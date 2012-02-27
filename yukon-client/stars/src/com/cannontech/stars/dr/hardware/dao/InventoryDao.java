@@ -87,10 +87,18 @@ public interface InventoryDao {
     
     public int getYukonDefinitionIdByEntryId(int entryId);
     
+    /**
+     * Returns the InventoryIdentifier.  Includes all device types whether
+     * they live in LmHardwareBase or MeterHardwareBase or as MCT's in YukonPAObject.
+     */
     public InventoryIdentifier getYukonInventory(int inventoryId);
 
     public InventoryIdentifier getYukonInventory(String serialNumber, int energyCompanyId);
     
+    /**
+     * Returns a Set of InventoryIdentifier for all inventory ids.  Includes all device types whether
+     * they live in LmHardwareBase or MeterHardwareBase or as MCT's in YukonPAObject.
+     */
     public Set<InventoryIdentifier> getYukonInventory(Collection<Integer> inventoryIds);
 
     public List<DisplayableLmHardware> getDisplayableLMHardware(List<? extends YukonInventory> inventoryIdentifiers);

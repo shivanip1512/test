@@ -55,7 +55,6 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.bean.InventoryBean;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -196,7 +195,7 @@ public class HardwareServiceImpl implements HardwareService {
 
     @Override
     public void changeType(YukonUserContext context, InventoryIdentifier inv, HardwareType type) throws ObjectInOtherEnergyCompanyException {
-        if (InventoryBean.unsupportedDeviceTypes.containsKey(type.getDefinitionId())) {
+        if (!type.isSupportsChangeType()) {
             throw new NotSupportedException(inv);
         } else {
             HardwareType original = inv.getHardwareType();

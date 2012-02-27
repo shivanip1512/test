@@ -47,6 +47,7 @@ public class ChangeWarehouseHelper extends InventoryActionsHelper {
                             hardwareService.changeWarehouse(context, inv, warehouseId);
                             successCount++;
                         } catch (ObjectInOtherEnergyCompanyException e) {
+                            /* Inventory was probably in a member energy comany */
                             log.error("Unable to change warehouse: " + inv, e);
                             failedCount++;
                         } finally {

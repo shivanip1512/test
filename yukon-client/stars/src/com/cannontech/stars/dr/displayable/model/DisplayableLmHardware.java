@@ -38,5 +38,10 @@ public class DisplayableLmHardware {
     public void setLabel(String label) {
         this.label = label;
     }
+    
+    @Override
+    public String toString() {
+        return serialNumber + " : " + deviceType;
+    }
 
 }

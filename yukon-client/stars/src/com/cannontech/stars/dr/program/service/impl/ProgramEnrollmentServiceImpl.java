@@ -124,7 +124,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
             StarsProgramSignUp programSignUp = operation.getStarsProgramSignUp();
             Instant now  = new Instant();
 
-            // Clean up an opt outs that are active or scheduled.
+            // Clean up any opt outs that are active or scheduled.
             for (ProgramEnrollment programEnrollment : requests) {
                 if (programEnrollment.isEnroll() == false) {
                     
@@ -162,31 +162,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     if (automaticConfigurationEnabled) {
                         //ZigBee related configs
                         if (hardwareType.isZigbee()) {
-                            //Determine Gateway and Device Id.
-                            int deviceId = liteHw.getDeviceID();
-                            
-                            List<Integer> lmGroupIds = gatewayDeviceDao.getLMGroupIdByEndPointId(deviceId);
-                            
-                            if (lmGroupIds.isEmpty()) {
-                                throw new InvalidParameterException("Device is not Enrolled in any program.");
-                            }
-                            
-                            //Grabbing only the first GroupId the device is assigned to.
-                            //All group this device is assigned to should have the same Utility Enrollment Group Id. 
-                            //If they do not it is considered a misconfiguration and will have un expected behavior
-                            int lmGroupId = lmGroupIds.get(0);
-                            
-                            //Build Attributes to send
-                            Map<DRLCClusterAttribute,Integer> attributes = Maps.newHashMap();
-                            
-                            //Utility Enrollment group
-                            int utilEnrollGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(lmGroupId);
-                            if (utilEnrollGroup == 0) {
-                                log.warn("Not sending Utility Enrollment Group to device because it is '0'. ");
-                            } else {
-                                attributes.put(DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP, utilEnrollGroup);    
-                                zigbeeWebService.sendLoadGroupAddressing(deviceId, attributes);
-                            }
+                            // Send Config Message
+                            sendZigbeeConfigMessage(liteHw.getDeviceID());
                             
                             //Update the status of the ZigBee Hardware to Available
                             List<YukonListEntry> availableListEntry = yukonListDao.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL, 
@@ -252,6 +229,33 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         ProgramEnrollmentResultEnum result = (trackHardwareAddressingEnabled) ?
                 ProgramEnrollmentResultEnum.SUCCESS_HARDWARE_CONFIG : ProgramEnrollmentResultEnum.SUCCESS;
         return result;
+    }
+    
+    @Override
+    public void sendZigbeeConfigMessage(int deviceId) throws DigiWebServiceException, InvalidParameterException {
+        //Determine Gateway and Device Id.
+        List<Integer> lmGroupIds = gatewayDeviceDao.getLMGroupIdByEndPointId(deviceId);
+        
+        if (lmGroupIds.isEmpty()) {
+            throw new InvalidParameterException("Device is not Enrolled in any program.");
+        }
+        
+        //Grabbing only the first GroupId the device is assigned to.
+        //All groups this device is assigned to should have the same Utility Enrollment Group Id. 
+        //If they do not it is considered a misconfiguration and will have un expected behavior
+        int lmGroupId = lmGroupIds.get(0);
+        
+        //Build Attributes to send
+        Map<DRLCClusterAttribute,Integer> attributes = Maps.newHashMap();
+        
+        //Utility Enrollment group
+        int utilEnrollGroup = lmGroupDao.getUtilityEnrollmentGroupForSepGroup(lmGroupId);
+        if (utilEnrollGroup == 0) {
+            log.warn("Not sending Utility Enrollment Group to device because it is '0'. ");
+        } else {
+            attributes.put(DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP, utilEnrollGroup);    
+            zigbeeWebService.sendLoadGroupAddressing(deviceId, attributes);
+        }
     }
     
     private StarsOperation createStarsOperation(CustomerAccount customerAccount,

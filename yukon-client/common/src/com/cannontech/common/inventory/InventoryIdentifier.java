@@ -31,7 +31,7 @@ public class InventoryIdentifier implements YukonInventory, Serializable {
     
     @Override
     public String toString() {
-        return hardwareType + ":" + inventoryId;
+        return hardwareType + " : " + inventoryId;
     }
 
     @Override

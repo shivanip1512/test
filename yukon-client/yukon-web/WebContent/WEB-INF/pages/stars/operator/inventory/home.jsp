@@ -112,7 +112,9 @@
             <cti:dataGridCell>
             
                 <%--SEARCH --%>
-                <%@ include file="search.jsp" %>
+                <c:if test="${showSearch}">
+                    <%@ include file="search.jsp" %>
+                </c:if>
                 
                 <c:if test="${showActions}">
                 

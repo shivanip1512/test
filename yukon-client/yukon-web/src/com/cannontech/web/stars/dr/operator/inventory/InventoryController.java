@@ -49,8 +49,8 @@ import com.cannontech.roles.yukon.EnergyCompanyRole.MeteringType;
 import com.cannontech.stars.InventorySearchResult;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
+import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
@@ -58,7 +58,6 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -69,8 +68,6 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.HardwareModelHelper;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareValidator;
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
@@ -95,17 +92,6 @@ public class InventoryController {
     @Autowired private YukonListDao yukonListDao;
     @Autowired private HardwareModelHelper helper;
     
-    public final static ImmutableSet<HardwareType> unsupportedDeviceTypes;
-    static {
-        Builder<HardwareType> builder = ImmutableSet.builder();
-        builder.add(HardwareType.NON_YUKON_METER);
-        builder.add(HardwareType.DIGI_GATEWAY);
-        builder.add(HardwareType.UTILITY_PRO_ZIGBEE);
-        builder.add(HardwareType.LCR_6200_ZIGBEE);
-        builder.add(HardwareType.LCR_6600_ZIGBEE);
-        unsupportedDeviceTypes = builder.build();
-    }
-    
     /* Home - Landing Page */
     @RequestMapping
     public String home(ModelMap model, YukonUserContext context) {
@@ -127,6 +113,9 @@ public class InventoryController {
         
         boolean showLinks = configurationSource.getBoolean("DIGI_ENABLED", false);
         model.addAttribute("showLinks", showLinks);
+        
+        boolean showSearch = rolePropertyDao.checkProperty(YukonRoleProperty.INVENTORY_SEARCH, user);
+        model.addAttribute("showSearch", showSearch);
         
         boolean hasAddRange = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SN_ADD_RANGE, user);
         boolean hasCreate = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
@@ -152,7 +141,7 @@ public class InventoryController {
             @Override
             public boolean apply(YukonListEntry input) {
                 HardwareType type = HardwareType.valueOf(input.getYukonDefID()); 
-                return !unsupportedDeviceTypes.contains(type);
+                return type.isSupportsAddByRange();
             }
         });
         model.addAttribute("addHardwareByRangeTypes", addHardwareByRangeTypes.iterator());
@@ -199,6 +188,12 @@ public class InventoryController {
     @RequestMapping
     public String view(ModelMap model, YukonUserContext context, int inventoryId) {
         model.addAttribute("mode", PageEditMode.VIEW);
+        int accountId = inventoryDao.getAccountIdForInventory(inventoryId);
+        if (accountId > 0) {
+            model.addAttribute("inventoryId", inventoryId);
+            model.addAttribute("accountId", accountId);
+            return "redirect:/spring/stars/operator/hardware/view";
+        }
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
         setupModel(model, context, hardware);
         return "operator/inventory/inventory.jsp";

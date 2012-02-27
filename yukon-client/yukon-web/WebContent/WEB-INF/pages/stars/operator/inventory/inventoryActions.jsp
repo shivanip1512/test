@@ -43,19 +43,21 @@
                 </cti:dataGridCell>
             </cti:checkRolesAndProperties>
             
-            <cti:dataGridCell>
-                <table>
-                    <tr>
-                        <td class="actionCell">
-                            <form action="deleteInventory/view" method="get">
-                                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                <cti:button nameKey="deleteInventory" type="submit" styleClass="buttonGroup"/>
-                            </form>
-                        </td>
-                        <td class="actionCell"><i:inline key=".deleteInventoryDescription"/></td>
-                    </tr>
-                </table>
-            </cti:dataGridCell>
+            <cti:checkRolesAndProperties value="SN_DELETE_RANGE">
+                <cti:dataGridCell>
+                    <table>
+                        <tr>
+                            <td class="actionCell">
+                                <form action="deleteInventory/view" method="get">
+                                    <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
+                                    <cti:button nameKey="deleteInventory" type="submit" styleClass="buttonGroup"/>
+                                </form>
+                            </td>
+                            <td class="actionCell"><i:inline key=".deleteInventoryDescription"/></td>
+                        </tr>
+                    </table>
+                </cti:dataGridCell>
+            </cti:checkRolesAndProperties>
             
             <cti:dataGridCell>
                 <table>
@@ -112,6 +114,23 @@
                     </tr>
                 </table>
             </cti:dataGridCell>
+            
+            <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
+                <cti:dataGridCell>
+                        <table>
+                            <tr>
+                                <td class="actionCell">
+                                    <form action="resendConfig/view" method="get">
+                                        <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
+                                        <cti:button nameKey="resendConfig" type="submit" styleClass="buttonGroup"/>
+                                    </form>
+                                </td>
+                                <td class="actionCell"><i:inline key=".resendConfigDescription"/></td>
+                            </tr>
+                        </table>
+                </cti:dataGridCell>
+            </cti:checkRolesAndProperties>
+            
         </cti:dataGrid>
      
      </tags:boxContainer2>

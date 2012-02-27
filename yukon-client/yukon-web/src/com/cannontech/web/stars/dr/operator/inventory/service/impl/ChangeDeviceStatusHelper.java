@@ -48,7 +48,7 @@ public class ChangeDeviceStatusHelper extends InventoryActionsHelper {
                             hardwareService.changeDeviceStatus(context, inv, statusEntryId, session);
                             successCount++;
                         } catch (ObjectInOtherEnergyCompanyException e) {
-                            /* Expect this to never happen */
+                            /* Inventory was probably in a member energy comany */
                             log.error("Unable to change device status: " + inv, e);
                             failedCount++;
                         } finally {

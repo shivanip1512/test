@@ -47,6 +47,7 @@ public class ChangeServiceCompanyHelper extends InventoryActionsHelper {
                             hardwareService.changeServiceCompany(context, inv, serviceCompanyId);
                             successCount++;
                         } catch (ObjectInOtherEnergyCompanyException e) {
+                            /* Inventory was probably in a member energy comany */
                             log.error("Unable to change service company: " + inv, e);
                             failedCount++;
                         } finally {

@@ -63,20 +63,15 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     /* Gateways*/
     DIGI_GATEWAY(YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, TWO_WAY_RECEIVER, GATEWAY, EXPRESSCOM, true, false, false);
     
-    // this key prefix can be found in the following file:
-    // consumer.xml
-    private final static String keyPrefix = "yukon.dr.consumer.hardware.type.";
-    
-    private final int definitionId;
-    private final InventoryCategory inventoryCategory;
-    private final HardwareClass hardwareClass;
-    private final HardwareConfigType hardwareConfigType;
     
     private final static ImmutableSet<HardwareType> zigbeeTypes;
     private final static ImmutableSet<HardwareType> zigbeeEndpointTypes;
-    private final static ImmutableSet<HardwareType> validForChangeType;
-    private final static ImmutableSet<HardwareType> utilityPROTypes;
+    private final static ImmutableSet<HardwareType> utilityProTypes;
     private final static ImmutableSet<HardwareType> autoModeEnableTypes;
+    
+    private final static ImmutableSet<HardwareType> supportsChangeType;
+    private final static ImmutableSet<HardwareType> supportsAddByRange;
+    
     static {
         Builder<HardwareType> builder = ImmutableSet.builder();
         builder.add(UTILITY_PRO_ZIGBEE);
@@ -87,29 +82,39 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         builder.add(DIGI_GATEWAY);
         zigbeeTypes = builder.build();
         
-        Builder<HardwareType> validForChangeTypeBuilder = ImmutableSet.builder();
-        validForChangeTypeBuilder.add(LCR_6600_EXPRESSCOM);
-        validForChangeTypeBuilder.add(LCR_6200_EXPRESSCOM);
-        validForChangeTypeBuilder.add(LCR_5000_EXPRESSCOM);
-        validForChangeTypeBuilder.add(LCR_5000_VERSACOM);
-        validForChangeTypeBuilder.add(LCR_4000);
-        validForChangeTypeBuilder.add(LCR_3000);
-        validForChangeTypeBuilder.add(LCR_2000);
-        validForChangeTypeBuilder.add(LCR_1000);
-        validForChangeTypeBuilder.add(SA_205);
-        validForChangeTypeBuilder.add(SA_305);
-        validForChangeTypeBuilder.add(SA_SIMPLE);
-        validForChangeTypeBuilder.add(EXPRESSSTAT);
-        validForChangeTypeBuilder.add(COMMERCIAL_EXPRESSSTAT);
-        validForChangeTypeBuilder.add(EXPRESSSTAT_HEAT_PUMP);
-        validForChangeTypeBuilder.add(UTILITY_PRO);
-        validForChangeTypeBuilder.add(UTILITY_PRO_G2);
-        validForChangeTypeBuilder.add(UTILITY_PRO_G3);
-        validForChangeType = validForChangeTypeBuilder.build();
+        Builder<HardwareType> builder2 = ImmutableSet.builder();
+        builder2.add(LCR_6600_EXPRESSCOM);
+        builder2.add(LCR_6200_EXPRESSCOM);
+        builder2.add(LCR_5000_EXPRESSCOM);
+        builder2.add(LCR_5000_VERSACOM);
+        builder2.add(LCR_4000);
+        builder2.add(LCR_3000);
+        builder2.add(LCR_2000);
+        builder2.add(LCR_1000);
+        builder2.add(SA_205);
+        builder2.add(SA_305);
+        builder2.add(SA_SIMPLE);
+        builder2.add(EXPRESSSTAT);
+        builder2.add(COMMERCIAL_EXPRESSSTAT);
+        builder2.add(EXPRESSSTAT_HEAT_PUMP);
+        builder2.add(UTILITY_PRO);
+        builder2.add(UTILITY_PRO_G2);
+        builder2.add(UTILITY_PRO_G3);
+        supportsChangeType = builder2.build();
+        supportsAddByRange = builder2.build();
         
-        utilityPROTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
+        utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
     }
+    
+    // this key prefix can be found in the following file:
+    // consumer.xml
+    private final static String keyPrefix = "yukon.dr.consumer.hardware.type.";
+    
+    private final int definitionId;
+    private final InventoryCategory inventoryCategory;
+    private final HardwareClass hardwareClass;
+    private final HardwareConfigType hardwareConfigType;
     
     //TODO Drop booleans and turn these into sets as well?
     private boolean supportsSchedules;
@@ -188,47 +193,69 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     /**
      * Returns true if this hardware type is a thermostat.
-     * @return boolean
      */
     public boolean isThermostat() {
         return getHardwareClass().isThermostat();
     }
     
     /**
-     * Returns true if this hardware type is a gateway.
-     * @return
+     * Returns true if this hardware type is a gateway (ZigBee gateway device).
      */
     public boolean isGateway() {
         return getHardwareClass().isGateway();
     }
     
+    /**
+     * Returns true if this hardware type is a ZigBee device.
+     */
     public boolean isZigbee() {
         return zigbeeTypes.contains(this);
     }
 
+    /**
+     * Returns true if this hardware type is a ZigBee endpoint (non gateway ZigBee device).
+     */
     public boolean isZigbeeEndpoint() {
         return zigbeeEndpointTypes.contains(this);
     }
     
-    public boolean isValidForChangeType() {
-        return validForChangeType.contains(this);
+    /**
+     * Returns true if this hardware type supports the 'change device type' action.
+     */
+    public boolean isSupportsChangeType() {
+        return supportsChangeType.contains(this);
     }
     
-    public static Set<HardwareType> getValidForChangeTypeSet() {
-        return validForChangeType;
+    /**
+     * Returns set of all hardware types that support the 'change device type' action.
+     */
+    public static Set<HardwareType> getSupportsChangeType() {
+        return supportsChangeType;
+    }
+    
+    /**
+     * Returns true if this hardware type supports the 'add by range' action.
+     */
+    public boolean isSupportsAddByRange() {
+        return supportsAddByRange.contains(this);
+    }
+    
+    /**
+     * Returns set of all hardware types that support the 'add by range' action.
+     */
+    public static Set<HardwareType> getSupportsAddByRange() {
+        return supportsAddByRange;
     }
 
     /**
-     * Returns true if this hardware type is a meter/mct.
-     * @return boolean
+     * Returns true if this hardware type is a meter(MeterHardwareBase or MCT).
      */
     public boolean isMeter() {
         return getHardwareClass().isMeter() ;
     }
     
     /**
-     * Returns true if this hardware type is a switch/lcr.
-     * @return boolean
+     * Returns true if this hardware type is a switch or lcr.
      */
     public boolean isSwitch() {
         return getHardwareClass().isSwitch();
@@ -236,7 +263,6 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     /**
      * Returns true if this is a two way device.
-     * @return boolean
      */
     public boolean isTwoWay() {
         return getInventoryCategory() == TWO_WAY_RECEIVER;
@@ -305,9 +331,9 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
 
     /**
-     * Checks if a device has a base type of UtilityPRO.
+     * Returns true if this hardware type is a Utility Pro type of thermostat.
      */
     public boolean isUtilityProType() {
-        return utilityPROTypes.contains(this);
+        return utilityProTypes.contains(this);
     }
 }

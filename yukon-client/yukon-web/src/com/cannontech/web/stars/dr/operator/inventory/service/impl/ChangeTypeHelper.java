@@ -58,9 +58,11 @@ public class ChangeTypeHelper extends InventoryActionsHelper {
                             successful.add(inv);
                             successCount++;
                         } catch (NotSupportedException nse) {
+                            /* Original hardware type does not support the 'change type' action */
                             unsupported.add(inv);
                             unsupportedCount++;
                         } catch (ObjectInOtherEnergyCompanyException e) {
+                            /* Inventory was probably in a member energy comany */
                             failed.add(inv);
                             failedCount++;
                         } finally {

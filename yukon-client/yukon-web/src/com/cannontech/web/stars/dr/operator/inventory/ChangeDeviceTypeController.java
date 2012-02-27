@@ -61,7 +61,7 @@ public class ChangeDeviceTypeController {
         
         for (YukonListEntry entry : deviceTypes) {
             HardwareType type = HardwareType.valueOf(entry.getDefinition().getDefinitionId());
-            if (type.isValidForChangeType()) {
+            if (type.isSupportsChangeType()) {
                 validTypes.add(new Pair<HardwareType, String>(type, entry.getEntryText()));
             }
         }

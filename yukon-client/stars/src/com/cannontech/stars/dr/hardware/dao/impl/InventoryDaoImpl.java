@@ -748,6 +748,8 @@ public class InventoryDaoImpl implements InventoryDao {
         // Where clause
         SqlFragmentCollection whereClause = SqlFragmentCollection.newAndCollection();
         whereClause.add(new SqlStatementBuilder("IM.EnergyCompanyId").in(ecIds));
+        
+        /* Search Parameters */
         if (StringUtils.isNotBlank(inventorySearch.getSerialNumber())) {
             whereClause.add(new SqlStatementBuilder("LMHB.ManufacturerSerialNumber").startsWith(inventorySearch.getSerialNumber()));
         }
@@ -813,6 +815,7 @@ public class InventoryDaoImpl implements InventoryDao {
         
         return results;
     }
+    
     @Override
     public int getCategoryIdForTypeId(int hardwareTypeId, YukonEnergyCompany ec) {
         

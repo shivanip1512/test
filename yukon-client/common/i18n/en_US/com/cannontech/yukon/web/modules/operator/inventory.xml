@@ -190,6 +190,8 @@
     <entry key="yukon.web.modules.operator.inventoryActions.changeServiceCompanyDescription">Change the service company.</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.changeWarehouse.label">Change Warehouse</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.changeWarehouseDescription">Change the warehouse.</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.resendConfig.label">Resend ZigBee Config</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.resendConfigDescription">Resend configurations for ZigBee devices.</entry>
     
     <!-- /inventory/deleteInventory.jsp -->
     <entry key="yukon.web.modules.operator.deleteInventory.pageName">Delete Inventory</entry>
@@ -226,6 +228,27 @@
     <entry key="yukon.web.modules.operator.changeServiceCompany.instructions">This will change the service company of all inventory in the selected inventory collection.</entry>
     <entry key="yukon.web.modules.operator.changeServiceCompany.newServiceCompany">New Service Company</entry>
     <entry key="yukon.web.modules.operator.changeServiceCompany.progress">Progress</entry>
+    
+    <!-- /inventory/resendConfig.jsp -->
+    <entry key="yukon.web.modules.operator.resendConfig.pageName">Resend Configuration</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.resendConfigContainer.title">Resend Configuration For ZigBee Devices</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.disclaimerLabel">Note</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.disclaimer">This task with send load management configuration messages to all ZigBee devices in the collection.</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.progress.title">Resend Configuration Task Status</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.progress">Progress</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.successful">Successful</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.unsupported">Unsupported</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.failed">Failed</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.failedItems.title">Failed Items</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.displayableLmHardware">Serial Number : Device Type</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.reason">Failure Reason</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.failureMessage">{0}</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.canceled">Resend Configuration task canceled after {0} items were processed.</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.newOperation">Choose A New Operation For Inventory</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.viewFailureReasons">View Failed</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.successCollectionDescription">Resend Configuration Success List</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.failedCollectionDescription">Resend Configuration Failed List</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.unsupportedCollectionDescription">Resend Configuration Unsupported List</entry>
     
     <!-- /inventory/changeWarehouse.jsp -->
     <entry key="yukon.web.modules.operator.changeWarehouse.pageName">Change Warehouse</entry>
