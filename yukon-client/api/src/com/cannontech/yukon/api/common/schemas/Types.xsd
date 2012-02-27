@@ -1,37 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-            xmlns:yukon="http://yukon.cannontech.com/api" 
-            targetNamespace="http://yukon.cannontech.com/api" 
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:yukon="http://yukon.cannontech.com/api"
+            targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified" version="1.0">
-            
-	<xsd:annotation>
-		<xsd:documentation xml:lang="en">
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
             General type definitions for Yukon message elements.
         </xsd:documentation>
-	</xsd:annotation>
-    
-    <xsd:simpleType name="AccountNumber" >
-        <xsd:restriction base="xsd:string" />
+    </xsd:annotation>
+
+    <xsd:simpleType name="AccountNumber">
+        <xsd:restriction base="xsd:string"/>
     </xsd:simpleType>
 
-    <xsd:simpleType name="SerialNumber" >
-        <xsd:restriction base="xsd:string" />
+    <xsd:simpleType name="SerialNumber">
+        <xsd:restriction base="xsd:string"/>
     </xsd:simpleType>
 
     <xsd:simpleType name="UnboundedLimit">
-        <xsd:union memberTypes="xsd:positiveInteger yukon:UnboundedLimitWord" />
+        <xsd:union memberTypes="xsd:positiveInteger yukon:UnboundedLimitWord"/>
     </xsd:simpleType>
 
     <xsd:simpleType name="UnboundedLimitWord">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="unbounded" />
+            <xsd:enumeration value="unbounded"/>
         </xsd:restriction>
     </xsd:simpleType>
 
     <xsd:complexType name="emptyElement">
         <xsd:complexContent>
-            <xsd:restriction base="xsd:anyType" />
+            <xsd:restriction base="xsd:anyType"/>
         </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Token">
+        <xsd:attribute name="value" use="required" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:complexType name="ReturnToken">
@@ -44,50 +48,49 @@
 
     <xsd:simpleType name="ThermostatMode">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="Auto" />
-            <xsd:enumeration value="Cool" />
-            <xsd:enumeration value="Heat" />
-            <xsd:enumeration value="Off" />
+            <xsd:enumeration value="Auto"/>
+            <xsd:enumeration value="Cool"/>
+            <xsd:enumeration value="Heat"/>
+            <xsd:enumeration value="Off"/>
         </xsd:restriction>
     </xsd:simpleType>
-    
+
     <xsd:simpleType name="ThermostatFan">
-            <xsd:restriction base="xsd:string">
-                <xsd:enumeration value="Auto" />
-                <xsd:enumeration value="Circulate" />
-                <xsd:enumeration value="On" />
-            </xsd:restriction>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Auto"/>
+            <xsd:enumeration value="Circulate"/>
+            <xsd:enumeration value="On"/>
+        </xsd:restriction>
     </xsd:simpleType>
 
+    <xsd:simpleType name="TemperatureUnit">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value="F|C"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 
     <xsd:complexType name="Temperature">
-        <xsd:simpleContent >
-            <xsd:extension base="xsd:float">
-                <xsd:attribute name="unit">
-                    <xsd:simpleType>
-                            <xsd:restriction base="xsd:string">
-                                <xsd:pattern value="F|C" />
-                            </xsd:restriction>
-                        </xsd:simpleType>
-                </xsd:attribute>
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:double">
+                <xsd:attribute name="unit" type="yukon:TemperatureUnit"/>
             </xsd:extension>
         </xsd:simpleContent>
     </xsd:complexType>
-    
+
     <xsd:simpleType name="OptOutType">
-            <xsd:restriction base="xsd:string">
-                <xsd:enumeration value="ENABLED" />
-                <xsd:enumeration value="DISABLED_WITH_COMM" />
-                <xsd:enumeration value="DISABLED_WITHOUT_COMM" />
-            </xsd:restriction>
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ENABLED"/>
+            <xsd:enumeration value="DISABLED_WITH_COMM"/>
+            <xsd:enumeration value="DISABLED_WITHOUT_COMM"/>
+        </xsd:restriction>
     </xsd:simpleType>
 
     <xsd:simpleType name="HardwareClass">
         <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="SWITCH" />
-            <xsd:enumeration value="THERMOSTAT" />
-            <xsd:enumeration value="METER" />
-            <xsd:enumeration value="GATEWAY" />
+            <xsd:enumeration value="SWITCH"/>
+            <xsd:enumeration value="THERMOSTAT"/>
+            <xsd:enumeration value="METER"/>
+            <xsd:enumeration value="GATEWAY"/>
         </xsd:restriction>
     </xsd:simpleType>
 
