@@ -54,6 +54,7 @@ PlcInfrastructure Grid;
 
 int SimulatorMainFunction(int argc, char **argv);
 void loadGloabalSimulatorBehaviors(Logger &logger);
+bool confirmCcu710(int ccu_address, int portNumber, Logger &logger);
 bool getPorts(vector<int> &ports);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
@@ -191,6 +192,39 @@ void loadGloabalSimulatorBehaviors(Logger &logger)
         std::auto_ptr<PlcBehavior> d(new BchBehavior());
         d->setChance(chance);
         Grid.setBehavior(d);
+    }
+}
+
+bool confirmCcu710(int ccu_address, int portNumber, Logger &logger) 
+{
+    static const string Ccu710AType = "CCU-710A";
+    stringstream ss_addr, ss_port;
+    ss_addr << ccu_address;
+    ss_port << portNumber;
+    const string sql = "SELECT PAO.Type "
+                       "FROM YukonPAObject PAO "
+                         "JOIN DeviceIdlcRemote DIR ON PAO.PAObjectId = DIR.DeviceId "
+                         "JOIN DeviceDirectCommSettings DDCS ON PAO.PAObjectID = DDCS.DEVICEID "
+                         "JOIN PORTTERMINALSERVER PTS ON DDCS.PORTID = PTS.PORTID "
+                       "WHERE DIR.Address = " + ss_addr.str() + " " + 
+                         "AND PTS.SocketPortNumber = " + ss_port.str();
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+
+    rdr.execute();
+
+    if( rdr() )
+    {
+        string type;
+        rdr["Type"] >> type;
+        return (strcmp(type.c_str(), Ccu710AType.c_str()) == 0);
+    }
+    else
+    {
+        // If we have a DB connection, no results came from the query, so return false.
+        // If we don't have a DB connection, just return true.
+        return !connection.isValid();
     }
 }
 
@@ -332,6 +366,14 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
 
         if( !peek_buf.empty() )
         {
+            if( peek_buf[0] == 0x05 && peek_buf[1] == 0x64 )
+            {
+                // This is a DNP header...
+                scope.log("DNP message obtained, clearing the socket.");
+                scope.log("Please remove the CBC/RTU from this comm channel to eliminate this message.");
+                socket_interface.clear();
+                continue;
+            }
             if( peek_buf[0] == CcuIDLC::Hdlc_FramingFlag )
             {
                 // Device is either a 721 or a 711.
@@ -434,7 +476,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                     socket_interface.clear();
                 }
 
-                if( ccu_list.find(ccu_address) == ccu_list.end() )
+                if( ccu_list.find(ccu_address) == ccu_list.end() && confirmCcu710(ccu_address, portNumber, scope))
                 {
                     scope.log("New CCU address received", ccu_address);
 
@@ -442,10 +484,19 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                 }
             }
 
-            if( !ccu_list[ccu_address]->handleRequest(socket_interface, scope) )
+            if( ccu_list.find(ccu_address) != ccu_list.end() )
             {
-                scope.log("Error while processing message, clearing socket");
+                if( !ccu_list[ccu_address]->handleRequest(socket_interface, scope) )
+                {
+                    scope.log("Error while processing message, clearing socket");
 
+                    socket_interface.clear();
+                }
+            }
+            else
+            {
+                // The request was probably garbage. We shouldn't see this often, if ever.
+                scope.log("Invalid message received, clearing socket.");
                 socket_interface.clear();
             }
         }
