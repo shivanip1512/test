@@ -45,6 +45,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
@@ -102,7 +103,7 @@ public class ZigBeeHardwareController {
                 device = gatewayDeviceDao.getZigbeeGateway(deviceId);
                 try {
                     ping = zigbeeStateUpdaterService.updateGatewayStatus(device);
-                } catch (DigiWebServiceException e) {
+                } catch (DigiNotConfiguredException e) {
                     String notConfigured = "yukon.web.modules.operator.hardware.zigbeeNotEnabled";
                     MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(notConfigured);
                     ping = new ZigbeePingResponse(false, Commissioned.DECOMMISSIONED, resolvable);
@@ -112,7 +113,7 @@ public class ZigBeeHardwareController {
                 device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
                 try {
                     ping = zigbeeStateUpdaterService.updateEndPointStatus(device);
-                } catch (DigiWebServiceException e) {
+                } catch (DigiNotConfiguredException e) {
                     String notConfigured = "yukon.web.modules.operator.hardware.zigbeeNotEnabled";
                     MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(notConfigured);
                     ping = new ZigbeePingResponse(false, Commissioned.DECOMMISSIONED, resolvable);    

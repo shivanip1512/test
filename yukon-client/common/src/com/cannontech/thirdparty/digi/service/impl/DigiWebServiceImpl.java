@@ -29,6 +29,7 @@ import com.cannontech.spring.CheckConfigParam;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiEmptyDeviceCoreResultException;
+import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.model.DevConnectwareId;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
@@ -47,7 +48,7 @@ import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-@CheckConfigParam(value="DIGI_ENABLED", expecting="true", throwable=DigiWebServiceException.class, errorMessage="SEP not enabled")
+@CheckConfigParam(value="DIGI_ENABLED", expecting="true", throwable=DigiNotConfiguredException.class, errorMessage="SEP not enabled")
 public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterService {
 
     private static final Logger log = YukonLogManager.getLogger(DigiWebServiceImpl.class);
