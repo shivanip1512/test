@@ -23,6 +23,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.messaging.ControlHistoryMessage;
@@ -200,6 +201,8 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     public void handleCancelTextMessage(CancelZigbeeText cancelZigbeeText) {
         try {
             zigbeeWebService.cancelTextMessage(cancelZigbeeText);
+        } catch (DigiNotConfiguredException e){
+            log.error("Digi not configured", e);
         } catch (DigiWebServiceException e) {
             log.warn("caught exception in handleTextMessage", e);
         } catch (ZigbeeClusterLibraryException e) {

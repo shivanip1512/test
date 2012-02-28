@@ -22,6 +22,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.WaitableExecutor;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
+import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.model.FileData;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
 
@@ -138,9 +139,9 @@ public class DigiPollingServiceImpl {
                 zigbeeStateUpdaterService.updateAllGatewayStatuses();
                 zigbeeStateUpdaterService.updateAllEndPointStatuses();
             } catch (DigiNotConfiguredException e) {
-                log.error("Digi not configured", e);
-            } catch (Exception e) {
-                log.error("End point update failed",e);
+                log.warn("Digi not configured", e);
+            } catch (DigiWebServiceException e) {
+                log.error("Digi status update failed",e);
             }
             log.debug("Digi Device Status Poll Finished");
         }

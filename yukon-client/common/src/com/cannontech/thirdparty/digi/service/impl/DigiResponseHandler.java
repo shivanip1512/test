@@ -34,6 +34,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeControlEventDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.model.DevConnectwareId;
 import com.cannontech.thirdparty.digi.model.DeviceCore;
 import com.cannontech.thirdparty.digi.model.FileData;
@@ -575,7 +576,11 @@ public class DigiResponseHandler {
                 
                 if (devOldState != Commissioned.DECOMMISSIONED) {
                     //Poll is commissioned
-                    zigbeeStateUpdaterService.activateSmartPolling(device);
+                    try {
+                        zigbeeStateUpdaterService.activateSmartPolling(device);
+                    } catch (DigiNotConfiguredException e) {
+                        log.error("Digi not configured", e);
+                    }
                 }
             }
         }

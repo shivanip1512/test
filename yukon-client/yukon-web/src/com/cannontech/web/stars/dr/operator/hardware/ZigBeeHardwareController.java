@@ -122,7 +122,12 @@ public class ZigBeeHardwareController {
             
             zigbeeEventLogService.zigbeeDeviceRefreshed(pao.getPaoName());
             
-            zigbeeStateUpdaterService.activateSmartPolling(device);
+            try {
+                zigbeeStateUpdaterService.activateSmartPolling(device);
+            } catch (DigiNotConfiguredException e) {
+                log.error("Digi not configured", e);
+            }
+
             returnJson(resp, ping.isSuccess(), accessor.getMessage(ping.getPingResultResolvable()));
         } catch (DigiWebServiceException e) {
             commandFailed(resp, accessor, e.getMessage());
@@ -190,8 +195,12 @@ public class ZigBeeHardwareController {
             zigbeeWebService.installEndPoint(gatewayId, deviceId);
 
             ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
-            zigbeeStateUpdaterService.activateSmartPolling(device);
-            
+            try {
+                zigbeeStateUpdaterService.activateSmartPolling(device);
+            } catch (DigiNotConfiguredException e) {
+                log.error("Digi not configured", e);
+            }
+
             zigbeeEventLogService.zigbeeDeviceCommissioned(device.getName());
         } catch (DigiWebServiceException e) {
             messageFailed = true;
@@ -241,9 +250,12 @@ public class ZigBeeHardwareController {
         
         try {
             zigbeeWebService.installGateway(gatewayId);
-            
             ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
-            zigbeeStateUpdaterService.activateSmartPolling(gateway);
+            try {
+                zigbeeStateUpdaterService.activateSmartPolling(gateway);
+            } catch (DigiNotConfiguredException e) {
+                log.error("Digi not configured", e);
+            }
 
             zigbeeEventLogService.zigbeeDeviceCommissioned(gateway.getName());
         } catch (ZigbeeCommissionException e) {
