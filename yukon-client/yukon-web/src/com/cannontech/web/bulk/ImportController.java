@@ -21,7 +21,6 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
 import com.cannontech.common.bulk.callbackResult.ImportUpdateCallbackResult;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
-import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.service.BulkImportFileInfo;
 import com.cannontech.common.bulk.service.BulkImportMethod;
 import com.cannontech.common.bulk.service.BulkImportService;
@@ -35,7 +34,6 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.BULK_IMPORT_OPERATION)
 public class ImportController extends MultiActionController {
 
-    private BulkFieldService bulkFieldService = null;
     private BulkImportService bulkImportService = null;
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache = null;
     
@@ -68,11 +66,8 @@ public class ImportController extends MultiActionController {
         
         Map<BulkImportMethod, Set<BulkFieldColumnHeader>> methodUpdateableFieldsMap = new HashMap<BulkImportMethod, Set<BulkFieldColumnHeader>>();
         for (BulkImportMethod method : importMethods) {
-            
-            Set<BulkFieldColumnHeader> methodUpdateableFields = bulkFieldService.getUpdateableBulkFieldColumnHeaders();
-            Set<BulkFieldColumnHeader> requiredColumns = method.getRequiredColumns();
-            methodUpdateableFields.removeAll(requiredColumns);
-            methodUpdateableFieldsMap.put(method, methodUpdateableFields);
+          
+            methodUpdateableFieldsMap.put(method, method.getOptionalColumns());
         }
         
         return methodUpdateableFieldsMap;
@@ -105,9 +100,12 @@ public class ImportController extends MultiActionController {
         String fileInfoId = bulkImportFileInfo.getId();
         bulkImportFileInfoMap.put(fileInfoId, bulkImportFileInfo);
         
+        String deviceType = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
+        
         // confirm
         ModelAndView mav = new ModelAndView("redirect:/spring/bulk/import/importConfirm");
         mav.addObject("fileInfoId", fileInfoId);
+        mav.addObject("deviceType", deviceType);
         
         return mav;
     }
@@ -117,19 +115,23 @@ public class ImportController extends MultiActionController {
         
         ModelAndView mav = new ModelAndView("import/importConfirm.jsp");
         
+ 
+        String deviceType = ServletRequestUtils.getStringParameter(request, "deviceType");
+        
         // get file info
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
         
-        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo);
+        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, deviceType);
         mav.addObject("parsedResult", parsedResult);
-        
+        mav.addObject("deviceType", deviceType);
+
         // header errors
         if (parsedResult.hasErrors()) {
             
             ModelAndView errorMav = new ModelAndView("import/importUpload.jsp");
             errorMav.addObject("ignoreInvalidCols", bulkImportFileInfo.isIgnoreInvalidCols());
-            
+            errorMav.addObject("importTypeSelector", deviceType);
             errorMav.addObject("importMethods", importMethods);
             errorMav.addObject("methodUpdateableFieldsMap", getMethodUpdateabledFieldsMap());
             errorMav.addObject("headersErrorResolverList", parsedResult.getErrorResolvers());
@@ -145,11 +147,13 @@ public class ImportController extends MultiActionController {
         
         ModelAndView mav = new ModelAndView("redirect:/spring/bulk/import/importResults");
         
+        String deviceType = ServletRequestUtils.getStringParameter(request, "deviceType");
+     
         // open file as csv
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
         
-        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo);
+        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, deviceType);
         String resultsId = bulkImportService.startBulkImport(parsedResult);
         
         mav.addObject("resultsId", resultsId);
@@ -174,11 +178,6 @@ public class ImportController extends MultiActionController {
         return mav;
     }
 
-    @Required
-    public void setBulkFieldService(BulkFieldService bulkFieldService) {
-        this.bulkFieldService = bulkFieldService;
-    }
-    
     @Required
     public void setRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;

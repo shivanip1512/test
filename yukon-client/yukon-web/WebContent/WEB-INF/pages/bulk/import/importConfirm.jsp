@@ -33,6 +33,8 @@
     <tags:boxContainer title="${headerTitle}" id="importConfirmContainer" hideEnabled="false">
     
         <form id="importConfirmForm" action="/spring/bulk/import/doImport" method="post">
+
+            <input type="hidden" value="${deviceType}" name="deviceType" />
             
             <%-- CONFIRMATION INFO --%>
             <cti:msg var="rows" key="yukon.common.device.bulk.importConfirm.rows"/>

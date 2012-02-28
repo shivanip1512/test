@@ -36,6 +36,12 @@ public class PaoCreationHelper {
     private PaoDefinitionService paoDefinitionService;
     private PointDao pointDao;
     
+    public void addDefaultPointsToNewPao(YukonPao pao) {
+        List<PointBase> pointsToCreate = paoDefinitionService.createDefaultPointsForPao(pao);
+        
+        applyPointsForNewPao(pointsToCreate);
+    }
+    
     public void addDefaultPointsToPao(YukonPao pao) {
         List<PointBase> pointsToCreate = paoDefinitionService.createDefaultPointsForPao(pao);
         
@@ -126,6 +132,15 @@ public class PaoCreationHelper {
             newPoints.add(point);
         }
         
+        // Insert into DB
+        dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
+    }
+    
+    public void applyPointsForNewPao(List<PointBase> pointsToCreate) {
+        MultiDBPersistent pointsToAdd = new MultiDBPersistent();
+        Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
+        newPoints.addAll(pointsToCreate);
+
         // Insert into DB
         dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
     }

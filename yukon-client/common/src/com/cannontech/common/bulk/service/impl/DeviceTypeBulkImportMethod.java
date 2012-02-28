@@ -1,6 +1,6 @@
 package com.cannontech.common.bulk.service.impl;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,27 +15,26 @@ import com.cannontech.core.dao.PaoDao;
 
 public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
     
-    private DeviceCreationService deviceCreationService = null;
-    private PaoDao paoDao = null;
-    
-    @Autowired
-    public void setDeviceCreationService(DeviceCreationService deviceCreationService) {
-        this.deviceCreationService = deviceCreationService;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
+    @Autowired private DeviceCreationService deviceCreationService = null;
+    @Autowired private PaoDao paoDao = null;
     
     @Override
     public Set<BulkFieldColumnHeader> getRequiredColumns() {
         
-        Set<BulkFieldColumnHeader> requiredColumns = new HashSet<BulkFieldColumnHeader>();
-        requiredColumns.add(BulkFieldColumnHeader.DEVICE_TYPE);
+        Set<BulkFieldColumnHeader> requiredColumns = new LinkedHashSet<BulkFieldColumnHeader>();
         requiredColumns.add(BulkFieldColumnHeader.NAME);
+        requiredColumns.add(BulkFieldColumnHeader.DEVICE_TYPE);
         requiredColumns.add(BulkFieldColumnHeader.ADDRESS);
         requiredColumns.add(BulkFieldColumnHeader.ROUTE);
+        return requiredColumns;
+    }
+    
+    public Set<BulkFieldColumnHeader> getOptionalColumns() {
+
+        Set<BulkFieldColumnHeader> requiredColumns = new LinkedHashSet<BulkFieldColumnHeader>();
+        requiredColumns.add(BulkFieldColumnHeader.DISCONNECT_ADDRESS);
+        requiredColumns.add(BulkFieldColumnHeader.METER_NUMBER);
+        requiredColumns.add(BulkFieldColumnHeader.ENABLE);
         return requiredColumns;
     }
 
@@ -63,6 +62,8 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
             throw new DeviceCreationException("Could not create device by type: Non-numeric address value.", e);
         } catch (DeviceCreationException e) {
             throw new DeviceCreationException("Could not create new device", e);
+        } catch(IllegalArgumentException e) {
+            throw new DeviceCreationException("Could not create device by type: Invalid device type.", e);
         }
 
         return device;

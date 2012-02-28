@@ -28,7 +28,7 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
     
     private List<BulkImportMethod> supportedImportMethods = null;
 
-    public ParsedBulkImportFileInfo createParsedBulkImportFileInfo(BulkImportFileInfo info) {
+    public ParsedBulkImportFileInfo createParsedBulkImportFileInfo(BulkImportFileInfo info, String deviceType) {
         
         ParsedBulkImportFileInfo result = new ParsedBulkImportFileInfo(info);
         
@@ -56,10 +56,12 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
             // check for all required fields for each method
             BulkImportMethod chosenMethod = null;
             for (BulkImportMethod method : supportedImportMethods) {
-                Set<BulkFieldColumnHeader> requiredColumns = method.getRequiredColumns();
-                if (headerColumnSet.containsAll(requiredColumns)) {
-                    chosenMethod = method;
-                    break;
+                if (method.getType().equalsIgnoreCase(deviceType)) {
+                    Set<BulkFieldColumnHeader> requiredColumns = method.getRequiredColumns();
+                    if (headerColumnSet.containsAll(requiredColumns)) {
+                        chosenMethod = method;
+                        break;
+                    }
                 }
             }
 
@@ -77,10 +79,18 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
             
             // check that remaining update columns are ok (updateable)
             checkUpdateBulkFieldColumnHeaders(result, updateBulkFieldColumnHeaders);
+            if (!result.hasErrors()) {
+                for (BulkFieldColumnHeader bulkFieldColumnHeader : updateBulkFieldColumnHeaders) {
+                    if (!chosenMethod.getOptionalColumns().contains(bulkFieldColumnHeader)) {
+                        result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.columnHeader.error.notUpdateableColumnName",
+                                                                       bulkFieldColumnHeader.toString()));
+                    }
+                }
+            }
+
             if (result.hasErrors()) {
                 return result;
             }
-            
             // set the update bulk fields
             result.addUpdateBulkFieldColumnHeaders(updateBulkFieldColumnHeaders);
             

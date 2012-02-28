@@ -126,13 +126,14 @@
     <!-- IMPORT CONTROLLER (IMPORT BY FILE) -->
     <bean id="ImportController" class="com.cannontech.web.bulk.ImportController" >
         
-        <property name="bulkFieldService" ref="bulkFieldService" />
         <property name="bulkImportService" ref="bulkImportService" />
         <property name="recentResultsCache" ref="recentResultsCache" />
         <property name="importMethods">
             <list>
                 <ref bean="templateBulkImportMethod" />
                 <ref bean="deviceTypeBulkImportMethod" />
+                <ref bean="rfnTemplateBulkImportMethod" />
+                <ref bean="rfnDeviceTypeBulkImportMethod" />
             </list>
         </property>
         

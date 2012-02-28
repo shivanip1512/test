@@ -419,10 +419,22 @@
     </bean>
     
     <bean id="templateBulkImportMethod" class="com.cannontech.common.bulk.service.impl.TemplateBulkImportMethod">
+        <property name="type" value="DLC"/>
         <property name="name" value="TEMPLATE"/>
     </bean>
     
     <bean id="deviceTypeBulkImportMethod" class="com.cannontech.common.bulk.service.impl.DeviceTypeBulkImportMethod">
+        <property name="type" value="DLC"/>
+        <property name="name" value="DEVICE_TYPE"/>
+    </bean>
+    
+    <bean id="rfnTemplateBulkImportMethod" class="com.cannontech.common.bulk.service.impl.RfnTemplateBulkImportMethod">
+        <property name="type" value="RFN"/>
+        <property name="name" value="TEMPLATE"/>
+    </bean>
+    
+    <bean id="rfnDeviceTypeBulkImportMethod" class="com.cannontech.common.bulk.service.impl.RfnDeviceTypeBulkImportMethod">
+        <property name="type" value="RFN"/>
         <property name="name" value="DEVICE_TYPE"/>
     </bean>
     
@@ -450,6 +462,8 @@
           <list>
             <ref bean="templateBulkImportMethod"/>
             <ref bean="deviceTypeBulkImportMethod"/>
+            <ref bean="rfnTemplateBulkImportMethod"/>
+            <ref bean="rfnDeviceTypeBulkImportMethod"/>
           </list>
         </property>
     </bean>

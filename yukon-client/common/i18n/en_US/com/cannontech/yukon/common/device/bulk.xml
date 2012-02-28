@@ -638,6 +638,10 @@
     <entry key="yukon.common.device.bulk.options.import.ignoreInvalidHeaders">Ignore columns with invalid headers</entry>
     <entry key="yukon.common.device.bulk.options.import.ignoreInvalidTemplates">Ignore invalid template names</entry>
     
+    <entry key="yukon.common.device.bulk.options.deviceTypeSelect.text">Select type of Device: </entry>
+    <entry key="yukon.common.device.bulk.options.deviceTypeSelect.rfn">RFN Meter</entry>
+    <entry key="yukon.common.device.bulk.options.deviceTypeSelect.dlc">DLC Meter</entry>
+    
     <!-- importUpload.jsp: column header instruction table headers -->
     <entry key="yukon.common.device.bulk.columnHeader.tableHeader.import.optionalHeaders">Optional Columns</entry>
     <entry key="yukon.common.device.bulk.columnHeader.tableHeader.import.descriptionInstruction">Description</entry>

@@ -1,7 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <cti:msg var="pageTitle" key="yukon.common.device.bulk.importUpload.pageTitle"/>
 <cti:url var="check" value="/WebConfig/yukon/Icons/check.gif"/>
@@ -23,20 +24,37 @@
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
         
     </cti:breadCrumbs>
+
+    <script>
+    jQuery(function(){
+        updateImportTypeSelection();
+        jQuery("#importTypeSelector").change(function(){
+            updateImportTypeSelection();
+        });
+    });
+    
+    function updateImportTypeSelection() {
+        var itemSelected = jQuery("#importTypeSelector").val();
+        //hide all rows
+        jQuery("[class^='importType_']").hide();
+        //show rows for the selected interface
+        jQuery(".importType_" + itemSelected).show();
+    }
+    </script>
     
     <h2>${pageTitle}</h2>
     <br>
 
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.importUpload.header"/>
     <tags:boxContainer title="${headerTitle}" id="importUploadContainer" hideEnabled="false">
-    
+        <form id="uploadForm" method="post" action="/spring/bulk/import/parseUpload" enctype="multipart/form-data">
         <table>
                 
             <tr valign="top">
             
                 <%-- UPLOAD FIELD --%>
                 <td>
-                    <form id="uploadForm" method="post" action="/spring/bulk/import/parseUpload" enctype="multipart/form-data">
+                   
                 
                         <%-- note --%>
                         <table>
@@ -80,10 +98,10 @@
                         
                         <%-- file select --%>
                         <div class="normalBoldLabel" style="display:inline;">Import File:</div>
-                        <input type="file" name="dataFile" size="30px">
+                        <input type="file" name="dataFile" >
                         <tags:slowInput myFormId="uploadForm" label="Load" labelBusy="Load" />
                         
-                    </form>
+                   
                 </td>
             
                 <%-- INSTRUCTIONS --%>
@@ -92,7 +110,7 @@
                     <ul style="font-size:11px;">
                         <cti:msg key="yukon.common.device.bulk.importUpload.instructions"/>
                     </ul>
-                    
+                   
                     <%-- sample files --%>
                     <div class="small">
                         <div class="normalBoldLabel" style="display:inline;"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</div>
@@ -109,24 +127,40 @@
             <tr>
                 <td colspan="2"><div style="height:20px;"></div></td>
             </tr>
-                
-                    
+            <tr>
+                <td>
+                    <label class="normalBoldLabel"><cti:msg2 key="yukon.common.device.bulk.options.deviceTypeSelect.text" />
+                    <select name="importTypeSelector" id="importTypeSelector" >
+                        <option value="DLC" <c:if test="${importTypeSelector eq 'DLC'}">selected="selected"</c:if>>
+                            <i:inline key="yukon.common.device.bulk.options.deviceTypeSelect.dlc" />
+                        </option>
+                        <option value="RFN" <c:if test="${importTypeSelector eq 'RFN'}">selected="selected"</c:if>>
+                            <i:inline key="yukon.common.device.bulk.options.deviceTypeSelect.rfn" />
+                        </option>
+                    </select>
+                    </label>
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="2"><div style="height: 20px;"></div></td>
+            </tr>
             <%-- METHODS --%>
             <tr valign="top">
                 
                 <%-- methods --%>
                 <c:forEach var="method" items="${importMethods}">
-                
+                   
                     <cti:url var="methodImg" value="/WebConfig/yukon/Icons/import_by_${method.name}.gif"/>
                 
-                    <td>
+                    <td class="importType_${method.type}"  style="display: none;">
                         <table class="miniResultsTable" style="font-size:11px;">
                     
                             <tr>
-                                <td colspan="2" style="background-color:#CDCDCD;">
+                                <td colspan="2" style="background-color:#CDCDCD;" >
                                 
                                     <div >
-                                    <table class="noStyle" cellpadding="0" cellspacing="0">
+                                    <table class="noStyle">
                                         <tr valign="top">
                                             <td rowspan="2"><img src="${methodImg}"></td>
                                             <td><div class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.columnHeader.tableHeader.import.method.tableLabel.${method.name}"/></div></td>
@@ -148,9 +182,9 @@
                             <c:forEach var="field" items="${method.requiredColumns}">
                             
                                 <tr valign="top">
-                                
+                                 
                                     <td class="smallBoldLabel">${field}</td>
-                                    
+                                   
                                     <td>
                                         <cti:msg var="description" key="yukon.common.device.bulk.columnHeader.import.description.${field}"/>
                                         <cti:msg var="instruction" key="yukon.common.device.bulk.columnHeader.import.instruction.${field}"/>
@@ -167,9 +201,9 @@
                             </tr>
                             
                             <c:forEach var="field" items="${methodUpdateableFieldsMap[method]}">
-                            
+                               
                                 <tr>
-                                
+                        
                                     <td class="smallBoldLabel">${field}</td>
                                     
                                     <td>
@@ -182,15 +216,14 @@
                             
                             </c:forEach>
                             
-                        </table>
-                        </td>
-                
-                    </c:forEach>
+                    </table>
+                    </td>
+                </c:forEach>
                     
             </tr>
                 
         </table>
-    
+     </form>
     </tags:boxContainer>
     
  </cti:standardPage>
