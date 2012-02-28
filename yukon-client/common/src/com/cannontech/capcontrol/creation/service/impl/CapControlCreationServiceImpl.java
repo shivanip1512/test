@@ -49,8 +49,14 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	public PaoIdentifier createCapControlObject(PaoType paoType, String name, boolean disabled) {
         CompleteYukonPao pao = null;
         
-        HierarchyPaoCreator creator = HierarchyPaoCreator.valueOf(paoType.name());
-        if (creator == null) {
+        try {
+            HierarchyPaoCreator creator = HierarchyPaoCreator.valueOf(paoType.name());
+            HierarchyImportData data = new HierarchyImportData(paoType, name, ImportAction.ADD);
+            data.setDisabled(disabled);
+            
+            pao = creator.getCompleteYukonPao(data);
+        } catch (IllegalArgumentException e) {
+            // paoType doesn't have a HierarchyPaoCreator, must be a regulator!
             if (paoType == PaoType.LOAD_TAP_CHANGER || paoType == PaoType.GANG_OPERATED || paoType == PaoType.PHASE_OPERATED) {
                 pao = new CompleteRegulator();
                 pao.setDisabled(disabled);
@@ -59,11 +65,6 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
                 throw new UnsupportedOperationException("Import of " + name + " failed. Unknown " +
                 		                                "Pao Type: " + paoType.getDbString());
             }
-        } else {
-            HierarchyImportData data = new HierarchyImportData(paoType, name, ImportAction.ADD);
-            data.setDisabled(disabled);
-            
-            pao = creator.getCompleteYukonPao(data);
         }
         
         paoPersistenceService.createPao(pao, paoType);
