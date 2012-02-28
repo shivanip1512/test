@@ -13,7 +13,7 @@ import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
 import com.roguewave.vsj.VirtualOutputStream;
 
-public class DefineCollectableDynamicCommand  implements DefineCollectable {
+public class DefineCollectableDynamicCommand  extends DefineCollectableCapControlCommand {
 
     private static int DYNAMICCOMMAND_ID = 529;
     
@@ -22,8 +22,8 @@ public class DefineCollectableDynamicCommand  implements DefineCollectable {
     }
     
     @Override
-    public Object create(VirtualInputStream arg0) throws IOException {
-        throw new IOException("Unable to create new DynamicCommand");
+    public Object create(VirtualInputStream arg0) {
+        return new DynamicCommand(DynamicCommandType.UNDEFINED);
     }
 
     @Override
@@ -57,6 +57,9 @@ public class DefineCollectableDynamicCommand  implements DefineCollectable {
 
     @Override
     public void saveGuts(Object obj, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException {
+
+        super.saveGuts(obj,vstr,polystr);
+
         DynamicCommand command = (DynamicCommand) obj;
         
         DynamicCommandType dynamicCommandType = command.getCommandType();
