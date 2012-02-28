@@ -70,8 +70,8 @@
                                     <spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
                                 </td>
             	                <td nowrap="nowrap">${row.itemType}</td>
-            	                <td nowrap="nowrap">${row.itemDescription}</td>
-            	                <td><spring:escapeBody>${row.parentString}</spring:escapeBody></td>
+            	                <td nowrap="nowrap"><spring:escapeBody htmlEscape="true">${row.itemDescription}</spring:escapeBody></td>
+            	                <td>${row.parentString}</td>
             	            </tr>
             	        </c:forEach>
             	    </table>
