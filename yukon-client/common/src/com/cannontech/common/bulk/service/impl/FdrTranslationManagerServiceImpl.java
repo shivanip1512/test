@@ -183,6 +183,10 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                 }
                 
                 //Validate data object
+                if(dataRow.getInterface() == null) {
+                    String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.error.noInterfaceColumns");
+                    throw new ProcessingException(error);
+                }
                 String missingColumn = dataRow.getMissingColumn();
                 if(missingColumn != null) {
                     String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.fdrTranslationManagement.error.missingAnyColumn", missingColumn);
