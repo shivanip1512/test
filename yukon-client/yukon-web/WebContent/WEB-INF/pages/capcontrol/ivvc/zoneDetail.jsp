@@ -298,8 +298,9 @@
 			<br>
             <c:choose>
                 <c:when test="${zoneDto.zoneType == threePhase}">
-                    <tags:tabbedBoxContainer nameKeys="${nameKeys}" styleClass="ivvcRegulatorTabs">
-                        <tags:tabbedBoxContainerElement>
+                    <cti:tabbedContentSelector>
+                        <cti:msg2 var="tabName" key=".ivvc.zoneDetail.attributesRegAll.title" />
+                        <cti:tabbedContentSelectorContent selectorName="${tabName}">
                             <tags:alternateRowReset/>
                             <table class="compactResultsTable">
                                 <tr style="text-align: left;">
@@ -335,10 +336,11 @@
                                     </tr>
                                 </c:forEach>
                             </table>
-                        </tags:tabbedBoxContainerElement>
+                        </cti:tabbedContentSelectorContent>
                         <c:forEach items="${zoneDto.regulators}" var="regulator">
                             <c:set var="phaseKey" value="${regulator.key}"/>
-                            <tags:tabbedBoxContainerElement>
+                            <cti:msg2 var="tabName" key=".ivvc.zoneDetail.attributesReg${phaseKey}.title" />
+                            <cti:tabbedContentSelectorContent selectorName="${tabName}">
                                 <tags:alternateRowReset/>
                                 <table class="compactResultsTable">
                                     <tr style="text-align: left;">
@@ -378,9 +380,9 @@
                                         </tr>
                                     </c:forEach>
                                 </table>
-                            </tags:tabbedBoxContainerElement>
+                            </cti:tabbedContentSelectorContent>
                         </c:forEach>
-                    </tags:tabbedBoxContainer>
+                    </cti:tabbedContentSelector>
                 </c:when>
                 <c:otherwise>
         			<tags:boxContainer2 nameKey="attributes" hideEnabled="true" showInitially="true">

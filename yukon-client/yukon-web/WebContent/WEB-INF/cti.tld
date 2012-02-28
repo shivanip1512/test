@@ -2022,6 +2022,12 @@
     <name>tabbedContentSelector</name>
     <tag-class>com.cannontech.web.taglib.TabbedContentSelectorTag</tag-class>
     <body-content>JSP</body-content>
+    <attribute>
+        <name>cssClass</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Class name applied to the div.</description>
+    </attribute>
    	<description>
         Organizes content into columns using cti:dataGridCell tags.
     	</description>

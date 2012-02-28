@@ -163,9 +163,6 @@ public class ZoneDetailController {
         setupRegulatorPointMappings(model, zoneDto);
         setupRegulatorCommands(model, zoneDto);
         
-        List<String> nameKeys = Lists.newArrayList("attributesRegAll", "attributesRegA", "attributesRegB", "attributesRegC");
-        model.addAttribute("nameKeys", nameKeys);
-
         model.addAttribute("subBusId", zoneDto.getSubstationBusId());
         int updaterDelay = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATA_UPDATER_DELAY_MS, user));
         model.addAttribute("updaterDelay", updaterDelay);

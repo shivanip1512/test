@@ -96,14 +96,18 @@ Yukon.ui = {
             });
         });
         
-        Yukon.uiUtils.tabs.init();
-        
         /*
          * Focus the designated input element
          */
+        setTimeout('Yukon.ui._focus_first()', 300);
+    },
+    
+    _focus_first: function(){
         var focusElement = $$(".f_focus:first")[0];
         if(focusElement) {
-            focusElement.focus();
+            try{ //Play nice with IE
+                focusElement.focus();
+            }catch(err){}
         }
     },
     
@@ -393,13 +397,6 @@ Yukon.uiUtils = {
 
         hide : function() {
             jQuery("#modal_glass").fadeOut(200);
-        }
-    },
-    
-    tabs: {
-        init: function(args){
-            var defaults = {};
-            jQuery(".f_tabs").tabs(jQuery.extend(defaults, args));
         }
     }
 };

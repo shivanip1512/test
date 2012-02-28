@@ -10,6 +10,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 public class TabbedContentSelectorTag extends BodyTagSupport {
 
+    private String cssClass = "";
 	private String selectedTabName = "";
 	private List<String> tabNames = new ArrayList<String>();
 	private List<String> tabIds = new ArrayList<String>();
@@ -54,8 +55,8 @@ public class TabbedContentSelectorTag extends BodyTagSupport {
 	        pageContext.getOut().println("<script type=\"text/javascript\">");
             pageContext.getOut().println("jQuery(function(){jQuery(\"#tabbedControl_" + id + "\").tabs({selected: "+ getSelectedTabIndex() +"}).show();});");
             pageContext.getOut().println("</script>");
-                
-            pageContext.getOut().println("<div id=\"tabbedControl_" + id + "\" class=\"dn\">");
+            //The tabs are initially hidden on page load to avoid jarring page shrinkage after the js initialization of the tabs.
+            pageContext.getOut().println("<div id=\"tabbedControl_" + id + "\" class=\"dn "+ this.cssClass +"\">");
 	        pageContext.getOut().println("<ul>");
             for(int i=0; i<tabIds.size(); i++){
                 pageContext.getOut().println("<li><a href=\"#" + tabIds.get(i) + "\">" + tabNames.get(i) + "</a></li>");
