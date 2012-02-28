@@ -66,6 +66,7 @@ mgr_paosched.obj \
 ccmonitorpoint.obj \
 cctwowaycbcpoints.obj \
 PointValueHolder.obj \
+ccareabase.obj \
 ccarea.obj \
 ccsparea.obj \
 ccsubstation.obj \

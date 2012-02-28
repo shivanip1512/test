@@ -17,6 +17,7 @@ class CtiTime;
 #define CTICCCAPBANKMOVEMSG_ID      513
 #define CTICCSUBVERIFICATIONMSG_ID  514
 #define CTIPAOSCHEDULEMSG_ID        515
+#define CTICCAREABASE_ID            516
 #define CTICCEVENTLOG_ID            517
 #define CTICCMONITORPOINT_ID        518
 #define CTICCPOINTRESPONSE_ID       519
@@ -37,6 +38,8 @@ class CtiTime;
 #define CAP_CONTROL_COMMAND_ID       533
 #define SYSTEM_STATUS_MSG_ID         534
 #define DELETE_ITEM_MSG_ID           535
+
+
 
 // square root of 3 for power factor calculations
 #define SQRT3               1.7320508075688772935274463415059

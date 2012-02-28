@@ -19,6 +19,11 @@ CapControlPao::CapControlPao(Cti::RowReader& rdr)
     restore(rdr);
 }
 
+CapControlPao::~CapControlPao()
+{
+    _pointIds.clear();
+}
+
 void CapControlPao::restore(Cti::RowReader& rdr)
 {
     string tempString;
@@ -151,6 +156,7 @@ CapControlPao& CapControlPao::operator=(const CapControlPao& right)
         _paoDescription = right._paoDescription;
         _disableFlag = right._disableFlag;
         _disabledStatePointId = right._disabledStatePointId;
+        _pointIds = right._pointIds;
     }
     return *this;
 }
@@ -179,5 +185,17 @@ void CapControlPao::setDisabledStatePointId( const long newId, bool sendDisableP
 long CapControlPao::getDisabledStatePointId() const
 {
     return _disabledStatePointId;
+}
+
+void CapControlPao::removePointId(long pId)
+{
+    for (int i = 0; i < _pointIds.size(); ++i)
+    {
+        if ( pId == _pointIds[i] )
+        {
+            _pointIds.erase(_pointIds.begin()+i);
+            return;
+        }
+    }
 }
 

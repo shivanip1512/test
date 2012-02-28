@@ -98,6 +98,7 @@ GangOperatedVoltageRegulator.obj \
 PhaseOperatedVoltageRegulator.obj \
 ccmonitorpoint.obj \
 cctwowaycbcpoints.obj \
+ccareabase.obj \
 ccarea.obj \
 ccsparea.obj \
 ccsubstation.obj \

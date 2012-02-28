@@ -14,8 +14,8 @@
 #include "amq_connection.h"
 #include "IVVCAnalysisMessage.h"
 
-using Cti::CapControl::PaoIdList;
-using Cti::CapControl::PointIdList;
+using Cti::CapControl::PaoIdVector;
+using Cti::CapControl::PointIdVector;
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::VoltageRegulator;
 using Cti::CapControl::VoltageRegulatorManager;
@@ -756,7 +756,7 @@ bool IVVCAlgorithm::hasValidData( const PointDataRequestPtr& request, CtiTime ti
 
     // check var point(s)
 
-    PointIdList busVarPointIds = subbus->getCurrentVarLoadPoints();
+    PointIdVector busVarPointIds = subbus->getCurrentVarLoadPoints();
 
     for each ( long busVarPointId in busVarPointIds )
     {
@@ -982,7 +982,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
     // We still need the bus watt and var points.
 
     long busWattPointId = subbus->getCurrentWattLoadPointId();
-    PointIdList busVarPointIds = subbus->getCurrentVarLoadPoints();
+    PointIdVector busVarPointIds = subbus->getCurrentVarLoadPoints();
 
     if (busWattPointId > 0)
     {
@@ -1219,7 +1219,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
     }
     PointValueMap pointValues = state->getGroupRequest()->getPointValues();
     pointValues.erase(subbus->getCurrentWattLoadPointId());
-    PointIdList pointIds = subbus->getCurrentVarLoadPoints();
+    PointIdVector pointIds = subbus->getCurrentVarLoadPoints();
     for each (long pointId in pointIds)
     {
         pointValues.erase(pointId);
@@ -1355,7 +1355,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         return true;
     }
 
-    PointIdList pointIds = subbus->getCurrentVarLoadPoints();
+    PointIdVector pointIds = subbus->getCurrentVarLoadPoints();
     double      varValue = 0.0;
 
     for each (long pointId in pointIds)

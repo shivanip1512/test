@@ -20,7 +20,6 @@
 #include "MsgCapControlServerResponse.h"
 
 using Cti::CapControl::VoltageRegulatorManager;
-using Cti::CapControl::PaoIdList;
 using Cti::CapControl::createPorterRequestMsg;
 using std::endl;
 
@@ -1769,25 +1768,9 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, Cti::CapControl::CapCon
             CtiCCSpecialPtr sArea = store->findSpecialAreaByPAObjectID(paoId);
             sArea->setOvUvDisabledFlag(ovuvFlag);
 
-            PaoIdList* stationIds = sArea->getSubstationIds();
-            for each(long stationId in *stationIds)
+            for each(long stationId in sArea->getSubstationIds())
             {
-                CtiCCSubstationPtr station = store->findSubstationByPAObjectID(stationId);
-                station->setOvUvDisabledFlag(ovuvFlag);
-
-                PaoIdList* subBusIds = station->getCCSubIds();
-                for each(long subBusId in *subBusIds)
-                {
-                    CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(subBusId);
-                    subBus->setOvUvDisabledFlag(ovuvFlag);
-                    modifiedSubBuses.push_back(subBus);
-
-                    CtiFeeder_vec feeders = subBus->getCCFeeders();
-                    for each(CtiCCFeederPtr feeder in feeders)
-                    {
-                        feeder->setOvUvDisabledFlag(ovuvFlag);
-                    }
-                }
+                setParentOvUvFlags(stationId, Cti::CapControl::Substation, ovuvFlag, modifiedSubBuses);
             }
             break;
         }
@@ -1796,25 +1779,9 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, Cti::CapControl::CapCon
             CtiCCAreaPtr area = store->findAreaByPAObjectID(paoId);
             area->setOvUvDisabledFlag(ovuvFlag);
 
-            PaoIdList* stationIds = area->getSubStationList();
-            for each(long stationId in *stationIds)
+            for each(long stationId in area->getSubstationIds())
             {
-                CtiCCSubstationPtr station = store->findSubstationByPAObjectID(stationId);
-                station->setOvUvDisabledFlag(ovuvFlag);
-
-                PaoIdList* subBusIds = station->getCCSubIds();
-                for each(long subBusId in *subBusIds)
-                {
-                    CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(subBusId);
-                    subBus->setOvUvDisabledFlag(ovuvFlag);
-                    modifiedSubBuses.push_back(subBus);
-
-                    CtiFeeder_vec feeders = subBus->getCCFeeders();
-                    for each(CtiCCFeederPtr feeder in feeders)
-                    {
-                        feeder->setOvUvDisabledFlag(ovuvFlag);
-                    }
-                }
+                setParentOvUvFlags(stationId, Cti::CapControl::Substation, ovuvFlag, modifiedSubBuses);
             }
             break;
         }
@@ -1823,18 +1790,9 @@ void CtiCCCommandExecutor::setParentOvUvFlags(int paoId, Cti::CapControl::CapCon
             CtiCCSubstationPtr station = store->findSubstationByPAObjectID(paoId);
             station->setOvUvDisabledFlag(ovuvFlag);
 
-            PaoIdList* subBusIds = station->getCCSubIds();
-            for each(long subBusId in *subBusIds)
+            for each(long subBusId in station->getCCSubIds())
             {
-                CtiCCSubstationBusPtr subBus = store->findSubBusByPAObjectID(subBusId);
-                subBus->setOvUvDisabledFlag(ovuvFlag);
-                modifiedSubBuses.push_back(subBus);
-
-                CtiFeeder_vec feeders = subBus->getCCFeeders();
-                for each(CtiCCFeederPtr feeder in feeders)
-                {
-                    feeder->setOvUvDisabledFlag(ovuvFlag);
-                }
+                setParentOvUvFlags(subBusId, Cti::CapControl::SubBus, ovuvFlag, modifiedSubBuses);
             }
             break;
         }
@@ -2691,11 +2649,8 @@ void CtiCCCommandExecutor::ControlAllCapBanks(LONG paoId, int control)
     }
     else if (station != NULL && !station->getDisableFlag())
     {
-        Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
-        while (iterBus  != station->getCCSubIds()->end())
+        for each (long busId in station->getCCSubIds())
         {
-            LONG busId = *iterBus;
-            iterBus++;
             currentSubstationBus = store->findSubBusByPAObjectID(busId);
             if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag())
             {
@@ -2715,20 +2670,14 @@ void CtiCCCommandExecutor::ControlAllCapBanks(LONG paoId, int control)
     }
     else if (area != NULL && !area->getDisableFlag())
     {
-        PaoIdList::iterator subIter = area->getSubStationList()->begin();
-
-        while (subIter != area->getSubStationList()->end())
+        for each(long subId in area->getSubstationIds())
         {
-            station = store->findSubstationByPAObjectID(*subIter);
-            subIter++;
-
+            station = store->findSubstationByPAObjectID(subId);
+            
             if (station != NULL && !station->getDisableFlag())
             {
-                Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
-                while (iterBus  != station->getCCSubIds()->end())
+                for each (long busId in station->getCCSubIds())
                 {
-                    LONG busId = *iterBus;
-                    iterBus++;
                     currentSubstationBus = store->findSubBusByPAObjectID(busId);
                     if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag())
                     {
@@ -2751,20 +2700,14 @@ void CtiCCCommandExecutor::ControlAllCapBanks(LONG paoId, int control)
     }
     else if (spArea != NULL && !spArea->getDisableFlag())
     {
-        PaoIdList::iterator subIter = spArea->getSubstationIds()->begin();
-
-        while (subIter != spArea->getSubstationIds()->end())
+        for each (long subId in spArea->getSubstationIds())
         {
-            station = store->findSubstationByPAObjectID(*subIter);
-            subIter++;
+            station = store->findSubstationByPAObjectID(subId);
 
             if (station != NULL && !station->getDisableFlag())
             {
-                Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
-                while (iterBus  != station->getCCSubIds()->end())
+                for each (long busId in station->getCCSubIds())
                 {
-                    LONG busId = *iterBus;
-                    iterBus++;
                     currentSubstationBus = store->findSubBusByPAObjectID(busId);
                     if (currentSubstationBus != NULL && !currentSubstationBus->getDisableFlag())
                     {
@@ -3030,12 +2973,10 @@ void CtiCCCommandExecutor::EnableArea()
             //To make sure they are not already on a conflicting different enabled Special Area
             BOOL refusalFlag = FALSE;
             string refusalText = "Special Area is not enabled!";
-            PaoIdList::iterator subIter = currentSpArea->getSubstationIds()->begin();
-            while (subIter != currentSpArea->getSubstationIds()->end())
+            for each (long subId in currentSpArea->getSubstationIds())
             {
                 CtiCCSubstationPtr currentSubstation = NULL;
-                currentSubstation = store->findSubstationByPAObjectID(*subIter);
-                subIter++;
+                currentSubstation = store->findSubstationByPAObjectID(subId);
                 if (currentSubstation != NULL)
                 {
                     if (currentSubstation->getSaEnabledFlag())
@@ -3075,13 +3016,10 @@ void CtiCCCommandExecutor::EnableArea()
 
                 store->UpdatePaoDisableFlagInDB(currentSpArea, false);
 
-                PaoIdList::iterator subIter = currentSpArea->getSubstationIds()->begin();
-
-                while (subIter != currentSpArea->getSubstationIds()->end())
-                {
+                 for each (long subId in currentSpArea->getSubstationIds())
+                 {
                     CtiCCSubstationPtr currentSubstation = NULL;
-                    currentSubstation = store->findSubstationByPAObjectID(*subIter);
-                    subIter++;
+                    currentSubstation = store->findSubstationByPAObjectID(subId);
                     if (currentSubstation != NULL)
                     {
                         if (!currentSubstation->getSaEnabledFlag())
@@ -3163,13 +3101,10 @@ void CtiCCCommandExecutor::DisableArea()
 
             store->UpdatePaoDisableFlagInDB(currentSpArea, true);
 
-            PaoIdList::iterator subIter = currentSpArea->getSubstationIds()->begin();
-
-            while (subIter != currentSpArea->getSubstationIds()->end())
-            {
+             for each (long subId in currentSpArea->getSubstationIds())
+             {
                 CtiCCSubstationPtr currentSubstation = NULL;
-                currentSubstation = store->findSubstationByPAObjectID(*subIter);
-                subIter++;
+                currentSubstation = store->findSubstationByPAObjectID(subId);
                 if (currentSubstation != NULL)
                 {
                     if (currentSubstation->getSaEnabledFlag() &&
@@ -3303,9 +3238,11 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
 
     CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(areaId);
     CtiCCSpecialPtr currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
+    CtiCCAreaBasePtr areaBase = NULL;
 
     if (currentArea != NULL)
     {
+        areaBase = currentArea;
         isValidIdFlag = TRUE;
         isAreaFlag = TRUE;
 
@@ -3315,12 +3252,11 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
 
         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, currentArea->getPaoId(), 0, 0, 0, capControlEnableOvUv, 0, 1, text1, _command->getUser()));
-
     }
     else if (currentSpArea != NULL)
     {
+        areaBase = currentSpArea;
         isValidIdFlag = TRUE;
-        isAreaFlag = FALSE;
 
         string text1 = string("Auto Enable OvUv By Special Area Control Point");
         string additional1 = string("Special Area: ");
@@ -3328,46 +3264,21 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
 
         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0,0, 0, 0, capControlEnableOvUv, 0, 1, text1, _command->getUser()));
-
-
     }
     else
         return;
 
     if (isValidIdFlag)
     {
-
         CtiCCSubstationPtr currentStation = NULL;
         CtiCCSubstationBusPtr currentSubstationBus = NULL;
         CtiCCFeederPtr currentFeeder = NULL;
 
-        PaoIdList::iterator subIter;
-        PaoIdList* stationList = NULL;
+        areaBase->setOvUvDisabledFlag(false);
 
-        if(isAreaFlag)
+        for each (long subId in areaBase->getSubstationIds() )
         {
-            currentArea->setOvUvDisabledFlag(FALSE);
-
-            subIter = currentArea->getSubStationList()->begin();
-            stationList = currentArea->getSubStationList();
-        }
-        else
-        {
-            currentSpArea->setOvUvDisabledFlag(FALSE);
-
-            subIter = currentSpArea->getSubstationIds()->begin();
-            stationList = currentSpArea->getSubstationIds();
-        }
-
-        if (stationList == NULL)
-        {
-            return;
-        }
-
-        while (subIter != stationList->end() )
-        {
-            currentStation = store->findSubstationByPAObjectID(*subIter);
-            subIter++;
+            currentStation = store->findSubstationByPAObjectID(subId);
 
             if (currentStation != NULL)
             {
@@ -3386,10 +3297,7 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
 
                         currentSubstationBus->setOvUvDisabledFlag(FALSE);
                         currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
-                        if (isAreaFlag)
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, currentArea->getPaoId(),  currentStation->getPaoId(),  currentSubstationBus->getPaoId(), 0, capControlEnableOvUv, currentSubstationBus->getEventSequence(), 1, text1, _command->getUser()));
-                        else
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0,  currentStation->getPaoId(), currentSubstationBus->getPaoId(), 0, capControlEnableOvUv, currentSubstationBus->getEventSequence(), 1, text1, _command->getUser()));
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, areaBase->getPaoId(),  currentStation->getPaoId(),  currentSubstationBus->getPaoId(), 0, capControlEnableOvUv, currentSubstationBus->getEventSequence(), 1, text1, _command->getUser()));
 
                         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
@@ -3491,9 +3399,11 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
 
     CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(areaId);
     CtiCCSpecialPtr currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
+    CtiCCAreaBasePtr areaBase = NULL;
 
     if (currentArea != NULL)
     {
+        areaBase = currentArea;
         isValidIdFlag = TRUE;
         isAreaFlag = TRUE;
 
@@ -3507,15 +3417,15 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
     }
     else if (currentSpArea != NULL)
     {
-            isValidIdFlag = TRUE;
-            isAreaFlag = FALSE;
+        areaBase = currentSpArea;
+        isValidIdFlag = TRUE;
 
-            string text1 = string("Auto Disable OvUv By Special Area Control Point");
-            string additional1 = string("Special Area: ");
-            additional1 += currentSpArea->getPaoName();
+        string text1 = string("Auto Disable OvUv By Special Area Control Point");
+        string additional1 = string("Special Area: ");
+        additional1 += currentSpArea->getPaoName();
 
-            pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0, 0, 0, 0, capControlDisableOvUv, 0, 0, text1, _command->getUser()));
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0, 0, 0, 0, capControlDisableOvUv, 0, 0, text1, _command->getUser()));
 
     }
     else
@@ -3527,35 +3437,11 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
         CtiCCSubstationBusPtr currentSubstationBus = NULL;
         CtiCCFeederPtr currentFeeder = NULL;
 
+        areaBase->setOvUvDisabledFlag(TRUE);
 
-        PaoIdList::iterator subIter;
-        PaoIdList* stationList = NULL;
-
-        if(isAreaFlag)
+        for each(long subId in areaBase->getSubstationIds() )
         {
-            currentArea->setOvUvDisabledFlag(TRUE);
-
-            subIter = currentArea->getSubStationList()->begin();
-            stationList = currentArea->getSubStationList();
-        }
-        else
-        {
-            currentSpArea->setOvUvDisabledFlag(TRUE);
-
-            subIter = currentSpArea->getSubstationIds()->begin();
-            stationList = currentSpArea->getSubstationIds();
-        }
-
-        if (stationList == NULL)
-        {
-            return;
-        }
-
-        while (subIter != stationList->end() )
-        {
-            currentStation = store->findSubstationByPAObjectID(*subIter);
-            subIter++;
-
+            currentStation = store->findSubstationByPAObjectID(subId);
             if (currentStation != NULL)
             {
                 currentStation->setOvUvDisabledFlag(TRUE);
@@ -3573,10 +3459,7 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
 
                         currentSubstationBus->setOvUvDisabledFlag(TRUE);
                         currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
-                        if (isAreaFlag)
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, currentArea->getPaoId(), currentStation->getPaoId(), currentSubstationBus->getPaoId(), 0, capControlDisableOvUv, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
-                        else
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0, currentStation->getPaoId(), currentSubstationBus->getPaoId(), 0, capControlDisableOvUv, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, areaBase->getPaoId(), 0, currentStation->getPaoId(), currentSubstationBus->getPaoId(), 0, capControlDisableOvUv, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
 
 
                         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
@@ -3700,18 +3583,14 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
         }
 
 
-        PaoIdList::iterator busIter;
         if (disableFlag)
             currentStation->setOvUvDisabledFlag(TRUE);
         else
             currentStation->setOvUvDisabledFlag(FALSE);
 
-        busIter = currentStation->getCCSubIds()->begin();
-
-        while (busIter != currentStation->getCCSubIds()->end() )
+        for each (long busId in currentStation->getCCSubIds() )
         {
-            currentSubBus = store->findSubBusByPAObjectID(*busIter);
-            busIter++;
+            currentSubBus = store->findSubBusByPAObjectID(busId);
 
             if (currentSubBus != NULL)
             {
@@ -4881,17 +4760,13 @@ void CtiCCCommandExecutor::ConfirmArea()
         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL,0, currentArea->getPaoId(), 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
 
-        Cti::CapControl::PaoIdList::const_iterator iter = currentArea->getSubStationList()->begin();
-        while (iter != currentArea->getSubStationList()->end())
+        for each(long stationId in currentArea->getSubstationIds())
         {
-            LONG stationId = *iter;
             CtiCCSubstation *station = store->findSubstationByPAObjectID(stationId);
             if (station != NULL)
             {
-                Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
-                while (iterBus  != station->getCCSubIds()->end())
+                for each (long busId in station->getCCSubIds())
                 {
-                    LONG busId = *iterBus;
                     CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
                     if (currentSubstationBus != NULL)
                     {
@@ -4906,10 +4781,8 @@ void CtiCCCommandExecutor::ConfirmArea()
                             }
                         }
                     }
-                    iterBus++;
                 }
             }
-            iter++;
         }
         if (confirmMulti->getCount() > 0)
         {
@@ -4968,17 +4841,13 @@ void CtiCCCommandExecutor::ConfirmArea()
                 pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
                 ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-                Cti::CapControl::PaoIdList::const_iterator iter = currentSpArea->getSubstationIds()->begin();
-                while (iter != currentSpArea->getSubstationIds()->end())
+                for each (long stationId in currentSpArea->getSubstationIds())
                 {
-                    LONG stationId = *iter;
                     CtiCCSubstation *station = store->findSubstationByPAObjectID(stationId);
                     if (station != NULL)
                     {
-                        Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
-                        while (iterBus  != station->getCCSubIds()->end())
+                        for each (long busId in station->getCCSubIds())
                         {
-                            LONG busId = *iterBus;
                             CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
                             if (currentSubstationBus != NULL)
                             {
@@ -4993,10 +4862,8 @@ void CtiCCCommandExecutor::ConfirmArea()
                                     }
                                 }
                             }
-                            iterBus++;
                         }
                     }
-                    iter++;
                 }
 
                 if (confirmMulti->getCount() > 0)
@@ -5048,10 +4915,8 @@ void CtiCCCommandExecutor::ConfirmSubstation()
         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, station->getParentId(), station->getPaoId(), 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-        Cti::CapControl::PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
-        while (iterBus  != station->getCCSubIds()->end())
+        for each (long busId in station->getCCSubIds())
         {
-            LONG busId = *iterBus;
             CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
             if (currentSubstationBus != NULL)
             {
@@ -5066,7 +4931,6 @@ void CtiCCCommandExecutor::ConfirmSubstation()
                     }
                 }
             }
-            iterBus++;
         }
 
         if (confirmMulti->getCount() > 0)
@@ -6166,10 +6030,8 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     CtiCCSubstation* currentStation = store->findSubstationByPAObjectID(paoId);
     if (currentStation != NULL)
     {
-        Cti::CapControl::PaoIdList::const_iterator iterBus = currentStation->getCCSubIds()->begin();
-        while (iterBus  != currentStation->getCCSubIds()->end())
+        for each (long busId in currentStation->getCCSubIds())
         {
-            LONG busId = *iterBus;
             CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
             if (currentSubstationBus != NULL)
             {
@@ -6203,7 +6065,6 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                 found = TRUE;
             }
-            iterBus++;
         }
         string text1 = string("Reset Daily Operations");
         string additional1 = string("Substation: ");
@@ -6402,19 +6263,14 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
         CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
         if ( currentArea != NULL && ! currentArea->getDisableFlag())
         {
-            PaoIdList::iterator subIter = currentArea->getSubStationList()->begin();
-
-            while (subIter != currentArea->getSubStationList()->end())
+            for each (long stationId in currentArea->getSubstationIds())
             {
-                CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(*subIter);
-                subIter++;
+                CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(stationId);
 
                 if (currentStation != NULL)
                 {
-                    Cti::CapControl::PaoIdList::const_iterator iterBus = currentStation->getCCSubIds()->begin();
-                    while (iterBus  != currentStation->getCCSubIds()->end())
+                    for each (long busId in currentStation->getCCSubIds())
                     {
-                        LONG busId = *iterBus;
                         CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
                         if (currentSubstationBus != NULL)
                         {
@@ -6449,7 +6305,6 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             found = TRUE;
                         }
-                        iterBus++;
                     }
                 }
             }

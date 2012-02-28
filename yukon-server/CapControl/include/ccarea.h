@@ -17,8 +17,9 @@
 #include "StrategyManager.h"
 #include "ccmonitorpoint.h"
 #include "Controllable.h"
+#include "ccareabase.h"
 
-class CtiCCArea : public RWCollectable, public Controllable
+class CtiCCArea : public CtiCCAreaBase
 {
 
 public:
@@ -32,36 +33,19 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 
     virtual ~CtiCCArea();
 
-    LONG getVoltReductionControlPointId() const;
-    BOOL getVoltReductionControlValue() const;
-    BOOL getOvUvDisabledFlag() const;
     BOOL getReEnableAreaFlag() const;
-
-    DOUBLE getPFactor() const;
-    DOUBLE getEstPFactor() const;
     BOOL getChildVoltReductionFlag() const;
-    Cti::CapControl::PaoIdList* getSubStationList(){return &_subStationIds;};
-    CtiCCOperationStats& getOperationStats();
-    CtiCCConfirmationStats& getConfirmationStats();
-    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds;};
     BOOL getAreaUpdatedFlag() const;
 
     void deleteCCSubs(long subId);
 
-    CtiCCArea& setVoltReductionControlPointId(LONG pointId);
-    CtiCCArea& setVoltReductionControlValue(BOOL flag);
-    CtiCCArea& setOvUvDisabledFlag(BOOL flag);
     CtiCCArea& setReEnableAreaFlag(BOOL flag);
-
-    CtiCCArea& setPFactor(DOUBLE pfactor);
-    CtiCCArea& setEstPFactor(DOUBLE estPfactor);
     CtiCCArea& setChildVoltReductionFlag(BOOL flag);
     CtiCCArea& setAreaUpdatedFlag(BOOL flag);
 
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     CtiCCArea& checkAndUpdateChildVoltReductionFlags();
 
-    BOOL isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(Cti::RowReader& rdr);
 
@@ -74,26 +58,11 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 
 private:
 
-    LONG _voltReductionControlPointId;
-    BOOL _voltReductionControlValue;
-
-    DOUBLE _pfactor;
-    DOUBLE _estPfactor;
-
-    string _additionalFlags;
-    BOOL _ovUvDisabledFlag;
     BOOL _reEnableAreaFlag;
     BOOL _childVoltReductionFlag;
 
-    Cti::CapControl::PaoIdList _subStationIds;
-    Cti::CapControl::PointIdList _pointIds;
-
-    CtiCCOperationStats _operationStats;
-    CtiCCConfirmationStats _confirmationStats;
-
        //don't stream
     BOOL _insertDynamicDataFlag;
-    BOOL _dirty;
     BOOL _areaUpdatedFlag;
 
     void restore(Cti::RowReader& rdr);

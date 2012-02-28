@@ -26,7 +26,7 @@
 #include "MsgVerifyBanks.h"
 
 using Cti::CapControl::PointResponse;
-using Cti::CapControl::PointIdList;
+using Cti::CapControl::PointIdVector;
 
 using std::endl;
 using std::set;
@@ -263,7 +263,6 @@ CtiCCSubstationBus::CtiCCSubstationBus(const CtiCCSubstationBus& sub)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus::~CtiCCSubstationBus()
 {
-    _pointIds.clear();
     try
     {   delete_container(_ccfeeders);
         _ccfeeders.clear();
@@ -504,9 +503,9 @@ LONG CtiCCSubstationBus::getCurrentVarLoadPointId() const
  *
  * @return list<long>
  */
-PointIdList CtiCCSubstationBus::getCurrentVarLoadPoints() const
+PointIdVector CtiCCSubstationBus::getCurrentVarLoadPoints() const
 {
-    PointIdList points;
+    PointIdVector points;
     int pointId = 0;
 
     if (getUsePhaseData())

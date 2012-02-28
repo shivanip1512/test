@@ -125,7 +125,6 @@ CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank::~CtiCCCapBank()
 {
-    _pointIds.clear();
     if (!_monitorPoint.empty())
     {
         for (int i = 0; i < _monitorPoint.size(); i++)

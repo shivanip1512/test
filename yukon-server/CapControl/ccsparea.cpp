@@ -42,41 +42,25 @@ RWDEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCSpecial::CtiCCSpecial()
-    : Controllable(0),
-      _voltReductionControlPointId(0),
-      _voltReductionControlValue(0),
-      _pfactor(0),
-      _estPfactor(0),
-      _ovUvDisabledFlag(false),
-      _isSpecial(true),
-      _insertDynamicDataFlag(false),
-      _dirty(false)
+    : CtiCCAreaBase(0),
+      _insertDynamicDataFlag(false)
 {
 }
 
 CtiCCSpecial::CtiCCSpecial(StrategyManager * strategyManager)
-    : Controllable(strategyManager),
-      _voltReductionControlPointId(0),
-      _voltReductionControlValue(0),
-      _pfactor(0),
-      _estPfactor(0),
-      _ovUvDisabledFlag(false),
-      _isSpecial(true),
-      _insertDynamicDataFlag(false),
-      _dirty(false)
+    : CtiCCAreaBase(strategyManager),
+      _insertDynamicDataFlag(false)
 {
 }
 
 CtiCCSpecial::CtiCCSpecial(Cti::RowReader& rdr, StrategyManager * strategyManager)
-    : Controllable(rdr, strategyManager)
+    : CtiCCAreaBase(rdr, strategyManager)
 {
     restore(rdr);
-    _operationStats.setPAOId(getPaoId());
-    _confirmationStats.setPAOId(getPaoId());
 }
 
 CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)
-    : Controllable(special)
+    : CtiCCAreaBase(special)
 {
     operator=(special);
 }
@@ -87,22 +71,8 @@ CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)
 CtiCCSpecial::~CtiCCSpecial()
 {
 
-    _pointIds.clear();
-    if (!_substationIds.empty())
-    {
-        _substationIds.clear();
-    }
 }
 
-CtiCCOperationStats& CtiCCSpecial::getOperationStats()
-{
-    return _operationStats;
-}
-
-CtiCCConfirmationStats& CtiCCSpecial::getConfirmationStats()
-{
-    return _confirmationStats;
-}
 
 /*---------------------------------------------------------------------------
     saveGuts
@@ -111,34 +81,31 @@ CtiCCConfirmationStats& CtiCCSpecial::getConfirmationStats()
 ---------------------------------------------------------------------------*/
 void CtiCCSpecial::saveGuts(RWvostream& ostrm ) const
 {
-    RWCollectable::saveGuts( ostrm );
-    CapControlPao::saveGuts(ostrm);
+    CtiCCAreaBase::saveGuts(ostrm);
 
-    ostrm << _substationIds.size();
-    Cti::CapControl::PaoIdList::const_iterator iter = _substationIds.begin();
+    ostrm << getSubstationIds().size();
 
-    for(LONG i=0;i<_substationIds.size();i++)
+    for each (long subId in getSubstationIds())
     {
-        ostrm << (LONG)*iter;
-        iter++;
+        ostrm << subId;
     }
-    double pfDisplayValue = _pfactor;
-    double estPfDisplayValue = _estPfactor;
+    double pfDisplayValue = getPFactor();
+    double estPfDisplayValue = getEstPFactor();
 
     // Modifying the display value of pFactor to represent +100% values as a negative value.
-    if (_pfactor > 1)
+    if (pfDisplayValue > 1)
     {
         pfDisplayValue -= 2;
     }
-    if (_estPfactor > 1)
+    if (estPfDisplayValue > 1)
     {
         estPfDisplayValue -= 2;
     }
 
-    ostrm << _ovUvDisabledFlag
+    ostrm << getOvUvDisabledFlag()
         << pfDisplayValue
         << estPfDisplayValue
-        << _voltReductionControlValue;
+        << getVoltReductionControlValue();
 
 }
 
@@ -147,25 +114,10 @@ void CtiCCSpecial::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
 {
-    Controllable::operator=(right);
+    CtiCCAreaBase::operator=(right);
 
     if( this != &right )
     {
-        _ovUvDisabledFlag = right._ovUvDisabledFlag;
-        _pfactor = right._pfactor;
-        _estPfactor = right._estPfactor;
-
-        _voltReductionControlPointId = right._voltReductionControlPointId;
-        _voltReductionControlValue = right._voltReductionControlValue;
-
-        _substationIds.clear();
-        _substationIds.assign(right._substationIds.begin(), right._substationIds.end());
-
-
-        _operationStats = right._operationStats;
-        _confirmationStats = right._confirmationStats;
-
-       _dirty = right._dirty;
        _insertDynamicDataFlag = right._insertDynamicDataFlag;
     }
     return *this;
@@ -188,21 +140,9 @@ CtiCCSpecial* CtiCCSpecial::replicate() const
 ---------------------------------------------------------------------------*/
 void CtiCCSpecial::restore(Cti::RowReader& rdr)
 {
-    string tempBoolString;
-
-    rdr["voltreductionpointid"] >> _voltReductionControlPointId;
-
-    if (_voltReductionControlPointId <= 0)
-    {
-        setVoltReductionControlValue(FALSE);
-    }
-
-    setPFactor(-1);
-    setEstPFactor(-1);
-
-    setVoltReductionControlValue(FALSE);
-
-    _dirty = TRUE;
+    CtiCCAreaBase::restore(rdr);
+    
+    setDirty(true);
     _insertDynamicDataFlag = TRUE;
 }
 
@@ -219,27 +159,24 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
 
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
-            addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags));
-            _additionalFlags.append("NNNNNNNNNNNNNNNNNNN");
+            addFlags[0] = (getOvUvDisabledFlag()?'Y':'N');
+            string additionalFlags = string(char2string(*addFlags));
+            additionalFlags.append("NNNNNNNNNNNNNNNNNNN");
 
             static const string updaterSql = "update dynamicccspecialarea set additionalflags = ?, controlvalue = ? "
                                              " where areaid = ?";
             Cti::Database::DatabaseWriter updater(conn, updaterSql);
 
-            updater << _additionalFlags << _voltReductionControlValue << getPaoId();
+            updater << additionalFlags << getVoltReductionControlValue() << getPaoId();
 
             if(updater.execute())    // No error occured!
             {
-                _dirty = FALSE;
+                setDirty(false);
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
-                _dirty = TRUE;
+                
+                setDirty(true);
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -260,7 +197,7 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
             static const string inserterSql = "insert into dynamicccspecialarea values (?, ?, ?)";
             Cti::Database::DatabaseWriter inserter(conn, inserterSql);
 
-            inserter << getPaoId() << addFlags << _voltReductionControlValue;
+            inserter << getPaoId() << addFlags << getVoltReductionControlValue();
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -273,15 +210,11 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
             if(inserter.execute())    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
-                _dirty = FALSE;
+                setDirty(false);            
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
-                _dirty = TRUE;
+                setDirty(true);
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -298,139 +231,13 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 }
 void CtiCCSpecial::setDynamicData(Cti::RowReader& rdr)
 {
-    rdr["additionalflags"] >> _additionalFlags;
-    std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
-
-    _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
-
-    rdr["controlvalue"] >> _voltReductionControlValue;
-    if (_voltReductionControlPointId <= 0)
-    {
-        setVoltReductionControlValue(FALSE);
-    }
-
+    CtiCCAreaBase::setDynamicData(rdr);
     _insertDynamicDataFlag = FALSE;
-    _dirty = false;
+    setDirty(false);
 
 
 
 }
 
-/*---------------------------------------------------------------------------
-    getControlPointId
 
-    Returns the controlPoint Id of the area
----------------------------------------------------------------------------*/
-LONG CtiCCSpecial::getVoltReductionControlPointId() const
-{
-    return _voltReductionControlPointId;
-}
-
-/*---------------------------------------------------------------------------
-    getControlValue
-
-    Returns the ControlValue flag of the area
----------------------------------------------------------------------------*/
-BOOL CtiCCSpecial::getVoltReductionControlValue() const
-{
-    return _voltReductionControlValue;
-}
-
-/*---------------------------------------------------------------------------
-    isDirty()
-
-    Returns the dirty flag of the area
----------------------------------------------------------------------------*/
-BOOL CtiCCSpecial::isDirty() const
-{
-    return _dirty;
-}
-
-/*---------------------------------------------------------------------------
-    getOvUvDisabledFlag
-
-    Returns the ovuv disable flag of the area
----------------------------------------------------------------------------*/
-BOOL CtiCCSpecial::getOvUvDisabledFlag() const
-{
-    return _ovUvDisabledFlag;
-}
-
-/*---------------------------------------------------------------------------
-    getPFactor
-
-    Returns the getPFactor of the area
----------------------------------------------------------------------------*/
-DOUBLE CtiCCSpecial::getPFactor() const
-{
-    return _pfactor;
-}
-/*---------------------------------------------------------------------------
-    getEstPFactor
-
-    Returns the getEstPFactor of the area
----------------------------------------------------------------------------*/
-DOUBLE CtiCCSpecial::getEstPFactor() const
-{
-    return _estPfactor;
-}
-
-/*---------------------------------------------------------------------------
-    setControlPointId
-
-    Sets the ControlPointId of the area
----------------------------------------------------------------------------*/
-CtiCCSpecial& CtiCCSpecial::setVoltReductionControlPointId(LONG pointId)
-{
-    _voltReductionControlPointId = pointId;
-    return *this;
-}
-/*---------------------------------------------------------------------------
-    setControlValue
-
-    Sets the ControlValue flag of the area
----------------------------------------------------------------------------*/
-CtiCCSpecial& CtiCCSpecial::setVoltReductionControlValue(BOOL flag)
-{
-    if (_voltReductionControlValue != flag)
-        _dirty = TRUE;
-    _voltReductionControlValue = flag;
-    return *this;
-}
-
-
-/*---------------------------------------------------------------------------
-    setOvUvDisabledFlag
-
-    Sets the ovuv disable flag of the area
----------------------------------------------------------------------------*/
-CtiCCSpecial& CtiCCSpecial::setOvUvDisabledFlag(BOOL flag)
-{
-    if (_ovUvDisabledFlag != flag)
-        _dirty = TRUE;
-
-    _ovUvDisabledFlag = flag;
-    return *this;
-}
-
-/*---------------------------------------------------------------------------
-    setPFactor
-
-    Sets the PFactor of the area
----------------------------------------------------------------------------*/
-CtiCCSpecial& CtiCCSpecial::setPFactor(DOUBLE pfactor)
-{
-    _pfactor = pfactor;
-    return *this;
-}
-/*---------------------------------------------------------------------------
-    setEstPFactor
-
-    Sets the estPFactor of the area
----------------------------------------------------------------------------*/
-CtiCCSpecial& CtiCCSpecial::setEstPFactor(DOUBLE estpfactor)
-{
-    _estPfactor = estpfactor;
-    return *this;
-}
 

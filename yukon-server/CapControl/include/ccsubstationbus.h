@@ -63,7 +63,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     LONG getParentId() const;
 
-    Cti::CapControl::PointIdList getCurrentVarLoadPoints() const;
+    Cti::CapControl::PointIdVector getCurrentVarLoadPoints() const;
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     DOUBLE getRawCurrentVarLoadPointValue() const;
@@ -336,8 +336,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& verifyControlledStatusFlags();
     LONG getNextTODStartTime();
 
-    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds;};
-
     CtiCCSubstationBus& setVerificationAlreadyStartedFlag(BOOL verificationFlag);
     void setVerificationStrategy(int verificationStrategy);
     int getVerificationStrategy(void) const;
@@ -494,7 +492,6 @@ private:
     void restore(Cti::RowReader& rdr);
     string doubleToString(DOUBLE doubleVal);
 
-    Cti::CapControl::PointIdList _pointIds;
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 
     bool performDataOldAndFallBackNecessaryCheckOnFeeders();

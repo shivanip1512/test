@@ -16,6 +16,7 @@
 #include "ccOperationStats.h"
 #include "ccConfirmationStats.h"
 #include "Controllable.h"
+#include "ccareabase.h"
 
 namespace Cti {
 namespace Database {
@@ -23,7 +24,7 @@ namespace Database {
 }
 }
 
-class CtiCCSpecial : public RWCollectable, public Controllable
+class CtiCCSpecial : public CtiCCAreaBase
 {
 
 public:
@@ -37,28 +38,10 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
 
     virtual ~CtiCCSpecial();
 
-    LONG getVoltReductionControlPointId() const;
-    BOOL getVoltReductionControlValue() const;
-
-    BOOL getOvUvDisabledFlag() const;
-    DOUBLE getPFactor() const;
-    DOUBLE getEstPFactor() const;
-
-    CtiCCSpecial& setVoltReductionControlPointId(LONG pointId);
-    CtiCCSpecial& setVoltReductionControlValue(BOOL flag);
-
-    CtiCCSpecial& setOvUvDisabledFlag(BOOL flag);
-    CtiCCSpecial& setPFactor(DOUBLE pfactor);
-    CtiCCSpecial& setEstPFactor(DOUBLE estpfactor);
-
-    Cti::CapControl::PaoIdList* getSubstationIds() {return &_substationIds;};
-    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds;};
-    CtiCCOperationStats& getOperationStats();
-    CtiCCConfirmationStats& getConfirmationStats();
-
-    BOOL isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(Cti::RowReader& rdr);
+
+    virtual bool isSpecial() {return true;};
 
     //Members inherited from RWCollectable
     void saveGuts(RWvostream& ) const;
@@ -69,26 +52,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
 
 private:
 
-    LONG _voltReductionControlPointId;
-    BOOL _voltReductionControlValue;
-
-    DOUBLE _pfactor;
-    DOUBLE _estPfactor;
-
-    string _additionalFlags;
-    BOOL _ovUvDisabledFlag;
-
-    Cti::CapControl::PaoIdList _substationIds;
-    BOOL _isSpecial;
-
-    Cti::CapControl::PointIdList _pointIds;
-
-    CtiCCOperationStats _operationStats;
-    CtiCCConfirmationStats _confirmationStats;
-
    //don't stream
     BOOL _insertDynamicDataFlag;
-    BOOL _dirty;
 
     void restore(Cti::RowReader& rdr);
 

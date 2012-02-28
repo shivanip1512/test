@@ -5,8 +5,8 @@
 namespace Cti {
 namespace CapControl {
 
-typedef std::list<long> PaoIdList;
-typedef std::list<long> PointIdList;
+typedef std::vector<long> PaoIdVector;
+typedef std::vector<long> PointIdVector;
 
 }
 }

@@ -21,7 +21,7 @@ using std::endl;
 
 extern ULONG _CC_DEBUG;
 
-using Cti::CapControl::PaoIdList;
+using Cti::CapControl::PaoIdVector;
 
 RWDEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 
@@ -63,7 +63,6 @@ CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation::~CtiCCSubstation()
 {
-    _pointIds.clear();
     try
     {
         _subBusIds.clear();
@@ -100,11 +99,10 @@ void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
           << _ovUvDisabledFlag;
 
     ostrm << _subBusIds.size();
-    PaoIdList::const_iterator iter = _subBusIds.begin();
 
-    for( ; iter != _subBusIds.end(); iter++)
+    for each(long busId in _subBusIds)
     {
-        ostrm << (LONG)*iter;
+        ostrm << busId;
     }
 
     double pfDisplayValue = _pfactor;
@@ -663,15 +661,11 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    PaoIdList::iterator busIter;
-
-    busIter = getCCSubIds()->begin();
-
-    while (busIter != getCCSubIds()->end() )
+    
+    for each (long busId in getCCSubIds() )
     {
-        currentSubstationBus = store->findSubBusByPAObjectID(*busIter);
-        busIter++;
-
+        currentSubstationBus = store->findSubBusByPAObjectID(busId);
+        
         if (currentSubstationBus != NULL && currentSubstationBus->getVerificationFlag())
         {
             try
@@ -702,17 +696,12 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    PaoIdList::iterator busIter;
-
     int numberOfSubBusesPending = 0;
 
-    busIter = getCCSubIds()->begin();
-
-    while (busIter != getCCSubIds()->end() )
+    for each (long busId in getCCSubIds())
     {
-        currentSubstationBus = store->findSubBusByPAObjectID(*busIter);
-        busIter++;
-
+        currentSubstationBus = store->findSubBusByPAObjectID(busId);
+        
         if (currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getPerformingVerificationFlag())
         {
             setRecentlyControlledFlag(TRUE);
@@ -734,17 +723,12 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
-    PaoIdList::iterator busIter;
-
     int numberOfSubBusesVoltReducting = 0;
 
-    busIter = getCCSubIds()->begin();
-
-    while (busIter != getCCSubIds()->end() )
+    for each (long busId in getCCSubIds())
     {
-        currentSubstationBus = store->findSubBusByPAObjectID(*busIter);
-        busIter++;
-
+        currentSubstationBus = store->findSubBusByPAObjectID(busId);
+        
         if (currentSubstationBus->getVoltReductionFlag())
         {
             setChildVoltReductionFlag(TRUE);

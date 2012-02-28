@@ -151,7 +151,6 @@ public:
     int  getVCtrlIndex() const;
     int getAssumedOrigVerificationState() const;
 
-    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds;};
     std::vector <CtiCCMonitorPointPtr>& getMonitorPoint() {return _monitorPoint;};
 
     CtiCCCapBank& setParentId(LONG parentId);
@@ -402,7 +401,6 @@ private:
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    Cti::CapControl::PointIdList _pointIds;
     std::vector <CtiCCMonitorPoint*>  _monitorPoint; //normally this is just one, but if display order is > 1 then we have more
                                                     // than one monitor point attached to a capbank!!!
 

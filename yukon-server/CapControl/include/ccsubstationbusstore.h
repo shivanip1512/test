@@ -361,10 +361,9 @@ public:
         }
     };
 
-    void cascadeStrategySettingsToChildren(LONG spAreaId, LONG areaId, LONG subBusId);
 
-
-    void locateOrphans(Cti::CapControl::PaoIdList *orphanCaps, Cti::CapControl::PaoIdList *orphanFeeders, PaoIdToCapBankMap paobject_capbank_map,
+    void cascadeAreaStrategySettings(CtiCCAreaBase* object);
+    void locateOrphans(Cti::CapControl::PaoIdVector *orphanCaps, Cti::CapControl::PaoIdVector *orphanFeeders, PaoIdToCapBankMap paobject_capbank_map,
                        PaoIdToFeederMap paobject_feeder_map, ChildToParentMap capbank_feeder_map, ChildToParentMap feeder_subbus_map);
     BOOL isCapBankOrphan(long capBankId);
     BOOL isFeederOrphan(long feederId);
@@ -396,14 +395,14 @@ public:
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
     void handleVoltageRegulatorDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    void updateModifiedStationsAndBusesSets(Cti::CapControl::PaoIdList* stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    void updateModifiedStationsAndBusesSets(Cti::CapControl::PaoIdVector stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet);
     void registerForAdditionalPoints(CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet);
     void initializeAllPeakTimeFlagsAndMonitorPoints(BOOL setTargetVarFlag = FALSE);
     void createAndSendClientMessages( ULONG &msgBitMask, ULONG &msgSubsBitMask, CtiMultiMsg_set &modifiedSubsSet,
                                       CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages);
-    void addSubstationObjectsToSet(Cti::CapControl::PaoIdList *subBusIds, CtiMultiMsg_set &modifiedSubsSet);
-    void addSubBusObjectsToSet(Cti::CapControl::PaoIdList *subBusIds, CtiMultiMsg_set &modifiedSubsSet);
+    void addSubstationObjectsToSet(Cti::CapControl::PaoIdVector subBusIds, CtiMultiMsg_set &modifiedSubsSet);
+    void addSubBusObjectsToSet(Cti::CapControl::PaoIdVector subBusIds, CtiMultiMsg_set &modifiedSubsSet);
     void updateSubstationObjectSet(LONG substationId, CtiMultiMsg_set &modifiedStationsSet);
     void updateAreaObjectSet(LONG areaId, CtiMultiMsg_set &modifiedAreasSet);
     void clearDBReloadList();
@@ -624,8 +623,8 @@ private:
     CapBankList _rejectedCapBanks;
 
     std::list <CC_DBRELOAD_INFO> _reloadList;
-    Cti::CapControl::PaoIdList   _orphanedCapBanks;
-    Cti::CapControl::PaoIdList   _orphanedFeeders;
+    Cti::CapControl::PaoIdVector   _orphanedCapBanks;
+    Cti::CapControl::PaoIdVector   _orphanedFeeders;
 
     CapBankIdToKvarMap _maxKvarMap;
 

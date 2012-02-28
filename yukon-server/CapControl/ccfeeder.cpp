@@ -226,7 +226,6 @@ CtiCCFeeder::CtiCCFeeder(const CtiCCFeeder& feeder)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder::~CtiCCFeeder()
 {
-    _pointIds.clear();
     try
     {
         delete_container(_cccapbanks);
@@ -6470,8 +6469,6 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         regressionA = right.regressionA;
         regressionB = right.regressionB;
         regressionC = right.regressionC;
-        _pointIds.clear();
-        _pointIds  = right._pointIds;
         delete_container(_cccapbanks);
         _cccapbanks.clear();
         for(LONG i=0;i<right._cccapbanks.size();i++)

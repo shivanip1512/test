@@ -99,7 +99,7 @@ void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstation* st
 {
     station->setSaEnabledFlag(FALSE);
     station->setParentId(parentArea->getPaoId());
-    parentArea->getSubStationList()->push_back(station->getPaoId());
+    parentArea->getSubstationIds().push_back(station->getPaoId());
     store->insertSubstationToPaoMap(station);
     station->setDisableFlag(FALSE);
 
@@ -114,7 +114,7 @@ void initialize_bus(Test_CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus
     bus->setCurrentVarLoadPointId(1);
     bus->setCurrentVarLoadPointValue(55, CtiTime());
     bus->setVerificationFlag(FALSE);
-    parentStation->getCCSubIds()->push_back(bus->getPaoId());
+    parentStation->getCCSubIds().push_back(bus->getPaoId());
     store->insertSubBusToPaoMap(bus);
     bus->setDisableFlag(FALSE);
     bus->setVerificationFlag(FALSE);
@@ -184,9 +184,9 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     station->setParentId(1);
     station->setSaEnabledFlag(FALSE);
     store->insertAreaToPaoMap(area);
-    area->getSubStationList()->push_back(station->getPaoId());
+    area->getSubstationIds().push_back(station->getPaoId());
     store->insertSubstationToPaoMap(station);
-    station->getCCSubIds()->push_back(bus->getPaoId());
+    station->getCCSubIds().push_back(bus->getPaoId());
     store->insertSubBusToPaoMap(bus);
 
     bus->setCorrectionNeededNoBankAvailFlag(FALSE);

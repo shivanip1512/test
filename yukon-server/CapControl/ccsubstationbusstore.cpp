@@ -57,8 +57,8 @@ using namespace Cti::CapControl;
 using Database::DatabaseDaoFactory;
 using Cti::ThreadStatusKeeper;
 
-using Cti::CapControl::PaoIdList;
-using Cti::CapControl::PointIdList;
+using Cti::CapControl::PaoIdVector;
+using Cti::CapControl::PointIdVector;
 
 CtiTime timeSaver;
 
@@ -546,8 +546,7 @@ std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByAreaId(
         return subBuses;
     }
 
-    PaoIdList* stationIds = area->getSubStationList();
-    for each(long stationId in *stationIds)
+    for each(long stationId in area->getSubstationIds())
     {
         CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
         if (station == NULL)
@@ -555,8 +554,7 @@ std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByAreaId(
             continue;
         }
 
-        PaoIdList* subIds = station->getCCSubIds();
-        for each(int subId in *subIds)
+        for each(int subId in station->getCCSubIds())
         {
             CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
             if (subBus == NULL)
@@ -579,8 +577,7 @@ std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesBySpecial
         return subBuses;
     }
 
-    PaoIdList* stationIds = area->getSubstationIds();
-    for each(long stationId in *stationIds)
+    for each(long stationId in area->getSubstationIds())
     {
         CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
         if (station == NULL)
@@ -588,8 +585,7 @@ std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesBySpecial
             continue;
         }
 
-        PaoIdList* subIds = station->getCCSubIds();
-        for each(int subId in *subIds)
+        for each(int subId in station->getCCSubIds())
         {
             CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
             if (subBus == NULL)
@@ -611,9 +607,7 @@ std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBusStore::getSubBusesByStation
     {
         return subBuses;
     }
-
-    PaoIdList* subIds = station->getCCSubIds();
-    for each(int subId in *subIds)
+    for each(int subId in station->getCCSubIds())
     {
         CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
         if (subBus == NULL)
@@ -754,8 +748,7 @@ CapBankList CtiCCSubstationBusStore::getCapBanksByPaoIdAndType(int paoId, CapCon
                 break;
             }
 
-            PaoIdList* subIds = station->getCCSubIds();
-            for each(int subId in *subIds)
+            for each(int subId in station->getCCSubIds())
             {
                 CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
                 if (subBus == NULL)
@@ -780,8 +773,7 @@ CapBankList CtiCCSubstationBusStore::getCapBanksByPaoIdAndType(int paoId, CapCon
                 break;
             }
 
-            PaoIdList* stationIds = area->getSubStationList();
-            for each(long stationId in *stationIds)
+            for each(long stationId in area->getSubstationIds())
             {
                 CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
                 if (station == NULL)
@@ -789,8 +781,7 @@ CapBankList CtiCCSubstationBusStore::getCapBanksByPaoIdAndType(int paoId, CapCon
                     continue;
                 }
 
-                PaoIdList* subIds = station->getCCSubIds();
-                for each(int subId in *subIds)
+                for each(int subId in station->getCCSubIds())
                 {
                     CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
                     if (subBus == NULL)
@@ -817,8 +808,7 @@ CapBankList CtiCCSubstationBusStore::getCapBanksByPaoIdAndType(int paoId, CapCon
                 break;
             }
 
-            PaoIdList* stationIds = spArea->getSubstationIds();
-            for each(long stationId in *stationIds)
+            for each(long stationId in spArea->getSubstationIds())
             {
                 CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
                 if (station == NULL)
@@ -826,8 +816,7 @@ CapBankList CtiCCSubstationBusStore::getCapBanksByPaoIdAndType(int paoId, CapCon
                     break;
                 }
 
-                PaoIdList* subIds = station->getCCSubIds();
-                for each(int subId in *subIds)
+                for each(int subId in station->getCCSubIds())
                 {
                     CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
                     if (subBus == NULL)
@@ -1184,29 +1173,28 @@ BOOL CtiCCSubstationBusStore::deleteCapControlMaps()
     {
         _unsolicitedCapBanks.clear();
         _rejectedCapBanks.clear();
-        while (!_orphanedFeeders.empty())
+        for each (long orphanId in _orphanedFeeders)
         {
-            long feederId = _orphanedFeeders.front();
-            _orphanedFeeders.pop_front();
-            CtiCCFeederPtr feeder = findFeederByPAObjectID(feederId);
+            CtiCCFeederPtr feeder = findFeederByPAObjectID(orphanId);
             if (feeder != NULL)
             {
                 delete feeder;
             }
         }
 
-        while (!_orphanedCapBanks.empty())
-        {
-            long capId = _orphanedCapBanks.front();
-            _orphanedCapBanks.pop_front();
+        _orphanedFeeders.clear();
 
-            CtiCCCapBankPtr cap = findCapBankByPAObjectID(capId);
+        for each (long orphanId in _orphanedCapBanks)
+        {
+            CtiCCCapBankPtr cap = findCapBankByPAObjectID(orphanId);
             if (cap != NULL)
             {
                 delete cap;
             }
         }
-                if ( _ccSubstationBuses->size() > 0 )
+        _orphanedCapBanks.clear();
+
+        if ( _ccSubstationBuses->size() > 0 )
         {
             dumpAllDynamicData();
             wasAlreadyRunning = true;
@@ -1467,13 +1455,13 @@ void CtiCCSubstationBusStore::reset()
         for(i = 0; i< _ccSpecialAreas->size();i++)
         {
              CtiCCSpecialPtr spArea =  (CtiCCSpecialPtr)(*_ccSpecialAreas).at(i);
-             cascadeStrategySettingsToChildren(spArea->getPaoId(), 0, 0);
+             cascadeAreaStrategySettings(spArea);
         }
 
         for(i=0;i< _ccGeoAreas->size();i++)
         {
             CtiCCAreaPtr area =  (CtiCCAreaPtr)(*_ccGeoAreas).at(i);
-            cascadeStrategySettingsToChildren(0, area->getPaoId(), 0);
+            cascadeAreaStrategySettings(area);
 
             //disables verification on a subbus if the parent area or substation have been disabled.
             area->checkForAndStopVerificationOnChildSubBuses(capMessages);
@@ -3986,7 +3974,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                     substation_area_map->insert(make_pair(currentSubstationId, currentAreaId));
                     if (currentCCArea != NULL)
                     {
-                        currentCCArea->getSubStationList()->push_back(currentSubstationId);
+                        currentCCArea->addSubstationId(currentSubstationId);
                     }
 
                     ccSubstations->push_back( currentCCSubstation );
@@ -4056,7 +4044,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
                     }
                     substation_specialarea_map->insert(make_pair(currentSubId, currentSpAreaId));
-                    currentCCSpArea->getSubstationIds()->push_back(currentSubId);
+                    currentCCSpArea->addSubstationId(currentSubId);
                 }
             }
         }
@@ -4563,7 +4551,8 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
             reloadOperationStatsFromDatabase(areaId,&_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
                                              &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
 
-            cascadeStrategySettingsToChildren(0, areaId, 0);
+
+            cascadeAreaStrategySettings(findAreaByPAObjectID(areaId));
         }
         //_reregisterforpoints = TRUE;
     }
@@ -5049,11 +5038,10 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     if (currentCCSubstation != NULL)
                     {
                         currentCCSubstationBus->setParentName(currentCCSubstation->getPaoName());
-                        PaoIdList::const_iterator iterBus = currentCCSubstation->getCCSubIds()->begin();
                         bool found = false;
-                        for( ;iterBus != currentCCSubstation->getCCSubIds()->end(); iterBus++)
+                        for each (long busId in currentCCSubstation->getCCSubIds())
                         {
-                            if (*iterBus == currentSubBusId)
+                            if (busId == currentSubBusId)
                             {
                                 found = true;
                                 break;
@@ -5061,7 +5049,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                         }
                         if(!found)
                         {
-                            currentCCSubstation->getCCSubIds()->push_back(currentSubBusId);
+                            currentCCSubstation->addCCSubId(currentSubBusId);
                         }
                     }
 
@@ -5236,7 +5224,6 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                  }
             }
 
-            //while (!dualBusEnabledSubs.empty())
             if (!altsub_sub_idmap->empty())
             {
                 PaoIdToPointIdMultiMap::iterator iter = altsub_sub_idmap->begin();
@@ -5648,6 +5635,7 @@ void CtiCCSubstationBusStore::assignStrategyToCCObject(Cti::RowReader& dbRdr, Ct
                if (currentSpArea != NULL)
                {
                    currentSpArea->setStrategy( stratId );
+                   cascadeAreaStrategySettings(currentSpArea);
                }
             }
             break;
@@ -5657,6 +5645,7 @@ void CtiCCSubstationBusStore::assignStrategyToCCObject(Cti::RowReader& dbRdr, Ct
                 if (currentArea != NULL)
                 {
                     currentArea->setStrategy( stratId );
+                    cascadeAreaStrategySettings(currentArea);
                 }
             }
             break;
@@ -5736,7 +5725,7 @@ void CtiCCSubstationBusStore::assignStrategyAtBus(CtiCCSubstationBusPtr bus, lon
 
         if (bus->getStrategy()->getUnitType() == ControlStrategy::None)
         {
-            cascadeStrategySettingsToChildren(0, currentStation->getParentId(), 0);
+            cascadeAreaStrategySettings(findAreaByPAObjectID(currentStation->getParentId()));
         }
         if (ciStringEqual(bus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
         {
@@ -7415,7 +7404,7 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
     return;
 }
 
-void CtiCCSubstationBusStore::locateOrphans(PaoIdList *orphanCaps, PaoIdList *orphanFeeders, PaoIdToCapBankMap paobject_capbank_map,
+void CtiCCSubstationBusStore::locateOrphans(PaoIdVector *orphanCaps, PaoIdVector *orphanFeeders, PaoIdToCapBankMap paobject_capbank_map,
                        PaoIdToFeederMap paobject_feeder_map, ChildToParentMap capbank_feeder_map, ChildToParentMap feeder_subbus_map)
 {
     try
@@ -7459,14 +7448,10 @@ BOOL CtiCCSubstationBusStore::isFeederOrphan(long feederId)
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         {
-            PaoIdList::iterator iter = _orphanedFeeders.begin();
-
-            while (iter != _orphanedFeeders.end())
+            for each(long orphanId in _orphanedFeeders)
             {
-                if (*iter == feederId)
+                if (orphanId== feederId)
                     return TRUE;
-                else
-                    iter++;
             }
         }
     }
@@ -7485,11 +7470,9 @@ BOOL CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         {
-            PaoIdList::iterator iter = _orphanedCapBanks.begin();
-
-            while (iter != _orphanedCapBanks.end())
+            for each (long orphanId in _orphanedCapBanks)
             {
-                if (*iter == capBankId)
+                if (orphanId == capBankId)
                 {
                     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                     {
@@ -7498,8 +7481,6 @@ BOOL CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
                     }
                     return TRUE;
                 }
-                else
-                    iter++;
             }
         }
     }
@@ -7515,9 +7496,19 @@ void CtiCCSubstationBusStore::removeFromOrphanList(long ccId)
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+        for ( PaoIdVector::iterator orphanCapIter = _orphanedCapBanks.begin();  orphanCapIter != _orphanedCapBanks.end(); ++orphanCapIter)
         {
-            _orphanedCapBanks.remove(ccId);
-            _orphanedFeeders.remove(ccId);
+            if (*orphanCapIter == ccId)
+            {
+                _orphanedCapBanks.erase(orphanCapIter);
+            }
+        }
+        for ( PaoIdVector::iterator orphanFdrIter = _orphanedFeeders.begin();  orphanFdrIter != _orphanedFeeders.end(); ++orphanFdrIter)
+        {
+            if (*orphanFdrIter == ccId)
+            {
+                _orphanedFeeders.erase(orphanFdrIter);
+            }
         }
     }
     catch(...)
@@ -7554,11 +7545,9 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
         try
         {
             //Delete pointids on this sub
-            PointIdList *pointIds  = substationToDelete->getPointIds();
-            while (!pointIds->empty())
-            {
-                LONG pointid = pointIds->front();
-                pointIds->pop_front();
+           for each (long pointid in *substationToDelete->getPointIds())
+           {
+
                 int ptCount = getNbrOfSubstationsWithPointID(pointid);
                 if (ptCount > 1)
                 {
@@ -7597,7 +7586,7 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
                 CtiCCSpecial *spArea = *itrSp;
                 if (spArea != NULL)
                 {
-                    spArea->getSubstationIds()->remove(substationId);
+                    spArea->removeSubstationId(substationId);
                 }
                 itrSp++;
             }
@@ -7649,11 +7638,8 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
             try
             {
                 //Delete pointids on this sub
-                PointIdList *pointIds  = areaToDelete->getPointIds();
-                while (!pointIds->empty())
+                for each (long pointid in *areaToDelete->getPointIds())
                 {
-                    LONG pointid = pointIds->front();
-                    pointIds->pop_front();
                     int ptCount = getNbrOfAreasWithPointID(pointid);
                     if (ptCount > 1)
                     {
@@ -7683,28 +7669,25 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
             LONG subBusId;
 
             CtiCCSubstationPtr station = NULL;
-            PaoIdList::iterator iter = areaToDelete->getSubStationList()->begin();
-            while (iter != areaToDelete->getSubStationList()->end())
+            for each (long stationId in areaToDelete->getSubstationIds())
             {
-                stationId = *iter;
                 station = findSubstationByPAObjectID(stationId);
                 if (station != NULL)
                 {
                     if (station->getSaEnabledId() > 0)
                     {
-						++iter;
                         continue;
                     }
-                    PaoIdList::iterator iterBus = station->getCCSubIds()->begin();
-                    while (iterBus  != station->getCCSubIds()->end())
+                    PaoIdVector::const_iterator iterBus = station->getCCSubIds().begin();
+                    while (iterBus  != station->getCCSubIds().end())
                     {
                         subBusId = *iterBus;
                         deleteSubBus(subBusId);
-                        iterBus = station->getCCSubIds()->erase(iterBus);
+                        iterBus = station->getCCSubIds().erase(iterBus);
                     }
                 }
                 deleteSubstation(stationId);
-                iter = areaToDelete->getSubStationList()->erase(iter);
+                areaToDelete->removeSubstationId(stationId);
             }
 
             try
@@ -7758,11 +7741,8 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
             try
             {
                 //Delete pointids on this sub
-                PointIdList *pointIds  = spAreaToDelete->getPointIds();
-                while (!pointIds->empty())
+                for each (long pointid in *spAreaToDelete->getPointIds())
                 {
-                    LONG pointid = pointIds->front();
-                    pointIds->pop_front();
                     int ptCount = getNbrOfSpecialAreasWithPointID(pointid);
                     if (ptCount > 1)
                     {
@@ -7858,12 +7838,9 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
         try
         {
             //Delete pointids on this sub
-            PointIdList *pointIds  = subToDelete->getPointIds();
-            while (!pointIds->empty())
+            for each (long pointid in *subToDelete->getPointIds())
             {
-                LONG pointid = pointIds->front();
-                pointIds->pop_front();
-                int ptCount = getNbrOfSubBusesWithPointID(pointid);
+               int ptCount = getNbrOfSubBusesWithPointID(pointid);
                 if (ptCount > 1)
                 {
                     PointIdToSubBusMultiMap::iterator iter1 = _pointid_subbus_map.lower_bound(pointid);
@@ -7901,13 +7878,13 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                     {
                         LONG pointid = subToDelete->getCurrentVarLoadPointId();
                         _pointid_subbus_map.erase(pointid);
-                        tempSub->getPointIds()->remove(pointid);
+                        tempSub->removePointId(pointid);
                     }
                     else if (!ciStringEqual(tempSub->getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit))
                     {
                         LONG pointid = subToDelete->getCurrentVoltLoadPointId();
                         _pointid_subbus_map.erase(pointid);
-                        tempSub->getPointIds()->remove(pointid);
+                        tempSub->removePointId(pointid);
                     }
                 }
                 _altsub_sub_idmap.erase(subBusId);
@@ -7985,12 +7962,9 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
             deleteCapBank(capBankId);
         }
 
-        PointIdList *pointIds  = feederToDelete->getPointIds();
         //Delete pointids on this feeder
-        while (!pointIds->empty())
+        for each (long pointid in *feederToDelete->getPointIds())
         {
-            LONG pointid = pointIds->front();
-            pointIds->pop_front();
             int ptCount = getNbrOfFeedersWithPointID(pointid);
             if (ptCount > 1)
             {
@@ -8057,12 +8031,9 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
         {
           //  capBankToDelete->dumpDynamicData();
 
-            PointIdList* pointIds  = capBankToDelete->getPointIds();
             //Delete pointids on this feeder
-            while (!pointIds->empty())
+            for each (long pointid in *capBankToDelete->getPointIds())
             {
-                LONG pointid = pointIds->front();
-                pointIds->pop_front();
                 int ptCount = getNbrOfCapBanksWithPointID(pointid);
                 if (ptCount > 1)
                 {
@@ -8232,7 +8203,7 @@ bool CtiCCSubstationBusStore::handleAreaDBChange(LONG reloadId, BYTE reloadActio
     {
         CtiCCAreaPtr tempArea = findAreaByPAObjectID(reloadId);
 
-        if (tempArea != NULL &&tempArea->getSubStationList()->size() > 1)
+        if (tempArea != NULL &&tempArea->getSubstationIds().size() > 1)
         {
             setValid(false);
             _reloadList.clear();
@@ -8246,7 +8217,7 @@ bool CtiCCSubstationBusStore::handleAreaDBChange(LONG reloadId, BYTE reloadActio
             tempArea = findAreaByPAObjectID(reloadId);
             if (tempArea != NULL)
             {
-                updateModifiedStationsAndBusesSets(tempArea->getSubStationList(),msgBitMask, msgSubsBitMask,
+                updateModifiedStationsAndBusesSets(tempArea->getSubstationIds(),msgBitMask, msgSubsBitMask,
                                                      modifiedSubsSet,  modifiedStationsSet);
                 if (tempArea->getDisableFlag())
                     tempArea->checkForAndStopVerificationOnChildSubBuses(capMessages);
@@ -8508,13 +8479,11 @@ bool CtiCCSubstationBusStore::handleSpecialAreaDBChange(LONG reloadId, BYTE relo
 }
 
 
-void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(PaoIdList* stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(PaoIdVector stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet)
 {
-    PaoIdList::const_iterator iter = stationIdList->begin();
-    while (iter != stationIdList->end())
+    for each (long stationId in stationIdList)
     {
-        LONG stationId = *iter;
         CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
         if (station != NULL)
         {
@@ -8524,7 +8493,6 @@ void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(PaoIdList* stat
             msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
             msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
         }
-        iter++;
     }
     return;
 }
@@ -8550,7 +8518,7 @@ void CtiCCSubstationBusStore::handleStrategyDBChange(LONG reloadId, BYTE reloadA
             CtiCCArea* area = (CtiCCAreaPtr)(*_ccGeoAreas)[i];
             if (!area->getDisableFlag() && area->getStrategy()->getStrategyId() == reloadId)
             {
-                addSubstationObjectsToSet(area->getSubStationList(), modifiedSubsSet);
+                addSubstationObjectsToSet(area->getSubstationIds(), modifiedSubsSet);
             }
         }
         for(i=0;i<_ccSubstationBuses->size();i++)
@@ -8923,48 +8891,38 @@ void CtiCCSubstationBusStore::updateAreaObjectSet(LONG areaId, CtiMultiMsg_set &
 }
 
 
-void CtiCCSubstationBusStore::addSubBusObjectsToSet(PaoIdList *subBusIds, CtiMultiMsg_set &modifiedSubsSet)
+void CtiCCSubstationBusStore::addSubBusObjectsToSet(PaoIdVector subBusIds, CtiMultiMsg_set &modifiedSubsSet)
 {
-    PaoIdList::const_iterator busIter = subBusIds->begin();
-    while (busIter != subBusIds->end())
+    for each (long busId in subBusIds)
     {
-
-        CtiCCSubstationBus* tempSub = findSubBusByPAObjectID(*busIter);
+        CtiCCSubstationBus* tempSub = findSubBusByPAObjectID(busId);
         if (tempSub != NULL)
         {
             modifiedSubsSet.erase(tempSub);
             modifiedSubsSet.insert(tempSub);
-
         }
-        busIter++;
     }
     return;
 }
 
 
-void CtiCCSubstationBusStore::addSubstationObjectsToSet(PaoIdList *substationIds, CtiMultiMsg_set &modifiedSubsSet)
+void CtiCCSubstationBusStore::addSubstationObjectsToSet(PaoIdVector substationIds, CtiMultiMsg_set &modifiedSubsSet)
 {
-    PaoIdList::const_iterator stationIter = substationIds->begin();
-
-    while (stationIter != substationIds->end())
+    for each(long stationId in substationIds)
     {
-        CtiCCSubstationPtr station = findSubstationByPAObjectID(*stationIter);
+        CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
         if (station != NULL)
         {
-            PaoIdList::const_iterator busIter = station->getCCSubIds()->begin();
-            while (busIter != station->getCCSubIds()->end())
+            for each (long busId in station->getCCSubIds())
             {
-
-                CtiCCSubstationBus* tempSub = findSubBusByPAObjectID(*busIter);
+                CtiCCSubstationBus* tempSub = findSubBusByPAObjectID(busId);
                 if (tempSub != NULL)
                 {
                     modifiedSubsSet.insert(tempSub);
 
                 }
-                busIter++;
             }
         }
-        stationIter++;
     }
     return;
 }
@@ -9479,9 +9437,9 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
             pf = 0;
             epf = 0;
             numBuses = 0;
-            for (PaoIdList::const_iterator iter = station->getCCSubIds()->begin(); iter != station->getCCSubIds()->end(); iter++)
+            for each (long busId in station->getCCSubIds())
             {
-                CtiCCSubstationBus *bus = findSubBusByPAObjectID(*iter);
+                CtiCCSubstationBus *bus = findSubBusByPAObjectID(busId);
                 if (bus != NULL)
                 {
                      pf += bus->getPowerFactorValue();
@@ -9506,9 +9464,9 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
                 pf = 0;
                 epf = 0;
                 numStations = 0;
-                for (PaoIdList::const_iterator iter = area->getSubStationList()->begin(); iter != area->getSubStationList()->end(); iter++)
+                for each (long stationId in area->getSubstationIds())
                 {
-                    CtiCCSubstation *station = findSubstationByPAObjectID(*iter);
+                    CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
                     if (station != NULL)
                     {
                          pf += station->getPFactor();
@@ -9535,17 +9493,14 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
                 pf = 0;
                 epf = 0;
                 numStations = 0;
-                PaoIdList::const_iterator iter = spArea->getSubstationIds()->begin();
-                while (iter != spArea->getSubstationIds()->end())
+                for each (long stationId in spArea->getSubstationIds())
                 {
-                    stationId = *iter;
                     station = findSubstationByPAObjectID(stationId);
                     if (station != NULL)
                     {
                          pf += station->getPFactor();
                          epf += station->getEstPFactor();
                     }
-                    iter++;
                     numStations++;
                 }
                 if (numStations != 0)
@@ -9856,14 +9811,12 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
         for(i=0;i<_ccSubstations->size();i++)
         {
             CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
-            PaoIdList::iterator busIter = currentStation->getCCSubIds()->begin();
             CCStatsObject subUserDef, subDaily, subWeekly, subMonthly;
             CCStatsObject subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp;
-            LONG numOfBuses = currentStation->getCCSubIds()->size();
-            while (busIter != currentStation->getCCSubIds()->end())
+            LONG numOfBuses = currentStation->getCCSubIds().size();
+            for each (long busId in currentStation->getCCSubIds())
             {
-                CtiCCSubstationBusPtr currentSubstationBus = findSubBusByPAObjectID(*busIter);
-                busIter++;
+                CtiCCSubstationBusPtr currentSubstationBus = findSubBusByPAObjectID(busId);
                 if (currentSubstationBus != NULL)
                 {
                     incrementConfirmationPercentTotals(currentSubstationBus, subUserDef, subDaily, subWeekly, subMonthly);
@@ -9879,14 +9832,12 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
         for(i=0;i<_ccGeoAreas->size();i++)
         {
             CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
-            PaoIdList::iterator subIter = currentArea->getSubStationList()->begin();
             CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly;
             CCStatsObject areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
-            LONG numOfSubs = currentArea->getSubStationList()->size();
-            while (subIter != currentArea->getSubStationList()->end())
+            LONG numOfSubs = currentArea->getSubstationIds().size();
+            for each (long subId in currentArea->getSubstationIds())
             {
-                CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(*subIter);
-                subIter++;
+                CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(subId);
                 if (currentStation != NULL)
                 {
                    incrementConfirmationPercentTotals(currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
@@ -9902,15 +9853,12 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
         for(i=0;i<_ccSpecialAreas->size();i++)
         {
             CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
-            PaoIdList::iterator subIter = currentSpArea->getSubstationIds()->begin();
-
             CCStatsObject areaUserDef, areaDaily, areaWeekly, areaMonthly;
             CCStatsObject areaUserDefOp, areaDailyOp, areaWeeklyOp, areaMonthlyOp;
-            LONG numOfSubs = currentSpArea->getSubstationIds()->size();
-            while (subIter != currentSpArea->getSubstationIds()->end())
+            LONG numOfSubs = currentSpArea->getSubstationIds().size();
+            for each (long subId in currentSpArea->getSubstationIds())
             {
-                CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(*subIter);
-                subIter++;
+                CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(subId);
                 if (currentStation != NULL)
                 {
                     incrementConfirmationPercentTotals(currentStation, areaUserDef, areaDaily, areaWeekly, areaMonthly);
@@ -10411,6 +10359,43 @@ void CtiCCSubstationBusStore::createOperationStatPointDataMsgs(CtiMultiMsg_vec& 
     return;
 }
 
+void CtiCCSubstationBusStore::cascadeAreaStrategySettings(CtiCCAreaBase* object)
+{
+    if (object == NULL || object->getStrategy()->getUnitType() == ControlStrategy::None)
+        return;
+    
+    long strategyID = object->getStrategy()->getStrategyId();
+
+    for each (long stationId in object->getSubstationIds())
+    {
+        CtiCCSubstation *station =findSubstationByPAObjectID(stationId);
+        if (station == NULL)
+            continue;
+        for each ( long busId in station->getCCSubIds() )
+        {
+            CtiCCSubstationBus* currentCCSubstationBus = findSubBusByPAObjectID(busId);
+            if (currentCCSubstationBus == NULL)
+                continue;
+            if ((object->isSpecial() && station->getSaEnabledFlag() && station->getSaEnabledId() == object->getPaoId() ) ||
+                (!object->isSpecial() && !station->getSaEnabledFlag() && currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::None))
+            {
+                currentCCSubstationBus->setStrategy(strategyID);
+
+                if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
+                {
+                    currentCCSubstationBus->figureNextCheckTime();
+                }
+                for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
+                {
+                    CtiCCFeederPtr fdr = currentCCSubstationBus->getCCFeeders()[i];
+                    if ( fdr->getStrategy()->getUnitType() == ControlStrategy::None )
+                        fdr->setStrategy( strategyID );                                
+                }
+            }
+        }
+    }
+}
+
 void CtiCCSubstationBusStore::getSubBusParentInfo(CtiCCSubstationBus* bus, LONG &spAreaId, LONG &areaId, LONG &stationId)
 {
     stationId = 0;
@@ -10465,123 +10450,6 @@ void CtiCCSubstationBusStore::getFeederParentInfo(CtiCCFeeder* feeder, LONG &spA
 }
 
 
-
-void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, LONG areaId, LONG subBusId)
-{
-    LONG stationId = 0;
-    if (spAreaId > 0)
-    {
-        CtiCCSpecial* spArea = findSpecialAreaByPAObjectID(spAreaId);
-        if (spArea != NULL && spArea->getStrategy()->getUnitType() != ControlStrategy::None)
-        {
-            long strategyID = spArea->getStrategy()->getStrategyId();
-
-            PaoIdList::const_iterator iter = spArea->getSubstationIds()->begin();
-            for ( ; iter != spArea->getSubstationIds()->end(); ++iter)
-            {
-                stationId = *iter;
-                CtiCCSubstation *station =findSubstationByPAObjectID(stationId);
-                if (station != NULL)
-                {
-                    PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
-                    for ( ; iterBus  != station->getCCSubIds()->end(); ++iterBus)
-                    {
-                        subBusId = *iterBus;
-                        CtiCCSubstationBus* currentCCSubstationBus = findSubBusByPAObjectID(subBusId);
-                        if (currentCCSubstationBus != NULL)
-                        {
-                            if (station->getSaEnabledFlag() && station->getSaEnabledId() == spAreaId)
-                            {
-                                currentCCSubstationBus->setStrategy(strategyID);
-
-                                if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
-                                {
-                                    currentCCSubstationBus->figureNextCheckTime();
-                                }
-                                for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
-                                {
-                                    CtiCCFeederPtr fdr = currentCCSubstationBus->getCCFeeders()[i];
-                                    if ( fdr->getStrategy()->getUnitType() == ControlStrategy::None )
-                                        fdr->setStrategy( strategyID );                                
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-    }
-    else if (areaId > 0)
-    {
-        CtiCCArea* area = findAreaByPAObjectID(areaId);
-        if (area != NULL && area->getStrategy()->getUnitType() != ControlStrategy::None)
-        {
-            long strategyID = area->getStrategy()->getStrategyId();
-
-            PaoIdList::const_iterator iter = area->getSubStationList()->begin();
-            for ( ; iter != area->getSubStationList()->end(); ++iter)
-            {
-                stationId = *iter;
-                CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
-                if (station != NULL)
-                {
-                    PaoIdList::const_iterator iterBus = station->getCCSubIds()->begin();
-                    for ( ; iterBus  != station->getCCSubIds()->end(); ++iterBus)
-                    {
-                        subBusId = *iterBus;
-                        CtiCCSubstationBus* currentCCSubstationBus = findSubBusByPAObjectID(subBusId);
-                        if (currentCCSubstationBus != NULL)
-                        {
-                            if (!station->getSaEnabledFlag() && (currentCCSubstationBus->getStrategy()->getUnitType() == ControlStrategy::None))
-                            {
-                                currentCCSubstationBus->setStrategy(strategyID);
-
-                                if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod) )
-                                {
-                                    currentCCSubstationBus->figureNextCheckTime();
-                                }
-                                for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
-                                {
-                                    CtiCCFeederPtr fdr = currentCCSubstationBus->getCCFeeders()[i];
-                                    if ( fdr->getStrategy()->getUnitType() == ControlStrategy::None )
-                                        fdr->setStrategy( strategyID );
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-    }
-    else if (subBusId > 0)
-    {
-        CtiCCSubstationBus* currentSubstationBus = findSubBusByPAObjectID(subBusId);
-        if (currentSubstationBus != NULL && currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
-        {
-            CtiCCSubstationPtr currentStation = NULL;
-            currentStation = findSubstationByPAObjectID(currentSubstationBus->getParentId());
-            if (currentStation != NULL)
-            {
-                if (!currentStation->getSaEnabledFlag())
-                {
-                    StrategyManager::SharedPtr currentCCStrategy = currentSubstationBus->getStrategy();
-
-                    for (int i = 0; i < currentSubstationBus->getCCFeeders().size(); i++ )
-                    {
-                        CtiCCFeederPtr fdr = currentSubstationBus->getCCFeeders()[i];
-                        if ( fdr->getStrategy()->getUnitType() == ControlStrategy::None )
-                            fdr->setStrategy( currentSubstationBus->getStrategy()->getStrategyId() );
-                    }
-                }
-            }
-        }
-    }
-
-
-    return;
-}
 
 bool CtiCCSubstationBusStore::isAnyBankClosed(int paoId, CapControlType type)
 {

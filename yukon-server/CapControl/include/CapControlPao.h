@@ -3,6 +3,7 @@
 #include "yukon.h"
 #include "row_reader.h"
 #include "rwutil.h"
+#include "cctypes.h"
 #include <string>
 
 #include <rw/vstream.h>
@@ -20,11 +21,13 @@ class CapControlPao
         std::string _paoStatistics;
 
         long    _disabledStatePointId;
+        Cti::CapControl::PointIdVector _pointIds;
 
     public:
 
         CapControlPao();
         CapControlPao(Cti::RowReader& rdr);
+        ~CapControlPao();
 
         int getPaoId() const;
         void setPaoId(int paoId);
@@ -60,4 +63,7 @@ class CapControlPao
 
         void setDisabledStatePointId( const long newId, bool sendDisablePointMessage = false );
         long getDisabledStatePointId() const;
+
+        Cti::CapControl::PointIdVector* getPointIds() {return &_pointIds;};
+        void removePointId(long pId);
 };

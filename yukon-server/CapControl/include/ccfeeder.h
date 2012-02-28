@@ -321,8 +321,6 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiRequestMsg*  createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                           CtiMultiMsg_vec& pilMessages, CtiCCCapBank* currentCapBank, int control);
 
-    Cti::CapControl::PointIdList* getPointIds() {return &_pointIds;};
-
     BOOL isVerificationAlreadyControlled(long minConfirmPercent, long quality, DOUBLE varAValueBeforeControl,
                              DOUBLE varBValueBeforeControl, DOUBLE varCValueBeforeControl,
                              DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, double oldVarValue, double newVarValue,
@@ -475,7 +473,6 @@ private:
     void restore(Cti::RowReader& rdr);
     string doubleToString(DOUBLE doubleVal, LONG decimalPlaces);
 
-    Cti::CapControl::PointIdList _pointIds;
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 
     bool checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
