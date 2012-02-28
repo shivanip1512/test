@@ -53,19 +53,19 @@
 
 	<entry key="yukon.web.modules.dr.chooseProgram">Choose Program</entry>
     
-    <entry key="yukon.web.modules.dr.byProgramName.confirm.ENABLED">Enabled the Consumer''s Ability to Opt Out for the program {0} and communicate with devices.</entry>
-    <entry key="yukon.web.modules.dr.byProgramName.confirm.DISABLED_WITH_COMM">Disabled the Consumer''s Ability to Opt Out for the program {0}. The Consumer can communicate with devices.</entry>
-    <entry key="yukon.web.modules.dr.byProgramName.confirm.DISABLED_WITHOUT_COMM">Disabled the Consumer''s Ability to Opt Out for the program {0} or communicate with devices.</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.ENABLED">Enabled the Consumer's Ability to Opt Out for the program {0} and communicate with devices.</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.DISABLED_WITH_COMM">Disabled the Consumer's Ability to Opt Out for the program {0}. The Consumer can communicate with devices.</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.DISABLED_WITHOUT_COMM">Disabled the Consumer's Ability to Opt Out for the program {0} or communicate with devices.</entry>
     <entry key="yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts">Canceled Current Opt Outs for the program {0}</entry>
-    <entry key="yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts">Counting Today''s Opt Outs for the program {0}</entry>
-    <entry key="yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts">Not Counting Today''s Opt Outs for the program {0}</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts">Counting Today's Opt Outs for the program {0}</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts">Not Counting Today's Opt Outs for the program {0}</entry>
     
-    <entry key="yukon.web.modules.dr.byProgramName.confirm.ENABLED.allPrograms">Enabled the Consumer''s Ability to Opt Out for all programs and communicate with devices.</entry>
-    <entry key="yukon.web.modules.dr.byProgramName.confirm.DISABLED_WITH_COMM.allPrograms">Disabled the Consumer''s Ability to Opt Out for all programs. The Consumer can communicate with devices.</entry>
-    <entry key="yukon.web.modules.dr.byProgramName.confirm.DISABLED_WITHOUT_COMM.allPrograms">Disabled the Consumer''s Ability to Opt Out for all programs or communicate with devices.</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.ENABLED.allPrograms">Enabled the Consumer's Ability to Opt Out for all programs and communicate with devices.</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.DISABLED_WITH_COMM.allPrograms">Disabled the Consumer's Ability to Opt Out for all programs. The Consumer can communicate with devices.</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.DISABLED_WITHOUT_COMM.allPrograms">Disabled the Consumer's Ability to Opt Out for all programs or communicate with devices.</entry>
     <entry key="yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts.allPrograms">Canceled Current Opt Outs For All Programs</entry>
-    <entry key="yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts.allPrograms">Counting Today''s Opt Outs for All Programs</entry>
-    <entry key="yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts.allPrograms">Not Counting Today''s Opt Outs for Any Programs</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts.allPrograms">Counting Today's Opt Outs for All Programs</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts.allPrograms">Not Counting Today's Opt Outs for Any Programs</entry>
     
     <entry key="yukon.web.modules.dr.confirm.enableConsumerOptOuts">Consumer Opt Outs Have Been Enabled</entry>
     <entry key="yukon.web.modules.dr.confirm.disableConsumerOptOuts">Consumer Opt Outs Have Been Disabled</entry>
