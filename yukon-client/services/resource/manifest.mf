@@ -39,6 +39,7 @@ Class-Path: ./
  commons-collections-3.2.jar 
  wsdl4j.jar 
  aopalliance.jar 
+ servlet-api.jar 
  spring-aop-3.0.5.jar 
  spring-asm-3.0.5.jar 
  spring-aspects-3.0.5.jar 
