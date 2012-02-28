@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<demandResetRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../DemandResetRequest.xsd" 
+           version="1.0">
+    <paos>
+        <deviceGroup value="/Meters/Ross/Some 430s"/>
+    </paos>
+</demandResetRequest>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-            xmlns:yukon="http://yukon.cannontech.com/api" 
-            targetNamespace="http://yukon.cannontech.com/api" 
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:yukon="http://yukon.cannontech.com/api"
+            targetNamespace="http://yukon.cannontech.com/api"
             elementFormDefault="qualified" version="1.0">
 
     <xsd:include schemaLocation="Types.xsd"/>
@@ -11,7 +11,7 @@
             General type definitions for Yukon message elements pertaining specifically to PAOs.
         </xsd:documentation>
 	</xsd:annotation>
-    
+
     <xsd:complexType name="DeviceGroup">
         <xsd:attribute name="value" use="required" type="xsd:string"/>
     </xsd:complexType>
@@ -38,6 +38,12 @@
         </xsd:choice>
     </xsd:complexType>
 
+    <xsd:complexType name="PaoIdCollection">
+        <xsd:sequence>
+            <xsd:element name="paoId" maxOccurs="unbounded" type="yukon:PaoId"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
     <xsd:complexType name="Pao">
         <xsd:choice>
             <xsd:element name="paoName" type="yukon:PaoName"/>
@@ -47,4 +53,13 @@
         </xsd:choice>
     </xsd:complexType>
 
+    <xsd:complexType name="PaoError">
+        <xsd:sequence>
+            <xsd:element name="paoId" maxOccurs="unbounded" type="yukon:PaoId"/>
+            <xsd:element name="description" type="xsd:string"/>
+            <xsd:element name="troubleshooting" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="code" type="xsd:int" use="required"/>
+        <xsd:attribute name="category" type="xsd:string" use="required"/>
+    </xsd:complexType>
 </xsd:schema>

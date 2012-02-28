@@ -12,5 +12,6 @@ public interface DemandResetService {
      * list with {@link #validDevices(Iterable)} first.  Any devices which cannot be reset will be
      * ignored.
      */
-    public void sendDemandReset(Iterable<? extends YukonPao> devices, LiteYukonUser user);
+    public void sendDemandReset(Iterable<? extends YukonPao> devices, DemandResetCallback callback,
+                                LiteYukonUser user);
 }

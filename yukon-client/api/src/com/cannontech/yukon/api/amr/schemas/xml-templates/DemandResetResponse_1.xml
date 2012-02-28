@@ -4,12 +4,28 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://yukon.cannontech.com/api ../DemandResetResponse.xsd" 
            version="1.0">
-    <resetsRequested initiated="3"/>
+    <resetsRequested initiated="3" numLookupErrors="1" numUnsupportedDevices="1" numErrors="4"/>
     <lookupError>
         <deviceGroup value="/Meters/InvalidGroup"/>
     </lookupError>
-    <error errorCode="unsupportedDevice">
+    <unsupportedDevices>
+        <paoId value="129533"/>
+    </unsupportedDevices>
+    <error code="85" category="Yukon System">
         <paoId value="213423"/>
+        <paoId value="132423"/>
+        <paoId value="1596223"/>
+        <description>
+            The targeted device is disabled or inhibited in the Yukon System.
+        </description>
+        <troubleshooting>
+            This is a Yukon system message, the device is flagged as disabled in the
+            Device Setup.
+        </troubleshooting>
+    </error>
+    <error code="10001" category="Network Manager">
         <paoId value="17423"/>
+        <description>No node in network manager.</description>
+        <troubleshooting>description of how to troubleshoot this error</troubleshooting>
     </error>
 </demandResetResponse>

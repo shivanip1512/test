@@ -8,26 +8,8 @@
     <xsd:complexType name="ResetsRequested">
         <xsd:attribute name="initiated" type="xsd:int" use="required"/>
         <xsd:attribute name="numLookupErrors" type="xsd:int" use="optional" default="0"/>
-        <xsd:attribute name="numDeviceErrors" type="xsd:int" use="optional" default="0"/>
-    </xsd:complexType>
-
-    <xsd:simpleType name="DemandResetErrorCode">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="unsupportedDevice">
-                <xsd:annotation>
-                    <xsd:documentation>
-                        The device does not support demand reset.
-                    </xsd:documentation>
-                </xsd:annotation>
-            </xsd:enumeration>
-        </xsd:restriction>
-    </xsd:simpleType>
-
-    <xsd:complexType name="DemandResetError">
-        <xsd:sequence maxOccurs="unbounded">
-            <xsd:element name="paoId" type="yukon:PaoId"/>
-        </xsd:sequence>
-        <xsd:attribute name="errorCode" type="yukon:DemandResetErrorCode" use="required"/>
+        <xsd:attribute name="numUnsupportedDevices" type="xsd:int" use="optional" default="0"/>
+        <xsd:attribute name="numErrors" type="xsd:int" use="optional" default="0"/>
     </xsd:complexType>
 
     <xsd:complexType name="DemandResetResponse">
@@ -44,10 +26,10 @@
                                 </xsd:documentation>
                             </xsd:annotation>
                         </xsd:element>
-                        <xsd:element name="error" type="yukon:DemandResetError"
-                            minOccurs="0" maxOccurs="unbounded"/>
+                        <xsd:element name="unsupportedDevices" type="yukon:PaoIdCollection" minOccurs="0"/>
+                        <xsd:element name="error" type="yukon:PaoError" minOccurs="0" maxOccurs="unbounded"/>
                     </xsd:sequence>
-                    <xsd:element name="generalFailure" type="yukon:Failure" minOccurs="0"/>
+                    <xsd:element name="generalFailure" type="yukon:Failure"/>
                 </xsd:choice>
             </xsd:extension>
         </xsd:complexContent>

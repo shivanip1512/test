@@ -117,9 +117,9 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     private final HardwareConfigType hardwareConfigType;
     
     //TODO Drop booleans and turn these into sets as well?
-    private boolean supportsSchedules;
-    private boolean supportsOptOut;
-    private boolean supportsManualAdjustment;
+    private final boolean supportsSchedules;
+    private final boolean supportsOptOut;
+    private final boolean supportsManualAdjustment;
 
     private HardwareType(int definitionId, 
                          InventoryCategory inventoryCategory,
