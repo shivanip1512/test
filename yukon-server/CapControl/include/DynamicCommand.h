@@ -5,11 +5,16 @@
 
 #include <map>
 
+#include "MsgCapControlCommand.h"
+
 //No namespace. RogueWave Pukes
 
-class DynamicCommand : public RWCollectable
+class DynamicCommand : public CapControlCommand
 {
     RWDECLARE_COLLECTABLE( DynamicCommand );
+
+    private:
+        typedef CapControlCommand Inherited;
 
     public:
        enum CommandType {
@@ -27,6 +32,7 @@ class DynamicCommand : public RWCollectable
        DynamicCommand();
 
        void restoreGuts(RWvistream& iStream);
+       void saveGuts(RWvostream & oStream);
 
        bool getParameter(Parameter parameter, long& value);
        bool getParameter(Parameter parameter, double& value);

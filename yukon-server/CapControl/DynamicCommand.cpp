@@ -8,13 +8,15 @@ using std::map;
 
 RWDEFINE_COLLECTABLE( DynamicCommand, DYNAMICCOMMAND_ID )
 
-DynamicCommand::DynamicCommand() : _commandType(DynamicCommand::UNDEFINED)
+DynamicCommand::DynamicCommand() : Inherited(), _commandType(DynamicCommand::UNDEFINED)
 {
 
 }
 
 void DynamicCommand::restoreGuts(RWvistream& iStream)
 {
+    Inherited::restoreGuts(iStream);
+
     int commandType = 0;
     iStream >> commandType;
     _commandType = (DynamicCommand::CommandType)commandType;

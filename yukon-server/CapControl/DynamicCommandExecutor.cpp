@@ -7,7 +7,8 @@
 #include "ccid.h"
 #include "cccapbank.h"
 #include "ccsubstationbusstore.h"
-
+#include "ExecutorFactory.h"
+#include "MsgCapControlServerResponse.h"
 
 extern ULONG _CC_DEBUG;
 
@@ -22,12 +23,13 @@ DynamicCommandExecutor::DynamicCommandExecutor(DynamicCommand* dynamicCommand) :
 void DynamicCommandExecutor::execute()
 {
     DynamicCommand::CommandType commandType = _dynamicCommand->getCommandType();
+    bool ret = false;
 
     switch (commandType)
     {
         case DynamicCommand::DELTA:
         {
-            executePointResponseDeltaUpdate();
+            ret = executePointResponseDeltaUpdate();
             break;
         }
         case DynamicCommand::UNDEFINED:
@@ -41,6 +43,24 @@ void DynamicCommandExecutor::execute()
             break;
         }
     }
+
+    long messageId = _dynamicCommand->getMessageId();
+    long commandResult;
+    string commandResultText;
+    if (ret == true)
+    {
+        commandResult = CtiCCServerResponse::RESULT_SUCCESS;
+        commandResultText = string("Command was successful.");
+    }
+    else
+    {
+        commandResult = CtiCCServerResponse::RESULT_COMMAND_REFUSED;
+        commandResultText = string("Command Failed.");
+    }
+
+    CtiCCServerResponse* msg = new CtiCCServerResponse(messageId, commandResult, commandResultText);
+    msg->setUser(_dynamicCommand->getUser());
+    CtiCCExecutorFactory::createExecutor(msg)->execute();
 
     return;
 }
