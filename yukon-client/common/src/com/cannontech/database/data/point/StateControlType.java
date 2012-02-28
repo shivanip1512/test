@@ -8,17 +8,17 @@ public enum StateControlType implements DatabaseRepresentationSource {
     CLOSE("control close"),
     ;
     
-    String controlName;
+    private final String controlCommand;
     
-    private StateControlType(String controlName) {
-        this.controlName = controlName;
+    private StateControlType(String controlCommand) {
+        this.controlCommand = controlCommand;
     }
     
-    public String getControlName() {
-        return controlName;
+    public String getControlCommand() {
+        return controlCommand;
     }
     
     public Object getDatabaseRepresentation() {
-        return getControlName();
+        return getControlCommand();
     }
 }

@@ -133,10 +133,6 @@
 	                    <xs:element name="init" type="xs:boolean" minOccurs="0" default="false" />
 	                    <xs:element name="name" type="xs:string" minOccurs="0" />
 	                    <xs:element name="description" type="xs:string" minOccurs="0" />
-						<xs:element name="controlType" type="controlTypeType" minOccurs="0" default="NONE" />
-						<xs:element name="controlOffset" type="xs:integer" minOccurs="0" default="1" />
-						<xs:element name="stateZeroControl" type="stateControlType" minOccurs="0" default="OPEN" />
-						<xs:element name="stateOneControl" type="stateControlType" minOccurs="0" default="CLOSE" />
 						<xs:element name="archive" type="archiveDefaults" minOccurs="0" />
 	                    <xs:choice>
 	                        <xs:sequence>
@@ -162,12 +158,34 @@
                                     </xs:complexType>
                                 </xs:element>
 	                        </xs:sequence>
-	                        <xs:element name="stategroup">
-	                            <xs:complexType>
-	                                <xs:attribute name="value" type="xs:string" use="required" />
-                                    <xs:attribute name="initialState" type="xs:string" />
-	                            </xs:complexType>
-	                        </xs:element>
+							<xs:sequence>
+								<xs:element name="controlType" minOccurs="0">
+									<xs:complexType>
+										<xs:attribute name="value" type="controlTypeType" use="required" />
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="controlOffset" minOccurs="0">
+									<xs:complexType>
+										<xs:attribute name="value" type="xs:integer" use="required" />
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="stateZeroControl" minOccurs="0">
+									<xs:complexType>
+										<xs:attribute name="value" type="stateControlType" use="required" />
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="stateOneControl" minOccurs="0">
+									<xs:complexType>
+										<xs:attribute name="value" type="stateControlType" use="required" />
+									</xs:complexType>
+								</xs:element>
+								<xs:element name="stategroup">
+									<xs:complexType>
+										<xs:attribute name="value" type="xs:string" use="required" />
+										<xs:attribute name="initialState" type="xs:string" />
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
 	                    </xs:choice>
                         <xs:element name="calculation" minOccurs="0">
                             <xs:complexType>

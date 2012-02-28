@@ -376,10 +376,10 @@ public static synchronized PointBase createStatusPoint( String pointName, Intege
 	pointStatus.setControlType(controlType.getControlName());
 	
 	if (stateZeroControl != null) {
-	    pointStatus.setStateZeroControl(stateZeroControl.getControlName());
+	    pointStatus.setStateZeroControl(stateZeroControl.getControlCommand());
 	}
 	if (stateOneControl != null) {
-	    pointStatus.setStateOneControl(stateOneControl.getControlName());
+	    pointStatus.setStateOneControl(stateOneControl.getControlCommand());
 	}
 	((StatusPoint) newPoint).setPointStatus(pointStatus);
 

@@ -135,58 +135,60 @@ public class PaoStore {
 		for (Point inheritedPoint : points) {
 			
 			PointIdentifier id = new PointIdentifier(PointType.getForString(inheritedPoint.getType()), inheritedPoint.getOffset());
-			Point exisitngPoint = null;
+			Point existingPoint = null;
 			
 			// Just Calculated Points
 			if (inheritedPoint.getCalculation() != null) {
-			    exisitngPoint = this.calcPoints.get(id);
+			    existingPoint = this.calcPoints.get(id);
 			    
-			    if (exisitngPoint == null) {
+			    if (existingPoint == null) {
 			        this.calcPoints.put(id, inheritedPoint);
 			        continue;
 			    }
 			} else {
 			    // All Points
-			    exisitngPoint = this.points.get(id);
+			    existingPoint = this.points.get(id);
 			    
-			    if (exisitngPoint == null) {
+			    if (existingPoint == null) {
 			        this.points.put(id, inheritedPoint);
 			        continue;
 			    }
 			}
 				
 			// point was marked as disabled by child, leave it be
-			if (!exisitngPoint.getEnabled()) {
+			if (!existingPoint.getEnabled()) {
 				continue;
 			} 
 				
 			// apply items from inherited point if they have not already been set by some child
-			if (exisitngPoint.getInit() == null) {
-				exisitngPoint.setInit(inheritedPoint.getInit());
+			if (existingPoint.getInit() == null) {
+				existingPoint.setInit(inheritedPoint.getInit());
 			}
-			if (exisitngPoint.getName() == null) {
-				exisitngPoint.setName(inheritedPoint.getName());
+			if (existingPoint.getName() == null) {
+				existingPoint.setName(inheritedPoint.getName());
 			}
-			if (exisitngPoint.getDescription() == null) {
-				exisitngPoint.setDescription(inheritedPoint.getDescription());
+			if (existingPoint.getDescription() == null) {
+				existingPoint.setDescription(inheritedPoint.getDescription());
 			}
 			
 			// existing point does not have state group set, and the inherited point has a multipier/uom to offer us...
 			// if we already have a state group then we are not interested in the inherited point's multiplier/uom.
-			if(exisitngPoint.getPointChoice().getStategroup() == null && inheritedPoint.getPointChoice().getPointChoiceSequence() != null) {
+			if(existingPoint.getPointChoice().getPointChoiceSequence2() == null && inheritedPoint.getPointChoice().getPointChoiceSequence() != null) {
 				
 				// existing point doesn't have any multiplier/uom, take all that the inherited point has to give us
-				if (exisitngPoint.getPointChoice().getPointChoiceSequence() == null) {
-					exisitngPoint.getPointChoice().setPointChoiceSequence(inheritedPoint.getPointChoice().getPointChoiceSequence());
+				if (existingPoint.getPointChoice().getPointChoiceSequence() == null) {
+					existingPoint.getPointChoice().setPointChoiceSequence(inheritedPoint.getPointChoice().getPointChoiceSequence());
 				}
 			}
 
 			// existing point does not have multiplier/uom set, and the inherited point has state group to offer us...
 			// if we already have a multiplier/uom then we are not interested in the state group that the inherited point has to offer.
-			if (exisitngPoint.getPointChoice().getPointChoiceSequence() == null && inheritedPoint.getPointChoice().getStategroup() != null) {
+			if (existingPoint.getPointChoice().getPointChoiceSequence() == null && inheritedPoint.getPointChoice().getPointChoiceSequence2() != null
+			        && inheritedPoint.getPointChoice().getPointChoiceSequence2().getStategroup() != null) {
 				
-				if (exisitngPoint.getPointChoice().getStategroup() == null) {
-					exisitngPoint.getPointChoice().setStategroup(inheritedPoint.getPointChoice().getStategroup());
+				if (existingPoint.getPointChoice().getPointChoiceSequence2() != null &&
+				        existingPoint.getPointChoice().getPointChoiceSequence2().getStategroup() == null) {
+					existingPoint.getPointChoice().getPointChoiceSequence2().setStategroup(inheritedPoint.getPointChoice().getPointChoiceSequence2().getStategroup());
 				}
 			}
 		}

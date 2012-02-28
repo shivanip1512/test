@@ -21,14 +21,18 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private double multiplier = 1.0;
     private int unitOfMeasure = PointUnits.UOMID_INVALID;
     private int stateGroupId = StateGroupUtils.STATEGROUP_ANALOG;
-    private int initialState = StateGroupUtils.DEFAULT_STATE;
     private int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
+    private PointArchiveInterval pointArchiveInterval = PointArchiveInterval.ZERO;
+    private PointArchiveType pointArchiveType = PointArchiveType.NONE;
+
+    // Only valid for Status points
+    private int initialState = StateGroupUtils.DEFAULT_STATE;
     private int controlOffset = 1;
     private ControlType controlType = ControlType.NONE;
     private StateControlType stateZeroControl = StateControlType.OPEN;
     private StateControlType stateOneControl = StateControlType.CLOSE;
-    private PointArchiveType pointArchiveType = PointArchiveType.NONE;
-    private PointArchiveInterval pointArchiveInterval = PointArchiveInterval.ZERO;
+
+    // Only valid for Calculated points
     private CalcPointInfo calcPointInfo = null;
     
     public PointTemplate(PointType type, int offset) {

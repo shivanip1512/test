@@ -892,16 +892,6 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         template.setMultiplier(multiplier);
         template.setUnitOfMeasure(unitOfMeasure);
         template.setDecimalPlaces(decimalPlaces);
-        template.setControlOffset(point.getControlOffset());
-
-        ControlType controlType = ControlType.valueOf(point.getControlType().toString());
-        template.setControlType(controlType);
-        
-        StateControlType stateZeroControl = StateControlType.valueOf(point.getStateZeroControl().toString());
-        template.setStateZeroControl(stateZeroControl);
-        
-        StateControlType stateOneControl = StateControlType.valueOf(point.getStateOneControl().toString());
-        template.setStateOneControl(stateOneControl);
         
         Archive archive = point.getArchive();
         if (archive != null) {
@@ -915,12 +905,31 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         String initialStateStr = null;
         boolean stateGroupSet = false;
         
-        if (point.getPointChoice().getStategroup() != null) {
-            stateGroupSet = true;
-            stateGroupName = point.getPointChoice().getStategroup().getValue();
-            initialStateStr = point.getPointChoice().getStategroup().getInitialState();
+        // if we have Status Point elements set
+        if (point.getPointChoice().getPointChoiceSequence2() != null) {
+            if (point.getPointChoice().getPointChoiceSequence2().getControlOffset() != null) {
+                template.setControlOffset(point.getPointChoice().getPointChoiceSequence2().getControlOffset().getValue());
+            }
+            if (point.getPointChoice().getPointChoiceSequence2().getControlType() != null) {
+                ControlType controlType = ControlType.valueOf(point.getPointChoice().getPointChoiceSequence2().getControlType().getValue().toString());
+                template.setControlType(controlType);
+            }
+            if (point.getPointChoice().getPointChoiceSequence2().getStateZeroControl() != null) {
+                StateControlType stateZeroControl = StateControlType.valueOf(point.getPointChoice().getPointChoiceSequence2().getStateZeroControl().getValue().toString());
+                template.setStateZeroControl(stateZeroControl);
+            }
+            if (point.getPointChoice().getPointChoiceSequence2().getStateOneControl() != null) {
+                StateControlType stateOneControl = StateControlType.valueOf(point.getPointChoice().getPointChoiceSequence2().getStateOneControl().getValue().toString());
+                template.setStateOneControl(stateOneControl);
+            }
+            if (point.getPointChoice().getPointChoiceSequence2().getStategroup() != null) {
+                stateGroupSet = true;
+                stateGroupName = point.getPointChoice().getPointChoiceSequence2().getStategroup().getValue();
+                initialStateStr = point.getPointChoice().getPointChoiceSequence2().getStategroup().getInitialState();
+            }
         }
         
+        // if we have the Analog State Group set
         if(point.getPointChoice().getPointChoiceSequence() != null &&
            point.getPointChoice().getPointChoiceSequence().getAnalogstategroup() != null) {
             stateGroupSet = true;
