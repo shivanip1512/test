@@ -17,11 +17,11 @@ import org.exolab.castor.xml.XMLFieldDescriptor;
 import org.exolab.castor.xml.validators.*;
 
 /**
- * Class PointChoiceDescriptor.
+ * Class StateZeroControlDescriptor.
  * 
  * @version $Revision$ $Date$
  */
-public class PointChoiceDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
+public class StateZeroControlDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -53,94 +53,55 @@ public class PointChoiceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      //- Constructors -/
     //----------------/
 
-    public PointChoiceDescriptor() 
+    public StateZeroControlDescriptor() 
      {
         super();
-        
-        //-- set grouping compositor
-        setCompositorAsChoice();
+        xmlName = "stateZeroControl";
         org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
         org.exolab.castor.mapping.FieldHandler             handler        = null;
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;
         //-- initialize attribute descriptors
         
+        //-- _value
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.types.StateControlType.class, "_value", "value", org.exolab.castor.xml.NodeType.Attribute);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                StateZeroControl target = (StateZeroControl) object;
+                return target.getValue();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    StateZeroControl target = (StateZeroControl) object;
+                    target.setValue( (com.cannontech.common.pao.definition.model.castor.types.StateControlType) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        };
+        handler = new org.exolab.castor.xml.handlers.EnumFieldHandler(com.cannontech.common.pao.definition.model.castor.types.StateControlType.class, handler);
+        desc.setImmutable(true);
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _value
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
         //-- initialize element descriptors
         
-        //-- _pointChoiceSequence
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.PointChoiceSequence.class, "_pointChoiceSequence", "-error-if-this-is-used-", org.exolab.castor.xml.NodeType.Element);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                PointChoice target = (PointChoice) object;
-                return target.getPointChoiceSequence();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    PointChoice target = (PointChoice) object;
-                    target.setPointChoiceSequence( (com.cannontech.common.pao.definition.model.castor.PointChoiceSequence) value);
-                }
-                catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new com.cannontech.common.pao.definition.model.castor.PointChoiceSequence();
-            }
-        };
-        desc.setHandler(handler);
-        desc.setContainer(true);
-        desc.setClassDescriptor(new com.cannontech.common.pao.definition.model.castor.PointChoiceSequenceDescriptor());
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _pointChoiceSequence
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-        }
-        desc.setValidator(fieldValidator);
-        //-- _pointChoiceSequence2
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.pao.definition.model.castor.PointChoiceSequence2.class, "_pointChoiceSequence2", "-error-if-this-is-used-", org.exolab.castor.xml.NodeType.Element);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                PointChoice target = (PointChoice) object;
-                return target.getPointChoiceSequence2();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    PointChoice target = (PointChoice) object;
-                    target.setPointChoiceSequence2( (com.cannontech.common.pao.definition.model.castor.PointChoiceSequence2) value);
-                }
-                catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new com.cannontech.common.pao.definition.model.castor.PointChoiceSequence2();
-            }
-        };
-        desc.setHandler(handler);
-        desc.setContainer(true);
-        desc.setClassDescriptor(new com.cannontech.common.pao.definition.model.castor.PointChoiceSequence2Descriptor());
-        desc.setRequired(true);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _pointChoiceSequence2
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        fieldValidator.setMinOccurs(1);
-        { //-- local scope
-        }
-        desc.setValidator(fieldValidator);
-    } //-- com.cannontech.common.pao.definition.model.castor.PointChoiceDescriptor()
+    } //-- com.cannontech.common.pao.definition.model.castor.StateZeroControlDescriptor()
 
 
       //-----------/
@@ -192,7 +153,7 @@ public class PointChoiceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      */
     public java.lang.Class getJavaClass()
     {
-        return com.cannontech.common.pao.definition.model.castor.PointChoice.class;
+        return com.cannontech.common.pao.definition.model.castor.StateZeroControl.class;
     } //-- java.lang.Class getJavaClass() 
 
     /**

@@ -22,11 +22,11 @@ import org.exolab.castor.xml.ValidationException;
 import org.xml.sax.ContentHandler;
 
 /**
- * Class PointChoice.
+ * Class ControlOffset.
  * 
  * @version $Revision$ $Date$
  */
-public class PointChoice implements java.io.Serializable {
+public class ControlOffset implements java.io.Serializable {
 
 
       //--------------------------/
@@ -34,24 +34,19 @@ public class PointChoice implements java.io.Serializable {
     //--------------------------/
 
     /**
-     * Field _pointChoiceSequence
+     * Field _value
      */
-    private com.cannontech.common.pao.definition.model.castor.PointChoiceSequence _pointChoiceSequence;
-
-    /**
-     * Field _pointChoiceSequence2
-     */
-    private com.cannontech.common.pao.definition.model.castor.PointChoiceSequence2 _pointChoiceSequence2;
+    private java.lang.Integer _value;
 
 
       //----------------/
      //- Constructors -/
     //----------------/
 
-    public PointChoice() 
+    public ControlOffset() 
      {
         super();
-    } //-- com.cannontech.common.pao.definition.model.castor.PointChoice()
+    } //-- com.cannontech.common.pao.definition.model.castor.ControlOffset()
 
 
       //-----------/
@@ -59,26 +54,15 @@ public class PointChoice implements java.io.Serializable {
     //-----------/
 
     /**
-     * Returns the value of field 'pointChoiceSequence'.
+     * Returns the value of field 'value'.
      * 
-     * @return PointChoiceSequence
-     * @return the value of field 'pointChoiceSequence'.
+     * @return Integer
+     * @return the value of field 'value'.
      */
-    public com.cannontech.common.pao.definition.model.castor.PointChoiceSequence getPointChoiceSequence()
+    public java.lang.Integer getValue()
     {
-        return this._pointChoiceSequence;
-    } //-- com.cannontech.common.pao.definition.model.castor.PointChoiceSequence getPointChoiceSequence() 
-
-    /**
-     * Returns the value of field 'pointChoiceSequence2'.
-     * 
-     * @return PointChoiceSequence2
-     * @return the value of field 'pointChoiceSequence2'.
-     */
-    public com.cannontech.common.pao.definition.model.castor.PointChoiceSequence2 getPointChoiceSequence2()
-    {
-        return this._pointChoiceSequence2;
-    } //-- com.cannontech.common.pao.definition.model.castor.PointChoiceSequence2 getPointChoiceSequence2() 
+        return this._value;
+    } //-- java.lang.Integer getValue() 
 
     /**
      * Method isValid
@@ -127,26 +111,14 @@ public class PointChoice implements java.io.Serializable {
     } //-- void marshal(org.xml.sax.ContentHandler) 
 
     /**
-     * Sets the value of field 'pointChoiceSequence'.
+     * Sets the value of field 'value'.
      * 
-     * @param pointChoiceSequence the value of field
-     * 'pointChoiceSequence'.
+     * @param value the value of field 'value'.
      */
-    public void setPointChoiceSequence(com.cannontech.common.pao.definition.model.castor.PointChoiceSequence pointChoiceSequence)
+    public void setValue(java.lang.Integer value)
     {
-        this._pointChoiceSequence = pointChoiceSequence;
-    } //-- void setPointChoiceSequence(com.cannontech.common.pao.definition.model.castor.PointChoiceSequence) 
-
-    /**
-     * Sets the value of field 'pointChoiceSequence2'.
-     * 
-     * @param pointChoiceSequence2 the value of field
-     * 'pointChoiceSequence2'.
-     */
-    public void setPointChoiceSequence2(com.cannontech.common.pao.definition.model.castor.PointChoiceSequence2 pointChoiceSequence2)
-    {
-        this._pointChoiceSequence2 = pointChoiceSequence2;
-    } //-- void setPointChoiceSequence2(com.cannontech.common.pao.definition.model.castor.PointChoiceSequence2) 
+        this._value = value;
+    } //-- void setValue(java.lang.Integer) 
 
     /**
      * Method unmarshal
@@ -159,7 +131,7 @@ public class PointChoice implements java.io.Serializable {
     public static java.lang.Object unmarshal(java.io.Reader reader)
         throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
     {
-        return (com.cannontech.common.pao.definition.model.castor.PointChoice) Unmarshaller.unmarshal(com.cannontech.common.pao.definition.model.castor.PointChoice.class, reader);
+        return (com.cannontech.common.pao.definition.model.castor.ControlOffset) Unmarshaller.unmarshal(com.cannontech.common.pao.definition.model.castor.ControlOffset.class, reader);
     } //-- java.lang.Object unmarshal(java.io.Reader) 
 
     /**
