@@ -86,6 +86,8 @@ public class DigiControlMessageHandler implements SepMessageHandler {
             ControlHistoryMessage chMessage = buildControlHistoryMessage(eventId, message, now);
             dispatchConnection.queue(chMessage);
 
+        } catch (DigiNotConfiguredException e) {
+            log.error("Error in ZigBeeWebService: " + e.getMessage());
         } catch (DigiWebServiceException e) {
             log.error("Error in ZigBeeWebService: " + e.getMessage());
         }
@@ -105,6 +107,8 @@ public class DigiControlMessageHandler implements SepMessageHandler {
             ControlHistoryMessage histMsg = buildControlHistoryMessageForRestore(message, new Instant());        
             dispatchConnection.queue(histMsg);
             
+        } catch (DigiNotConfiguredException e) {
+            log.error("Error in ZigBeeWebService: " + e.getMessage());
         } catch (DigiWebServiceException e) {
             log.error("Error in ZigBeeWebService: " + e.getMessage());
         }
@@ -190,6 +194,8 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     public void handleSendTextMessage(ZigbeeTextMessage zigbeeTextMessage) {
         try {
             zigbeeWebService.sendTextMessage(zigbeeTextMessage);
+        } catch (DigiNotConfiguredException e) {
+            log.warn("caut exception in handlTextMessage", e);
         } catch (DigiWebServiceException e) {
             log.warn("caught exception in handleTextMessage", e);
         } catch (ZigbeeClusterLibraryException e) {

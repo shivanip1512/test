@@ -121,14 +121,11 @@ public class ZigBeeHardwareController {
             }
             
             zigbeeEventLogService.zigbeeDeviceRefreshed(pao.getPaoName());
-            
-            try {
-                zigbeeStateUpdaterService.activateSmartPolling(device);
-            } catch (DigiNotConfiguredException e) {
-                log.error("Digi not configured", e);
-            }
+            zigbeeStateUpdaterService.activateSmartPolling(device);
 
             returnJson(resp, ping.isSuccess(), accessor.getMessage(ping.getPingResultResolvable()));
+        } catch (DigiNotConfiguredException e) {
+            commandFailed(resp, accessor, e.getMessage());
         } catch (DigiWebServiceException e) {
             commandFailed(resp, accessor, e.getMessage());
         }
@@ -195,13 +192,12 @@ public class ZigBeeHardwareController {
             zigbeeWebService.installEndPoint(gatewayId, deviceId);
 
             ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
-            try {
-                zigbeeStateUpdaterService.activateSmartPolling(device);
-            } catch (DigiNotConfiguredException e) {
-                log.error("Digi not configured", e);
-            }
+            zigbeeStateUpdaterService.activateSmartPolling(device);
 
             zigbeeEventLogService.zigbeeDeviceCommissioned(device.getName());
+        } catch (DigiNotConfiguredException e) {
+            messageFailed = true;
+            errorMessage = e.getMessage();
         } catch (DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
@@ -251,13 +247,12 @@ public class ZigBeeHardwareController {
         try {
             zigbeeWebService.installGateway(gatewayId);
             ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
-            try {
-                zigbeeStateUpdaterService.activateSmartPolling(gateway);
-            } catch (DigiNotConfiguredException e) {
-                log.error("Digi not configured", e);
-            }
+            zigbeeStateUpdaterService.activateSmartPolling(gateway);
 
             zigbeeEventLogService.zigbeeDeviceCommissioned(gateway.getName());
+        } catch (DigiNotConfiguredException e) {
+            messageFailed = true;
+            errorMessage = e.getMessage();
         } catch (ZigbeeCommissionException e) {
             messageFailed = true;
             errorResolvable = e.getDescription();
@@ -288,6 +283,9 @@ public class ZigBeeHardwareController {
             
             ZigbeeDevice device = zigbeeDeviceDao.getZigbeeDevice(deviceId);
             zigbeeEventLogService.zigbeeDeviceDecommissioned(device.getName());
+        } catch (DigiNotConfiguredException e) {
+            messageFailed = true;
+            errorMessage = e.getMessage();
         } catch (DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
@@ -308,6 +306,9 @@ public class ZigBeeHardwareController {
             ZigbeeDevice gateway = gatewayDeviceDao.getZigbeeGateway(gatewayId);
             
             zigbeeEventLogService.zigbeeDeviceDecommissioned(gateway.getName());
+        } catch (DigiNotConfiguredException e) {
+            messageFailed = true;
+            errorMessage = e.getMessage();
         } catch (DigiWebServiceException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
@@ -391,6 +392,9 @@ public class ZigBeeHardwareController {
             zigbeeWebService.sendTextMessage(textMessage);
             
             zigbeeEventLogService.zigbeeSentText(pao.getPaoName(),textMessage.getMessage());
+        } catch (DigiNotConfiguredException e) {
+            messageFailed = true;
+            errorMessage = e.getMessage();
         } catch (ZigbeeClusterLibraryException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
@@ -437,6 +441,8 @@ public class ZigBeeHardwareController {
         
         try {
             zigbeeWebService.uninstallEndPoint(gatewayId, deviceId);
+        } catch (DigiNotConfiguredException e) {
+            log.warn("Problem while sending uninstall command to the device. Device will still be unassigned from the gateway.",e);
         } catch (DigiWebServiceException e) {
             log.warn("Problem while sending uninstall command to the device. Device will still be unassigned from the gateway.");
         }

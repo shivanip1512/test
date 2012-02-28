@@ -23,6 +23,7 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
@@ -112,12 +113,16 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
 
     private void decommissionGatewayAndUnassignDevices(int gatewayId) {
         List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gatewayId);
-        for (ZigbeeDevice device : devices) {
-            zigbeeWebService.uninstallEndPoint(gatewayId, device.getZigbeeDeviceId());
-        }
+        try {
+            for (ZigbeeDevice device : devices) {
+                zigbeeWebService.uninstallEndPoint(gatewayId, device.getZigbeeDeviceId());
+            }
 
-        //Decommission from iDigi
-        zigbeeWebService.removeGateway(gatewayId);
+            //Decommission from iDigi
+            zigbeeWebService.removeGateway(gatewayId);
+        } catch (DigiNotConfiguredException e) {
+            log.warn("Digi not configured", e);
+        }
     }
     
     @Override

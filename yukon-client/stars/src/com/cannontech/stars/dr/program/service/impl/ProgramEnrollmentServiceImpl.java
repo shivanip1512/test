@@ -77,6 +77,7 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.model.DRLCClusterAttribute;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
@@ -253,8 +254,12 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         if (utilEnrollGroup == 0) {
             log.warn("Not sending Utility Enrollment Group to device because it is '0'. ");
         } else {
-            attributes.put(DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP, utilEnrollGroup);    
-            zigbeeWebService.sendLoadGroupAddressing(deviceId, attributes);
+            attributes.put(DRLCClusterAttribute.UTILITY_ENROLLMENT_GROUP, utilEnrollGroup);
+            try {
+                zigbeeWebService.sendLoadGroupAddressing(deviceId, attributes);
+            } catch (DigiNotConfiguredException e) {
+                log.warn("Digi not configured",e);
+            }
         }
     }
     

@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.TextMessageElementRequestMapper;
 import com.cannontech.yukon.api.stars.model.TextMessage;
@@ -80,6 +81,10 @@ public class SendTextMessageEndpoint {
             for (ZigbeeTextMessage zigbeeTextMessage : zigbeeTextMessages) {
                 zigbeeWebService.sendTextMessage(zigbeeTextMessage);
             }
+        } catch (DigiNotConfiguredException e) {
+            Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "DigiNotConfigured", "Digi is not configured.");
+            resp.addContent(fe);
+            log.error(e.getMessage(), e);
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
             resp.addContent(fe);

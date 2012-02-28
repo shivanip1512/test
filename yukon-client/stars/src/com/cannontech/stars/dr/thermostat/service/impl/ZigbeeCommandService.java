@@ -27,6 +27,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.AbstractCommandExecutionService;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
+import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.model.ZigbeeEndpoint;
@@ -82,6 +83,8 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
             message.setInventoryIds(Collections.singleton(stat.getId()));
             
             zigbeeWebService.sendManualAdjustment(message);
+        } catch (DigiNotConfiguredException e) {
+            throw new CommandCompletionException(e.getMessage(), e);
         } catch (ZigbeeClusterLibraryException e) {
             throw new CommandCompletionException(e.getMessage(), e);
         } catch (DigiWebServiceException e) {
@@ -120,6 +123,8 @@ public class ZigbeeCommandService extends AbstractCommandExecutionService {
                 
                 saveAndLogUpdateEvent(account, ats, timeOfWeek, stat, user);
                 
+            } catch (DigiNotConfiguredException e) {
+                return ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_ERROR;
             } catch (ZigbeeClusterLibraryException e) {
                 return ThermostatScheduleUpdateResult.UPDATE_SCHEDULE_ERROR;
             } catch (DigiWebServiceException e) {

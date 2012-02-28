@@ -566,23 +566,24 @@ public class DigiResponseHandler {
         zigbeeServiceHelper.sendPointStatusUpdate(gateway,
                                                   BuiltInAttribute.ZIGBEE_LINK_STATUS,
                                                   Commissioned.CONNECTED);
-
-        if (oldState == Commissioned.DISCONNECTED) {
-            //Do this only if we were disconnected before. If no change, do not call.
-            List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gateway.getZigbeeDeviceId());
-            for (ZigbeeDevice device : devices) {
-                pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
-                Commissioned devOldState = PointStateHelper.decodeRawState(Commissioned.class, pvh.getValue());
-                
-                if (devOldState != Commissioned.DECOMMISSIONED) {
-                    //Poll is commissioned
-                    try {
-                        zigbeeStateUpdaterService.activateSmartPolling(device);
-                    } catch (DigiNotConfiguredException e) {
-                        log.error("Digi not configured", e);
+        try {
+            if (oldState == Commissioned.DISCONNECTED) {
+                //Do this only if we were disconnected before. If no change, do not call.
+                List<ZigbeeDevice> devices = gatewayDeviceDao.getAssignedZigbeeDevices(gateway.getZigbeeDeviceId());
+                for (ZigbeeDevice device : devices) {
+                    pvh = attributeDynamicDataSource.getPointValue(device, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+                    Commissioned devOldState = PointStateHelper.decodeRawState(Commissioned.class, pvh.getValue());
+                    
+                    if (devOldState != Commissioned.DECOMMISSIONED) {
+                        //Poll is commissioned
+                        
+                            zigbeeStateUpdaterService.activateSmartPolling(device);
+                        
                     }
                 }
             }
+        } catch (DigiNotConfiguredException e) {
+            log.warn("Digi not configured", e);
         }
     }
     
