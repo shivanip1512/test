@@ -28,6 +28,24 @@ private:
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
 
+    struct IedResetCommand
+    {
+        unsigned char function;
+        std::vector<unsigned char> payload;
+
+        //  We can remove this when we have C++11's initializer list syntax
+        IedResetCommand( unsigned char function_, std::vector<unsigned char> payload_ ) :
+            function(function_),
+            payload(payload_)
+        {
+        }
+    };
+
+    typedef map<int, IedResetCommand> IedTypesToCommands;
+
+    static const IedTypesToCommands ResetCommandsByIedType;
+    static IedTypesToCommands initIedResetCommands();
+
     enum
     {
         FuncRead_DemandPos       = 0x92,
@@ -43,7 +61,7 @@ private:
         MCT360_LGS4ResetID   =    3,
         MCT360_GEKVResetID   =    4,
 
-            //  these addresses are only valid for the 360 and 370
+        //  these addresses are only valid for the 360 and 370
         MCT360_AlphaResetPos = 0xb0,
         MCT360_LGS4ResetPos  = 0xc0,
         MCT360_GEKVResetPos  = 0xc1,

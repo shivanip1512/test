@@ -38,6 +38,8 @@ const Mct470Device::ConfigPartsList  Mct470Device::_config_parts_470 = Mct470Dev
 const Mct470Device::ValueMapping Mct470Device::_memoryMap = Mct470Device::initMemoryMap();
 const Mct470Device::FunctionReadValueMappings Mct470Device::_functionReadValueMaps = Mct470Device::initFunctionReadValueMaps();
 
+const Mct470Device::IedTypesToCommands Mct470Device::ResetCommandsByIedType = Mct470Device::initIedResetCommands();
+
 const Mct470Device::error_map Mct470Device::_error_info_old_lp    = Mct470Device::initErrorInfoOldLP();
 const Mct470Device::error_map Mct470Device::_error_info_lgs4      = Mct470Device::initErrorInfoLGS4();
 const Mct470Device::error_map Mct470Device::_error_info_alphaa3   = Mct470Device::initErrorInfoAlphaA3();
@@ -2633,6 +2635,40 @@ boost::optional<Mct470Device::IED_Types> Mct470Device::tryDetermineIedTypeFromDe
 }
 
 
+Mct470Device::IedTypesToCommands Mct470Device::initIedResetCommands()
+{
+    return boost::assign::map_list_of
+        (IED_Type_Alpha_PP, IedResetCommand
+            (FuncWrite_IEDCommand, list_of
+                //  SPID, meter type, meter num, function Alpha reset
+                (0xff)(IED_Type_Alpha_PP)(0)(1)))
+        (IED_Type_LG_S4, IedResetCommand
+            (FuncWrite_IEDCommand, list_of
+                //  SPID, meter type, meter num, function S4 reset
+                (0xff)(IED_Type_LG_S4)   (0)(0x2b)))
+        (IED_Type_Alpha_A3, IedResetCommand
+            (FuncWrite_IEDCommandWithData, list_of
+                //  SPID, meter type, meter num, command, data length, demand reset bit set
+                (0xff)(IED_Type_Alpha_A3)(0)(9)(1)(1)))
+        (IED_Type_GE_kV2c, IedResetCommand
+            (FuncWrite_IEDCommandWithData, list_of
+                //  SPID, meter type, meter num, command, data length, demand reset bit set
+                (0xff)(IED_Type_GE_kV2c) (0)(9)(1)(1)))
+        (IED_Type_GE_kV2, IedResetCommand
+            (FuncWrite_IEDCommandWithData, list_of
+                //  SPID, meter type, meter num, command, data length, demand reset bit set
+                (0xff)(IED_Type_GE_kV2)  (0)(9)(1)(1)))
+        (IED_Type_GE_kV, IedResetCommand
+            (FuncWrite_IEDCommandWithData, list_of
+                //  SPID, meter type, meter num, command, data length, demand reset bit set
+                (0xff)(IED_Type_GE_kV)   (0)(9)(1)(1)))
+        (IED_Type_Sentinel, IedResetCommand
+            (FuncWrite_IEDCommandWithData, list_of
+                //  SPID, meter type, meter num, command, data length, demand reset bit set
+                (0xff)(IED_Type_Sentinel)(0)(9)(1)(1)));
+}
+
+
 INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
                                   CtiCommandParser &parse,
                                   OUTMESS *&OutMessage,
@@ -2743,50 +2779,6 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
                     }
                 }
             }
-
-            struct IedResetCommand
-            {
-                unsigned char function;
-                vector<unsigned char> payload;
-
-                IedResetCommand( unsigned char function_, vector<unsigned char> payload_ ) :
-                    function(function_),
-                    payload(payload_)
-                {
-                }
-            };
-
-            typedef map<int, IedResetCommand> IedTypesToCommands;
-
-            static const IedTypesToCommands ResetCommandsByIedType = boost::assign::map_list_of
-                (IED_Type_Alpha_PP, IedResetCommand
-                    (FuncWrite_IEDCommand, list_of
-                        //  SPID, meter type, meter num, function Alpha reset
-                        (0xff)(IED_Type_Alpha_PP)(0)(1)))
-                (IED_Type_LG_S4, IedResetCommand
-                    (FuncWrite_IEDCommand, list_of
-                        //  SPID, meter type, meter num, function S4 reset
-                        (0xff)(IED_Type_LG_S4)   (0)(0x2b)))
-                (IED_Type_Alpha_A3, IedResetCommand
-                    (FuncWrite_IEDCommandWithData, list_of
-                        //  SPID, meter type, meter num, command, data length, demand reset bit set
-                        (0xff)(IED_Type_Alpha_A3)(0)(9)(1)(1)))
-                (IED_Type_GE_kV2c, IedResetCommand
-                    (FuncWrite_IEDCommandWithData, list_of
-                        //  SPID, meter type, meter num, command, data length, demand reset bit set
-                        (0xff)(IED_Type_GE_kV2c) (0)(9)(1)(1)))
-                (IED_Type_GE_kV2, IedResetCommand
-                    (FuncWrite_IEDCommandWithData, list_of
-                        //  SPID, meter type, meter num, command, data length, demand reset bit set
-                        (0xff)(IED_Type_GE_kV2)  (0)(9)(1)(1)))
-                (IED_Type_GE_kV, IedResetCommand
-                    (FuncWrite_IEDCommandWithData, list_of
-                        //  SPID, meter type, meter num, command, data length, demand reset bit set
-                        (0xff)(IED_Type_GE_kV)   (0)(9)(1)(1)))
-                (IED_Type_Sentinel, IedResetCommand
-                    (FuncWrite_IEDCommandWithData, list_of
-                        //  SPID, meter type, meter num, command, data length, demand reset bit set
-                        (0xff)(IED_Type_Sentinel)(0)(9)(1)(1)));
 
             IedTypesToCommands::const_iterator itr = ResetCommandsByIedType.find(*iedType);
 

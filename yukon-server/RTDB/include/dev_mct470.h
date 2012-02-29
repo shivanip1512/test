@@ -27,6 +27,23 @@ private:
     static ConfigPartsList  initConfigParts430();
     static ConfigPartsList  initConfigParts470();
 
+    struct IedResetCommand
+    {
+        unsigned char function;
+        std::vector<unsigned char> payload;
+
+        IedResetCommand( unsigned char function_, std::vector<unsigned char> payload_ ) :
+            function(function_),
+            payload(payload_)
+        {
+        }
+    };
+
+    typedef map<int, IedResetCommand> IedTypesToCommands;
+
+    static const IedTypesToCommands ResetCommandsByIedType;
+    static       IedTypesToCommands initIedResetCommands();
+
     CtiTableDeviceMCTIEDPort _iedPort;
     CtiTime                  _iedTime;
 

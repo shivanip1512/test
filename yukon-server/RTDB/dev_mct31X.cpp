@@ -28,6 +28,8 @@ static const double MCT360_GEKV_KWHMultiplier = 2000000.0;
 
 const Mct31xDevice::CommandSet Mct31xDevice::_commandStore = Mct31xDevice::initCommandStore();
 
+const Mct31xDevice::IedTypesToCommands Mct31xDevice::ResetCommandsByIedType = Mct31xDevice::initIedResetCommands();
+
 Mct31xDevice::Mct31xDevice( )
 {
     for( int i = 0; i < ChannelCount; i++ )
@@ -128,8 +130,6 @@ bool Mct31xDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 
     if( getOperationFromStore(_commandStore, cmd, bst) )
     {
-
-
         return true;
     }
 
@@ -399,6 +399,29 @@ bool Mct31xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 }
 
 
+Mct31xDevice::IedTypesToCommands Mct31xDevice::initIedResetCommands()
+{
+    return boost::assign::map_list_of
+        (CtiTableDeviceMCTIEDPort::AlphaPowerPlus, IedResetCommand
+            (MCT360_AlphaResetPos, list_of<unsigned char>
+                (60)    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                 (1)))  //  Demand Reset function code for the Alpha
+        (CtiTableDeviceMCTIEDPort::LandisGyrS4, IedResetCommand
+            (MCT360_LGS4ResetPos, list_of<unsigned char>
+                (MCT360_LGS4ResetID)
+                (60)    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                (43)))  //  Demand Reset function code for the LG S4
+        (CtiTableDeviceMCTIEDPort::GeneralElectricKV, IedResetCommand
+            (MCT360_GEKVResetPos, list_of<unsigned char>
+                (MCT360_GEKVResetID)
+                (60)    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
+                 (0)    //  sequence, standard proc, and uppoer bits of proc are 0
+                 (9)    //  procedure 9
+                 (1)    //  parameter length 1
+                 (1))); //  demand reset bit set
+}
+
+
 INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     if( parse.isKeyValid("ied") && parse.isKeyValid("reset")
@@ -408,39 +431,6 @@ INT Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
         if( getOperation(function, OutMessage->Buffer.BSt) )
         {
-            struct IedResetCommand
-            {
-                unsigned char function;
-                vector<unsigned char> payload;
-
-                IedResetCommand( unsigned char function_, vector<unsigned char> payload_ ) :
-                    function(function_),
-                    payload(payload_)
-                {
-                }
-            };
-
-            typedef map<int, IedResetCommand> IedTypesToCommands;
-
-            static const IedTypesToCommands ResetCommandsByIedType = boost::assign::map_list_of
-                (CtiTableDeviceMCTIEDPort::AlphaPowerPlus, IedResetCommand
-                    (MCT360_AlphaResetPos, list_of<unsigned char>
-                        (60)    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
-                         (1)))  //  Demand Reset function code for the Alpha
-                (CtiTableDeviceMCTIEDPort::LandisGyrS4, IedResetCommand
-                    (MCT360_LGS4ResetPos, list_of<unsigned char>
-                        (MCT360_LGS4ResetID)
-                        (60)    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
-                        (43)))  //  Demand Reset function code for the LG S4
-                (CtiTableDeviceMCTIEDPort::GeneralElectricKV, IedResetCommand
-                    (MCT360_GEKVResetPos, list_of<unsigned char>
-                        (MCT360_GEKVResetID)
-                        (60)    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
-                         (0)    //  sequence, standard proc, and uppoer bits of proc are 0
-                         (9)    //  procedure 9
-                         (1)    //  parameter length 1
-                         (1))); //  demand reset bit set
-
             const int iedtype = getIEDPort().getIEDType();
 
             IedTypesToCommands::const_iterator itr = ResetCommandsByIedType.find(iedtype);
