@@ -68,7 +68,6 @@ test_cmd_lcr3102_DemandResponseSummary.obj \
 test_cmd_lcr3102_hourlyDataLog.obj \
 test_dev_cbc8020.obj \
 test_dev_grp.obj \
-test_mgr_point.obj \
 test_dev_ccu721.obj \
 test_dev_mct.obj \
 test_dev_mct2xx.obj \
@@ -84,12 +83,13 @@ test_dev_mct410.obj \
 test_dev_mct420.obj \
 test_dev_mct470.obj \
 test_dev_rtm.obj \
-test_dev_addr_global.obj \
+test_dev_rds.obj \
+test_dev_single.obj \
 test_lcr3102.obj \
+test_mgr_point.obj \
 test_rte_ccu.obj \
 test_slctdev.obj \
 test_rtdb_sql.obj \
-test_dev_rds.obj \
 test_encryption_cbcrbt.obj \
 test_encryption_cmac.obj \
 test_encryption_oneway.obj \
