@@ -673,9 +673,8 @@ void CtiDeviceRTC::addVerificationForOutMessage(CtiOutMessage &OutMessage)
     }
     else if( OutMessage.Buffer.SASt._groupType == SADIG )
     {
-        char codestr[8];
+        char codestr[8] = {};  //  default initialize all elements to 0
         strncpy(codestr, OutMessage.Buffer.SASt._codeSimple, 7);
-        codestr[7] = 0;
         cmdStr = CtiProtocolSA3rdParty::asString(OutMessage.Buffer.SASt);
         if( gConfigParms.getValueAsULong("DEBUGLEVEL_DEVICE", 0) == TYPE_RTC )
         {
@@ -686,9 +685,8 @@ void CtiDeviceRTC::addVerificationForOutMessage(CtiOutMessage &OutMessage)
     }
     else
     {
-        char codestr[7];
+        char codestr[7] = {};  //  default initialize all elements to 0
         strncpy(codestr, OutMessage.Buffer.SASt._codeSimple, 6);
-        codestr[6] = 0;
         string golay_codestr;
         golay_codestr  = codestr;
         golay_codestr += "-";

@@ -79,7 +79,7 @@ const string CtiProtocolSA305::_strategyStr[64] =
 
 CtiProtocolSA305::CtiProtocolSA305() :
 _padBits(0),
-_startBits(4),
+_startBits(SA305StartBits),
 _transmitterType(0),
 _transmitterAddress(0),
 _messageReady(false),
@@ -107,7 +107,7 @@ _percentageOff(0)
 
 CtiProtocolSA305::CtiProtocolSA305(const BYTE *bytestr, UINT bytelen) :
 _padBits(0),
-_startBits(4),
+_startBits(SA305StartBits),
 _transmitterType(0),
 _transmitterAddress(0),
 _messageReady(false),
@@ -316,15 +316,15 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
         }
         else if(_period <= 30.0)
         {
-            if(_startBits == 5 && _percentageOff <= 5.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            if(_startBits == 5 && _percentageOff <= 5.0)     // 326 Adaptive Algorithm has some additional control strategies.
             {
                 strategy = 54; // 1.5/30
             }
-            else if(_startBits == 5 && _percentageOff <= 10.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            else if(_startBits == 5 && _percentageOff <= 10.0)     // 326 Adaptive Algorithm has some additional control strategies.
             {
                 strategy = 55; // 3/30
             }
-            else if(_startBits == 5 && _percentageOff <= 15.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            else if(_startBits == 5 && _percentageOff <= 15.0)     // 326 Adaptive Algorithm has some additional control strategies.
             {
                 strategy = 56; // 4.5/30
             }
@@ -332,7 +332,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
             {
                 strategy = 4; // 000100b 5/30
             }
-            else if(_startBits == 5 && _percentageOff <= 20.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            else if(_startBits == 5 && _percentageOff <= 20.0)     // 326 Adaptive Algorithm has some additional control strategies.
             {
                 strategy = 57; // 6/30
             }
@@ -340,7 +340,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
             {
                 strategy = 5; // 000101b 7.5/30
             }
-            else if(_startBits == 5 && _percentageOff <= 30.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            else if(_startBits == 5 && _percentageOff <= 30.0)     // 326 Adaptive Algorithm has some additional control strategies.
             {
                 strategy = 58; // 9/30
             }
@@ -348,7 +348,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
             {
                 strategy = 6; // 000110b 10/30
             }
-            else if(_startBits == 5 && _percentageOff <= 35.0)     // 305 Adaptive Algorithm has some additional control strategies.
+            else if(_startBits == 5 && _percentageOff <= 35.0)     // 326 Adaptive Algorithm has some additional control strategies.
             {
                 strategy = 59; // 10.5/30
             }
@@ -525,9 +525,9 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
     if(_strategy <= 0) _strategy = parse.getiValue("sa_strategy", 0);
 
     if( findStringIgnoreCase(parse.getCommandStr()," adapt") ||
-        findStringIgnoreCase(parse.getCommandStr()," truecycle") )   // Adaptive algorithm!
+        findStringIgnoreCase(parse.getCommandStr()," truecycle") )   // SA/CV326 adaptive algorithm!
     {
-        setStartBits(5);
+        setStartBits(CV326StartBits);  //  indicate SA/CV326 instead of SA305
     }
     // Now process the message components.
     resetMessage();
@@ -609,7 +609,7 @@ void CtiProtocolSA305::addressMessage(int command_type, int command_description)
         addBits(_padBits, 2);            // The RTC seems to want this!
     }
 
-    addBits(_startBits, 3);          // This appears to be the start bits.
+    addBits(_startBits, 3);          // Add the start bits.  SA305 is 100b, SA/CV326 is 101b.
     addBits(_flags, 6);
 
     if(_flags & AddressTypeGroupFlag)
@@ -1149,6 +1149,7 @@ void CtiProtocolSA305::setTransmitterAddress( int val )
 
 void CtiProtocolSA305::setStartBits(int val)
 {
+    //  SA305 is 100b, SA/CV326 is 101b.
     _startBits = val & 0x00000007;  // Three bits
 }
 

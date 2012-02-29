@@ -22,14 +22,17 @@ protected:
         CommandDescription_DIMode = 0x01,
         CommandDescription_DLCMode = 0x00,
         CommandDescription_29Bit = 0x01,
-        CommandDescription_13Bit = 0x00
+        CommandDescription_13Bit = 0x00,
+
+        SA305StartBits = 0x04,
+        CV326StartBits = 0x05,
     };
 
 
 private:
 
     int _padBits;            // For RTC trx this is 00b.
-    int _startBits;         // May be 100 = "4" or 101 = "5" For adaptive algorithm.
+    int _startBits;         // May be 100 = "4" for SA305 or 101 = "5" for SA326 adaptive algorithm.
     bool _messageReady;
 
     int _serial;            // 22-bit
