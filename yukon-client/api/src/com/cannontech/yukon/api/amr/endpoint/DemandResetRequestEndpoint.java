@@ -16,7 +16,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
-import com.cannontech.amr.demandreset.service.DemandResetService;
+import com.cannontech.amr.demandreset.service.PlcDemandResetService;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.MultipleDeviceResultHolder;
@@ -84,7 +84,7 @@ public class DemandResetRequestEndpoint {
     private final static Namespace ns = YukonXml.getYukonNamespace();
 
     @Autowired private PaoSelectionService paoSelectionService;
-    @Autowired private DemandResetService demandResetService;
+    @Autowired private PlcDemandResetService demandResetService;
 
     @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "demandResetRequest")
     public Element invoke(Element demandResetRequest, LiteYukonUser user) {

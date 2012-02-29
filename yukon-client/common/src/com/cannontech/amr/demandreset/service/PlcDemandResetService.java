@@ -3,7 +3,7 @@ package com.cannontech.amr.demandreset.service;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public interface DemandResetService {
+public interface PlcDemandResetService {
     public <T extends YukonPao> Iterable<T> validDevices(Iterable<T> paos);
     public <T extends YukonPao> Iterable<T> invalidDevices(Iterable<T> paos);
 

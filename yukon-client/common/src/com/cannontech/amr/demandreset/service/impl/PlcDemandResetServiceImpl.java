@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
-import com.cannontech.amr.demandreset.service.DemandResetService;
+import com.cannontech.amr.demandreset.service.PlcDemandResetService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
@@ -30,8 +30,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
-public class DemandResetServiceImpl implements DemandResetService {
-    private static final Logger log = YukonLogManager.getLogger(DemandResetServiceImpl.class);
+public class PlcDemandResetServiceImpl implements PlcDemandResetService {
+    private static final Logger log = YukonLogManager.getLogger(PlcDemandResetServiceImpl.class);
 
     private final static String COMMAND = "putvalue ied reset";
     private final static Set<PaoType> validTypes =
