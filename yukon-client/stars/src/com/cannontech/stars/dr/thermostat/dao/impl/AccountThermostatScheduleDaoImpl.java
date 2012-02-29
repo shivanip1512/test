@@ -272,8 +272,21 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     	return yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
 	}
 	
-	// ALL SCHEDULES FOR ACCOUNT BY TYPE
+    // ALL SCHEDULES AND ENTRIES FOR ACCOUNT BY TYPE
     private List<AccountThermostatSchedule> getAllSchedulesAndEntriesForAccountByTypes(int accountId, List<SchedulableThermostatType> types) {
+        
+        //combine all of the allowable modes
+        List<AccountThermostatSchedule> schedules = getAllSchedulesForAccountByTypes(accountId,types);
+        for(AccountThermostatSchedule schedule : schedules) {
+            List<AccountThermostatScheduleEntry> atsEntries = accountThermostatScheduleEntryDao.getAllEntriesForSchduleId(schedule.getAccountThermostatScheduleId());
+            schedule.setScheduleEntries(atsEntries);
+        }
+        
+        return schedules;
+    }
+    
+    // ALL SCHEDULES FOR ACCOUNT BY TYPE
+    private List<AccountThermostatSchedule> getAllSchedulesForAccountByTypes(int accountId, List<SchedulableThermostatType> types) {
         
         //combine all of the allowable modes
         
@@ -287,14 +300,9 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
         sql.append("ORDER BY ATS.ScheduleName");
         
         List<AccountThermostatSchedule> schedules = yukonJdbcTemplate.query(sql, accountThermostatScheduleRowAndFieldMapper);
-        for(AccountThermostatSchedule schedule : schedules) {
-            List<AccountThermostatScheduleEntry> atsEntries = accountThermostatScheduleEntryDao.getAllEntriesForSchduleId(schedule.getAccountThermostatScheduleId());
-            schedule.setScheduleEntries(atsEntries);
-        }
-        
+
         return schedules;
     }
-
     @Override
     public AccountThermostatSchedule getSchedulesForAccountByScheduleName(int accountId, String scheduleName){
         List<AccountThermostatSchedule> thermostatSchedules = getSchedulesForAccountByScheduleName(accountId, scheduleName, null);
@@ -343,8 +351,8 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     
 
     @Override
-    public List<AccountThermostatSchedule> getAllAllowedSchedulesForAccountByType(int accountId, SchedulableThermostatType type) {
-        List<AccountThermostatSchedule> schedules = getAllSchedulesForAccountByType(accountId, type);
+    public List<AccountThermostatSchedule> getAllAllowedSchedulesForAccountByTypes(int accountId, List<SchedulableThermostatType> types) {
+        List<AccountThermostatSchedule> schedules = getAllSchedulesForAccountByTypes(accountId, types);
         removeDisallowedSchedules(accountId, schedules);
        
         return schedules;

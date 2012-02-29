@@ -1,7 +1,7 @@
 package com.cannontech.yukon.api.consumer.endpoint;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -14,7 +14,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -31,7 +30,7 @@ import com.google.common.collect.Maps;
 public class ThermostatAndScheduleListRequestEndpoint {
 
     private Namespace ns = YukonXml.getYukonNamespace();
-    private Logger log = YukonLogManager.getLogger(HardwareSummaryListRequestEndpoint.class);
+    private Logger log = YukonLogManager.getLogger(ThermostatAndScheduleListRequestEndpoint.class);
     
     @Autowired private InventoryDao inventoryDao;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
@@ -41,17 +40,10 @@ public class ThermostatAndScheduleListRequestEndpoint {
             throws Exception {
        
         XmlVersionUtils.verifyYukonMessageVersion(thermostatAndScheduleListRequest,XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-        SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(thermostatAndScheduleListRequest);
         
         // get all thermostats for the account id
         List<Thermostat> thermostats = inventoryDao.getThermostatsByAccountId(customerAccount.getAccountId());
-        
-        // get inventory ids
-        List<Integer> inventoryIds = requestTemplate.evaluateAsIntegerList("//y:inventoryId");
-        // only schedules for inventory ids provided should be included in the response
-        // if no inventory ids provided all schedule information will be included the the response
-        removeInapplicableThermostats(thermostats, inventoryIds);
-        
+                
         // init response
         Element response = new Element("ThermostatAndScheduleListResponse", ns);
         response.setAttribute(new Attribute("version", "1.0"));
@@ -73,32 +65,29 @@ public class ThermostatAndScheduleListRequestEndpoint {
         return response;
     }
     
-    private void removeInapplicableThermostats(List<Thermostat> thermostats, List<Integer> inventoryIds){
-        if (!inventoryIds.isEmpty()) {
-            ListIterator<Thermostat> iterator = thermostats.listIterator();
-            while(iterator.hasNext()){
-                Thermostat thermostat = iterator.next();
-                if (!inventoryIds.contains(thermostat.getId())) {
-                    iterator.remove();
-                }
-            }
-        }
-    }
-    
     private Map<Thermostat, List<AccountThermostatSchedule>> getThermostatSchedules(Integer accountId, List<Thermostat> thermostats) {
-        Map<SchedulableThermostatType, List<AccountThermostatSchedule>> schedulableThermostatTypes = Maps.newHashMap();
+        Map<SchedulableThermostatType, List<AccountThermostatSchedule>> schedulableThermostatTypes = getSchedulableThermostatTypes(accountId,  thermostats);
         Map<Thermostat, List<AccountThermostatSchedule>> thermostatSchedules = Maps.newLinkedHashMap();
-        for (Thermostat thermostat : thermostats) { 
-            if (!thermostatSchedules.containsKey(thermostat)) {
-                List<AccountThermostatSchedule> schedules = schedulableThermostatTypes.get(thermostat.getSchedulableThermostatType());
-                if(schedules == null){
-                    schedules = accountThermostatScheduleDao.getAllAllowedSchedulesForAccountByType(accountId, thermostat.getSchedulableThermostatType());
-                    schedulableThermostatTypes.put(thermostat.getSchedulableThermostatType(), schedules);
-                }
-                thermostatSchedules.put(thermostat , schedules);
-            }
+        for (Thermostat thermostat : thermostats) {
+            List<AccountThermostatSchedule> schedules = schedulableThermostatTypes.get(thermostat.getSchedulableThermostatType());
+            thermostatSchedules.put(thermostat, schedules);
         }
         return thermostatSchedules;
+    }
+    
+    private Map<SchedulableThermostatType,  List<AccountThermostatSchedule>> getSchedulableThermostatTypes(Integer accountId, List<Thermostat> thermostats){
+        Map<SchedulableThermostatType,  List<AccountThermostatSchedule>> schedulableThermostatTypes = Maps.newHashMap();
+        for(Thermostat thermostat: thermostats){
+            if(!schedulableThermostatTypes.containsKey(thermostat.getSchedulableThermostatType())){
+                schedulableThermostatTypes.put(thermostat.getSchedulableThermostatType(), new ArrayList<AccountThermostatSchedule>());
+            }
+
+        }
+        List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllAllowedSchedulesForAccountByTypes(accountId, new ArrayList<SchedulableThermostatType>(schedulableThermostatTypes.keySet()));
+        for(AccountThermostatSchedule schedule: schedules){
+            schedulableThermostatTypes.get(schedule.getThermostatType()).add(schedule);
+        }
+        return schedulableThermostatTypes; 
     }
 
     private void buildResponse(Integer accountId, Map<Thermostat, List<AccountThermostatSchedule>> thermostatSchedules, Element response){
@@ -110,6 +99,7 @@ public class ThermostatAndScheduleListRequestEndpoint {
         for (Thermostat thermostat : thermostatSchedules.keySet()) {
             Element thermostatElement = new Element("thermostat", ns);
             thermostatElement.addContent(XmlUtils.createStringElement("inventoryId", ns, String.valueOf(thermostat.getId())));
+            thermostatElement.addContent(XmlUtils.createStringElement("serialNumber", ns, String.valueOf(thermostat.getSerialNumber())));
             thermostatElement.addContent(XmlUtils.createStringElement("deviceLabel", ns, String.valueOf(thermostat.getDeviceLabel())));
             thermostatElement.addContent(XmlUtils.createStringElement("thermostatType", ns, String.valueOf(thermostat.getSchedulableThermostatType())));
             for (AccountThermostatSchedule schedule : thermostatSchedules.get(thermostat)) {

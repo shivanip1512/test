@@ -120,19 +120,20 @@ public interface AccountThermostatScheduleDao {
 	 * Retrieve list of all AccountThermostatSchedules for a given accountId and thermostat type.
 	 * a.k.a. "all saved schedules for account"
 	 */
-	public List<AccountThermostatSchedule> getAllSchedulesForAccountByType(int accountId, SchedulableThermostatType type);
+    public List<AccountThermostatSchedule> getAllSchedulesForAccountByType(int accountId, SchedulableThermostatType type);
 
-	/**
-	 * Get the AccountThermostatSchedules for an Account based on the user.
-	 */
-    public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId,
-                                                                                            List<SchedulableThermostatType> types);
     /**
-     * Get all allowed schedules for account by thermostat type
+     * Get all allowed thermostat schedules and entries for an Account based on the user.
+     */
+    public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId, List<SchedulableThermostatType> types);
+
+    /**
+     * Get all allowed thermostat schedules and entries for an Account based on the user.
+     * 
      * @param accountId
-     * @param type                    
+     * @param types
      * @return
      */
-    public List<AccountThermostatSchedule> getAllAllowedSchedulesForAccountByType(int accountId,
-                                                                                            SchedulableThermostatType type);
+    public List<AccountThermostatSchedule> getAllAllowedSchedulesForAccountByTypes(int accountId, List<SchedulableThermostatType> types);
+
 }

@@ -35,6 +35,7 @@
     <xsd:complexType name="Thermostat">
         <xsd:sequence>
             <xsd:element name="inventoryId" type="yukon:nonNegativeInt" />
+            <xsd:element name="serialNumber" type="xsd:string" />
             <xsd:element name="deviceLabel" type="xsd:string" />
             <xsd:element name="thermostatType" type="xsd:string" />
             <xsd:element name="schedule" type="yukon:Schedule" />
