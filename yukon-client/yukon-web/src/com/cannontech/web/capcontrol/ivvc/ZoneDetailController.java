@@ -13,25 +13,40 @@ import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
+import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
+import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
+import com.cannontech.capcontrol.model.Zone;
+import com.cannontech.capcontrol.model.ZoneVoltagePointsHolder;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.commands.CapControlCommandExecutor;
+import com.cannontech.cbc.commands.CommandResultCallback;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.common.util.CommandExecutionException;
+import com.cannontech.common.util.LazyList;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -40,8 +55,12 @@ import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.capcontrol.PeakTargetSetting;
+import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.message.capcontrol.model.CapControlServerResponse;
 import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.model.DynamicCommand;
 import com.cannontech.message.capcontrol.model.DynamicCommand.DynamicCommandType;
@@ -56,71 +75,210 @@ import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.util.CapControlWebUtils;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.input.PaoIdentifierPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
-
 @RequestMapping("/ivvc/zone/*")
 @Controller
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class ZoneDetailController {
 
-    private FilterCacheFactory filterCacheFactory;
-    private RolePropertyDao rolePropertyDao;
-    private ZoneService zoneService;
-    private ZoneDtoHelper zoneDtoHelper;
-    private VoltageRegulatorService voltageRegulatorService;
-    private VoltageFlatnessGraphService voltageFlatnessGraphService;
-    private PaoDao paoDao;
-    private PointDao pointDao;
-    private CapControlCommandExecutor executor;
-    
+    @Autowired private FilterCacheFactory filterCacheFactory;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ZoneService zoneService;
+    @Autowired private ZoneDtoHelper zoneDtoHelper;
+    @Autowired private VoltageRegulatorService voltageRegulatorService;
+    @Autowired private VoltageFlatnessGraphService voltageFlatnessGraphService;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private CapControlCommandExecutor executor;
+    @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
+    @Autowired private StrategyDao strategyDao;
+    @Autowired private ZoneDao zoneDao;
+
+    public static class ZoneVoltageDeltas {
+        private List<CapBankPointDelta> pointDeltas = LazyList
+                .ofInstance(CapBankPointDelta.class);
+        
+        public ZoneVoltageDeltas() {
+            super();
+        }
+        public ZoneVoltageDeltas(List<CapBankPointDelta> pointDeltas) {
+            this.pointDeltas = pointDeltas;
+        }
+        public List<CapBankPointDelta> getPointDeltas() {
+            return pointDeltas;
+        }
+        public void setPointDeltas(List<CapBankPointDelta> pointDeltas) {
+            this.pointDeltas = pointDeltas;
+        }
+    }
+
     @RequestMapping
-    public String detail(ModelMap model, HttpServletRequest request, YukonUserContext context, int zoneId, Boolean isSpecialArea) {
+    public String detail(ModelMap model, HttpServletRequest request, YukonUserContext context,
+                         int zoneId, Boolean isSpecialArea) {
         setupDetails(model, request, context, zoneId, isSpecialArea);
+
+        List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zoneId);
+        ZoneVoltagePointsHolder zoneVoltagePointsHolder = new ZoneVoltagePointsHolder(zoneId, infos);
+        model.addAttribute("zoneVoltagePointsHolder", zoneVoltagePointsHolder);
+
         return "ivvc/zoneDetail.jsp";
     }
-    
+
     @RequestMapping
-    public String deltaUpdate(ModelMap model, 
-                              boolean staticDelta, 
-                              int bankId, 
-                              int pointId, 
-                              String delta, 
-                              int zoneId, 
+    public String voltagePoints(ModelMap model, HttpServletRequest request,
+                                YukonUserContext context, int zoneId, Boolean isSpecialArea) {
+        List<VoltageLimitedDeviceInfo> infos = ccMonitorBankListDao.getDeviceInfoByZoneId(zoneId);
+        ZoneVoltagePointsHolder zoneVoltagePointsHolder = new ZoneVoltagePointsHolder(zoneId, infos);
+        setupVoltagePointAttributes(zoneVoltagePointsHolder, model, context, zoneId, isSpecialArea);
+        return "ivvc/voltagePointsEdit.jsp";
+    }
+    
+    @RequestMapping(method = RequestMethod.POST)
+    public String updateVoltagePoints(@ModelAttribute ZoneVoltagePointsHolder zoneVoltagePointsHolder,
+                                      BindingResult bindingResult,
+                                      ModelMap model, YukonUserContext context, int zoneId,
+                                      Boolean isSpecialArea, FlashScope flashScope) {
+        setupVoltagePointAttributes(zoneVoltagePointsHolder, model, context, zoneId, isSpecialArea);
+        
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            return "ivvc/voltagePointsEdit.jsp";
+        }
+
+        try {
+            CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(context.getYukonUser());
+            Zone zone = zoneDao.getZoneById(zoneId);
+            int subBusId = zone.getSubstationBusId();
+            CapControlStrategy strategy = strategyDao.getForId(cache.getSubBus(subBusId).getStrategyId());
+
+            // Loop over your zoneVoltagePoints and set the limits to the strategies if Override is true
+            for (VoltageLimitedDeviceInfo voltagePoint : zoneVoltagePointsHolder.getPoints()) {
+                if (voltagePoint.isOverrideStrategy()) continue;
+
+                double lowerLimit = voltagePoint.getLowerLimit(); 
+                double upperLimit = voltagePoint.getUpperLimit();
+                for ( PeakTargetSetting setting : strategy.getTargetSettings()) {
+                    if (setting.getType() == TargetSettingType.LOWER_VOLT_LIMIT) {
+                        lowerLimit = Double.parseDouble(setting.getPeakValue());
+                    }
+                    if (setting.getType() == TargetSettingType.UPPER_VOLT_LIMIT) {
+                        upperLimit = Double.parseDouble(setting.getPeakValue());
+                    }
+                }
+
+                voltagePoint.setLowerLimit(lowerLimit);
+                voltagePoint.setUpperLimit(upperLimit);
+            }
+
+            ccMonitorBankListDao.updateDeviceInfo(zoneVoltagePointsHolder.getPoints());
+            MessageSourceResolvable successMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.voltagePoints.updateSuccess");
+            flashScope.setConfirm(successMessage);
+        } catch (DataAccessException e) {
+            MessageSourceResolvable errorMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.voltagePoints.updateFailure");
+            flashScope.setError(errorMessage);
+        }
+
+        return "redirect:/spring/capcontrol/ivvc/zone/voltagePoints";
+    }
+
+    private void setupVoltagePointAttributes(ZoneVoltagePointsHolder zoneVoltagePointsHolder, ModelMap model,
+                                             YukonUserContext context, int zoneId,
+                                             Boolean isSpecialArea) {
+        setupBreadCrumbs(model, context, zoneId, isSpecialArea);
+        model.addAttribute("zoneId", zoneId);
+        model.addAttribute("zoneVoltagePointsHolder", zoneVoltagePointsHolder);
+
+        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT,
+                                                               context.getYukonUser());
+        model.addAttribute("hasEditingRole", hasEditingRole);
+    }
+
+    @RequestMapping
+    public String voltageDeltas(ModelMap model, HttpServletRequest request,
+                                YukonUserContext context, int zoneId, Boolean isSpecialArea) {
+        setupDeltas(model, request, zoneId);
+        setupBreadCrumbs(model, context, zoneId, isSpecialArea);
+        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT,
+                                          context.getYukonUser());
+        model.addAttribute("hasEditingRole", hasEditingRole);
+        model.addAttribute("zoneId", zoneId);
+        return "ivvc/zoneVoltageDeltas.jsp";
+    }
+
+    @RequestMapping(method = RequestMethod.POST)
+    public String deltaUpdate(@ModelAttribute ZoneVoltageDeltas zoneVoltageDeltas,
+                              BindingResult bindingResult,
+                              ModelMap model,
+                              int zoneId,
                               Boolean isSpecialArea,
-                              LiteYukonUser user,
+                              YukonUserContext context,
                               HttpServletRequest request,
                               FlashScope flashScope) {
         try {
-            double deltaAsDbl = Double.valueOf(delta);
-        
-            DynamicCommand command = new DynamicCommand(DynamicCommandType.DELTA);
-            command.addParameter(Parameter.DEVICE_ID, bankId);
-            command.addParameter(Parameter.POINT_ID, pointId);
-            command.addParameter(Parameter.POINT_RESPONSE_DELTA, deltaAsDbl);
-            command.addParameter(Parameter.POINT_RESPONSE_STATIC_DELTA, staticDelta ? 1 : 0);
-            
-            executor.execute(command);
-            
-            if(isSpecialArea == null) {
-                isSpecialArea = false;
+            for (CapBankPointDelta pointDelta : zoneVoltageDeltas.getPointDeltas()) {
+                double deltaAsDbl = Double.valueOf(pointDelta.getDelta());
+    
+                DynamicCommand command = new DynamicCommand(DynamicCommandType.DELTA);
+                command.addParameter(Parameter.DEVICE_ID, pointDelta.getBankId());
+                command.addParameter(Parameter.POINT_ID, pointDelta.getPointId());
+                command.addParameter(Parameter.POINT_RESPONSE_DELTA, deltaAsDbl);
+                command.addParameter(Parameter.POINT_RESPONSE_STATIC_DELTA, pointDelta.isStaticDelta() ? 1 : 0);
+                
+                CommandResultCallback callback = new CommandResultCallback() {
+                    private CapControlServerResponse response;
+                    private String errorMessage;
+                    @Override
+                    public void processingExceptionOccured(String errorMessage) {
+                        this.errorMessage = errorMessage;
+                    }
+                    @Override
+                    public CapControlServerResponse getResponse() {
+                        return response;
+                    }
+                    @Override
+                    public void recievedResponse(CapControlServerResponse message) {
+                        if (!message.isSuccess()) {
+                            this.errorMessage = message.getResponse();
+                        }
+                        this.response = message;
+                    }
+                    @Override
+                    public String getErrorMessage() {
+                        return errorMessage;
+                    }
+                };
+    
+                CapControlServerResponse response = executor.blockingExecute(command, CapControlServerResponse.class, callback);
+                if (response.isTimeout()) {
+                    flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateTimeout"));
+                } else if (!response.isSuccess()) {
+                    flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateFailure", callback.getErrorMessage()));
+                } else {
+                    flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateSuccess"));
+                }
+    
+                if (isSpecialArea == null) {
+                    isSpecialArea = false;
+                }
             }
         } catch (NumberFormatException e) {
             // The user entered something invalid into the delta field
-            MessageSourceResolvable failureMessage = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.updateFailure");
-            flashScope.setError(failureMessage);
-        } catch (CommandExecutionException e) {
-            MessageSourceResolvable failureMessage = new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.updateFailure", e);
-            flashScope.setError(failureMessage);
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateFailureFormat"));
         }
-        
+
         model.addAttribute("isSpecialArea", isSpecialArea);
         model.addAttribute("zoneId", zoneId);
-        return "redirect:/spring/capcontrol/ivvc/zone/detail";
+        return "redirect:/spring/capcontrol/ivvc/zone/voltageDeltas";
     }
     
     @RequestMapping
@@ -159,10 +317,9 @@ public class ZoneDetailController {
         setupIvvcEvents(model, zoneDto.getZoneId(), zoneDto.getSubstationBusId());
         setupCapBanks(model, cache, zoneDto);
         setupBreadCrumbs(model, cache, zoneDto, isSpecialArea);
-        setupDeltas(model, request, zoneDto.getZoneId());
         setupRegulatorPointMappings(model, zoneDto);
         setupRegulatorCommands(model, zoneDto);
-        
+
         model.addAttribute("subBusId", zoneDto.getSubstationBusId());
         int updaterDelay = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATA_UPDATER_DELAY_MS, user));
         model.addAttribute("updaterDelay", updaterDelay);
@@ -182,6 +339,7 @@ public class ZoneDetailController {
         model.addAttribute("regulatorIdMap", regulatorIdMap);
         model.addAttribute("regulatorNameMap", regulatorNameMap);
         model.addAttribute("zoneDto", zoneDto);
+        model.addAttribute("zoneId", zoneDto.getZoneId());
         addZoneEnums(model);
     }
 
@@ -340,12 +498,25 @@ public class ZoneDetailController {
             pointDelta.setDeltaRounded(bdDelta.doubleValue());
         }
         
-        model.addAttribute("zoneId", zoneId);
         model.addAttribute("searchResults", searchResults);
     }
-    
-    private void setupBreadCrumbs(ModelMap model, CapControlCache cache, AbstractZone zoneDto, boolean isSpecialArea) {
-        
+
+    private void setupBreadCrumbs(ModelMap model, YukonUserContext context, int zoneId,
+                                  Boolean isSpecialArea) {
+        LiteYukonUser user = context.getYukonUser();
+        if (isSpecialArea == null) {
+            isSpecialArea = false;
+        }
+        model.addAttribute("isSpecialArea", isSpecialArea);
+
+        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
+        AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
+        setupBreadCrumbs(model, cache, zoneDto, isSpecialArea);
+    }
+
+    private void setupBreadCrumbs(ModelMap model, CapControlCache cache, AbstractZone zoneDto,
+                                  boolean isSpecialArea) {
+
         int subBusId = zoneDto.getSubstationBusId();
         StreamableCapObject subBus = cache.getSubBus(subBusId);
         SubStation station = cache.getSubstation(subBus.getParentID());
@@ -372,49 +543,9 @@ public class ZoneDetailController {
         model.addAttribute("zoneName", zoneName);
     }
     
-    @Autowired
-    public void setFilteredCapControlcache (FilterCacheFactory factory) {
-        this.filterCacheFactory = factory;
+    @InitBinder
+    public void setupBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(PaoIdentifier.class, new PaoIdentifierPropertyEditor());
     }
-    
-    @Autowired
-    public void setRolePropertyDao (RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setZoneService (ZoneService zoneService) {
-        this.zoneService = zoneService;
-    }
-    
-    @Autowired
-    public void setVoltageRegulatorService(VoltageRegulatorService voltageRegulatorService) {
-        this.voltageRegulatorService = voltageRegulatorService;
-    }
-    
-    @Autowired
-    public void setVoltageFlatnessGraphService(VoltageFlatnessGraphService voltageFlatnessGraphService) {
-        this.voltageFlatnessGraphService = voltageFlatnessGraphService;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setZoneDtoHelpers(ZoneDtoHelper zoneDtoHelpers) {
-        this.zoneDtoHelper = zoneDtoHelpers;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
-    @Autowired
-    public void setCapControlCommandExecutor(CapControlCommandExecutor executor) {
-        this.executor = executor;
-    }
-    
+
 }

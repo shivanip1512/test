@@ -182,7 +182,7 @@ public class CapBankEditorForm extends DBEditorForm {
                     LitePoint point = allPoints.get(i);
                     if (point.getUofmID() == PointUnits.UOMID_VOLTS) {
                         CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams(point);
-                        monitorPoint.setCapBankId(capBank.getCapBank().getDeviceID().intValue());
+                        monitorPoint.setDeviceId(capBank.getCapBank().getDeviceID().intValue());
                         // set the feeder limits by default
                         setDefaultFeederLimits(capBank, monitorPoint);
 

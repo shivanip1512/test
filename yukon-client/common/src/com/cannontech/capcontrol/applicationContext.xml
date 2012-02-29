@@ -23,6 +23,7 @@
 	<bean class="com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl"/>
 	
     <bean id="zoneDao" class="com.cannontech.capcontrol.dao.impl.ZoneDaoImpl"/>
+    <bean id="ccMonitorBankListDao" class="com.cannontech.capcontrol.dao.impl.CcMonitorBankListDaoImpl"/>
 
     <bean id="ivvcAnalysisMessageListener" class="com.cannontech.capcontrol.service.impl.IvvcAnalysisMessageListener"/>
     <bean id="ivvcAnalysisScenarioProcessor" class="com.cannontech.capcontrol.service.impl.IvvcAnalysisScenarioProcessor"/>

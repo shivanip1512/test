@@ -243,50 +243,78 @@
 			</tags:boxContainer2>
 		</cti:dataGridCell>
 		<cti:dataGridCell>
-			<tags:boxContainer2 nameKey="voltageProfile" hideEnabled="true" showInitially="true">
-				<!--Chart -->
-		        <c:set var="amChartsProduct" value="amline"/>
-		        <c:url var="amChartFile" scope="page" value="/spring/capcontrol/ivvc/bus/chart">
-		        	<cti:param name="subBusId" value="${subBusId}"/>
-		        </c:url>
-		        <c:url var="amSrc" scope="page" value="/JavaScript/amChart/${amChartsProduct}.swf">
-		            <c:param name="${amChartsProduct}_path" value="/JavaScript/amChart/" />
-		            <c:param name="${amChartsProduct}_flashWidth" value="100%" />
-		            <c:param name="${amChartsProduct}_flashHeight" value="100%" />
-		            <c:param name="${amChartsProduct}_preloaderColor" value="#000000" />
-		            <c:param name="${amChartsProduct}_settingsFile" value="${amChartFile}" />
-		        </c:url>
-		        
-		        <c:url var="expressInstallSrc" scope="page" value="/JavaScript/expressinstall.swf" />
-		        <cti:includeScript link="/JavaScript/swfobject.js"/>
-		
-		        <cti:uniqueIdentifier var="uniqueId" prefix="flashDiv_"/>
-		        <div id="${uniqueId}">
-		            <div style="width:90%;text-align:center;">
-		                <br>
-		                <br>
-		                <h4>The Adobe Flash Player is required to view this graph.</h4>
-		                <br>
-		                Please download the latest version of the Flash Player by following the link below.
-		                <br>
-		                <br>
-		                <a href="http://www.adobe.com" target="_blank"><img border="0" src="<c:url value="/WebConfig/yukon/Icons/visitadobe.gif"/>" /></a>
-		                <br>
-		            </div>
-		        </div>
-		        
-		        <c:set var="swfWidth" value="100%"/>
-		        
-		        <script type="text/javascript">
-                   var so = new SWFObject("${amSrc}", "${chartId}", "${swfWidth}", "300", "8", "#FFFFFF");
-                   so.useExpressInstall('${expressInstallSrc}');
-                   so.addVariable("chart_id", "${chartId}");
-                   so.write("${uniqueId}");
-		        </script>
-                
-                <cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
-
-			</tags:boxContainer2>
+			<cti:tabbedContentSelector>
+				<cti:msg2 var="tabName" key=".voltageProfile.title" />
+				<cti:tabbedContentSelectorContent selectorName="${tabName}">
+					<!--Chart -->
+			        <c:set var="amChartsProduct" value="amline"/>
+			        <c:url var="amChartFile" scope="page" value="/spring/capcontrol/ivvc/bus/chart">
+			        	<cti:param name="subBusId" value="${subBusId}"/>
+			        </c:url>
+			        <c:url var="amSrc" scope="page" value="/JavaScript/amChart/${amChartsProduct}.swf">
+			            <c:param name="${amChartsProduct}_path" value="/JavaScript/amChart/" />
+			            <c:param name="${amChartsProduct}_flashWidth" value="100%" />
+			            <c:param name="${amChartsProduct}_flashHeight" value="100%" />
+			            <c:param name="${amChartsProduct}_preloaderColor" value="#000000" />
+			            <c:param name="${amChartsProduct}_settingsFile" value="${amChartFile}" />
+			        </c:url>
+			        
+			        <c:url var="expressInstallSrc" scope="page" value="/JavaScript/expressinstall.swf" />
+			        <cti:includeScript link="/JavaScript/swfobject.js"/>
+			
+			        <cti:uniqueIdentifier var="uniqueId" prefix="flashDiv_"/>
+			        <div id="${uniqueId}">
+			            <div style="width:90%;text-align:center;">
+			                <br>
+			                <br>
+			                <h4>The Adobe Flash Player is required to view this graph.</h4>
+			                <br>
+			                Please download the latest version of the Flash Player by following the link below.
+			                <br>
+			                <br>
+			                <a href="http://www.adobe.com" target="_blank"><img border="0" src="<c:url value="/WebConfig/yukon/Icons/visitadobe.gif"/>" /></a>
+			                <br>
+			            </div>
+			        </div>
+			        
+			        <c:set var="swfWidth" value="100%"/>
+			        
+			        <script type="text/javascript">
+	                   var so = new SWFObject("${amSrc}", "${chartId}", "${swfWidth}", "300", "8", "#FFFFFF");
+	                   so.useExpressInstall('${expressInstallSrc}');
+	                   so.addVariable("chart_id", "${chartId}");
+	                   so.write("${uniqueId}");
+			        </script>
+	                
+	                <cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
+				</cti:tabbedContentSelectorContent>
+				<cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
+				<cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
+					<div class="largeDialogScrollArea">
+						<c:forEach items="${zoneVoltagePointsHolders}" var="zoneVoltagePointsHolder">
+							<c:set var="zoneId" value="${zoneVoltagePointsHolder.zoneId}"/>
+							<c:set var="hideEditButton" value="true"/>
+	    					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
+	    				    	<cti:param name="zoneId" value="${zoneId}"/>
+	    				    </cti:url>
+							<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
+						    	<cti:param name="zoneId" value="${zoneId}"/>
+						    </cti:url>
+							<h3 class="dib">
+							<a href="${zoneDetailUrl}">
+								<spring:escapeBody htmlEscape="true">
+										${zoneVoltagePointsHolder.zoneName}
+								</spring:escapeBody>
+							</a>
+							</h3>
+							(<a href="${zoneVoltagePointsUrl}"><i:inline key=".voltagePoints.editPoints"/></a>)
+							<br><br>
+							<%@ include file="voltagePoints.jspf" %>
+							<br>
+						</c:forEach>
+					</div>
+				</cti:tabbedContentSelectorContent>
+			</cti:tabbedContentSelector>
             
             <br>
             <tags:boxContainer2 nameKey="ivvcAnalysisContainer">

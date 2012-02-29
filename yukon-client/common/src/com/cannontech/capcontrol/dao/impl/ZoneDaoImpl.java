@@ -522,12 +522,12 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     }
 
     @Override
-    public List<Integer> getMonitorPointsForBank(int bankId) {
+    public List<Integer> getMonitorPointsForBank(int deviceId) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         
         sqlBuilder.append("SELECT PointID");
         sqlBuilder.append("FROM CCMonitorBankList");
-        sqlBuilder.append("WHERE BankID").eq(bankId);
+        sqlBuilder.append("WHERE DeviceId").eq(deviceId);
         sqlBuilder.append("ORDER BY DisplayOrder");
         
         List<Integer> points = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
@@ -535,12 +535,12 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     }
 
     @Override
-    public Map<Integer, Phase> getMonitorPointsForBankAndPhase(int bankId) {
+    public Map<Integer, Phase> getMonitorPointsForBankAndPhase(int deviceId) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         
         sqlBuilder.append("SELECT PointID, Phase");
         sqlBuilder.append("FROM CCMonitorBankList");
-        sqlBuilder.append("WHERE BankID").eq(bankId);
+        sqlBuilder.append("WHERE DeviceId").eq(deviceId);
         sqlBuilder.append("ORDER BY DisplayOrder");
 
         final Map<Integer, Phase> results = Maps.newHashMap();

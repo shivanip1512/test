@@ -13,7 +13,7 @@ import com.cannontech.database.db.DBPersistent;
 
 public class CCMonitorBankList extends DBPersistent {
 
-	private Integer capBankId = new Integer ( 0 );
+	private Integer deviceId = new Integer ( 0 );
 	private Integer pointId = new Integer ( 0 );
 	
 	private Integer displayOrder = new Integer ( 0 );
@@ -36,7 +36,7 @@ public class CCMonitorBankList extends DBPersistent {
 		"Phase"
 	};
 
-	public static final String CONSTRAINT_COLUMNS[] = { "BankId", "PointId" };
+	public static final String CONSTRAINT_COLUMNS[] = { "DeviceId", "PointId" };
 
 	public static final String TABLE_NAME= "CCMONITORBANKLIST";
 	
@@ -48,7 +48,7 @@ public class CCMonitorBankList extends DBPersistent {
 	public CCMonitorBankList(CapBankMonitorPointParams _monitorPoint_) {
 		super();
 		monitorPoint = _monitorPoint_;
-		capBankId = new Integer ( monitorPoint.getCapBankId() );
+		deviceId = new Integer ( monitorPoint.getDeviceId() );
 		pointId =  new Integer (monitorPoint.getPointId() );
 		displayOrder = new Integer ( monitorPoint.getDisplayOrder() );
 		if (monitorPoint.isInitScan())
@@ -68,7 +68,7 @@ public class CCMonitorBankList extends DBPersistent {
 
 	public void add() throws SQLException {
 
-		Object[] addValues = { getCapBankId(), getPointId(), getDisplayOrder(), getScannable(),
+		Object[] addValues = { getDeviceId(), getPointId(), getDisplayOrder(), getScannable(),
 							   getNINAvg(), getUpperBandwidth(), getLowerBandwidth(), getPhase()
 							   };
 
@@ -77,13 +77,13 @@ public class CCMonitorBankList extends DBPersistent {
 	}
 
 	public void delete() throws SQLException {
-		Object[] values = { getCapBankId(), getPointId() };
+		Object[] values = { getDeviceId(), getPointId() };
 		
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS, values );
 	}
 
 	public void retrieve() throws SQLException {
-		Object constraintValues[] = { getCapBankId(), getPointId()};
+		Object constraintValues[] = { getDeviceId(), getPointId()};
 		Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 
 		if( results.length == SETTER_COLUMNS.length )
@@ -108,20 +108,20 @@ public class CCMonitorBankList extends DBPersistent {
 			getPhase()
 		};
 
-		Object constraintValues[] = { getCapBankId(), getPointId()};
+		Object constraintValues[] = { getDeviceId(), getPointId()};
 
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 
 
-	public Integer getCapBankId() {
+	public Integer getDeviceId() {
 		if (monitorPoint != null) 
-			capBankId = new Integer ( monitorPoint.getCapBankId() );
-		return capBankId;
+			deviceId = new Integer ( monitorPoint.getDeviceId() );
+		return deviceId;
 	}
 
-	public void setCapBankId(Integer capBankId) {
-			getMonitorPoint().setCapBankId(capBankId.intValue());
+	public void setDeviceId(Integer deviceId) {
+			getMonitorPoint().setDeviceId(deviceId.intValue());
 	}
 
 	public Integer getDisplayOrder() {
@@ -189,16 +189,16 @@ public class CCMonitorBankList extends DBPersistent {
 		return monitorPoint;
 	}
 	
-    public static List<CCMonitorBankList> getMonitorPointsOnCapBankList (Integer capBankId) {
-        String sqlStmt = "SELECT * FROM CCMonitorBankList WHERE bankId = ?";  
+    public static List<CCMonitorBankList> getMonitorPointsOnCapBankList (Integer deviceId) {
+        String sqlStmt = "SELECT * FROM CCMonitorBankList WHERE deviceId = ?";  
     
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            
         
-        List<CCMonitorBankList> monitorPoints = yukonTemplate.query(sqlStmt, new Integer[] {capBankId},
+        List<CCMonitorBankList> monitorPoints = yukonTemplate.query(sqlStmt, new Integer[] {deviceId},
         		new RowMapper() {
         			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
         				CCMonitorBankList monitorPoint = new CCMonitorBankList(); 
-        				monitorPoint.setCapBankId(new Integer ( rs.getBigDecimal(1).intValue() ));
+        				monitorPoint.setDeviceId(new Integer ( rs.getBigDecimal(1).intValue() ));
         				monitorPoint.setPointId(new Integer ( rs.getBigDecimal(2).intValue() ));
         				monitorPoint.setDisplayOrder(new Integer ( rs.getBigDecimal(3).intValue() ));
         				monitorPoint.setScannable(new Character (rs.getString(4).charAt(0) ));
@@ -218,12 +218,12 @@ public class CCMonitorBankList extends DBPersistent {
         return monitorPoints;  	
     }
 
-    public static void deleteMonitorPointsOnCapBankList (Integer capBankId) {
-        String sqlStmt = "DELETE FROM CCMonitorBankList WHERE bankId = ?";  
+    public static void deleteMonitorPointsOnCapBankList (Integer deviceId) {
+        String sqlStmt = "DELETE FROM CCMonitorBankList WHERE deviceId = ?";  
  
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();                    
         
-        yukonTemplate.update(sqlStmt, new Integer[] {capBankId});
+        yukonTemplate.update(sqlStmt, new Integer[] {deviceId});
 
     }
 }

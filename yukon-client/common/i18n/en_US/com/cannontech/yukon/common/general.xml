@@ -7,6 +7,7 @@
 <entry key="yukon.common.disable">Disable</entry>
 <entry key="yukon.common.enable">Enable</entry>
 <entry key="yukon.common.cancel">Cancel</entry>
+<entry key="yukon.common.save">Save</entry>
 
 <entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
 <entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
@@ -20,6 +21,7 @@
 
 <entry key="yukon.common.phase">Phase</entry>
 <entry key="yukon.common.noPhase">No Phase</entry>
+<entry key="yukon.common.phase.phase">---</entry>
 <entry key="yukon.common.phase.phaseA">A</entry>
 <entry key="yukon.common.phase.phaseB">B</entry>
 <entry key="yukon.common.phase.phaseC">C</entry>

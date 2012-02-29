@@ -1,0 +1,60 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+
+<cti:msgScope paths="modules.capcontrol.ivvc.voltagePoints">
+	<tags:alternateRowReset />
+	<table class="compactResultsTable">
+		<tr>
+			<th><i:inline key=".table.header.deviceName"/></th>
+			<th><i:inline key=".table.header.pointName"/></th>
+			<th><i:inline key=".table.header.phase"/></th>
+			<th><i:inline key=".table.header.lowerLimit"/></th>
+			<th><i:inline key=".table.header.currentVoltage"/></th>
+			<th><i:inline key=".table.header.upperLimit"/></th>
+		</tr>
+		<c:forEach var="voltagePoint" items="${zoneVoltagePointsHolder.points}" varStatus="status">
+			<c:set var="overrideStrategyClass" value="fwb"/>
+			<c:if test="${!voltagePoint.overrideStrategy && !editMode}">
+				<c:set var="overrideStrategyClass" value="disabled"/>
+			</c:if>
+			<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+				<td>
+					<a href="/editor/cbcBase.jsf?type=2&amp;itemid=${voltagePoint.paoIdentifier.paoId}">
+						<spring:escapeBody htmlEscape="true">
+							${voltagePoint.paoName}
+						</spring:escapeBody>
+					</a>
+				</td>
+				<td><spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody></td>
+				<td><i:inline key="yukon.common.phase.phase${voltagePoint.phase}"/></td>
+				<td class="${overrideStrategyClass}">
+					${voltagePoint.lowerLimit}
+				</td>
+				<td><c:choose>
+						<c:when test="${voltagePoint.pointId > 0}">
+							<cti:pointValue pointId="${voltagePoint.pointId}" format="VALUE" />
+						</c:when>
+						<c:otherwise>
+							<i:inline key="yukon.web.defaults.dashes" />
+						</c:otherwise>
+					</c:choose>
+				</td>
+				<td class="${overrideStrategyClass}">
+					${voltagePoint.upperLimit}
+				</td>
+			</tr>
+		</c:forEach>
+	</table>
+	<c:if test="${hasEditingRole && !hideEditButton}">
+		<div class="actionArea">
+			<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
+		    	<cti:param name="zoneId" value="${zoneId}"/>
+		    </cti:url>
+			<cti:button nameKey="edit" href="${zoneVoltagePointsUrl}"/>
+		</div>
+	</c:if>
+</cti:msgScope>

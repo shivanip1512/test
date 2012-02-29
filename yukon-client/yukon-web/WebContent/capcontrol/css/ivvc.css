@@ -150,3 +150,11 @@ table.ivvcGridLayout tr {
 #ivvcAnalysisMsg {
     font-size: 12px;
 }
+
+form#deltaForm tr {
+	height: 25px;
+}
+form#deltaForm label.staticChangedLabel {
+	background-color: orange;
+	padding-top: 4px;
+}

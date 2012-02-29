@@ -55,20 +55,27 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ivvcEvents.description">Event Description</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ivvcEvents.phase">Event Phase</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.ivvcEvents.none">No Past Events to Display</entry>
-	
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.voltageProfile.title">Voltage Profile</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.title">Voltage Deltas</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.bankName">Bank Name</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.cbcName">CBC Name</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.deviceName">Affected Device Name</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.pointName">Point Name</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.preOp">Pre Op Value</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.delta">Delta</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.static">Static</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.emptyTable">No items to display.</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.deltaTitle">Click to edit</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.updateSuccess">Voltage Delta Updated Successfully</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.deltas.updateFailure">Voltage Delta Update Failure. Invalid value format</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.voltagePoints.title">Voltage Points</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.otherActions.title">Other Actions</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneDetail.otherActions.voltageDeltas">Voltage Deltas</entry>
+	
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.pageName">Voltage Deltas</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.pageDescription">Voltage Deltas</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateSuccess">Voltage Delta Updated Successfully</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateFailure">Voltage Delta Update Failure</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateFailureFormat">Voltage Delta Update Failure. Invalid value format</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.updateTimeout">Voltage Delta Update Failure. Message Timeout</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.deltas.title">Voltage Deltas</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.deltas.bankName">Bank Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.deltas.cbcName">CBC Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.deltas.deviceName">Affected Device Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.deltas.pointName">Point Name</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.deltas.preOp">Pre Op Value</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.deltas.delta">Delta</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.deltas.static">Static</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.deltas.emptyTable">No items to display.</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.zoneVoltageDeltas.deltas.deltaTitle">Click to edit</entry>
 	
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.pageName">IVVC SubBus</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.busView.pageDescription">{0}</entry>
@@ -92,6 +99,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.deleteConfirmation.message">Are you sure you want to delete zone {0}?</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.ivvcAnalysisContainer.title">IVVC Analysis Message</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.noIvvcMessage">No IVVC analysis has been performed.</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.voltagePoints.editPoints">Edit Points</entry>
     
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario.unknown">unknown</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario1">{0} - IVVC Analysis: Stale Data Encountered for {1}. Received updates for {2}% of Required CBC Voltage Points. Minimum was {3}%.</entry>
@@ -269,6 +277,21 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.graphs.lineWidth"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.graphs.dataLabelsTextColor"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.graphs.dataLabelsTextSize"></entry>
+
+	<!-- Voltage Points table used on both bus & zone detail views -->
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.pageName">Voltage Points</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.pageDescription">Voltage Points</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.title">Voltage Points</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.pointName">Point Name</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.phase">Phase</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.lowerLimit">Lower Limit</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.currentVoltage">Current Voltage</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.upperLimit">Upper Limit</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.overrideStrategy">Override Strategy</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.capBanks.noCbc">No Cbc</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.updateSuccess">Update Successful</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.updateFailure">Update Failure</entry>
     
     <!-- Last Operation Widget Tooltips -->
     <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.raiseTap.notRecent.notWarning">Tap Up</entry>

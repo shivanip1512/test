@@ -846,6 +846,16 @@
 		                                    <menu></menu>
 											<link>/spring/capcontrol/ivvc/zone/detail?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
 		                                    <labelArgument>${zoneName}</labelArgument>
+		                                    <pages>
+				                                <page name="ivvc.voltagePoints" type="DETAIL">
+				                                    <menu></menu>
+													<link>/spring/capcontrol/ivvc/zone/voltagePoints?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+				                                </page>
+				                                <page name="ivvc.zoneVoltageDeltas" type="DETAIL">
+				                                    <menu></menu>
+													<link>/spring/capcontrol/ivvc/zone/voltageDeltas?zoneId=${zoneId}&amp;isSpecialArea=${isSpecialArea}</link>
+				                                </page>
+		                                    </pages>
 		                                </page>
                                     </pages>
                                 </page>

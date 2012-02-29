@@ -580,7 +580,7 @@ public final class PointDaoImpl implements PointDao {
         for (CCMonitorBankList point : capBank.getCcMonitorBankList()) {
 
             CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams();
-            monitorPoint.setCapBankId(point.getCapBankId().intValue());
+            monitorPoint.setDeviceId(point.getDeviceId().intValue());
             monitorPoint.setPointId(point.getPointId().intValue());
             monitorPoint.setDisplayOrder(point.getDisplayOrder().intValue());
 

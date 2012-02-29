@@ -409,4 +409,5 @@ function getHeaderJSON(xhr) {
 	if (json) {
 		return eval('(' + json + ')');
 	}
+	return {};
 }

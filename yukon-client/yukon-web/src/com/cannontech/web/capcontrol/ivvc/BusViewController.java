@@ -8,8 +8,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.capcontrol.model.AbstractZone;
+import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
+import com.cannontech.capcontrol.model.ZoneVoltagePointsHolder;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
@@ -26,18 +30,20 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @RequestMapping("/ivvc/bus/*")
 @Controller
 public class BusViewController {
 
-    private FilterCacheFactory filterCacheFactory;
-    private RolePropertyDao rolePropertyDao;
-    private ZoneService zoneService;
-    private StrategyDao strategyDao;
-    private VoltageFlatnessGraphService voltageFlatnessGraphService;
-    private PointDao pointDao;
+    @Autowired private FilterCacheFactory filterCacheFactory;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ZoneService zoneService;
+    @Autowired private StrategyDao strategyDao;
+    @Autowired private VoltageFlatnessGraphService voltageFlatnessGraphService;
+    @Autowired private PointDao pointDao;
+    @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     
     @RequestMapping
     public String detail(ModelMap model, YukonUserContext userContext, Boolean isSpecialArea, int subBusId) {
@@ -129,35 +135,23 @@ public class BusViewController {
         List<Integer> unassignedBankIds = zoneService.getUnassignedCapBankIdsForSubBusId(subBusId);
         
         model.addAttribute("unassignedBanksExist",unassignedBankIds.size()>0);
-    }
 
-    @Autowired
-    public void setFilteredCapControlcache (FilterCacheFactory factory) {
-        this.filterCacheFactory = factory;
+        List<ZoneVoltagePointsHolder> zoneVoltagePointsHolders = Lists.newArrayList();
+        setupZoneVoltagePoints(zoneVoltagePointsHolders, hierarchy);
+        model.addAttribute("zoneVoltagePointsHolders", zoneVoltagePointsHolders);
     }
     
-    @Autowired
-    public void setRolePropertyDao (RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setZoneService (ZoneService zoneService) {
-        this.zoneService = zoneService;
-    }
-    
-    @Autowired
-    public void setStrategyDao (StrategyDao strategyDao) {
-        this.strategyDao = strategyDao;
-    }
-    
-    @Autowired
-    public void setVoltageFlatnessGraphService(VoltageFlatnessGraphService voltageFlatnessGraphService) {
-        this.voltageFlatnessGraphService = voltageFlatnessGraphService;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
+    private void setupZoneVoltagePoints(List<ZoneVoltagePointsHolder> zoneVoltagePointsHolders, ZoneHierarchy hierarchy) {
+        
+        AbstractZone zone = hierarchy.getZone();
+        List<VoltageLimitedDeviceInfo> voltageInfos = ccMonitorBankListDao.getDeviceInfoByZoneId(zone.getZoneId());
+        ZoneVoltagePointsHolder pointsHolder = new ZoneVoltagePointsHolder(zone.getZoneId(), voltageInfos);
+        pointsHolder.setZoneName(zone.getName());
+        zoneVoltagePointsHolders.add(pointsHolder);
+        
+        for (ZoneHierarchy childHierarchy : hierarchy.getChildren()) {
+            // Recursion... GO!!
+            setupZoneVoltagePoints(zoneVoltagePointsHolders, childHierarchy);
+        }
     }
 }

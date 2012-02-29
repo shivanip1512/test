@@ -11,7 +11,7 @@ public class CapBankMonitorPointParams {
 
 private LitePoint monitorPoint = null;
 
-private int capBankId = 0;
+private int deviceId = 0;
 private int displayOrder = 0;
 private char scannable = 'N';
 private long NINAvg = 3;
@@ -31,12 +31,12 @@ private String phase;
 		monitorPoint = litePoint;
 	}
 
-	public int getCapBankId() {
-		return capBankId;
+	public int getDeviceId() {
+		return deviceId;
 	}
 
-	public void setCapBankId(int _capBankId_) {
-		capBankId = _capBankId_;
+	public void setDeviceId(int _deviceId_) {
+		deviceId = _deviceId_;
 	}
 
 	public int getDisplayOrder() {
