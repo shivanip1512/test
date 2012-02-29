@@ -66,4 +66,5 @@ class CapControlPao
 
         Cti::CapControl::PointIdVector* getPointIds() {return &_pointIds;};
         void removePointId(long pId);
+        void addPointId(const long ID);
 };

@@ -293,14 +293,6 @@ PaoIdVector::iterator CtiCCAreaBase::removeSubstationId(PaoIdVector::iterator su
 
 void CtiCCAreaBase::removeSubstationId(long subId)
 {
-    for (PaoIdVector::const_iterator subIter =_subStationIds.begin(); subIter != _subStationIds.end(); ++subIter)
-    {
-        if (*subIter == subId)
-        {
-            _subStationIds.erase(subIter);
-            return;
-        }
-
-    }
+    _subStationIds.erase(remove(_subStationIds.begin(), _subStationIds.end(), subId), _subStationIds.end());
 }
             

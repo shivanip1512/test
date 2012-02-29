@@ -187,15 +187,15 @@ long CapControlPao::getDisabledStatePointId() const
     return _disabledStatePointId;
 }
 
+
 void CapControlPao::removePointId(long pId)
 {
-    for (int i = 0; i < _pointIds.size(); ++i)
-    {
-        if ( pId == _pointIds[i] )
-        {
-            _pointIds.erase(_pointIds.begin()+i);
-            return;
-        }
-    }
+    _pointIds.erase(remove(_pointIds.begin(), _pointIds.end(), pId), _pointIds.end());
 }
+
+void CapControlPao::addPointId(const long ID)
+{
+    _pointIds.push_back(ID);
+}
+
 

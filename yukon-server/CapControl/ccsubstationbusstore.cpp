@@ -3864,7 +3864,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                 if (currentCCSubstation->getVoltReductionControlId() > 0 )
                 {
                     pointid_station_map->insert(make_pair(currentCCSubstation->getVoltReductionControlId(), currentCCSubstation));
-                    currentCCSubstation->getPointIds()->push_back(currentCCSubstation->getVoltReductionControlId());
+                    currentCCSubstation->addPointId(currentCCSubstation->getVoltReductionControlId());
                 }
             }
 
@@ -4100,7 +4100,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                     {
                         currentStation->setDisabledStatePointId(tempPointId, substationId);
                         pointid_station_map->insert(make_pair(tempPointId,currentStation));
-                        currentStation->getPointIds()->push_back(tempPointId);
+                        currentStation->addPointId(tempPointId);
                     }
                     else if ( resolvePointType(tempPointType) == AnalogPointType )
                     {
@@ -4110,7 +4110,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                             if (currentStation->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_station_map->insert(make_pair(tempPointId,currentStation));
-                                currentStation->getPointIds()->push_back(tempPointId);
+                                currentStation->addPointId(tempPointId);
                             }
                         }
                         else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
@@ -4119,7 +4119,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                             if (currentStation->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_station_map->insert(make_pair(tempPointId,currentStation));
-                                currentStation->getPointIds()->push_back(tempPointId);
+                                currentStation->addPointId(tempPointId);
                             }
                         }
                         else
@@ -4251,7 +4251,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                 if (currentCCArea->getVoltReductionControlPointId() > 0 )
                 {
                     pointid_area_map->insert(make_pair(currentCCArea->getVoltReductionControlPointId(), currentCCArea));
-                    currentCCArea->getPointIds()->push_back(currentCCArea->getVoltReductionControlPointId());
+                    currentCCArea->addPointId(currentCCArea->getVoltReductionControlPointId());
                 }
             }
 
@@ -4480,7 +4480,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                     {
                         currentArea->setDisabledStatePointId(tempPointId, areaId);
                         pointid_area_map->insert(make_pair(tempPointId,currentArea));
-                        currentArea->getPointIds()->push_back(tempPointId);
+                        currentArea->addPointId(tempPointId);
                     }
                     else if ( resolvePointType(tempPointType) == AnalogPointType )
                     {
@@ -4490,7 +4490,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                             if (currentArea->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_area_map->insert(make_pair(tempPointId,currentArea));
-                                currentArea->getPointIds()->push_back(tempPointId);
+                                currentArea->addPointId(tempPointId);
                             }
                         }
                         else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
@@ -4499,7 +4499,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                             if (currentArea->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_area_map->insert(make_pair(tempPointId,currentArea));
-                                currentArea->getPointIds()->push_back(tempPointId);
+                                currentArea->addPointId(tempPointId);
                             }
                         }
                         else
@@ -4609,7 +4609,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                 if (currentCCSpArea->getVoltReductionControlPointId() > 0 )
                 {
                     pointid_specialarea_map->insert(make_pair(currentCCSpArea->getVoltReductionControlPointId(), currentCCSpArea));
-                    currentCCSpArea->getPointIds()->push_back(currentCCSpArea->getVoltReductionControlPointId());
+                    currentCCSpArea->addPointId(currentCCSpArea->getVoltReductionControlPointId());
                 }
             }
         }
@@ -4798,7 +4798,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                     {
                         currentSpArea->setDisabledStatePointId(tempPointId, true);
                         pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
-                        currentSpArea->getPointIds()->push_back(tempPointId);
+                        currentSpArea->addPointId(tempPointId);
                     }
                     else if ( resolvePointType(tempPointType) == AnalogPointType )
                     {
@@ -4808,7 +4808,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                             if (currentSpArea->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
-                                currentSpArea->getPointIds()->push_back(tempPointId);
+                                currentSpArea->addPointId(tempPointId);
                             }
                         }
                         else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
@@ -4817,7 +4817,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                             if (currentSpArea->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
-                                currentSpArea->getPointIds()->push_back(tempPointId);
+                                currentSpArea->addPointId(tempPointId);
                             }
                         }
                         else
@@ -4928,22 +4928,22 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 if (currentCCSubstationBus->getCurrentVarLoadPointId() > 0 )
                 {
                     pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getCurrentVarLoadPointId(), currentCCSubstationBus));
-                    currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getCurrentVarLoadPointId());
+                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getCurrentVarLoadPointId());
                 }
                 if (currentCCSubstationBus->getCurrentWattLoadPointId() > 0 )
                 {
                     pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getCurrentWattLoadPointId(), currentCCSubstationBus));
-                    currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getCurrentWattLoadPointId());
+                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getCurrentWattLoadPointId());
                 }
                 if (currentCCSubstationBus->getCurrentVoltLoadPointId() > 0 )
                 {
                     pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getCurrentVoltLoadPointId(), currentCCSubstationBus));
-                    currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getCurrentVoltLoadPointId());
+                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getCurrentVoltLoadPointId());
                 }
                 if (currentCCSubstationBus->getSwitchOverPointId() > 0 )
                 {
                     pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getSwitchOverPointId(), currentCCSubstationBus));
-                    currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getSwitchOverPointId());
+                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getSwitchOverPointId());
                 }
 
                 if (currentCCSubstationBus->getDualBusEnable() &&
@@ -4956,12 +4956,12 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     if (currentCCSubstationBus->getPhaseBId() > 0)
                     {
                         pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getPhaseBId(), currentCCSubstationBus));
-                        currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getPhaseBId());
+                        currentCCSubstationBus->addPointId(currentCCSubstationBus->getPhaseBId());
                     }
                     if (currentCCSubstationBus->getPhaseCId() > 0)
                     {
                         pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getPhaseCId(), currentCCSubstationBus));
-                        currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getPhaseCId());
+                        currentCCSubstationBus->addPointId(currentCCSubstationBus->getPhaseCId());
                     }
 
                 }
@@ -4969,12 +4969,12 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 if (currentCCSubstationBus->getVoltReductionControlId() > 0 )
                 {
                     pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getVoltReductionControlId(), currentCCSubstationBus));
-                    currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getVoltReductionControlId());
+                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getVoltReductionControlId());
                 }
                 if (currentCCSubstationBus->getDisableBusPointId() > 0)
                 {
                     pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getDisableBusPointId(), currentCCSubstationBus));
-                    currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getDisableBusPointId());
+                    currentCCSubstationBus->addPointId(currentCCSubstationBus->getDisableBusPointId());
 
                 }
                     //cCSubstationBuses->push_back(currentCCSubstationBus);
@@ -5246,7 +5246,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                 if (dualBus->getCurrentVarLoadPointId() > 0)
                                 {
                                     pointid_subbus_map->insert(make_pair(dualBus->getCurrentVarLoadPointId(), currentCCSubstationBus ));
-                                    currentCCSubstationBus->getPointIds()->push_back(dualBus->getCurrentVarLoadPointId());
+                                    currentCCSubstationBus->addPointId(dualBus->getCurrentVarLoadPointId());
                                 }
                                 else
                                 {
@@ -5260,7 +5260,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                 if (dualBus->getCurrentVoltLoadPointId() > 0)
                                 {
                                     pointid_subbus_map->insert(make_pair(dualBus->getCurrentVoltLoadPointId(), currentCCSubstationBus));
-                                    currentCCSubstationBus->getPointIds()->push_back(dualBus->getCurrentVoltLoadPointId());
+                                    currentCCSubstationBus->addPointId(dualBus->getCurrentVoltLoadPointId());
                                 }
                                 else
                                 {
@@ -5465,14 +5465,14 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     {
                         currentCCSubstationBus->setDisabledStatePointId(tempPointId, subBusId);
                         pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
-                        currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                        currentCCSubstationBus->addPointId(tempPointId);
                     }
                     else if ( resolvePointType(tempPointType) == StatusPointType &&
                               tempPointOffset == Cti::CapControl::Offset_CommsState )
                     {
                         currentCCSubstationBus->setCommsStatePointId(tempPointId);
                         pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
-                        currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                        currentCCSubstationBus->addPointId(tempPointId);
                     }
                     else if ( resolvePointType(tempPointType) == AnalogPointType )
                     {
@@ -5480,25 +5480,25 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                         {
                             currentCCSubstationBus->setEstimatedVarLoadPointId(tempPointId);
                             pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
-                            currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                            currentCCSubstationBus->addPointId(tempPointId);
                         }
                         else if ( tempPointOffset == Cti::CapControl::Offset_DailyOperations )
                         {
                             currentCCSubstationBus->setDailyOperationsAnalogPointId(tempPointId);
                             pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
-                            currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                            currentCCSubstationBus->addPointId(tempPointId);
                         }
                         else if ( tempPointOffset == Cti::CapControl::Offset_PowerFactor )
                         {
                             currentCCSubstationBus->setPowerFactorPointId(tempPointId);
                             pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
-                            currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                            currentCCSubstationBus->addPointId(tempPointId);
                         }
                         else if ( tempPointOffset == Cti::CapControl::Offset_EstimatedPowerFactor )
                         {
                             currentCCSubstationBus->setEstimatedPowerFactorPointId(tempPointId);
                             pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
-                            currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                            currentCCSubstationBus->addPointId(tempPointId);
                         }
                         else if ( tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
                                   tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
@@ -5506,7 +5506,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                             if (currentCCSubstationBus->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
-                                currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                                currentCCSubstationBus->addPointId(tempPointId);
                             }
                         }
                         else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
@@ -5515,7 +5515,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                             if (currentCCSubstationBus->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
                                 pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
-                                currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                                currentCCSubstationBus->addPointId(tempPointId);
                             }
                         }
                         else
@@ -5805,17 +5805,17 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                 if (currentCCFeeder->getCurrentVarLoadPointId() > 0 )
                 {
                     pointid_feeder_map->insert(make_pair(currentCCFeeder->getCurrentVarLoadPointId(), currentCCFeeder));
-                    currentCCFeeder->getPointIds()->push_back(currentCCFeeder->getCurrentVarLoadPointId());
+                    currentCCFeeder->addPointId(currentCCFeeder->getCurrentVarLoadPointId());
                 }
                 if (currentCCFeeder->getCurrentWattLoadPointId() > 0)
                 {
                     pointid_feeder_map->insert(make_pair(currentCCFeeder->getCurrentWattLoadPointId(), currentCCFeeder));
-                    currentCCFeeder->getPointIds()->push_back(currentCCFeeder->getCurrentWattLoadPointId());
+                    currentCCFeeder->addPointId(currentCCFeeder->getCurrentWattLoadPointId());
                 }
                 if (currentCCFeeder->getCurrentVoltLoadPointId() > 0)
                 {
                     pointid_feeder_map->insert(make_pair(currentCCFeeder->getCurrentVoltLoadPointId(), currentCCFeeder));
-                    currentCCFeeder->getPointIds()->push_back(currentCCFeeder->getCurrentVoltLoadPointId());
+                    currentCCFeeder->addPointId(currentCCFeeder->getCurrentVoltLoadPointId());
                 }
                 if (currentCCFeeder->getUsePhaseData())
                 {
@@ -6253,7 +6253,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                         {
                             currentCCFeeder->setDisabledStatePointId(tempPointId, feederId);
                             pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
-                            currentCCFeeder->getPointIds()->push_back(tempPointId);
+                            currentCCFeeder->addPointId(tempPointId);
                         }
                         else if ( resolvePointType(tempPointType) == AnalogPointType )
                         {
@@ -6261,25 +6261,25 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                             {
                                 currentCCFeeder->setEstimatedVarLoadPointId(tempPointId);
                                 pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
-                                currentCCFeeder->getPointIds()->push_back(tempPointId);
+                                currentCCFeeder->addPointId(tempPointId);
                             }
                             else if ( tempPointOffset == Cti::CapControl::Offset_DailyOperations )
                             {
                                 currentCCFeeder->setDailyOperationsAnalogPointId(tempPointId);
                                 pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
-                                currentCCFeeder->getPointIds()->push_back(tempPointId);
+                                currentCCFeeder->addPointId(tempPointId);
                             }
                             else if ( tempPointOffset == Cti::CapControl::Offset_PowerFactor )
                             {
                                 currentCCFeeder->setPowerFactorPointId(tempPointId);
                                 pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
-                                currentCCFeeder->getPointIds()->push_back(tempPointId);
+                                currentCCFeeder->addPointId(tempPointId);
                             }
                             else if ( tempPointOffset == Cti::CapControl::Offset_EstimatedPowerFactor )
                             {
                                 currentCCFeeder->setEstimatedPowerFactorPointId(tempPointId);
                                 pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
-                                currentCCFeeder->getPointIds()->push_back(tempPointId);
+                                currentCCFeeder->addPointId(tempPointId);
                             }
                             else if ( tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
                                       tempPointOffset <= Cti::CapControl::Offset_OperationSuccessPercentRangeMax )
@@ -6287,7 +6287,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                 if (currentCCFeeder->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                                 {
                                     pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
-                                    currentCCFeeder->getPointIds()->push_back(tempPointId);
+                                    currentCCFeeder->addPointId(tempPointId);
                                 }
                             }
                             else if ( tempPointOffset >= Cti::CapControl::Offset_ConfirmationSuccessPercentRangeMin &&
@@ -6296,7 +6296,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                 if (currentCCFeeder->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                                 {
                                     pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
-                                    currentCCFeeder->getPointIds()->push_back(tempPointId);
+                                    currentCCFeeder->addPointId(tempPointId);
                                 }
                             }
                             else
@@ -6660,21 +6660,21 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         {
                             currentCCCapBank->setDisabledStatePointId(tempPointId, capBankId); 
                             pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                            currentCCCapBank->getPointIds()->push_back(tempPointId);
+                            currentCCCapBank->addPointId(tempPointId);
                         }
                         else if ( resolvePointType(tempPointType) == StatusPointType &&
                                   tempPointOffset == Cti::CapControl::Offset_CapbankControlStatus )
                         {
                             currentCCCapBank->setStatusPointId(tempPointId);
                             pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                            currentCCCapBank->getPointIds()->push_back(tempPointId);
+                            currentCCCapBank->addPointId(tempPointId);
                         }
                         else if ( resolvePointType(tempPointType) == AnalogPointType &&
                                   tempPointOffset == Cti::CapControl::Offset_CapbankOperationAnalog )
                         {
                             currentCCCapBank->setOperationAnalogPointId(tempPointId);
                             pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                            currentCCCapBank->getPointIds()->push_back(tempPointId);
+                            currentCCCapBank->addPointId(tempPointId);
                         }
                         else if ( resolvePointType(tempPointType) == AnalogPointType &&
                                   tempPointOffset >= Cti::CapControl::Offset_OperationSuccessPercentRangeMin &&
@@ -6682,7 +6682,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         {
                             if (currentCCCapBank->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
-                                currentCCCapBank->getPointIds()->push_back(tempPointId);
+                                currentCCCapBank->addPointId(tempPointId);
                                 pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
                             }
                         }
@@ -6691,7 +6691,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         {
                             if (currentCCCapBank->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                             {
-                                currentCCCapBank->getPointIds()->push_back(tempPointId);
+                                currentCCCapBank->addPointId(tempPointId);
                                 pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
                             }
                         }
@@ -6772,7 +6772,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                             {
                                 if (twoWayPts->setTwoWayPointId(pointType, tempPointOffset, tempPointId) )
                                 {
-                                    currentCCCapBank->getPointIds()->push_back(tempPointId);
+                                    currentCCCapBank->addPointId(tempPointId);
                                     pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
                                 }
                             }
@@ -7496,20 +7496,8 @@ void CtiCCSubstationBusStore::removeFromOrphanList(long ccId)
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
-        for ( PaoIdVector::iterator orphanCapIter = _orphanedCapBanks.begin();  orphanCapIter != _orphanedCapBanks.end(); ++orphanCapIter)
-        {
-            if (*orphanCapIter == ccId)
-            {
-                _orphanedCapBanks.erase(orphanCapIter);
-            }
-        }
-        for ( PaoIdVector::iterator orphanFdrIter = _orphanedFeeders.begin();  orphanFdrIter != _orphanedFeeders.end(); ++orphanFdrIter)
-        {
-            if (*orphanFdrIter == ccId)
-            {
-                _orphanedFeeders.erase(orphanFdrIter);
-            }
-        }
+        _orphanedFeeders.erase(remove(_orphanedFeeders.begin(), _orphanedFeeders.end(), ccId), _orphanedFeeders.end());
+        _orphanedCapBanks.erase(remove(_orphanedCapBanks.begin(), _orphanedCapBanks.end(), ccId), _orphanedCapBanks.end());
     }
     catch(...)
     {
@@ -7678,13 +7666,11 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                     {
                         continue;
                     }
-                    PaoIdVector::const_iterator iterBus = station->getCCSubIds().begin();
-                    while (iterBus  != station->getCCSubIds().end())
+                    for each ( long subBusId in station->getCCSubIds() )
                     {
-                        subBusId = *iterBus;
                         deleteSubBus(subBusId);
-                        iterBus = station->getCCSubIds().erase(iterBus);
                     }
+                    station->getCCSubIds().clear();
                 }
                 deleteSubstation(stationId);
                 areaToDelete->removeSubstationId(stationId);
