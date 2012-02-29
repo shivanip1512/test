@@ -70,5 +70,6 @@
 	<classpathentry kind="lib" path="/third-party/jsch-0.1.44.jar"/>
 	<classpathentry kind="lib" path="/third-party/easymock-3.0.jar" sourcepath="/third-party/linked-sources/easymock-3.0-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/jackson-all-1.9.1.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/recaptcha4j-0.0.7.jar" sourcepath="/third-party/linked-sources/recaptcha4j-0.0.7.zip"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>

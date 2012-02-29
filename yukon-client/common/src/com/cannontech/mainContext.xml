@@ -142,6 +142,7 @@
                <value>classpath:com/cannontech/yukon/web/layout/standard</value>
                <value>classpath:com/cannontech/yukon/web/input</value>
                <value>classpath:com/cannontech/yukon/web/alerts</value>
+               <value>classpath:com/cannontech/yukon/web/captcha</value>
                <value>classpath:com/cannontech/yukon/web/login</value>
                <value>classpath:com/cannontech/yukon/web/error</value>
                <value>classpath:com/cannontech/yukon/web/changeLogin</value>
