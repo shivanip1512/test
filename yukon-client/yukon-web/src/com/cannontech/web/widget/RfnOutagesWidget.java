@@ -98,7 +98,7 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     /**
      * MUST BE PUBLIC FOR c:forEach TAG
      */
-    public class RfnOutageLog {
+    public static class RfnOutageLog {
         public RfnOutageLog(Instant start, Instant end) {
             this.start = start;
             this.end = end;
