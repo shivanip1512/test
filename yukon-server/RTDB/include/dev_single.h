@@ -108,10 +108,13 @@ private:
     typedef std::map< int, bool > ScanFlagsPending_t;
     mutable ScanFlagsPending_t _pending_map;       // Scantype, bool pendingState
 
-    ULONG getTardyTime(int scantype) const;
+    virtual void setScanRate(int a, LONG b);
+
     bool hasRateOrClockChanged(int rate, CtiTime &Now);
     BOOL isAlternateRateActive(bool &bScanIsScheduled, CtiTime &aNow=CtiTime(), int rate = ScanRateInvalid) const;
     BOOL scheduleSignaledAlternateScan( int rate ) const;
+
+    CtiTime peekDispatchTime() const;
 
     std::string eWordReport(const ESTRUCT &ESt, Cti::Optional<repeater_info> repeater_details) const;
 
@@ -143,13 +146,11 @@ public:
 
     CtiDeviceSingle& operator=(const CtiDeviceSingle& aRef);
 
-    BOOL isStatValid(const INT stat) const;
-
     BOOL isRateValid(const INT i) const;
 
     virtual LONG getScanRate(int a) const;
 
-    virtual void setScanRate(int a, LONG b);
+    unsigned long getTardyTime(int scantype) const;
 
     CtiTableDeviceScanRate  getRateTable(const INT i) const;
 
@@ -238,8 +239,6 @@ public:
     virtual void resetForScan(int scantype);
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;
     virtual bool hasLongScanRate(const std::string &cmd) const;
-
-    CtiTime peekDispatchTime() const;
 
     CtiTime getNextWindowOpen() const;
     static int desolveScanRateType( const std::string &cmd );
