@@ -12,6 +12,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
+import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
@@ -74,6 +75,8 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
                             }
                         } catch (DigiWebServiceException dwse) {
                             fail(failureKey, identifier, dwse);
+                        } catch (DigiNotConfiguredException dnce) {
+                            fail(failureKey, identifier, dnce);
                         } catch (InvalidParameterException ipe) {
                             fail(failureKey, identifier, ipe);
                         } finally {
