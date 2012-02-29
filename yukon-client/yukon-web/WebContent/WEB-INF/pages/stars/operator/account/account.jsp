@@ -178,7 +178,6 @@
         }
         
         function prepPasswordFields(){
-            debug('prepping password fields!');
           //if we are showing the plain-text fields, copy them over to the password fields
             if(jQuery("#showPasswordCheckbox:checked").length > 0){
                 jQuery(".password_editor_field:password").each(function(){
@@ -384,7 +383,7 @@
                             <c:if test="${loginMode eq 'EDIT'}">
                                 <br/>
                                 <br/>
-                                <span style="float:right;padding-top:3px;"><button type="button" class="f_deleteLogin"><i:inline key=".deleteLogin"/></button></span>
+                                <button type="button" class="f_deleteLogin fr"><i:inline key=".deleteLogin"/></button>
                             </c:if>
                         </cti:displayForPageEditModes>
                         
