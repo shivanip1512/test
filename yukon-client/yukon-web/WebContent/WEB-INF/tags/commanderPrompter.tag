@@ -33,7 +33,7 @@
                 modal: true,
                 title: jQuery("#commanderPrompterConfirm").attr('data-title'), 
                 buttons: {
-                    "<i:inline key="yukon.web.components.dialog.ok"/>": function() {
+                    "<cti:msg key="yukon.web.components.dialog.ok"/>": function() {
                         jQuery( this ).dialog( "close" );
                         replacement = jQuery( this ).find("input:text").val();
                         cmd = cmd.replace(params[paramIdx], replacement);
@@ -41,7 +41,7 @@
                         // try next replacements
                         processCommanderReplacement(paramIdx + 1, originalCmd, cmd, cmdField);
                     },
-                    "<i:inline key="yukon.web.components.dialog.cancel"/>": function() {
+                    "<cti:msg key="yukon.web.components.dialog.cancel"/>": function() {
                         jQuery( this ).find("input:text").val("");
                         jQuery( this ).dialog( "close" );
                         //the EXT version of this tried to populate an undefined field.  Pretty sure this
@@ -120,7 +120,7 @@ jQuery(function(){
 });
 </script>
 
-<div id="commanderPrompterConfirm" class="dn" data-title="<i:inline key="yukon.common.device.commander.prompterDialog.title"/>">
+<div id="commanderPrompterConfirm" class="dn" data-title="<cti:msg key="yukon.common.device.commander.prompterDialog.title"/>">
     <label>
         <span>::REPLACED AT RUNTIME::</span>
         <input type="text"/>
