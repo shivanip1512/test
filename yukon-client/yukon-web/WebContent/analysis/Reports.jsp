@@ -162,7 +162,8 @@ function checkDates(){
 		var t = stopDate.split("/");
 		var realStartDate = new Date(p[2], (p[0]-1), p[1]);
 		var realStopDate = new Date(t[2], t[0]-1, t[1]);
-		if(realStartDate < realStopDate){
+		
+		if(realStartDate < realStopDate || $('startCal').getAttribute("disabled") == "" || $('stopCal').getAttribute("disabled") == ""){
 			loadTarget(document.reportForm);
 		} else {
 			if($('startHourID')) {    //Check that one of the time fields exists 

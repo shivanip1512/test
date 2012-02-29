@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,10 +62,10 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     
     private SqlStatementBuilder selectSql = new SqlStatementBuilder();
     {
-        selectSql.append("SELECT ControlEntryId, InventoryId, LMGroupId, AccountId,");
-        selectSql.append(       "GroupEnrollStart, GroupEnrollStop, OptOutStart, OptOutStop, Type,");
-        selectSql.append(       "Relay, UserIdFirstAction, UserIdSecondAction, ProgramId");
-        selectSql.append("FROM " + TABLE_NAME);
+        selectSql.append("SELECT LMHCG.ControlEntryId, LMHCG.InventoryId, LMHCG.LMGroupId, LMHCG.AccountId,");
+        selectSql.append(       "LMHCG.GroupEnrollStart, LMHCG.GroupEnrollStop, LMHCG.OptOutStart, LMHCG.OptOutStop, LMHCG.Type,");
+        selectSql.append(       "LMHCG.Relay, LMHCG.UserIdFirstAction, LMHCG.UserIdSecondAction, LMHCG.ProgramId");
+        selectSql.append("FROM " + TABLE_NAME + " LMHCG");
     }
     
     static {
@@ -700,6 +701,28 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         template.setFieldMapper(controlGroupFieldMapper); 
     }
 
+    @Override
+    public List<LMHardwareControlGroup> getIntersectingEnrollments(Set<Integer> energyCompanyIds, List<Integer> loadGroupIds, OpenInterval enrollmentInterval) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectSql);
+        sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = LMHCG.AccountId");
+        sql.append("WHERE LMHCG.LmGroupId").in(loadGroupIds);
+        sql.append("  AND ECTAM.EnergyCompanyId").in(energyCompanyIds);
+        if (!enrollmentInterval.isOpenEnd()) {
+            sql.append("  AND LMHCG.GroupEnrollStart").lt(enrollmentInterval.getEnd());
+        }
+        sql.append("  AND (LMHCG.GroupEnrollStop IS NULL");
+        if (!enrollmentInterval.isOpenStart()) {
+            sql.append("       OR LMHCG.GroupEnrollStop").gte(enrollmentInterval.getStart());
+        }
+        sql.append(")");
+        sql.append("  AND LMHCG.Type").eq_k(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        
+        List<LMHardwareControlGroup> enrollments = yukonJdbcTemplate.query(sql, createRowMapper());
+        return enrollments;
+    }
+    
     @Override
     public List<LMHardwareControlGroup> getIntersectingEnrollments(int accountId,
                                                                    int inventoryId,

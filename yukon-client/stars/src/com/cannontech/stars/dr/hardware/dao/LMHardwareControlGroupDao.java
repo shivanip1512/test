@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.hardware.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.ReadableInstant;
 
@@ -125,17 +126,17 @@ public interface LMHardwareControlGroupDao {
      * This method retrieves all enrollments that intersect with the supplied interval.  This
      * also includes active enrollments that would intersect with the intersection.
      */
-    public List<LMHardwareControlGroup> getIntersectingEnrollments(int accountId,
-                                                                   int inventoryId,
-                                                                   int loadGroupId,
-                                                                   OpenInterval enrollmentInterval);
+    public List<LMHardwareControlGroup> getIntersectingEnrollments(Set<Integer> energyCompanyIds, List<Integer> loadGroupIds, OpenInterval enrollmentInterval);
+
+    /**
+     * This method retrieves all enrollments that intersect with the supplied interval.  This
+     * also includes active enrollments that would intersect with the intersection.
+     */
+    public List<LMHardwareControlGroup> getIntersectingEnrollments(int accountId, int inventoryId, int loadGroupId, OpenInterval enrollmentInterval);
 
     /**
      * This method retrieves all opt outs that intersect with the supplied interval.  This
      * also includes active opt outs that would intersect with the intersection.
      */
-    public List<LMHardwareControlGroup> getIntersectingOptOuts(int accountId,
-                                                               int inventoryId,
-                                                               int loadGroupId,
-                                                               OpenInterval optOutInterval);
+    public List<LMHardwareControlGroup> getIntersectingOptOuts(int accountId, int inventoryId, int loadGroupId, OpenInterval optOutInterval);
 }

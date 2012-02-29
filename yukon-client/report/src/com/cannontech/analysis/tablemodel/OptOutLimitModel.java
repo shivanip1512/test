@@ -14,6 +14,7 @@ import org.joda.time.ReadableInstant;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.OpenInterval;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -24,7 +25,9 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
@@ -35,8 +38,11 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
 public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.ModelRow> implements EnergyCompanyModelAttributes, UserContextModelAttributes {
@@ -49,9 +55,24 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     private YukonEnergyCompanyService yukonEnergyCompanyService = YukonSpringHook.getBean("yukonEnergyCompanyService", YukonEnergyCompanyService.class);
     private EnrollmentDao enrollmentDao =  YukonSpringHook.getBean("enrollmentDao", EnrollmentDao.class);
     private InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
+    private LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);
     private ProgramDao programDao =  YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
     private OptOutEventDao optOutEventDao = YukonSpringHook.getBean("optOutEventDao", OptOutEventDao.class);
     private OptOutService optOutService = YukonSpringHook.getBean("optOutService", OptOutService.class);
+    
+    private Function<LMHardwareControlGroup, Integer> lmHardwareControlGroupToAccountIdFunction =
+            new Function<LMHardwareControlGroup, Integer>() {
+                @Override
+                public Integer apply(LMHardwareControlGroup lmHardwareControlGroup) {
+                    return lmHardwareControlGroup.getAccountId();
+                }};
+        
+        private Function<LMHardwareControlGroup, Integer> lmHardwareControlGroupToInventoryIdFunction = 
+            new Function<LMHardwareControlGroup, Integer>() {
+                @Override
+                public Integer apply(LMHardwareControlGroup lmHardwareControlGroup) {
+                    return lmHardwareControlGroup.getInventoryId();
+                }};
     
     private YukonUserContext userContext;
     
@@ -179,6 +200,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             if (residentialGroupOptOutLimit == null) continue;
             Integer optOutLimit = residentialGroupOptOutLimit.getLimit();
             DateTime reportStartDate = getReportStartDate(optOutEndDate, energyCompany, residentialGroupOptOutLimit);
+            OpenInterval reportInterval = OpenInterval.createClosed(reportStartDate, optOutEndDate);
             
             // Check to see if users where selected and use them to find the report data.
             if (userIds != null) {
@@ -210,25 +232,24 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             
             // Check to see if programs where selected and uses them to find the report data.
             if (programIds != null) {
-                List<Program> suppliedProgramIds = programDao.getByProgramIds(programIds);
-    
+                // Get the enrollments for the programIds supplied
                 List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
-                List<CustomerAccountWithNames> accounts = 
-                    customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, groupIdsFromSQL, reportStartDate.toInstant().toDate(), optOutEndDate.toInstant().toDate());
-    
-                for (CustomerAccountWithNames account : accounts) {
-                    List<OverrideHistory> overrideHistories = 
-                        optOutEventDao.getOptOutHistoryForAccount(account.getAccountId(), reportStartDate, optOutEndDate, residentialGroup);
-                    
-                    for (OverrideHistory overrideHistory : overrideHistories) {
-    
-                        // Retrieve the involved program ids from override history entry  
-                        for (Program overrideHistoryProgram : overrideHistory.getPrograms()) {
-                            if (suppliedProgramIds.contains(overrideHistoryProgram)) {
-                                addOverrideHistoryToModel(Collections.singletonList(overrideHistory), optOutLimit);
-                                break;
-                            }
-                        }
+                Set<Integer> usableEnergyCompanies = ecMappingDao.getChildEnergyCompanyIds(energyCompanyId);
+                List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getIntersectingEnrollments(usableEnergyCompanies, groupIdsFromSQL, reportInterval);
+                
+                // Build up a multimap of account ids to enrolled inventory ids.
+                ImmutableListMultimap<Integer, LMHardwareControlGroup> accountIdToLMHardwareControlGroups = 
+                    Multimaps.index(enrollments, lmHardwareControlGroupToAccountIdFunction);
+                ListMultimap<Integer, Integer> accountIdToInventoryIds = 
+                    Multimaps.transformValues(accountIdToLMHardwareControlGroups, lmHardwareControlGroupToInventoryIdFunction);
+                
+                // Create the model rows of the enrolled inventories found on the account.
+                for (Integer accountId : accountIdToInventoryIds.keySet()) {
+                    Set<Integer> enrolledInventoryIds = Sets.newHashSet(accountIdToInventoryIds.get(accountId));
+                    for (int enrolledInventoryId : enrolledInventoryIds) {
+                        List<OverrideHistory> overrideHistoryList =
+                                optOutEventDao.getOptOutHistoryForInventory(enrolledInventoryId, reportStartDate, optOutEndDate, residentialGroup);
+                        addOverrideHistoryToModel(overrideHistoryList, optOutLimit);
                     }
                 }
             }
