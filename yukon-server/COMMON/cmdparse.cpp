@@ -1880,6 +1880,14 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                 }
             }
         }
+        if( ! CmdStr.match("water meter read interval").empty())
+        {
+            _cmd["water_meter_read_interval"] = true;
+        }
+        if( ! CmdStr.match("load profile allocation").empty())
+        {
+            _cmd["load_profile_allocation"] = true;
+        }
         if(CmdStr.contains(" update"))
         {
             flag |= CMD_FLAG_UPDATE;
@@ -2052,6 +2060,22 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             if( CmdStr.contains(" disable") )
             {
                 _cmd["tou_disable"] = CtiParseValue(true);
+            }
+        }
+
+        if( ! CmdStr.match(" water meter read interval( |$)").empty())
+        {
+            _cmd["water_meter_read_interval"] = true;
+            if( ! (token = CmdStr.match("interval [0-9]+ ?[hm]")).empty())
+            {
+                int duration = atoi(token.match(str_num).c_str());
+                if (*token.rbegin() == 'h')     // if given hours, convert to minutes (tokens last char either 'm' or 'h'
+                {
+                    duration *= 60;
+                }
+                duration *= 60;                 // convert minutes to seconds
+
+                _cmd["read_interval_duration_seconds"] = CtiParseValue(duration);
             }
         }
 
@@ -2945,6 +2969,22 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 }
             }
         }
+        if(CmdStr.contains(" load profile allocation "))
+        {
+            _cmd["load_profile_allocation"] = true;
+
+            if(!(token = CmdStr.match("allocation 1:[0-9]+ 2:[0-9]+ 3:[0-9]+ 4:[0-9]+")).empty())
+            {
+                int channel1, channel2, channel3, channel4;
+
+                sscanf(token.c_str(), "allocation 1:%d 2:%d 3:%d 4:%d", &channel1, &channel2, &channel3, &channel4);
+
+                _cmd["load_profile_allocation_channel_1"] = CtiParseValue(channel1);
+                _cmd["load_profile_allocation_channel_2"] = CtiParseValue(channel2);
+                _cmd["load_profile_allocation_channel_3"] = CtiParseValue(channel3);
+                _cmd["load_profile_allocation_channel_4"] = CtiParseValue(channel4);
+            }
+        }
     }
     else
     {
@@ -3835,6 +3875,17 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
         if(!(token = CmdStr.match(" sync|filler")).empty())
         {
             _cmd["vcfiller"] = TRUE;
+        }
+
+        if(!(token = CmdStr.match(" channel 2 (netmetering|water meter|none)")).empty())
+        {
+            CtiTokenizer tok( token );
+
+            tok();      // == "channel"
+            tok();      // == "2"
+
+            _cmd["channel_2_configuration"] = true;
+            _cmd["channel_2_configuration_setting"] = CtiParseValue( tok() );
         }
     }
     else
