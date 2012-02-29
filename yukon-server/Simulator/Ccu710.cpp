@@ -30,16 +30,15 @@ error_t Ccu710::peekAddress(Comms &comms, unsigned &address)
 {
     bytes address_buf;
 
-    if( !comms.peek(back_inserter(address_buf), 1) )
+    if( !comms.peek(back_inserter(address_buf), 3) )
     {
         return false;
     }
 
-    if( isExtendedAddress(address_buf[0]) )
+    if( !isExtendedAddress(address_buf[0]) )
     {
-        address_buf.clear();
-
-        if( !comms.peek(back_inserter(address_buf), 2) )
+        // These bits can never be set if the address isn't extended.
+        if( address_buf[1] & 0x38 )
         {
             return false;
         }

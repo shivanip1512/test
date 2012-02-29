@@ -56,6 +56,7 @@ int SimulatorMainFunction(int argc, char **argv);
 void loadGloabalSimulatorBehaviors(Logger &logger);
 bool confirmCcu710(int ccu_address, int portNumber, Logger &logger);
 bool getPorts(vector<int> &ports);
+bool isDnpHeader(bytes peek_buf);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
 void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, Logger &logger);
@@ -250,6 +251,16 @@ bool getPorts(vector<int> &ports)
     return !ports.empty();
 }
 
+bool isDnpHeader(bytes peek_buf)
+{
+    if( peek_buf.size() < 2 )
+    {
+        return false;
+    }
+
+    return ((peek_buf[0] == 0x05) && (peek_buf[1] == 0x64));
+}
+
 void CcuPortMaintainer(int portNumber, int strategy)
 {
     while( !gQuit )
@@ -366,138 +377,139 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
 
         if( !peek_buf.empty() )
         {
-            if( peek_buf[0] == 0x05 && peek_buf[1] == 0x64 )
+            if( isDnpHeader(peek_buf) )
             {
-                // This is a DNP header...
                 scope.log("DNP message obtained, clearing the socket.");
                 scope.log("Please remove the CBC/RTU from this comm channel to eliminate this message.");
                 socket_interface.clear();
-                continue;
             }
-            if( peek_buf[0] == CcuIDLC::Hdlc_FramingFlag )
+            else 
             {
-                // Device is either a 721 or a 711.
-                if( !CcuIDLC::addressAvailable(socket_interface) )
+                if( peek_buf[0] == CcuIDLC::Hdlc_FramingFlag )
                 {
-                    Sleep(500);
-                    continue;
-                }
-
-                if( error = CcuIDLC::peekAddress(socket_interface, ccu_address) )
-                {
-                    scope.log("Invalid message received, clearing socket / " + error);
-
-                    socket_interface.clear();
-                }
-
-                if( ccu_list.find(ccu_address) == ccu_list.end() )
-                {
-                    stringstream ss_address, ss_port;
-                    ss_address << ccu_address;
-                    ss_port    << portNumber;
-                    // Device is either a 711 or 721, but isn't yet in the ccu_list.
-                    // We need to find from the database (if possible) what type of device
-                    // this is and create it, then add it to the map.
-                    const string sql_Ccu721 =   "SELECT DISTINCT Y.TYPE "
-                                                "FROM YukonPAObject Y, DEVICE V, DeviceAddress A, PORTTERMINALSERVER P, "
-                                                    "DeviceDirectCommSettings D "
-                                                "WHERE A.DeviceID = V.DEVICEID AND V.DEVICEID = Y.PAObjectID AND "
-                                                    "Y.TYPE = 'CCU-721' AND A.SlaveAddress = " + ss_address.str() + " AND "
-                                                    "D.PORTID = P.PORTID AND Y.PAObjectID = D.DEVICEID AND "
-                                                    "P.SOCKETPORTNUMBER = " + ss_port.str();
-
-                    const string sql_Ccu711 =   "SELECT DISTINCT Y.TYPE "
-                                                "FROM YukonPAObject Y, DEVICEIDLCREMOTE D, Device V, PORTTERMINALSERVER P, "
-                                                    "DeviceDirectCommSettings S "
-                                                "WHERE D.DEVICEID = V.DEVICEID AND V.DEVICEID = Y.PAObjectID AND "
-                                                    "Y.TYPE = 'CCU-711' AND D.ADDRESS = " + ss_address.str() + " AND "
-                                                    "S.PORTID = P.PORTID AND Y.PAObjectID = S.DEVICEID AND "
-                                                    "P.SOCKETPORTNUMBER = " + ss_port.str();
-
-                    Cti::Database::DatabaseConnection connection;
-                    Cti::Database::DatabaseReader rdr(connection, sql_Ccu721);
-
-                    rdr.execute();
-
-                    if( rdr() )
+                    // Device is either a 721 or a 711.
+                    if( !CcuIDLC::addressAvailable(socket_interface) )
                     {
-                        // The database query result wasn't empty, so the device SHOULD BE a 721. Check this.
-                        string str;
-                        rdr["TYPE"] >> str;
-                        if( strcmp(str.c_str(), "CCU-721") == 0 )
-                        {
-                            ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
-                        }
+                        Sleep(500);
+                        continue;
                     }
-                    else
+                    
+                    if( error = CcuIDLC::peekAddress(socket_interface, ccu_address) )
                     {
-                        rdr.setCommandText(sql_Ccu711);
+                        scope.log("Invalid message received, clearing socket / " + error);
+                    
+                        socket_interface.clear();
+                    }
+                    
+                    if( ccu_list.find(ccu_address) == ccu_list.end() )
+                    {
+                        stringstream ss_address, ss_port;
+                        ss_address << ccu_address;
+                        ss_port    << portNumber;
+                        // Device is either a 711 or 721, but isn't yet in the ccu_list.
+                        // We need to find from the database (if possible) what type of device
+                        // this is and create it, then add it to the map.
+                        const string sql_Ccu721 =   "SELECT DISTINCT Y.TYPE "
+                                                    "FROM YukonPAObject Y, DEVICE V, DeviceAddress A, PORTTERMINALSERVER P, "
+                                                        "DeviceDirectCommSettings D "
+                                                    "WHERE A.DeviceID = V.DEVICEID AND V.DEVICEID = Y.PAObjectID AND "
+                                                        "Y.TYPE = 'CCU-721' AND A.SlaveAddress = " + ss_address.str() + " AND "
+                                                        "D.PORTID = P.PORTID AND Y.PAObjectID = D.DEVICEID AND "
+                                                        "P.SOCKETPORTNUMBER = " + ss_port.str();
+                    
+                        const string sql_Ccu711 =   "SELECT DISTINCT Y.TYPE "
+                                                    "FROM YukonPAObject Y, DEVICEIDLCREMOTE D, Device V, PORTTERMINALSERVER P, "
+                                                        "DeviceDirectCommSettings S "
+                                                    "WHERE D.DEVICEID = V.DEVICEID AND V.DEVICEID = Y.PAObjectID AND "
+                                                        "Y.TYPE = 'CCU-711' AND D.ADDRESS = " + ss_address.str() + " AND "
+                                                        "S.PORTID = P.PORTID AND Y.PAObjectID = S.DEVICEID AND "
+                                                        "P.SOCKETPORTNUMBER = " + ss_port.str();
+                    
+                        Cti::Database::DatabaseConnection connection;
+                        Cti::Database::DatabaseReader rdr(connection, sql_Ccu721);
+                    
                         rdr.execute();
-
+                    
                         if( rdr() )
                         {
+                            // The database query result wasn't empty, so the device SHOULD BE a 721. Check this.
                             string str;
                             rdr["TYPE"] >> str;
-                            if( strcmp(str.c_str(), "CCU-711") == 0 )
+                            if( strcmp(str.c_str(), "CCU-721") == 0 )
                             {
-                                ccu_list.insert(make_pair(ccu_address, new Ccu711(ccu_address, strategy)));
+                                ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
                             }
                         }
                         else
                         {
-                            // There was a problem in the connection to the database, or the device isn't
-                            // in the database. Determine which device to use based on the validateCommand
-                            // function.
-                            if( validRequest<Ccu721>(socket_interface) )
+                            rdr.setCommandText(sql_Ccu711);
+                            rdr.execute();
+                    
+                            if( rdr() )
                             {
-                                ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
+                                string str;
+                                rdr["TYPE"] >> str;
+                                if( strcmp(str.c_str(), "CCU-711") == 0 )
+                                {
+                                    ccu_list.insert(make_pair(ccu_address, new Ccu711(ccu_address, strategy)));
+                                }
                             }
                             else
                             {
-                                ccu_list.insert(make_pair(ccu_address, new Ccu711(ccu_address, strategy)));
+                                // There was a problem in the connection to the database, or the device isn't
+                                // in the database. Determine which device to use based on the validateCommand
+                                // function.
+                                if( validRequest<Ccu721>(socket_interface) )
+                                {
+                                    ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
+                                }
+                                else
+                                {
+                                    ccu_list.insert(make_pair(ccu_address, new Ccu711(ccu_address, strategy)));
+                                }
                             }
                         }
                     }
                 }
-            }
-            else
-            {
-                // Device is a 710.
-                if( !Ccu710::addressAvailable(socket_interface) )
+                else
                 {
-                    Sleep(500);
-                    continue;
+                    // Device is a 710.
+                    if( !Ccu710::addressAvailable(socket_interface) )
+                    {
+                        Sleep(500);
+                        continue;
+                    }
+
+                    if( error = Ccu710::peekAddress(socket_interface, ccu_address) )
+                    {
+                        scope.log("Invalid message received, clearing socket / " + error);
+
+                        socket_interface.clear();
+                    }
+
+                    if( ccu_list.find(ccu_address) == ccu_list.end() && confirmCcu710(ccu_address, portNumber, scope))
+                    {
+                        scope.log("New CCU address received", ccu_address);
+
+                        ccu_list.insert(make_pair(ccu_address, new Ccu710(ccu_address, strategy)));
+                    }
                 }
 
-                if( error = Ccu710::peekAddress(socket_interface, ccu_address) )
+                if( ccu_list.find(ccu_address) != ccu_list.end() )
                 {
-                    scope.log("Invalid message received, clearing socket / " + error);
+                    if( !ccu_list[ccu_address]->handleRequest(socket_interface, scope) )
+                    {
+                        scope.log("Error while processing message, clearing socket");
 
+                        socket_interface.clear();
+                    }
+                }
+                else
+                {
+                    // The request was probably garbage. We shouldn't see this often, if ever.
+                    scope.log("Invalid message received, clearing socket.");
                     socket_interface.clear();
                 }
-
-                if( ccu_list.find(ccu_address) == ccu_list.end() && confirmCcu710(ccu_address, portNumber, scope))
-                {
-                    scope.log("New CCU address received", ccu_address);
-
-                    ccu_list.insert(make_pair(ccu_address, new Ccu710(ccu_address, strategy)));
-                }
-            }
-
-            if( ccu_list.find(ccu_address) != ccu_list.end() )
-            {
-                if( !ccu_list[ccu_address]->handleRequest(socket_interface, scope) )
-                {
-                    scope.log("Error while processing message, clearing socket");
-
-                    socket_interface.clear();
-                }
-            }
-            else
-            {
-                // The request was probably garbage. We shouldn't see this often, if ever.
-                scope.log("Invalid message received, clearing socket.");
-                socket_interface.clear();
             }
         }
         else
