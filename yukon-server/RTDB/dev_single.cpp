@@ -1841,38 +1841,27 @@ bool CtiDeviceSingle::validatePendingStatus(bool status, int scantype, CtiTime &
 }
 
 
-ULONG CtiDeviceSingle::getTardyTime(int scantype) const
+unsigned long CtiDeviceSingle::getTardyTime(int scantype) const
 {
-    ULONG maxtardytime = getScanRate(scantype);
+    const unsigned long minTardyTime = gConfigParms.getValueAsInt("SCANNER_MAX_TARDY_TIME", 60);
 
-    if(maxtardytime < gConfigParms.getValueAsInt("SCANNER_MAX_TARDY_TIME", 60))
+    unsigned long tardyTime = getScanRate(scantype);
+
+    if( tardyTime < minTardyTime )
     {
-        maxtardytime = gConfigParms.getValueAsInt("SCANNER_MAX_TARDY_TIME", 60);
+        tardyTime = minTardyTime;
     }
-    else
+    else if( scantype == ScanRateGeneral ||
+             scantype == ScanRateIntegrity )
     {
-        switch(scantype)
-        {
-        case ScanRateGeneral:
-        case ScanRateIntegrity:
-            {
-                maxtardytime = maxtardytime * 2 + 1;
-                break;
-            }
-        case ScanRateAccum:
-            {
-                maxtardytime = maxtardytime + maxtardytime / 2;
-                break;
-            }
-        }
+        tardyTime = tardyTime * 2 + 1;
+    }
+    else if( scantype == ScanRateAccum )
+    {
+        tardyTime = tardyTime + tardyTime / 2;
     }
 
-    if(maxtardytime > 7200)
-    {
-        maxtardytime = 7200;
-    }
-
-    return maxtardytime;
+    return min(tardyTime, 7200UL);
 }
 
 bool CtiDeviceSingle::hasLongScanRate(const string &cmd) const

@@ -1,23 +1,7 @@
 #include "precompiled.h"
 
-// These next few are required for Win32
-#include <process.h>
-#include <vector>
-
-#include <rw/toolpro/winsock.h>
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <float.h>
-#include <time.h>
-
-#include "os2_2w32.h"
-#include "cticalls.h"
-
 #include "dbaccess.h"
 #include "dsm2.h"
-#include "elogger.h"
 #include "dsm2err.h"
 #include "queues.h"
 #include "porter.h"
@@ -43,7 +27,6 @@
 #include "msg_cmd.h"
 #include "msg_reg.h"
 #include "msg_dbchg.h"
-#include "msg_signal.h"
 
 #include "c_port_interface.h"
 #include "cparms.h"
@@ -95,8 +78,6 @@ INT     MakePorterRequests(list< OUTMESS* > &outList);
 Cti::ScannableDeviceManager ScannerDeviceManager(Application_Scanner);
 CtiConfigManager            ConfigManager;
 CtiPointManager             ScannerPointManager;
-
-static RWWinSockInfo  winsock;
 
 extern BOOL ScannerQuit;
 
@@ -153,13 +134,29 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
 {
     INT   nRet = 0;
     CtiTime TimeNow;
-    list< OUTMESS* > &outList =  *((list< OUTMESS* > *)d);
+    CtiDeviceBase::OutMessageList &outList = *(static_cast<CtiDeviceBase::OutMessageList *>(d));
 
     if(ScannerDebugLevel & SCANNER_DEBUG_DEVICEANALYSIS)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Looking at " << pBase->getName() << endl;
     }
+
+    //  poor man's lambda, fix me when C++11-able
+    struct setOutMessageExpiration
+    {
+        setOutMessageExpiration(CtiTime expirationTime_) : expirationTime(expirationTime_) {}
+
+        const CtiTime expirationTime;
+
+        void operator()(CtiOutMessage *om)
+        {
+            if( om && ! om->ExpirationTime )
+            {
+                om->ExpirationTime = expirationTime.seconds();
+            }
+        }
+    };
 
     if(pBase->isSingle() && !pBase->isInhibited())
     {
@@ -177,8 +174,13 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
                 dout << CtiTime() << " **** Accumulator Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
 
             }
+            CtiDeviceBase::OutMessageList scanOMs;
             DeviceRecord->resetScanFlag(CtiDeviceSingle::ScanException);   // Results should be forced though the exception system
-            nRet = DeviceRecord->initiateAccumulatorScan(outList);
+            nRet = DeviceRecord->initiateAccumulatorScan(scanOMs);
+
+            for_each(scanOMs.begin(), scanOMs.end(), setOutMessageExpiration(TimeNow.seconds() + DeviceRecord->getTardyTime(ScanRateAccum)));
+
+            outList.splice(outList.end(), scanOMs);
         }
 
         /*
@@ -193,8 +195,13 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
                 dout << CtiTime() << " **** Integrity Scan Checkpoint **** " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
 
             }
+            CtiDeviceBase::OutMessageList scanOMs;
             DeviceRecord->resetScanFlag(CtiDeviceSingle::ScanException);   // Results should be forced though the exception system
-            DeviceRecord->initiateIntegrityScan(outList);
+            DeviceRecord->initiateIntegrityScan(scanOMs);
+
+            for_each(scanOMs.begin(), scanOMs.end(), setOutMessageExpiration(TimeNow.seconds() + DeviceRecord->getTardyTime(ScanRateIntegrity)));
+
+            outList.splice(outList.end(), scanOMs);
         }
 
         /*
@@ -203,7 +210,8 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
 
         if(DeviceRecord->getNextScan(ScanRateGeneral) <= TimeNow)
         {
-            if((nRet = DeviceRecord->initiateGeneralScan(outList)) > 0)
+            CtiDeviceBase::OutMessageList scanOMs;
+            if((nRet = DeviceRecord->initiateGeneralScan(scanOMs)) > 0)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " General Scan Fail to Device: " << DeviceRecord->getName() << ". Error " << nRet << ": " << GetError(nRet) << endl;
@@ -216,6 +224,10 @@ static void applyGenerateScanRequests(const long key, CtiDeviceSPtr pBase, void 
                     dout << CtiTime() << " **** Exception/General Checkpoint ****   " << DeviceRecord->getID() << " / " <<  DeviceRecord->getName() << endl;
                 }
                 DeviceRecord->setScanFlag(CtiDeviceSingle::ScanException);   // Results need NOT be forced though the exception system
+
+                for_each(scanOMs.begin(), scanOMs.end(), setOutMessageExpiration(TimeNow.seconds() + DeviceRecord->getTardyTime(ScanRateGeneral)));
+
+                outList.splice(outList.end(), scanOMs);
             }
         }
 
