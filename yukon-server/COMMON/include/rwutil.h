@@ -31,17 +31,6 @@
 #include "boostutil.h"
 
 /*
- *  RWfile
- */
-inline RWFile& operator>>(RWFile &f, std::string &str){
-    RWCString s;
-    f >> s;
-        str = s.data();
-    return f;
-
-}
-
-/*
  *  RW stream operators.  seralize bool
  */
 inline RWvostream& operator<<(RWvostream &strm, bool b)

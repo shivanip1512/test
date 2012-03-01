@@ -1,31 +1,11 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   scanglob
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanglob.cpp-arc  $
-* REVISION     :  $Revision: 1.10.14.2 $
-* DATE         :  $Date: 2008/11/21 16:14:53 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-
-/* Global definitions for the scanner */
+#include "dsm2.h"
+#include "scanglob.h"
 
 // These next few are required for Win32
 #include <iostream>
 using namespace std;
-
-#include "os2_2w32.h"
-#include "scanner.h"
-#include "dsm2.h"
-#include "scanglob.h"
-#include "dlldefs.h"
-#include "utility.h"
 
 IM_EX_SCANSUP bool SuspendLoadProfile = false;
 
