@@ -10,11 +10,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface DeviceAttributeReadStrategy {
     
     /**
-     * Each strategy implementation should have a type in the DeviceAttributeReadStrategyType enum.
+     * Each strategy implementation should have a type in the {@link StrategyType} enum.
      * This returns that type for this strategy implementation.
      */
     public StrategyType getType();
-    
+
     /**
      * This associates the strategy with a subset of PaoTypes. It is up to the author of the
      * strategies to ensure that only one strategy "canRead" for each PaoType. It is recommended

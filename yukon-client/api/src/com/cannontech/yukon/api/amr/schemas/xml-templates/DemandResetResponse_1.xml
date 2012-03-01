@@ -13,7 +13,25 @@
     </unsupportedDevices>
     <error code="85" category="Yukon System">
         <paoId value="213423"/>
+        <description>
+            The targeted device is disabled or inhibited in the Yukon System.
+        </description>
+        <troubleshooting>
+            This is a Yukon system message, the device is flagged as disabled in the
+            Device Setup.
+        </troubleshooting>
+    </error>
+    <error code="85" category="Yukon System">
         <paoId value="132423"/>
+        <description>
+            The targeted device is disabled or inhibited in the Yukon System.
+        </description>
+        <troubleshooting>
+            This is a Yukon system message, the device is flagged as disabled in the
+            Device Setup.
+        </troubleshooting>
+    </error>
+    <error code="85" category="Yukon System">
         <paoId value="1596223"/>
         <description>
             The targeted device is disabled or inhibited in the Yukon System.

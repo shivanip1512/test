@@ -55,9 +55,10 @@
 
     <xsd:complexType name="PaoError">
         <xsd:sequence>
-            <xsd:element name="paoId" maxOccurs="unbounded" type="yukon:PaoId"/>
+            <xsd:element name="paoId" type="yukon:PaoId"/>
             <xsd:element name="description" type="xsd:string"/>
             <xsd:element name="troubleshooting" type="xsd:string"/>
+            <xsd:element name="resultString" type="xsd:string" minOccurs="0"/>
         </xsd:sequence>
         <xsd:attribute name="code" type="xsd:int" use="required"/>
         <xsd:attribute name="category" type="xsd:string" use="required"/>

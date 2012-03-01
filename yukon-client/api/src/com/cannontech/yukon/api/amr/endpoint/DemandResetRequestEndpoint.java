@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -16,10 +17,9 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
-import com.cannontech.amr.demandreset.service.PlcDemandResetService;
+import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.MultipleDeviceResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
@@ -32,42 +32,25 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Endpoint
 public class DemandResetRequestEndpoint {
     private static class MyDemandResetCallback implements DemandResetCallback {
         List<Element> errorElems = Lists.newArrayList();
-        Map<Integer, Element> errorElementsByCode = Maps.newHashMap();
-        Map<Integer, SpecificDeviceErrorDescription> errorsByCode = Maps.newHashMap();
-        int numErrorsFound = 0;
 
         @Override
-        public void completed(MultipleDeviceResultHolder results) {
+        public void completed(Results results) {
             Map<SimpleDevice, SpecificDeviceErrorDescription> errors = results.getErrors();
             for (SimpleDevice device : errors.keySet()) {
                 SpecificDeviceErrorDescription error = errors.get(device);
-                Integer errorCode = error.getErrorCode();
-                Element errorElem = errorElementsByCode.get(errorCode);
-                if (errorElem == null) {
-                    errorElem = new Element("error", ns);
-                    errorElementsByCode.put(errorCode, errorElem);
-                    errorsByCode.put(errorCode, error);
+                Element errorElem = new Element("error", ns);
 
-                    errorElem.setAttribute("category", error.getCategory());
-                    errorElem.setAttribute("code", Integer.toString(error.getErrorCode()));
-                    errorElems.add(errorElem);
-                }
+                errorElem.setAttribute("category", error.getCategory());
+                errorElem.setAttribute("code", Integer.toString(error.getErrorCode()));
+                errorElems.add(errorElem);
 
                 errorElem.addContent(makePaoElement(device));
-                numErrorsFound++;
-            }
-
-            // We need to add these _after_ the paoId elements.
-            for (Integer errorCode : errorElementsByCode.keySet()) {
-                Element errorElem = errorElementsByCode.get(errorCode);
-                SpecificDeviceErrorDescription error = errorsByCode.get(errorCode);
 
                 Element descriptionElem = new Element("description", ns);
                 descriptionElem.setText(error.getDescription());
@@ -76,6 +59,13 @@ public class DemandResetRequestEndpoint {
                 Element troubleshootingElem = new Element("troubleshooting", ns);
                 troubleshootingElem.setText(error.getTroubleshooting());
                 errorElem.addContent(troubleshootingElem);
+
+                String resultString = error.getPorter();
+                if (!StringUtils.isBlank(resultString)) {
+                    Element resultStringElem = new Element("resultString", ns);
+                    resultStringElem.setText(resultString);
+                    errorElem.addContent(resultStringElem);
+                }
             }
         }
     }
@@ -84,7 +74,7 @@ public class DemandResetRequestEndpoint {
     private final static Namespace ns = YukonXml.getYukonNamespace();
 
     @Autowired private PaoSelectionService paoSelectionService;
-    @Autowired private PlcDemandResetService demandResetService;
+    @Autowired private DemandResetService demandResetService;
 
     @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "demandResetRequest")
     public Element invoke(Element demandResetRequest, LiteYukonUser user) {
@@ -126,11 +116,12 @@ public class DemandResetRequestEndpoint {
             MyDemandResetCallback callback = new MyDemandResetCallback();
             demandResetService.sendDemandReset(validDevices, callback, user);
 
+            int numErrors = callback.errorElems.size();
             resetsRequestedElem.setAttribute("initiated",
-                                             Integer.toString(validDevices.size() - callback.numErrorsFound));
+                                             Integer.toString(validDevices.size() - numErrors));
             resetsRequestedElem.setAttribute("numLookupErrors", Integer.toString(numLookupFailures));
             resetsRequestedElem.setAttribute("numUnsupportedDevices", Integer.toString(invalidDevices.size()));
-            resetsRequestedElem.setAttribute("numErrors", Integer.toString(callback.numErrorsFound));
+            resetsRequestedElem.setAttribute("numErrors", Integer.toString(numErrors));
             response.addContent(resetsRequestedElem);
             if (numLookupFailures > 0) {
                 response.addContent(lookupErrorElem);
