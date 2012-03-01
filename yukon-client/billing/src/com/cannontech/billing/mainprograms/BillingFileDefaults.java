@@ -48,6 +48,7 @@ public class BillingFileDefaults
 	private java.util.Vector <String> billGroup = null;
 	private String outputFileDir = null;
 	private boolean removeMultiplier = false;
+	private String token = null;
 
 	private boolean appendToFile = false;
 
@@ -498,4 +499,11 @@ public class BillingFileDefaults
 	public LiteYukonUser getLiteYukonUser() {
 		return liteYukonUser;
 	}
+	
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

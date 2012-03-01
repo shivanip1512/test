@@ -97,6 +97,11 @@ public class MasterConfigMap implements ConfigurationSource {
     }
     
     @Override
+    public String getString(MasterConfigBooleanKeysEnum key, String defaultValue) {
+        return getString(key.name(), defaultValue);
+    }
+    
+    @Override
     public int getRequiredInteger(String key) throws UnknownKeyException {
     	if (!configMap.containsKey(key)) {
             throw new UnknownKeyException(key);
@@ -167,5 +172,5 @@ public class MasterConfigMap implements ConfigurationSource {
     public Duration getDuration(String key, ReadableDuration defaultValue, DurationFieldType duationFieldType) {
         return getPeriod(key, defaultValue.toPeriod(), duationFieldType).toStandardDuration();
     }
-    
+
 }

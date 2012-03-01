@@ -129,6 +129,21 @@ public interface RawPointHistoryDao {
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
+     * such that the RPH values for each PAO will be accessible (and ordered) on their own.
+     * 
+     * @param paos The Iterable of PAOs
+     * @param attribute The Attribute to return, this can either be a regular or a mapped attribute
+     * @param startChangeId The changeId to start from.
+     * @param stopChangeId The id of the last changeId to use in this call
+     * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering by timestamp (only affects the iteration order of the values)
+     * @return
+     */
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> paos, Attribute attribute, final int startChangeId, final int stopChangeId, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order);
+    
+    /**
+     * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
      * such that the RPH values for each PAO will be accessible (and ordered) on their own. For any pao in "paos", the following will
      * be true:
      * 

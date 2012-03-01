@@ -5,14 +5,17 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.StringRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Maps;
 
 /**
  * Insert the type's description here.
@@ -20,7 +23,7 @@ import com.cannontech.spring.YukonSpringHook;
  * @author: 
  */
 public final class FileFormatTypes {
-    private static SimpleJdbcTemplate jdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+    private static YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
     
 	// Constants representing types of file formats
 	// ** THESE MUST MATCH THE DATABASE TABLE BILLINGFILEFORMATS **
@@ -54,6 +57,7 @@ public final class FileFormatTypes {
   	public static final int EXTENDED_TOU_INCODE = 24;
   	public static final int ITRON_REGISTER_READINGS_EXPORT = 25;
   	public static final int SIMPLE_TOU_DEVICE_NAME = 26;
+  	public static final int CMEP = 27;
 
   	public static final int MVRS_KETCHIKAN = 30;
   	public static final int STANDARD = 31;
@@ -88,17 +92,18 @@ public final class FileFormatTypes {
 	public static final String EXTENDED_TOU_INCODE_STRING = "INCODE (Extended TOU)";
 	public static final String ITRON_REGISTER_READINGS_EXPORT_STRING = "Itron Register Readings Export";
 	public static final String SIMPLE_TOU_DEVICE_NAME_STRING  = "SIMPLE_TOU_DeviceName";
+	public static final String CMEP_STRING = "CMEP";
 	public static final String MVRS_KETCHIKAN_STRING = "MVRS Ketchikan";
 	public static final String STANDARD_STRING = "Standard";
 	public static final String NISC_TOU_KVARH_RATES_ONLY_STRING = "NISC TOU (kVarH) Rates Only";
 	public static final String NISC_INTERVAL_READINGS_STRING = "NISC Interval Readings";
 	public static final String CURTAILMENT_EVENTS_ITRON_STRING = "Curtailment Events - Itron";
 	
-    private static final int[] defaultValidFormatIDs;
+    private static final int[] defaultValidFormatIds;
     private static final String[] defaultValidFormatTypes;
     
     static {
-        defaultValidFormatIDs = new int[] {
+        defaultValidFormatIds = new int[] {
                 STANDARD, 
                 CADPXL2, 
                 CTICSV, 
@@ -120,15 +125,25 @@ public final class FileFormatTypes {
     }
 
     public final static int getFormatID(String typeStr) {
-        final String sql = "SELECT FORMATID FROM BillingFileFormats WHERE FORMATTYPE = ? " +
-                            " AND FORMATID >= 0";
-        int formatId = jdbcTemplate.queryForInt(sql, typeStr);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT BFF.FormatId");
+        sql.append("FROM BillingFileFormats BFF");
+        sql.append("WHERE BFF.FormatType").eq(typeStr);
+        sql.append("  AND BFF.FormatId").gte(0);
+
+        int formatId = yukonJdbcTemplate.queryForInt(sql);
         return formatId;
     }
 
     public final static String getFormatType(int typeEnum) {
-        final String sql = "SELECT FORMATTYPE FROM BillingFileFormats WHERE FORMATID = ?";
-        String formatType = jdbcTemplate.queryForObject(sql, String.class, typeEnum);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT BFF.FormatType");
+        sql.append("FROM BillingFileFormats BFF");
+        sql.append("WHERE BFF.FormatId").eq(typeEnum);
+
+        String formatType = yukonJdbcTemplate.queryForString(sql);
         return formatType;
     }
 
@@ -136,13 +151,14 @@ public final class FileFormatTypes {
      * @return Returns the validFormatIds.
      */
     public static int[] getValidFormatIDs() {
-        final String sql = "SELECT FORMATID FROM BillingFileFormats WHERE FORMATID >= 0";
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT BFF.FormatId");
+        sql.append("FROM BillingFileFormats BFF");
+        sql.append("WHERE BFF.FormatId").gte(0);
+        
         try {
-            List<Integer> list = jdbcTemplate.query(sql, new ParameterizedRowMapper<Integer>() {
-                public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getInt("FORMATID");
-                }
-            });
+            List<Integer> list = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
             
             if (list.size() > 0) {
                 int[] formatIds = new int[list.size()];
@@ -152,22 +168,22 @@ public final class FileFormatTypes {
                 return formatIds;
             }    
         } catch (DataAccessException e) {
-            return defaultValidFormatIDs;
+            return defaultValidFormatIds;
         }
-        return defaultValidFormatIDs;
+        return defaultValidFormatIds;
     }
 
 	public static String[] getValidFormatTypes() {
-        final String sql = "SELECT FORMATTYPE FROM BillingFileFormats WHERE FORMATID >= 0";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT BFF.FormatType");
+        sql.append("FROM BillingFileFormats BFF");
+        sql.append("WHERE BFF.FormatId").gte(0);
+
         try {
-            List<String> list = jdbcTemplate.query(sql, new ParameterizedRowMapper<String>(){
-                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getString("FORMATTYPE");
-                }
-            });
+            List<String> formatTypes = yukonJdbcTemplate.query(sql, new StringRowMapper());
             
-            if (list.size() > 0) {
-                return list.toArray(new String[list.size()]);
+            if (formatTypes.size() > 0) {
+                return formatTypes.toArray(new String[formatTypes.size()]);
             }
         } catch (DataAccessException e) {
             return defaultValidFormatTypes;
@@ -176,25 +192,28 @@ public final class FileFormatTypes {
 	}
     
     public static Map<String, Integer> getValidFormats() {
-        final String sql = "SELECT FORMATID,FORMATTYPE FROM BillingFileFormats WHERE FORMATID >= 0";
-        final SortedMap<String, Integer> resultMap = new TreeMap<String, Integer>();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT BFF.FormatId, BFF.FormatType");
+        sql.append("FROM BillingFileFormats BFF");
+        sql.append("WHERE BFF.FormatId").gte(0);
+        
+        final SortedMap<String, Integer> typeToFormatIdsMap = Maps.newTreeMap();
         try {
-            jdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
+            yukonJdbcTemplate.query(sql, new RowCallbackHandler() {
                 public void processRow(ResultSet rs) throws SQLException {
-                    resultMap.put(rs.getString("FORMATTYPE"), rs.getInt("FORMATID"));
+                    typeToFormatIdsMap.put(rs.getString("FormatType"), rs.getInt("FormatId"));
                 }
             });
         } catch (DataAccessException e) {
-            for (int x = 0; x < defaultValidFormatIDs.length; x++) {
-                resultMap.put(defaultValidFormatTypes[x], defaultValidFormatIDs[x]);
+            for (int x = 0; x < defaultValidFormatIds.length; x++) {
+                typeToFormatIdsMap.put(defaultValidFormatTypes[x], defaultValidFormatIds[x]);
             }
         }
        
-        Map<String, Integer> resultMapReturn = resultMap;
-        return resultMapReturn;
+        return typeToFormatIdsMap;
     }
     
     public static void setSimpleJdbcTemplate(final SimpleJdbcTemplate jdbcTemplate) {
-        FileFormatTypes.jdbcTemplate = jdbcTemplate;
+        FileFormatTypes.yukonJdbcTemplate = (YukonJdbcTemplate)jdbcTemplate;
     }
 }

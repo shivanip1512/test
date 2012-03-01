@@ -47,6 +47,11 @@ public class MockConfigurationSource implements ConfigurationSource {
     public String getString(String key, String defaultValue) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String getString(MasterConfigBooleanKeysEnum key, String defaultValue) {
+        throw new UnsupportedOperationException();
+    }
     
     @Override
     public Duration getDuration(String key, ReadableDuration defaultValue) {
@@ -69,5 +74,4 @@ public class MockConfigurationSource implements ConfigurationSource {
             DurationFieldType durationFieldType) {
         throw new UnsupportedOperationException();
     }
-    
 }

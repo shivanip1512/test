@@ -189,7 +189,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     public Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final boolean excludeDisabledPaos) {
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff = getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledPaos, Clusivity.EXCLUSIVE_EXCLUSIVE, Order.REVERSE);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff = 
+                getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledPaos, Clusivity.EXCLUSIVE_EXCLUSIVE, Order.REVERSE);
         
         return Maps.transformValues(limitedStuff.asMap(), new Function<Collection<PointValueQualityHolder>, PointValueQualityHolder>() {
             public PointValueQualityHolder apply(Collection<PointValueQualityHolder> from) {
@@ -201,7 +202,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
         return getLimitedAttributeData(displayableDevices, attribute, startDate, stopDate, maxRows, excludeDisabledPaos, clusivity, order, OrderBy.TIMESTAMP);
     }
-
+    
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order, final OrderBy orderBy) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
@@ -269,6 +270,39 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, 20, excludeDisabledPaos);
     }
 
+    @Override
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final int startChangeId, final int stopChangeId, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
+        SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
+            public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
+                return new SqlFragmentGenerator<Integer>() {
+                    @Override
+                    public SqlFragmentSource generate(List<Integer> subList) {
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
+                        sql.append(  "rph.value, rph.quality, p.pointtype");
+                        sql.append("FROM rawpointhistory rph");
+                        sql.append(  "JOIN point p ON rph.pointId = p.pointId");
+                        sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
+                        sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
+                        sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
+                        sql.append(  "AND rph.changeId").gte(startChangeId);
+                        sql.append(  "AND rph.changeId").lte(stopChangeId);
+                        sql.append(  "AND yp.PAObjectID").in(subList);
+                        if (excludeDisabledPaos) {
+                            sql.append(  "AND yp.DisableFlag = 'N'");
+                        }
+                        appendOrderByClause(sql, order);
+                        
+                        return sql;
+                    }
+                };
+            }
+        };
+        
+        return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, 20, excludeDisabledPaos);
+    }
+
+    
     @Override
     public ListMultimap<PaoIdentifier, PointValueQualityHolder> getDataByPointName(Iterable<PaoIdentifier> paos, final String pointName, 
                                                                                    final Date startDate, final Date stopDate, final Clusivity clusivity, final Order order) {
@@ -764,3 +798,4 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         this.paoDefinitionDao = paoDefinitionDao;
     }
 }
+

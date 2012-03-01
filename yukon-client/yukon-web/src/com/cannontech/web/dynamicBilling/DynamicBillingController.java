@@ -599,8 +599,7 @@ public class DynamicBillingController extends MultiActionController {
 		return dynamicBillingFileDao;
 	}
 
-	public void setDynamicBillingFileDao(
-			DynamicBillingFileDao dynamicBillingFileDao) {
+	public void setDynamicBillingFileDao(DynamicBillingFileDao dynamicBillingFileDao) {
 		this.dynamicBillingFileDao = dynamicBillingFileDao;
 	}
 

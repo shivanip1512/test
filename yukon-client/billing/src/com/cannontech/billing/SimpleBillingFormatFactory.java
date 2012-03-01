@@ -131,6 +131,9 @@ public final class SimpleBillingFormatFactory {
 		case FileFormatTypes.CURTAILMENT_EVENTS_ITRON:
             return YukonSpringHook.getBean("curtailmentEventsItronFormat", SimpleBillingFormat.class);
         	
+		case FileFormatTypes.CMEP:
+		    return new CMEP_MEPMD01Format();
+            
         default:
         	// Assume dynamic format
         	

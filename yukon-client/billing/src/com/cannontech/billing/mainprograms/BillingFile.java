@@ -215,10 +215,8 @@ public class BillingFile extends java.util.Observable implements Runnable
 	 */
 	public void encodeOutput(java.io.OutputStream out) throws IOException {
         CTILogger.info("Valid entries are for meter data where: ");
-        CTILogger.info("  DEMAND readings > " + simpleBillingFormat.getBillingFileDefaults().getDemandStartDate() + 
-        		" AND <= " + simpleBillingFormat.getBillingFileDefaults().getEndDate());
-        CTILogger.info("  ENERGY readings > " + simpleBillingFormat.getBillingFileDefaults().getEnergyStartDate() + 
-        		" AND <= " + simpleBillingFormat.getBillingFileDefaults().getEndDate());
+        CTILogger.info("  DEMAND readings > " + simpleBillingFormat.getBillingFileDefaults().getDemandStartDate() + " AND <= " + simpleBillingFormat.getBillingFileDefaults().getEndDate());
+        CTILogger.info("  ENERGY readings > " + simpleBillingFormat.getBillingFileDefaults().getEnergyStartDate() + " AND <= " + simpleBillingFormat.getBillingFileDefaults().getEndDate());
 
 		try {
 			boolean success = simpleBillingFormat.writeToFile(out);
@@ -226,8 +224,7 @@ public class BillingFile extends java.util.Observable implements Runnable
 				notify("Unsuccessfull database query" );
 			} else {
 	            setChanged();
-	            notify("Successfully created the file : " + simpleBillingFormat.getBillingFileDefaults().getOutputFileDir()
-	                    + "\n" + simpleBillingFormat.getReadingCount() + " Valid Readings Reported.");
+	            notify("Successfully created the file : " + simpleBillingFormat.getBillingFileDefaults().getOutputFileDir() + "\n" + simpleBillingFormat.getReadingCount() + " Valid Readings Reported.");
 			}
 
 		} catch (IllegalArgumentException e) {

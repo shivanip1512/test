@@ -35,6 +35,8 @@ public interface ConfigurationSource {
      * @return the value of the key, or defaultValue if the key didn't exist
      */
     public String getString(String key, String defaultValue);
+
+    public String getString(MasterConfigBooleanKeysEnum key, String defaultValue);
     
     public int getRequiredInteger(String key) throws UnknownKeyException;
     
@@ -131,5 +133,4 @@ public interface ConfigurationSource {
      */
     public Duration getDuration(String key, ReadableDuration defaultValue);
 
-    
 }

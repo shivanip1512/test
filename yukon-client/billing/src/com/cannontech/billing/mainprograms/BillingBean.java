@@ -43,7 +43,7 @@ public class BillingBean implements java.util.Observer
 	private int timer = 0;
 	private String timerString = "";
 	private String errorMsg = null;
-	
+	private String token = null;
 
 /**
  * BillingBean constructor comment.
@@ -54,53 +54,26 @@ public BillingBean()
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (5/23/2002 11:25:28 AM)
- * @param enable boolean
- */
-public void enableTimer(boolean enable)
-{
-	if( enable )
-	{
-		timerString = "0 sec";
-		timer = 0;
-	}
-}
-/**
  * Comment
  */
 public void generateFile(java.io.OutputStream out) throws java.io.IOException
 {
 	// Gather new billing defaults and write them to the properties file.
 	//FormatID, demandDays, energyDays, collectionGrpVector, outputFile, inputFile
-	BillingFileDefaults defaults = new BillingFileDefaults(
-	getFileFormat(),
-	(new Integer( getDemandDaysPrev()).intValue()),
-	(new Integer( getEnergyDaysPrev()).intValue()),
-	getBillGroup(),
-	getOutputFile(),
-	getRemoveMult(),
-	getInputFile(),
-	getEndDate(),
-	getAppendToFile());
-
-	if (defaults == null)
-		return;
+	BillingFileDefaults defaults = 
+	        new BillingFileDefaults(getFileFormat(), getDemandDaysPrev(), getEnergyDaysPrev(), getBillGroup(), getOutputFile(),
+	                                getRemoveMult(), getInputFile(), getEndDate(), getAppendToFile());
 
 	defaults.setLiteYukonUser(getLiteYukonUser());
     setBillingFormatter(defaults);
 
-	if( getSimpleBillingFormat() != null)
-	{
+	if( getSimpleBillingFormat() != null) {
 		Date timerStart = new Date();
-		CTILogger.info("Started " + FileFormatTypes.getFormatType(getBillingDefaults().getFormatID()) +
-					" format at: " + timerStart);
+		CTILogger.info("Started " + FileFormatTypes.getFormatType(getBillingDefaults().getFormatID()) + " format at: " + timerStart);
 
 		//start our DB thread
 		getBillingFile().encodeOutput(out);
-	}
-	else
-	{
+	} else {
 		CTILogger.info(getBillingDefaults().getFormatID() + " unrecognized file format id");
 	}
 
@@ -160,7 +133,7 @@ public Date getEndDate()
 }
 public void setEndDate(Date newEndDate)
 {
-	if( endDate.compareTo(newEndDate) != 0)
+	if(endDate == null || endDate.compareTo(newEndDate) != 0)
 	{
 		endDate = newEndDate;
 		CTILogger.info("Changing End Date from: " + endDate +" to: " + newEndDate);
@@ -284,13 +257,11 @@ private void setBillingFormatter(BillingFileDefaults billingFileDefaults)
 
 public synchronized void update(java.util.Observable obs, Object data) 
 {
-	if( obs instanceof BillingFile )
-	{
+	if( obs instanceof BillingFile ) {
 		CTILogger.info("Done with Billing File Format.");
 
 		BillingFile src =  (BillingFile)obs;
 		src.deleteObserver( this );
-		enableTimer(false);
 	}
 }
 public LiteYukonUser getLiteYukonUser() {
@@ -316,4 +287,10 @@ public void setErrorMsg(String errorMsg) {
 	this.errorMsg = errorMsg;
 }
 
+    public String getToken() {
+        return token;
+    }
+    public void setToken(String token) {
+        this.token = token;
+    }
 }
