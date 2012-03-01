@@ -83,6 +83,5 @@ Yukon.GridHelper = {
 var jqGridHelper = Yukon.GridHelper;
 
 jQuery(window).delegate(".ui-jqgrid", 'onresize', function(event){
-    debug('resize!');
     jQuery(this).jqGrid();
 });
