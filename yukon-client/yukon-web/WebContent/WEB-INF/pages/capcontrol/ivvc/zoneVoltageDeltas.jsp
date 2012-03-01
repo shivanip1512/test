@@ -15,7 +15,7 @@
 				jQuery(e.currentTarget).hide();
 				jQuery(e.currentTarget).next().show();
 				jQuery(e.currentTarget).next().find("input").focus();
-				jQuery("#deltaSubmitBtn").slideDown();
+				jQuery("#deltaFormButtons").slideDown();
 			});
 
 			jQuery(".editDelta input").keydown(function(e) {
@@ -31,9 +31,9 @@
 
 				if (jQuery(".editDelta:visible").length == 0 &&
 					jQuery("input.staticChanged").length == 0) {
-					jQuery("#deltaSubmitBtn").slideUp();
+					jQuery("#deltaFormButtons").slideUp();
 				} else {
-					jQuery("#deltaSubmitBtn").slideDown();
+					jQuery("#deltaFormButtons").slideDown();
 				}
 			});
 
@@ -41,7 +41,7 @@
 			jQuery("#deltaSubmitBtn").click(function() {
 				if (jQuery(".editDelta:visible").length == 0 &&
 						jQuery("input.staticChanged").length == 0) {
-					jQuery("#deltaSubmitBtn").slideUp();
+					jQuery("#deltaFormButtons").slideUp();
 					return;
 				}
 	
@@ -80,7 +80,7 @@
 			jQuery(e.currentTarget).closest("td").find(".viewDelta").show();
 			if (jQuery(".editDelta:visible").length == 0 &&
 				jQuery("input.staticChanged").length == 0) {
-				jQuery("#deltaSubmitBtn").slideUp();
+				jQuery("#deltaFormButtons").slideUp();
 			}
 		}
 	</script>
@@ -175,8 +175,8 @@
 					</tr>
 				</c:forEach>
 			</table>
-			<div id="deltaSubmitBtn" class="actionArea dn">
-				<cti:button nameKey="submit" type="submit"/>
+			<div id="deltaFormButtons" class="actionArea dn">
+				<cti:button id="deltaSubmitBtn" nameKey="submit" type="submit"/>
 				<cti:url var="zoneVoltageDeltasUrl" value="/spring/capcontrol/ivvc/zone/voltageDeltas">
 			    	<cti:param name="zoneId" value="${zoneId}"/>
 			    </cti:url>
