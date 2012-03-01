@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <script type="text/javascript">
-jQuery(document).ready(flashYellow($('reloadedAt'), 2));
+jQuery(document).ready(flashYellow(jQuery('#reloadedAt')[0], 2));
 </script>
 
 <cti:msgScope paths="widgets.rfnOutagesWidget">
