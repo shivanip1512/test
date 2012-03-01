@@ -1,6 +1,7 @@
 package com.cannontech.database.data.state;
 
 import java.util.List;
+import java.util.Vector;
 
 import org.springframework.jdbc.core.JdbcOperations;
 
@@ -17,8 +18,7 @@ public class GroupState extends com.cannontech.database.db.DBPersistent implemen
 {
 	private com.cannontech.database.db.state.StateGroup stateGroup = null;
    
-   //contains instances of com.cannontech.database.data.state.State
-	private java.util.Vector statesVector = null;
+	private Vector<State> statesVector = null;
 
 /**
  * StatusPoint constructor comment.
@@ -93,9 +93,9 @@ public com.cannontech.database.db.state.StateGroup getStateGroup() {
  * This method was created in VisualAge.
  * @return com.cannontech.database.db.point.PointControl
  */
-public java.util.Vector getStatesVector() {
+public Vector<State> getStatesVector() {
 	if( statesVector == null )
-		statesVector = new java.util.Vector();
+		statesVector = new Vector<State>();
 		
 	return statesVector;
 }
@@ -155,7 +155,7 @@ public final static boolean hasMonitor(Integer stateGroupId)
 public void retrieve() throws java.sql.SQLException {
 
 	getStateGroup().retrieve();
-	statesVector = new java.util.Vector();
+	statesVector = new Vector<State>();
 	
 	try
 	{
@@ -190,7 +190,7 @@ public void setDbConnection(java.sql.Connection conn)
 
 	getStateGroup().setDbConnection(conn);
 	
-	java.util.Vector v = getStatesVector();
+	Vector<State> v = getStatesVector();
 
 	if( v != null )
 	{
@@ -210,19 +210,17 @@ public void setStateGroup(com.cannontech.database.db.state.StateGroup newValue) 
  */
 public void setStateGroupID(Integer stateGroupID) {
 	getStateGroup().setStateGroupID(stateGroupID);
-	if( getStatesVector() != null )
-			for( int i = 0; i < getStatesVector().size(); i++ )
-				{
-					State state = (State) getStatesVector().get(i);
-					state.getState().setStateGroupID(getStateGroup().getStateGroupID());
-				}
-	
+	if (getStatesVector() != null) {
+	    for (State state : getStatesVector()) {
+			state.getState().setStateGroupID(getStateGroup().getStateGroupID());
+		}
+	}	
 }
 /**
  * This method was created in VisualAge.
  * @param newValue com.cannontech.database.db.device.Device
  */
-public void setStatesVector(java.util.Vector newValue) {
+public void setStatesVector(Vector<State> newValue) {
 	this.statesVector = newValue;
 }
 
