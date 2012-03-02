@@ -4,20 +4,40 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
+import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.capcontrol.PeakTargetSetting;
+import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
 
 public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private StrategyDao strategyDao;
+    @Autowired private PointDao pointDao;
+    
+    private final YukonRowMapper<ZonePointPhaseHolder> regulatorPointRowMapper = new YukonRowMapper<ZonePointPhaseHolder>() {
+        @Override
+        public ZonePointPhaseHolder mapRow(YukonResultSet rs) throws SQLException {
+            int zoneId = rs.getInt("ZoneId");
+            int pointId = rs.getInt("PointId");
+            Phase phase = rs.getEnum("Phase", Phase.class);
+            return new ZonePointPhaseHolder(zoneId, pointId, phase);
+        }
+    };
     
     private final YukonRowMapper<VoltageLimitedDeviceInfo> deviceInfoRowMapper = new YukonRowMapper<VoltageLimitedDeviceInfo>() {
         @Override
@@ -64,6 +84,11 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         sql.append(  "FROM RegulatorToZoneMapping");
         sql.append(  "WHERE ZoneId").eq_k(zoneId);
         sql.append(")");
+        sql.append("OR cc.PointId IN (");
+        sql.append(  "SELECT PointId");
+        sql.append(  "FROM PointToZoneMapping");
+        sql.append(  "WHERE ZoneId").eq_k(zoneId);
+        sql.append(")");
         
         List<VoltageLimitedDeviceInfo> deviceInfoList = yukonJdbcTemplate.query(sql, deviceInfoRowMapper);
         return deviceInfoList;
@@ -86,6 +111,197 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     public void updateDeviceInfo(List<VoltageLimitedDeviceInfo> deviceInfoList) {
         for(VoltageLimitedDeviceInfo deviceInfo : deviceInfoList) {
             updateDeviceInfo(deviceInfo);
+        }
+    }
+    
+    @Override
+    public void addDeviceInfo(VoltageLimitedDeviceInfo info) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink sink = sql.insertInto("CcMonitorBankList");
+        sink.addValue("DeviceId", info.getPaoIdentifier().getPaoId());
+        sink.addValue("PointId", info.getPointId());
+        sink.addValue("DisplayOrder", 1);
+        sink.addValue("Scannable", YNBoolean.YES);
+        sink.addValue("NINAvg", 3);
+        sink.addValue("UpperBandwidth", info.getUpperLimit());
+        sink.addValue("LowerBandwidth", info.getLowerLimit());
+        sink.addValue("Phase", info.getPhase());
+        sink.addValue("OverrideStrategy", YNBoolean.valueOf(info.isOverrideStrategy()));
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void updatePhase(int pointId, Phase phase) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE CcMonitorBankList");
+        sql.append("SET Phase").eq_k(phase);
+        sql.append("WHERE PointId").eq(pointId);
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void removePoints(List<Integer> pointIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CcMonitorBankList");
+        sql.append("WHERE PointId").in(pointIds);
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void addRegulatorPoint(int regulatorId) {
+        //get the point(s)
+        ZonePointPhaseHolder zonePointPhase = getZonePointPhaseByRegulatorId(regulatorId);
+        
+        //get the strategy for this zone's substation
+        LimitsHolder limits = getLimitsFromStrategy(zonePointPhase.zoneId);
+        
+        //build object and add
+        VoltageLimitedDeviceInfo info = new VoltageLimitedDeviceInfo();
+        info.setPaoIdentifier(new PaoIdentifier(regulatorId, PaoType.PHASE_OPERATED)); //maybe get type from zone?
+        info.setPointId(zonePointPhase.pointId);                                //doesn't really matter
+        info.setUpperLimit(limits.upperLimit);
+        info.setLowerLimit(limits.lowerLimit);
+        info.setPhase(zonePointPhase.phase);
+        info.setOverrideStrategy(false);
+        
+        addDeviceInfo(info);
+    }
+    
+    @Override
+    public void addAdditionalMonitorPoint(int pointId, int zoneId, Phase phase) {
+        //get the strategy for this zone's substation
+        LimitsHolder limits = getLimitsFromStrategy(zoneId);
+        
+        //get the device
+        PaoPointIdentifier paoPointId = pointDao.getPaoPointIdentifier(pointId);
+        PaoIdentifier paoId = paoPointId.getPaoIdentifier();
+        
+        //build object and add
+        VoltageLimitedDeviceInfo info = new VoltageLimitedDeviceInfo();
+        info.setPaoIdentifier(paoId);
+        info.setPointId(pointId);
+        info.setUpperLimit(limits.upperLimit);
+        info.setLowerLimit(limits.lowerLimit);
+        info.setPhase(phase);
+        info.setOverrideStrategy(false);
+        
+        addDeviceInfo(info);
+    }
+    
+    @Override
+    public void updateRegulatorPoint(int regulatorId) {
+        ZonePointPhaseHolder zonePointPhase = getZonePointPhaseByRegulatorId(regulatorId);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE CcMonitorBankList");
+        sql.append("SET Phase").eq(zonePointPhase.phase);
+        sql.append("WHERE PointId").eq(zonePointPhase.pointId);
+        sql.append("AND DeviceId").eq(regulatorId);
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public boolean deleteNonMatchingRegulatorPoint(int regulatorId, int pointIdToMatch) {
+        SqlStatementBuilder getRegulatorPointSql = new SqlStatementBuilder();
+        getRegulatorPointSql.append("SELECT PointId");
+        getRegulatorPointSql.append("FROM RegulatorToZoneMapping");
+        getRegulatorPointSql.append("JOIN ExtraPaoPointAssignment eppa ON RegulatorId = eppa.PAObjectId");
+        getRegulatorPointSql.append("WHERE RegulatorId").eq_k(regulatorId);
+        getRegulatorPointSql.append("AND Attribute").eq("VOLTAGE_Y");
+        
+        try {
+            //if there is no voltage_y point assigned, this will throw an exception
+            int pointId = yukonJdbcTemplate.queryForInt(getRegulatorPointSql);
+            
+            //check to see if it matches the specified pointId. Only delete if it
+            //DOESN'T match.
+            if(pointId != pointIdToMatch) {
+                SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+                deleteSql.append("DELETE FROM CcMonitorBankList");
+                deleteSql.append("WHERE DeviceId").eq(regulatorId);
+                deleteSql.append("AND PointId").eq(pointId);
+                yukonJdbcTemplate.update(deleteSql);
+            } else {
+                return false;
+            }
+        } catch(EmptyResultDataAccessException e) {
+            return false;
+        }
+        return true;
+    }
+    
+    @Override
+    public void removePointsByZone(int zoneId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CcMonitorBankList");
+        sql.append("WHERE PointId IN (");
+        sql.append(  "SELECT PointId");
+        sql.append(  "FROM RegulatorToZoneMapping rtzm");
+        sql.append(  "JOIN ExtraPaoPointAssignment eppa ON rtzm.RegulatorId = eppa.PAObjectId");
+        sql.append(  "WHERE ZoneId").eq_k(zoneId);
+        sql.append(")");
+        sql.append("OR PointId IN (");
+        sql.append(  "SELECT PointId");
+        sql.append(  "FROM PointToZoneMapping");
+        sql.append(  "WHERE ZoneId").eq_k(zoneId);
+        sql.append(")");
+        
+        yukonJdbcTemplate.update(sql);
+    }
+    
+    private ZonePointPhaseHolder getZonePointPhaseByRegulatorId(int regulatorId) {
+        SqlStatementBuilder getZoneInfoSql = new SqlStatementBuilder();
+        getZoneInfoSql.append("SELECT ZoneId, PointId, Phase");
+        getZoneInfoSql.append("FROM RegulatorToZoneMapping");
+        getZoneInfoSql.append("JOIN ExtraPaoPointAssignment eppa ON RegulatorId = eppa.PAObjectId");
+        getZoneInfoSql.append("WHERE RegulatorId").eq_k(regulatorId);
+        getZoneInfoSql.append("AND Attribute").eq("VOLTAGE_Y");
+        
+        return yukonJdbcTemplate.queryForObject(getZoneInfoSql, regulatorPointRowMapper);
+    }
+    
+    private LimitsHolder getLimitsFromStrategy(int zoneId) {
+        SqlStatementBuilder getStrategyIdSql = new SqlStatementBuilder();
+        getStrategyIdSql.append("SELECT StrategyId");
+        getStrategyIdSql.append("FROM Zone");
+        getStrategyIdSql.append("JOIN CcSeasonStrategyAssignment ccssa ON Zone.SubstationBusId = ccssa.PaObjectId");
+        getStrategyIdSql.append("WHERE ZoneId").eq_k(zoneId);
+        int strategyId = yukonJdbcTemplate.queryForInt(getStrategyIdSql);
+        
+        //get the upper and lower limits from the strategy
+        CapControlStrategy strategy = strategyDao.getForId(strategyId);
+        List<PeakTargetSetting> settings = strategy.getTargetSettings();
+        double upperVoltLimit = 0.0;
+        double lowerVoltLimit = 0.0;
+        for(PeakTargetSetting setting : settings) {
+            if(setting.getType() == TargetSettingType.UPPER_VOLT_LIMIT) {
+                upperVoltLimit = Double.parseDouble(setting.getPeakValue());
+            } else if(setting.getType() == TargetSettingType.LOWER_VOLT_LIMIT) {
+                lowerVoltLimit = Double.parseDouble(setting.getPeakValue());
+            }
+        }
+        return new LimitsHolder(upperVoltLimit, lowerVoltLimit);
+    }
+    
+    private class LimitsHolder {
+        public double upperLimit;
+        public double lowerLimit;
+        public LimitsHolder(double upperLimit, double lowerLimit) {
+            this.upperLimit = upperLimit;
+            this.lowerLimit = lowerLimit;
+        }
+    }
+    
+    private class ZonePointPhaseHolder {
+        public int zoneId;
+        public int pointId;
+        public Phase phase;
+        public ZonePointPhaseHolder(int zoneId, int pointId, Phase phase) {
+            this.zoneId = zoneId;
+            this.pointId = pointId;
+            this.phase = phase;
         }
     }
 }

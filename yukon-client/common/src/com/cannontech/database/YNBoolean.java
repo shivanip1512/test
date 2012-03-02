@@ -32,4 +32,10 @@ public enum YNBoolean implements DatabaseRepresentationSource {
     public static YNBoolean valueOf(boolean value) {
         return value ? YES : NO;
     }
+    
+    public static YNBoolean valueOf(char value) {
+        if(value == 'Y' || value == 'y') return YES;
+        if(value == 'N' || value == 'n') return NO;
+        return null;
+    }
 }

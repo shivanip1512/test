@@ -99,6 +99,18 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         return searchResult;
     }
     
+    @Override
+    public boolean isOrphan(int regulatorId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Count(*)");
+        sql.append("FROM RegulatorToZoneMapping");
+        sql.append("WHERE RegulatorId").eq_k(regulatorId);
+        
+        int count = yukonJdbcTemplate.queryForInt(sql);
+        if(count == 0) return true;
+        return false;
+    }
+    
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;

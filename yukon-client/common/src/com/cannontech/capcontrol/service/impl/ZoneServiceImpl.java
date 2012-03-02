@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
+import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.RootZoneExistsException;
 import com.cannontech.capcontrol.model.AbstractZone;
@@ -30,15 +31,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class ZoneServiceImpl implements ZoneService {
-
-    private ZoneDao zoneDao;
-    private DBPersistentDao dbPersistantDao;
+    @Autowired private ZoneDao zoneDao;
+    @Autowired private DBPersistentDao dbPersistantDao;
+    @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     
     @Override
     @Transactional
     public boolean saveZone(AbstractZone abstractZone) {
         DbChangeType dbChangeType = DbChangeType.UPDATE;
         
+        List<Integer> oldRegulatorIds = Lists.newArrayList();
         if(abstractZone.getZoneId() == null) {
             //We are creating a new zone.
             dbChangeType = DbChangeType.ADD;
@@ -49,6 +51,12 @@ public class ZoneServiceImpl implements ZoneService {
                 if (rootZone != null) {
                     throw new RootZoneExistsException();
                 }
+            }
+        } else {
+            //get list of regulators associated with zone before update
+            List<RegulatorToZoneMapping> oldMappings = zoneDao.getRegulatorToZoneMappingsByZoneId(abstractZone.getZoneId());
+            for(RegulatorToZoneMapping oldMap : oldMappings) {
+                oldRegulatorIds.add(oldMap.getRegulatorId());
             }
         }
         
@@ -63,6 +71,18 @@ public class ZoneServiceImpl implements ZoneService {
         
         zoneDao.updateCapBankToZoneMapping(abstractZone.getZoneId(), banksToZone);
         zoneDao.updatePointToZoneMapping(abstractZone.getZoneId(), pointsToZone);
+        for(RegulatorToZoneMapping regToZone : zone.getRegulators()) {
+            int regId = regToZone.getRegulatorId();
+            if(oldRegulatorIds.contains(regId)) {
+                ccMonitorBankListDao.updateRegulatorPoint(regId);
+            } else {
+                ccMonitorBankListDao.addRegulatorPoint(regId);
+            }
+        }
+        //remove regulator points for regulators no longer attached
+        if(!oldRegulatorIds.isEmpty()) {
+            ccMonitorBankListDao.removePoints(oldRegulatorIds);
+        }
         
         sendZoneChangeDbMessage(zone.getId(),dbChangeType);
         return true;
@@ -71,7 +91,8 @@ public class ZoneServiceImpl implements ZoneService {
     @Override
     @Transactional
     public boolean deleteZone(int zoneId) {
-        zoneDao.delete(zoneId);      
+        ccMonitorBankListDao.removePointsByZone(zoneId);
+        zoneDao.delete(zoneId);
         sendZoneChangeDbMessage(zoneId, DbChangeType.DELETE);
         return true;
     }
@@ -259,15 +280,5 @@ public class ZoneServiceImpl implements ZoneService {
     
     public Map<Integer, Phase> getMonitorPointsForBankAndPhase(int bankId) {
         return zoneDao.getMonitorPointsForBankAndPhase(bankId);
-    }
-    
-    @Autowired
-    public void setZoneDao(ZoneDao zoneDao) {
-        this.zoneDao = zoneDao;
-    }
-    
-    @Autowired
-    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
-        this.dbPersistantDao = dbPersistantDao;
     }
 }

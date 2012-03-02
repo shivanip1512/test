@@ -3,6 +3,7 @@ package com.cannontech.capcontrol.dao;
 import java.util.List;
 
 import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
+import com.cannontech.enums.Phase;
 
 public interface CcMonitorBankListDao {
     
@@ -23,4 +24,50 @@ public interface CcMonitorBankListDao {
      * values for multiple device entries.
      */
     public void updateDeviceInfo(List<VoltageLimitedDeviceInfo> deviceInfoList);
+    
+    /**
+     * Updates the phase on the specified point.
+     */
+    public void updatePhase(int pointId, Phase phase);
+    
+    /**
+     * Inserts a new additional monitor point entry, using the specified point id 
+     * and phase, and inheriting limits from subbus strategy settings.
+     */
+    public void addAdditionalMonitorPoint(int pointId, int zoneId, Phase phase);
+    
+    /**
+     * Inserts new entry for voltage Y point on the specified regulator.
+     */
+    public void addRegulatorPoint(int regulatorId);
+    
+    /**
+     * Updates the entry for voltage Y point on the specified regulator.
+     */
+    public void updateRegulatorPoint(int regulatorId);
+    
+    /**
+     * Removes the voltage Y point entry for the specified regulator unless
+     * the voltage Y pointId matches the specified pointId.
+     * @return true if a point was deleted, otherwise false
+     */
+    public boolean deleteNonMatchingRegulatorPoint(int regulatorId, int pointIdToMatch);
+    
+    /**
+     * Removes all specified point entries from the table.
+     */
+    public void removePoints(List<Integer> pointIds);
+    
+    /**
+     * Removes all regulator and additional monitor points associated with the
+     * specified zone.
+     */
+    public void removePointsByZone(int zoneId);
+    
+    /**
+     * Inserts an entry with the settings specified in the VoltageLimitedDeviceInfo
+     * object. DisplayOrder is defaulted to 0, Scannable is defaulted to false, and
+     * NINAvg is defaulted to 3.
+     */
+    public void addDeviceInfo(VoltageLimitedDeviceInfo info);
 }

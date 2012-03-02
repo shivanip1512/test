@@ -25,4 +25,9 @@ public interface VoltageRegulatorDao {
      * @return
      */
     public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count);
+    
+    /**
+     * @return true if the regulator is an orphan, otherwise false
+     */
+    public boolean isOrphan(int regulatorId);
 }

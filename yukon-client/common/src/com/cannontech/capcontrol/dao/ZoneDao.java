@@ -9,6 +9,7 @@ import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
+import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.enums.Phase;
 
@@ -186,4 +187,9 @@ public interface ZoneDao {
      * @return
      */
     public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to);
+    
+    /**
+     * Returns the RegulatorToZoneMappings for the specified zone.
+     */
+    public List<RegulatorToZoneMapping> getRegulatorToZoneMappingsByZoneId(int zoneId);
 }

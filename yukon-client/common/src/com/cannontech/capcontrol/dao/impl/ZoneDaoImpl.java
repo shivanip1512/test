@@ -12,6 +12,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
+import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
@@ -38,8 +39,9 @@ import com.google.common.collect.Maps;
 
 public class ZoneDaoImpl implements ZoneDao, InitializingBean {
 
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     private SimpleTableAccessTemplate<Zone> zoneTemplate;
     private SimpleTableAccessTemplate<RegulatorToZoneMapping> regulatorToZoneTemplate;
     
@@ -156,7 +158,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         return zone;
     }
 
-    private List<RegulatorToZoneMapping> getRegulatorToZoneMappingsByZoneId(int zoneId) {
+    public List<RegulatorToZoneMapping> getRegulatorToZoneMappingsByZoneId(int zoneId) {
         SqlStatementBuilder regulatorToZoneSql = new SqlStatementBuilder();
         regulatorToZoneSql.append("SELECT RegulatorId, ZoneId, Phase");
         regulatorToZoneSql.append("FROM RegulatorToZoneMapping");
@@ -350,10 +352,16 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
 
     @Override
     public void updatePointToZoneMapping(int zoneId, List<PointToZoneMapping> pointsToZone) {
-    	SqlStatementBuilder sqlBuilderDelete = new SqlStatementBuilder();
+        //capture the points that were previously assigned to the zone...
+        SqlStatementBuilder sqlBuilderGetPoints = new SqlStatementBuilder();
+        sqlBuilderGetPoints.append("SELECT PointId");
+        sqlBuilderGetPoints.append("FROM PointToZoneMapping");
+        sqlBuilderGetPoints.append("WHERE ZoneId").eq(zoneId);
+        List<Integer> oldPointIds = yukonJdbcTemplate.query(sqlBuilderGetPoints, new IntegerRowMapper());
+        //...then delete them all
+        SqlStatementBuilder sqlBuilderDelete = new SqlStatementBuilder();
 		sqlBuilderDelete.append("DELETE FROM PointToZoneMapping");
         sqlBuilderDelete.append("Where ZoneId").eq(zoneId);
-        
         yukonJdbcTemplate.update(sqlBuilderDelete);
         
         for (PointToZoneMapping pointToZone : pointsToZone) {
@@ -362,6 +370,25 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         	sqlBuilderInsert.values(pointToZone.getPointId(), zoneId, pointToZone.getGraphPositionOffset(), pointToZone.getDistance(), pointToZone.getPhase());
             
             yukonJdbcTemplate.update(sqlBuilderInsert);
+            
+            int currentPointId = pointToZone.getPointId();
+            Phase currentPhase = pointToZone.getPhase();
+            if(oldPointIds.contains(currentPointId)) {
+                //if point is in list of points from pointToZoneMapping, we just
+                //update CcMonitorBankList w/ new phase (then remove from list)
+                ccMonitorBankListDao.updatePhase(currentPointId, currentPhase);
+                oldPointIds.remove(currentPointId);
+            } else {
+                //if point is not in list of points from pointToZoneMapping, we
+                //insert new, with strategy settings
+                ccMonitorBankListDao.addAdditionalMonitorPoint(currentPointId, zoneId, currentPhase);
+            }
+        }
+        
+        //if any points from pointToZoneMapping are not being updated, they've
+        //been removed. Remove their entries from the table.
+        if(!oldPointIds.isEmpty()) {
+            ccMonitorBankListDao.removePoints(oldPointIds);
         }
     }
     
@@ -527,7 +554,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         
         sqlBuilder.append("SELECT PointID");
         sqlBuilder.append("FROM CCMonitorBankList");
-        sqlBuilder.append("WHERE DeviceId").eq(deviceId);
+        sqlBuilder.append("WHERE DeviceID").eq(deviceId);
         sqlBuilder.append("ORDER BY DisplayOrder");
         
         List<Integer> points = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
@@ -540,7 +567,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         
         sqlBuilder.append("SELECT PointID, Phase");
         sqlBuilder.append("FROM CCMonitorBankList");
-        sqlBuilder.append("WHERE DeviceId").eq(deviceId);
+        sqlBuilder.append("WHERE DeviceID").eq(deviceId);
         sqlBuilder.append("ORDER BY DisplayOrder");
 
         final Map<Integer, Phase> results = Maps.newHashMap();
@@ -599,15 +626,5 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         regulatorToZoneTemplate.setPrimaryKeyField("RegulatorId");
         regulatorToZoneTemplate.setParentForeignKeyField("ZoneId", CascadeMode.DELETE_ALL_CHILDREN_BEFORE_UPDATE);
         regulatorToZoneTemplate.setAdvancedFieldMapper(regulatorToZoneFieldMapper);
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
     }
 }

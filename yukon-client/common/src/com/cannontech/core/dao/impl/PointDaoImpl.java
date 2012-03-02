@@ -34,7 +34,6 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -603,7 +602,8 @@ public final class PointDaoImpl implements PointDao {
 
             LitePoint p = getLitePoint(point.getPointId().intValue());
             monitorPoint.setPointName(p.getPointName());
-            monitorPoint.setOverrideFdrLimits(false);
+            
+            monitorPoint.setOverrideFdrLimits(point.isOverrideStrategySettings());
             monitorPointList.add(monitorPoint);
         }
         return monitorPointList;

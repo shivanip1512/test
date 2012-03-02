@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
@@ -13,6 +14,7 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.CtiUtilities;
@@ -87,14 +89,31 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         //Point Mappings
         ExtraPaoPointAssignmentDao eppad = YukonSpringHook.getBean("extraPaoPointAssignmentDao", ExtraPaoPointAssignmentDao.class);
         List<ExtraPaoPointMapping> eppMappings = Lists.newArrayList();
+        int voltageYPointId = 0;
         for(VoltageRegulatorPointMapping mapping : pointMappings) {
             eppMappings.add(mapping.getExtraPaoPointMapping());
+            //check to see if a voltage Y point is still attached
+            if(mapping.getAttribute() == BuiltInAttribute.VOLTAGE_Y) {
+                voltageYPointId = mapping.getPointId();
+            }
+        }
+        
+        //remove voltage Y CcMonitorBankList entry, if one exists and is different from the new one
+        boolean isNewVoltageYPoint = false;
+        CcMonitorBankListDao ccMonitorBankListDao = YukonSpringHook.getBean(CcMonitorBankListDao.class);
+        if(voltageYPointId > 0) {
+            isNewVoltageYPoint = ccMonitorBankListDao.deleteNonMatchingRegulatorPoint(getPAObjectID(), voltageYPointId);
         }
         
         PaoType paoType = PaoType.getForDbString(getPAOType());
-        
         eppad.saveAssignments(new PaoIdentifier(getCapControlPAOID(), paoType) , eppMappings);
         pointMappings = null;
+        
+        //add voltage_y CcMonitorBankList entry, if a point is assigned
+        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean("voltageRegulatorDao", VoltageRegulatorDao.class);
+        if(isNewVoltageYPoint && !voltageRegulatorDao.isOrphan(getPAObjectID())) {
+            ccMonitorBankListDao.addRegulatorPoint(getPAObjectID());
+        }
     }
 
     @Override

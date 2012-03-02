@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.db.DBPersistent;
 
@@ -22,6 +23,7 @@ public class CCMonitorBankList extends DBPersistent {
 	private Float upperBandwidth = new Float(0);
 	private Float lowerBandwidth = new Float(0);
 	private Character phase;
+	private Boolean overrideStrategySettings = Boolean.FALSE;
 	
 	private CapBankMonitorPointParams monitorPoint = null;
 
@@ -33,7 +35,8 @@ public class CCMonitorBankList extends DBPersistent {
 		"NINAvg",
 		"UpperBandwidth",
 		"LowerBandwidth",
-		"Phase"
+		"Phase",
+		"OverrideStrategy"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "DeviceId", "PointId" };
@@ -45,6 +48,7 @@ public class CCMonitorBankList extends DBPersistent {
 	public CCMonitorBankList(){
 		super();
 	}
+	
 	public CCMonitorBankList(CapBankMonitorPointParams _monitorPoint_) {
 		super();
 		monitorPoint = _monitorPoint_;
@@ -64,13 +68,15 @@ public class CCMonitorBankList extends DBPersistent {
 		} else {
 		    phase = new Character ('A'); //Default to phase A
 		}
+		overrideStrategySettings = monitorPoint.isOverrideFdrLimits();
 	}
 
 	public void add() throws SQLException {
 
 		Object[] addValues = { getDeviceId(), getPointId(), getDisplayOrder(), getScannable(),
-							   getNINAvg(), getUpperBandwidth(), getLowerBandwidth(), getPhase()
-							   };
+							   getNINAvg(), getUpperBandwidth(), getLowerBandwidth(), getPhase(),
+							   getOverrideStrategySettingsObject()
+							 };
 
 		add( TABLE_NAME, addValues );
 
@@ -94,6 +100,7 @@ public class CCMonitorBankList extends DBPersistent {
 			setUpperBandwidth((Float) results[3]);
 			setLowerBandwidth((Float) results[4]);
 			setPhase((Character) results[5]);
+			setOverrideStrategySettings((Boolean) results[6]);
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -105,7 +112,7 @@ public class CCMonitorBankList extends DBPersistent {
 		Object setValues[]= 
 		{
 			getDisplayOrder(),getScannable(), getNINAvg(), getUpperBandwidth(), getLowerBandwidth(), 
-			getPhase()
+			getPhase(), getOverrideStrategySettingsObject()
 		};
 
 		Object constraintValues[] = { getDeviceId(), getPointId()};
@@ -182,6 +189,18 @@ public class CCMonitorBankList extends DBPersistent {
     public void setPhase(Character phase) {
         this.phase = phase;
     }
+    
+    public Boolean isOverrideStrategySettings() {
+        return overrideStrategySettings;
+    }
+    
+    public Object getOverrideStrategySettingsObject() {
+        return YNBoolean.valueOf(overrideStrategySettings).getDatabaseRepresentation();
+    }
+    
+    public void setOverrideStrategySettings(Boolean overrideStrategySettings) {
+        this.overrideStrategySettings = overrideStrategySettings;
+    }
 
     public CapBankMonitorPointParams getMonitorPoint() {
 		if (monitorPoint == null)
@@ -190,13 +209,13 @@ public class CCMonitorBankList extends DBPersistent {
 	}
 	
     public static List<CCMonitorBankList> getMonitorPointsOnCapBankList (Integer deviceId) {
-        String sqlStmt = "SELECT * FROM CCMonitorBankList WHERE deviceId = ?";  
+        String sqlStmt = "SELECT * FROM CCMonitorBankList WHERE DeviceId = ?";  
     
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            
         
         List<CCMonitorBankList> monitorPoints = yukonTemplate.query(sqlStmt, new Integer[] {deviceId},
-        		new RowMapper() {
-        			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+        		new RowMapper<CCMonitorBankList>() {
+        			public CCMonitorBankList mapRow(ResultSet rs, int rowNum) throws SQLException {
         				CCMonitorBankList monitorPoint = new CCMonitorBankList(); 
         				monitorPoint.setDeviceId(new Integer ( rs.getBigDecimal(1).intValue() ));
         				monitorPoint.setPointId(new Integer ( rs.getBigDecimal(2).intValue() ));
@@ -211,6 +230,8 @@ public class CCMonitorBankList extends DBPersistent {
         				} else {
         				    monitorPoint.setPhase(null);
         				}
+        				char overrideStrategySettingsChar = rs.getString(9).charAt(0);
+        				monitorPoint.setOverrideStrategySettings(YNBoolean.valueOf(overrideStrategySettingsChar).getBoolean());
         				return monitorPoint;
         			}
         		});
@@ -219,11 +240,11 @@ public class CCMonitorBankList extends DBPersistent {
     }
 
     public static void deleteMonitorPointsOnCapBankList (Integer deviceId) {
-        String sqlStmt = "DELETE FROM CCMonitorBankList WHERE deviceId = ?";  
+        String sqlStmt = "DELETE FROM CCMonitorBankList WHERE DeviceId = ?";  
  
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();                    
         
-        yukonTemplate.update(sqlStmt, new Integer[] {deviceId});
+        yukonTemplate.update(sqlStmt, new Object[] {deviceId});
 
     }
 }
