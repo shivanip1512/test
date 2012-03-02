@@ -279,5 +279,8 @@
       <sequence name="archiveValuesExportField">
         <table name="ArchiveValuesExportField" identitycolumn="FieldID"/>
       </sequence>
+      <sequence name="YukonMessageId">
+        <table name="ExternalToYukonMessageIdMapping" identitycolumn="YukonMessageId"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

@@ -292,6 +292,8 @@
     <bean id="encryptedRouteDao" class="com.cannontech.encryption.impl.EncryptedRouteDaoImpl"/>
             
     <bean id="energyCompanyRolePropertyDao" class="com.cannontech.core.roleproperties.dao.impl.EnergyCompanyRolePropertyDaoImpl"/>
+    
+    <bean id="yukonTextMessageDao" class="com.cannontech.message.activemq.impl.YukonTextMessageDaoImpl"/>
 
     <bean class="com.cannontech.spring.MasterConfigInterceptor"/>
 </beans>

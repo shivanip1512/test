@@ -5,6 +5,7 @@
            version="1.0">
     <textMessageList>
         <textMessage>
+            <messageId>42</messageId>
             <serialNumber>98765400011</serialNumber>
             <serialNumber>98767600012</serialNumber>
             <message>Send test message.</message>

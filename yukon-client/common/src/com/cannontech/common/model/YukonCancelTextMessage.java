@@ -3,8 +3,8 @@ package com.cannontech.common.model;
 import java.io.Serializable;
 import java.util.Set;
 
-public class CancelZigbeeText implements Serializable {
-    private static final long serialVersionUID = 3L;
+public class YukonCancelTextMessage implements Serializable {
+    private static final long serialVersionUID = 4L;
     
     private int messageId;
     private Set<Integer> inventoryIds;

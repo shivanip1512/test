@@ -3,7 +3,7 @@ package com.cannontech.common.model;
 /**
  * Adding Yukon addressing to the ZigbeeTextMessage to be used as a spring model.
  */
-public class ZigbeeTextMessageDto extends ZigbeeTextMessage {
+public class ZigbeeTextMessageDto extends YukonTextMessage {
 
     private int accountId;
     private int inventoryId;

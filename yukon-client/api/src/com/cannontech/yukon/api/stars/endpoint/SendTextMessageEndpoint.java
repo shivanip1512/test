@@ -6,32 +6,35 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.activemq.YukonTextMessageDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
-import com.cannontech.thirdparty.service.ZigbeeWebService;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.TextMessageElementRequestMapper;
-import com.cannontech.yukon.api.stars.model.TextMessage;
+import com.cannontech.yukon.api.stars.model.DeviceTextMessage;
 import com.cannontech.yukon.api.util.NodeToElementMapperWrapper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -46,7 +49,11 @@ public class SendTextMessageEndpoint {
     @Autowired private InventoryDao inventoryDao;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
-    @Autowired private ZigbeeWebService zigbeeWebService;
+    @Autowired private YukonTextMessageDao yukonTextMessageDao;
+    @Autowired private NextValueHelper nextValueHelper;
+    
+    //@Autowired by setter
+    private JmsTemplate jmsTemplate;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(SendTextMessageEndpoint.class);
@@ -62,9 +69,10 @@ public class SendTextMessageEndpoint {
         // create template and parse data
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(sendTextMessage);
         
-        List<TextMessage> textMessages = 
-                requestTemplate.evaluate("//y:textMessageList/y:textMessage", new NodeToElementMapperWrapper<TextMessage>(new TextMessageElementRequestMapper()));
-        List<ZigbeeTextMessage> zigbeeTextMessages = getZigbeeTextMessages(textMessages, user);
+        List<DeviceTextMessage> textMessages = 
+                requestTemplate.evaluate("//y:textMessageList/y:textMessage", new NodeToElementMapperWrapper<DeviceTextMessage>(new TextMessageElementRequestMapper()));
+        
+        List<YukonTextMessage> yukonTextMessages = getYukonTextMessages(textMessages, user);
         
         // init response
         Element resp = new Element("sendTextMessageResponse", ns);
@@ -76,15 +84,11 @@ public class SendTextMessageEndpoint {
             
             // Check authorization
             rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
-            
+
             // Send out messages
-            for (ZigbeeTextMessage zigbeeTextMessage : zigbeeTextMessages) {
-                zigbeeWebService.sendTextMessage(zigbeeTextMessage);
+            for (YukonTextMessage yukonTextMessage : yukonTextMessages) {
+                jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", yukonTextMessage);
             }
-        } catch (DigiNotConfiguredException e) {
-            Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "DigiNotConfigured", "Digi is not configured.");
-            resp.addContent(fe);
-            log.error(e.getMessage(), e);
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
             resp.addContent(fe);
@@ -102,35 +106,35 @@ public class SendTextMessageEndpoint {
     }
     
     /**
-     * This method converts a list of text messages to zigbee text message objects.  These can then be passed
-     * to the ZigBee web service and sent out.
+     * This method converts a list of text messages to Yukon text message objects.  These can then be passed
+     * to the Yukon Message Handler and sent out.
      */
-    private List<ZigbeeTextMessage> getZigbeeTextMessages(List<TextMessage> textMessages, LiteYukonUser user) {
+    private List<YukonTextMessage> getYukonTextMessages(List<DeviceTextMessage> textMessages, LiteYukonUser user) {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
 
         // Get all the serial numbers used in this web service call.
         final Set<String> serialNumbers = Sets.newHashSet();
-        for (TextMessage textMessage : textMessages) {
+        for (DeviceTextMessage textMessage : textMessages) {
             serialNumbers.addAll(textMessage.getSerialNumbers());
         }
 
         Map<String, Integer> serialNumberToInventoryIdMap = 
                 inventoryDao.getSerialNumberToInventoryIdMap(serialNumbers, yukonEnergyCompany.getEnergyCompanyId());
         
-        return getZigbeeTextMessages(textMessages, serialNumberToInventoryIdMap) ;
+        return getYukonTextMessages(textMessages, serialNumberToInventoryIdMap, user) ;
     }
     
     /**
-     * This method converts a list of text messages to zigbee text message objects.  These can then be passed
-     * to the ZigBee web service and sent out.
+     * This method converts a list of text messages to Yukon text message objects.  These can then be passed
+     * to the Yukon Message Handler and sent out.
      */
-    private List<ZigbeeTextMessage>  getZigbeeTextMessages(List<TextMessage> textMessages, final Map<String, Integer> serialNumberToInventoryIdMap) {
-        List<ZigbeeTextMessage> zigbeeTextMessages = 
-                Lists.transform(textMessages, new Function<TextMessage, ZigbeeTextMessage>() {
+    private List<YukonTextMessage>  getYukonTextMessages(List<DeviceTextMessage> textMessages, final Map<String, Integer> serialNumberToInventoryIdMap, final LiteYukonUser user) {
+        List<YukonTextMessage> yukonTextMessage = 
+                Lists.transform(textMessages, new Function<DeviceTextMessage, YukonTextMessage>() {
 
                     @Override
-                    public ZigbeeTextMessage apply(TextMessage textMessage) {
-                        ZigbeeTextMessage zigbeeTextMessage = new ZigbeeTextMessage();
+                    public YukonTextMessage apply(DeviceTextMessage textMessage) {
+                        YukonTextMessage yukonTextMessage = new YukonTextMessage();
 
                         Collection<Integer> inventoryIds = 
                                 Collections2.transform(textMessage.getSerialNumbers(), new Function<String, Integer>() {
@@ -139,17 +143,29 @@ public class SendTextMessageEndpoint {
                                         return serialNumberToInventoryIdMap.get(serialNumber);
                                     }
                                 });
+                        //Adding the mapping to the database.
+                        Instant endTime = textMessage.getStartTime().plus(textMessage.getDisplayDuration());
+                        long yukonMessageId = nextValueHelper.getNextValue("ExternalToYukonMessageIdMapping");
+                        yukonTextMessageDao.addMessageIdMapping(textMessage.getMessageId(), yukonMessageId, user, endTime);
+
+                        yukonTextMessage.setMessageId(yukonMessageId);
+                        yukonTextMessage.setYukonUser(user);
+                        yukonTextMessage.setInventoryIds(Sets.newHashSet(inventoryIds));
+                        yukonTextMessage.setConfirmationRequired(textMessage.isConfirmationRequired());
+                        yukonTextMessage.setDisplayDuration(textMessage.getDisplayDuration());
+                        yukonTextMessage.setMessage(textMessage.getMessage());
+                        yukonTextMessage.setStartTime(textMessage.getStartTime());
                         
-                        zigbeeTextMessage.setInventoryIds(Sets.newHashSet(inventoryIds));
-                        zigbeeTextMessage.setConfirmationRequired(textMessage.isConfirmationRequired());
-                        zigbeeTextMessage.setDisplayDuration(textMessage.getDisplayDuration());
-                        zigbeeTextMessage.setMessage(textMessage.getMessage());
-                        zigbeeTextMessage.setStartTime(textMessage.getStartTime());
-                        
-                        return zigbeeTextMessage;
+                        return yukonTextMessage;
                     }
                 });
 
-        return zigbeeTextMessages;
+        return yukonTextMessage;
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setPubSubDomain(false);
     }
 }

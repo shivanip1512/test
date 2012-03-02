@@ -14,8 +14,8 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.model.CancelZigbeeText;
-import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.model.YukonCancelTextMessage;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.thirdparty.messaging.SepControlMessage;
@@ -163,7 +163,7 @@ public class SepMessageListener {
     public void handleSendTextMessage(Message message) {
         logger.debug("Received message on yukon.notif.stream.dr.smartEnergyProfileTextMessage.Send Queue");
 
-        ZigbeeTextMessage zigbeeTextMessage;
+        YukonTextMessage yukonTextMessage;
         
         if (message instanceof StreamMessage) {
             //This is how C++ will send us the message
@@ -194,13 +194,13 @@ public class SepMessageListener {
                 long timeSeconds = streamMessage.readLong();
                 Instant startTime = new Instant(timeSeconds*1000);
                 
-                zigbeeTextMessage = new ZigbeeTextMessage();
-                zigbeeTextMessage.setInventoryIds(inventoryIds);
-                zigbeeTextMessage.setMessageId(messageId);
-                zigbeeTextMessage.setMessage(sb.toString());
-                zigbeeTextMessage.setConfirmationRequired(confirmationRequired);
-                zigbeeTextMessage.setDisplayDuration(displayDuration);
-                zigbeeTextMessage.setStartTime(startTime);
+                yukonTextMessage = new YukonTextMessage();
+                yukonTextMessage.setInventoryIds(inventoryIds);
+                yukonTextMessage.setMessageId(messageId);
+                yukonTextMessage.setMessage(sb.toString());
+                yukonTextMessage.setConfirmationRequired(confirmationRequired);
+                yukonTextMessage.setDisplayDuration(displayDuration);
+                yukonTextMessage.setStartTime(startTime);
             } catch (JMSException e) {
                 logger.error("Exception parsing StreamMessage.");
                 return;
@@ -210,10 +210,10 @@ public class SepMessageListener {
             return;
         }
 
-        handleSendTextMessage(zigbeeTextMessage);
+        handleSendTextMessage(yukonTextMessage);
     }
     
-    public void handleSendTextMessage(ZigbeeTextMessage zigbeeTextMessage) {
+    public void handleSendTextMessage(YukonTextMessage zigbeeTextMessage) {
         //Passes the message to the handlers
         for (SepMessageHandler handler : sepMessageHandlers) {
             handler.handleSendTextMessage(zigbeeTextMessage);
@@ -228,7 +228,7 @@ public class SepMessageListener {
     public void handleCancelTextMessage(Message message) {
         logger.debug("Received message on yukon.notif.stream.dr.smartEnergyProfileTextMessage.Cancel Queue");
         
-        CancelZigbeeText cancelZigbeeText;
+        YukonCancelTextMessage cancelZigbeeText;
         
         if (message instanceof StreamMessage) {
             //This is how C++ will send us the message
@@ -245,7 +245,7 @@ public class SepMessageListener {
                     inventoryIds.add(inventoryId);
                 }
                 
-                cancelZigbeeText = new CancelZigbeeText();
+                cancelZigbeeText = new YukonCancelTextMessage();
                 cancelZigbeeText.setMessageId(messageId);
                 cancelZigbeeText.setInventoryIds(inventoryIds);                
             } catch (JMSException e) {
@@ -254,7 +254,7 @@ public class SepMessageListener {
             }
         } else if (message instanceof ObjectMessage) {
             //This is how Java would send us the message.
-            cancelZigbeeText = (CancelZigbeeText)message;
+            cancelZigbeeText = (YukonCancelTextMessage)message;
         } else {
             logger.error("Unhandled message type on the queue.");
             return;
@@ -263,7 +263,7 @@ public class SepMessageListener {
         handleCancelTextMessage(cancelZigbeeText);
     }
     
-    public void handleCancelTextMessage(CancelZigbeeText cancelZigbeeText) {
+    public void handleCancelTextMessage(YukonCancelTextMessage cancelZigbeeText) {
         //Passes the message to the handlers
         for (SepMessageHandler handler : sepMessageHandlers) {
             handler.handleCancelTextMessage(cancelZigbeeText);

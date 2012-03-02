@@ -11,8 +11,8 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.model.CancelZigbeeText;
-import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.model.YukonCancelTextMessage;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -191,9 +191,9 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     }
     
     @Override
-    public void handleSendTextMessage(ZigbeeTextMessage zigbeeTextMessage) {
+    public void handleSendTextMessage(YukonTextMessage yukonTextMessage) {
         try {
-            zigbeeWebService.sendTextMessage(zigbeeTextMessage);
+            zigbeeWebService.sendTextMessage(yukonTextMessage);
         } catch (DigiNotConfiguredException e) {
             log.warn("caut exception in handlTextMessage", e);
         } catch (DigiWebServiceException e) {
@@ -204,7 +204,7 @@ public class DigiControlMessageHandler implements SepMessageHandler {
     }
 
     @Override
-    public void handleCancelTextMessage(CancelZigbeeText cancelZigbeeText) {
+    public void handleCancelTextMessage(YukonCancelTextMessage cancelZigbeeText) {
         try {
             zigbeeWebService.cancelTextMessage(cancelZigbeeText);
         } catch (DigiNotConfiguredException e){

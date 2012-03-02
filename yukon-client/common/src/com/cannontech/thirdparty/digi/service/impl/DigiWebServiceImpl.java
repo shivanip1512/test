@@ -17,13 +17,12 @@ import org.springframework.web.client.RestOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.model.CancelZigbeeText;
-import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.model.YukonCancelTextMessage;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.database.db.point.stategroup.Commissioned;
-import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.spring.CheckConfigParam;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
@@ -53,7 +52,6 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     private static final Logger log = YukonLogManager.getLogger(DigiWebServiceImpl.class);
 
-    @Autowired private NextValueHelper nextValueHelper;
     @Autowired private RestOperations restTemplate;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
     @Autowired private ZigbeeDeviceDao zigbeeDeviceDao;
@@ -398,7 +396,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
 
     @Override
-    public void sendManualAdjustment(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+    public void sendManualAdjustment(YukonTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
         log.debug("Sending adjusment message to Gateways. Message: \"" + message.getMessage() +"\"");
 
         Set<Integer> inventoryIds = message.getInventoryIds();
@@ -409,7 +407,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
     
     @Override
-    public void sendTextMessage(ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+    public void sendTextMessage(YukonTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
         log.debug("Sending text message to Gateways. Message: \"" + message.getMessage() +"\"");
 
         Set<Integer> inventoryIds = message.getInventoryIds();
@@ -418,12 +416,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         sendTextMessage(gateways,message);
     }
 
-    private void sendTextMessage(List<ZigbeeDevice> gateways, ZigbeeTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {
-        //Needs a unique id.
-        int messageId = nextValueHelper.getNextValue("ZBControlEvent");
-        message.setMessageId(messageId);
-        //We are not tracking these Id's yet. They will be needed to cancel any messages being displayed.
-        
+    private void sendTextMessage(List<ZigbeeDevice> gateways, YukonTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException {       
         String xml = digiXMLBuilder.buildTextMessage(gateways, message);
         String source;
         
@@ -463,14 +456,14 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
     }
 
     @Override
-    public void cancelTextMessage(CancelZigbeeText cancelZigbeeText) throws ZigbeeClusterLibraryException, DigiWebServiceException {
+    public void cancelTextMessage(YukonCancelTextMessage cancelZigbeeText) throws ZigbeeClusterLibraryException, DigiWebServiceException {
         Set<Integer> inventoryIds = cancelZigbeeText.getInventoryIds();
         List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForInventoryIds(inventoryIds); 
         
         cancelTextMessage(gateways,cancelZigbeeText);
     }
     
-    private void cancelTextMessage(List<ZigbeeDevice> devices, CancelZigbeeText cancelZigbeeText) {
+    private void cancelTextMessage(List<ZigbeeDevice> devices, YukonCancelTextMessage cancelZigbeeText) {
         String xml = digiXMLBuilder.buildCancelMessageEvent(devices, cancelZigbeeText);
         String source;
         

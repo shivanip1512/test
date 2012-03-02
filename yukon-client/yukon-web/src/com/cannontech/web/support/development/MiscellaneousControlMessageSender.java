@@ -12,8 +12,9 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.model.CancelZigbeeText;
-import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.model.YukonCancelTextMessage;
+import com.cannontech.common.model.YukonTextMessage;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.web.security.annotation.CheckDevelopmentMode;
@@ -26,6 +27,7 @@ public class MiscellaneousControlMessageSender {
 
     @Autowired ProgramDao programDao;
     @Autowired EnrollmentDao enrollmentDao;
+    @Autowired NextValueHelper nextValueHelper;
     
     //Autowired by setter.
     private JmsTemplate jmsTemplate;
@@ -40,16 +42,18 @@ public class MiscellaneousControlMessageSender {
         Instant startTime = new Instant();
         Duration displayDuration = new Duration(startTime, startTime.plus(60000));
         
-        ZigbeeTextMessage zigbeeTextMessage = new ZigbeeTextMessage();
-
-        zigbeeTextMessage.setMessageId(controlId++);
-        zigbeeTextMessage.setInventoryIds(inventoryIds);
-        zigbeeTextMessage.setMessage("Test Message: " + controlId);
-        zigbeeTextMessage.setConfirmationRequired(false);
-        zigbeeTextMessage.setDisplayDuration(displayDuration);
-        zigbeeTextMessage.setStartTime(startTime);
+        controlId = nextValueHelper.getNextValue("ExternalToYukonMessageIdMapping");
         
-        jmsTemplate.convertAndSend("yukon.notif.stream.dr.smartEnergyProfileTextMessage.Send", zigbeeTextMessage);
+        YukonTextMessage yukonTextMessage = new YukonTextMessage();
+
+        yukonTextMessage.setMessageId(controlId);
+        yukonTextMessage.setInventoryIds(inventoryIds);
+        yukonTextMessage.setMessage("Test Message: " + controlId);
+        yukonTextMessage.setConfirmationRequired(false);
+        yukonTextMessage.setDisplayDuration(displayDuration);
+        yukonTextMessage.setStartTime(startTime);
+        
+        jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", yukonTextMessage);
         return "redirect:main";
     }
     
@@ -58,12 +62,12 @@ public class MiscellaneousControlMessageSender {
         List<Integer> groupIds = programDao.getDistinctGroupIdsByYukonProgramIds(Sets.newHashSet(loadProgramId));
         Set<Integer> inventoryIds = enrollmentDao.getActiveEnrolledInventoryIdsForGroupIds(groupIds);
 
-        CancelZigbeeText cancelZigbeeText = new CancelZigbeeText();
+        YukonCancelTextMessage cancelZigbeeText = new YukonCancelTextMessage();
         
         cancelZigbeeText.setInventoryIds(inventoryIds);
-        cancelZigbeeText.setMessageId(controlId-1);
+        cancelZigbeeText.setMessageId(controlId);
         
-        jmsTemplate.convertAndSend("yukon.notif.stream.dr.smartEnergyProfileTextMessage.Cancel", cancelZigbeeText);
+        jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Cancel", cancelZigbeeText);
         return "redirect:main";
     }
     

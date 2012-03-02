@@ -15,6 +15,7 @@
     
     <xsd:complexType name="TextMessage">
         <xsd:sequence>
+            <xsd:element name="messageId" type="xsd:long"/>
             <xsd:element name="serialNumber" type="yukon:SerialNumber" maxOccurs="unbounded"/>
             <xsd:element name="message" type="xsd:string"/>
             <xsd:element name="confirmationRequired" type="xsd:boolean" minOccurs="0"/>

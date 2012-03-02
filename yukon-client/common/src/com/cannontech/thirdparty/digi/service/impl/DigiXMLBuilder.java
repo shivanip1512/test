@@ -7,8 +7,8 @@ import java.util.Set;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.model.CancelZigbeeText;
-import com.cannontech.common.model.ZigbeeTextMessage;
+import com.cannontech.common.model.YukonCancelTextMessage;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.SepDeviceClassDao;
@@ -90,7 +90,7 @@ public class DigiXMLBuilder {
         return xml;
     }
     
-    public String buildTextMessage(List<ZigbeeDevice> gateways, ZigbeeTextMessage message) {
+    public String buildTextMessage(List<ZigbeeDevice> gateways, YukonTextMessage message) {
         int confirmationValue = message.isConfirmationRequired() ? 128:0;
         
         long startTimeSeconds = 0; // Zero means now
@@ -132,7 +132,7 @@ public class DigiXMLBuilder {
         return xml;
     }
     
-    public String buildCancelMessageEvent(List<ZigbeeDevice> gateways, CancelZigbeeText cancelZigbeeText) {
+    public String buildCancelMessageEvent(List<ZigbeeDevice> gateways, YukonCancelTextMessage cancelZigbeeText) {
         String xml = 
                "<sci_request version=\"1.0\">"
             + "  <send_message>"
