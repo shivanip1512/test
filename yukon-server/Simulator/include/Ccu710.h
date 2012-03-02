@@ -5,7 +5,6 @@
 #include "emetconwords.h"
 
 #include "CommInterface.h"
-#include "types.h"
 
 namespace Cti {
 namespace Simulator {
@@ -166,7 +165,6 @@ private:
     int _address;
     int _strategy;
 
-    static error_t extractAddress(const bytes &buf, unsigned &address);
     static bool isExtendedAddress(unsigned char address_byte);
     static unsigned char makeReplyControl(unsigned address, ReplyControls reply_control);
 
@@ -181,6 +179,10 @@ private:
     std::string describeReply(const reply_t &reply) const;
 
     error_t sendReply(CommsOut &comms, const reply_t &reply, Logger &logger) const;
+
+protected:
+
+    static error_t extractAddress(const bytes &buf, unsigned &address);
 };
 
 }

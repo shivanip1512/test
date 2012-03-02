@@ -1,10 +1,7 @@
 #include "precompiled.h"
 
 #include "Ccu710.h"
-
 #include "Simulator.h"
-
-#include "boostutil.h"
 
 using namespace std;
 
@@ -35,24 +32,13 @@ error_t Ccu710::peekAddress(Comms &comms, unsigned &address)
         return false;
     }
 
-    if( !isExtendedAddress(address_buf[0]) )
-    {
-        // These bits can never be set if the address isn't extended.
-        if( address_buf[1] & 0x38 )
-        {
-            return false;
-        }
-    }
-
     return extractAddress(address_buf, address);
 }
-
 
 bool Ccu710::isExtendedAddress(unsigned char address_byte)
 {
     return address_byte & 0x40;
 }
-
 
 bool parity(unsigned char x)
 {
@@ -80,32 +66,36 @@ unsigned char makeEvenParity(unsigned char x)
     return parity(cropped)?(cropped | 0x80):(cropped);
 }
 
-
 error_t Ccu710::extractAddress(const bytes &address_buf, unsigned &address)
 {
-    if( address_buf.empty() )
+    if( address_buf.size() < 2)
     {
-        return "No data for address extraction";
+        return "Insufficient data for address extraction";
     }
     if( !isEvenParity(address_buf[0]) )
     {
         return "Invalid parity in address extraction";
     }
 
-    address = address_buf[0] & 0x03;
-
     if( isExtendedAddress(address_buf[0]) )
     {
-        if( address_buf.size() < 2 )
-        {
-            return "Insufficient data for extended address extraction";
-        }
         if( !isEvenParity(address_buf[1]) )
         {
             return "Invalid parity in address extraction";
         }
 
+        address = address_buf[0] & 0x03;
         address |= (address_buf[1] >> 1) & 0x1c;
+    }
+    else
+    {
+        // These bits can never be set if the address isn't extended.
+        if( address_buf[1] & 0x38 )
+        {
+            return "Invalid non-extended address data received.";
+        }
+
+        address = address_buf[0] & 0x03;
     }
 
     return error_t::success;

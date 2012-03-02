@@ -1,37 +1,14 @@
 #include "precompiled.h"
 
-#include <iostream>
-#include <vector>
-
-#include <boost/thread/thread.hpp>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/filesystem.hpp>
 
-#include "PlcInfrastructure.h"
-#include "Ccu710.h"
+#include "SimulatorUtils.h"
+#include "Simulator.h"
 #include "Ccu711.h"
 #include "Ccu721.h"
-#include "ScopedLogger.h"
-#include "CommInterface.h"
-#include "BehaviorCollection.h"
 #include "DelayBehavior.h"
 #include "BchBehavior.h"
 #include "cparms.h"
-#include "guard.h"
-#include "sema.h"
-#include "dbaccess.h"
-#include "database_reader.h"
-#include "database_connection.h"
-
-#include "boostutil.h"
-
-#include "dllbase.h"
-#include "ctinexus.h"
-#include "ctitime.h"
-#include "logger.h"
 
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType);
 
@@ -50,13 +27,10 @@ DLLIMPORT extern CtiLogger dout;
 namespace Cti {
 namespace Simulator {
 
-PlcInfrastructure Grid;
-
 int SimulatorMainFunction(int argc, char **argv);
 void loadGloabalSimulatorBehaviors(Logger &logger);
 bool confirmCcu710(int ccu_address, int portNumber, Logger &logger);
 bool getPorts(vector<int> &ports);
-bool isDnpHeader(bytes peek_buf);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
 void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, Logger &logger);
@@ -249,16 +223,6 @@ bool getPorts(vector<int> &ports)
     }
 
     return !ports.empty();
-}
-
-bool isDnpHeader(bytes peek_buf)
-{
-    if( peek_buf.size() < 2 )
-    {
-        return false;
-    }
-
-    return ((peek_buf[0] == 0x05) && (peek_buf[1] == 0x64));
 }
 
 void CcuPortMaintainer(int portNumber, int strategy)

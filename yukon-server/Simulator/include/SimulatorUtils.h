@@ -1,12 +1,11 @@
 #pragma once
 
-#include "PlcInfrastructure.h"
+#include "types.h"
 
 namespace Cti {
 namespace Simulator {
 
-extern PlcInfrastructure Grid;
+bool isDnpHeader(bytes peek_buf);
 
 }
 }
-

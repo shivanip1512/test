@@ -39,6 +39,8 @@ INCLPATHS+= \
 
 
 CCU_SIMULATOR_OBJS=\
+SimulatorUtils.obj \
+Simulator.obj \
 ccu_simulator.obj \
 CommInterface.obj \
 SimulatorLogger.obj \
@@ -173,18 +175,18 @@ ccusimsvc.obj:	precompiled.h ctitime.h dlldefs.h ccusimsvc.h \
 		ctidbgmem.h netports.h dllbase.h dsm2.h mutex.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
 		words.h optional.h
-ccu_simulator.obj:	precompiled.h PlcInfrastructure.h Mct410.h \
-		EmetconWords.h types.h ctitime.h dlldefs.h SimulatorLogger.h \
-		logger.h thread.h mutex.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h \
-		DeviceMemoryManager.h BehaviorCollection.h MctBehavior.h \
-		ScopedLogger.h smartmap.h boostutil.h dllbase.h dsm2.h \
-		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
-		optional.h readers_writer_lock.h critical_section.h \
-		PlcBehavior.h Ccu710.h PlcTransmitter.h CommInterface.h \
-		ctinexus.h CommsBehavior.h portlogger.h Ccu711.h CcuIDLC.h \
-		Ccu721.h ctidate.h DelayBehavior.h BchBehavior.h cparms.h \
-		rwutil.h database_connection.h dbaccess.h sema.h \
+ccu_simulator.obj:	precompiled.h SimulatorUtils.h types.h Simulator.h \
+		PlcInfrastructure.h Mct410.h EmetconWords.h ctitime.h \
+		dlldefs.h SimulatorLogger.h logger.h thread.h mutex.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h numstr.h \
+		CtiPCPtrQueue.h DeviceMemoryManager.h BehaviorCollection.h \
+		MctBehavior.h ScopedLogger.h smartmap.h boostutil.h dllbase.h \
+		dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h \
+		words.h optional.h readers_writer_lock.h critical_section.h \
+		PlcBehavior.h Ccu711.h ccu710.h PlcTransmitter.h \
+		CommInterface.h ctinexus.h CommsBehavior.h portlogger.h \
+		CcuIDLC.h Ccu721.h ctidate.h DelayBehavior.h BchBehavior.h \
+		cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
 		configval.h
 comminterface.obj:	precompiled.h CommInterface.h ctinexus.h \
@@ -218,7 +220,7 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
 		optional.h dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
 		dev_exclusion.h boostutil.h tbl_paoexclusion.h row_reader.h \
-		rwutil.h database_connection.h dbaccess.h dllbase.h sema.h \
+		rwutil.h database_connection.h dbaccess.h dllbase.h \
 		database_reader.h boost_time.h config_device.h hashkey.h \
 		hash_functions.h rte_base.h dbmemobject.h ctibase.h \
 		ctinexus.h message.h collectable.h tbl_pao_lite.h \
@@ -265,56 +267,67 @@ scopedlogger.obj:	precompiled.h ScopedLogger.h SimulatorLogger.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		CtiPCPtrQueue.h
+simulator.obj:	precompiled.h Simulator.h PlcInfrastructure.h Mct410.h \
+		EmetconWords.h types.h ctitime.h dlldefs.h SimulatorLogger.h \
+		logger.h thread.h mutex.h guard.h utility.h queues.h \
+		cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h \
+		DeviceMemoryManager.h BehaviorCollection.h MctBehavior.h \
+		ScopedLogger.h smartmap.h boostutil.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
+		optional.h readers_writer_lock.h critical_section.h \
+		PlcBehavior.h
 simulatorlogger.obj:	precompiled.h SimulatorLogger.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		CtiPCPtrQueue.h ScopedLogger.h
+simulatorutils.obj:	precompiled.h SimulatorUtils.h types.h
 simulator_main.obj:	precompiled.h ctitime.h dlldefs.h ccusimsvc.h \
 		cservice.h CServiceConfig.h ctibase.h ctinexus.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h netports.h dllbase.h dsm2.h \
 		mutex.h guard.h utility.h queues.h cticalls.h os2_2w32.h \
 		numstr.h dsm2err.h words.h optional.h logger.h thread.h \
 		CtiPCPtrQueue.h
-test_bch_behavior.obj:	precompiled.h boostutil.h utility.h ctitime.h \
-		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		BehaviorCollection.h SimulatorLogger.h logger.h thread.h \
-		mutex.h guard.h CtiPCPtrQueue.h BchBehavior.h PlcBehavior.h
-test_behavior_collection.obj:	precompiled.h boostutil.h utility.h \
-		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
-		numstr.h BehaviorCollection.h SimulatorLogger.h logger.h \
-		thread.h mutex.h guard.h CtiPCPtrQueue.h
-test_ccusim.obj:	CCU711.h ccu710.h PlcTransmitter.h CommInterface.h \
-		ctinexus.h cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h \
-		netports.h BehaviorCollection.h SimulatorLogger.h logger.h \
-		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h \
-		CommsBehavior.h portlogger.h emetconwords.h CcuIDLC.h \
-		ctidate.h Ccu721.h Mct410.h DeviceMemoryManager.h \
+test_bch_behavior.obj:	BehaviorCollection.h SimulatorLogger.h logger.h \
+		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
+		queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		CtiPCPtrQueue.h BchBehavior.h PlcBehavior.h
+test_behavior_collection.obj:	BehaviorCollection.h SimulatorLogger.h \
+		logger.h dlldefs.h thread.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		CtiPCPtrQueue.h
+test_ccusim.obj:	EmetconWords.h types.h SimulatorUtils.h \
+		PlcInfrastructure.h Mct410.h ctitime.h dlldefs.h \
+		SimulatorLogger.h logger.h thread.h mutex.h guard.h utility.h \
+		queues.h cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h \
+		DeviceMemoryManager.h BehaviorCollection.h MctBehavior.h \
+		ScopedLogger.h smartmap.h boostutil.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
+		optional.h readers_writer_lock.h critical_section.h \
+		PlcBehavior.h Simulator.h Ccu710.h PlcTransmitter.h \
+		CommInterface.h ctinexus.h CommsBehavior.h portlogger.h
+test_delay_behavior.obj:	DelayBehavior.h CommsBehavior.h types.h \
+		SimulatorLogger.h logger.h dlldefs.h thread.h mutex.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
+		CtiPCPtrQueue.h BehaviorCollection.h
+test_frozen_peak_timestamp_behavior.obj:	FrozenPeakTimestampBehavior.h \
+		MctBehavior.h SimulatorLogger.h logger.h dlldefs.h thread.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		BehaviorCollection.h
+test_frozen_read_parity_behavior.obj:	FrozenReadParityBehavior.h \
+		MctBehavior.h SimulatorLogger.h logger.h dlldefs.h thread.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		BehaviorCollection.h
+test_mct410_sim.obj:	Mct410.h EmetconWords.h types.h ctitime.h \
+		dlldefs.h SimulatorLogger.h logger.h thread.h mutex.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h numstr.h \
+		CtiPCPtrQueue.h DeviceMemoryManager.h BehaviorCollection.h \
 		MctBehavior.h
-test_delay_behavior.obj:	precompiled.h boostutil.h utility.h ctitime.h \
-		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		BehaviorCollection.h SimulatorLogger.h logger.h thread.h \
-		mutex.h guard.h CtiPCPtrQueue.h DelayBehavior.h \
-		CommsBehavior.h
-test_frozen_peak_timestamp_behavior.obj:	yukon.h types.h ctidbgmem.h \
-		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
-		os2_2w32.h numstr.h BehaviorCollection.h SimulatorLogger.h \
-		logger.h thread.h mutex.h guard.h CtiPCPtrQueue.h \
-		FrozenPeakTimestampBehavior.h MctBehavior.h
-test_frozen_read_parity_behavior.obj:	yukon.h types.h ctidbgmem.h \
-		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
-		os2_2w32.h numstr.h BehaviorCollection.h SimulatorLogger.h \
-		logger.h thread.h mutex.h guard.h CtiPCPtrQueue.h \
-		FrozenReadParityBehavior.h MctBehavior.h
-test_mct410_sim.obj:	precompiled.h boostutil.h utility.h ctitime.h \
-		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		Mct410.h EmetconWords.h SimulatorLogger.h logger.h thread.h \
-		mutex.h guard.h CtiPCPtrQueue.h DeviceMemoryManager.h \
-		BehaviorCollection.h MctBehavior.h
-test_random_consumption_behavior.obj:	yukon.h types.h ctidbgmem.h \
-		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
-		os2_2w32.h numstr.h BehaviorCollection.h SimulatorLogger.h \
-		logger.h thread.h mutex.h guard.h CtiPCPtrQueue.h \
-		RandomConsumptionBehavior.h MctBehavior.h
+test_random_consumption_behavior.obj:	RandomConsumptionBehavior.h \
+		MctBehavior.h SimulatorLogger.h logger.h dlldefs.h thread.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		BehaviorCollection.h
 #ENDUPDATE#
 

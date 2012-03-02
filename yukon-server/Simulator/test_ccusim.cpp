@@ -1,11 +1,20 @@
 #include <boost/test/unit_test.hpp>
 
 #include "EmetconWords.h"
+#include "SimulatorUtils.h"
+#include "PlcInfrastructure.h"
+#include "Simulator.h"
+#include "Ccu710.h"
 
 using namespace std;
 using namespace Cti::Simulator;
 
 BOOST_AUTO_TEST_SUITE( test_ccusim )
+
+struct testCcu710 : Cti::Simulator::Ccu710
+{
+    using Ccu710::extractAddress;
+};
 
 BOOST_AUTO_TEST_CASE( test_EmetconWords_extract_bits )
 {
@@ -21,16 +30,127 @@ BOOST_AUTO_TEST_CASE( test_EmetconWords_extract_bits )
     b_word.push_back(0x05);
     b_word.push_back(0xa0);
 
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word,  0,  4), 0x0a);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word,  4,  5), 0x1f);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word,  9,  3), 0x07);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 12, 22), 1234567);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 34,  1), 0x00);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 35,  1), 0x01);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 36,  8), 0x00);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 44,  2), 0x01);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 46,  6), 0x1a);
+    BOOST_REQUIRE_EQUAL(EmetconWord::extract_bits(b_word,  0,  4), 0x0a);
+    BOOST_REQUIRE_EQUAL(EmetconWord::extract_bits(b_word,  4,  5), 0x1f);
+    BOOST_REQUIRE_EQUAL(EmetconWord::extract_bits(b_word,  9,  3), 0x07);
+    BOOST_REQUIRE_EQUAL(EmetconWord::extract_bits(b_word, 12, 22), 1234567);
+    BOOST_REQUIRE_EQUAL(EmetconWord::extract_bits(b_word, 34,  1), 0x00);
+    BOOST_REQUIRE_EQUAL(EmetconWord::extract_bits(b_word, 35,  1), 0x01);
+    BOOST_REQUIRE_EQUAL(EmetconWord::extract_bits(b_word, 36,  8), 0x00);
+    BOOST_REQUIRE_EQUAL(EmetconWord::extract_bits(b_word, 44,  2), 0x01);
+    BOOST_REQUIRE_EQUAL(EmetconWord::extract_bits(b_word, 46,  6), 0x1a);
 
+}
+
+BOOST_AUTO_TEST_CASE( test_ccu710_addressing )
+{
+    {
+        unsigned address = 0;
+        bytes header;
+
+        // Need at least two bytes...
+        BOOST_REQUIRE_EQUAL( testCcu710::extractAddress(header, address), "Insufficient data for address extraction" );
+        BOOST_REQUIRE_EQUAL( address, 0 );
+
+        header.push_back(0x05);
+
+        // One byte still ain't enough...
+        BOOST_REQUIRE_EQUAL( testCcu710::extractAddress(header, address), "Insufficient data for address extraction" );
+        BOOST_REQUIRE_EQUAL( address, 0 );
+
+        header.push_back(0x03);
+
+        // Now we're talkin'...
+        BOOST_REQUIRE( !testCcu710::extractAddress(header, address) );
+        BOOST_REQUIRE_EQUAL( address, 1 );
+    }
+
+    {
+        unsigned address = 0;
+        bytes header;
+
+        header.push_back(0x08);
+        header.push_back(0x9d);
+
+        // Parity of byte 0 is wrong...
+        BOOST_REQUIRE_EQUAL( testCcu710::extractAddress(header, address), "Invalid parity in address extraction" );
+        BOOST_REQUIRE_EQUAL( address, 0 );
+    }
+
+    {
+        unsigned address = 0;
+        bytes header;
+
+        header.push_back(0x63);
+        header.push_back(0x9d);
+
+        // Parity of byte 1 is wrong...
+        BOOST_REQUIRE_EQUAL( testCcu710::extractAddress(header, address), "Invalid parity in address extraction" );
+        BOOST_REQUIRE_EQUAL( address, 0 );
+    }
+
+    {
+        unsigned address = 0;
+        bytes header;
+
+        header.push_back(0x63);
+        header.push_back(0x9c);
+
+        // Extended address...
+        BOOST_REQUIRE( !testCcu710::extractAddress(header, address) );
+        BOOST_REQUIRE_EQUAL( address, 15 );
+    }
+
+    {
+        unsigned address = 0;
+        bytes header;
+
+        header.push_back(0x33);
+        header.push_back(0x9c);
+
+        // Bad non-extended data in byte 1.
+        BOOST_REQUIRE_EQUAL( testCcu710::extractAddress(header, address), "Invalid non-extended address data received." );
+        BOOST_REQUIRE_EQUAL( address, 0 );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_dnp_header_recognition )
+{
+    {
+        bytes header;
+
+        BOOST_REQUIRE( !isDnpHeader(header) ); // Not enough data.
+
+        header.push_back(0x05);
+
+        BOOST_REQUIRE( !isDnpHeader(header) ); // Not enough data.
+
+        header.push_back(0x64);
+
+        BOOST_REQUIRE( isDnpHeader(header) ); // Bingo!
+
+        header.push_back(0x04);
+
+        BOOST_REQUIRE( isDnpHeader(header) ); // More data, but first two bytes are still right!
+    }
+
+    {
+        bytes header;
+
+        header.push_back(0x05);
+        header.push_back(0x65);
+
+        BOOST_REQUIRE( !isDnpHeader(header) ); // So close, yet so far.
+
+        header.push_back(0x05);
+        header.push_back(0x64);
+
+        BOOST_REQUIRE( !isDnpHeader(header) ); // There, but not the right place.
+
+        bytes buf(header.begin()+2, header.end());
+
+        BOOST_REQUIRE( isDnpHeader(buf) ); // Proof it was in header!
+    }
 }
 
 /*
