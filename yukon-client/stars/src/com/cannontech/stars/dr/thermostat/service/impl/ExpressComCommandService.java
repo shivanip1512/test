@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.thermostat.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.joda.time.LocalTime;
@@ -10,12 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
@@ -240,4 +243,30 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
 
         return command.toString();
     }
+
+
+    public void sendTextMessage(YukonTextMessage message, Map<Integer, HardwareSummary> hardwareSummary){
+        
+        StringBuilder command = new StringBuilder();
+        command.append("putconfig xcom data '");
+        command.append(message.getMessage());
+        command.append("' msgpriority 7");
+        if(message.getDisplayDuration() != null){
+            int displayDuration = message.getDisplayDuration().toPeriod().toStandardMinutes().getMinutes();
+            command.append(" timeout ");
+            command.append(displayDuration);
+        }
+        for (Integer inventoryId : message.getInventoryIds()) {
+            try {
+                StringBuilder serial = new StringBuilder();
+                serial.append(" serial ");
+                serial.append(hardwareSummary.get(inventoryId).getSerialNumber());
+                commandRequestHardwareExecutor.execute(inventoryId, command.toString() + serial.toString(), message.getYukonUser());
+            } catch (CommandCompletionException e) {
+                //continue sending text messages
+                log.warn("Unable to send text message to thermostat "+ inventoryId, e);
+            }
+        }
+    }
+    
 }

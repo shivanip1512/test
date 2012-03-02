@@ -1,11 +1,17 @@
 package com.cannontech.stars.dr.thermostat.service.impl;
 
+import java.util.EnumMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.jms.ConnectionFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -13,6 +19,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.core.dao.CustomerDao;
@@ -30,6 +37,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
 import com.cannontech.stars.dr.hardware.model.CustomerEventType;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.HeatCoolSettingType;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
@@ -73,7 +81,11 @@ public class ThermostatServiceImpl implements ThermostatService {
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private ExpressComCommandService expressComCommandService;
 
+    //@Autowired by setter
+    private JmsTemplate jmsTemplate;
+    
     @Override
     public ThermostatManualEventResult executeManualEvent(int thermostatId, Temperature heatTemp, Temperature coolTemp,
                                                           ThermostatMode thermostatMode, ThermostatFanState fanState, boolean hold, boolean autoModeEnabledCommand,
@@ -606,5 +618,35 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
         
         return false;
+    }
+    
+    @Override
+    public void sendTextMessage(YukonTextMessage message){
+        
+        Map<Integer, HardwareSummary> hardwareSummary = inventoryDao.findHardwareSummariesById(message.getInventoryIds());
+        Map<HardwareType, Set<Integer>> hardwareTypeToInventoryIds = new EnumMap<HardwareType, Set<Integer>>(HardwareType.class);
+        for (int inventoryId : message.getInventoryIds()) {
+            HardwareType type = hardwareSummary.get(inventoryId).getHardwareType();
+            
+            if(!hardwareTypeToInventoryIds.containsKey(type)){
+                hardwareTypeToInventoryIds.put(type, new HashSet<Integer>());
+            }
+            hardwareTypeToInventoryIds.get(type).add(inventoryId);
+        }
+        for(HardwareType hardwareType:hardwareTypeToInventoryIds.keySet()){
+            message.setInventoryIds(hardwareTypeToInventoryIds.get(hardwareType));
+            if (hardwareType.isZigbee()) {
+                jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", message);
+            } else {
+                expressComCommandService.sendTextMessage(message, hardwareSummary);
+            }
+               
+        }
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setPubSubDomain(false);
     }
 }

@@ -74,12 +74,19 @@ public class CommandRequestHardwareExecutorImpl implements
     @Override
 	public void execute(Thermostat thermostat, String command,
 			LiteYukonUser user) throws CommandCompletionException {
-
-		LiteStarsLMHardware hardware = 
-			(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(thermostat.getId());
 		
-		this.execute(hardware, command, user);
+		this.execute(thermostat.getId(), command,  user);
 	}
+    
+    @Override
+    public void execute(Integer inventoryId, String command,
+            LiteYukonUser user) throws CommandCompletionException {
+
+        LiteStarsLMHardware hardware = 
+            (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+        
+        this.execute(hardware, command, user);
+    }
 
 	@Override
     public void executeWithTemplate(CommandRequestExecutionTemplate<CommandRequestRoute> template,

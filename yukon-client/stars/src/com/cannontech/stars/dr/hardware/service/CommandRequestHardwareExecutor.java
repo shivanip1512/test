@@ -57,4 +57,17 @@ public interface CommandRequestHardwareExecutor {
 	 */
 	public void execute(Thermostat thermostat, String command,
 			LiteYukonUser yukonUser) throws CommandCompletionException;
+	
+	 /**
+     * Method to execute a command (asynchronously) for a given thermostat and user.  This method
+     * will use the thermostat's route if it is not 0 or the energy company default route if the 
+     * thermostat's route is 0. Logs results.
+     * @param inventoryId - used to find thermostat
+     * @param command - Command to execute
+     * @param user - User executing command
+     * @throws CommandCompletionException
+     */
+    public void execute(Integer inventoryId, String command,
+                        LiteYukonUser user) throws CommandCompletionException;
+                        
 }

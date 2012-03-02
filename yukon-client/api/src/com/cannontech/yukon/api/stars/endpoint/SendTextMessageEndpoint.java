@@ -32,6 +32,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.activemq.YukonTextMessageDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.yukon.api.stars.endpoint.endpointMappers.TextMessageElementRequestMapper;
 import com.cannontech.yukon.api.stars.model.DeviceTextMessage;
@@ -51,6 +52,7 @@ public class SendTextMessageEndpoint {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonTextMessageDao yukonTextMessageDao;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private ThermostatService thermostatService;
     
     //@Autowired by setter
     private JmsTemplate jmsTemplate;
@@ -87,7 +89,8 @@ public class SendTextMessageEndpoint {
 
             // Send out messages
             for (YukonTextMessage yukonTextMessage : yukonTextMessages) {
-                jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", yukonTextMessage);
+                //jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", yukonTextMessage);
+                thermostatService.sendTextMessage(yukonTextMessage);
             }
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
@@ -120,6 +123,10 @@ public class SendTextMessageEndpoint {
 
         Map<String, Integer> serialNumberToInventoryIdMap = 
                 inventoryDao.getSerialNumberToInventoryIdMap(serialNumbers, yukonEnergyCompany.getEnergyCompanyId());
+
+        for (DeviceTextMessage textMessage : textMessages) {
+            textMessage.getSerialNumbers().retainAll(serialNumberToInventoryIdMap.keySet());
+        }
         
         return getYukonTextMessages(textMessages, serialNumberToInventoryIdMap, user) ;
     }
