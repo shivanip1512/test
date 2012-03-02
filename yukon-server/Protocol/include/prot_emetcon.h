@@ -191,6 +191,7 @@ public:
         PutConfig_Parameters,
         PutConfig_IEDDNPAddress,
         PutConfig_WaterMeterReadInterval,
+        PutConfig_Channel2NetMetering,      // GetConfig_Options was hijacked for the config byte/alarm mask in the 410....
 
         PutConfig_ARMC,
         PutConfig_ARML,

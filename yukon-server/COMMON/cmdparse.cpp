@@ -3877,7 +3877,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             _cmd["vcfiller"] = TRUE;
         }
 
-        if(!(token = CmdStr.match(" channel 2 (netmetering|water meter|none)")).empty())
+        if(!(token = CmdStr.match(" channel 2 (netmetering|ui1203 water meter|ui1204 water meter|none)")).empty())
         {
             CtiTokenizer tok( token );
 

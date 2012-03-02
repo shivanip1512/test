@@ -230,12 +230,14 @@ BOOST_AUTO_TEST_CASE(test_putconfig_channel_2_netmetering_water_meter_none)
 {
     std::string inputCommands[] = {
         "putconfig channel 2 netmetering",
-        "putconfig channel 2 water meter",
+        "putconfig channel 2 ui1203 water meter",
+        "putconfig channel 2 ui1204 water meter",
         "putconfig channel 2 none",
         "putconfig channel 2 explode"
     };
 
     bool parseResults[] = {
+        true,
         true,
         true,
         true,
@@ -266,7 +268,8 @@ BOOST_AUTO_TEST_CASE(test_putconfig_channel_2_netmetering_water_meter_none)
 
     std::string expectedResults[] = {
         "netmetering",
-        "water",
+        "ui1203",
+        "ui1204",
         "none",
         ""
     };

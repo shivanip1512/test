@@ -508,6 +508,7 @@ Mct410Device::CommandSet Mct410Device::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::GetConfig_WaterMeterReadInterval,   EmetconProtocol::IO_Read,
                            Memory_WaterMeterReadIntervalPos,                    Memory_WaterMeterReadIntervalLen));
 
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Channel2NetMetering,  EmetconProtocol::IO_Write,  Memory_OptionsPos,  Memory_OptionsLen));
 
     return cs;
 }
@@ -1392,41 +1393,44 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
     }
     else if ( parse.isKeyValid("water_meter_read_interval") )
     {
-        function = EmetconProtocol::PutConfig_WaterMeterReadInterval;
-        found    = getOperation(function, OutMessage->Buffer.BSt);
-
-        int duration = 0;       // default - 12 hours
-
-        if ( parse.isKeyValid("read_interval_duration_seconds") )
+        if ( isMct410(getType()) )
         {
-            duration = parse.getiValue("read_interval_duration_seconds");
+            function = EmetconProtocol::PutConfig_WaterMeterReadInterval;
+            found    = getOperation(function, OutMessage->Buffer.BSt);
 
-            duration /= 60;     // minutes
+            int duration = 0;       // default - MCT interprets this as 12 hours
 
-            if ( ( 5 <= duration && duration <= 600 ) && !( duration % 5 ) )    // use 5 minute granularity up to 10 hours
+            if ( parse.isKeyValid("read_interval_duration_seconds") )
             {
-                duration /= 5;
+                duration = parse.getiValue("read_interval_duration_seconds");
+
+                duration /= 60;     // minutes
+
+                if ( ( 5 <= duration && duration <= 600 ) && !( duration % 5 ) )    // use 5 minute granularity up to 10 hours
+                {
+                    duration /= 5;
+                }
+                else if ( ( 15 <= duration && duration <= 1860 ) && !( duration % 15 ) )    // 15 minute granularity up to 31 hours
+                {
+                    duration /= 15;
+                    duration |= 0x80;
+                }
+                else
+                {
+                    found = false;
+                    nRet  = ExecutionComplete;
+
+                    returnErrorMessage(BADPARAM, OutMessage, retList,
+                                       "Invalid interval length (" + CtiNumStr(duration) + " minutes), not sending");
+                }
             }
-            else if ( ( 15 <= duration && duration <= 1860 ) && !( duration % 15 ) )    // 15 minute granularity up to 31 hours
+
+            if( found )
             {
-                duration /= 15;
-                duration |= 0x80;
+                OutMessage->Sequence = function;
+
+                OutMessage->Buffer.BSt.Message[0] = duration;
             }
-            else
-            {
-                found = false;
-                nRet  = ExecutionComplete;
-
-                returnErrorMessage(BADPARAM, OutMessage, retList,
-                                   "Invalid interval length (" + CtiNumStr(duration) + " minutes), not sending");
-            }
-        }
-
-        if( nRet != ExecutionComplete )
-        {
-            OutMessage->Sequence = function;
-
-            OutMessage->Buffer.BSt.Message[0] = duration;
         }
     }
     else if ( parse.isKeyValid("load_profile_allocation") )
@@ -1456,6 +1460,77 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
 
             returnErrorMessage(BADPARAM, OutMessage, retList,
                                "Missing channel in load profile allocation, not sending");
+        }
+    }
+    else if ( parse.isKeyValid("channel_2_configuration") )
+    {
+        if ( isMct410(getType()) )
+        {
+            // we need to have the options byte in DynamicPaoInfo
+
+            if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options) )
+            {
+                // don't have it - go get it...
+                // sending a getconfig model message and returning an error to
+                // reissue the channel 2 configuration command
+                CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
+
+                if( getOperation(EmetconProtocol::GetConfig_Model, interest_om->Buffer.BSt) )
+                {
+                    interest_om->Sequence = EmetconProtocol::GetConfig_Model;
+
+                    //  make this return message disappear so it doesn't confuse the client
+                    interest_om->Request.Connection = 0;
+
+                    outList.push_back(interest_om);
+                }
+                else
+                {
+                    delete interest_om;
+                }
+                nRet  = ExecutionComplete;
+
+                returnErrorMessage(MISCONFIG, OutMessage, retList,
+                                   "Invalid request: Options Byte has been requested.  Reissue channel 2 configuration command.");
+            }
+            else
+            {
+                function = EmetconProtocol::PutConfig_Channel2NetMetering;
+                found    = getOperation(function, OutMessage->Buffer.BSt);
+
+                std::string new_option_string = parse.getsValue("channel_2_configuration_setting");
+
+                int new_option_bit_pattern = 0;
+
+                if( new_option_string == "none" )
+                {
+                    new_option_bit_pattern = 0x00;      //  000 -- No Meter Attached
+                }
+                else if ( new_option_string == "ui1203" )
+                {
+                    new_option_bit_pattern = 0x01;      //  001 -- Wired UI1203 Sensus Water Meter
+                }
+                else if ( new_option_string == "ui1204" )
+                {
+                    new_option_bit_pattern = 0x02;      //  010 -- Wired UI1204 (Touchread) Sensus or Badger Water Meter
+                }
+                else    //  if ( new_option_string == "netmetering" )
+                {
+                    new_option_bit_pattern = 0x07;      //  111 -- Net Metering Mode Enabled
+                }
+
+                long current_options = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options);
+
+                // clear out existing channel 2 info
+                current_options &= ~( 0x07 << 2 );      // cccccccc &= xxx000xx ==> ccc000cc
+
+                // OR in the new options
+                current_options |= ( new_option_bit_pattern << 2 );     // ccc000cc |= 000xxx00 ==> cccxxxcc
+
+                OutMessage->Sequence = function;
+
+                OutMessage->Buffer.BSt.Message[0] = current_options;
+            }
         }
     }
     else
@@ -2213,9 +2288,12 @@ INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid("water_meter_read_interval") )
     {
-        OutMessage->Sequence = EmetconProtocol::GetConfig_WaterMeterReadInterval;
+        if ( isMct410(getType()) )
+        {
+            OutMessage->Sequence = EmetconProtocol::GetConfig_WaterMeterReadInterval;
 
-        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
+            found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
+        }
     }
     else if( parse.isKeyValid("load_profile_allocation") )
     {
@@ -4772,7 +4850,6 @@ INT Mct410Device::decodeGetConfigWaterMeterReadInterval( INMESS *InMessage, CtiT
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -4783,19 +4860,19 @@ INT Mct410Device::decodeGetConfigWaterMeterReadInterval( INMESS *InMessage, CtiT
 
         std::string resultString( getName() + " / Water Meter Read Interval: " );
 
-        int minutes = 0;
+        int minutes = ( duration & 0x7f );
 
-        if ( ! ( duration & 0x7f ) )    // == 0 or 0x80 --> default == 12 hours
+        if ( minutes == 0 )
         {
-            minutes = ( 12 * 60 );      // 12 hours
+            minutes = ( 12 * 60 );      // 12 hours by default
         }
-        else if ( duration < 0x80 )     // 5 minute granularity
+        else if ( duration & 0x80 )     // 15 minute granularity
         {
-            minutes = duration * 5;
+            minutes *= 15;
         }
-        else                            // 15 minute granularity
+        else                            // 5 minute granularity
         {
-            minutes = ( duration & 0x7f ) * 15;
+            minutes *= 5;
         }
 
         int hours = minutes / 60;
@@ -4817,15 +4894,7 @@ INT Mct410Device::decodeGetConfigWaterMeterReadInterval( INMESS *InMessage, CtiT
         resultString += "\n";
 
 
-        CtiReturnMsg * ReturnMsg = NULL;
-
-        if ((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
+        CtiReturnMsg * ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString(resultString);
@@ -4840,7 +4909,6 @@ INT Mct410Device::decodeGetConfigLongLoadProfileStorageDays( INMESS *InMessage, 
 {
     INT status = NORMAL;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
@@ -4849,21 +4917,13 @@ INT Mct410Device::decodeGetConfigLongLoadProfileStorageDays( INMESS *InMessage, 
 
         std::string resultString( getName() + " / Long Load Profile Allocation:\n" );
 
-        resultString += "Channel 1: " + CtiNumStr(DSt->Message[4]) + " days\n";
-        resultString += "Channel 2: " + CtiNumStr(DSt->Message[5]) + " days\n";
-        resultString += "Channel 3: " + CtiNumStr(DSt->Message[6]) + " days\n";
-        resultString += "Channel 4: " + CtiNumStr(DSt->Message[7]) + " days\n";
+        resultString += "Channel 1: " + CtiNumStr(DSt->Message[4]) + " days at 15 minute allocation\n";
+        resultString += "Channel 2: " + CtiNumStr(DSt->Message[5]) + " days at 15 minute allocation\n";
+        resultString += "Channel 3: " + CtiNumStr(DSt->Message[6]) + " days at 15 minute allocation\n";
+        resultString += "Channel 4: " + CtiNumStr(DSt->Message[7]) + " days at 15 minute allocation\n";
 
 
-        CtiReturnMsg * ReturnMsg = NULL;
-
-        if ((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
+        CtiReturnMsg * ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString(resultString);
