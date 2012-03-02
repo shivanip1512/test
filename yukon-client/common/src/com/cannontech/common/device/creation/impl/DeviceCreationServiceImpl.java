@@ -198,7 +198,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
         // add to template's device groups
         addToTemplatesGroups(templateYukonDevice, newYukonDevice);
-        return templateYukonDevice;
+        return newYukonDevice;
     }
     
     private DeviceBase getNewDeviceFromTemplate(DeviceBase templateDevice, String newDeviceName){
