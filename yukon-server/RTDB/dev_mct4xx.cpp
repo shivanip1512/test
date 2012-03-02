@@ -515,7 +515,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
                     ReturnMsg->setResultString(lp_status_string.c_str());
 
-                    retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList );
+                    retMsgHandler( OutMessage->Request.CommandStr, MISCONFIG, ReturnMsg, vgList, retList );
 
                     delete OutMessage;
                     OutMessage = 0;
@@ -1727,11 +1727,11 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
             {
                 if( errRet )
                 {
-                    String temp = getName() += " / Load profile request status: \n";
+                    string temp = getName() + " / Load profile request status: \n";
                     temp += "Channel " + CtiNumStr(request_channel) + " LP Interval returned 0.";
                     temp += "Retrieve the correct LP Interval and attempt the request again.";
                     errRet->setResultString(temp);
-                    errRet->setStatus(ExecutionComplete);
+                    errRet->setStatus(MISCONFIG);
                     retList.push_back(errRet);
                     errRet = NULL;
                 }
