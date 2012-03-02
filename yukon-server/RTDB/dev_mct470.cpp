@@ -4185,6 +4185,7 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, CtiMess
                 switch( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4 )
                 {
                     case IED_Type_LG_S4:
+                    case IED_Type_Alpha_A3:
                     case IED_Type_GE_kV:
                     case IED_Type_GE_kV2:
                     case IED_Type_GE_kV2c:
@@ -4199,7 +4200,6 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, CtiMess
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" is reporting an invalid IED type (" << (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) << ") for getvalue ied demand **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
-                    case IED_Type_Alpha_A3:
                     case IED_Type_Alpha_PP:
                     {
                         has_volts = false;
