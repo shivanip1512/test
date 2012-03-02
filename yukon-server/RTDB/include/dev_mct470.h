@@ -158,7 +158,7 @@ private:
     bool isIedChannel(unsigned channel) const;
 
     long       getLoadProfileInterval( unsigned channel );
-    point_info getLoadProfileData    ( unsigned channel, const unsigned char *buf, unsigned len );
+    point_info getLoadProfileData    ( unsigned channel, long lp_interval, const unsigned char *buf, unsigned len );
 
     virtual bool hasChannelConfig    (const unsigned channel) const;
     virtual bool requestChannelConfig(const unsigned channel, const OUTMESS &OutMessage, OutMessageList &outList);

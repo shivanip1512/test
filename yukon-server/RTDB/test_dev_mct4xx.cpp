@@ -17,7 +17,7 @@ struct test_Mct4xxDevice : Cti::Devices::Mct4xxDevice
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  }
     point_info getAccumulatorData(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter) const
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  };
-    point_info getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len)
+    point_info getLoadProfileData(unsigned channel, long lp_interval, const unsigned char *buf, unsigned len)
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return point_info();  }
     long getLoadProfileInterval(unsigned channel)
         {  BOOST_FAIL("this virtual should never be called during this unit test");  return 0;  }

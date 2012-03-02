@@ -389,7 +389,7 @@ Mct4xxDevice::point_info Mct410Device::getData(const unsigned char *buf, const u
 }
 
 
-Mct410Device::point_info Mct410Device::getLoadProfileData(unsigned channel, const unsigned char *buf, unsigned len)
+Mct410Device::point_info Mct410Device::getLoadProfileData(unsigned channel, long lp_interval, const unsigned char *buf, unsigned len)
 {
     point_info pi;
 
@@ -399,7 +399,7 @@ Mct410Device::point_info Mct410Device::getLoadProfileData(unsigned channel, cons
     if( channel <= ChannelCount )
     {
         pi = getData(buf, len, ValueType_LoadProfile_DynamicDemand);
-        pi.value *= 3600 / getLoadProfileInterval(channel);
+        pi.value *= 3600 / lp_interval;
     }
     else if( channel == Channel_Voltage )
     {

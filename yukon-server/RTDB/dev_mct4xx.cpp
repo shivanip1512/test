@@ -501,437 +501,461 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
             else
             {
                 interval_len = getLoadProfileInterval(request_channel);
-                block_len    = interval_len * 6;
 
-                //  grab the beginning date
-                CtiTokenizer date_tok(parse.getsValue("lp_date_start"));
-                month = atoi(date_tok("-/").data());
-                day   = atoi(date_tok("-/").data());
-                year  = atoi(date_tok("-/").data());
-                //  note that this code assumes that the current century is 20xx - this will need to change in 2100
-                if( year < 100 )    year += 2000;
-
-                if( year > 2099 || year < 2000 )
+                if( interval_len == 0 )
                 {
-                    if( errRet )
-                    {
-                        CtiString temp = "Bad start date \"" + parse.getsValue("lp_date_start") + "\"";
-                        errRet->setResultString( temp );
-                        errRet->setStatus(NoMethod);
-                        retList.push_back( errRet );
-                        errRet = NULL;
-                    }
+                    // The interval length was zero. No execution needs to happen.
+                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+
+                    string lp_status_string;
+                    lp_status_string += getName() + " / Load profile request status:\n";
+                    lp_status_string += "Channel " + CtiNumStr(request_channel + 1) + " LP Interval returned 0.\n";
+                    lp_status_string += "Retrieve the correct LP Interval and attempt the request again.\n";
+
+                    ReturnMsg->setResultString(lp_status_string.c_str());
+
+                    retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList );
+
+                    delete OutMessage;
+                    OutMessage = 0;
+                    found = false;
+                    nRet  = ExecutionComplete;
                 }
-                else if( !cmd.compare("lp") )
+                else
                 {
-                    long candidate_id = 0;
+                    block_len    = interval_len * 6;
 
-                    while( !candidate_id )
+                    //  grab the beginning date
+                    CtiTokenizer date_tok(parse.getsValue("lp_date_start"));
+                    month = atoi(date_tok("-/").data());
+                    day   = atoi(date_tok("-/").data());
+                    year  = atoi(date_tok("-/").data());
+                    //  note that this code assumes that the current century is 20xx - this will need to change in 2100
+                    if( year < 100 )    year += 2000;
+
+                    if( year > 2099 || year < 2000 )
                     {
-                        candidate_id = InterlockedIncrement(&_llpRequest.candidate_request_id);
-                    }
-
-                    const long requestId = InterlockedCompareExchange(&_llpRequest.request_id, candidate_id, pReq->OptionsField());
-
-                    //  _llpRequest.request_id will be 0 if there is no command in progress, and OptionsField will be 0 if it is the first message
-                    if( requestId != pReq->OptionsField() )
-                    {
-                        if( requestId )
+                        if( errRet )
                         {
-                            CtiString temp = "Long load profile request already in progress - use \"getvalue lp cancel\" to cancel\n";
-                            temp += "Requested channel: " + CtiNumStr(_llpRequest.channel + 1) + "\n";
-                            temp += "Current interval: " + printable_time(_llpRequest.begin) + "\n";
-                            temp += "Ending interval:  " + printable_time(_llpRequest.end) + "\n";
-                            errRet->setResultString(temp);
-                            errRet->setStatus(NOTNORMAL);
-                            retList.push_back(errRet);
+                            CtiString temp = "Bad start date \"" + parse.getsValue("lp_date_start") + "\"";
+                            errRet->setResultString( temp );
+                            errRet->setStatus(NoMethod);
+                            retList.push_back( errRet );
                             errRet = NULL;
                         }
-                        else
+                    }
+                    else if( !cmd.compare("lp") )
+                    {
+                        long candidate_id = 0;
+
+                        while( !candidate_id )
                         {
-                            //  This command was cancelled
-                            delete OutMessage;
-                            OutMessage = NULL;
+                            candidate_id = InterlockedIncrement(&_llpRequest.candidate_request_id);
+                        }
 
-                            found = false;
-                            nRet  = ExecutionComplete;
+                        const long requestId = InterlockedCompareExchange(&_llpRequest.request_id, candidate_id, pReq->OptionsField());
 
-                            if( errRet )
+                        //  _llpRequest.request_id will be 0 if there is no command in progress, and OptionsField will be 0 if it is the first message
+                        if( requestId != pReq->OptionsField() )
+                        {
+                            if( requestId )
                             {
-                                CtiString temp = "Long load profile request was cancelled";
+                                CtiString temp = "Long load profile request already in progress - use \"getvalue lp cancel\" to cancel\n";
+                                temp += "Requested channel: " + CtiNumStr(_llpRequest.channel + 1) + "\n";
+                                temp += "Current interval: " + printable_time(_llpRequest.begin) + "\n";
+                                temp += "Ending interval:  " + printable_time(_llpRequest.end) + "\n";
                                 errRet->setResultString(temp);
                                 errRet->setStatus(NOTNORMAL);
                                 retList.push_back(errRet);
                                 errRet = NULL;
                             }
-                        }
-                    }
-                    else
-                    {
-                        CtiTime time_start, time_end;
-
-                        OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfile;
-
-                        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
-
-                        //  save it for later - we'll use it if we have to continue the command
-                        OutMessage->Request.OptionsField = candidate_id;
-
-                        //  grab the beginning time, if available
-                        if( parse.isKeyValid("lp_time_start") )
-                        {
-                            CtiTokenizer time_start_tok(parse.getsValue("lp_time_start"));
-                            hour   = atoi(time_start_tok(":").data());
-                            minute = atoi(time_start_tok(":").data());
-                        }
-                        else
-                        {
-                            //  otherwise, default to midnight
-                            hour   = 0;
-                            minute = 0;
-                        }
-
-                        time_start = CtiTime(CtiDate(day, month, year), hour, minute);
-
-                        //  grab the end date, if available
-                        if( parse.isKeyValid("lp_date_end") )
-                        {
-                            CtiTokenizer date_end_tok(parse.getsValue("lp_date_end"));
-
-                            month = atoi(date_end_tok("-/").data());
-                            day   = atoi(date_end_tok("-/").data());
-                            year  = atoi(date_end_tok("-/").data());
-                            //  note that this code assumes that the current century is 20xx - this will need to change in 2100
-                            if( year < 100 )    year += 2000;
-
-                            //  grab the end time, if available
-                            if( parse.isKeyValid("lp_time_end") )
-                            {
-                                CtiTokenizer time_end_tok(parse.getsValue("lp_time_end"));
-
-                                hour   = atoi(time_end_tok(":").data());
-                                minute = atoi(time_end_tok(":").data());
-
-                                time_end  = CtiTime(CtiDate(day, month, year), hour, minute);
-                            }
                             else
                             {
-                                //  otherwise, default to the end of the day
-                                time_end  = CtiTime(CtiDate(day, month, year));
-                                time_end += 86400;  //  end of the day/beginning of the next day
-                            }
-                        }
-                        else
-                        {
-                            //  otherwise default to the end of the block
-                            time_end  = time_start;
+                                //  This command was cancelled
+                                delete OutMessage;
+                                OutMessage = NULL;
 
-                            if( parse.isKeyValid("lp_time_start") )
-                            {
-                                //  did they want a specific time?
-                                time_end += block_len;
-                            }
-                            else
-                            {
-                                //  no time specified, they must've wanted a whole day
-                                time_end += 86400;
-                            }
-                        }
+                                found = false;
+                                nRet  = ExecutionComplete;
 
-                        if( !time_start.isValid() || !time_end.isValid() || (time_start >= time_end) )
-                        {
-                            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-
-                            CtiString time_error_string = getName() + " / Invalid date/time for LP request (" + parse.getsValue("lp_date_start");
-
-                            if( parse.isKeyValid("lp_time_start") )
-                            {
-                                time_error_string += " @ " + parse.getsValue("lp_time_start");
-                            }
-
-                            if( parse.isKeyValid("lp_date_end") )
-                            {
-                                time_error_string += " - ";
-
-                                time_error_string += parse.getsValue("lp_date_end");
-
-                                if( parse.isKeyValid("lp_time_end") )
+                                if( errRet )
                                 {
-                                    time_error_string += " @ " + parse.getsValue("lp_time_end");
+                                    CtiString temp = "Long load profile request was cancelled";
+                                    errRet->setResultString(temp);
+                                    errRet->setStatus(NOTNORMAL);
+                                    retList.push_back(errRet);
+                                    errRet = NULL;
                                 }
                             }
-
-                            time_error_string += ")";
-
-                            ReturnMsg->setResultString(time_error_string);
-
-                            retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, ReturnMsg, vgList, retList );
-
-                            delete OutMessage;
-                            OutMessage = 0;
-                            found = false;
-                            nRet  = ExecutionComplete;
-
-                            //  reset, we're not executing any more
-                            InterlockedCompareExchange(&_llpRequest.request_id, 0, candidate_id);
                         }
                         else
                         {
-                            if( ! requestId )
+                            CtiTime time_start, time_end;
+
+                            OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfile;
+
+                            found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
+
+                            //  save it for later - we'll use it if we have to continue the command
+                            OutMessage->Request.OptionsField = candidate_id;
+
+                            //  grab the beginning time, if available
+                            if( parse.isKeyValid("lp_time_start") )
                             {
-                                //  reset the failure indicator, this is the initial request
-                                _llpRequest.failed = false;
-                                _llpRequest.retry  = 0;
-                            }
-
-                            //  align to the beginning of an interval
-                            _llpRequest.begin = time_start.seconds() - (time_start.seconds() % interval_len);
-
-                            //  align this to the beginning of an interval as well
-                            _llpRequest.end   = time_end.seconds()   - (time_end.seconds()   % interval_len);
-
-                            _llpRequest.channel = request_channel;
-
-                            //  this is the number of seconds from the current pointer
-                            unsigned long relative_time = _llpRequest.begin - _llpInterest.time;
-
-                            if( OutMessage->Request.Connection && strstr(OutMessage->Request.CommandStr, " background") )
-                            {
-                                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
-                                ReturnMsg->setResultString(getName() + " / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress");
-
-                                pReq->setConnectionHandle(0);
-
-                                retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList );
-
-                                OutMessage->Priority = 8;
-                                //  make sure the OM doesn't report back to Commander
-                                OutMessage->Request.Connection = 0;
-                            }
-
-                            if( (_llpRequest.channel == _llpInterest.channel) &&  //  correct channel
-                                (relative_time < (16 * block_len))        &&  //  within 16 blocks
-                                !(relative_time % block_len) )                //  aligned
-                            {
-                                //  it's aligned (and close enough) to the block we're pointing at
-                                OutMessage->Buffer.BSt.Function  = 0x40;
-                                OutMessage->Buffer.BSt.Function += relative_time / block_len;
-
-                                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
-                                OutMessage->Buffer.BSt.Length   = 13;
-                            }
-                            else if( !strstr(OutMessage->Request.CommandStr, " read") )
-                            {
-                                //  we need to set the period of interest, so reuse the request message
-
-                                CtiString interestStr(pReq->CommandString());
-
-                                interestStr.replace("getvalue",   "putconfig emetcon");
-                                interestStr.replace("lp channel", "llp interest channel");
-
-                                CtiRequestMsg *interestReq = new CtiRequestMsg(*pReq);
-
-                                interestReq->setCommandString(interestStr);
-                                interestReq->setOptionsField(candidate_id);
-                                interestReq->setConnectionHandle(pReq->getConnectionHandle());
-
-                                retList.push_back(interestReq);
-
-                                delete OutMessage;
-                                OutMessage = 0;
-
-                                found = false;  //  don't try to touch the OutMessage
-                                nRet = NoError;
-
-                                //  trying to read, but we're not aligned - something must've gone wrong
-                                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), pReq->CommandString());
-
-                                ReturnMsg->setUserMessageId(pReq->UserMessageId());
-                                ReturnMsg->setConnectionHandle(pReq->getConnectionHandle());
-                                ReturnMsg->setResultString(getName() + " / Sending load profile period of interest");
-
-                                retMsgHandler(pReq->CommandString(), NoError, ReturnMsg, vgList, retList, true);
+                                CtiTokenizer time_start_tok(parse.getsValue("lp_time_start"));
+                                hour   = atoi(time_start_tok(":").data());
+                                minute = atoi(time_start_tok(":").data());
                             }
                             else
                             {
-                                //  trying to read, but we're not aligned - something must've gone wrong
-                                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
-                                ReturnMsg->setResultString(getName() + " / Long load profile read setup error");
-
-                                retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidTimestamp, ReturnMsg, vgList, retList );
-
-                                _llpInterest.time    = 0;
-                                _llpInterest.channel = 0;
-
-                                _llpRequest.begin   = 0;
-                                _llpRequest.end     = 0;
-                                _llpRequest.channel = 0;
-                                _llpRequest.failed = true;
-
-                                //  reset, we're not executing any more
-                                InterlockedCompareExchange(&_llpRequest.request_id, 0, candidate_id);
-
-                                nRet = ExecutionComplete;
-                                found = false;
-                                delete OutMessage;
-                                OutMessage = 0;
+                                //  otherwise, default to midnight
+                                hour   = 0;
+                                minute = 0;
                             }
 
-                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time,         _llpInterest.time);
-                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel,      _llpInterest.channel + 1);
-                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin, _llpRequest.begin);
-                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd,   _llpRequest.end);
-                        }
-                    }
-                }
-                else if( !cmd.compare("peak") )
-                {
-                    CtiString cmdString = parse.getCommandStr();
-                    if( InterlockedCompareExchange(&_llpPeakInterest.in_progress, true, false) &&
-                        !cmdString.contains("read") )
-                    {
-                        if( errRet )
-                        {
-                            CtiString temp = "Load profile peak request already in progress\n";
-                            errRet->setResultString(temp);
-                            errRet->setStatus(ErrorCommandAlreadyInProgress);
-                            retList.push_back(errRet);
-                            errRet = NULL;
-                        }
-                    }
-                    else
-                    {
-                        if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) ||
-                            ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
-                        {
-                            //  we need to read the SSPEC out of the meter
-                            executeBackgroundRequest("getconfig model", *OutMessage, outList);
+                            time_start = CtiTime(CtiDate(day, month, year), hour, minute);
 
-                            CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                            ReturnMsg->setResultString(getName() + " / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes");
-
-                            retMsgHandler( OutMessage->Request.CommandStr, ErrorVerifySSPEC, ReturnMsg, vgList, retList );
-
-                            delete OutMessage;
-                            OutMessage = 0;
-                            found = false;
-                            nRet  = ExecutionComplete;
-
-                            InterlockedExchange(&_llpPeakInterest.in_progress, false);
-                        }
-                        else if( !isSupported(Feature_LoadProfilePeakReport) )
-                        {
-                            CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                            ReturnMsg->setResultString(getName() + " / Load profile reporting not supported for this device's SSPEC revision");
-
-                            retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, ReturnMsg, vgList, retList );
-
-                            delete OutMessage;
-                            OutMessage = 0;
-                            found = false;
-                            nRet  = ExecutionComplete;
-
-                            InterlockedExchange(&_llpPeakInterest.in_progress, false);
-                        }
-                        else
-                        {
-                            OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfilePeakReport;
-                            found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
-                        }
-
-                        if( found )
-                        {
-                            int lp_peak_command = -1;
-                            string lp_peaktype = parse.getsValue("lp_peaktype");
-                            int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
-
-                            if( !lp_peaktype.compare("day") )
+                            //  grab the end date, if available
+                            if( parse.isKeyValid("lp_date_end") )
                             {
-                                lp_peak_command = FuncRead_LLPPeakDayPos;
-                            }
-                            else if( !lp_peaktype.compare("hour") )
-                            {
-                                lp_peak_command = FuncRead_LLPPeakHourPos;
-                            }
-                            else if( !lp_peaktype.compare("interval") )
-                            {
-                                lp_peak_command = FuncRead_LLPPeakIntervalPos;
-                            }
+                                CtiTokenizer date_end_tok(parse.getsValue("lp_date_end"));
 
-                            if( lp_peak_command > 0 )
-                            {
-                                //  add on a day - this is the end of the interval, not the beginning,
-                                //    so we need to start at midnight of the following day
-                                unsigned long request_time  = CtiTime(CtiDate(day, month, year)).seconds() + 86400;
+                                month = atoi(date_end_tok("-/").data());
+                                day   = atoi(date_end_tok("-/").data());
+                                year  = atoi(date_end_tok("-/").data());
+                                //  note that this code assumes that the current century is 20xx - this will need to change in 2100
+                                if( year < 100 )    year += 2000;
 
-                                //  if we need to send the period of interest, we'll use this later to
-                                //    generate the actual read command
-                                _llpPeakInterest.command = lp_peak_command;
-
-                                if( request_time    != _llpPeakInterest.time    ||
-                                    request_channel != _llpPeakInterest.channel ||
-                                    request_range   != _llpPeakInterest.period )
+                                //  grab the end time, if available
+                                if( parse.isKeyValid("lp_time_end") )
                                 {
-                                    //  we need to set it to the requested interval
-                                    _llpPeakInterest.time    = request_time;
-                                    _llpPeakInterest.channel = request_channel;
-                                    _llpPeakInterest.period  = request_range;
+                                    CtiTokenizer time_end_tok(parse.getsValue("lp_time_end"));
 
-                                    OutMessage->Sequence = EmetconProtocol::PutConfig_LoadProfileReportPeriod;
+                                    hour   = atoi(time_end_tok(":").data());
+                                    minute = atoi(time_end_tok(":").data());
 
-                                    OutMessage->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
-                                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
-                                    OutMessage->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
-                                    OutMessage->MessageFlags |= MessageFlag_ExpectMore;
-
-                                    unsigned long utc_time = request_time;
-
-                                    OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-                                    OutMessage->Buffer.BSt.Message[1] = (request_channel + 1) & 0x000000ff;
-
-                                    OutMessage->Buffer.BSt.Message[2] = (utc_time >> 24)      & 0x000000ff;
-                                    OutMessage->Buffer.BSt.Message[3] = (utc_time >> 16)      & 0x000000ff;
-                                    OutMessage->Buffer.BSt.Message[4] = (utc_time >>  8)      & 0x000000ff;
-                                    OutMessage->Buffer.BSt.Message[5] = (utc_time)            & 0x000000ff;
-
-                                    if( request_range < 256 )
-                                    {
-                                        OutMessage->Buffer.BSt.Message[6] = request_range & 0xff;
-
-                                        OutMessage->Buffer.BSt.Message[7] = 0;
-                                        OutMessage->Buffer.BSt.Message[8] = 0;
-                                    }
-                                    else
-                                    {
-                                        OutMessage->Buffer.BSt.Message[6] = 0;
-
-                                        OutMessage->Buffer.BSt.Message[7] = (request_range >> 8) & 0xff;
-                                        OutMessage->Buffer.BSt.Message[8] = (request_range     ) & 0xff;
-                                    }
+                                    time_end  = CtiTime(CtiDate(day, month, year), hour, minute);
                                 }
                                 else
                                 {
-                                    OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfilePeakReport;
+                                    //  otherwise, default to the end of the day
+                                    time_end  = CtiTime(CtiDate(day, month, year));
+                                    time_end += 86400;  //  end of the day/beginning of the next day
+                                }
+                            }
+                            else
+                            {
+                                //  otherwise default to the end of the block
+                                time_end  = time_start;
 
-                                    OutMessage->Buffer.BSt.Function = _llpPeakInterest.command;
+                                if( parse.isKeyValid("lp_time_start") )
+                                {
+                                    //  did they want a specific time?
+                                    time_end += block_len;
+                                }
+                                else
+                                {
+                                    //  no time specified, they must've wanted a whole day
+                                    time_end += 86400;
+                                }
+                            }
+
+                            if( !time_start.isValid() || !time_end.isValid() || (time_start >= time_end) )
+                            {
+                                CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+
+                                CtiString time_error_string = getName() + " / Invalid date/time for LP request (" + parse.getsValue("lp_date_start");
+
+                                if( parse.isKeyValid("lp_time_start") )
+                                {
+                                    time_error_string += " @ " + parse.getsValue("lp_time_start");
+                                }
+
+                                if( parse.isKeyValid("lp_date_end") )
+                                {
+                                    time_error_string += " - ";
+
+                                    time_error_string += parse.getsValue("lp_date_end");
+
+                                    if( parse.isKeyValid("lp_time_end") )
+                                    {
+                                        time_error_string += " @ " + parse.getsValue("lp_time_end");
+                                    }
+                                }
+
+                                time_error_string += ")";
+
+                                ReturnMsg->setResultString(time_error_string);
+
+                                retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, ReturnMsg, vgList, retList );
+
+                                delete OutMessage;
+                                OutMessage = 0;
+                                found = false;
+                                nRet  = ExecutionComplete;
+
+                                //  reset, we're not executing any more
+                                InterlockedCompareExchange(&_llpRequest.request_id, 0, candidate_id);
+                            }
+                            else
+                            {
+                                if( ! requestId )
+                                {
+                                    //  reset the failure indicator, this is the initial request
+                                    _llpRequest.failed = false;
+                                    _llpRequest.retry  = 0;
+                                }
+
+                                //  align to the beginning of an interval
+                                _llpRequest.begin = time_start.seconds() - (time_start.seconds() % interval_len);
+
+                                //  align this to the beginning of an interval as well
+                                _llpRequest.end   = time_end.seconds()   - (time_end.seconds()   % interval_len);
+
+                                _llpRequest.channel = request_channel;
+
+                                //  this is the number of seconds from the current pointer
+                                unsigned long relative_time = _llpRequest.begin - _llpInterest.time;
+
+                                if( OutMessage->Request.Connection && strstr(OutMessage->Request.CommandStr, " background") )
+                                {
+                                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                                    ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
+                                    ReturnMsg->setResultString(getName() + " / Load profile request submitted for background processing - use \"getvalue lp status\" to check progress");
+
+                                    pReq->setConnectionHandle(0);
+
+                                    retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList );
+
+                                    OutMessage->Priority = 8;
+                                    //  make sure the OM doesn't report back to Commander
+                                    OutMessage->Request.Connection = 0;
+                                }
+
+                                if( (_llpRequest.channel == _llpInterest.channel) &&  //  correct channel
+                                    (relative_time < (16 * block_len))        &&  //  within 16 blocks
+                                    !(relative_time % block_len) )                //  aligned
+                                {
+                                    //  it's aligned (and close enough) to the block we're pointing at
+                                    OutMessage->Buffer.BSt.Function  = 0x40;
+                                    OutMessage->Buffer.BSt.Function += relative_time / block_len;
+
                                     OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
                                     OutMessage->Buffer.BSt.Length   = 13;
                                 }
+                                else if( !strstr(OutMessage->Request.CommandStr, " read") )
+                                {
+                                    //  we need to set the period of interest, so reuse the request message
 
-                                nRet = NoError;
+                                    CtiString interestStr(pReq->CommandString());
+
+                                    interestStr.replace("getvalue",   "putconfig emetcon");
+                                    interestStr.replace("lp channel", "llp interest channel");
+
+                                    CtiRequestMsg *interestReq = new CtiRequestMsg(*pReq);
+
+                                    interestReq->setCommandString(interestStr);
+                                    interestReq->setOptionsField(candidate_id);
+                                    interestReq->setConnectionHandle(pReq->getConnectionHandle());
+
+                                    retList.push_back(interestReq);
+
+                                    delete OutMessage;
+                                    OutMessage = 0;
+
+                                    found = false;  //  don't try to touch the OutMessage
+                                    nRet = NoError;
+
+                                    //  trying to read, but we're not aligned - something must've gone wrong
+                                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), pReq->CommandString());
+
+                                    ReturnMsg->setUserMessageId(pReq->UserMessageId());
+                                    ReturnMsg->setConnectionHandle(pReq->getConnectionHandle());
+                                    ReturnMsg->setResultString(getName() + " / Sending load profile period of interest");
+
+                                    retMsgHandler(pReq->CommandString(), NoError, ReturnMsg, vgList, retList, true);
+                                }
+                                else
+                                {
+                                    //  trying to read, but we're not aligned - something must've gone wrong
+                                    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                                    ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                                    ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
+                                    ReturnMsg->setResultString(getName() + " / Long load profile read setup error");
+
+                                    retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidTimestamp, ReturnMsg, vgList, retList );
+
+                                    _llpInterest.time    = 0;
+                                    _llpInterest.channel = 0;
+
+                                    _llpRequest.begin   = 0;
+                                    _llpRequest.end     = 0;
+                                    _llpRequest.channel = 0;
+                                    _llpRequest.failed = true;
+
+                                    //  reset, we're not executing any more
+                                    InterlockedCompareExchange(&_llpRequest.request_id, 0, candidate_id);
+
+                                    nRet = ExecutionComplete;
+                                    found = false;
+                                    delete OutMessage;
+                                    OutMessage = 0;
+                                }
+
+                                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time,         _llpInterest.time);
+                                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Channel,      _llpInterest.channel + 1);
+                                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin, _llpRequest.begin);
+                                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd,   _llpRequest.end);
+                            }
+                        }
+                    }
+                    else if( !cmd.compare("peak") )
+                    {
+                        CtiString cmdString = parse.getCommandStr();
+                        if( InterlockedCompareExchange(&_llpPeakInterest.in_progress, true, false) &&
+                            !cmdString.contains("read") )
+                        {
+                            if( errRet )
+                            {
+                                CtiString temp = "Load profile peak request already in progress\n";
+                                errRet->setResultString(temp);
+                                errRet->setStatus(ErrorCommandAlreadyInProgress);
+                                retList.push_back(errRet);
+                                errRet = NULL;
+                            }
+                        }
+                        else
+                        {
+                            if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) ||
+                                ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+                            {
+                                //  we need to read the SSPEC out of the meter
+                                executeBackgroundRequest("getconfig model", *OutMessage, outList);
+
+                                CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                                ReturnMsg->setResultString(getName() + " / SSPEC revision not retrieved yet, attempting to read it automatically; please retry command in a few minutes");
+
+                                retMsgHandler( OutMessage->Request.CommandStr, ErrorVerifySSPEC, ReturnMsg, vgList, retList );
+
+                                delete OutMessage;
+                                OutMessage = 0;
+                                found = false;
+                                nRet  = ExecutionComplete;
+
+                                InterlockedExchange(&_llpPeakInterest.in_progress, false);
+                            }
+                            else if( !isSupported(Feature_LoadProfilePeakReport) )
+                            {
+                                CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                                ReturnMsg->setResultString(getName() + " / Load profile reporting not supported for this device's SSPEC revision");
+
+                                retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, ReturnMsg, vgList, retList );
+
+                                delete OutMessage;
+                                OutMessage = 0;
+                                found = false;
+                                nRet  = ExecutionComplete;
+
+                                InterlockedExchange(&_llpPeakInterest.in_progress, false);
+                            }
+                            else
+                            {
+                                OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfilePeakReport;
+                                found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
+                            }
+
+                            if( found )
+                            {
+                                int lp_peak_command = -1;
+                                string lp_peaktype = parse.getsValue("lp_peaktype");
+                                int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
+
+                                if( !lp_peaktype.compare("day") )
+                                {
+                                    lp_peak_command = FuncRead_LLPPeakDayPos;
+                                }
+                                else if( !lp_peaktype.compare("hour") )
+                                {
+                                    lp_peak_command = FuncRead_LLPPeakHourPos;
+                                }
+                                else if( !lp_peaktype.compare("interval") )
+                                {
+                                    lp_peak_command = FuncRead_LLPPeakIntervalPos;
+                                }
+
+                                if( lp_peak_command > 0 )
+                                {
+                                    //  add on a day - this is the end of the interval, not the beginning,
+                                    //    so we need to start at midnight of the following day
+                                    unsigned long request_time  = CtiTime(CtiDate(day, month, year)).seconds() + 86400;
+
+                                    //  if we need to send the period of interest, we'll use this later to
+                                    //    generate the actual read command
+                                    _llpPeakInterest.command = lp_peak_command;
+
+                                    if( request_time    != _llpPeakInterest.time    ||
+                                        request_channel != _llpPeakInterest.channel ||
+                                        request_range   != _llpPeakInterest.period )
+                                    {
+                                        //  we need to set it to the requested interval
+                                        _llpPeakInterest.time    = request_time;
+                                        _llpPeakInterest.channel = request_channel;
+                                        _llpPeakInterest.period  = request_range;
+
+                                        OutMessage->Sequence = EmetconProtocol::PutConfig_LoadProfileReportPeriod;
+
+                                        OutMessage->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
+                                        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
+                                        OutMessage->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
+                                        OutMessage->MessageFlags |= MessageFlag_ExpectMore;
+
+                                        unsigned long utc_time = request_time;
+
+                                        OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+
+                                        OutMessage->Buffer.BSt.Message[1] = (request_channel + 1) & 0x000000ff;
+
+                                        OutMessage->Buffer.BSt.Message[2] = (utc_time >> 24)      & 0x000000ff;
+                                        OutMessage->Buffer.BSt.Message[3] = (utc_time >> 16)      & 0x000000ff;
+                                        OutMessage->Buffer.BSt.Message[4] = (utc_time >>  8)      & 0x000000ff;
+                                        OutMessage->Buffer.BSt.Message[5] = (utc_time)            & 0x000000ff;
+
+                                        if( request_range < 256 )
+                                        {
+                                            OutMessage->Buffer.BSt.Message[6] = request_range & 0xff;
+
+                                            OutMessage->Buffer.BSt.Message[7] = 0;
+                                            OutMessage->Buffer.BSt.Message[8] = 0;
+                                        }
+                                        else
+                                        {
+                                            OutMessage->Buffer.BSt.Message[6] = 0;
+
+                                            OutMessage->Buffer.BSt.Message[7] = (request_range >> 8) & 0xff;
+                                            OutMessage->Buffer.BSt.Message[8] = (request_range     ) & 0xff;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        OutMessage->Sequence = EmetconProtocol::GetValue_LoadProfilePeakReport;
+
+                                        OutMessage->Buffer.BSt.Function = _llpPeakInterest.command;
+                                        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
+                                        OutMessage->Buffer.BSt.Length   = 13;
+                                    }
+
+                                    nRet = NoError;
+                                }
                             }
                         }
                     }
@@ -1698,30 +1722,47 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
 
             const int interval_len = getLoadProfileInterval(request_channel - 1);
 
-            //  align to the beginning of an interval
-            interest_time -= interest_time.seconds() % interval_len;
-
-            _llpInterest.time    = interest_time.seconds();
-            _llpInterest.channel = request_channel - 1;
-
-            unsigned long interval_beginning_time = _llpInterest.time - interval_len;
-
-            OutMessage->Sequence = function;
-
-            //  this request came from a "getvalue lp" command, so make sure to report ExpectMore during Route->ExecuteRequest()
-            if( OutMessage->Request.OptionsField = pReq->OptionsField() )
+            // Only do things if our interval length is valid!
+            if( interval_len == 0 )
             {
-                OutMessage->MessageFlags |= MessageFlag_ExpectMore;
+                if( errRet )
+                {
+                    String temp = getName() += " / Load profile request status: \n";
+                    temp += "Channel " + CtiNumStr(request_channel) + " LP Interval returned 0.";
+                    temp += "Retrieve the correct LP Interval and attempt the request again.";
+                    errRet->setResultString(temp);
+                    errRet->setStatus(ExecutionComplete);
+                    retList.push_back(errRet);
+                    errRet = NULL;
+                }
             }
+            else
+            {
+                //  align to the beginning of an interval
+                interest_time -= interest_time.seconds() % interval_len;
 
-            OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+                _llpInterest.time    = interest_time.seconds();
+                _llpInterest.channel = request_channel - 1;
 
-            OutMessage->Buffer.BSt.Message[1] = request_channel;
+                unsigned long interval_beginning_time = _llpInterest.time - interval_len;
 
-            OutMessage->Buffer.BSt.Message[2] = interval_beginning_time >> 24;
-            OutMessage->Buffer.BSt.Message[3] = interval_beginning_time >> 16;
-            OutMessage->Buffer.BSt.Message[4] = interval_beginning_time >>  8;
-            OutMessage->Buffer.BSt.Message[5] = interval_beginning_time;
+                OutMessage->Sequence = function;
+
+                //  this request came from a "getvalue lp" command, so make sure to report ExpectMore during Route->ExecuteRequest()
+                if( OutMessage->Request.OptionsField = pReq->OptionsField() )
+                {
+                    OutMessage->MessageFlags |= MessageFlag_ExpectMore;
+                }
+
+                OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+
+                OutMessage->Buffer.BSt.Message[1] = request_channel;
+
+                OutMessage->Buffer.BSt.Message[2] = interval_beginning_time >> 24;
+                OutMessage->Buffer.BSt.Message[3] = interval_beginning_time >> 16;
+                OutMessage->Buffer.BSt.Message[4] = interval_beginning_time >>  8;
+                OutMessage->Buffer.BSt.Message[5] = interval_beginning_time;
+            }
         }
     }
 
@@ -2615,10 +2656,15 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow,
 
             for( int i = 0; i < 6; i++, _llpRequest.begin += interval_len )
             {
-                point_info pi = getLoadProfileData(_llpRequest.channel, DSt->Message + (i * 2) + 1, 2);
+                long lp_interval = getLoadProfileInterval(_llpRequest.channel);
 
-                insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + 1 + _llpRequest.channel,
-                                      ReturnMsg, pi, point_name, _llpRequest.begin, 1.0, TAG_POINT_LOAD_PROFILE_DATA);
+                if( lp_interval != 0 )
+                {
+                    point_info pi = getLoadProfileData(_llpRequest.channel, lp_interval, DSt->Message + (i * 2) + 1, 2);
+
+                    insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + 1 + _llpRequest.channel,
+                                          ReturnMsg, pi, point_name, _llpRequest.begin, 1.0, TAG_POINT_LOAD_PROFILE_DATA);
+                }
             }
 
             if( _llpRequest.begin < _llpRequest.end )
@@ -3009,10 +3055,16 @@ INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, Cti
                 {
                     for( int offset = 5; offset >= 0; offset-- )
                     {
-                        pi = getLoadProfileData(channel, DSt->Message + offset*2 + 1, 2);
+                        long lp_interval = getLoadProfileInterval(channel);
 
-                        insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + channel + 1,
-                                              ret_msg, pi, "", timestamp + interval_len * (6 - offset), 1.0, TAG_POINT_LOAD_PROFILE_DATA);
+                        if( lp_interval != 0 )
+                        {
+                            // getLoadProfileInterval would have squawked if it were zero, no need to log here.
+                            pi = getLoadProfileData(channel, lp_interval, DSt->Message + offset*2 + 1, 2);
+
+                            insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + channel + 1,
+                                                  ret_msg, pi, "", timestamp + interval_len * (6 - offset), 1.0, TAG_POINT_LOAD_PROFILE_DATA);
+                        }
                     }
                 }
 
