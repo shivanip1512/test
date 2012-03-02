@@ -119,6 +119,8 @@ public:
         Key_MCT_LcdMetric25,
         Key_MCT_LcdMetric26,
 
+        Key_MCT_WaterMeterReadInterval,
+
         //  run-time info
         Key_MCT_LLPInterest_Time,
         Key_MCT_LLPInterest_Channel,
@@ -335,6 +337,8 @@ protected:
     static const std::string _key_mct_lcd_metric_24;
     static const std::string _key_mct_lcd_metric_25;
     static const std::string _key_mct_lcd_metric_26;
+
+    static const std::string _key_mct_water_meter_read_interval;
 
     static const std::string _key_udp_ip;
     static const std::string _key_udp_port;

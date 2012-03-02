@@ -204,6 +204,9 @@ protected:
         Memory_LLPChannelPos      = 0x34,
         Memory_LLPChannelLen      =    1,
 
+        Memory_WaterMeterReadIntervalPos    = 0x35,
+        Memory_WaterMeterReadIntervalLen    =    1,
+
         Memory_TimeAdjustTolPos   = 0x36,
         Memory_TimeAdjustTolLen   =    1,
 
@@ -399,6 +402,8 @@ protected:
     INT decodeGetConfigAddress     ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     INT decodeGetConfigPhaseDetect ( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
     INT decodeGetConfigDailyReadInterest( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT decodeGetConfigWaterMeterReadInterval( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
+    INT decodeGetConfigLongLoadProfileStorageDays( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
     static bool isDailyReadVulnerableToAliasing(const CtiDate &date, const CtiTime &now);
 

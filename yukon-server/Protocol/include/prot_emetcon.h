@@ -139,6 +139,7 @@ public:
         GetConfig_Softspec,
         GetConfig_Addressing,
         GetConfig_DailyReadInterest,
+        GetConfig_WaterMeterReadInterval,
 
         // PutConfig commands
         PutConfig_Install,
@@ -189,6 +190,7 @@ public:
         PutConfig_AlarmMask,
         PutConfig_Parameters,
         PutConfig_IEDDNPAddress,
+        PutConfig_WaterMeterReadInterval,
 
         PutConfig_ARMC,
         PutConfig_ARML,

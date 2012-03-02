@@ -159,6 +159,8 @@ const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_24 = "mct lcd metric 24
 const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_25 = "mct lcd metric 25";
 const string CtiTableDynamicPaoInfo::_key_mct_lcd_metric_26 = "mct lcd metric 26";
 
+const string CtiTableDynamicPaoInfo::_key_mct_water_meter_read_interval = "mct water meter read interval";
+
 const string CtiTableDynamicPaoInfo::_key_lcr_sspec                         = "lcr sspec";
 const string CtiTableDynamicPaoInfo::_key_lcr_sspec_revision                = "lcr sspec revision";
 const string CtiTableDynamicPaoInfo::_key_lcr_sspec_serial                  = "lcr serial address";
@@ -323,6 +325,8 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_LcdMetric24,                &_key_mct_lcd_metric_24));
     retval.insert(make_pair(Key_MCT_LcdMetric25,                &_key_mct_lcd_metric_25));
     retval.insert(make_pair(Key_MCT_LcdMetric26,                &_key_mct_lcd_metric_26));
+
+    retval.insert(make_pair(Key_MCT_WaterMeterReadInterval,     &_key_mct_water_meter_read_interval));
 
     retval.insert(make_pair(Key_FrozenRateAPeakTimestamp,       &_key_frozen_rate_a_peak_timestamp));
     retval.insert(make_pair(Key_FrozenRateBPeakTimestamp,       &_key_frozen_rate_b_peak_timestamp));

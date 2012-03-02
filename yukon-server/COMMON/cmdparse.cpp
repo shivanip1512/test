@@ -2971,10 +2971,10 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
         }
         if(CmdStr.contains(" load profile allocation "))
         {
-            _cmd["load_profile_allocation"] = true;
-
             if(!(token = CmdStr.match("allocation 1:[0-9]+ 2:[0-9]+ 3:[0-9]+ 4:[0-9]+")).empty())
             {
+                _cmd["load_profile_allocation"] = true;
+
                 int channel1, channel2, channel3, channel4;
 
                 sscanf(token.c_str(), "allocation 1:%d 2:%d 3:%d 4:%d", &channel1, &channel2, &channel3, &channel4);

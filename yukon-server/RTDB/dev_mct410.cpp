@@ -115,6 +115,8 @@ Mct410Device::ValueMapping Mct410Device::initMemoryMap()
 
         { Memory_DisplayParametersPos,     { Memory_DisplayParametersLen,    CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters        } },
         { Memory_TransformerRatioPos,      { Memory_TransformerRatioLen,     CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio         } },
+
+        { Memory_WaterMeterReadIntervalPos, { Memory_WaterMeterReadIntervalLen, CtiTableDynamicPaoInfo::Key_MCT_WaterMeterReadInterval  } },
     };
 
     ValueMapping memoryMap;
@@ -499,6 +501,13 @@ Mct410Device::CommandSet Mct410Device::initCommandStore()
     cs.insert(CommandStore(EmetconProtocol::PutConfig_PhaseDetectClear,   EmetconProtocol::IO_Function_Write,    FuncWrite_PhaseDetectClear,             FuncWrite_PhaseDetectClearLen));
 
     //************************************ End Config related *****************************
+
+
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_WaterMeterReadInterval,   EmetconProtocol::IO_Write,
+                           Memory_WaterMeterReadIntervalPos,                    Memory_WaterMeterReadIntervalLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_WaterMeterReadInterval,   EmetconProtocol::IO_Read,
+                           Memory_WaterMeterReadIntervalPos,                    Memory_WaterMeterReadIntervalLen));
+
 
     return cs;
 }
@@ -897,6 +906,11 @@ INT Mct410Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
 
         case EmetconProtocol::GetConfig_PhaseDetectArchive:
         case EmetconProtocol::GetConfig_PhaseDetect:        status = decodeGetConfigPhaseDetect(InMessage, TimeNow, vgList, retList, outList);      break;
+
+        case EmetconProtocol::GetConfig_WaterMeterReadInterval: status = decodeGetConfigWaterMeterReadInterval(InMessage, TimeNow, vgList, retList, outList);      break;
+
+        case EmetconProtocol::GetConfig_LongLoadProfile: status = decodeGetConfigLongLoadProfileStorageDays(InMessage, TimeNow, vgList, retList, outList);      break;
+
         default:
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -1375,6 +1389,74 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = true;
         }
 
+    }
+    else if ( parse.isKeyValid("water_meter_read_interval") )
+    {
+        function = EmetconProtocol::PutConfig_WaterMeterReadInterval;
+        found    = getOperation(function, OutMessage->Buffer.BSt);
+
+        int duration = 0;       // default - 12 hours
+
+        if ( parse.isKeyValid("read_interval_duration_seconds") )
+        {
+            duration = parse.getiValue("read_interval_duration_seconds");
+
+            duration /= 60;     // minutes
+
+            if ( ( 5 <= duration && duration <= 600 ) && !( duration % 5 ) )    // use 5 minute granularity up to 10 hours
+            {
+                duration /= 5;
+            }
+            else if ( ( 15 <= duration && duration <= 1860 ) && !( duration % 15 ) )    // 15 minute granularity up to 31 hours
+            {
+                duration /= 15;
+                duration |= 0x80;
+            }
+            else
+            {
+                found = false;
+                nRet  = ExecutionComplete;
+
+                returnErrorMessage(BADPARAM, OutMessage, retList,
+                                   "Invalid interval length (" + CtiNumStr(duration) + " minutes), not sending");
+            }
+        }
+
+        if( nRet != ExecutionComplete )
+        {
+            OutMessage->Sequence = function;
+
+            OutMessage->Buffer.BSt.Message[0] = duration;
+        }
+    }
+    else if ( parse.isKeyValid("load_profile_allocation") )
+    {
+        function = EmetconProtocol::PutConfig_LongLoadProfile;
+        found    = getOperation(function, OutMessage->Buffer.BSt);
+
+        // sanity check -- these should all be here
+
+        if ( parse.isKeyValid("load_profile_allocation_channel_1") &&
+             parse.isKeyValid("load_profile_allocation_channel_2") &&
+             parse.isKeyValid("load_profile_allocation_channel_3") &&
+             parse.isKeyValid("load_profile_allocation_channel_4") )
+        {
+            OutMessage->Sequence = function;
+
+            OutMessage->Buffer.BSt.Message[0] = 0xff;       // all SPIDs listen
+            OutMessage->Buffer.BSt.Message[1] = parse.getiValue("load_profile_allocation_channel_1");
+            OutMessage->Buffer.BSt.Message[2] = parse.getiValue("load_profile_allocation_channel_2");
+            OutMessage->Buffer.BSt.Message[3] = parse.getiValue("load_profile_allocation_channel_3");
+            OutMessage->Buffer.BSt.Message[4] = parse.getiValue("load_profile_allocation_channel_4");
+        }
+        else
+        {
+            found = false;
+            nRet  = ExecutionComplete;
+
+            returnErrorMessage(BADPARAM, OutMessage, retList,
+                               "Missing channel in load profile allocation, not sending");
+        }
     }
     else
     {
@@ -2128,6 +2210,18 @@ INT Mct410Device::executeGetConfig( CtiRequestMsg              *pReq,
         {
             OutMessage->Sequence = EmetconProtocol::GetConfig_PhaseDetectArchive;
         }
+    }
+    else if( parse.isKeyValid("water_meter_read_interval") )
+    {
+        OutMessage->Sequence = EmetconProtocol::GetConfig_WaterMeterReadInterval;
+
+        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
+    }
+    else if( parse.isKeyValid("load_profile_allocation") )
+    {
+        OutMessage->Sequence = EmetconProtocol::GetConfig_LongLoadProfile;
+
+        found = getOperation(OutMessage->Sequence, OutMessage->Buffer.BSt);
     }
     else
     {
@@ -4673,6 +4767,113 @@ bool Mct410Device::sspecValid(const unsigned sspec, const unsigned rev) const
 
     return sspec == Mct410Device::Sspec;
 }
+
+INT Mct410Device::decodeGetConfigWaterMeterReadInterval( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        unsigned duration = DSt->Message[0];
+
+        std::string resultString( getName() + " / Water Meter Read Interval: " );
+
+        int minutes = 0;
+
+        if ( ! ( duration & 0x7f ) )    // == 0 or 0x80 --> default == 12 hours
+        {
+            minutes = ( 12 * 60 );      // 12 hours
+        }
+        else if ( duration < 0x80 )     // 5 minute granularity
+        {
+            minutes = duration * 5;
+        }
+        else                            // 15 minute granularity
+        {
+            minutes = ( duration & 0x7f ) * 15;
+        }
+
+        int hours = minutes / 60;
+        minutes %= 60;
+
+        if ( hours )
+        {
+            resultString += CtiNumStr(hours) + " hour";
+            if ( hours > 1 )
+            {
+                resultString += "s";
+            }
+        }
+
+        if ( minutes )
+        {
+            resultString +=  " " + CtiNumStr(minutes) + " minutes";
+        }
+        resultString += "\n";
+
+
+        CtiReturnMsg * ReturnMsg = NULL;
+
+        if ((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+INT Mct410Device::decodeGetConfigLongLoadProfileStorageDays( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        std::string resultString( getName() + " / Long Load Profile Allocation:\n" );
+
+        resultString += "Channel 1: " + CtiNumStr(DSt->Message[4]) + " days\n";
+        resultString += "Channel 2: " + CtiNumStr(DSt->Message[5]) + " days\n";
+        resultString += "Channel 3: " + CtiNumStr(DSt->Message[6]) + " days\n";
+        resultString += "Channel 4: " + CtiNumStr(DSt->Message[7]) + " days\n";
+
+
+        CtiReturnMsg * ReturnMsg = NULL;
+
+        if ((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
 
 }
 }
