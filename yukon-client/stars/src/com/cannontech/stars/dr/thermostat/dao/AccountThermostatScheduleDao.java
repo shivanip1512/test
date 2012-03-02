@@ -128,7 +128,7 @@ public interface AccountThermostatScheduleDao {
     public List<AccountThermostatSchedule> getAllAllowedSchedulesAndEntriesForAccountByTypes(int accountId, List<SchedulableThermostatType> types);
 
     /**
-     * Get all allowed thermostat schedules and entries for an Account based on the user.
+     * Get all allowed thermostat schedules for an Account based on the user.
      * 
      * @param accountId
      * @param types

@@ -66,29 +66,15 @@ public class ThermostatAndScheduleListRequestEndpoint {
     }
     
     private Map<Thermostat, List<AccountThermostatSchedule>> getThermostatSchedules(Integer accountId, List<Thermostat> thermostats) {
-        Map<SchedulableThermostatType, List<AccountThermostatSchedule>> schedulableThermostatTypes = getSchedulableThermostatTypes(accountId,  thermostats);
         Map<Thermostat, List<AccountThermostatSchedule>> thermostatSchedules = Maps.newLinkedHashMap();
         for (Thermostat thermostat : thermostats) {
-            List<AccountThermostatSchedule> schedules = schedulableThermostatTypes.get(thermostat.getSchedulableThermostatType());
+            List<SchedulableThermostatType> compatibleTypes = new ArrayList<SchedulableThermostatType>(thermostat.getCompatibleSchedulableThermostatTypes());
+            List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllAllowedSchedulesForAccountByTypes(accountId, compatibleTypes);
             thermostatSchedules.put(thermostat, schedules);
         }
         return thermostatSchedules;
     }
     
-    private Map<SchedulableThermostatType,  List<AccountThermostatSchedule>> getSchedulableThermostatTypes(Integer accountId, List<Thermostat> thermostats){
-        Map<SchedulableThermostatType,  List<AccountThermostatSchedule>> schedulableThermostatTypes = Maps.newHashMap();
-        for(Thermostat thermostat: thermostats){
-            if(!schedulableThermostatTypes.containsKey(thermostat.getSchedulableThermostatType())){
-                schedulableThermostatTypes.put(thermostat.getSchedulableThermostatType(), new ArrayList<AccountThermostatSchedule>());
-            }
-
-        }
-        List<AccountThermostatSchedule> schedules = accountThermostatScheduleDao.getAllAllowedSchedulesForAccountByTypes(accountId, new ArrayList<SchedulableThermostatType>(schedulableThermostatTypes.keySet()));
-        for(AccountThermostatSchedule schedule: schedules){
-            schedulableThermostatTypes.get(schedule.getThermostatType()).add(schedule);
-        }
-        return schedulableThermostatTypes; 
-    }
 
     private void buildResponse(Integer accountId, Map<Thermostat, List<AccountThermostatSchedule>> thermostatSchedules, Element response){
        
