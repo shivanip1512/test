@@ -19,6 +19,7 @@
 #include "logger.h"
 #include "prot_ansi_focus.h"
 #include "ctidate.h"
+#include "pointdefs.h"
 
 using std::endl;
 
@@ -28,11 +29,22 @@ using std::endl;
 CtiProtocolANSI_focus::CtiProtocolANSI_focus( void )
 : CtiProtocolANSI()
 {
-
+   _table04 = NULL;
+   _table13 = NULL;
 }
 
 CtiProtocolANSI_focus::~CtiProtocolANSI_focus( void )
 {
+    if( _table04 != NULL )
+    {
+        delete _table04;
+        _table04 = NULL;
+    }
+    if( _table13 != NULL )
+    {
+        delete _table13;
+        _table13 = NULL;
+    }
 }
 
 void CtiProtocolANSI_focus::setAnsiDeviceType()
@@ -102,4 +114,136 @@ int CtiProtocolANSI_focus::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     return -1;
 
 
+}
+
+
+void CtiProtocolANSI_focus::convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID )
+{
+    switch( aTableID - 0x0800)
+    {
+         case 4:
+            {
+                {
+                   CtiLockGuard<CtiLogger> doubt_guard(dout);
+                   dout << CtiTime() << " Creating Focus Mfg Table 4" << endl;
+                }
+                _table04 = new CtiAnsiFocusMfgTable04( data, getDataOrder() );
+                _table04->printResult();
+                break;
+            }
+            
+        case 13:
+        {
+            {
+                   CtiLockGuard<CtiLogger> doubt_guard(dout);
+                   dout << CtiTime() << " Creating Focus Mfg Table 13" << endl;
+                }
+                _table13 = new CtiAnsiFocusMfgTable13( data, getFirmwareVersion(), getFirmwareRevision(), getDataOrder()  );
+                _table13->printResult();
+                break;
+            break;
+        }
+
+
+        default:
+            break;
+    }
+}
+
+void CtiProtocolANSI_focus::updateMfgBytesExpected()
+{
+    switch( (getCurrentTableId() - 0x800) )
+    {
+        case 4:
+        {
+            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::Focus_InstantaneouMeasurements,0,8,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            break;
+        }
+        case 13:
+        {
+            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::FocusAX_InstantaneouMeasurements,0,53,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            break;
+        }
+        default:
+            break;
+    }
+} 
+
+bool CtiProtocolANSI_focus::retreiveMfgPresentValue( int offset, double *value )
+{
+    bool retVal = false;
+    if( _table04 != NULL )
+    {
+        retVal = retreiveFocusKwPresentValue(offset,value );
+    }
+    if( _table13 != NULL )
+    {
+        retVal = retreiveFocusAXPresentValue(offset, value );
+    }
+    return retVal;
+}
+
+
+bool CtiProtocolANSI_focus::retreiveFocusKwPresentValue( int offset, double *value )
+{
+
+    switch(offset)
+    {
+        case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
+        {
+            *value = _table04->getInstantVoltage(0) / 8; 
+            return true;
+        }
+        default:
+        {
+            return false;
+        }
+    }
+}
+
+
+bool CtiProtocolANSI_focus::retreiveFocusAXPresentValue( int offset, double *value )
+{
+    switch(offset)
+    {
+        case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
+        {
+            *value = _table13->getPhaseVoltage(A);
+            return true;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
+        {
+            *value = _table13->getPhaseVoltage(B);
+            return true;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE:
+        {
+            *value = _table13->getPhaseVoltage(C);
+            return true;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT:
+        {
+            *value = _table13->getPhaseCurrent(A);
+            return true;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT:
+        {
+            *value = _table13->getPhaseCurrent(B);
+            return true;
+        }
+        case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT:
+        {
+            *value = _table13->getPhaseCurrent(C);
+            return true;
+        }
+        case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT:
+        {
+            *value = _table13->getNeutralCurrent();
+            return true;
+        }
+        default:
+        {
+            return false;
+        }
+    }
 }

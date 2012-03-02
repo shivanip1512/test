@@ -630,7 +630,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
            do
            {
                _index++;
-               if (_index >= _header->numTablesRequested)
+               if (_index > _header->numTablesRequested || _tables[_index].tableID == -1)
                {
                    if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
                    {
@@ -663,11 +663,6 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
 
 void CtiProtocolANSI::prepareApplicationLayer()
 {
-
-    if (_tables[_index].type == ANSI_TABLE_TYPE_MANUFACTURER)
-    {
-      _tables[_index].tableID += 0x0800;
-    }
 
     if (_tables[_index].tableID == Constants ||
         _tables[_index].tableID == CurrentRegisterData ||
@@ -1848,35 +1843,7 @@ void CtiProtocolANSI::updateBytesExpected( )
     }
 
 }
-void CtiProtocolANSI::updateMfgBytesExpected()
-{
-    switch( (_tables[_index].tableID - 0x800) )
-    {
-        case 0:
-        {
-            _tables[_index].bytesExpected = 59;
-            break;
-        }
-        case 2:
-        {
-            _tables[_index].bytesExpected = 20;
-            break;
-        }
-        case 70:
-        {
-            _tables[_index].bytesExpected = 46;
-            break;
-        }
-        case 110:
-        {
-            _tables[_index].bytesExpected = 166;
-            break;
-        }
 
-        default:
-            break;
-    }
-}
 
 int CtiProtocolANSI::sizeOfNonIntegerFormat( int aFormat )
 {
@@ -2257,24 +2224,12 @@ bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
     int ansiOffset;
     int ansiDeviceType = (int) getApplicationLayer().getAnsiDeviceType();
 
-    if (ansiDeviceType == CtiANSIApplication::kv2) //if 1, kv2 gets info from mfg tbl 110
+    if (success = retreiveMfgPresentValue(offset, value)) //if 1, kv2 gets info from mfg tbl 110
     {
-        try
+        if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
         {
-            success = retreiveMfgPresentValue(offset, value);
-            if (success)
-            {
-                if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
-                {
-                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                    dout << " *value =   "<<*value<<endl;
-                }
-            }
-        }
-        catch(...)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout << " *value =   "<<*value<<endl;
         }
     }
     else
@@ -3317,6 +3272,11 @@ void CtiProtocolANSI::setCurrentAnsiWantsTableValues(short tableID,int tableOffs
    return;
 }
 
+short CtiProtocolANSI::getCurrentTableId()
+{
+    return _tables[_index].tableID;
+}
+
 int CtiProtocolANSI::getWriteSequenceNbr(void)
 {
     return _seqNbr++;
@@ -3627,4 +3587,29 @@ int CtiProtocolANSI::calculateLPDataBlockStartIndex(ULONG lastLPTime)
         return getLastBlockIndex() - 1;
     }
 
+}
+
+int  CtiProtocolANSI::getFirmwareVersion()
+{
+    if( _table01 != NULL )
+    {
+        return _table01->getFWVersionNumber();
+    }
+    return 0;
+}
+int  CtiProtocolANSI::getFirmwareRevision()
+{
+    if( _table01 != NULL )
+    {
+        return _table01->getFWRevisionNumber();
+    }
+    return 0;
+}
+DataOrder  CtiProtocolANSI::getDataOrder()
+{
+    if( _table00 != NULL )
+    {
+        return _table00->getRawDataOrder();
+    }
+    return LSB;
 }

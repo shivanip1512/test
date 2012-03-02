@@ -104,6 +104,8 @@ std_ansi_tbl_64.obj \
 ansi_kv2_mtable_000.obj \
 ansi_kv2_mtable_070.obj \
 ansi_kv2_mtable_110.obj \
+ansi_focus_mtable_004.obj \
+ansi_focus_mtable_013.obj \
 
 TRANSDATAOBJS=\
 transdata_application.obj \

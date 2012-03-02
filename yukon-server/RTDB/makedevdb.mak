@@ -139,6 +139,8 @@ rte_versacom.obj \
 rte_xcu.obj \
 slctdev.obj \
 dev_focus.obj \
+dev_ipc410al.obj \
+dev_ipc420ad.obj \
 dev_ansi.obj \
 encryption_cbcrbt.obj \
 encryption_cmac.obj \

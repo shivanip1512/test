@@ -256,6 +256,11 @@ typedef enum
     Sentinel_BatteryLifeRequest           = 2049,
     Sentinel_BatteryLifeResponse          = 2050,
     Focus_SetLpReadControl                = 2082,
+    Focus_InstantaneouMeasurements        = 2052,
+    FocusAX_InstantaneouMeasurements      = 2061,
+    KV2_MfgInfo                           = 2048,
+    KV2_DisplayConfiguration              = 2118,
+    KV2_PresentRegisterData               = 2158,
 } MfgTables;
 
 
@@ -299,7 +304,7 @@ class IM_EX_PROT CtiProtocolANSI
 
     CtiANSIApplication &getApplicationLayer( void );
     void updateBytesExpected( );
-    void updateMfgBytesExpected( );
+    virtual void updateMfgBytesExpected( ) = 0;
     int sizeOfNonIntegerFormat( int aFormat );
 
     int sizeOfSTimeDate( void );
@@ -350,6 +355,7 @@ class IM_EX_PROT CtiProtocolANSI
     int proc09RemoteReset(UINT8 actionFlag);
     int proc22LoadProfileStartBlock( void );
 
+    short getCurrentTableId();
     void setCurrentAnsiWantsTableValues(short tableID,int tableOffset, unsigned int bytesExpected,BYTE  type, BYTE operation);
     void setLastLoadProfileTime(LONG lastLPTime);
     int getWriteSequenceNbr( void );
@@ -373,6 +379,9 @@ class IM_EX_PROT CtiProtocolANSI
       int getNbrIntervalsPerBlock();
       int getNbrBlksSet();
 
+      int getFirmwareVersion();
+      int getFirmwareRevision();
+      DataOrder getDataOrder();
 
 
    private:

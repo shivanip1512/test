@@ -22,6 +22,7 @@ class IM_EX_PROT CtiProtocolANSI_sentinel: public Cti::Protocols::Ansi::CtiProto
 
         virtual void destroyManufacturerTables( void );
         virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID );
+        virtual void updateMfgBytesExpected();
 
         virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime);
         virtual void setAnsiDeviceType();

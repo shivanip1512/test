@@ -184,4 +184,31 @@ bool CtiProtocolANSI_kv2::retreiveMfgPresentValue( int offset, double *value )
 }
 
 
+void CtiProtocolANSI_kv2::updateMfgBytesExpected()
+{
+    switch( (getCurrentTableId()  - 0x800) )
+    {
+        case 0:
+        {
 
+            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::KV2_MfgInfo,0,59,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            break;
+        }
+        
+        case 70:
+        {
+
+            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::KV2_DisplayConfiguration,0,46,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            break;
+        }
+        case 110:
+        {
+
+            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::KV2_PresentRegisterData,0,166,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            break;
+        }
+
+        default:
+            break;
+    }
+}

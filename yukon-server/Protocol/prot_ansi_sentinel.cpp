@@ -271,6 +271,22 @@ int CtiProtocolANSI_sentinel::getDaysOnBatteryReading()
 }
 
 
+void CtiProtocolANSI_sentinel::updateMfgBytesExpected()
+{
+    switch( (getCurrentTableId() - 0x800) )
+    {
+        
+        case 2:
+        {
+            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::Sentinel_BatteryLifeResponse,0,20,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            break;
+        }
+        
+
+        default:
+            break;
+    }
+}
 
 
 

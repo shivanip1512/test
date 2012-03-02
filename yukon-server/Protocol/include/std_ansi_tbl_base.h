@@ -52,6 +52,14 @@ typedef enum
     MSB
 } DataOrder;
 
+typedef enum
+{
+    A,
+    B,
+    C,
+    Invalid
+} PhaseType;
+
 #define BCD                unsigned char
 
 // non integer formats
