@@ -277,7 +277,7 @@ public class CapControlImportController {
 		List<CapControlImportResolvable> resolvables = Lists.newArrayList();
 		
 		for (HierarchyImportResult result : results) {	
-		    YukonMessageSourceResolvable message = result.getResolvable();
+		    YukonMessageSourceResolvable message = result.getMessage();
 		    
 		    CapControlImportResolvable resolvable = 
 		            new CapControlImportResolvable(message, result.getResultType().isSuccess());
@@ -292,7 +292,7 @@ public class CapControlImportController {
 		List<CapControlImportResolvable> resolvables = Lists.newArrayList();
 		
 		for (CbcImportResult result : results) {
-		    YukonMessageSourceResolvable message = result.getResolvable();
+		    YukonMessageSourceResolvable message = result.getMessage();
 		    
 		    CapControlImportResolvable resolvable = 
 		            new CapControlImportResolvable(message, result.getResultType().isSuccess());

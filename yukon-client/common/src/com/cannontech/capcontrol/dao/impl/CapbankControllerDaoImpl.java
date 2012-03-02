@@ -19,6 +19,7 @@ import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -159,13 +160,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
         sql.append("SELECT SerialNumber");
         sql.append("FROM DeviceCBC");
         
-        ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
-            public Integer mapRow(ResultSet rs, int num) throws SQLException{
-                return rs.getInt("SerialNumber");
-            }
-        };
-        
-        List<Integer> serialNumbers = yukonJdbcTemplate.query(sql, mapper);
+        List<Integer> serialNumbers = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
         return !serialNumbers.contains(serialNumber);
     }

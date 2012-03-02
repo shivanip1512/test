@@ -53,7 +53,7 @@ public class HierarchyImportMissingDataResult implements HierarchyImportResult {
     }
 
     @Override
-    public YukonMessageSourceResolvable getResolvable() {
+    public YukonMessageSourceResolvable getMessage() {
         String key = "yukon.web.modules.capcontrol.import.missingDataResult";
         Iterable<String> columnNames = Iterables.transform(missingFields, colNameOfField);
         String missingFields = StringUtils.join(columnNames.iterator(), ", ");

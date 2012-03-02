@@ -99,7 +99,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 				paoType = PaoType.getForDbString(type);
 			} catch (IllegalArgumentException e) {
 			    throw new CapControlCbcImportException("Import of " + name + " failed. Unknown Type: " + type,
-			                                             CbcImportResultType.INVALID_TYPE);
+			                                             CbcImportResultType.INVALID_TYPE, e);
 			}
 			
 			if (PaoType.isCbc(paoType)) {
@@ -165,7 +165,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
             paoType = PaoType.getForDbString(ccType);
         } catch (IllegalArgumentException i) {
             throw new CapControlHierarchyImportException("Import of " + name + " failed. Unknown Type: " + ccType, 
-                                                         HierarchyImportResultType.INVALID_TYPE);
+                                                         HierarchyImportResultType.INVALID_TYPE, i);
         }
         
         // There are required fields we KNOW are here. Set them, then try the non-requireds.
@@ -218,7 +218,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		        data.setBankOpState(bankOpState);
 		    } catch (IllegalArgumentException e) {
 		        throw new CapControlHierarchyImportException("Operational state field contained invalid data.", 
-		                                                     HierarchyImportResultType.INVALID_OPERATIONAL_STATE);
+		                                                     HierarchyImportResultType.INVALID_OPERATIONAL_STATE, e);
 		    }
 		}
 		
@@ -267,7 +267,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		        
 		    csvReader.close();
 		} catch (IOException e) {
-			throw new RuntimeException("Cap Control Importer encountered an error while reading the input file!");
+			throw new RuntimeException("Cap Control Importer encountered an error while reading the input file!", e);
 		}
 
         return cbcImportData;

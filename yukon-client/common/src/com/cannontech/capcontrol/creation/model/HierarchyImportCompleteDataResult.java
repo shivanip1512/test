@@ -54,7 +54,7 @@ public class HierarchyImportCompleteDataResult implements HierarchyImportResult 
     }
     
     @Override
-    public YukonMessageSourceResolvable getResolvable() {
+    public YukonMessageSourceResolvable getMessage() {
         String key = "yukon.web.modules.capcontrol.import.hierarchy";
         
         key += getResultKey(hierarchyImportData.getImportAction(), resultType.isSuccess());

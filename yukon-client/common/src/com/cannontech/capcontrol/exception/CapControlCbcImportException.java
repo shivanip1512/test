@@ -10,6 +10,11 @@ public class CapControlCbcImportException extends CapControlImportException {
         this.importResultType = importResultType;
     }
     
+    public CapControlCbcImportException(String message, CbcImportResultType importResultType, Throwable cause) {
+        super(message, cause);
+        this.importResultType = importResultType;
+    }
+    
     public CbcImportResultType getImportResultType() {
         return importResultType;
     }

@@ -7,12 +7,16 @@ package com.cannontech.capcontrol.exception;
  * required data is missing entirely in the file provided (i.e. the
  * "name" column in a file is present, but the field was left blank
  * for a specific row.) This exception is the parent of the
- * {@link ImporterInvalidPaoTypeException}, {@link ImporterInvalidDisabledValueException},
- * {@link ImporterInvalidImportActionException}, and {@link ImporterInvalidOpStateException}.
+ * {@link CapControlCbcImportException}, {@link CapControlHierarchyImportException},
+ * {@link ImporterCbcMissingDataException}, and {@link ImporterHierarchyMissingDataException}.
  */
 public class CapControlImportException extends RuntimeException {
 	
-	protected CapControlImportException(String message) {
-		super(message);
+    protected CapControlImportException(String message) {
+        super(message);
+    }
+    
+	protected CapControlImportException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }

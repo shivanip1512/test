@@ -62,7 +62,7 @@ public class CbcImportMissingDataResult implements CbcImportResult {
     }
 
     @Override
-    public YukonMessageSourceResolvable getResolvable() {
+    public YukonMessageSourceResolvable getMessage() {
         String key = "yukon.web.modules.capcontrol.import.missingDataResult";
         Iterable<String> columnNames = Iterables.transform(missingFields, colNameOfField);
         String missingFields = StringUtils.join(columnNames.iterator(), ", ");

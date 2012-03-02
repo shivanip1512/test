@@ -7,8 +7,8 @@ import org.jdom.Namespace;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class CbcImportCompleteDataResult implements CbcImportResult {
-    private CbcImportData cbcImportData;
-    private CbcImportResultType resultType;
+    private final CbcImportData cbcImportData;
+    private final CbcImportResultType resultType;
 
     public CbcImportCompleteDataResult(CbcImportData cbcImportData, CbcImportResultType resultType) {
         // The user should be using CbcImportMissingDataResult instead if this is null...
@@ -58,7 +58,7 @@ public class CbcImportCompleteDataResult implements CbcImportResult {
     }
 
     @Override
-    public YukonMessageSourceResolvable getResolvable() {
+    public YukonMessageSourceResolvable getMessage() {
         YukonMessageSourceResolvable message = null;
         
         String key = "yukon.web.modules.capcontrol.import.cbc";

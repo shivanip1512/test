@@ -9,6 +9,11 @@ public class CapControlHierarchyImportException extends CapControlImportExceptio
         super(message);
         this.importResultType = importResultType;
     }
+    
+    public CapControlHierarchyImportException(String message, HierarchyImportResultType importResultType, Throwable cause) {
+        super(message, cause);
+        this.importResultType = importResultType;
+    }
 
     public HierarchyImportResultType getImportResultType() {
         return importResultType;
