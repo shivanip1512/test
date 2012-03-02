@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
@@ -195,7 +196,8 @@ public class CCMonitorBankList extends DBPersistent {
     }
     
     public Object getOverrideStrategySettingsObject() {
-        return YNBoolean.valueOf(overrideStrategySettings).getDatabaseRepresentation();
+        DatabaseRepresentationSource ynBoolean = YNBoolean.valueOf(overrideStrategySettings);
+        return ynBoolean.getDatabaseRepresentation();
     }
     
     public void setOverrideStrategySettings(Boolean overrideStrategySettings) {
