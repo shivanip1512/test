@@ -26,7 +26,7 @@ jQuery(document).ready(flashYellow(jQuery('#reloadedAt')[0], 2));
         <c:choose>
             <c:when test="${empty logs}">
                 <tr>
-                    <td colspan="3" class="subtleGray fsi"><i:inline key=".noLogs"/></td>
+                    <td colspan="3" class="subtleGray"><i><i:inline key=".noLogs"/></i></td>
                 </tr>
             </c:when>
             <c:otherwise>
