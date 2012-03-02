@@ -4,24 +4,25 @@ import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.capcontrol.model.FeederPhaseData;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.common.pao.model.CompleteCapControlFeeder;
 import com.cannontech.common.search.SearchResult;
 
 public interface FeederDao {
-    
-    /**
-     * This method returns a feeder object by a given id.
-     * @param id the PaoID of the feeder.
-     * @return the Feeder specified.
-     */
-    public CompleteCapControlFeeder findById( int id );
     
     /**
      * This method returns all the Feeder IDs that are not assigned
      *  to a SubBus.
      */
     public List<Integer> getUnassignedFeederIds();
+    
+    /**
+     * Returns the phase data pointIds for the feeder id provided.
+     * @param feederId the paoId of the feeder
+     * @return a {@link FeederPhaseData} object populated with the Feeder's data 
+     *      from the database.
+     */
+    public FeederPhaseData getFeederPhaseData(int feederId);
     
     public SearchResult<LiteCapControlObject> getOrphans(int start, int count);
     

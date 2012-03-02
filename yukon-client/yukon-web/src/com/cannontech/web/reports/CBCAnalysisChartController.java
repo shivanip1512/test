@@ -21,12 +21,12 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
+import com.cannontech.capcontrol.model.FeederPhaseData;
 import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
-import com.cannontech.common.pao.model.CompleteCapControlFeeder;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.message.capcontrol.streamable.Feeder;
@@ -130,18 +130,17 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    		
     	    	}
     	    	else if(capControlCache.isFeeder(targetId)) {
-    	    		
     	    		com.cannontech.message.capcontrol.streamable.Feeder feeder_cache = capControlCache.getFeeder(targetId);
-    	    		CompleteCapControlFeeder feeder_dao = feederDao.findById(targetId);
+    	    		FeederPhaseData phaseData = feederDao.getFeederPhaseData(targetId);
     	    		
-    	    		if (feeder_dao.getUsePhaseData() == true) {
+    	    		if (phaseData.getUsePhaseData() == true) {
     	    			
     	    			definitionName = "kVarPhaseWattRPHDefinition";
     	    			
     	    			List<Integer> phaseIds = new ArrayList<Integer>();
-        	    		phaseIds.add(feeder_dao.getCurrentVarLoadPointId());
-        	    		phaseIds.add(feeder_dao.getPhaseB());
-        	    		phaseIds.add(feeder_dao.getPhaseC());
+        	    		phaseIds.add(phaseData.getCurrentVarLoadPointId());
+        	    		phaseIds.add(phaseData.getPhaseB());
+        	    		phaseIds.add(phaseData.getPhaseC());
     	    			labledPointIds.put("phaseIds", phaseIds);
     	    			
     	    			labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(feeder_cache.getEstimatedVarLoadPointID()));

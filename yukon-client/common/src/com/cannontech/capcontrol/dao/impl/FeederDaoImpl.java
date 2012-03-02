@@ -1,5 +1,7 @@
 package com.cannontech.capcontrol.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +9,10 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.capcontrol.dao.FeederDao;
+import com.cannontech.capcontrol.model.FeederPhaseData;
 import com.cannontech.capcontrol.model.LiteCapControlObject;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.model.CompleteCapControlFeeder;
-import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -26,20 +26,12 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 public class FeederDaoImpl implements FeederDao {    
     private static final ParameterizedRowMapper<LiteCapControlObject> liteCapControlObjectRowMapper;
     
-    private @Autowired PaoDao paoDao;
-    private @Autowired PaoCreationHelper paoCreationHelper;
-    private @Autowired PaoPersistenceService paoPersistenceService;
-    private @Autowired YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PaoCreationHelper paoCreationHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
     static {
         liteCapControlObjectRowMapper = CapbankControllerDaoImpl.createLiteCapControlObjectRowMapper();
-    }
-    
-    public CompleteCapControlFeeder findById(int id) {
-        PaoIdentifier paoIdentifier = new PaoIdentifier(id, PaoType.CAP_CONTROL_FEEDER);
-        CompleteCapControlFeeder feeder = 
-                paoPersistenceService.retreivePao(paoIdentifier, CompleteCapControlFeeder.class);
-        return feeder;
     }
 
     /**
@@ -58,6 +50,30 @@ public class FeederDaoImpl implements FeederDao {
         
         List<Integer> listmap = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         return listmap;
+    }
+    
+    @Override
+    public FeederPhaseData getFeederPhaseData(int feederId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CurrentVarLoadPointId, PhaseB, PhaseC, UsePhaseData");
+        sql.append("FROM CapControlFeeder");
+        sql.append("WHERE FeederId").eq(feederId);
+        
+        ParameterizedRowMapper<FeederPhaseData> mapper = 
+                new ParameterizedRowMapper<FeederPhaseData>() {
+            
+            @Override
+            public FeederPhaseData mapRow(ResultSet rs, int rowNum) throws SQLException {
+                int currentVarLoadPointId = rs.getInt("CurrentVarLoadPointId");
+                int phaseB = rs.getInt("PhaseB");
+                int phaseC = rs.getInt("PhaseC");
+                boolean usePhaseData = ("Y").equals(rs.getString("UsePhaseData"));
+                
+                return new FeederPhaseData(currentVarLoadPointId, phaseB, phaseC, usePhaseData);
+            }
+        };
+        
+        return yukonJdbcTemplate.queryForObject(sql, mapper);
     }
 
     @Override
