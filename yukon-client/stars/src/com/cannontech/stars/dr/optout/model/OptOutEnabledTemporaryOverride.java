@@ -11,6 +11,4 @@ public class OptOutEnabledTemporaryOverride extends OptOutTemporaryOverride {
     public void setOptOutValue(OptOutEnabled optOutEnabled) {
         this.optOutEnabled = optOutEnabled;
     }
-    
-    
 }

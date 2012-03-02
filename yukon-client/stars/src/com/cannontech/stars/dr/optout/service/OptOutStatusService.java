@@ -22,9 +22,11 @@ public interface OptOutStatusService {
     public OptOutEnabled getDefaultOptOutEnabled(LiteYukonUser user);
     
 	/**
-	 * Method to determine if Opt Outs are currently enabled
+	 * Method to determine if Opt Outs are currently enabled for all enrolled programs and at the 
+	 * energy company level.  If any enrolled program has optouts disabled while the energy company
+	 * is enabled, the most restrictive optout value is returned.
 	 * @param user - User to get value for
-	 * @return True if opt outs are enabled, False if disabled
+	 * @return Will return the highest value OptOutEnabled enum (most restrictive)
 	 */
 	public OptOutEnabled getOptOutEnabled(LiteYukonUser user);
 

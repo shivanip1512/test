@@ -128,6 +128,13 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		    getProgramIdOptOutTemporaryOverrideMap(energyCompany.getEnergyCompanyID());
 		OptOutEnabledTemporaryOverride energyCompanyOptOutTemporaryOverride =
 		    optOutTemporaryOverrideDao.findCurrentSystemOptOutTemporaryOverrides(energyCompany.getEnergyCompanyID());
+		OptOutEnabled optOutEnabled = OptOutEnabled.ENABLED;
+		
+		//use the global setting first
+		if(energyCompanyOptOutTemporaryOverride != null && 
+		        optOutEnabled.ordinal() < energyCompanyOptOutTemporaryOverride.getOptOutEnabled().ordinal()){
+		    optOutEnabled = energyCompanyOptOutTemporaryOverride.getOptOutEnabled();
+		}
 		
 		// Check to see if there have been any program based temporary overrides.
 		if (programIdOptOutTemporaryOverrideMap.size() > 0) {
@@ -139,6 +146,8 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 			lmHardwareControlGroups.addAll( 
 		        lmHardwareControlGroupDao.getCurrentEnrollmentByAccountId(customerAccount.getAccountId()));
 
+			//look for the most restrictive OptOutEnabled value among the energy company level and
+			//enrolled programs
 		    for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
 		        
 		        // Check to see if the program id is in the override list.
@@ -146,18 +155,13 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 		            OptOutEnabledTemporaryOverride optOutTemporaryOverride = 
 		                programIdOptOutTemporaryOverrideMap.get(lmHardwareControlGroup.getProgramId());
 		            
-		            // Opt Outs are disabled for this account.
-		            return optOutTemporaryOverride.getOptOutEnabled();
-		        // The program was not found in the override list. Now check the global entry.  
-		        } else {
-		            if (energyCompanyOptOutTemporaryOverride != null) {
-    		            // Opt Outs are disabled energy company wide and therefore are disabled for this account.
-    		            return energyCompanyOptOutTemporaryOverride.getOptOutEnabled();
+		            //is it more restrictive than the global setting?
+		            if(optOutEnabled.ordinal() < optOutTemporaryOverride.getOptOutEnabled().ordinal()){
+		                optOutEnabled = optOutTemporaryOverride.getOptOutEnabled();
 		            }
 		        }
 		    } 
-		    
-		    return OptOutEnabled.ENABLED;
+		    return optOutEnabled;
 
         // Checking to see if there is an energy company wide override.  If there has been, check to 
 		// see if opt outs are enabled or disabled energy company wide.
