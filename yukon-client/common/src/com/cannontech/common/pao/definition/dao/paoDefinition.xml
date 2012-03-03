@@ -4613,13 +4613,6 @@
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
-            <point type="Analog" offset="4">
-                <init>false</init>
-                <name>Net kWh</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="kWH"/>
-                <decimalplaces value="3"/>
-            </point>
             <point type="Analog" offset="20">
                 <init>true</init>
                 <name>Blink Count</name>
@@ -5650,12 +5643,54 @@
         </tags>
     </pao>
     
+    <pao id="RFN_NET_METERING" abstract="true">
+        <points>
+            <point type="Analog" offset="4">
+                <init>false</init>
+                <name>Net kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="33">
+                <name>Net kWh (Rate A kWH)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="34">
+                <name>Net kWh (Rate B kWH)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="35">
+                <name>Net kWh (Rate C kWH)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="36">
+                <name>Net kWh (Rate D kWH)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="37">
+                <name>Net kWh (Rate E kWH)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWh"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+    </pao>
+    
     <!-- FOCUS RFN METERS -->
-    <pao id="RFN410FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE">
+    <pao id="RFN410FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE, RFN_NET_METERING">
         <displayName>RFN-410fL</displayName>
     </pao>
     
-    <pao id="RFN410FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU">
+    <pao id="RFN410FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING">
         <displayName>RFN-410fX</displayName>
     </pao>
     
@@ -5663,10 +5698,10 @@
         <displayName>RFN-410fD</displayName>
     </pao>
     
-    <pao id="RFN420FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE">
+    <pao id="RFN420FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE, RFN_NET_METERING">
         <displayName>RFN-420fL</displayName>
     </pao>
-    <pao id="RFN420FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU">
+    <pao id="RFN420FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING">
         <displayName>RFN-420fX</displayName>
     </pao>
     <pao id="RFN420FD" inherits="RFN420FX, RFN_DISCONNECT">
@@ -5682,12 +5717,12 @@
     </pao>
 	
     <!-- ELSTER RFN METERS -->
-    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES, RFN_TOU">
+    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES, RFN_TOU, RFN_NET_METERING">
         <displayName>RFN-430A3</displayName>
     </pao>
     
     <!-- GE RFN METERS -->
-    <pao id="RFN430KV" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU">
+    <pao id="RFN430KV" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING">
         <displayName>RFN-430KV</displayName>
     </pao>
 
