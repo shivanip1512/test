@@ -11,9 +11,10 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.TimeSource;
+import com.cannontech.core.dynamic.AllPointDataListener;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
@@ -22,7 +23,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.google.common.collect.Sets;
 
-public class PointUpdateBackingService implements UpdateBackingService, PointDataListener {
+public class PointUpdateBackingService implements UpdateBackingService, AllPointDataListener {
     private TimeSource timeSource;
     private AsyncDynamicDataSource asyncDataSource;
     private PointFormattingService pointFormattingService;
@@ -129,6 +130,30 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
     }
 
     public void pointDataReceived(PointValueQualityHolder pointData) {
+        DatedPointValue old = cache.get(pointData.getId());
+        if (old == null) {
+            usePointData(pointData);
+        } else {
+            checkBeforeUsing(old, pointData);
+        }
+    }
+    
+    /**
+     * The point data can actually be older than the most current value but we want to use it instead.
+     * This will happen if the pointdata was recorded before the point was created in Yukon ie: peak demand.
+     * We want to replace our 'newer' unitialized value with the a real value recorded before our point was created.
+     * @param old
+     * @param pointData
+     */
+    private void checkBeforeUsing(DatedPointValue old, PointValueQualityHolder pointData) {
+        boolean isNewer = pointData.getPointDataTimeStamp().after(old.value.getPointDataTimeStamp());
+        boolean previouslyUninitialized = old.value.getPointQuality() == PointQuality.Uninitialized;
+        if (isNewer || previouslyUninitialized) {
+            usePointData(pointData);
+        }
+    }
+    
+    private void usePointData(PointValueQualityHolder pointData) {
         trimCache();
         DatedPointValue value = createWrapper(pointData);
         cache.put(pointData.getId(), value);
