@@ -390,10 +390,10 @@ private JPanel getStatesPanel() {
 			ivjStatesPanel = new JPanel();
 			ivjStatesPanel.setName("StatesPanel");
 			ivjStatesPanel.setLayout(new java.awt.GridBagLayout());
-			ivjStatesPanel.setMaximumSize(new java.awt.Dimension(353, 370));
-			ivjStatesPanel.setPreferredSize(new java.awt.Dimension(353, 370));
+			ivjStatesPanel.setMaximumSize(new java.awt.Dimension(353, 540));
+			ivjStatesPanel.setPreferredSize(new java.awt.Dimension(353, 540));
 			ivjStatesPanel.setBounds(0, 0, 352, 370);
-			ivjStatesPanel.setMinimumSize(new java.awt.Dimension(353, 370));
+			ivjStatesPanel.setMinimumSize(new java.awt.Dimension(353, 540));
 
 			java.awt.GridBagConstraints constraintsRepeaterLabel = new java.awt.GridBagConstraints();
 			constraintsRepeaterLabel.gridx = 3; constraintsRepeaterLabel.gridy = 1;
@@ -432,11 +432,8 @@ private JPanel getStatesPanel() {
 
 				java.awt.GridBagConstraints constraintsRawStateLabel = new java.awt.GridBagConstraints();
 				constraintsRawStateLabel.gridx = 1; constraintsRawStateLabel.gridy = i+2;
-				if (i < 2) {
-					constraintsRawStateLabel.gridwidth = 2;
-				}
 				constraintsRawStateLabel.anchor = java.awt.GridBagConstraints.WEST;
-				constraintsRawStateLabel.insets = new java.awt.Insets(0, 5, 5, 30);
+				constraintsRawStateLabel.insets = new java.awt.Insets(0, 5, 5, 10);
 				getStatesPanel().add(rawStateLabels[i], constraintsRawStateLabel);
 
 				java.awt.GridBagConstraints constraintsForegroundColorComboBox = new java.awt.GridBagConstraints();
