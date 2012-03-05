@@ -104,7 +104,7 @@ public class VoltageRegulatorDaoImpl implements VoltageRegulatorDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Count(*)");
         sql.append("FROM RegulatorToZoneMapping");
-        sql.append("WHERE RegulatorId").eq_k(regulatorId);
+        sql.append("WHERE RegulatorId").eq(regulatorId);
         
         int count = yukonJdbcTemplate.queryForInt(sql);
         if(count == 0) return true;

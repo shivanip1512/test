@@ -27,19 +27,22 @@ public interface CcMonitorBankListDao {
     
     /**
      * Updates the phase on the specified point.
+     * @return 
      */
-    public void updatePhase(int pointId, Phase phase);
+    public int updatePhase(int pointId, Phase phase);
     
     /**
      * Inserts a new additional monitor point entry, using the specified point id 
      * and phase, and inheriting limits from subbus strategy settings.
+     * @return 
      */
-    public void addAdditionalMonitorPoint(int pointId, int zoneId, Phase phase);
+    public int addAdditionalMonitorPoint(int pointId, int zoneId, Phase phase);
     
     /**
      * Inserts new entry for voltage Y point on the specified regulator.
+     * @return 
      */
-    public void addRegulatorPoint(int regulatorId);
+    public int addRegulatorPoint(int regulatorId);
     
     /**
      * Updates the entry for voltage Y point on the specified regulator.
@@ -55,8 +58,9 @@ public interface CcMonitorBankListDao {
     
     /**
      * Removes all specified point entries from the table.
+     * @return 
      */
-    public void removePoints(List<Integer> pointIds);
+    public int removePoints(List<Integer> pointIds);
     
     /**
      * Removes all regulator and additional monitor points associated with the
@@ -68,6 +72,7 @@ public interface CcMonitorBankListDao {
      * Inserts an entry with the settings specified in the VoltageLimitedDeviceInfo
      * object. DisplayOrder is defaulted to 0, Scannable is defaulted to false, and
      * NINAvg is defaulted to 3.
+     * @return 
      */
-    public void addDeviceInfo(VoltageLimitedDeviceInfo info);
+    public int addDeviceInfo(VoltageLimitedDeviceInfo info);
 }

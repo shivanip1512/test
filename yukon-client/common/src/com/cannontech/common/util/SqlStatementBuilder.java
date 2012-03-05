@@ -217,6 +217,11 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    public SqlStatementBuilder eq_k(String constant) {
+        addString("= '" + constant + "' ");
+        return this;
+    }
+    
     public SqlStatementBuilder neq(Object argument) {
         addString("!= ");
         appendArgument(argument);

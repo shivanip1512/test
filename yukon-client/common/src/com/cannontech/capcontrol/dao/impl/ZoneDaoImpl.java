@@ -157,7 +157,8 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         
         return zone;
     }
-
+    
+    @Override
     public List<RegulatorToZoneMapping> getRegulatorToZoneMappingsByZoneId(int zoneId) {
         SqlStatementBuilder regulatorToZoneSql = new SqlStatementBuilder();
         regulatorToZoneSql.append("SELECT RegulatorId, ZoneId, Phase");
@@ -371,7 +372,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
             
             yukonJdbcTemplate.update(sqlBuilderInsert);
             
-            int currentPointId = pointToZone.getPointId();
+            Integer currentPointId = pointToZone.getPointId();
             Phase currentPhase = pointToZone.getPhase();
             if(oldPointIds.contains(currentPointId)) {
                 //if point is in list of points from pointToZoneMapping, we just
@@ -554,7 +555,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         
         sqlBuilder.append("SELECT PointID");
         sqlBuilder.append("FROM CCMonitorBankList");
-        sqlBuilder.append("WHERE DeviceID").eq(deviceId);
+        sqlBuilder.append("WHERE DeviceId").eq(deviceId);
         sqlBuilder.append("ORDER BY DisplayOrder");
         
         List<Integer> points = yukonJdbcTemplate.query(sqlBuilder, new IntegerRowMapper());
@@ -567,7 +568,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
         
         sqlBuilder.append("SELECT PointID, Phase");
         sqlBuilder.append("FROM CCMonitorBankList");
-        sqlBuilder.append("WHERE DeviceID").eq(deviceId);
+        sqlBuilder.append("WHERE DeviceId").eq(deviceId);
         sqlBuilder.append("ORDER BY DisplayOrder");
 
         final Map<Integer, Phase> results = Maps.newHashMap();
