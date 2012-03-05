@@ -34,7 +34,7 @@ public enum BuiltInAttribute implements Attribute {
     KVAR("kVAr"),
     KVARH("kVArh"),
     LM_GROUP_STATUS("LM Group Status"),
-    LOAD_PROFILE("Load Profile", true, false),
+    LOAD_PROFILE("Load Profile"),
     TAP_DOWN("Lower Tap Position"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),
     MINIMUM_VOLTAGE("Minimum Voltage"),
@@ -43,8 +43,8 @@ public enum BuiltInAttribute implements Attribute {
     PEAK_DEMAND("Peak Demand"),
     PHASE("Phase"),
     POWER_FAIL_FLAG("Power Fail Flag"),
-    PROFILE_CHANNEL_2("Profile Channel 2", true, false),
-    PROFILE_CHANNEL_3("Profile Channel 3", true, false),
+    PROFILE_CHANNEL_2("Profile Channel 2"),
+    PROFILE_CHANNEL_3("Profile Channel 3"),
     TAP_UP("Raise Tap Position"),
     REVERSE_POWER_FLAG("Reverse Power Flag"),
     TAMPER_FLAG("Tamper Flag"),
@@ -53,11 +53,11 @@ public enum BuiltInAttribute implements Attribute {
     TOU_RATE_B_PEAK_DEMAND("Tou Rate B Peak"),
     TOU_RATE_C_PEAK_DEMAND("Tou Rate C Peak"),
     TOU_RATE_D_PEAK_DEMAND("Tou Rate D Peak"),
-    TOU_RATE_A_USAGE("Tou Rate A Usage", false, true), 
-    TOU_RATE_B_USAGE("Tou Rate B Usage", false, true), 
-    TOU_RATE_C_USAGE("Tou Rate C Usage", false, true), 
-    TOU_RATE_D_USAGE("Tou Rate D Usage", false, true), 
-    USAGE("Usage Reading", false, true), 
+    TOU_RATE_A_USAGE("Tou Rate A Usage"), 
+    TOU_RATE_B_USAGE("Tou Rate B Usage"), 
+    TOU_RATE_C_USAGE("Tou Rate C Usage"), 
+    TOU_RATE_D_USAGE("Tou Rate D Usage"), 
+    USAGE("Usage Reading"), 
     VOLTAGE("Voltage"),
     VOLTAGE_PHASE_A("Voltage (Phase A)"),
     VOLTAGE_PHASE_B("Voltage (Phase B)"),
@@ -65,8 +65,8 @@ public enum BuiltInAttribute implements Attribute {
     VOLTAGE_X("Voltage X"), // Source Side
     VOLTAGE_Y("Voltage Y"), // Load Side
     TERMINATE("Terminate"),
-    VOLTAGE_PROFILE("Voltage Profile", true, false),
-    USAGE_WATER("Water Usage Reading", false, true),
+    VOLTAGE_PROFILE("Voltage Profile"),
+    USAGE_WATER("Water Usage Reading"),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
     
@@ -133,6 +133,7 @@ public enum BuiltInAttribute implements Attribute {
     private static ImmutableSet<BuiltInAttribute> rfnEventStatusTypes;
     private static ImmutableSet<BuiltInAttribute> rfnEventAnalogTypes;
     private static ImmutableSet<BuiltInAttribute> profileAttributes;
+    private static ImmutableSet<BuiltInAttribute> accumulatorAttributes;
     static {
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         builder.add(CONFIGURATION_ERROR);
@@ -206,37 +207,39 @@ public enum BuiltInAttribute implements Attribute {
         rfnEventTypes = builder.build();
         
         Builder<BuiltInAttribute> profile = ImmutableSet.builder();
-        for (BuiltInAttribute attr : values()) {
-            if (attr.isProfile()) profile.add(attr);
-        }
+        profile.add(LOAD_PROFILE);
+        profile.add(PROFILE_CHANNEL_2);
+        profile.add(PROFILE_CHANNEL_3);
+        profile.add(VOLTAGE_PROFILE);
         profileAttributes = profile.build();
+        
+      //point is an accumulation; Example: Usage 
+        Builder<BuiltInAttribute> accumulators = ImmutableSet.builder();
+        accumulators.add(TOU_RATE_A_USAGE);
+        accumulators.add(TOU_RATE_B_USAGE);
+        accumulators.add(TOU_RATE_C_USAGE);
+        accumulators.add(TOU_RATE_D_USAGE);
+        accumulators.add(USAGE);
+        accumulators.add(USAGE_WATER);
+        accumulatorAttributes = accumulators.build();
     }
 
     private BuiltInAttribute(String description) {
     	this.description = description;
-		this.profile = false;
-		this.accumulator = false;
-    }
-    private BuiltInAttribute(String description, boolean profile, boolean accumulator) {
-    	this.description = description;
-		this.profile = profile;
-		this.accumulator = accumulator;
     }
     
     private String description;
-    private final boolean profile;
-    private final boolean accumulator;	//point is an accumulation; Example: Usage 
     
     public String getDescription() {
         return description;
     }
     
     public boolean isProfile() {
-		return profile;
+		return profileAttributes.contains(this);
 	}
 
     public boolean isAccumulator() {
-		return accumulator;
+		return accumulatorAttributes.contains(this);
 	}
     
     public static Set<BuiltInAttribute> getRfnEventStatusTypes() {
