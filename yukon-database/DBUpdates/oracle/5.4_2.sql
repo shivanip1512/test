@@ -39,6 +39,16 @@ ALTER TABLE DynamicCCMonitorPointResponse
         REFERENCES Point (PointId)
             ON DELETE CASCADE;
 /* End YUK-10659 */
+            
+/* Start YUK-10674 */
+UPDATE Point 
+SET PointName = 'Capacitor Bank State'
+WHERE pointId IN (SELECT p.pointId 
+                  FROM Point p, YukonPaobject yp
+                  WHERE p.PAObjectID = yp.PAObjectID 
+                    AND p.PointName = 'Bank Status'
+                    AND yp.Type LIKE 'CBC%');
+/* End YUK-10674 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 

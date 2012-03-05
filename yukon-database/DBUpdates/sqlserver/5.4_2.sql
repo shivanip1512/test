@@ -44,6 +44,15 @@ ALTER TABLE DynamicCCMonitorPointResponse
 GO
 /* End YUK-10659 */
 
+/* Start YUK-10674 */
+UPDATE Point 
+SET PointName = 'Capacitor Bank State'
+FROM Point p, YukonPaobject yp
+WHERE p.PAObjectID = yp.PAObjectID 
+  AND yp.Type LIKE 'CBC%'
+  AND p.PointName = 'Bank Status';
+/* End YUK-10674 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
