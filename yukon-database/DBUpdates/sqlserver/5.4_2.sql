@@ -77,7 +77,7 @@ SET ManualHeatTemp = NULL
 WHERE ManualMode = 'COOL' AND ManualCoolTemp IS NOT NULL;
 /* End YUK-10724 */
 
-/* Start YUK-10730 */
+/* Start YUK-10725 */
 CREATE TABLE ExtToYukonMessageIdMapping  (
    ExternalMessageId    NUMERIC                          NOT NULL,
    YukonMessageId       NUMERIC                          NOT NULL,
@@ -94,7 +94,7 @@ ALTER TABLE ExtToYukonMessageIdMapping
 GO
             
 INSERT INTO YukonServices VALUES(19,'YukonMessageListener','classpath:com/cannontech/services/yukonMessageListener/yukonMessageListener.xml', 'ServiceManager');
-/* End YUK-10730 */
+/* End YUK-10725 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
