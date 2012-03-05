@@ -5653,31 +5653,31 @@
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="33">
-                <name>Net kWh (Rate A kWH)</name>
+                <name>Net kWh (Rate A kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="34">
-                <name>Net kWh (Rate B kWH)</name>
+                <name>Net kWh (Rate B kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="35">
-                <name>Net kWh (Rate C kWH)</name>
+                <name>Net kWh (Rate C kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="36">
-                <name>Net kWh (Rate D kWH)</name>
+                <name>Net kWh (Rate D kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
                 <decimalplaces value="3"/>
             </point>
             <point type="Analog" offset="37">
-                <name>Net kWh (Rate E kWH)</name>
+                <name>Net kWh (Rate E kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
                 <decimalplaces value="3"/>
