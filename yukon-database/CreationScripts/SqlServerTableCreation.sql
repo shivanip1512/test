@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/5/2012 10:46:50 AM                         */
+/* Created on:     3/5/2012 1:58:14 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9448,6 +9448,7 @@ INSERT INTO YukonRoleProperty VALUES(-1702,-8,'Customer Info Importer File Locat
 INSERT INTO YukonRoleProperty VALUES(-1703,-8,'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 INSERT INTO YukonRoleProperty VALUES(-1704,-8,'Opt Outs Count', 'true', 'Determines whether new opt outs count against the opt out limits.'); 
 INSERT INTO YukonRoleProperty VALUES(-1705,-8,'Database Migration File Location','/Server/Export/','File location of the database migration export process.'); 
+INSERT INTO YukonRoleProperty VALUES(-1706,-8,'Enable Captchas','true','This feature turns on and off all the captchas in the system.');
 
 /* TDC Role */
 INSERT INTO YukonRoleProperty VALUES(-10100,-101,'loadcontrol_edit','00000000','(No settings yet)');

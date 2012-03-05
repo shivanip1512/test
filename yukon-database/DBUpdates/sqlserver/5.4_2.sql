@@ -96,6 +96,10 @@ GO
 INSERT INTO YukonServices VALUES(19,'YukonMessageListener','classpath:com/cannontech/services/yukonMessageListener/yukonMessageListener.xml', 'ServiceManager');
 /* End YUK-10725 */
 
+/* Start YUK-10730 */
+INSERT INTO YukonRoleProperty VALUES(-1706,-8,'Enable Captchas','true','This feature turns on and off all the captchas in the system');
+/* End YUK-10730 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
