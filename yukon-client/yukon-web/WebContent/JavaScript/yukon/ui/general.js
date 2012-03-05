@@ -99,15 +99,24 @@ Yukon.ui = {
         /*
          * Focus the designated input element
          */
-        setTimeout('Yukon.ui._focus_first()', 300);
+        Yukon.ui._autofocus();
     },
     
-    _focus_first: function(){
-        var focusElement = $$(".f_focus:first")[0];
+    
+    _AUTOFOCUS_TRIES: 0,
+    _autofocus: function(){
+        var focusElement = jQuery("[autofocus], .f_focus:first")[0];
+        
         if(focusElement) {
             try{ //Play nice with IE
                 focusElement.focus();
-            }catch(err){}
+            }catch(err){
+                //give the autofocus element 3 seconds to show itself
+                if(Yukon.ui._AUTOFOCUS_TRIES < 30){
+                    //certain browsers will error if the element to be focused is not yet visible
+                    setTimeout('Yukon.ui._autofocus()', 100);
+                }
+            }
         }
     },
     
