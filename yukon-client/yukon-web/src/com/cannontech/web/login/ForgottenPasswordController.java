@@ -1,4 +1,4 @@
-public package com.cannontech.web.login;
+package com.cannontech.web.login;
 
 import java.util.List;
 import java.util.Map;
