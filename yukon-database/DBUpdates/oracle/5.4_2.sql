@@ -50,6 +50,18 @@ WHERE pointId IN (SELECT p.pointId
                     AND yp.Type LIKE 'CBC%');
 /* End YUK-10674 */
 
+/* Start YUK-10709 */
+INSERT INTO BillingFileFormats VALUES (-27, 'CMEP', 1);
+
+CREATE TABLE RPHServiceTag  (
+    RPHServiceTagId         NUMBER                 NOT NULL,
+    ChangeId                NUMBER                 NOT NULL,
+    ServiceName             VARCHAR2(150)          NOT NULL,
+    ServiceNameRef          VARCHAR2(150)          NULL,
+    CONSTRAINT PK_RPHServiceTag PRIMARY KEY (RPHServiceTagId)
+);
+/* End YUK-10709 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

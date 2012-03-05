@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/17/2012 2:40:52 PM                         */
+/* Created on:     3/5/2012 3:32:42 AM                          */
 /*==============================================================*/
 
 
@@ -516,10 +516,11 @@ INSERT INTO BillingFileFormats VALUES(-23, 'Big Rivers Elec Coop',1);
 INSERT INTO BillingFileFormats VALUES(-24, 'INCODE (Extended TOU)',1);
 INSERT INTO BillingFileFormats VALUES(-25, 'Itron Register Readings Export',1);
 INSERT INTO BillingFileFormats VALUES(-26, 'SIMPLE_TOU_DeviceName',1);
+INSERT INTO BillingFileFormats VALUES(-27, 'CMEP', 1);
 INSERT INTO BillingFileFormats VALUES( 31, 'STANDARD',1);
 INSERT INTO BillingFileFormats VALUES(-32, 'NISC TOU (kVarH) Rates Only',1);
 INSERT INTO BillingFileFormats VALUES( 33, 'NISC Interval Readings', 1);
-INSERT INTO BillingFileFormats VALUES( -34, 'Curtailment Events - Itron', 1);
+INSERT INTO BillingFileFormats VALUES(-34, 'Curtailment Events - Itron', 1);
 
 /*==============================================================*/
 /* Index: Indx_BillFile_FormType_UNQ                            */
@@ -6883,6 +6884,17 @@ create unique index Indx_RFNAdd_SerNum_Man_Mod_UNQ on RFNAddress (
    SerialNumber ASC,
    Manufacturer ASC,
    Model ASC
+);
+
+/*==============================================================*/
+/* Table: RPHServiceTag                                         */
+/*==============================================================*/
+create table RPHServiceTag  (
+   RPHServiceTagId      NUMBER                          not null,
+   ChangeId             NUMBER                          not null,
+   ServiceName          VARCHAR2(150)                   not null,
+   ServiceNameRef       VARCHAR2(150),
+   constraint PK_RPHSERVICETAG primary key (RPHServiceTagId)
 );
 
 /*==============================================================*/
