@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/5/2012 1:59:17 PM                          */
+/* Created on:     3/5/2012 3:34:55 PM                          */
 /*==============================================================*/
 
 
@@ -793,7 +793,7 @@ create table CCHOLIDAYSTRATEGYASSIGNMENT  (
 /* Table: CCMonitorBankList                                     */
 /*==============================================================*/
 create table CCMonitorBankList  (
-   BankId               NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
    PointId              NUMBER                          not null,
    DisplayOrder         NUMBER                          not null,
    Scannable            CHAR(1)                         not null,
@@ -801,7 +801,8 @@ create table CCMonitorBankList  (
    UpperBandwidth       FLOAT                           not null,
    LowerBandwidth       FLOAT                           not null,
    Phase                CHAR(1),
-   constraint PK_CCMONITORBANKLIST primary key (BankId, PointId)
+   OverrideStrategy     CHAR(1)                         not null,
+   constraint PK_CCMONITORBANKLIST primary key (DeviceId, PointId)
 );
 
 /*==============================================================*/
@@ -10388,11 +10389,6 @@ alter table CCHOLIDAYSTRATEGYASSIGNMENT
 alter table CCHOLIDAYSTRATEGYASSIGNMENT
    add constraint FK_CCHOLIDAY_CAPCONTR foreign key (StrategyId)
       references CapControlStrategy (StrategyID);
-
-alter table CCMonitorBankList
-   add constraint FK_CCMonBankList_CapBank foreign key (BankId)
-      references CAPBANK (DEVICEID)
-      on delete cascade;
 
 alter table CCMonitorBankList
    add constraint FK_CCMonBankList_Point foreign key (PointId)

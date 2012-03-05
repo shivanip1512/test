@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/5/2012 1:58:14 PM                          */
+/* Created on:     3/5/2012 5:11:48 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -844,7 +844,7 @@ go
 /* Table: CCMonitorBankList                                     */
 /*==============================================================*/
 create table CCMonitorBankList (
-   BankId               numeric              not null,
+   DeviceId             numeric              not null,
    PointId              numeric              not null,
    DisplayOrder         numeric              not null,
    Scannable            char(1)              not null,
@@ -852,7 +852,8 @@ create table CCMonitorBankList (
    UpperBandwidth       float                not null,
    LowerBandwidth       float                not null,
    Phase                char(1)              null,
-   constraint PK_CCMONITORBANKLIST primary key (BankId, PointId)
+   OverrideStrategy     char(1)              not null,
+   constraint PK_CCMONITORBANKLIST primary key nonclustered (DeviceId, PointId)
 )
 go
 
@@ -11006,12 +11007,6 @@ go
 alter table CCHOLIDAYSTRATEGYASSIGNMENT
    add constraint FK_CCHOLIDAY_CAPCONTR foreign key (StrategyId)
       references CapControlStrategy (StrategyID)
-go
-
-alter table CCMonitorBankList
-   add constraint FK_CCMonBankList_CapBank foreign key (BankId)
-      references CAPBANK (DEVICEID)
-         on delete cascade
 go
 
 alter table CCMonitorBankList
