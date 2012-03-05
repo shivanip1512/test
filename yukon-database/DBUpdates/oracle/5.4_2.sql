@@ -72,6 +72,23 @@ SET ManualHeatTemp = NULL
 WHERE ManualMode = 'COOL' AND ManualCoolTemp IS NOT NULL;
 /* End YUK-10724 */
 
+/* Start YUK-10730 */
+CREATE TABLE ExtToYukonMessageIdMapping  (
+   ExternalMessageId    NUMBER                          NOT NULL,
+   YukonMessageId       NUMBER                          NOT NULL,
+   UserId               NUMBER                          NOT NULL,
+   MessageEndTime       DATE                            NOT NULL,
+   CONSTRAINT PK_ExtToYukonMessageIdMapping PRIMARY KEY (ExternalMessageId)
+);
+
+ALTER TABLE ExtToYukonMessageIdMapping
+    ADD CONSTRAINT FK_EToYMIMap_User FOREIGN KEY (UserId)
+        REFERENCES YukonUser (UserId)
+            ON DELETE CASCADE;
+            
+INSERT INTO YukonServices VALUES(19,'YukonMessageListener','classpath:com/cannontech/services/yukonMessageListener/yukonMessageListener.xml', 'ServiceManager');
+/* End YUK-10730 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

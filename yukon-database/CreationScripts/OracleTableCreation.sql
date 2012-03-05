@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/5/2012 3:32:42 AM                          */
+/* Created on:     3/5/2012 10:37:39 AM                         */
 /*==============================================================*/
 
 
@@ -4561,6 +4561,17 @@ create table EventWorkOrder  (
    EventID              NUMBER                          not null,
    OrderID              NUMBER                          not null,
    constraint PK_EVENTWORKORDER primary key (EventID)
+);
+
+/*==============================================================*/
+/* Table: ExtToYukonMessageIdMapping                            */
+/*==============================================================*/
+create table ExtToYukonMessageIdMapping  (
+   ExternalMessageId    NUMBER                          not null,
+   YukonMessageId       NUMBER                          not null,
+   UserId               NUMBER                          not null,
+   MessageEndTime       DATE                            not null,
+   constraint PK_EXTTOYUKONMESSAGEIDMAPPING primary key (ExternalMessageId)
 );
 
 /*==============================================================*/
@@ -9409,6 +9420,7 @@ INSERT INTO YukonServices VALUES (15, 'PorterResponseMonitor', 'classpath:com/ca
 INSERT INTO YukonServices VALUES (16, 'SepMessageListener', 'classpath:com/cannontech/services/sepMessageListener/sepMessageListenerContext.xml', 'ServiceManager'); 
 INSERT INTO YukonServices VALUES (17, 'DigiPollingService', 'classpath:com/cannontech/services/digiPollingService/digiPollingService.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (18, 'CymDISTMessageListener', 'classpath:com/cannontech/services/cymDISTService/cymDISTServiceContext.xml', 'ServiceManager');
+INSERT INTO YukonServices VALUES (19, 'YukonMessageListener','classpath:com/cannontech/services/yukonMessageListener/yukonMessageListener.xml', 'ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
@@ -11253,6 +11265,11 @@ alter table EventWorkOrder
 alter table EventWorkOrder
    add constraint FK_EVENTWO_WOBASE foreign key (OrderID)
       references WorkOrderBase (OrderID);
+
+alter table ExtToYukonMessageIdMapping
+   add constraint FK_EToYMIMap_User foreign key (UserId)
+      references YukonUser (UserID)
+      on delete cascade;
 
 alter table ExtraPaoPointAssignment
    add constraint FK_ExtraPAOPointAsgmt_Point foreign key (PointId)
