@@ -65,6 +65,16 @@ CREATE TABLE RPHServiceTag  (
 );
 /* End YUK-10709 */
 
+/* Start YUK-10724 */
+UPDATE ThermostatEventHistory 
+SET ManualCoolTemp = NULL 
+WHERE ManualMode = 'HEAT' AND ManualHeatTemp IS NOT NULL;
+
+UPDATE ThermostatEventHistory 
+SET ManualHeatTemp = NULL 
+WHERE ManualMode = 'COOL' AND ManualCoolTemp IS NOT NULL;
+/* End YUK-10724 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
