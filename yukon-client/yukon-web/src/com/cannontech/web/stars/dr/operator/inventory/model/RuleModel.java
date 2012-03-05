@@ -29,9 +29,6 @@ public class RuleModel {
     /* Load Groups Rule */
     private String groupIds;
     
-    /* Member */
-    private int memberOfEnergyCompanyId;
-    
     /* Postal Code */
     private String postalCode;
     
@@ -144,14 +141,6 @@ public class RuleModel {
     }
     public void setGroupIds(String groupIds) {
         this.groupIds = groupIds;
-    }
-
-    /* Member of Energy Company Id */
-    public int getMemberOfEnergyCompanyId() {
-        return memberOfEnergyCompanyId;
-    }
-    public void setMemberOfEnergyCompanyId(int memberOfEnergyCompanyId) {
-        this.memberOfEnergyCompanyId = memberOfEnergyCompanyId;
     }
     
     /* Program ids */

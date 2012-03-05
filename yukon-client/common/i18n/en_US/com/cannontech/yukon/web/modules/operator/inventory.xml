@@ -148,7 +148,6 @@
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.DEVICE_TYPE">Device Type</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.FIELD_INSTALL_DATE">Field Install Date</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.LOAD_GROUP">Load Group</entry>
-    <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.MEMBER">Member</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.POSTAL_CODE">Postal Code</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.PROGRAM">Program</entry>
     <entry key="yukon.web.modules.operator.filterSelection.filterRuleType.PROGRAM_SIGNUP_DATE">Program Sign-Up Date</entry>

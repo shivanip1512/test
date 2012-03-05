@@ -110,12 +110,6 @@
                                                     destinationFieldId="groupIds_${row.index}" linkType="selection"/>
                                         </c:when>
                                         
-                                        <c:when test="${rule.ruleType eq 'MEMBER'}">
-                                            <form:select path="filterRules[${row.index}].memberOfEnergyCompanyId">
-                                                <form:options items="${energyCompanies}" itemLabel="name" itemValue="energyCompanyId"/>
-                                            </form:select>
-                                        </c:when>
-                                        
                                         <c:when test="${rule.ruleType eq 'POSTAL_CODE'}">
                                             <spring:bind path="filterRules[${row.index}].postalCode" >
                                                 <c:choose>

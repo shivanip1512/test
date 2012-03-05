@@ -10,7 +10,6 @@ public enum FilterRuleType implements DisplayableEnum {
     DEVICE_TYPE,
     FIELD_INSTALL_DATE,
     LOAD_GROUP,
-    MEMBER,
     POSTAL_CODE,
     PROGRAM,
     PROGRAM_SIGNUP_DATE,

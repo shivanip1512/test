@@ -23,7 +23,9 @@ import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventory.model.FilterMode;
 import com.cannontech.web.stars.dr.operator.inventory.model.RuleModel;
@@ -33,11 +35,13 @@ import com.google.common.collect.Sets;
 
 public class InventoryOperationsFilterServiceImpl implements InventoryOperationsFilterService {
     
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     @Override
     public Set<InventoryIdentifier> getInventory(FilterMode filterMode, List<RuleModel> rules, DateTimeZone timeZone, YukonUserContext userContext) throws ParseException {
+        YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         SqlFragmentCollection whereClause;
         
         if (filterMode == FilterMode.AND) {
@@ -49,15 +53,18 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT ib.inventoryId InventoryId, yle.YukonDefinitionId YukonDefinitionId");
         sql.append("FROM InventoryBase ib");
-        sql.append(  "JOIN LMHardwareBase lmhb ON lmhb.inventoryId = ib.inventoryId");
+        sql.append(  "JOIN LMHardwareBase lmhb ON lmhb.InventoryId = ib.InventoryId");
         sql.append(  "LEFT JOIN LmHardwareControlGroup lmhcg ON lmhcg.InventoryId = ib.InventoryId");
         sql.append(  "JOIN YukonListEntry yle ON yle.EntryID = lmhb.LMHardwareTypeID");
+        sql.append(  "JOIN ECToInventoryMapping ecim ON ecim.InventoryId = ib.InventoryId");
         
         for (RuleModel rule : rules) {
             whereClause.add(getFragmentForRule(rule, timeZone, userContext));
         }
         
-        sql.append("WHERE").append(whereClause);
+        /* Only retrieve inventory for this energy company */
+        sql.append("WHERE ecim.EnergyCompanyId").eq(ec.getEnergyCompanyId());
+        sql.append("AND").append(whereClause);
         
         Set<InventoryIdentifier> result = Sets.newHashSet();
         
@@ -148,15 +155,6 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             sql.append("AND lmhcg.Type").eq_k(LMHardwareControlGroup.ENROLLMENT_ENTRY).append(")");
             break;
             
-        case MEMBER:
-            SqlStatementBuilder inventoryIdsFromECSql = new SqlStatementBuilder();
-            inventoryIdsFromECSql.append("SELECT ECTIM.InventoryId");
-            inventoryIdsFromECSql.append("FROM ECToInventoryMapping ECTIM");
-            inventoryIdsFromECSql.append("WHERE ECTIM.EnergyCompanyId").eq(rule.getMemberOfEnergyCompanyId());
-            
-            sql.append("IB.InventoryId").in(inventoryIdsFromECSql);
-            break;
-            
         case POSTAL_CODE:
             SqlStatementBuilder accountIdsForServiceZipCodeSql = new SqlStatementBuilder();
             accountIdsForServiceZipCodeSql.append("SELECT Distinct CA.AccountId");
@@ -230,14 +228,4 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
         return sql;
     }
 
-    // DI Setters
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setVendorSpecificSqlBuilderFactory(VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory) {
-        this.vendorSpecificSqlBuilderFactory = vendorSpecificSqlBuilderFactory;
-    }
 }
