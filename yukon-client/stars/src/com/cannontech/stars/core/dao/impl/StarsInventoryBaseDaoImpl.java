@@ -96,12 +96,10 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     public LiteInventoryBase getByInventoryId(final int inventoryId) throws NotFoundException {
     	SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(selectInventorySql);
-        sql.append("WHERE ib.InventoryId = ").appendArgument(inventoryId);
+        sql.append("WHERE ib.InventoryId").eq(inventoryId);
         LiteInventoryBase liteInv = null;
         try {
-            liteInv = yukonJdbcTemplate.queryForObject(sql.getSql(),
-                                                        smartInventoryRowMapper,
-                                                        sql.getArguments());
+            liteInv = yukonJdbcTemplate.queryForObject(sql, smartInventoryRowMapper);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("LiteInventoryBase not found by Inventory Id: " + inventoryId);
         }

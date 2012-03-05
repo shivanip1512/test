@@ -227,6 +227,16 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
         return account;
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public CustomerAccount findByAccountNumber(final String accountNumber, List<Integer> energyCompanyIds) {
+        try {
+            return getByAccountNumber(accountNumber, energyCompanyIds);
+        } catch (NotFoundException e) {
+            return null;
+        }
+    }
+
     @Override
     public List<CustomerAccount> getByUser(LiteYukonUser user) {
 

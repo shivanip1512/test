@@ -51,6 +51,15 @@ public interface ConfigurationSource {
      * @return the boolean value of the key, or defaultValue if the key didn't exist
      */
     public boolean getBoolean(String key, boolean defaultValue);
+
+    /**
+     * Returns boolean value of key from the configuration file. Returns a defaultValue if
+     * the key did not exist in the file.
+     * @param key
+     * @param defaultValue boolean value to return if the key does not exist
+     * @return the boolean value of the key, or defaultValue if the key didn't exist
+     */
+    public boolean getBoolean(MasterConfigBooleanKeysEnum key, boolean defaultValue);
     
     /**
      * Returns boolean value of key from the configuration file. Returns false if

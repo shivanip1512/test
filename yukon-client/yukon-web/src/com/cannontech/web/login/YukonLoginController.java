@@ -4,12 +4,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -20,14 +23,18 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
 
 public class YukonLoginController extends MultiActionController {
-    private LoginService loginService;
-    private RolePropertyDao rolePropertyDao;
-    private LoginCookieHelper loginCookieHelper;
-    private UrlAccessChecker urlAccessChecker;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private LoginCookieHelper loginCookieHelper;
+    @Autowired private LoginService loginService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private UrlAccessChecker urlAccessChecker;
 
     public ModelAndView view(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         mav.setViewName("login.jsp");
+        
+        boolean useOldForgottenPasswordPage = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.USE_OLD_FORGOTTEN_PASSWORD_PAGE, false);
+        mav.addObject("useOldForgottenPasswordPage", useOldForgottenPasswordPage);
         return mav;
     }
 
@@ -128,21 +135,5 @@ public class YukonLoginController extends MultiActionController {
     public ModelAndView inboundVoiceLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
         loginService.inboundVoiceLogin(request, response);
         return null;
-    }
-
-    public void setLoginService(LoginService loginService) {
-        this.loginService = loginService;
-    }
-    
-    public void setLoginCookieHelper(LoginCookieHelper loginCookieHelper) {
-        this.loginCookieHelper = loginCookieHelper;
-    }
-
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    public void setUrlAccessChecker(UrlAccessChecker urlAccessChecker) {
-        this.urlAccessChecker = urlAccessChecker;
     }
 }

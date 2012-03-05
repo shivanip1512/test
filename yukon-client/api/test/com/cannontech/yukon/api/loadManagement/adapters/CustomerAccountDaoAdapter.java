@@ -100,6 +100,11 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao{
     }
 
     @Override
+    public CustomerAccount findByAccountNumber(String accountNumber, List<Integer> energyCompanyIds) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
     public CustomerAccount getByAccountNumberForDescendentsOfEnergyCompany(String accountNumber,
                                                                            YukonEnergyCompany yukonEnergyCompany) {
         throw new UnsupportedOperationException("not implemented");

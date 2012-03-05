@@ -79,8 +79,7 @@ public interface CustomerAccountDao {
 
     public CustomerAccount getAccountByContactId(int contactId);
     
-    public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(final int ecId, List<Integer> groupIds,
-                                                                            Date startDate, Date stopDate);
+    public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(final int ecId, List<Integer> groupIds, Date startDate, Date stopDate);
     
     public CustomerAccountWithNames getAccountWithNamesByCustomerId(final int customerId,
                                                                     final int ecId);
@@ -100,6 +99,7 @@ public interface CustomerAccountDao {
     
     public CustomerAccount getByAccountNumber(String accountNumber, List<Integer> energyCompanyIds);
     
+    public CustomerAccount findByAccountNumber(String accountNumber, List<Integer> energyCompanyIds);
     
     /**
      * Searches for an account number with one energy company and its descendants. Caller should

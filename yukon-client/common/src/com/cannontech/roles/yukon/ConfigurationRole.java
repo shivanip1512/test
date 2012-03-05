@@ -13,4 +13,5 @@ public interface ConfigurationRole {
     public static final int SYSTEM_TIMEZONE = YukonRoleDefs.CONFIGURATION_PROPERTYID_BASE - 3;
     public static final int OPT_OUTS_COUNT = YukonRoleDefs.CONFIGURATION_PROPERTYID_BASE - 4;
     public static final int DATABASE_MIGRATION_FILE_LOCATION = YukonRoleDefs.CONFIGURATION_PROPERTYID_BASE - 5;
+    public static final int ENABLE_CAPTCHAS = YukonRoleDefs.CONFIGURATION_PROPERTYID_BASE - 6;
 }

@@ -8,19 +8,14 @@
     <head>
         <title><cti:msg key="yukon.web.login.pageTitle"/></title>
 
-        <link rel="stylesheet" type="text/css"
-            href="WebConfig/yukon/styles/StandardStyles.css">
-        <link rel="stylesheet" type="text/css"
-            href="WebConfig/yukon/styles/YukonGeneralStyles.css">
-        <link rel="stylesheet"
-            href="WebConfig/yukon/styles/shared/loginStyles.css"
-            type="text/css">
+        <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/StandardStyles.css">
+        <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/YukonGeneralStyles.css">
+        <link rel="stylesheet" type="text/css" href="WebConfig/yukon/styles/shared/loginStyles.css">
             
         <cti:css key="yukon.web.login.loginStyles"/>
     </head>
 
-    <body class="blank_module"
-        onLoad="document.forms.form1.USERNAME.focus()">
+    <body class="blank_module" onLoad="document.forms.form1.USERNAME.focus()">
 
         <div id="Header">
             <div class="stdhdr_left">
@@ -61,8 +56,10 @@
             </div>
 
             <div class="loginMainSection">
+            
                 <cti:msg var="loginTitle" key="yukon.web.login.login"></cti:msg>
                 <ct:abstractContainer title="${loginTitle}" type="rounded">
+                    <cti:flashScopeMessages/>
                     
                     <c:if test="${!empty param.failed}">
                         <div class="loginErrorMsg">
@@ -86,8 +83,7 @@
                         <cti:msg key="yukon.web.login.enterLogin"></cti:msg>
                     </div>
 
-                    <form name="form1" method="post"
-                        action="<cti:url value="/servlet/LoginController"/>">
+                    <form name="form1" method="post" action="<cti:url value="/servlet/LoginController"/>">
                         <table class="loginTable">
                             <tr>
                                 <td align="right">
@@ -120,9 +116,19 @@
                         </table>
                         <cti:checkGlobalRolesAndProperties value="ENABLE_PASSWORD_RECOVERY">
                             <div class="loginHelp">
-                                <a href="<cti:url value="/spring/login/forgotPassword"/>">
-    		                        <cti:msg key="yukon.web.login.forgotPassword"></cti:msg>
-                                </a>
+                                <cti:msg var="forgotPasswordText" key="yukon.web.login.forgotPassword"/>
+                                <c:choose>
+                                    <c:when test="${useOldForgottenPasswordPage}">
+                                        <a href="<cti:url value="/spring/login/forgotPassword"/>">
+            		                        ${forgotPasswordText}
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="<cti:url value="/spring/login/forgottenPassword"/>">
+                                            ${forgotPasswordText}
+                                        </a>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </cti:checkGlobalRolesAndProperties>
                         <input type="hidden" name="REDIRECTED_FROM" value="<spring:escapeBody htmlEscape="true">${param.REDIRECTED_FROM}</spring:escapeBody>">

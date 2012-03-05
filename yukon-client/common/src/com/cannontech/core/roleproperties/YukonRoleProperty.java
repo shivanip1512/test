@@ -382,6 +382,7 @@ public enum YukonRoleProperty {
     SYSTEM_TIMEZONE(SYSTEM_CONFIGURATION, com.cannontech.roles.yukon.ConfigurationRole.SYSTEM_TIMEZONE, stringType()),
     OPT_OUTS_COUNT(SYSTEM_CONFIGURATION, com.cannontech.roles.yukon.ConfigurationRole.OPT_OUTS_COUNT, booleanType()),
     DATABASE_MIGRATION_FILE_LOCATION(SYSTEM_CONFIGURATION, com.cannontech.roles.yukon.ConfigurationRole.DATABASE_MIGRATION_FILE_LOCATION, stringType()),
+    ENABLE_CAPTCHAS(SYSTEM_CONFIGURATION, com.cannontech.roles.yukon.ConfigurationRole.ENABLE_CAPTCHAS, booleanType()),
     
     /* Use EnergyCompanyRolePropertyDao when dealing with these role properties */
     ADMIN_EMAIL_ADDRESS(ENERGY_COMPANY, com.cannontech.roles.yukon.EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, stringType()),

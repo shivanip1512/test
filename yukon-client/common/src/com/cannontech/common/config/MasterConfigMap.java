@@ -137,7 +137,12 @@ public class MasterConfigMap implements ConfigurationSource {
     	
     	return Boolean.parseBoolean(configMap.get(key));
     }
-    
+
+    @Override
+    public boolean getBoolean(MasterConfigBooleanKeysEnum key, boolean defaultValue) {
+        return getBoolean(key.name(), defaultValue);
+    }
+
     @Override
     public boolean getBoolean(MasterConfigBooleanKeysEnum key) {
         return getBoolean(key.name(), false);

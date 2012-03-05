@@ -9,6 +9,9 @@ public class CaptchaResponse {
     
     private CaptchaErrorCode error;
     
+    public CaptchaResponse(CaptchaErrorCode error) {
+        this.error = error;
+    }
     public CaptchaResponse(ReCaptchaResponse reCaptchaResponse) {
         this.error = CaptchaErrorCode.getByCaptchaResponse(reCaptchaResponse.getErrorMessage());
     }

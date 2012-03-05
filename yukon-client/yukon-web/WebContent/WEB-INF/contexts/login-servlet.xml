@@ -46,10 +46,6 @@
 
     <bean id="loginController" class="com.cannontech.web.login.YukonLoginController">
         <property name="methodNameResolver" ref="methodNameResolver" />
-        <property name="loginService" ref="loginService"/>
-        <property name="loginCookieHelper" ref="loginCookieHelper"/>
-        <property name="rolePropertyDao" ref="rolePropertyDao"/>
-        <property name="urlAccessChecker" ref="urlAccessChecker"/>
     </bean>
 
     <bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">

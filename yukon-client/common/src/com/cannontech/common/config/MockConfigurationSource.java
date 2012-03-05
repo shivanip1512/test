@@ -12,6 +12,11 @@ public class MockConfigurationSource implements ConfigurationSource {
     public boolean getBoolean(String key, boolean defaultValue) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean getBoolean(MasterConfigBooleanKeysEnum key, boolean defaultValue) {
+        throw new UnsupportedOperationException();
+    }
     
     @Override
     public boolean getBoolean(MasterConfigBooleanKeysEnum developmentMode) {

@@ -12,9 +12,7 @@ public class LoginValidatorFactoryImpl implements LoginValidatorFactory {
     private YukonUserDao yukonUserDao;
     
     public LoginValidator getLoginValidator(LiteYukonUser residentialUser) {
-
         return new LoginValidator(residentialUser, yukonUserDao);
-        
     }
     
     @Autowired
