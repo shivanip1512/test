@@ -43,7 +43,7 @@ Yukon.GridHelper = {
             
             jQuery.extend(opts, args);
             
-            if(args.width == null || typeof(args.width) == 'undefined'){
+            if (args.width == null) {
                 opts.autowidth = true;
                 opts.shrinkToFit = 200;
             }
