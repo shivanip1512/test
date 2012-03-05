@@ -1491,7 +1491,7 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                 nRet  = ExecutionComplete;
 
                 returnErrorMessage(MISCONFIG, OutMessage, retList,
-                                   "Invalid request: Options Byte has been requested.  Reissue channel 2 configuration command.");
+                                   "Invalid request: Options Byte not retrieved yet, attempting to read automatically.  Reissue channel 2 configuration command.");
             }
             else
             {
@@ -1502,9 +1502,9 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
 
                 int new_option_bit_pattern = 0;
 
-                if( new_option_string == "none" )
+                if( new_option_string == "netmetering" )
                 {
-                    new_option_bit_pattern = 0x00;      //  000 -- No Meter Attached
+                    new_option_bit_pattern = 0x07;      //  111 -- Net Metering Mode Enabled
                 }
                 else if ( new_option_string == "ui1203" )
                 {
@@ -1514,18 +1514,19 @@ INT Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                 {
                     new_option_bit_pattern = 0x02;      //  010 -- Wired UI1204 (Touchread) Sensus or Badger Water Meter
                 }
-                else    //  if ( new_option_string == "netmetering" )
+                else    //  if ( new_option_string == "none" )
                 {
-                    new_option_bit_pattern = 0x07;      //  111 -- Net Metering Mode Enabled
+                    new_option_bit_pattern = 0x00;      //  000 -- No Meter Attached
                 }
+
 
                 long current_options = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options);
 
                 // clear out existing channel 2 info
-                current_options &= ~( 0x07 << 2 );      // cccccccc &= xxx000xx ==> ccc000cc
+                current_options &= 0xe3;
 
                 // OR in the new options
-                current_options |= ( new_option_bit_pattern << 2 );     // ccc000cc |= 000xxx00 ==> cccxxxcc
+                current_options |= ( new_option_bit_pattern << 2 );
 
                 OutMessage->Sequence = function;
 
