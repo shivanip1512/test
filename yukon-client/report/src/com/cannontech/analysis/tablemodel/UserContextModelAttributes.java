@@ -9,4 +9,5 @@ import com.cannontech.user.YukonUserContext;
  */
 public interface UserContextModelAttributes {
     public void setUserContext(YukonUserContext userContext);
+    public YukonUserContext getUserContext();
 }

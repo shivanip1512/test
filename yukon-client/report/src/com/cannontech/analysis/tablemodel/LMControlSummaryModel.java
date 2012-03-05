@@ -261,14 +261,20 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         }
     }
     
+    @Override
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
     }
 
+    @Override
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
     }
-
+    
+    @Override
+    public YukonUserContext getUserContext() {
+        return userContext;
+    }
     
     public Set<Integer> getProgramIds() {
         return programIds;
@@ -277,6 +283,5 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     public void setProgramIds(Set<Integer> programIds) {
         this.programIds = programIds;
     }
-
     
 }

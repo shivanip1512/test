@@ -27,10 +27,11 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 
-public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<DeviceReadStatisticsSummaryModel.ModelRow> {
+public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<DeviceReadStatisticsSummaryModel.ModelRow> implements UserContextModelAttributes {
 
     private Logger log = YukonLogManager.getLogger(DeviceReadStatisticsSummaryModel.class);
 
@@ -39,6 +40,7 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
     private AttributeService attributeService;
     
     // member variables
+    private YukonUserContext context;
     private String title = "Device Read Statistics Summary Report";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private Attribute attribute;
@@ -167,6 +169,15 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
         return groupResultRows;
     }
     
+    @Override
+    public void setUserContext(YukonUserContext context) {
+        this.context = context;
+    }
+    
+    public YukonUserContext getUserContext() {
+        return context;
+    }
+    
     public void setAttribute(Attribute attribute) {
         this.attribute = attribute;
     }
@@ -193,4 +204,5 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
+
 }

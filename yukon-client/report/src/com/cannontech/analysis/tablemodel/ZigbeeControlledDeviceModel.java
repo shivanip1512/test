@@ -90,4 +90,10 @@ public class ZigbeeControlledDeviceModel extends BareDatedReportModelBase<Zigbee
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
     }
+    
+    @Override
+    public YukonUserContext getUserContext() {
+        return userContext;
+    }
+    
 }

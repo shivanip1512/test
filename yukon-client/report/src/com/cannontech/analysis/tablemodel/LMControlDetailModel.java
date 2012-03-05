@@ -217,12 +217,19 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
         }
     }
     
+    @Override
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
     }
 
+    @Override
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
+    }
+    
+    @Override
+    public YukonUserContext getUserContext() {
+        return userContext;
     }
 
     public Set<Integer> getProgramIds() {

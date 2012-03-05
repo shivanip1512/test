@@ -13,21 +13,27 @@ import com.cannontech.analysis.report.DeviceReadStatisticsSummaryReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.DeviceReadStatisticsSummaryModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.ServletRequestEnumUtils;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
 
     private ReportFilter[] filterModelTypes = new ReportFilter[] {ReportFilter.GROUPS};
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private YukonUserContextMessageSourceResolver resolver;
     
     public DeviceReadStatisticsSummaryController() {
         super();
         model = YukonSpringHook.getBean("deviceReadStatisticsSummaryModel", DeviceReadStatisticsSummaryModel.class);
         report = new DeviceReadStatisticsSummaryReport(model);
+        resolver = YukonSpringHook.getBean("yukonUserContextMessageSourceResolver", YukonUserContextMessageSourceResolver.class);
     }
 
     public YukonReportBase getReport() {
@@ -64,6 +70,14 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
     }
     
     public String getHTMLOptionsTable() {
+        DeviceReadStatisticsSummaryModel contextModel = (DeviceReadStatisticsSummaryModel) model;
+        final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(contextModel.getUserContext());
+
+        List<BuiltInAttribute> measuredAttributes = Lists.newArrayList(Sets.difference(Sets.newHashSet(BuiltInAttribute.values()), BuiltInAttribute.getRfnEventTypes()));
+        BuiltInAttribute.sort(measuredAttributes, accessor);
+        List<BuiltInAttribute> eventAttributes = Lists.newArrayList(BuiltInAttribute.getRfnEventTypes());
+        BuiltInAttribute.sort(eventAttributes, accessor);
+        
         final StringBuilder sb = new StringBuilder();
         sb.append("<table style='padding: 5px;' class='TableCell'>" + LINE_SEPARATOR);
         
@@ -72,13 +86,16 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
         sb.append("        <td class='TitleHeader' style='padding-right: 5px;'>Data Attribute: </td>");
         sb.append("        <td class='main' style='padding-right: 5px;'>" + LINE_SEPARATOR);
         sb.append("            <select id=\"dataAttribute\" name=\"dataAttribute\">" + LINE_SEPARATOR);
-        int i = 0;
-        for(BuiltInAttribute attribute : BuiltInAttribute.values()){
-            sb.append("              <option value=\"" + attribute + "\""); 
-            if(i == 0) sb.append(" selected "); 
-            sb.append(">" + attribute.getDescription() + "</option>" + LINE_SEPARATOR);
-            i++;
+        sb.append("                <optgroup label=\"Measured Attributes\">" + LINE_SEPARATOR);
+        for (BuiltInAttribute attribute : measuredAttributes) {
+            sb.append("                <option value=\"" + attribute + "\">" + attribute.getDescription() + "</option>" + LINE_SEPARATOR);
         }
+        sb.append("                </optgroup>" + LINE_SEPARATOR);
+        sb.append("                <optgroup label=\"Event Attributes\">" + LINE_SEPARATOR);
+        for (BuiltInAttribute attribute : eventAttributes) {
+            sb.append("                <option value=\"" + attribute + "\">" + attribute.getDescription() + "</option>" + LINE_SEPARATOR);
+        }
+        sb.append("                </optgroup>" + LINE_SEPARATOR);
         sb.append("            </select>" + LINE_SEPARATOR);
         sb.append("        </td>" + LINE_SEPARATOR);
         

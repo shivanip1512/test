@@ -1,9 +1,14 @@
 package com.cannontech.common.pao.attribute.model;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.i18n.Displayable;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -127,6 +132,7 @@ public enum BuiltInAttribute implements Attribute {
     private static ImmutableSet<BuiltInAttribute> rfnEventTypes;
     private static ImmutableSet<BuiltInAttribute> rfnEventStatusTypes;
     private static ImmutableSet<BuiltInAttribute> rfnEventAnalogTypes;
+    private static ImmutableSet<BuiltInAttribute> profileAttributes;
     static {
         Builder<BuiltInAttribute> builder = ImmutableSet.builder();
         builder.add(CONFIGURATION_ERROR);
@@ -184,7 +190,7 @@ public enum BuiltInAttribute implements Attribute {
         builder.add(VOLTAGE_PHASE_C_OUT);
         builder.add(VOLTAGE_PHASE_ERROR);
         
-        builder.add(OUTAGE_STATUS);
+        builder.add(OUTAGE_STATUS);                 //[PLC & RFN] Shared
         
         rfnEventStatusTypes = builder.build();
         
@@ -198,6 +204,12 @@ public enum BuiltInAttribute implements Attribute {
         
         builder.addAll(rfnEventAnalogTypes);
         rfnEventTypes = builder.build();
+        
+        Builder<BuiltInAttribute> profile = ImmutableSet.builder();
+        for (BuiltInAttribute attr : values()) {
+            if (attr.isProfile()) profile.add(attr);
+        }
+        profileAttributes = profile.build();
     }
 
     private BuiltInAttribute(String description) {
@@ -239,6 +251,10 @@ public enum BuiltInAttribute implements Attribute {
         return rfnEventTypes;
     }
     
+    public static Set<BuiltInAttribute> getProfileAttributes() {
+        return profileAttributes;
+    }
+    
     public boolean isRfnEventType() {
         return rfnEventTypes.contains(this);
     }
@@ -258,6 +274,16 @@ public enum BuiltInAttribute implements Attribute {
     @Override
     public MessageSourceResolvable getMessage() {
         return YukonMessageSourceResolvable.createDefault("yukon.common.attribute.builtInAttribute." + name(), description);
+    }
+    
+    public static void sort(List<BuiltInAttribute> attributes, final MessageSourceAccessor accessor) {
+        Comparator<Displayable> comparator = new Comparator<Displayable>() {
+            @Override
+            public int compare(Displayable o1, Displayable o2) {
+                return accessor.getMessage(o1.getMessage()).compareTo(accessor.getMessage(o2.getMessage()));
+            }
+        };
+        Collections.sort(attributes, comparator);
     }
     
 }

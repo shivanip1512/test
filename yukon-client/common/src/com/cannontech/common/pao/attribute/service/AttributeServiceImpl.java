@@ -67,12 +67,20 @@ public class AttributeServiceImpl implements AttributeService {
     
     private Set<Attribute> readableAttributes;
     {
-    	EnumSet<BuiltInAttribute> nonProfiledAttributes = EnumSet.noneOf(BuiltInAttribute.class);
+        Set<BuiltInAttribute> nonReadableEvents = Sets.difference(BuiltInAttribute.getRfnEventTypes(), EnumSet.of(
+                                                                                                                  BuiltInAttribute.POWER_FAIL_FLAG,
+                                                                                                                  BuiltInAttribute.REVERSE_POWER_FLAG,
+                                                                                                                  BuiltInAttribute.TAMPER_FLAG,
+                                                                                                                  BuiltInAttribute.OUTAGE_STATUS));
+    	EnumSet<BuiltInAttribute> readableAttributes = EnumSet.noneOf(BuiltInAttribute.class);
     	for (BuiltInAttribute attribute : BuiltInAttribute.values()) {
-    		if (!attribute.isProfile()) nonProfiledAttributes.add(attribute);
+    	    // Exclude profile attributes and event attributes that are not readable
+    		if (!attribute.isProfile() && !nonReadableEvents.contains(attribute)) {
+    		    readableAttributes.add(attribute);
+    		}
     	}
     	// could consider other factors and handle user defined attributes in the future
-    	readableAttributes = ImmutableSet.<Attribute>copyOf(nonProfiledAttributes);
+    	this.readableAttributes = ImmutableSet.<Attribute>copyOf(readableAttributes);
     }
 
     public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
