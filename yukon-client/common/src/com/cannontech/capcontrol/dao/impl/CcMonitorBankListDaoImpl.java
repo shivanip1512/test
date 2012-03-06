@@ -188,7 +188,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getRegulatorPointSql.append("FROM RegulatorToZoneMapping");
         getRegulatorPointSql.append("JOIN ExtraPaoPointAssignment eppa ON RegulatorId = eppa.PAObjectId");
         getRegulatorPointSql.append("WHERE RegulatorId").eq(regulatorId);
-        getRegulatorPointSql.append("AND Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y.name());
+        getRegulatorPointSql.append("AND Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y);
         
         try {
             //if there is no voltage_y point assigned, this will throw an exception
@@ -248,7 +248,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getZoneInfoSql.append("FROM RegulatorToZoneMapping");
         getZoneInfoSql.append("JOIN ExtraPaoPointAssignment eppa ON RegulatorId = eppa.PAObjectId");
         getZoneInfoSql.append("WHERE RegulatorId").eq(regulatorId);
-        getZoneInfoSql.append("AND Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y.name());
+        getZoneInfoSql.append("AND Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y);
         
         return yukonJdbcTemplate.queryForObject(getZoneInfoSql, regulatorPointRowMapper);
     }
