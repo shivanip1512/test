@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
@@ -26,9 +28,10 @@ import com.google.common.collect.Lists;
 @CheckRole(YukonRole.INVENTORY)
 public class InventoryActionsController {
     
-    private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private ConfigurationSource configurationSource;
     private static final int MAX_SELECTED_INVENTORY_DISPLAYED = 1000;
-    private InventoryDao inventoryDao;
 
     /* Inventory Actions */
     @RequestMapping(value = "/operator/inventory/inventoryActions", method=RequestMethod.GET)
@@ -37,6 +40,9 @@ public class InventoryActionsController {
         InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
         modelMap.addAttribute("inventoryCollection", yukonCollection);
         modelMap.addAllAttributes(yukonCollection.getCollectionParameters());
+        
+        boolean digiEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
+        modelMap.addAttribute("digiEnabled", digiEnabled);
         
         return "operator/inventory/inventoryActions.jsp";
     }
@@ -66,16 +72,6 @@ public class InventoryActionsController {
         modelMap.addAttribute("inventoryInfoList", inventoryInfoList);
         
         return "operator/inventory/selectedInventoryPopup.jsp";
-    }
-    
-    @Autowired
-    public void setInventoryCollectionFactory(InventoryCollectionFactoryImpl inventoryCollectionFactory) {
-        this.inventoryCollectionFactory = inventoryCollectionFactory;
-    }
-    
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
     }
     
 }

@@ -130,19 +130,21 @@
             </cti:dataGridCell>
         
             <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
-                <cti:dataGridCell>
-                        <table>
-                            <tr>
-                                <td class="actionCell">
-                                    <form action="resendConfig/view" method="get">
-                                        <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                        <cti:button nameKey="resendConfig" type="submit" styleClass="buttonGroup"/>
-                                    </form>
-                                </td>
-                                <td class="actionCell"><i:inline key=".resendConfigDescription"/></td>
-                            </tr>
-                        </table>
-                </cti:dataGridCell>
+                <c:if test="${digiEnabled}">
+                    <cti:dataGridCell>
+                            <table>
+                                <tr>
+                                    <td class="actionCell">
+                                        <form action="resendConfig/view" method="get">
+                                            <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
+                                            <cti:button nameKey="resendConfig" type="submit" styleClass="buttonGroup"/>
+                                        </form>
+                                    </td>
+                                    <td class="actionCell"><i:inline key=".resendConfigDescription"/></td>
+                                </tr>
+                            </table>
+                    </cti:dataGridCell>
+                </c:if>
             </cti:checkRolesAndProperties>
             
         </cti:dataGrid>

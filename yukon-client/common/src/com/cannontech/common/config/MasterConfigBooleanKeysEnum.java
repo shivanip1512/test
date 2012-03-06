@@ -11,5 +11,6 @@ public enum MasterConfigBooleanKeysEnum {
 	VIRTUAL_PROGRAMS,
 	SHOW_ONE_WAY_ENCRYPT,
 	BULK_IMPORTER_SINGLE_GROUP,	//option to limit membership to only 1 child group per parent group. 
+	DIGI_ENABLED, 
 	;
 }
