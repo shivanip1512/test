@@ -129,7 +129,7 @@ SET OverrideStrategy = (SELECT StrategyOverrideSetting
                        );
 
 ALTER TABLE CCMonitorBankList 
-ALTER COLUMN OverrideStrategy CHAR(1) NOT NULL;
+MODIFY OverrideStrategy CHAR(1) NOT NULL;
 
 ALTER TABLE CCMonitorBankList
 DROP CONSTRAINT FK_CCMonBankList_CapBank;
