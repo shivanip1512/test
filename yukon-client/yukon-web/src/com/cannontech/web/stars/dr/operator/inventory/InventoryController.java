@@ -155,6 +155,7 @@ public class InventoryController {
                          @ModelAttribute InventorySearch inventorySearch, 
                          Integer itemsPerPage, 
                          Integer page) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.INVENTORY_SEARCH, context.getYukonUser());
         YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser()); //This may be wrong
         LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(ec);
 
