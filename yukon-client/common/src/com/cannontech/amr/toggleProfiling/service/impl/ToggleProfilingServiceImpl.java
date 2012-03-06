@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
@@ -33,8 +34,18 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
     private DBPersistentDao dbPersistentDao = null;
     private JobManager jobManager = null;
     private YukonJobDefinition<ToggleProfilingTask> toggleProfilingDefinition = null;
-    
-    public void toggleProfilingForDevice(int deviceId, int channelNum, boolean newToggleVal) {
+
+    @Override
+    public void startProfilingForDevice(int deviceId, int channelNum) {
+        toggleProfilingForDevice(deviceId, channelNum, true);
+    }
+
+    @Override
+    public void stopProfilingForDevice(int deviceId, int channelNum) {
+        toggleProfilingForDevice(deviceId, channelNum, false);
+    }
+
+    private void toggleProfilingForDevice(int deviceId, int channelNum, boolean newToggleVal) {
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
@@ -47,9 +58,22 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
         dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
 
     }
-    
-    public void scheduleToggleProfilingForDevice(int deviceId, int channelNum, boolean newToggleVal, Date toggleDate, YukonUserContext userContext) {
-        
+
+    @Override
+    public void scheduleStartProfilingForDevice(int deviceId, int channelNum, Date toggleDate,
+                                                YukonUserContext userContext) {
+        scheduleToggleProfilingForDevice(deviceId, channelNum, true, toggleDate, userContext);
+    }
+
+    @Override
+    public void scheduleStopProfilingForDevice(int deviceId, int channelNum, Date toggleDate,
+                                               YukonUserContext userContext) {
+        scheduleToggleProfilingForDevice(deviceId, channelNum, false, toggleDate, userContext);
+    }
+
+    private void scheduleToggleProfilingForDevice(int deviceId, int channelNum,
+                                                  boolean newToggleVal, Date toggleDate,
+                                                  YukonUserContext userContext) {
         ToggleProfilingTask toggleProfilingTask = toggleProfilingDefinition.createBean();
         toggleProfilingTask.setDeviceId(deviceId);
         toggleProfilingTask.setChannelNum(channelNum);
@@ -63,7 +87,8 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
         logger.info("Toggle profiling scheduled for deviceId/channel " + deviceId + "/" + channelNum + " on " + toggleDate + ".");
 
     }
-    
+
+    @Override
     public boolean getToggleValueForDevice(int deviceId, int channelNum) {
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
@@ -74,14 +99,16 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
         
         return toggleValue;
     }
-    
+
+    @Override
     public boolean getToggleValueForDevice(DeviceLoadProfile deviceLoadProfile, int channelNum) {
         
         boolean toggleValue = deviceLoadProfile.loadProfileIsOnForChannel(channelNum);
         
         return toggleValue;
     }
-    
+
+    @Override
     public DeviceLoadProfile getDeviceLoadProfile(int deviceId) {
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
@@ -105,7 +132,8 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
         }
         return myJob;
     }
-    
+
+    @Override
     public List<Map<String, Object>> getToggleJobInfos(int deviceId, int channel) {
         
         List<Map<String, Object>> myJobInfos = new ArrayList<Map<String, Object>>();
@@ -132,8 +160,18 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
         
         return myJobInfos;
     }
-    
-    public void disableScheduledJob(int deviceId, int channel, boolean newToggleVal) {
+
+    @Override
+    public void disableScheduledStart(int deviceId, int channel) {
+        disableScheduledJob(deviceId, channel, true);
+    }
+
+    @Override
+    public void disableScheduledStop(int deviceId, int channel) {
+        disableScheduledJob(deviceId, channel, false);
+    }
+
+    private void disableScheduledJob(int deviceId, int channel, boolean newToggleVal) {
         
         ScheduledOneTimeJob job = findScheduledJob(deviceId, channel, newToggleVal);
         if (job != null) {
@@ -142,7 +180,13 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
             jobManager.disableJob(job);
         }
     }
-    
+
+    @Override
+    public Instant getScheduledStart(int deviceId, int channel) {
+        ScheduledOneTimeJob job = findScheduledJob(deviceId, channel, true);
+        return job == null ? null : new Instant(job.getStartTime());
+    }
+
     @Required
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;

@@ -85,10 +85,10 @@
     
     <xsd:attributeGroup name="PaoDescriptors">
         <xsd:attribute name="meterNumber" use="optional" type="xsd:string" />
-        <xsd:attribute name="carrierAddress" use="optional" type="xsd:unsignedInt" />
+        <xsd:attribute name="carrierAddress" use="optional" type="yukon:nonNegativeInt"/>
         <xsd:attribute name="name" use="optional" type="xsd:string" />
         <xsd:attribute name="enabled" use="optional" type="xsd:boolean" />
-        <xsd:attribute name="paoId" use="optional" type="xsd:int" />
+        <xsd:attribute name="paoId" use="optional" type="yukon:nonNegativeInt"/>
         <xsd:attribute name="paoType" use="optional" type="xsd:string" />
     </xsd:attributeGroup>
     

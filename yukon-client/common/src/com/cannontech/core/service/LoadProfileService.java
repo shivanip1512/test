@@ -15,7 +15,7 @@ public interface LoadProfileService {
                                         int channel, 
                                         Date start, 
                                         Date stop, 
-                                        CompletionCallback runner,
+                                        CompletionCallback callback,
                                         YukonUserContext userContext);
     public Collection<ProfileRequestInfo> getPendingLoadProfileRequests(LiteYukonPAObject device);
     
@@ -28,7 +28,7 @@ public interface LoadProfileService {
     public String getLastReturnMsg(long requestId); 
     
     public class ProfileRequestInfo {
-        public CompletionCallback runner;
+        public CompletionCallback callback;
         public Date from;
         public Date to;
         public Request request;

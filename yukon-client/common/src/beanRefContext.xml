@@ -67,6 +67,8 @@
             <list>
                 <value> com/cannontech/core/service/serverServicesContext.xml</value>
                 <value>com/cannontech/stars/starsContext.xml</value>
+                <value>com/cannontech/amr/amrContext.xml</value>
+                <value>com/cannontech/jobs/jobContext.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg index="1" value="true" />

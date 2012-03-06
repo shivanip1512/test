@@ -11,7 +11,6 @@ import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.common.pao.definition.model.PaoData.OptionalField;
 import com.google.common.collect.ImmutableSet;
 
-
 public interface PaoSelectionService {
     public enum PaoSelectorType {
         ADDRESS("carrierAddress", OptionalField.CARRIER_ADDRESS),
@@ -61,13 +60,16 @@ public interface PaoSelectionService {
     }
 
     public class PaoSelectionData {
-        private Map<PaoIdentifier, PaoData> paoDataById;
-        private Map<PaoSelectorType, List<String>> lookupFailures;
+        private final Map<PaoIdentifier, PaoData> paoDataById;
+        private final Map<PaoSelectorType, List<String>> lookupFailures;
+        private final int numLookupFailures;
 
         public PaoSelectionData(Map<PaoIdentifier, PaoData> paoDataById,
-                                Map<PaoSelectorType, List<String>> lookupFailures) {
+                                Map<PaoSelectorType, List<String>> lookupFailures,
+                                int numLookupFailures) {
             this.paoDataById = paoDataById;
             this.lookupFailures = lookupFailures;
+            this.numLookupFailures = numLookupFailures;
         }
 
         public Map<PaoIdentifier, PaoData> getPaoDataById() {
@@ -76,6 +78,10 @@ public interface PaoSelectionService {
 
         public Map<PaoSelectorType, List<String>> getLookupFailures() {
             return lookupFailures;
+        }
+
+        public int getNumLookupFailures() {
+            return numLookupFailures;
         }
     }
 
@@ -101,4 +107,10 @@ public interface PaoSelectionService {
      * all devices selected by meter number will include meter number but no other required fields.
      */
     public PaoSelectionData selectPaoIdentifiersByType(Node paoCollectionNode);
+
+    /**
+     * If there are any lookup errors, add a "lookupError" node as a child of the given parent.
+     * This method does nothing if there are no lookup errors.
+     */
+    public void addLookupErrorsNode(PaoSelectionData paoData, Element parent);
 }

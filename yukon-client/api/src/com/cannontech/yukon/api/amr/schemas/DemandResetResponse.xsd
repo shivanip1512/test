@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api"
-    targetNamespace="http://yukon.cannontech.com/api" elementFormDefault="qualified" version="1.1">
+    targetNamespace="http://yukon.cannontech.com/api" elementFormDefault="qualified" version="1.0">
 
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd"/>
     <xsd:include schemaLocation="../../common/schemas/PaoTypes.xsd"/>

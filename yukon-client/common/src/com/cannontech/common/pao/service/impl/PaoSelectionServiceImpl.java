@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jdom.Element;
 import org.jdom.Namespace;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Node;
@@ -66,7 +67,11 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
         Map<PaoIdentifier, PaoData> dataById = selectAndGetData(paoCollectionNode, null,
                                                                 lookupFailures);
 
-        PaoSelectionData retVal = new PaoSelectionData(dataById, lookupFailures);
+        int numLookupFailures = 0;
+        for (List<String> failures : lookupFailures.values()) {
+            numLookupFailures += failures.size();
+        }
+        PaoSelectionData retVal = new PaoSelectionData(dataById, lookupFailures, numLookupFailures);
         return retVal;
     }
 
@@ -92,6 +97,27 @@ public class PaoSelectionServiceImpl implements PaoSelectionService {
         }
 
         return retVal;
+    }
+
+    @Override
+    public void addLookupErrorsNode(PaoSelectionData paoData, Element parent) {
+        if (paoData.getNumLookupFailures() == 0) {
+            return;
+        }
+
+        Element lookupErrorElem = new Element("lookupError", ns);
+        for (Map.Entry<PaoSelectorType, List<String>> entry : paoData.getLookupFailures().entrySet()) {
+            PaoSelectorType selectorType = entry.getKey();
+            List<String> lookupFailures = entry.getValue();
+            if (!lookupFailures.isEmpty()) {
+                for (String lookupFailure : lookupFailures) {
+                    Element paoElement = new Element(selectorType.getElementName(), ns);
+                    paoElement.setAttribute("value", lookupFailure);
+                    lookupErrorElem.addContent(paoElement);
+                }
+            }
+        }
+        parent.addContent(lookupErrorElem);
     }
 
     private void addNeededData(List<PaoData> paosNeedingData,

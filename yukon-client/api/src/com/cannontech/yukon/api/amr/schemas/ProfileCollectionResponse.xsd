@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api"
+    targetNamespace="http://yukon.cannontech.com/api" elementFormDefault="qualified" version="1.0">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd"/>
+    <xsd:include schemaLocation="../../common/schemas/PaoTypes.xsd"/>
+
+    <xsd:complexType name="InvalidChannelError">
+        <xsd:sequence>
+            <xsd:element name="paoId" type="yukon:PaoId" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ProfileCollectionResponse">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:choice>
+                    <xsd:element name="failure" type="yukon:Failure" minOccurs="0"/>
+                    <xsd:sequence>
+                        <xsd:element name="futureScheduleUpdated" type="yukon:Success" minOccurs="0"/>
+                        <xsd:element name="token" type="yukon:Token" minOccurs="0">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    A token is returned if a load of past profile data was requested.
+                                    If the start date is more than 59 minutes in the past, the request
+                                    is considered to include a request for past data.
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:element>
+                        <xsd:element name="invalidChannel" type="yukon:InvalidChannelError" minOccurs="0"/>
+                    </xsd:sequence>
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="profileCollectionResponse" type="yukon:ProfileCollectionResponse"/>
+</xsd:schema>

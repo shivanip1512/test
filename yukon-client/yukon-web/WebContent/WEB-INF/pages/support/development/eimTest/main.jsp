@@ -104,7 +104,7 @@ jQuery(function() {
                     </optgroup>
                 </c:forEach>
             </select>
-            <textarea id="xmlRequest" name="xmlRequest"></textarea>
+            <textarea id="xmlRequest" name="xmlRequest" spellcheck="false"></textarea>
         </div>
 
         <tags:nameValueContainer2>

@@ -47,16 +47,17 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class LoadProfileServiceImpl implements LoadProfileService {
-    private BasicServerConnection porterConnection;
+    private final static Logger log = YukonLogManager.getLogger(LoadProfileServiceImpl.class);
+
     private PorterQueueDataService queueDataService;
     private DBPersistentDao dbPersistentDao;
     private DateFormattingService dateFormattingService;
     private SystemDateFormattingService systemDateFormattingService;
     private ActivityLoggerService activityLoggerService = null;
-    private Logger log = YukonLogManager.getLogger(LoadProfileServiceImpl.class);
-    private ScheduledExecutor executor;
     private PaoDefinitionDao paoDefinitionDao;
-    
+    private BasicServerConnection porterConnection;
+    private ScheduledExecutor executor;
+
     private Map<Long, Integer> outstandingCancelRequestIds = new HashMap<Long, Integer>();
     private Map<Long, Long> recentlyCanceledRequestIds = new HashMap<Long, Long>();
     private Set<Long> receivedCancelRequestIds = new HashSet<Long>();
@@ -67,7 +68,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     private Map<Long, String> lastReturnMsgs = new HashMap<Long, String>();
     
     private Set<Long> recentlyReceivedRequestIds = new HashSet<Long>();
-    private Map<Long, LoadProfileService.CompletionCallback> currentRequestIds = new HashMap<Long, LoadProfileService.CompletionCallback>();
+    private Map<Long, CompletionCallback> currentRequestIds = new HashMap<Long, CompletionCallback>();
     private MapQueue<Integer,ProfileRequestInfo> pendingDeviceRequests = new MapQueue<Integer,ProfileRequestInfo>();
     private Map<Integer,ProfileRequestInfo> currentDeviceRequests = new HashMap<Integer,ProfileRequestInfo>();
 
@@ -83,7 +84,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         });
     }
     
-    public synchronized void initiateLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, LoadProfileService.CompletionCallback runner, YukonUserContext userContext) {
+    public synchronized void initiateLoadProfile(LiteYukonPAObject device, int channel,
+            Date start, Date stop, CompletionCallback callback, YukonUserContext userContext) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
         Validate.isTrue(paoDefinitionDao.isTagSupported(device.getPaoType(), PaoTag.LOAD_PROFILE), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
@@ -144,7 +146,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         info.from = start;
         info.to = stop;
         info.request = req;
-        info.runner = runner;
+        info.callback = callback;
         info.requestId = requestId;
         info.channel = channel;
         info.userName = userContext.getYukonUser().getUsername();
@@ -156,7 +158,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         // pass off to handleOutgoingMessage
         handleOutgoingMessage(info);
         // if write fails, we don't want this to happen
-        currentRequestIds.put(requestId, runner);
+        currentRequestIds.put(requestId, callback);
     }
 
     private synchronized void handleOutgoingMessage(ProfileRequestInfo info) {
@@ -235,10 +237,10 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 currentDeviceRequests.remove(deviceId);
                 expectedReturnCount.remove(info.requestId);
                 receivedReturnsCount.remove(info.requestId);
-                if(info.runner != null){
+                if(info.callback != null){
                     executor.execute(new Runnable() {
                         public void run() {
-                            info.runner.onFailure(-1, "Load Profile command has not responded, request has been abandoned.");
+                            info.callback.onFailure(-1, "Load Profile command has not responded, request has been abandoned.");
                         }
                     });
                 }
@@ -301,7 +303,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 
                 int deviceId = returnMsg.getDeviceID();
                 
-                final LoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
+                final CompletionCallback runnable = currentRequestIds.remove(requestId);
                 final int returnStatus = returnMsg.getStatus();
                 final String resultString = returnMsg.getResultString();
                 
@@ -316,7 +318,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 lastReturnMsgs.put(requestId, resultString);
                 
                 log.debug("received last return for request id " + requestId + ", status was " + returnStatus + ", response was " + returnMsg.getResultString());
-                // get runner and execute it on the global thread pool
+                // get callback and execute it on the global thread pool
                 if (runnable != null) {
                     executor.execute(new Runnable() {
                         public void run() {
@@ -377,8 +379,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                 currentDeviceRequests.remove(deviceId);
                 expectedReturnCount.remove(requestId);
                 receivedReturnsCount.remove(requestId);
-                // get runner and execute it on the global thread pool
-                final LoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
+                // get callback and execute it on the global thread pool
+                final CompletionCallback runnable = currentRequestIds.remove(requestId);
                 if (runnable != null) {
                     executor.execute(new Runnable() {
                         public void run() {
@@ -406,8 +408,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
                     pendingDeviceRequests.removeValue(deviceId,pendingInfo);
                     expectedReturnCount.remove(requestId);
                     receivedReturnsCount.remove(requestId);
-                    // get runner and execute it on the global thread pool
-                    final LoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
+                    // get callback and execute it on the global thread pool
+                    final CompletionCallback runnable = currentRequestIds.remove(requestId);
                     if (runnable != null) {
                         executor.execute(new Runnable() {
                             public void run() {
@@ -538,8 +540,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             HashMap<String, String> data = new HashMap<String, String>();
             
             String email = "";
-            if (info.runner != null) {
-                email = info.runner.toString();
+            if (info.callback != null) {
+                email = info.callback.toString();
             }
             data.put("email", email);
             data.put("from",
@@ -571,34 +573,34 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
     }
-    
-    @Required
+
+    @Autowired
     public void setQueueDataService(PorterQueueDataService queueDataService) {
         this.queueDataService = queueDataService;
     }
 
-    @Required
+    @Autowired
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
         this.dbPersistentDao = dbPersistentDao;
     }
 
-    @Required
+    @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
     }
-    
-    @Required
+
+    @Autowired
     public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
         this.systemDateFormattingService = systemDateFormattingService;
     }
-    
-    @Required
+
+    @Autowired
     public void setActivityLoggerService(ActivityLoggerService activityLoggerService) {
         this.activityLoggerService = activityLoggerService;
     }
-    
+
     @Autowired
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-		this.paoDefinitionDao = paoDefinitionDao;
-	}
+        this.paoDefinitionDao = paoDefinitionDao;
+    }
 }

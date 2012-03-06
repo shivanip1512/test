@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api"
+    elementFormDefault="qualified" version="1.0" targetNamespace="http://yukon.cannontech.com/api">
+
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd"/>
+    <xsd:include schemaLocation="../../common/schemas/PaoTypes.xsd"/>
+
+    <xsd:simpleType name="Channel">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="LOAD_PROFILE"/>
+            <xsd:enumeration value="PROFILE_CHANNEL_2"/>
+            <xsd:enumeration value="PROFILE_CHANNEL_3"/>
+            <xsd:enumeration value="VOLTAGE_PROFILE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="StartCollection">
+        <xsd:sequence>
+            <xsd:element name="paos" type="yukon:PaoCollection"/>
+        </xsd:sequence>
+        <xsd:attribute name="channel" type="yukon:Channel" default="LOAD_PROFILE"/>
+        <xsd:attribute name="start" type="xsd:dateTime">
+            <xsd:annotation>
+                <xsd:documentation>
+                    If omitted, will default to starting now.  If this date is more than 59
+                    minutes in the past, the device will be queried for past data and a token will
+                    be returned in the response which can be used to check on the status of this
+                    request.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="stop" type="xsd:dateTime">
+            <xsd:annotation>
+                <xsd:documentation>
+                    If omitted, will default never stop.  If this is more than 59 minutes in the
+                    future, future collection will be scheduled.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="StopCollection">
+        <xsd:sequence>
+            <xsd:element name="paos" type="yukon:PaoCollection"/>
+        </xsd:sequence>
+        <xsd:attribute name="channel" type="xsd:string" default="Load Profile"/>
+        <xsd:attribute name="stop" type="xsd:dateTime"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ProfileCollectionRequest">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:choice>
+                    <xsd:element name="startCollection" type="yukon:StartCollection"/>
+                    <xsd:element name="stopCollection" type="yukon:StopCollection"/>
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="profileCollectionRequest" type="yukon:ProfileCollectionRequest"/>
+</xsd:schema>

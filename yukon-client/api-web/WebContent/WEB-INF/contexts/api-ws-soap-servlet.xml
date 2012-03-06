@@ -62,6 +62,21 @@
         <property name="portTypeName" value="starsPort" />
     </bean>
 
+    <bean id="common" class="com.cannontech.yukon.api.support.YukonWsdlDefinition" parent="wsdlBase">
+        <property name="schemaCollection">
+            <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">
+                <property name="xsds">
+                    <list>
+                        <value>classpath:com/cannontech/yukon/api/common/schemas/AllCommon.xsd</value>
+                    </list>
+                </property>
+                <property name="inline" value="true"/>
+            </bean>
+        </property>
+        <property name="serviceName" value="commonService"/>
+        <property name="portTypeName" value="commonPort"/>
+    </bean>
+
     <bean id="account" class="com.cannontech.yukon.api.support.YukonWsdlDefinition" parent="wsdlBase">
         <property name="schemaCollection">
             <bean class="org.springframework.xml.xsd.commons.CommonsXsdSchemaCollection">

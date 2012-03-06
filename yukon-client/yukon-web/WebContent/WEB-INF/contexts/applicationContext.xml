@@ -539,19 +539,6 @@
                 <constructor-arg value="METERING"/>
             </bean>
 	   	</property>
-        <property name="loadProfileService" ref="loadProfileService" />
-        <property name="emailService" ref="emailService"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="deviceDao" ref="deviceDao"/>
-        <property name="meterDao" ref="meterDao"/>
-        <property name="dateFormattingService" ref="dateFormattingService"/>
-        <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator"/>
-        <property name="attributeService" ref="attributeService"/>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
-        <property name="contactDao" ref="contactDao"/>
-        <property name="simpleReportService" ref="simpleReportService"/>
-        <property name="toggleProfilingService" ref="toggleProfilingService"/>
-        
     </bean>
     
     <bean id="pendingProfilesWidget"

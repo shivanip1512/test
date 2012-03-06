@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<profileCollectionResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ProfileCollectionResponse.xsd" 
+           version="1.0">
+    <token value="125577564304-0"/>
+</profileCollectionResponse>

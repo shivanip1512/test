@@ -1,8 +1,5 @@
 package com.cannontech.yukon.api.util;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
@@ -16,38 +13,40 @@ import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
 
 public class XMLFailureGenerator {
-
     private static Logger log = YukonLogManager.getLogger(XMLFailureGenerator.class);
-    private static Set<Class<? extends Throwable>> exceptionToIgnore = new HashSet<Class<? extends Throwable>>();
-    {
-        // add any ignorable Exceptions to exceptionToIgnore here
-        // ignorable Exceptions will be logged as DEBUG instead of ERROR
-    }
-    
+    private final static Namespace ns = YukonXml.getYukonNamespace();
+
     public static Element generateFailure(Element request, Throwable t, String errorCode, String errorDescription) {
-        return generateFailure(request, t, errorCode, errorDescription, YukonXml.getYukonNamespace());
+        return generateFailure(request, t, errorCode, errorDescription, ns);
     }
 
     public static Element generateFailure(Element request, String errorCode, String errorDescription) {
-        return generateFailure(request, null, errorCode, errorDescription, YukonXml.getYukonNamespace());
+        return generateFailure(request, null, errorCode, errorDescription, ns);
     }
 
-    public static Element generateFailure(Element request, Throwable t, String errorCode, String errorDescription, Namespace ns) {
-        
+    public static Element generateFailure(Element request, Throwable t, String errorCode,
+                                          String errorDescription, Namespace nsIn) {
         // log error
         Throwable rc = CtiUtilities.getRootCause(t);
         String key = "FK" + RandomStringUtils.randomNumeric(10);
         handleException(request, t, rc, key);
-        
+
         // generate failure element
-        Element failureElement = new Element("failure", ns);
-        failureElement.addContent(XmlUtils.createStringElement("errorCode", ns, errorCode));
-        failureElement.addContent(XmlUtils.createStringElement("errorReference", ns, key));
-        failureElement.addContent(XmlUtils.createStringElement("errorDescription", ns, errorDescription));
+        Element failureElement = new Element("failure", nsIn);
+        failureElement.addContent(XmlUtils.createStringElement("errorCode", nsIn, errorCode));
+        failureElement.addContent(XmlUtils.createStringElement("errorReference", nsIn, key));
+        failureElement.addContent(XmlUtils.createStringElement("errorDescription", nsIn, errorDescription));
         
         return failureElement;
     }
-    
+
+    public static Element makeSimple(String errorCode, String errorDescription) {
+        Element failureElem = new Element("failure", ns);
+        failureElem.addContent(XmlUtils.createStringElement("errorCode", ns, errorCode));
+        failureElem.addContent(XmlUtils.createStringElement("errorDescription", ns, errorDescription));
+        return failureElem;
+    }
+
     private static void handleException(Element request, Throwable t, Throwable rc, String key) {
         
         Level level = Level.ERROR;
@@ -65,9 +64,6 @@ public class XMLFailureGenerator {
     private static boolean ignoreException(Throwable t) {
         Throwable exception = t;
         while (exception != null) {
-            if (exceptionToIgnore.contains(exception.getClass())) {
-                return true;
-            }
             exception = ExceptionUtils.getCause(exception);
         }
         return false;

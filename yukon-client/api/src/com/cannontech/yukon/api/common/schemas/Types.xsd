@@ -38,14 +38,6 @@
         <xsd:attribute name="value" use="required" type="xsd:string"/>
     </xsd:complexType>
 
-    <xsd:complexType name="ReturnToken">
-        <xsd:annotation>
-            <xsd:documentation>Used in requests to indicate that the requester wants the web
-            service to return a token instead of blocking.</xsd:documentation>
-        </xsd:annotation>
-        <xsd:attribute name="tokenExpires" type="xsd:dateTime"/>
-    </xsd:complexType>
-
     <xsd:simpleType name="ThermostatMode">
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="Auto"/>

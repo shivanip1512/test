@@ -21,13 +21,8 @@
   </bean>
  
   <bean id="loadProfileService" class="com.cannontech.core.service.impl.LoadProfileServiceImpl" init-method="initialize">
-    <property name="queueDataService" ref="porterQueueDataService"/>
     <property name="executor" ref="globalScheduledExecutor"/>
     <property name="porterConnection" ref="porterConnection"/>
-    <property name="dbPersistentDao" ref="dbPersistentDao"/>
-    <property name="dateFormattingService" ref="dateFormattingService"/>
-    <property name="systemDateFormattingService" ref="systemDateFormattingService"/>
-    <property name="activityLoggerService" ref="activityLoggerService"/>
   </bean>
 
   <bean id="generalAlarmPointMonitorProcessor" class="com.cannontech.amr.monitors.impl.GeneralAlarmPointMonitorProcessorFactory"/>

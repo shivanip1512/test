@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tokenStatusRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../TokenStatusRequest.xsd" 
+           version="1.0">
+    <token value="PC:1330976791-0"/>
+</tokenStatusRequest>

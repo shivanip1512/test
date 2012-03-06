@@ -14,24 +14,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.Days;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.amr.device.ProfileAttributeChannel;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -57,7 +54,6 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -67,8 +63,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -76,25 +70,22 @@ import com.google.common.collect.Maps;
  * Widget used to display point data in a trend
  */
 public class ProfileWidget extends WidgetControllerBase {
-
-    private LoadProfileService loadProfileService = null;
-    private EmailService emailService = null;
-    private PaoDao paoDao = null;
-    private DeviceDao deviceDao = null;
-    private MeterDao meterDao = null;
-    private DurationFormattingService durationFormattingService;
-    private DateFormattingService dateFormattingService = null;
-    private DeviceErrorTranslatorDao deviceErrorTranslatorDao = null;
-    private AttributeService attributeService = null;
-    private YukonUserDao yukonUserDao = null;
-    private ContactDao contactDao = null;
-    private SimpleReportService simpleReportService = null;
-    private ToggleProfilingService toggleProfilingService = null;
-    private TemplateProcessorFactory templateProcessorFactory = null;
-    private RolePropertyDao rolePropertyDao;
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
-
-    private final static Logger log = YukonLogManager.getLogger(ProfileWidget.class);
+    @Autowired private LoadProfileService loadProfileService;
+    @Autowired private EmailService emailService;
+    @Autowired private PaoDao paoDao;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private DurationFormattingService durationFormattingService;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Autowired private AttributeService attributeService;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private SimpleReportService simpleReportService;
+    @Autowired private ToggleProfilingService toggleProfilingService;
+    @Autowired private TemplateProcessorFactory templateProcessorFactory;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     /*
      * Long load profile email message format NOTE: Outlook will sometimes strip
@@ -102,79 +93,6 @@ public class ProfileWidget extends WidgetControllerBase {
      * in front of the line breaks seems to prevent this. Not sure about other
      * email clients.
      */
-
-    private enum ProfileAttributeChannelEnum {
-
-        LOAD_PROFILE(BuiltInAttribute.LOAD_PROFILE, 1) {
-            public int getRate(DeviceLoadProfile deviceLoadProfile) {
-                return deviceLoadProfile.getLoadProfileDemandRate();
-            }
-        },
-        PROFILE_CHANNEL_2(BuiltInAttribute.PROFILE_CHANNEL_2, 2) {
-            public int getRate(DeviceLoadProfile deviceLoadProfile) {
-                return deviceLoadProfile.getLoadProfileDemandRate();
-            }
-        },
-        PROFILE_CHANNEL_3(BuiltInAttribute.PROFILE_CHANNEL_3, 3) {
-            public int getRate(DeviceLoadProfile deviceLoadProfile) {
-                return deviceLoadProfile.getLoadProfileDemandRate();
-            }
-        },
-        VOLTAGE_PROFILE(BuiltInAttribute.VOLTAGE_PROFILE, 4) {
-            public int getRate(DeviceLoadProfile deviceLoadProfile) {
-                return deviceLoadProfile.getVoltageDmdRate();
-            }
-        };
-
-        private BuiltInAttribute attribute;
-        private Integer channel;
-
-        private final static ImmutableMap<Integer, ProfileAttributeChannelEnum> lookupByChannel;
-
-        static {
-            try {
-                Builder<Integer, ProfileAttributeChannelEnum> channelBuilder =
-                    ImmutableMap.builder();
-                for (ProfileAttributeChannelEnum profileAttributeChannel : values()) {
-                    channelBuilder.put(profileAttributeChannel.channel, profileAttributeChannel);
-                }
-                lookupByChannel = channelBuilder.build();
-            } catch (IllegalArgumentException e) {
-                log.warn("Caught exception while building lookup maps, look for a duplicate channel.", e);
-                throw e;
-            }
-        }
-
-        private ProfileAttributeChannelEnum(BuiltInAttribute attribute, Integer channel) {
-            this.attribute = attribute;
-            this.channel = channel;
-        }
-
-        public BuiltInAttribute getAttribute() {
-            return attribute;
-        }
-
-        public Integer getChannel() {
-            return channel;
-        }
-
-        public int getRate(DeviceLoadProfile deviceLoadProfile) {
-            return this.getRate(deviceLoadProfile);
-        }
-
-        /**
-         * Looks up the ProfileAttributeChannelEnum based on its channel.
-         * @param channel
-         * @return
-         * @throws IllegalArgumentException - if no match for channel
-         */
-        public static ProfileAttributeChannelEnum getForChannel(Integer channel)
-                throws IllegalArgumentException {
-            ProfileAttributeChannelEnum profileAttributeChannel = lookupByChannel.get(channel);
-            Validate.notNull(profileAttributeChannel, Integer.toString(channel));
-            return profileAttributeChannel;
-        }
-    }
 
     private String calcIntervalStr(int secs, YukonUserContext userContext) {
         Duration duration = Duration.standardSeconds(secs);
@@ -191,14 +109,14 @@ public class ProfileWidget extends WidgetControllerBase {
 
         Set<Attribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
         List<Map<String, Object>> availableChannels = new ArrayList<Map<String, Object>>();
-        for (ProfileAttributeChannelEnum attrChanEnum : ProfileAttributeChannelEnum.values()) {
+        for (ProfileAttributeChannel attrChanEnum : ProfileAttributeChannel.values()) {
 
             if (supportedProfileAttributes.contains(attrChanEnum.getAttribute())) {
 
                 Map<String, Object> channelInfo = new HashMap<String, Object>();
                 channelInfo.put("channelProfilingOn", toggleProfilingService.getToggleValueForDevice(deviceId, attrChanEnum.getChannel()));
                 channelInfo.put("jobInfos", toggleProfilingService.getToggleJobInfos(deviceId, attrChanEnum.getChannel()));
-                channelInfo.put("channelNumber", attrChanEnum.getChannel().toString());
+                channelInfo.put("channelNumber", Integer.toString(attrChanEnum.getChannel()));
                 channelInfo.put("channelDescription", attrChanEnum.getAttribute().getDescription());
                 channelInfo.put("channelProfileRate", calcIntervalStr(attrChanEnum.getRate(deviceLoadProfile), userContext));
 
@@ -347,7 +265,7 @@ public class ProfileWidget extends WidgetControllerBase {
             Attribute attribute = null;
             String channelName = "";
 
-            ProfileAttributeChannelEnum profileAttributeChannel = ProfileAttributeChannelEnum.getForChannel(channel);
+            ProfileAttributeChannel profileAttributeChannel = ProfileAttributeChannel.getForChannel(channel);
             attribute = profileAttributeChannel.getAttribute();
             channelName = profileAttributeChannel.getAttribute().getDescription();
 
@@ -484,8 +402,8 @@ public class ProfileWidget extends WidgetControllerBase {
             // start now
             if (startRadio.equalsIgnoreCase("now")) {
                 // already scheduled to start? cancel it
-                toggleProfilingService.disableScheduledJob(deviceId, channelNum, true);
-                toggleProfilingService.toggleProfilingForDevice(deviceId, channelNum, true);
+                toggleProfilingService.disableScheduledStart(deviceId, channelNum);
+                toggleProfilingService.startProfilingForDevice(deviceId, channelNum);
             }
             // start later
             else if (startRadio.equalsIgnoreCase("future") && toggleErrorMsg == null) {
@@ -496,23 +414,23 @@ public class ProfileWidget extends WidgetControllerBase {
                 }
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
-                    toggleProfilingService.disableScheduledJob(deviceId, channelNum, true);
-                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, true,
-                                                                            scheduledStartDate, userContext);
+                    toggleProfilingService.disableScheduledStart(deviceId, channelNum);
+                    toggleProfilingService.scheduleStartProfilingForDevice(deviceId, channelNum,
+                                                                           scheduledStartDate, userContext);
                 }
             }
             // stop now?
             // - kill any scheduled stops
             if (stopRadio.equalsIgnoreCase("now")) {
-                toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
+                toggleProfilingService.disableScheduledStop(deviceId, channelNum);
             }
             // stop later?
             // - don't bother if there was an error scheduling the start date
             else if (stopRadio.equalsIgnoreCase("future") && toggleErrorMsg == null) {
                 // schedule it!, already scheduled? cancel it
-                toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
-                toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false,
-                                                                        scheduledStopDate, userContext);
+                toggleProfilingService.disableScheduledStop(deviceId, channelNum);
+                toggleProfilingService.scheduleStopProfilingForDevice(deviceId, channelNum,
+                                                                      scheduledStopDate, userContext);
             }
         }
         // STOP
@@ -523,8 +441,8 @@ public class ProfileWidget extends WidgetControllerBase {
             // stop now
             if (stopRadio.equalsIgnoreCase("now")) {
                 // already scheduled to start? cancel it
-                toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
-                toggleProfilingService.toggleProfilingForDevice(deviceId, channelNum, false);
+                toggleProfilingService.disableScheduledStop(deviceId, channelNum);
+                toggleProfilingService.stopProfilingForDevice(deviceId, channelNum);
             }
             // stop later
             else if (stopRadio.equalsIgnoreCase("future")) {
@@ -547,9 +465,9 @@ public class ProfileWidget extends WidgetControllerBase {
                 }
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
-                    toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
-                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false,
-                                                                            scheduledStopDate, userContext);
+                    toggleProfilingService.disableScheduledStop(deviceId, channelNum);
+                    toggleProfilingService.scheduleStopProfilingForDevice(deviceId, channelNum,
+                                                                          scheduledStopDate, userContext);
                 }
             }
         }
@@ -681,93 +599,4 @@ public class ProfileWidget extends WidgetControllerBase {
 
         return email;
     }
-
-    @Required
-    public void setEmailService(EmailService emailService) {
-        this.emailService = emailService;
-    }
-
-    @Required
-    public void setLoadProfileService(LoadProfileService loadProfileService) {
-        this.loadProfileService = loadProfileService;
-    }
-
-    @Required
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    @Required
-    public DeviceDao getDeviceDao() {
-        return deviceDao;
-    }
-
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-
-    @Required
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-
-    @Required
-    public void setDateFormattingService(
-                                         DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-
-    @Required
-    public void setDeviceErrorTranslatorDao(
-                                            DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
-        this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
-    }
-
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-    @Required
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-
-    @Required
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-
-    @Required
-    public void setSimpleReportService(SimpleReportService simpleReportService) {
-        this.simpleReportService = simpleReportService;
-    }
-
-    @Required
-    public void setToggleProfilingService(
-                                          ToggleProfilingService toggleProfilingService) {
-        this.toggleProfilingService = toggleProfilingService;
-    }
-
-    @Autowired
-    public void setTemplateProcessorFactory(TemplateProcessorFactory templateProcessorFactory) {
-        this.templateProcessorFactory = templateProcessorFactory;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-
-    @Autowired
-    public void setDurationFormattingService(DurationFormattingService durationFormattingService) {
-        this.durationFormattingService = durationFormattingService;
-    }
-
 }

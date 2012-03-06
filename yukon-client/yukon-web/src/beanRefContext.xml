@@ -9,7 +9,6 @@
      <constructor-arg>
        <list>
             <value>com/cannontech/web/serverContext.xml</value>
-            <value>com/cannontech/amr/amrContext.xml</value>
             <value>com/cannontech/cc/applicationContext.xml</value>
             <value>com/cannontech/common/alert/alertContext.xml</value>
 			<value>com/cannontech/common/chart/chartContext.xml</value>
@@ -17,7 +16,6 @@
 			<value>com/cannontech/multispeak/client/applicationContext.xml</value>
 			<value>com/cannontech/billing/billingContext.xml</value>
 			<value>com/cannontech/cbc/cbcContext.xml</value>
-            <value>com/cannontech/jobs/jobContext.xml</value>
             <value>com/cannontech/report/reportContext.xml</value>
             <value>com/cannontech/common/opc/applicationContext.xml</value>
        </list>
