@@ -189,3 +189,4 @@ ALTER TABLE CcMonitorBankList RENAME COLUMN BankId to DeviceId;
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.4', 'Garrett D', '05-MAR-2012', 'Latest Update', 2 );
