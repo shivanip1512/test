@@ -285,11 +285,17 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.deviceName">Device Name</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.pointName">Point Name</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.phase">Phase</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.lowerLimitSmall">Lower</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.lowerLimit">Lower Limit</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.lowerLimitTitle">Lower Voltage Limit</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.currentVoltageSmall">Current</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.currentVoltage">Current Voltage</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.currentVoltageTitle">Current Voltage</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.upperLimitSmall">Upper</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.upperLimit">Upper Limit</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.upperLimitTitle">Upper Voltage Limit</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.table.header.overrideStrategy">Override Strategy</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.capBanks.noCbc">No Cbc</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.capBanks.noCbc">No CBC</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.updateSuccess">Update Successful</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.updateFailure">Update Failure</entry>
     

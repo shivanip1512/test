@@ -12,9 +12,10 @@
 	<script>
 		jQuery(document).ready(function() {
 			jQuery(".viewDelta").click(function(e) {
-				jQuery(e.currentTarget).hide();
-				jQuery(e.currentTarget).next().show();
-				jQuery(e.currentTarget).next().find("input").focus();
+				var currentTarget = jQuery(e.currentTarget); 
+				currentTarget.hide();
+				currentTarget.next().show();
+				currentTarget.next().find("input").focus();
 				jQuery("#deltaFormButtons").slideDown();
 			});
 
@@ -38,6 +39,15 @@
 			});
 
 			jQuery("a.cancelEdit").click(cancelEdit);
+
+			jQuery("#deltaReset").click(function(e) {
+				jQuery(".editDelta").hide();
+				jQuery(".viewDelta").show();
+				
+				jQuery("input[type='checkbox']").removeClass("staticChanged");
+				jQuery("label").removeClass("staticChangedLabel");
+			});
+
 			jQuery("#deltaSubmitBtn").click(function() {
 				if (jQuery(".editDelta:visible").length == 0 &&
 						jQuery("input.staticChanged").length == 0) {
@@ -48,16 +58,17 @@
 				var inputs = [];
 				var index = 0;
 				jQuery("form#deltaForm tr").each(function() {
-					var staticChanged = jQuery(this).find("input.staticChanged");
-					var editDeltaInput = jQuery(this).find(".editDelta:visible input");
+					var tr = jQuery(this);
+					var staticChanged = tr.find("input.staticChanged");
+					var editDeltaInput = tr.find(".editDelta:visible input");
 	
 					if (staticChanged.length > 0 || editDeltaInput.length > 0) {
 	
 	            		params = {};
-						params.newDelta = editDeltaInput.length > 0 ? editDeltaInput.val() : jQuery(this).find(".viewDelta input[type='hidden']").val();
+						params.newDelta = editDeltaInput.length > 0 ? editDeltaInput.val() : tr.find(".viewDelta input[type='hidden']").val();
 	            		params.newStaticValue = staticChanged.is(":checked");
-	        			params.bankId = jQuery(this).find("td.bankAndPointIds").find(".pointDeltaBankId").val();
-	        			params.pointId = jQuery(this).find("td.bankAndPointIds").find(".pointDeltaPointId").val();
+	        			params.bankId = tr.find("td.bankAndPointIds").find(".pointDeltaBankId").val();
+	        			params.pointId = tr.find("td.bankAndPointIds").find(".pointDeltaPointId").val();
 	
 						inputs.push('<input type="hidden" name="pointDeltas['+index+'].delta" value="'+ params.newDelta +'"/>');
 						inputs.push('<input type="hidden" name="pointDeltas['+index+'].staticDelta" value="'+ params.newStaticValue +'"/>');
@@ -176,11 +187,8 @@
 				</c:forEach>
 			</table>
 			<div id="deltaFormButtons" class="actionArea dn">
-				<cti:button id="deltaSubmitBtn" nameKey="submit" type="submit"/>
-				<cti:url var="zoneVoltageDeltasUrl" value="/spring/capcontrol/ivvc/zone/voltageDeltas">
-			    	<cti:param name="zoneId" value="${zoneId}"/>
-			    </cti:url>
-			    <cti:button nameKey="reset" href="${zoneVoltageDeltasUrl}"/>
+				<cti:button id="deltaSubmitBtn" nameKey="update" type="submit"/>
+			    <cti:button nameKey="cancel" type="reset" id="deltaReset"/>
 			</div>
 		</form:form>
 	</tags:pagedBox2>

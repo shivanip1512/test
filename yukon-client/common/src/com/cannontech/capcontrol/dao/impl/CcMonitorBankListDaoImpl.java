@@ -54,7 +54,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             boolean overrideStrategy = rs.getEnum("OverrideStrategy", YNBoolean.class).getBoolean();
             
             VoltageLimitedDeviceInfo deviceInfo = new VoltageLimitedDeviceInfo();
-            deviceInfo.setPaoIdentifier(paoIdentifier);
+            deviceInfo.setParentPaoIdentifier(paoIdentifier);
             deviceInfo.setPaoName(paoName);
             deviceInfo.setPointId(pointId);
             deviceInfo.setPointName(pointName);
@@ -102,7 +102,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         sql.append(", LowerBandwidth").eq(deviceInfo.getLowerLimit());
         sql.append(", UpperBandwidth").eq(deviceInfo.getUpperLimit());
         sql.append(", OverrideStrategy").eq(YNBoolean.valueOf(deviceInfo.isOverrideStrategy()));
-        sql.append("WHERE DeviceId").eq(deviceInfo.getPaoIdentifier().getPaoId());
+        sql.append("WHERE DeviceId").eq(deviceInfo.getParentPaoIdentifier().getPaoId());
         sql.append("AND PointId").eq(deviceInfo.getPointId());
         yukonJdbcTemplate.update(sql);
     }
@@ -118,7 +118,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     public int addDeviceInfo(VoltageLimitedDeviceInfo info) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto("CcMonitorBankList");
-        sink.addValue("DeviceId", info.getPaoIdentifier().getPaoId());
+        sink.addValue("DeviceId", info.getParentPaoIdentifier().getPaoId());
         sink.addValue("PointId", info.getPointId());
         sink.addValue("DisplayOrder", 1);
         sink.addValue("Scannable", YNBoolean.YES);
@@ -232,7 +232,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     
     private VoltageLimitedDeviceInfo buildNewInfoObject(PaoIdentifier paoId, int pointId, LimitsHolder limits, Phase phase) {
         VoltageLimitedDeviceInfo info = new VoltageLimitedDeviceInfo();
-        info.setPaoIdentifier(paoId);
+        info.setParentPaoIdentifier(paoId);
         info.setPointId(pointId);
         info.setUpperLimit(limits.upperLimit);
         info.setLowerLimit(limits.lowerLimit);

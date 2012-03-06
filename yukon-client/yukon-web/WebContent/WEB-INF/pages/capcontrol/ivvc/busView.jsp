@@ -71,7 +71,7 @@
         </script>
     </cti:checkProperty>
 
-	<cti:dataGrid cols="2" tableClasses="ivvcGridLayout">
+	<cti:dataGrid cols="2" tableClasses="ivvcGridLayout twoColumnLayout">
 	
 		<cti:dataGridCell>
 			<tags:boxContainer2 nameKey="strategyDetails" arguments="${strategyName}" argumentSeparator=":" hideEnabled="true" showInitially="true">
@@ -308,7 +308,6 @@
 							</a>
 							</h3>
 							(<a href="${zoneVoltagePointsUrl}"><i:inline key=".voltagePoints.editPoints"/></a>)
-							<br><br>
 							<%@ include file="voltagePoints.jspf" %>
 							<br>
 						</c:forEach>

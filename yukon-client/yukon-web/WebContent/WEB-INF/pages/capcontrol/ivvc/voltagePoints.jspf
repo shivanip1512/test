@@ -7,14 +7,19 @@
 
 <cti:msgScope paths="modules.capcontrol.ivvc.voltagePoints">
 	<tags:alternateRowReset />
-	<table class="compactResultsTable">
+	<table class="compactResultsTable zoneVoltagePoints">
 		<tr>
-			<th><i:inline key=".table.header.deviceName"/></th>
-			<th><i:inline key=".table.header.pointName"/></th>
+			<th></th>
 			<th><i:inline key=".table.header.phase"/></th>
-			<th><i:inline key=".table.header.lowerLimit"/></th>
-			<th><i:inline key=".table.header.currentVoltage"/></th>
-			<th><i:inline key=".table.header.upperLimit"/></th>
+			<th title="<cti:msg2 key=".table.header.lowerLimitTitle"/>">
+				<i:inline key=".table.header.lowerLimitSmall"/>
+			</th>
+			<th title="<cti:msg2 key=".table.header.currentVoltageTitle"/>">
+				<i:inline key=".table.header.currentVoltageSmall"/>
+			</th>
+			<th title="<cti:msg2 key=".table.header.upperLimitTitle"/>">
+				<i:inline key=".table.header.upperLimitSmall"/>
+			</th>
 		</tr>
 		<c:forEach var="voltagePoint" items="${zoneVoltagePointsHolder.points}" varStatus="status">
 			<c:set var="overrideStrategyClass" value="fwb"/>
@@ -23,15 +28,16 @@
 			</c:if>
 			<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 				<td>
-					<a href="/editor/cbcBase.jsf?type=2&amp;itemid=${voltagePoint.paoIdentifier.paoId}">
-						<spring:escapeBody htmlEscape="true">
-							${voltagePoint.paoName}
-						</spring:escapeBody>
+					<span class="gutter"><strong>Device: </strong></span>
+					<a href="/editor/cbcBase.jsf?type=2&amp;itemid=${voltagePoint.parentPaoIdentifier.paoId}">
+						<spring:escapeBody htmlEscape="true">${voltagePoint.paoName}</spring:escapeBody>
 					</a>
+					<br>
+					<span class="gutter"><strong>Point: </strong></span>
+					<spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody>
 				</td>
-				<td><spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody></td>
 				<td><i:inline key="yukon.common.phase.phase${voltagePoint.phase}"/></td>
-				<td class="${overrideStrategyClass}">
+				<td title="<cti:msg2 key=".table.header.lowerLimitTitle"/>" class="${overrideStrategyClass}">
 					${voltagePoint.lowerLimit}
 				</td>
 				<td><c:choose>
@@ -43,7 +49,7 @@
 						</c:otherwise>
 					</c:choose>
 				</td>
-				<td class="${overrideStrategyClass}">
+				<td title="<cti:msg2 key=".table.header.upperLimitTitle"/>" class="${overrideStrategyClass}">
 					${voltagePoint.upperLimit}
 				</td>
 			</tr>

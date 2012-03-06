@@ -112,6 +112,9 @@ table.ivvcGridLayout td.middle,
 table.ivvcGridLayout td.last {
     width: 50%;
 }
+table.ivvcGridLayout td.last {
+	padding-left: 15px;
+}
 
 table.ivvcGridLayout tr {
     vertical-align: top;
@@ -157,4 +160,10 @@ form#deltaForm tr {
 form#deltaForm label.staticChangedLabel {
 	background-color: orange;
 	padding-top: 4px;
+}
+
+table.zoneVoltagePoints .gutter {
+	display: inline-block;
+	width: 60px;
+	text-align: right;
 }

@@ -159,7 +159,7 @@ public class ZoneDetailController {
             int subBusId = zone.getSubstationBusId();
             CapControlStrategy strategy = strategyDao.getForId(cache.getSubBus(subBusId).getStrategyId());
 
-            // Loop over your zoneVoltagePoints and set the limits to the strategies if Override is true
+            // Loop over your zoneVoltagePoints and set the limits to the strategies if Override is false
             for (VoltageLimitedDeviceInfo voltagePoint : zoneVoltagePointsHolder.getPoints()) {
                 if (voltagePoint.isOverrideStrategy()) continue;
 

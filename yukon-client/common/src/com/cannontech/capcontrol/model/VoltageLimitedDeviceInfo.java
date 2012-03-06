@@ -4,7 +4,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.enums.Phase;
 
 public class VoltageLimitedDeviceInfo {
-    private PaoIdentifier paoIdentifier;
+    private PaoIdentifier parentPaoIdentifier;
     private String paoName;
     private int pointId;
     private String pointName;
@@ -13,12 +13,12 @@ public class VoltageLimitedDeviceInfo {
     private double upperLimit;
     private boolean overrideStrategy;
 
-    public PaoIdentifier getPaoIdentifier() {
-        return paoIdentifier;
+    public PaoIdentifier getParentPaoIdentifier() {
+        return parentPaoIdentifier;
     }
 
-    public void setPaoIdentifier(PaoIdentifier paoIdentifier) {
-        this.paoIdentifier = paoIdentifier;
+    public void setParentPaoIdentifier(PaoIdentifier parentPaoIdentifier) {
+        this.parentPaoIdentifier = parentPaoIdentifier;
     }
 
     public String getPaoName() {

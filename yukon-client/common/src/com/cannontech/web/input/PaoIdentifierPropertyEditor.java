@@ -24,7 +24,8 @@ public class PaoIdentifierPropertyEditor extends PropertyEditorSupport {
     @Override
     public String getAsText() {
         PaoIdentifier paoIdentifier = (PaoIdentifier) getValue();
-        return paoIdentifier == null ? "" : paoIdentifier.toString();
+        String returnVal = paoIdentifier.getPaoType().name() + ":" + paoIdentifier.getPaoId();
+        return paoIdentifier == null ? "" : returnVal;
     }
 
 }

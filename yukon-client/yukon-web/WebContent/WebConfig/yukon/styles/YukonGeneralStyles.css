@@ -660,7 +660,7 @@ div.boxContainer .boxContainer_titleBar .controls .minMax {
 }
 
 div.boxContainer .boxContainer_content, div.pagedBox .content { 
-	padding: .5em;
+	padding: 8px;
 	border-left: 1px solid #BBBBBB;
 	border-right: 1px solid #BBBBBB;
 	border-bottom: 1px solid #BBBBBB;

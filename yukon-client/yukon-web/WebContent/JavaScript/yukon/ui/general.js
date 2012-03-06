@@ -439,6 +439,12 @@ jQuery.fn.selectText = function() {
     }
 };
 
+jQuery.fn.toggleDisabled = function(){
+    return this.each(function(){
+        this.disabled = !this.disabled;
+    });
+};
+
 // initialize the lib
 jQuery(document).ready(function(){
     Yukon.ui.init();
