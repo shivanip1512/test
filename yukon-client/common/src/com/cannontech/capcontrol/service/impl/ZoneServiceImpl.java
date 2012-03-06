@@ -72,9 +72,10 @@ public class ZoneServiceImpl implements ZoneService {
         zoneDao.updateCapBankToZoneMapping(abstractZone.getZoneId(), banksToZone);
         zoneDao.updatePointToZoneMapping(abstractZone.getZoneId(), pointsToZone);
         for(RegulatorToZoneMapping regToZone : zone.getRegulators()) {
-            int regId = regToZone.getRegulatorId();
+            Integer regId = regToZone.getRegulatorId();
             if(oldRegulatorIds.contains(regId)) {
                 ccMonitorBankListDao.updateRegulatorPoint(regId);
+                oldRegulatorIds.remove(regId);
             } else {
                 ccMonitorBankListDao.addRegulatorPoint(regId);
             }

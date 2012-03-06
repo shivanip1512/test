@@ -153,6 +153,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         ZonePointPhaseHolder zonePointPhase = getZonePointPhaseByRegulatorId(regulatorId);
         LimitsHolder limits = getLimitsFromStrategy(zonePointPhase.zoneId);
         
+        //paoType here may not be technically correct, but it will never actually be used. Only the id is necessary.
         PaoIdentifier paoId = new PaoIdentifier(regulatorId, PaoType.PHASE_OPERATED);
         VoltageLimitedDeviceInfo info = buildNewInfoObject(paoId, zonePointPhase.pointId, limits, zonePointPhase.phase);
         return addDeviceInfo(info);
