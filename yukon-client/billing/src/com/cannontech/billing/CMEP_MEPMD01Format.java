@@ -26,12 +26,12 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.core.dao.RPHServiceTagDao;
+import com.cannontech.core.dao.PersistedSystemValueDao;
+import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.core.dynamic.RphServiceTag;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.base.Function;
 import com.google.common.collect.ListMultimap;
@@ -45,23 +45,20 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
     private MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
     private PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
     private RawPointHistoryDao rawPointHistoryDao = YukonSpringHook.getBean("rphDao", RawPointHistoryDao.class);
-    private RPHServiceTagDao rphServiceTagDao = YukonSpringHook.getBean("rphServiceTagDao", RPHServiceTagDao.class);
+    private PersistedSystemValueDao persistedSystemValueDao = YukonSpringHook.getBean("persistedSystemValueDaoImpl", PersistedSystemValueDao.class);
 
-    private String RPH_SERVICE = "CMEP";
-    
     @Override
 	public boolean retrieveBillingData() {	
         long timer = System.currentTimeMillis();
         Instant processingDate = new Instant();
 
         // Get the information from the CPARMS and the billing module
-        RphServiceTag cmepServiceTag = null;
-        Integer startChangeId = null;
-        Integer stopChangeId = null;
-        if (getBillingFileDefaults().getToken() != null) {
-            cmepServiceTag = rphServiceTagDao.getRphServiceTag(RPH_SERVICE, null);
-            startChangeId = cmepServiceTag.getChangeId();
-            stopChangeId = rawPointHistoryDao.getMaxChangeId();
+        long lastCempChangeId = 0;
+        long maxChangeId = 0;
+        boolean useLastChangeId= getBillingFileDefaults().getToken() != null;
+        if (useLastChangeId) {
+            lastCempChangeId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.CMEP_BILLING_FILE_LAST_CHANGE_ID);
+            maxChangeId = rawPointHistoryDao.getMaxChangeId();
         }
         
         Date billingStartDate = getBillingFileDefaults().getEnergyStartDate();
@@ -74,9 +71,9 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
         for (CMEPUnitEnum cmepUnit : cmepUnits) {
             try {
                 ListMultimap<PaoIdentifier, PointValueQualityHolder> billingAttributeData;  
-                if (cmepServiceTag != null) {
-                    billingAttributeData = rawPointHistoryDao.getAttributeData(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), startChangeId, stopChangeId, false, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
-                } else {
+                if (useLastChangeId) {  // get data by token (lastChangeId)
+                    billingAttributeData = rawPointHistoryDao.getAttributeData(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), lastCempChangeId, maxChangeId, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
+                } else {    // get data by date range
                     billingAttributeData = rawPointHistoryDao.getAttributeData(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), billingStartDate, billingEndDate, false, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
                 }
                 
@@ -107,9 +104,8 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
         }
         
         // If we are using the changeId version make sure to update the changeId to the next entry needed.
-        if (cmepServiceTag != null) {
-            cmepServiceTag.setChangeId(stopChangeId+1);
-            rphServiceTagDao.save(cmepServiceTag);
+        if (useLastChangeId) {
+            persistedSystemValueDao.setValue(PersistedSystemValueKey.CMEP_BILLING_FILE_LAST_CHANGE_ID, maxChangeId);
         }
 
 	    CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));

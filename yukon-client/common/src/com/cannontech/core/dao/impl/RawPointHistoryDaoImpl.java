@@ -271,7 +271,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     @Override
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final int startChangeId, final int stopChangeId, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final long startChangeId, final long stopChangeId, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
@@ -531,11 +531,11 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return result;
     }
 
-    public int getMaxChangeId() {
+    public long getMaxChangeId() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT MAX(ChangeId)");
         sql.append("FROM RawPointHistory");
-        int maxChangeId = yukonTemplate.queryForInt(sql);
+        long maxChangeId = yukonTemplate.queryForLong(sql);
         
         return maxChangeId;
     }

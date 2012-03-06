@@ -167,6 +167,15 @@ public class BillingFile extends java.util.Observable implements Runnable
 					String subString = arg.substring(startIndex);
 					password = subString;
 				}
+				else if (argLowerCase.startsWith("token")) {
+				    if (startIndex == 0) {  
+				        // not key=value pair, it's just key. the value used here is not important...today anyways!				        
+				        billingFileDefaults.setToken("blah");
+				    } else {    // this option doesn't make a lot of sense today (since the value of token is never read), but it paves the path for tomorrow...maybe?!
+				        String token = arg.substring(startIndex);
+				        billingFileDefaults.setToken(token);				                                     
+				    }
+				}
 			}
 
 			LiteYukonUser liteYukonUser = billingFile.getLiteYukonUser(username, password);

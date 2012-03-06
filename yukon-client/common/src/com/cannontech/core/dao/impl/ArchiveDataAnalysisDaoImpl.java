@@ -297,7 +297,7 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     private int insertIntoArchiveDataAnalysis(BuiltInAttribute attribute, Period intervalPeriod, boolean excludeBadPointQualities, Interval dateTimeRange) {
-        int maxChangeId = rawPointHistoryDao.getMaxChangeId();
+        long maxChangeId = rawPointHistoryDao.getMaxChangeId();
         int analysisId = nextValueHelper.getNextValue("ArchiveDataAnalysis");
         
         SqlStatementBuilder sql = new SqlStatementBuilder();

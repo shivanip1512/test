@@ -140,7 +140,7 @@ public interface RawPointHistoryDao {
      * @param order - controls ordering by timestamp (only affects the iteration order of the values)
      * @return
      */
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> paos, Attribute attribute, final int startChangeId, final int stopChangeId, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order);
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> paos, Attribute attribute, final long startChangeId, final long stopChangeId, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
@@ -284,7 +284,7 @@ public interface RawPointHistoryDao {
    /**
     * Get the largest changeId currently in RawPointHistory
     */
-   public int getMaxChangeId();
+   public long getMaxChangeId();
    
    public static class AdjacentPointValues {
        private PointValueHolder preceding;

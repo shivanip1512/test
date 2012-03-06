@@ -557,6 +557,7 @@ proc runBatchProgram { args } {
 #             File_Path   - Optional export path
 #             Energy_Days - Optional number of days to go back for energy
 #             Demand_Days - Optional number of days to go back for demand
+#			  other       - Optional area for direct appending to billing.bat
 #
 proc exportBillingFile { args } {
 
@@ -566,6 +567,7 @@ proc exportBillingFile { args } {
     set demandDays "dem:"
     set exportFile "%YUKON_BASE%\\client\\export\\"
     set exportSpec "file:"
+    set other ""
 
     if [ catch { 
         set argCount [ llength $args ]
@@ -630,9 +632,12 @@ proc exportBillingFile { args } {
                 append demandDays "30"
             }
 
+			if { $argCount == 8 } {
+				append other [lindex $args 7]
+			} 
 
             # export the file with 7 parameters
-            dout [createProcess "%YUKON_BASE%\\client\\bin\\billing.bat" $groupType $billFormat $exportSpec $energyDays $demandDays]
+            dout [createProcess "%YUKON_BASE%\\client\\bin\\billing.bat" $groupType $billFormat $exportSpec $energyDays $demandDays $other]
             
         } else {
             dout "No Args for exportBillingFile"

@@ -9,6 +9,7 @@ public enum PersistedSystemValueKey {
     VALIDATION_ENGINE_LAST_CHANGE_ID(-1, InputTypeFactory.longType()),
     MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED(null, new InstantType()),
     MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED(null, new InstantType()),
+    CMEP_BILLING_FILE_LAST_CHANGE_ID(1, InputTypeFactory.longType()),
     ;
     
     private final Object defaultValue;
