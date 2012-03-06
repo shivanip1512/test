@@ -72,18 +72,13 @@ error_t Ccu710::extractAddress(const bytes &address_buf, unsigned &address)
     {
         return "Insufficient data for address extraction";
     }
-    if( !isEvenParity(address_buf[0]) )
+    if( !isEvenParity(address_buf[0]) || !isEvenParity(address_buf[1]) )
     {
         return "Invalid parity in address extraction";
     }
 
     if( isExtendedAddress(address_buf[0]) )
     {
-        if( !isEvenParity(address_buf[1]) )
-        {
-            return "Invalid parity in address extraction";
-        }
-
         address = address_buf[0] & 0x03;
         address |= (address_buf[1] >> 1) & 0x1c;
     }
