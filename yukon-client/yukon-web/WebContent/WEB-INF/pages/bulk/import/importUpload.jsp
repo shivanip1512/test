@@ -36,9 +36,9 @@
     function updateImportTypeSelection() {
         var itemSelected = jQuery("#importTypeSelector").val();
         //hide all rows
-        jQuery("[class^='importType_']").hide();
+        jQuery("[class^='bulkImportType_']").hide();
         //show rows for the selected interface
-        jQuery(".importType_" + itemSelected).show();
+        jQuery(".bulkImportType_" + itemSelected).show();
     }
     </script>
     
@@ -123,37 +123,33 @@
                 </td>
             
             </tr>
-                
-            <tr>
-                <td colspan="2"><div style="height:20px;"></div></td>
-            </tr>
-            <tr>
-                <td>
-                    <label class="normalBoldLabel"><cti:msg2 key="yukon.common.device.bulk.options.deviceTypeSelect.text" />
-                    <select name="importTypeSelector" id="importTypeSelector" >
-                        <option value="DLC" <c:if test="${importTypeSelector eq 'DLC'}">selected="selected"</c:if>>
-                            <i:inline key="yukon.common.device.bulk.options.deviceTypeSelect.dlc" />
-                        </option>
-                        <option value="RFN" <c:if test="${importTypeSelector eq 'RFN'}">selected="selected"</c:if>>
-                            <i:inline key="yukon.common.device.bulk.options.deviceTypeSelect.rfn" />
-                        </option>
-                    </select>
-                    </label>
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td colspan="2"><div style="height: 20px;"></div></td>
-            </tr>
-            <%-- METHODS --%>
-            <tr valign="top">
+                <tr>
+                    <td colspan="2"><div style="height: 20px;"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="normalBoldLabel"><cti:msg2 key="yukon.common.device.bulk.options.deviceTypeSelect.text" /> <select name="importTypeSelector" id="importTypeSelector">
+                                <c:forEach var="bulkImportType" items="${bulkImportTypes}">
+                                    <option value="${bulkImportType}" <c:if test="${importTypeSelector eq bulkImportType}">selected="selected"</c:if>>
+                                        <i:inline key="yukon.common.device.bulk.options.deviceTypeSelect.${bulkImportType}" />
+                                    </option>
+                                </c:forEach>
+                        </select> </label>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><div style="height: 20px;"></div></td>
+                </tr>
+                <%-- METHODS --%>
+                <tr valign="top">
                 
                 <%-- methods --%>
                 <c:forEach var="method" items="${importMethods}">
                    
                     <cti:url var="methodImg" value="/WebConfig/yukon/Icons/import_by_${method.name}.gif"/>
                 
-                    <td class="importType_${method.type}"  style="display: none;">
+                    <td class="bulkImportType_${method.type}"  style="display: none;">
                         <table class="miniResultsTable" style="font-size:11px;">
                     
                             <tr>

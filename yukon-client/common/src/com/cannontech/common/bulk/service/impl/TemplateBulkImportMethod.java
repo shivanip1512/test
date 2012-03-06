@@ -1,9 +1,7 @@
 package com.cannontech.common.bulk.service.impl;
 
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,41 +9,44 @@ import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.google.common.collect.ImmutableSet;
 
 public class TemplateBulkImportMethod extends BulkImportMethodBase {
     @Autowired
     private DeviceCreationService deviceCreationService = null;
-
+    
+    private static ImmutableSet<BulkFieldColumnHeader> requiredColumns = new ImmutableSet.Builder<BulkFieldColumnHeader>()
+            .add(BulkFieldColumnHeader.NAME)
+            .add(BulkFieldColumnHeader.TEMPLATE)
+            .build();
+    
+    private static ImmutableSet<BulkFieldColumnHeader> optionalColumns = new ImmutableSet.Builder<BulkFieldColumnHeader>()
+            .add(BulkFieldColumnHeader.METER_NUMBER)
+            .add(BulkFieldColumnHeader.ROUTE)
+            .add(BulkFieldColumnHeader.ENABLE)
+            .add(BulkFieldColumnHeader.DISCONNECT_ADDRESS)
+            .add(BulkFieldColumnHeader.ENABLE)
+            .add(BulkFieldColumnHeader.ADDRESS)
+            .build();
+    
     @Override
     public Set<BulkFieldColumnHeader> getRequiredColumns() {
-
-        Set<BulkFieldColumnHeader> requiredColumns = new LinkedHashSet<BulkFieldColumnHeader>();
-        requiredColumns.add(BulkFieldColumnHeader.NAME);
-        requiredColumns.add(BulkFieldColumnHeader.TEMPLATE);
         return requiredColumns;
     }
 
     @Override
     public Set<BulkFieldColumnHeader> getOptionalColumns() {
-
-        Set<BulkFieldColumnHeader> requiredColumns = new TreeSet<BulkFieldColumnHeader>();
-        requiredColumns.add(BulkFieldColumnHeader.METER_NUMBER);
-        requiredColumns.add(BulkFieldColumnHeader.ROUTE);
-        requiredColumns.add(BulkFieldColumnHeader.DISCONNECT_ADDRESS);
-        requiredColumns.add(BulkFieldColumnHeader.ENABLE);
-        requiredColumns.add(BulkFieldColumnHeader.ADDRESS);
-        return requiredColumns;
+        return optionalColumns;
     }
 
     @Override
     public SimpleDevice initDevice(Map<BulkFieldColumnHeader, String> fields)
             throws DeviceCreationException {
-
+     
         String creationFieldStringValue = fields.get(BulkFieldColumnHeader.TEMPLATE);
         String nameFieldStringValue = fields.get(BulkFieldColumnHeader.NAME);
 
-        SimpleDevice device =
-            deviceCreationService.createDeviceByTemplate(creationFieldStringValue,
+        SimpleDevice device = deviceCreationService.createDeviceByTemplate(creationFieldStringValue,
                                                          nameFieldStringValue,
                                                          true);
 

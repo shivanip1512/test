@@ -1,6 +1,5 @@
 package com.cannontech.common.bulk.service.impl;
 
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,29 +9,33 @@ import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.google.common.collect.ImmutableSet;
 
 public class RfnTemplateBulkImportMethod extends BulkImportMethodBase{
     @Autowired private DeviceCreationService deviceCreationService = null;
     
+    
+    private static ImmutableSet<BulkFieldColumnHeader> requiredColumns = new ImmutableSet.Builder<BulkFieldColumnHeader>()
+            .add(BulkFieldColumnHeader.NAME)
+            .add(BulkFieldColumnHeader.TEMPLATE)
+            .add(BulkFieldColumnHeader.RFN_MODEL)
+            .add(BulkFieldColumnHeader.RFN_SERIAL_NUMBER)
+            .add(BulkFieldColumnHeader.RFN_MANUFACTURER)
+            .build();
+    
+    private static ImmutableSet<BulkFieldColumnHeader> optionalColumns = new ImmutableSet.Builder<BulkFieldColumnHeader>()
+            .add(BulkFieldColumnHeader.METER_NUMBER)
+            .add(BulkFieldColumnHeader.ENABLE)
+            .build();
+    
     @Override
     public Set<BulkFieldColumnHeader> getRequiredColumns() {
-        
-        Set<BulkFieldColumnHeader> requiredColumns = new LinkedHashSet<BulkFieldColumnHeader>();
-        requiredColumns.add(BulkFieldColumnHeader.NAME);
-        requiredColumns.add(BulkFieldColumnHeader.TEMPLATE);
-        requiredColumns.add(BulkFieldColumnHeader.RFN_MODEL);
-        requiredColumns.add(BulkFieldColumnHeader.RFN_SERIAL_NUMBER);
-        requiredColumns.add(BulkFieldColumnHeader.RFN_MANUFACTURER);
         return requiredColumns;
     }
     
     @Override
     public Set<BulkFieldColumnHeader> getOptionalColumns() {
-
-        Set<BulkFieldColumnHeader> requiredColumns = new LinkedHashSet<BulkFieldColumnHeader>();
-        requiredColumns.add(BulkFieldColumnHeader.METER_NUMBER);
-        requiredColumns.add(BulkFieldColumnHeader.ENABLE);
-        return requiredColumns;
+        return optionalColumns;
     }
     
     @Override

@@ -1,6 +1,7 @@
 package com.cannontech.common.device.creation;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 
 
 public interface DeviceCreationService {
@@ -55,5 +56,5 @@ public interface DeviceCreationService {
      * @return 
      * @throws DeviceCreationException
      */
-    public SimpleDevice createRfnDeviceByDeviceType(String deviceType, String name, String model, String manufacturer, String serialNumber, boolean createPoints) throws DeviceCreationException;
+    public SimpleDevice createRfnDeviceByDeviceType(PaoType type, String name, String model, String manufacturer, String serialNumber, boolean createPoints) throws DeviceCreationException;
 }

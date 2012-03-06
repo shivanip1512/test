@@ -18,6 +18,7 @@ import com.cannontech.common.bulk.service.BulkFileInfo;
 import com.cannontech.common.bulk.service.BulkImportFileInfo;
 import com.cannontech.common.bulk.service.BulkImportMethod;
 import com.cannontech.common.bulk.service.BulkImportService;
+import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -28,7 +29,7 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
     
     private List<BulkImportMethod> supportedImportMethods = null;
 
-    public ParsedBulkImportFileInfo createParsedBulkImportFileInfo(BulkImportFileInfo info, String deviceType) {
+    public ParsedBulkImportFileInfo createParsedBulkImportFileInfo(BulkImportFileInfo info, BulkImportType bulkImportType) {
         
         ParsedBulkImportFileInfo result = new ParsedBulkImportFileInfo(info);
         
@@ -56,7 +57,7 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
             // check for all required fields for each method
             BulkImportMethod chosenMethod = null;
             for (BulkImportMethod method : supportedImportMethods) {
-                if (method.getType().equalsIgnoreCase(deviceType)) {
+                if (method.getType() == bulkImportType) {
                     Set<BulkFieldColumnHeader> requiredColumns = method.getRequiredColumns();
                     if (headerColumnSet.containsAll(requiredColumns)) {
                         chosenMethod = method;

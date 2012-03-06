@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public interface BulkImportService {
 
-    public ParsedBulkImportFileInfo createParsedBulkImportFileInfo(BulkImportFileInfo info, String deviceType);
+    public ParsedBulkImportFileInfo createParsedBulkImportFileInfo(BulkImportFileInfo info,  BulkImportType bulkImportType);
             
     public String startBulkImport(ParsedBulkImportFileInfo bulkImportFileInfo) throws IOException;
 }

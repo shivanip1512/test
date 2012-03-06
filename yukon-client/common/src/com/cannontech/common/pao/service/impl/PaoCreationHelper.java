@@ -36,16 +36,12 @@ public class PaoCreationHelper {
     private PaoDefinitionService paoDefinitionService;
     private PointDao pointDao;
     
-    public void addDefaultPointsToNewPao(YukonPao pao) {
-        List<PointBase> pointsToCreate = paoDefinitionService.createDefaultPointsForPao(pao);
-        
-        applyPointsForNewPao(pointsToCreate);
-    }
-    
+    /**
+     * Creates the points for the newly created pao based on pao definition
+     */
     public void addDefaultPointsToPao(YukonPao pao) {
         List<PointBase> pointsToCreate = paoDefinitionService.createDefaultPointsForPao(pao);
-        
-        applyPoints(pao, pointsToCreate);
+        applyPointsForNewPao(pointsToCreate);
     }
 
     /**
@@ -64,10 +60,14 @@ public class PaoCreationHelper {
         }	
     }
     
+    /**
+     * Creates all points for a pao based on pao definiton meaning this
+     *  will even create points that are not defined as <init>true</init>.
+     * @param pao
+     */
     public void addAllPointsToPao(YukonPao pao) {
         List<PointBase> pointsToCreate = paoDefinitionService.createAllPointsForPao(pao);
-        
-        applyPoints(pao, pointsToCreate);
+        applyPointsForNewPao(pointsToCreate);
     }
     
     public void processDbChange(YukonPao pao, DbChangeType changeType) {
@@ -82,7 +82,12 @@ public class PaoCreationHelper {
         dbPersistentDao.processDBChange(msg);
     }
 
-    public void applyPoints(int paoId, List<PointBase> pointsToCreate) {
+    /**
+     * @see PaoCreationHelper.applyPoints(YukonPao pao, List<PointBase> pointsToCreate)
+     * @param paoId
+     * @param pointsToCreate
+     */
+    private void applyPoints(int paoId, List<PointBase> pointsToCreate) {
     	MultiDBPersistent pointsToAdd = new MultiDBPersistent();
         Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
         Set<PointBase> calculatedPoints = Sets.newHashSet();
@@ -136,6 +141,12 @@ public class PaoCreationHelper {
         dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
     }
     
+    /**
+     * Performs DB persistents of provided points, points are expected
+     * to be provide with there PAObjectId already set.
+     * For use with the 'addDefaultPointsToPao' method.
+     * @param pointsToCreate
+     */
     public void applyPointsForNewPao(List<PointBase> pointsToCreate) {
         MultiDBPersistent pointsToAdd = new MultiDBPersistent();
         Vector<DBPersistent> newPoints = pointsToAdd.getDBPersistentVector();
@@ -145,6 +156,9 @@ public class PaoCreationHelper {
         dbPersistentDao.performDBChangeWithNoMsg(pointsToAdd, TransactionType.INSERT);
     }
     
+    /**
+     * Creates points base on list of points provided that exist on a template device.
+     */
     public void applyPoints(YukonPao pao, List<PointBase> pointsToCreate) {
         applyPoints(pao.getPaoIdentifier().getPaoId(), pointsToCreate);
     }

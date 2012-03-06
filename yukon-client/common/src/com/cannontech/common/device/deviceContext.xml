@@ -237,14 +237,7 @@
 		<property name="deviceGroupService" ref="deviceGroupService"/>
     </bean>
     
-    <bean id="deviceCreationService"
-        class="com.cannontech.common.device.creation.impl.DeviceCreationServiceImpl">
-        <property name="deviceDao" ref="deviceDao"/>
-        <property name="paoDao" ref="paoDao"/>
-        <property name="pointDao" ref="pointDao"/>
-        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
-        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
-    </bean>
+    <bean id="deviceCreationService" class="com.cannontech.common.device.creation.impl.DeviceCreationServiceImpl"/>
     
     <bean id="dlcAddressRangeService" class="com.cannontech.device.range.impl.DlcAddressRangeServiceImpl"/>
     

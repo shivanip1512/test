@@ -3,10 +3,11 @@ package com.cannontech.common.bulk.service.impl;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.bulk.service.BulkImportMethod;
+import com.cannontech.common.bulk.service.BulkImportType;
 
 public abstract class BulkImportMethodBase implements BulkImportMethod {
     
-    private String type;
+    public BulkImportType type;
 
     private String name;
     
@@ -19,12 +20,12 @@ public abstract class BulkImportMethodBase implements BulkImportMethod {
         this.name = name;
     }
 
-    public String getType() {
+    public BulkImportType getType() {
         return type;
     }
     
     @Required
-    public void setType(String type) {
+    public void setType(BulkImportType type) {
         this.type = type;
     }
     

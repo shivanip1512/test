@@ -24,6 +24,7 @@ import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.service.BulkImportFileInfo;
 import com.cannontech.common.bulk.service.BulkImportMethod;
 import com.cannontech.common.bulk.service.BulkImportService;
+import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.bulk.service.ParsedBulkImportFileInfo;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -40,10 +41,10 @@ public class ImportController extends MultiActionController {
     private List<BulkImportMethod> importMethods = null;
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new HashMap<String, BulkImportFileInfo>();
     
-    
-    
     // UPLOAD
     public ModelAndView upload(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
 
         ModelAndView mav = new ModelAndView("import/importUpload.jsp");
         
@@ -58,6 +59,10 @@ public class ImportController extends MultiActionController {
         // options
         Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", true);
         mav.addObject("ignoreInvalidCols", ignoreInvalidCols);
+        
+        mav.addObject("bulkImportTypes", BulkImportType.values());
+        
+        mav.addObject("importTypeSelector", importTypeSelector);
         
         return mav;
     }
@@ -77,6 +82,8 @@ public class ImportController extends MultiActionController {
     // PARSE
     public ModelAndView parseUpload(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
+        String importTypeSelector = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
+        
         // options 
         Boolean ignoreInvalidCols = ServletRequestUtils.getBooleanParameter(request, "ignoreInvalidCols", false);
         
@@ -88,6 +95,8 @@ public class ImportController extends MultiActionController {
         BulkFileUpload bulkFileUpload = BulkFileUploadUtils.getBulkFileUpload(request);
         
         if (bulkFileUpload.hasErrors()) {
+            
+            errorMav.addObject("importTypeSelector", importTypeSelector);
             errorMav.addObject("fileErrorKeys", StringUtils.join(bulkFileUpload.getErrors(), "||"));
             return errorMav;
         }
@@ -99,13 +108,11 @@ public class ImportController extends MultiActionController {
         // save file info
         String fileInfoId = bulkImportFileInfo.getId();
         bulkImportFileInfoMap.put(fileInfoId, bulkImportFileInfo);
-        
-        String deviceType = ServletRequestUtils.getStringParameter(request, "importTypeSelector");
-        
+            
         // confirm
         ModelAndView mav = new ModelAndView("redirect:/spring/bulk/import/importConfirm");
         mav.addObject("fileInfoId", fileInfoId);
-        mav.addObject("deviceType", deviceType);
+        mav.addObject("bulkImportType", importTypeSelector);
         
         return mav;
     }
@@ -116,25 +123,26 @@ public class ImportController extends MultiActionController {
         ModelAndView mav = new ModelAndView("import/importConfirm.jsp");
         
  
-        String deviceType = ServletRequestUtils.getStringParameter(request, "deviceType");
+        BulkImportType bulkImportType = BulkImportType.valueOf(ServletRequestUtils.getStringParameter(request, "bulkImportType"));
         
         // get file info
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
         
-        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, deviceType);
+        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
         mav.addObject("parsedResult", parsedResult);
-        mav.addObject("deviceType", deviceType);
+        mav.addObject("bulkImportType", bulkImportType);
 
         // header errors
         if (parsedResult.hasErrors()) {
             
             ModelAndView errorMav = new ModelAndView("import/importUpload.jsp");
             errorMav.addObject("ignoreInvalidCols", bulkImportFileInfo.isIgnoreInvalidCols());
-            errorMav.addObject("importTypeSelector", deviceType);
+            errorMav.addObject("importTypeSelector", bulkImportType);
             errorMav.addObject("importMethods", importMethods);
             errorMav.addObject("methodUpdateableFieldsMap", getMethodUpdateabledFieldsMap());
             errorMav.addObject("headersErrorResolverList", parsedResult.getErrorResolvers());
+            errorMav.addObject("bulkImportTypes", BulkImportType.values());
             
             return errorMav;
         }
@@ -147,13 +155,12 @@ public class ImportController extends MultiActionController {
         
         ModelAndView mav = new ModelAndView("redirect:/spring/bulk/import/importResults");
         
-        String deviceType = ServletRequestUtils.getStringParameter(request, "deviceType");
+        BulkImportType bulkImportType = BulkImportType.valueOf(ServletRequestUtils.getStringParameter(request, "bulkImportType"));
      
         // open file as csv
         String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
         BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
-        
-        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, deviceType);
+        ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo, bulkImportType);
         String resultsId = bulkImportService.startBulkImport(parsedResult);
         
         mav.addObject("resultsId", resultsId);

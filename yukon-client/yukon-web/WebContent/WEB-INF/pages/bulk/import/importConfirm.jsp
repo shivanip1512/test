@@ -34,7 +34,7 @@
     
         <form id="importConfirmForm" action="/spring/bulk/import/doImport" method="post">
 
-            <input type="hidden" value="${deviceType}" name="deviceType" />
+            <input type="hidden" value="${bulkImportType}" name="bulkImportType" />
             
             <%-- CONFIRMATION INFO --%>
             <cti:msg var="rows" key="yukon.common.device.bulk.importConfirm.rows"/>
