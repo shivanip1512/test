@@ -36,4 +36,42 @@ public class LoadGroup implements DisplayablePao {
         this.programIds = programIds;
     }
     
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((loadGroupName == null) ? 0 : loadGroupName.hashCode());
+        result = prime * result
+                + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
+        result = prime * result
+                + ((programIds == null) ? 0 : programIds.hashCode());
+        return result;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LoadGroup other = (LoadGroup) obj;
+        if (loadGroupName == null) {
+            if (other.loadGroupName != null)
+                return false;
+        } else if (!loadGroupName.equals(other.loadGroupName))
+            return false;
+        if (paoIdentifier == null) {
+            if (other.paoIdentifier != null)
+                return false;
+        } else if (!paoIdentifier.equals(other.paoIdentifier))
+            return false;
+        if (programIds == null) {
+            if (other.programIds != null)
+                return false;
+        } else if (!programIds.equals(other.programIds))
+            return false;
+        return true;
+    }
 }

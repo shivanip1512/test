@@ -1958,6 +1958,9 @@
                             <page name="changeWarehouse" type="BASIC">
                                 <menu>inventory|</menu>
                             </page>
+                            <page name="saveToBatch" type="BASIC">
+                                <menu>inventory|</menu>
+                            </page>
                             <page name="resendConfig" type="BASIC">
                                 <menu>inventory|</menu>
                             </page>

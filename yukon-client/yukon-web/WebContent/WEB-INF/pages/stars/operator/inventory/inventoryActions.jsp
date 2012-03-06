@@ -115,6 +115,20 @@
                 </table>
             </cti:dataGridCell>
             
+            <cti:dataGridCell>
+                <table>
+                    <tr>
+                        <td class="actionCell">
+                            <form action="saveToBatch/setup" method="get">
+                                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
+                                <cti:button nameKey="saveToBatch" type="submit" styleClass="buttonGroup"/>
+                            </form>
+                        </td>
+                        <td class="actionCell"><i:inline key=".saveToBatch"/></td>
+                    </tr>
+                </table>
+            </cti:dataGridCell>
+        
             <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
                 <cti:dataGridCell>
                         <table>

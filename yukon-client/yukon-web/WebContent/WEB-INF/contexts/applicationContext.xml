@@ -1987,6 +1987,9 @@
     <bean id="addByRangeHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.AddByRangeHelper">
         <property name="resultsCache" ref="inventoryTaskResultsCache" />
     </bean>
+    <bean id="saveToBatchHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.SaveToBatchHelper">
+        <property name="resultsCache" ref="inventoryTaskResultsCache"/>
+    </bean>
     <bean id="resendLmConfigHelper" class="com.cannontech.web.stars.dr.operator.inventory.service.impl.ResendLmConfigHelper">
         <property name="resultsCache" ref="inventoryTaskResultsCache" />
     </bean>

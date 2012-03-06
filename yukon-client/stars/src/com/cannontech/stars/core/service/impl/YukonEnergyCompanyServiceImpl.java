@@ -32,7 +32,7 @@ public class YukonEnergyCompanyServiceImpl implements YukonEnergyCompanyService 
     }
 
     @Override
-    public LiteStarsEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
+    public YukonEnergyCompany getEnergyCompanyByOperator(LiteYukonUser operator) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ECOLL.EnergyCompanyId");
         sql.append("FROM EnergyCompanyOperatorLoginList ECOLL");

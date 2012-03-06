@@ -189,8 +189,25 @@
     <entry key="yukon.web.modules.operator.inventoryActions.changeServiceCompanyDescription">Change the service company.</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.changeWarehouse.label">Change Warehouse</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.changeWarehouseDescription">Change the warehouse.</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.saveToBatch">Save collection to batch.</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.saveToBatch.label">Save To Batch</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.resendConfig.label">Resend ZigBee Config</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.resendConfigDescription">Resend configurations for ZigBee devices.</entry>
+
+    <!-- /inventory/inventoryOperations/saveBatch.jsp -->
+    <entry key="yukon.web.modules.operator.saveToBatch.title">Configure Batch Settings</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.instructionsLabel">Warning:</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.instructions">It is possible to create a batch that will change the route &amp; group of all inventory in the selected inventory collection.</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.note">Note:</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.multipleHardwareConfigTypes">The hardware collection contains multiple hardware configuration types.</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.enforceSingleHardwareConfigType">Inventory configuration can only be updated when all devices share a single hardware configuration type.</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.useCurrentRoutes">Use routes assigned to the switches</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.ecDefaultRouteLabel">Energy Company Default Route - </entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.noDefaultRoute">Energy Company Default Route - None</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.useCurrentConfiguration">Use configuration stored in the switches</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.progress">Progress</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.route">Route</entry>
+    <entry key="yukon.web.modules.operator.saveToBatch.group">Group</entry>
     
     <!-- /inventory/deleteInventory.jsp -->
     <entry key="yukon.web.modules.operator.deleteInventory.pageName">Delete Inventory</entry>
@@ -311,5 +328,9 @@
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notesLabel">Note:</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notes">Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.newOperation">Choose A New Operation For Inventory</entry>
+    
+    <!-- /inventory/saveBatch.jsp -->
+    <entry key="yukon.web.modules.operator.saveToBatch.pageName">Save To Batch</entry>
+    
     
 </properties>
