@@ -56,15 +56,6 @@ WHERE p.PAObjectID = yp.PAObjectID
   
 /* Start YUK-10709 */
 INSERT INTO BillingFileFormats VALUES (-27, 'CMEP', 1);
-
-CREATE TABLE RPHServiceTag  (
-    RPHServiceTagId         NUMERIC               NOT NULL,
-    ChangeId                NUMERIC               NOT NULL,
-    ServiceName             VARCHAR(150)          NOT NULL,
-    ServiceNameRef          VARCHAR(150)          NULL,
-    CONSTRAINT PK_RPHServiceTag PRIMARY KEY (RPHServiceTagId)
-);
-GO
 /* End YUK-10709 */
 
 /* Start YUK-10724 */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/5/2012 5:11:48 PM                          */
+/* Created on:     3/5/2012 5:53:13 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7322,18 +7322,6 @@ create unique index Indx_RFNAdd_SerNum_Man_Mod_UNQ on RFNAddress (
 SerialNumber ASC,
 Manufacturer ASC,
 Model ASC
-)
-go
-
-/*==============================================================*/
-/* Table: RPHServiceTag                                         */
-/*==============================================================*/
-create table RPHServiceTag (
-   RPHServiceTagId      numeric              not null,
-   ChangeId             numeric              not null,
-   ServiceName          varchar(150)         not null,
-   ServiceNameRef       varchar(150)         null,
-   constraint PK_RPHSERVICETAG primary key nonclustered (RPHServiceTagId)
 )
 go
 

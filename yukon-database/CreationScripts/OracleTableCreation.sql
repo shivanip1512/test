@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/5/2012 3:34:55 PM                          */
+/* Created on:     3/5/2012 5:55:03 PM                          */
 /*==============================================================*/
 
 
@@ -6896,17 +6896,6 @@ create unique index Indx_RFNAdd_SerNum_Man_Mod_UNQ on RFNAddress (
    SerialNumber ASC,
    Manufacturer ASC,
    Model ASC
-);
-
-/*==============================================================*/
-/* Table: RPHServiceTag                                         */
-/*==============================================================*/
-create table RPHServiceTag  (
-   RPHServiceTagId      NUMBER                          not null,
-   ChangeId             NUMBER                          not null,
-   ServiceName          VARCHAR2(150)                   not null,
-   ServiceNameRef       VARCHAR2(150),
-   constraint PK_RPHSERVICETAG primary key (RPHServiceTagId)
 );
 
 /*==============================================================*/

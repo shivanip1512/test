@@ -52,14 +52,6 @@ WHERE pointId IN (SELECT p.pointId
 
 /* Start YUK-10709 */
 INSERT INTO BillingFileFormats VALUES (-27, 'CMEP', 1);
-
-CREATE TABLE RPHServiceTag  (
-    RPHServiceTagId         NUMBER                 NOT NULL,
-    ChangeId                NUMBER                 NOT NULL,
-    ServiceName             VARCHAR2(150)          NOT NULL,
-    ServiceNameRef          VARCHAR2(150)          NULL,
-    CONSTRAINT PK_RPHServiceTag PRIMARY KEY (RPHServiceTagId)
-);
 /* End YUK-10709 */
 
 /* Start YUK-10724 */
