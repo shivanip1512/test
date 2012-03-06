@@ -18,7 +18,7 @@ public class YukonTextMessageDaoImpl implements YukonTextMessageDao {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
-        SqlParameterSink sink = sql.insertInto("ExternalToYukonMessageIdMapping");
+        SqlParameterSink sink = sql.insertInto("ExtToYukonMessageIdMapping");
         
         sink.addValue("ExternalMessageId", externalMessageId);
         sink.addValue("MessageEndTime", endTime);
