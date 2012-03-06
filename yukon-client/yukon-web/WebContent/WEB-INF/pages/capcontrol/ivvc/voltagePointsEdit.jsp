@@ -88,7 +88,7 @@
 						</td>
 						<td>
 							<tags:input path="points[${status.index}].upperLimit" size="4"
-									disbled="${disabledInput}" inputClass="upperLimit" />
+									disabled="${disabledInput}" inputClass="upperLimit" />
 						</td>
 						<td><form:checkbox path="points[${status.index}].overrideStrategy"/></td>
 					</tr>
