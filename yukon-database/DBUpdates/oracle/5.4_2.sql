@@ -23,16 +23,8 @@ ALTER TABLE DynamicCCMonitorPointResponse
     DROP CONSTRAINT FK_DYN_CCMONPTRSP_PTID;
     
 ALTER TABLE DynamicCCMonitorBankHistory
-    ADD CONSTRAINT FK_DynCCMonBankHistory_CapBank FOREIGN KEY (BankId)
-        REFERENCES CapBank (DeviceId)
-            ON DELETE CASCADE;
-ALTER TABLE DynamicCCMonitorBankHistory
     ADD CONSTRAINT FK_DynCCMonBankHistory_Point FOREIGN KEY (PointId)
         REFERENCES Point (PointId)
-            ON DELETE CASCADE;
-ALTER TABLE DynamicCCMonitorPointResponse
-    ADD CONSTRAINT FK_DynCCMonPointResp_CapBank FOREIGN KEY (BankId)
-        REFERENCES CapBank (DeviceId)
             ON DELETE CASCADE;
 ALTER TABLE DynamicCCMonitorPointResponse
     ADD CONSTRAINT FK_DynCCMonPointResp_Point FOREIGN KEY (PointId)

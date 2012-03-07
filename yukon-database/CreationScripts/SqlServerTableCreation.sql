@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/7/2012 9:26:07 AM                          */
+/* Created on:     3/7/2012 10:13:54 AM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -11783,20 +11783,8 @@ alter table DynamicCCFeeder
 go
 
 alter table DynamicCCMonitorBankHistory
-   add constraint FK_DynCCMonBankHistory_CapBank foreign key (BankID)
-      references CAPBANK (DEVICEID)
-         on delete cascade
-go
-
-alter table DynamicCCMonitorBankHistory
    add constraint FK_DynCCMonBankHistory_Point foreign key (PointID)
       references POINT (POINTID)
-         on delete cascade
-go
-
-alter table DynamicCCMonitorPointResponse
-   add constraint FK_DynCCMonPointResp_CapBank foreign key (BankID)
-      references DynamicCCCapBank (CapBankID)
          on delete cascade
 go
 
