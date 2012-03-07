@@ -151,6 +151,25 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         }
     }
 
+    public static void appendChangeIdClause(SqlBuilder sql, Range<Long> changeIdRange, Clusivity clusivity) {
+        if (changeIdRange.getMin() != null) {
+            if (clusivity.isStartInclusive()) {
+                sql.append("AND rph.changeId").gte(changeIdRange.getMin());
+            } else {
+                sql.append("AND rph.changeId").gt(changeIdRange.getMin());
+            }
+        }
+        if (changeIdRange.getMax() != null) {
+            if (clusivity.isEndInclusive()) {
+                sql.append("AND rph.changeId").lte(changeIdRange.getMax());
+            } else {
+                sql.append("AND rph.changeId").lt(changeIdRange.getMax());
+            }
+        }
+    }
+
+    
+    
     public static void appendOrderByClause(SqlBuilder sql, Order order) {
         appendOrderByClause(sql,order,OrderBy.TIMESTAMP);
     }
@@ -286,6 +305,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
                         sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
                         sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
+                        appendChangeIdClause(sql, changeIdRange, clusivity);
                         sql.append(  "AND rph.changeId").gte(changeIdRange.getMin());
                         sql.append(  "AND rph.changeId").lte(changeIdRange.getMax());
                         sql.append(  "AND yp.PAObjectID").in(subList);
