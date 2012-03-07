@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -60,6 +62,9 @@ public class SendTextMessageEndpoint {
     private Namespace ns = YukonXml.getYukonNamespace();
     private Logger log = YukonLogManager.getLogger(SendTextMessageEndpoint.class);
     
+    private static final String MESSAGE_PATTERN = "[\\w!#$%&'()*+,-./:;=?@[\\\\]^_`\\{\\|\\}~]+";
+    private Pattern pattern = Pattern.compile(MESSAGE_PATTERN);
+    
     @PostConstruct
     public void initialize() throws JDOMException {}
     
@@ -74,37 +79,48 @@ public class SendTextMessageEndpoint {
         List<DeviceTextMessage> textMessages = 
                 requestTemplate.evaluate("//y:textMessageList/y:textMessage", new NodeToElementMapperWrapper<DeviceTextMessage>(new TextMessageElementRequestMapper()));
         
-        List<YukonTextMessage> yukonTextMessages = getYukonTextMessages(textMessages, user);
-        
         // init response
         Element resp = new Element("sendTextMessageResponse", ns);
         Attribute versionAttribute = new Attribute("version", "1.0");
         resp.setAttribute(versionAttribute);
+               
+        boolean allMessagesValid = true;
         
-        // run service
-        try {
-            
-            // Check authorization
-            rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
-
-            // Send out messages
-            for (YukonTextMessage yukonTextMessage : yukonTextMessages) {
-                //jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", yukonTextMessage);
-                thermostatService.sendTextMessage(yukonTextMessage);
+        for(DeviceTextMessage textMessage: textMessages){  
+            Matcher matcher = pattern.matcher(textMessage.getMessage());
+            if(!matcher.matches()){
+                allMessagesValid = false;
+                Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, "OtherException", "Invalid message: "+textMessage.getMessage());
+                resp.addContent(fe);
             }
-        } catch (NotAuthorizedException e) {
-            Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
-            resp.addContent(fe);
-            return resp;
-        } catch (Exception e) {
-            Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "OtherException", "An exception has been caught.");
-            resp.addContent(fe);
-            log.error(e.getMessage(), e);
         }
-        
-        // build response
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
-        
+        if (allMessagesValid) {
+
+            List<YukonTextMessage> yukonTextMessages = getYukonTextMessages(textMessages, user);
+
+            // run service
+            try {
+
+                // Check authorization
+                rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
+
+                // Send out messages
+                for (YukonTextMessage yukonTextMessage : yukonTextMessages) {
+                    thermostatService.sendTextMessage(yukonTextMessage);
+                }
+            } catch (NotAuthorizedException e) {
+                Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
+                resp.addContent(fe);
+                return resp;
+            } catch (Exception e) {
+                Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "OtherException", "An exception has been caught.");
+                resp.addContent(fe);
+                log.error(e.getMessage(), e);
+            }
+
+            // build response
+            resp.addContent(XmlUtils.createStringElement("success", ns, ""));
+        }
         return resp;
     }
     
