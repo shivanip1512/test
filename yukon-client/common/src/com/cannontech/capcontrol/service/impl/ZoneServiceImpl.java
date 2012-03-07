@@ -77,7 +77,7 @@ public class ZoneServiceImpl implements ZoneService {
                 ccMonitorBankListDao.updateRegulatorPoint(regId);
                 oldRegulatorIds.remove(regId);
             } else {
-                ccMonitorBankListDao.addRegulatorPoint(regId);
+                ccMonitorBankListDao.addRegulatorPoint(regId, regToZone.getPhase(), zone.getId());
             }
         }
         //remove regulator points for regulators no longer attached

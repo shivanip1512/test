@@ -158,6 +158,23 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     }
     
     @Override
+    public int addRegulatorPoint(int regulatorId, Phase phase, int zoneId) {
+        SqlStatementBuilder getPointIdSql = new SqlStatementBuilder();
+        getPointIdSql.append("SELECT PointId");
+        getPointIdSql.append("FROM ExtraPaoPointAssignment");
+        getPointIdSql.append("WHERE PaObjectId").eq(regulatorId);
+        getPointIdSql.append("AND Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y);
+        int pointId = yukonJdbcTemplate.queryForInt(getPointIdSql);
+        
+        LimitsHolder limits = getLimitsFromStrategy(zoneId);
+        
+        //paoType here may not be technically correct, but it will never actually be used. Only the id is necessary.
+        PaoIdentifier paoId = new PaoIdentifier(regulatorId, PaoType.PHASE_OPERATED);
+        VoltageLimitedDeviceInfo info = buildNewInfoObject(paoId, pointId, limits, phase);
+        return addDeviceInfo(info);
+    }
+    
+    @Override
     public int addAdditionalMonitorPoint(int pointId, int zoneId, Phase phase) {
         LimitsHolder limits = getLimitsFromStrategy(zoneId);
         PaoIdentifier paoId = pointDao.getPaoPointIdentifier(pointId).getPaoIdentifier();

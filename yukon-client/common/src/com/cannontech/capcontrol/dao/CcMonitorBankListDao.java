@@ -45,6 +45,12 @@ public interface CcMonitorBankListDao {
     public int addRegulatorPoint(int regulatorId);
     
     /**
+     * Inserts a new point on the specified regulator.
+     * @return 
+     */
+    public int addRegulatorPoint(int regulatorId, Phase phase, int zoneId);
+    
+    /**
      * Updates the entry for voltage Y point on the specified regulator.
      */
     public void updateRegulatorPoint(int regulatorId);
