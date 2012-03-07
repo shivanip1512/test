@@ -192,7 +192,7 @@ public class ProfileCollectionRequestEndpoint {
 
             Instant scheduledStart = toggleProfilingService.getScheduledStart(paoId, channelNum);
             // This is a "stop collection" so stop == null means stop now.
-            if (stop == null || !scheduledStart.isBefore(stop.minus(minOffset))) {
+            if (stop == null || scheduledStart != null && !scheduledStart.isBefore(stop.minus(minOffset))) {
                 toggleProfilingService.disableScheduledStart(paoId, channelNum);
             }
 
