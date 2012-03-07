@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.YNBoolean;
@@ -233,7 +234,7 @@ public class CCMonitorBankList extends DBPersistent {
         				    monitorPoint.setPhase(null);
         				}
         				char overrideStrategySettingsChar = rs.getString(9).charAt(0);
-        				monitorPoint.setOverrideStrategySettings(YNBoolean.valueOf(overrideStrategySettingsChar).getBoolean());
+        				monitorPoint.setOverrideStrategySettings(CtiUtilities.isTrue(overrideStrategySettingsChar));
         				return monitorPoint;
         			}
         		});
