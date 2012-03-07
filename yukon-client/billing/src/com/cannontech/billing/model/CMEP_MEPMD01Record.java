@@ -38,15 +38,15 @@ public class CMEP_MEPMD01Record implements BillingRecordBase {
     public String dataToString() {
         StringBuilder strBuilder = new StringBuilder();
         
-        strBuilder.append(RECORD_TYPE + DS + RECORD_VERSION + DS);
-        strBuilder.append(senderId + DS + senderCustomerId + DS);
-        strBuilder.append(recieverId + DS + recieverCustomerId + DS);
+        strBuilder.append(RECORD_TYPE).append(DS).append(RECORD_VERSION).append(DS);
+        strBuilder.append(senderId).append(DS).append(senderCustomerId).append(DS);
+        strBuilder.append(recieverId).append(DS).append(recieverCustomerId).append(DS);
         
-        strBuilder.append(dateTimeFormmater.print(timestamp) + DS +meterId + DS +PURPOSE + DS+ commodity.getBillingRepresentation()+ DS);
-        strBuilder.append(units + DS + calculationConstant + DS + interval+ DS + count + DS);
+        strBuilder.append(dateTimeFormmater.print(timestamp)).append(DS).append(meterId).append(DS).append(PURPOSE).append(DS).append(commodity.getBillingRepresentation()).append(DS);
+        strBuilder.append(units).append(DS).append(calculationConstant).append(DS).append(interval).append(DS).append(count).append(DS);
         
         for (DataEntry dataEntry : readingData) {
-            strBuilder.append(dateTimeFormmater.print(dataEntry.readingTimstamp) + DS + dataEntry.protocolText + DS + dataEntry.readingValue);
+            strBuilder.append(dateTimeFormmater.print(dataEntry.readingTimstamp)).append(DS).append(dataEntry.protocolText).append(DS).append(dataEntry.readingValue);
         }
         strBuilder.append("\r\n");
         

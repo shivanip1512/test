@@ -40,10 +40,7 @@ public class BillingBean implements java.util.Observer
 	private Boolean removeMult = null;
 	private Boolean appendToFile = null;
 	private Date endDate = null;
-	private int timer = 0;
-	private String timerString = "";
 	private String errorMsg = null;
-	private String token = null;
 
 /**
  * BillingBean constructor comment.
@@ -286,11 +283,4 @@ public String getErrorMsg() {
 public void setErrorMsg(String errorMsg) {
 	this.errorMsg = errorMsg;
 }
-
-    public String getToken() {
-        return token;
-    }
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

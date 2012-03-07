@@ -2,7 +2,6 @@ package com.cannontech.common.config;
 
 public enum MasterConfigBooleanKeysEnum {
 
-    CMEP_UNITS,
 	ENABLE_WEB_DEBUG_PAGES,
 	DEVELOPMENT_MODE,
 	I18N_DESIGN_MODE,

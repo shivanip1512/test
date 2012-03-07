@@ -31,6 +31,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.IterableUtils;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -271,7 +272,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     @Override
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final long startChangeId, final long stopChangeId, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeDataByChangeIdRange(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final Range<Long> changeIdRange, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
@@ -285,8 +286,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
                         sql.append("WHERE p.PointOffset").eq_k(pointIdentifier.getOffset());
                         sql.append(  "AND p.PointType").eq_k(pointIdentifier.getPointType());
-                        sql.append(  "AND rph.changeId").gte(startChangeId);
-                        sql.append(  "AND rph.changeId").lte(stopChangeId);
+                        sql.append(  "AND rph.changeId").gte(changeIdRange.getMin());
+                        sql.append(  "AND rph.changeId").lte(changeIdRange.getMax());
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
                             sql.append(  "AND yp.DisableFlag = 'N'");

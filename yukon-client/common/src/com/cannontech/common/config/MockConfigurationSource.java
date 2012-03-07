@@ -54,7 +54,7 @@ public class MockConfigurationSource implements ConfigurationSource {
     }
 
     @Override
-    public String getString(MasterConfigBooleanKeysEnum key, String defaultValue) {
+    public String getString(MasterConfigStringKeysEnum key, String defaultValue) {
         throw new UnsupportedOperationException();
     }
     

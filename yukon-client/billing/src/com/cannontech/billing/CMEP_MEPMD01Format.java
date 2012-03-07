@@ -19,13 +19,14 @@ import com.cannontech.billing.model.CMEP_MEPMD01Record;
 import com.cannontech.billing.model.CMEP_MEPMD01Record.DataEntry;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -53,12 +54,12 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
         Instant processingDate = new Instant();
 
         // Get the information from the CPARMS and the billing module
-        long lastCempChangeId = 0;
-        long maxChangeId = 0;
+        Range<Long> changeIdRange = null;
         boolean useLastChangeId= getBillingFileDefaults().getToken() != null;
         if (useLastChangeId) {
-            lastCempChangeId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.CMEP_BILLING_FILE_LAST_CHANGE_ID);
-            maxChangeId = rawPointHistoryDao.getMaxChangeId();
+            Long lastCempChangeId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.CMEP_BILLING_FILE_LAST_CHANGE_ID);
+            Long maxChangeId = rawPointHistoryDao.getMaxChangeId();
+            changeIdRange = new Range<Long>(lastCempChangeId, maxChangeId);
         }
         
         Date billingStartDate = getBillingFileDefaults().getEnergyStartDate();
@@ -72,9 +73,9 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
             try {
                 ListMultimap<PaoIdentifier, PointValueQualityHolder> billingAttributeData;  
                 if (useLastChangeId) {  // get data by token (lastChangeId)
-                    billingAttributeData = rawPointHistoryDao.getAttributeData(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), lastCempChangeId, maxChangeId, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
+                    billingAttributeData = rawPointHistoryDao.getAttributeDataByChangeIdRange(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), changeIdRange, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
                 } else {    // get data by date range
-                    billingAttributeData = rawPointHistoryDao.getAttributeData(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), billingStartDate, billingEndDate, false, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD);
+                    billingAttributeData = rawPointHistoryDao.getAttributeData(deviceIdToMeterMap.values(), cmepUnit.getAttribute(), billingStartDate, billingEndDate, false, Clusivity.EXCLUSIVE_INCLUSIVE, Order.FORWARD);
                 }
                 
                 for (Entry<PaoIdentifier, PointValueQualityHolder> entry : billingAttributeData.entries()) {
@@ -105,7 +106,7 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
         
         // If we are using the changeId version make sure to update the changeId to the next entry needed.
         if (useLastChangeId) {
-            persistedSystemValueDao.setValue(PersistedSystemValueKey.CMEP_BILLING_FILE_LAST_CHANGE_ID, maxChangeId);
+            persistedSystemValueDao.setValue(PersistedSystemValueKey.CMEP_BILLING_FILE_LAST_CHANGE_ID, changeIdRange.getMax());
         }
 
 	    CTILogger.info("@" +this.toString() +" Data Collection : Took " + (System.currentTimeMillis() - timer));
@@ -144,7 +145,7 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
      * Gets the CMEP units from master.cfg.  If this CPARM doesn't exist it will use the KVARHREG CMEP unit.
      */
     private List<CMEPUnitEnum> getCMEPUnits() {
-        String cmepUnitsStr = configurationSource.getString(MasterConfigBooleanKeysEnum.CMEP_UNITS, "KWHREG,KW");
+        String cmepUnitsStr = configurationSource.getString(MasterConfigStringKeysEnum.CMEP_UNITS, "KWHREG,KW");
         List<String> cmepUnitsStrs = Lists.newArrayList(StringUtils.split(cmepUnitsStr, ','));
         List<CMEPUnitEnum> cmepUnits = 
             Lists.transform(cmepUnitsStrs, new Function<String, CMEPUnitEnum>() {

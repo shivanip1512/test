@@ -9,6 +9,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.point.PointType;
@@ -133,14 +134,13 @@ public interface RawPointHistoryDao {
      * 
      * @param paos The Iterable of PAOs
      * @param attribute The Attribute to return, this can either be a regular or a mapped attribute
-     * @param startChangeId The changeId to start from.
-     * @param stopChangeId The id of the last changeId to use in this call
+     * @param changeIdRange The change id range we will use when getting the point value data.
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
      * @param clusivity - determines whether each end of range is inclusive or exclusive
      * @param order - controls ordering by timestamp (only affects the iteration order of the values)
      * @return
      */
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> paos, Attribute attribute, final long startChangeId, final long stopChangeId, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order);
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeDataByChangeIdRange(Iterable <? extends YukonPao> paos, Attribute attribute, Range<Long> changeIdRange, boolean excludeDisabledPaos, Clusivity clusivity, Order order);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap

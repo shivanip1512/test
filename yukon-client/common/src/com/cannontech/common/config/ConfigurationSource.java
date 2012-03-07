@@ -36,7 +36,7 @@ public interface ConfigurationSource {
      */
     public String getString(String key, String defaultValue);
 
-    public String getString(MasterConfigBooleanKeysEnum key, String defaultValue);
+    public String getString(MasterConfigStringKeysEnum key, String defaultValue);
     
     public int getRequiredInteger(String key) throws UnknownKeyException;
     

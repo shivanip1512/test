@@ -97,7 +97,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
     
     @Override
-    public String getString(MasterConfigBooleanKeysEnum key, String defaultValue) {
+    public String getString(MasterConfigStringKeysEnum key, String defaultValue) {
         return getString(key.name(), defaultValue);
     }
     
