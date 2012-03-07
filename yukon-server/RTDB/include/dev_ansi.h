@@ -10,6 +10,8 @@
 #include "pt_analog.h"
 #include "pt_status.h"
 
+namespace Cti {
+namespace Devices {
 
 class IM_EX_DEVDB CtiDeviceAnsi : public CtiDeviceMeter
 {
@@ -82,5 +84,6 @@ private:
     unsigned long _lastLPTime;
 };
 
+}}
 
 

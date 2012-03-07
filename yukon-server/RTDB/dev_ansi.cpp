@@ -13,6 +13,9 @@ using std::string;
 using std::list;
 using std::endl;
 
+namespace Cti {
+namespace Devices {
+
 bool isUnintializedTimeAndValue(double value, double time);
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -841,6 +844,5 @@ bool isUnintializedTimeAndValue(double value, double timestamp)
         return false;
 }
 
-
-
-
+}
+}

@@ -3,6 +3,9 @@
 #include "dev_focus.h"
 #include "prot_ansi.h"
 
+namespace Cti {
+namespace Devices {
+
 class IM_EX_DEVDB Ipc410ALDevice : public CtiDeviceFocus 
 {
 
@@ -22,5 +25,6 @@ private:
 
 };
 
-
+}
+}
 

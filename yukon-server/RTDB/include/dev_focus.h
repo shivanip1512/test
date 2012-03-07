@@ -10,6 +10,9 @@
 #include "types.h"
 #include "dllyukon.h"
 
+namespace Cti {
+namespace Devices {
+
 class IM_EX_DEVDB CtiDeviceFocus : public CtiDeviceAnsi
 {
 
@@ -35,5 +38,6 @@ private:
 
 };
 
-
+}
+}
 

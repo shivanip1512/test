@@ -2,6 +2,9 @@
 #include "dlldefs.h"
 #include "dev_focus.h"
 
+namespace Cti {
+namespace Devices {
+
 class IM_EX_DEVDB Ipc420ADDevice : public CtiDeviceFocus 
 {
 
@@ -21,4 +24,6 @@ private:
 
 };
 
+}
+}
 

@@ -16,15 +16,15 @@ CtiAnsiFocusMfgTable13::CtiAnsiFocusMfgTable13( BYTE *dataBlob, int fwVersion, i
     {
         _xyFormat = Q9_7;
     }
-    for (PhaseType i = A; i < Invalid; i = PhaseType(int(i) + 1))
+    for (int i = A; i < Invalid; ++i)
     {
         dataBlob += toAnsiIntParser( dataBlob, &_gyrboxPhaseInfo.phaseVoltage[i].rawValue, sizeof(unsigned short),  dataOrder );
     }
-    for (PhaseType i = A; i < Invalid; i = PhaseType(int(i) + 1))
+    for (int i = A; i < Invalid; ++i)
     {
         dataBlob += toAnsiIntParser( dataBlob, &_gyrboxPhaseInfo.phaseVoltageAngle[i].rawValue, sizeof(unsigned short),  dataOrder );
     }
-    for (PhaseType i = A; i < Invalid; i = PhaseType(int(i) + 1))
+    for (int i = A; i < Invalid; ++i)
     {
         dataBlob += toAnsiIntParser( dataBlob, &_gyrboxPhaseInfo.phaseCurrent[i].rawValue, sizeof(unsigned short),  dataOrder );
     }

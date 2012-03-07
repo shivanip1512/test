@@ -122,25 +122,24 @@ void CtiProtocolANSI_focus::convertToManufacturerTable( BYTE *data, BYTE numByte
     switch( aTableID )
     {
          case Focus_InstantaneouMeasurements:
+        {
             {
-                {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " Creating Focus Mfg Table 4" << endl;
-                }
-                _table04 = new CtiAnsiFocusMfgTable04( data, getDataOrder() );
-                _table04->printResult();
-                break;
+               CtiLockGuard<CtiLogger> doubt_guard(dout);
+               dout << CtiTime() << " Creating Focus Mfg Table 4" << endl;
             }
+            _table04 = new CtiAnsiFocusMfgTable04( data, getDataOrder() );
+            _table04->printResult();
+            break;
+        }
             
         case FocusAX_InstantaneouMeasurements:
         {
             {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " Creating Focus Mfg Table 13" << endl;
-                }
-                _table13 = new CtiAnsiFocusMfgTable13( data, getFirmwareVersion(), getFirmwareRevision(), getDataOrder()  );
-                _table13->printResult();
-                break;
+               CtiLockGuard<CtiLogger> doubt_guard(dout);
+               dout << CtiTime() << " Creating Focus Mfg Table 13" << endl;
+            }
+            _table13 = new CtiAnsiFocusMfgTable13( data, getFirmwareVersion(), getFirmwareRevision(), getDataOrder()  );
+            _table13->printResult();
             break;
         }
 

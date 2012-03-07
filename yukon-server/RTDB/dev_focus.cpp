@@ -15,6 +15,9 @@ using namespace Cti::Protocols::Ansi;
 using std::string;
 using std::endl;
 
+namespace Cti {
+namespace Devices {
+
 //=========================================================================================================================================
 //=========================================================================================================================================
 
@@ -223,3 +226,5 @@ unsigned long CtiDeviceFocus::updateLastLpTime()
     return getANSIProtocol().getLPTime(0);
 }
 
+}
+}
