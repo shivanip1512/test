@@ -48,15 +48,17 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
 
         //get template
-        DeviceBase templateDevice = getExistingDeviceByTemplate(templateName);
+        DeviceBase templateDevice = retrieveExistingDeviceByTemplate(templateName);
         
         int templateDeviceId = templateDevice.getPAObjectID();
         PaoType paoType = PaoType.getForDbString(templateDevice.getPAOType());
+        PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, paoType);
+        
         //copy device from a template
         DeviceBase newDevice = getNewDeviceFromTemplate(templateDevice,newDeviceName);
 
         //create new device
-        SimpleDevice newYukonDevice = createNewDeviceByTemplate(newDevice, templateDeviceId,  paoType, templateName, copyPoints);
+        SimpleDevice newYukonDevice = createNewDeviceByTemplate(newDevice, templateIdentifier, templateName, copyPoints);
 
         return newYukonDevice;
 
@@ -67,11 +69,12 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             throws DeviceCreationException {
         
         //get template, validate that a template is an RFN Template
-        DeviceBase templateDevice = getExistingDeviceByTemplate(templateName);
+        DeviceBase templateDevice = retrieveExistingDeviceByTemplate(templateName);
         
         
         int templateDeviceId = templateDevice.getPAObjectID();
         PaoType paoType = PaoType.getForDbString(templateDevice.getPAOType());
+        PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, paoType);
         
         if (PaoClass.getForDbString(templateDevice.getPAOClass()) != PaoClass.RFMESH) {
             throw new DeviceCreationException(String.format("Could not create new device named '%s' from template '%s'. Template '%s' must be an RFN Device",
@@ -88,7 +91,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         newDevice.getRfnAddress().setModel(model);
         
         // create new device
-        SimpleDevice newYukonDevice = createNewDeviceByTemplate(newDevice, templateDeviceId, paoType, templateName, copyPoints);
+        SimpleDevice newYukonDevice = createNewDeviceByTemplate(newDevice, templateIdentifier, templateName, copyPoints);
 
         return newYukonDevice;
 
@@ -149,21 +152,19 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
                 new PaoIdentifier(newDevice.getDevice().getDeviceID(), type);
             SimpleDevice yukonDevice = new SimpleDevice(paoIdentifier);
 
-            // db change msg
-            paoCreationHelper.processDbChange(yukonDevice, DbChangeType.ADD);
-
             // CREATE POINTS
             if (createPoints) {
                 paoCreationHelper.addDefaultPointsToPao(yukonDevice);
             }
+            // db change msg.  Process Device dbChange AFTER device AND points have been inserted into DB.
+            paoCreationHelper.processDbChange(yukonDevice, DbChangeType.ADD);
             return yukonDevice;
         } catch (PersistenceException e) {
             throw new DeviceCreationException("Could not create new device.", e);
         }
     }
 
-    private SimpleDevice createNewDeviceByTemplate(DeviceBase newDevice, Integer templateDeviceId,
-                                                   PaoType templateType, String templateName,
+    private SimpleDevice createNewDeviceByTemplate(DeviceBase newDevice, PaoIdentifier templateIdentifier, String templateName,
                                                    boolean copyPoints) {
         try {
             dbPersistentDao.performDBChangeWithNoMsg(newDevice, TransactionType.INSERT);
@@ -176,16 +177,13 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
             // COPY POINTS
             if (copyPoints) {
-                List<PointBase> points = pointDao.getPointsForPao(templateDeviceId);
+                List<PointBase> points = pointDao.getPointsForPao(templateIdentifier.getPaoId());
                 paoCreationHelper.applyPoints(newYukonDevice, points);
             }
 
-            // db change msg. Process Device dbChange AFTER device AND points have been inserted
-            // into
-            // DB.
+            // db change msg. Process Device dbChange AFTER device AND points have been inserted into DB.
             paoCreationHelper.processDbChange(newYukonDevice, DbChangeType.ADD);
 
-            PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, templateType);
             SimpleDevice templateYukonDevice = new SimpleDevice(templateIdentifier);
 
             // add to template's device groups
@@ -209,7 +207,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
     }
     
-    private DeviceBase getExistingDeviceByTemplate(String templateName) {
+    private DeviceBase retrieveExistingDeviceByTemplate(String templateName) {
         
         try {
             SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
@@ -217,7 +215,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
             DeviceBase templateDevice = DeviceFactory.createDevice(templateYukonDevice.getDeviceType());
             templateDevice.setDeviceID(templateDeviceId);
-            templateDevice = (DeviceBase) dbPersistentDao.retrieveDBPersistent(templateDevice);
+            dbPersistentDao.retrieveDBPersistent(templateDevice);
 
             return templateDevice;
         } catch (IncorrectResultSizeDataAccessException e) {
