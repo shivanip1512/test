@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
+import com.cannontech.amr.toggleProfiling.service.ProfilingService;
 import com.cannontech.amr.toggleProfiling.tasks.ToggleProfilingTask;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -26,9 +26,9 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.user.YukonUserContext;
 
-public class ToggleProfilingServiceImpl implements ToggleProfilingService {
+public class ProfilingServiceImpl implements ProfilingService {
 
-    private Logger logger = YukonLogManager.getLogger(ToggleProfilingServiceImpl.class);
+    private Logger logger = YukonLogManager.getLogger(ProfilingServiceImpl.class);
     
     private PaoDao paoDao = null;
     private DBPersistentDao dbPersistentDao = null;
@@ -60,15 +60,15 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
     }
 
     @Override
-    public void scheduleStartProfilingForDevice(int deviceId, int channelNum, Date toggleDate,
+    public void scheduleStartProfilingForDevice(int deviceId, int channelNum, Date startDate,
                                                 YukonUserContext userContext) {
-        scheduleToggleProfilingForDevice(deviceId, channelNum, true, toggleDate, userContext);
+        scheduleToggleProfilingForDevice(deviceId, channelNum, true, startDate, userContext);
     }
 
     @Override
-    public void scheduleStopProfilingForDevice(int deviceId, int channelNum, Date toggleDate,
+    public void scheduleStopProfilingForDevice(int deviceId, int channelNum, Date stopDate,
                                                YukonUserContext userContext) {
-        scheduleToggleProfilingForDevice(deviceId, channelNum, false, toggleDate, userContext);
+        scheduleToggleProfilingForDevice(deviceId, channelNum, false, stopDate, userContext);
     }
 
     private void scheduleToggleProfilingForDevice(int deviceId, int channelNum,
@@ -89,7 +89,7 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
     }
 
     @Override
-    public boolean getToggleValueForDevice(int deviceId, int channelNum) {
+    public boolean isProfilingOnNow(int deviceId, int channelNum) {
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);

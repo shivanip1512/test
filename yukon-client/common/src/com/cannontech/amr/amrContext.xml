@@ -187,7 +187,7 @@
     
     <!-- Toggle Profiling Service -->
     <bean id="toggleProfilingService"
-        class="com.cannontech.amr.toggleProfiling.service.impl.ToggleProfilingServiceImpl">
+        class="com.cannontech.amr.toggleProfiling.service.impl.ProfilingServiceImpl">
         <property name="paoDao" ref="paoDao" />
         <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="jobManager" ref="jobManager" />

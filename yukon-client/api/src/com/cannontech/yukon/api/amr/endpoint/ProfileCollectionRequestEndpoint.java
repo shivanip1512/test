@@ -13,7 +13,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.w3c.dom.Node;
 
 import com.cannontech.amr.device.ProfileAttributeChannel;
-import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
+import com.cannontech.amr.toggleProfiling.service.ProfilingService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -37,7 +37,7 @@ public class ProfileCollectionRequestEndpoint {
     private final static Duration minOffset = Period.minutes(59).toStandardDuration();
 
     @Autowired private PaoSelectionService paoSelectionService;
-    @Autowired private ToggleProfilingService toggleProfilingService;
+    @Autowired private ProfilingService toggleProfilingService;
     @Autowired private AttributeService attributeService;
     @Autowired private ProfileCollectionService profileCollectionService;
 
@@ -191,6 +191,7 @@ public class ProfileCollectionRequestEndpoint {
             int paoId = device.getPaoId();
 
             Instant scheduledStart = toggleProfilingService.getScheduledStart(paoId, channelNum);
+            boolean isRunningNow = toggleProfilingService.isProfilingOnNow(paoId, channelNum);
             // This is a "stop collection" so stop == null means stop now.
             if (stop == null || scheduledStart != null && !scheduledStart.isBefore(stop.minus(minOffset))) {
                 toggleProfilingService.disableScheduledStart(paoId, channelNum);
@@ -200,7 +201,7 @@ public class ProfileCollectionRequestEndpoint {
 
             if (stop == null) {
                 toggleProfilingService.stopProfilingForDevice(paoId, channelNum);
-            } else {
+            } else if (scheduledStart != null || isRunningNow) {
                 toggleProfilingService.scheduleStopProfilingForDevice(paoId, channelNum,
                                                                       stop.toDate(), userContext);
             }

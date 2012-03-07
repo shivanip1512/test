@@ -28,7 +28,7 @@ import com.cannontech.amr.device.ProfileAttributeChannel;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
+import com.cannontech.amr.toggleProfiling.service.ProfilingService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
@@ -82,7 +82,7 @@ public class ProfileWidget extends WidgetControllerBase {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private ContactDao contactDao;
     @Autowired private SimpleReportService simpleReportService;
-    @Autowired private ToggleProfilingService toggleProfilingService;
+    @Autowired private ProfilingService profilingService;
     @Autowired private TemplateProcessorFactory templateProcessorFactory;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -104,7 +104,7 @@ public class ProfileWidget extends WidgetControllerBase {
                                                               YukonUserContext userContext) {
 
         // get load profile
-        DeviceLoadProfile deviceLoadProfile = toggleProfilingService.getDeviceLoadProfile(deviceId);
+        DeviceLoadProfile deviceLoadProfile = profilingService.getDeviceLoadProfile(deviceId);
         Meter meter = meterDao.getForId(deviceId);
 
         Set<Attribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
@@ -114,8 +114,8 @@ public class ProfileWidget extends WidgetControllerBase {
             if (supportedProfileAttributes.contains(attrChanEnum.getAttribute())) {
 
                 Map<String, Object> channelInfo = new HashMap<String, Object>();
-                channelInfo.put("channelProfilingOn", toggleProfilingService.getToggleValueForDevice(deviceId, attrChanEnum.getChannel()));
-                channelInfo.put("jobInfos", toggleProfilingService.getToggleJobInfos(deviceId, attrChanEnum.getChannel()));
+                channelInfo.put("channelProfilingOn", profilingService.isProfilingOnNow(deviceId, attrChanEnum.getChannel()));
+                channelInfo.put("jobInfos", profilingService.getToggleJobInfos(deviceId, attrChanEnum.getChannel()));
                 channelInfo.put("channelNumber", Integer.toString(attrChanEnum.getChannel()));
                 channelInfo.put("channelDescription", attrChanEnum.getAttribute().getDescription());
                 channelInfo.put("channelProfileRate", calcIntervalStr(attrChanEnum.getRate(deviceLoadProfile), userContext));
@@ -402,8 +402,8 @@ public class ProfileWidget extends WidgetControllerBase {
             // start now
             if (startRadio.equalsIgnoreCase("now")) {
                 // already scheduled to start? cancel it
-                toggleProfilingService.disableScheduledStart(deviceId, channelNum);
-                toggleProfilingService.startProfilingForDevice(deviceId, channelNum);
+                profilingService.disableScheduledStart(deviceId, channelNum);
+                profilingService.startProfilingForDevice(deviceId, channelNum);
             }
             // start later
             else if (startRadio.equalsIgnoreCase("future") && toggleErrorMsg == null) {
@@ -414,22 +414,22 @@ public class ProfileWidget extends WidgetControllerBase {
                 }
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
-                    toggleProfilingService.disableScheduledStart(deviceId, channelNum);
-                    toggleProfilingService.scheduleStartProfilingForDevice(deviceId, channelNum,
+                    profilingService.disableScheduledStart(deviceId, channelNum);
+                    profilingService.scheduleStartProfilingForDevice(deviceId, channelNum,
                                                                            scheduledStartDate, userContext);
                 }
             }
             // stop now?
             // - kill any scheduled stops
             if (stopRadio.equalsIgnoreCase("now")) {
-                toggleProfilingService.disableScheduledStop(deviceId, channelNum);
+                profilingService.disableScheduledStop(deviceId, channelNum);
             }
             // stop later?
             // - don't bother if there was an error scheduling the start date
             else if (stopRadio.equalsIgnoreCase("future") && toggleErrorMsg == null) {
                 // schedule it!, already scheduled? cancel it
-                toggleProfilingService.disableScheduledStop(deviceId, channelNum);
-                toggleProfilingService.scheduleStopProfilingForDevice(deviceId, channelNum,
+                profilingService.disableScheduledStop(deviceId, channelNum);
+                profilingService.scheduleStopProfilingForDevice(deviceId, channelNum,
                                                                       scheduledStopDate, userContext);
             }
         }
@@ -441,8 +441,8 @@ public class ProfileWidget extends WidgetControllerBase {
             // stop now
             if (stopRadio.equalsIgnoreCase("now")) {
                 // already scheduled to start? cancel it
-                toggleProfilingService.disableScheduledStop(deviceId, channelNum);
-                toggleProfilingService.stopProfilingForDevice(deviceId, channelNum);
+                profilingService.disableScheduledStop(deviceId, channelNum);
+                profilingService.stopProfilingForDevice(deviceId, channelNum);
             }
             // stop later
             else if (stopRadio.equalsIgnoreCase("future")) {
@@ -465,8 +465,8 @@ public class ProfileWidget extends WidgetControllerBase {
                 }
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
-                    toggleProfilingService.disableScheduledStop(deviceId, channelNum);
-                    toggleProfilingService.scheduleStopProfilingForDevice(deviceId, channelNum,
+                    profilingService.disableScheduledStop(deviceId, channelNum);
+                    profilingService.scheduleStopProfilingForDevice(deviceId, channelNum,
                                                                           scheduledStopDate, userContext);
                 }
             }

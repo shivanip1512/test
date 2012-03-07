@@ -9,17 +9,17 @@ import org.joda.time.Instant;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.user.YukonUserContext;
 
-public interface ToggleProfilingService {
+public interface ProfilingService {
     public void startProfilingForDevice(int deviceId, int channelNum);
     public void stopProfilingForDevice(int deviceId, int channelNum);
 
-    public void scheduleStartProfilingForDevice(int deviceId, int channelNum, Date toggleDate,
+    public void scheduleStartProfilingForDevice(int deviceId, int channelNum, Date startDate,
                                                 YukonUserContext userContext);
 
-    public void scheduleStopProfilingForDevice(int deviceId, int channelNum, Date toggleDate,
+    public void scheduleStopProfilingForDevice(int deviceId, int channelNum, Date stopDate,
                                                YukonUserContext userContext);
 
-    public boolean getToggleValueForDevice(int deviceId, int channelNum);
+    public boolean isProfilingOnNow(int deviceId, int channelNum);
 
     public boolean getToggleValueForDevice(DeviceLoadProfile deviceLoadProfile, int channelNum);
 
