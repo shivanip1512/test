@@ -243,7 +243,8 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
                 ListMultimap<Integer, Integer> accountIdToInventoryIds = 
                     Multimaps.transformValues(accountIdToLMHardwareControlGroups, lmHardwareControlGroupToInventoryIdFunction);
                 
-                // Create the model rows of the enrolled inventories found on the account.
+                // Create the model rows of the enrolled inventories found on the account.  We're also using the set to remove any duplicate inventory
+                // entries that may occur from enrolling and unenrolling a device mulitple times.
                 for (Integer accountId : accountIdToInventoryIds.keySet()) {
                     Set<Integer> enrolledInventoryIds = Sets.newHashSet(accountIdToInventoryIds.get(accountId));
                     for (int enrolledInventoryId : enrolledInventoryIds) {
