@@ -82,7 +82,7 @@ INSERT INTO YukonServices VALUES(19,'YukonMessageListener','classpath:com/cannon
 /* End YUK-10725 */
 
 /* Start YUK-10730 */
-INSERT INTO YukonRoleProperty VALUES(-1706,-8,'Enable Captchas','true','This feature turns on and off all the captchas in the system');
+INSERT INTO YukonRoleProperty VALUES(-1706,-8,'Enable CAPTCHAs','true','Enable CAPTCHAs for password management.');
 /* End YUK-10730 */
 
 /* Start YUK-10707 */
