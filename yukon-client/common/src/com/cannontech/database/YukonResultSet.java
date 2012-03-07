@@ -14,11 +14,13 @@ import org.joda.time.Instant;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.format.ISOPeriodFormat;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.MapMaker;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.MapMaker;
 
 public class YukonResultSet {
     private ResultSet rs;
@@ -99,6 +101,13 @@ public class YukonResultSet {
 
     public Date getDate(String columnLabel) throws SQLException {
         return rs.getTimestamp(columnLabel);
+    }
+
+    public PaoIdentifier getPaoIdentifier(String paObjectIdColumnLabel, String paoTypeColumnLabel)
+            throws SQLException {
+        int paoId = getInt(paObjectIdColumnLabel);
+        PaoType paoType = getEnum(paoTypeColumnLabel, PaoType.class);
+        return new PaoIdentifier(paoId, paoType);
     }
     
     public Instant getInstant(String columnLabel) throws SQLException {

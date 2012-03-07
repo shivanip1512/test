@@ -42,10 +42,8 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     private final YukonRowMapper<VoltageLimitedDeviceInfo> deviceInfoRowMapper = new YukonRowMapper<VoltageLimitedDeviceInfo>() {
         @Override
         public VoltageLimitedDeviceInfo mapRow(YukonResultSet rs) throws SQLException {
-            int paoId = rs.getInt("PaObjectId");
             String paoName = rs.getString("PaoName");
-            PaoType paoType = rs.getEnum("Type", PaoType.class);
-            PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
+            PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaObjectId", "Type");
             int pointId = rs.getInt("PointId");
             String pointName = rs.getString("PointName");
             Phase phase = rs.getEnum("Phase", Phase.class);
