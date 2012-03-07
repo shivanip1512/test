@@ -17,12 +17,12 @@
     		<c:otherwise>
                 <Span class="ErrorMsg" id="changeLoginErrorDiv">
     		</c:otherwise>
-    	</c:choose>
-            <cti:msg key="${loginChangeMsg}"/>
-            <c:if test="${!empty param.retrySeconds}">
-                <br/>
-                <cti:msg key="yukon.web.changelogin.error.RETRY" argument="${param.retrySeconds}"></cti:msg>
-            </c:if>            
+    	   </c:choose>
+                <cti:msg key="${loginChangeMsg}"/>
+                <c:if test="${!empty param.retrySeconds}">
+                    <br/>
+                    <cti:msg key="yukon.web.changelogin.error.RETRY" argument="${param.retrySeconds}"></cti:msg>
+                </c:if>            
         </Span>
         <br/>
     </c:if>
