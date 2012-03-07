@@ -19,8 +19,8 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.service.PaoSelectionService;
-import com.cannontech.common.pao.service.PaoSelectionUtil;
 import com.cannontech.common.pao.service.PaoSelectionService.PaoSelectionData;
+import com.cannontech.common.pao.service.PaoSelectionUtil;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.user.YukonUserContext;
@@ -224,6 +224,9 @@ public class ProfileCollectionRequestEndpoint {
      */
     private ProfileAttributeChannel parseChannel(SimpleXPathTemplate template, Element responseElem) {
         String channelStr = template.evaluateAsString("@channel");
+        if (channelStr == null) {
+            return ProfileAttributeChannel.LOAD_PROFILE;
+        }
         ProfileAttributeChannel channel = null;
         try {
             channel = ProfileAttributeChannel.valueOf(channelStr);
