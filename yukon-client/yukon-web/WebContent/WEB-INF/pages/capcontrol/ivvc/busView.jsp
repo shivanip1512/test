@@ -300,13 +300,9 @@
 							<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
 						    	<cti:param name="zoneId" value="${zoneId}"/>
 						    </cti:url>
-							<h3 class="dib">
-							<a href="${zoneDetailUrl}">
-								<spring:escapeBody htmlEscape="true">
-										${zoneVoltagePointsHolder.zoneName}
-								</spring:escapeBody>
-							</a>
-							</h3>
+							<strong>
+								<a href="${zoneDetailUrl}"><spring:escapeBody htmlEscape="true">${zoneVoltagePointsHolder.zoneName}</spring:escapeBody></a>
+							</strong>
 							(<a href="${zoneVoltagePointsUrl}"><i:inline key=".voltagePoints.editPoints"/></a>)
 							<%@ include file="voltagePoints.jspf" %>
 							<br>
