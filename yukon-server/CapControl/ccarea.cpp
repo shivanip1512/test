@@ -78,13 +78,10 @@ void CtiCCArea::saveGuts(RWvostream& ostrm ) const
     CtiCCAreaBase::saveGuts(ostrm);
 
     ostrm << getOvUvDisabledFlag();
-    ostrm << getSubstationIds().size();
-
-    for each(long paoId in getSubstationIds())
-    {
-        ostrm << paoId;
-    }
-
+    Cti::CapControl::PaoIdVector substationIds = getSubstationIds();
+    ostrm << substationIds.size();
+    ostrm << substationIds;
+    
     double pfDisplayValue = getPFactor();
     double estPfDisplayValue = getEstPFactor();
 

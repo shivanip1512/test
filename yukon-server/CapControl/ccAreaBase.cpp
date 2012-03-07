@@ -115,16 +115,6 @@ CtiCCAreaBase& CtiCCAreaBase::operator=(const CtiCCAreaBase& right)
 }
 
 /*---------------------------------------------------------------------------
-    replicate
-
-    Restores self's operation fields
----------------------------------------------------------------------------*/
-CtiCCAreaBase* CtiCCAreaBase::replicate() const
-{
-    return(new CtiCCAreaBase(*this));
-}
-
-/*---------------------------------------------------------------------------
     saveGuts
 
     Save self's state onto the given stream
@@ -241,7 +231,9 @@ CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlPointId(LONG pointId)
 CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlValue(BOOL flag)
 {
     if (_voltReductionControlValue != flag)
+    {
         _dirty = true;
+    }
     _voltReductionControlValue = flag;
     return *this;
 }
@@ -255,7 +247,9 @@ CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlValue(BOOL flag)
 CtiCCAreaBase& CtiCCAreaBase::setOvUvDisabledFlag(BOOL flag)
 {
     if (_ovUvDisabledFlag != flag)
+    {
         _dirty = true;;
+    }
     _ovUvDisabledFlag = flag;
     return *this;
 }

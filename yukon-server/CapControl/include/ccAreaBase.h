@@ -63,8 +63,6 @@ public:
 
     CtiCCAreaBase& operator=(const CtiCCAreaBase& right);
 
-    CtiCCAreaBase* replicate() const;
-
 private:
 
     LONG _voltReductionControlPointId;
