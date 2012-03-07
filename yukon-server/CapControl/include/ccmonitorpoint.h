@@ -29,7 +29,7 @@ public:
     virtual ~CtiCCMonitorPoint();
 
     LONG getPointId() const;
-    LONG getBankId() const;
+    LONG getDeviceId() const;
     DOUBLE getValue() const;
     LONG getDisplayOrder() const;
     BOOL isScannable() const;
@@ -41,7 +41,7 @@ public:
     BOOL getScanInProgress() const;
 
     CtiCCMonitorPoint& setPointId(LONG pointId);
-    CtiCCMonitorPoint& setBankId(LONG bankId);
+    CtiCCMonitorPoint& setDeviceId(LONG bankId);
     CtiCCMonitorPoint& setValue(DOUBLE value);
     CtiCCMonitorPoint& setDisplayOrder(LONG displayOrder);
     CtiCCMonitorPoint& setScannable(BOOL flag);
@@ -52,7 +52,7 @@ public:
     CtiCCMonitorPoint& setTimeStamp(CtiTime timeStamp);
     CtiCCMonitorPoint& setScanInProgress(BOOL flag);
 
-    CtiCCMonitorPoint* replicate() const;
+    boost::shared_ptr<CtiCCMonitorPoint> replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
 
     BOOL isDirty() const;
@@ -77,7 +77,7 @@ private:
     Cti::CapControl::Phase  _phase;
 
     LONG _pointId;
-    LONG _bankId;
+    LONG _deviceId;
 
     LONG _displayOrder;
     BOOL _scannable;
@@ -97,4 +97,4 @@ private:
 
 };
 
-typedef CtiCCMonitorPoint* CtiCCMonitorPointPtr;
+typedef boost::shared_ptr<CtiCCMonitorPoint> CtiCCMonitorPointPtr;

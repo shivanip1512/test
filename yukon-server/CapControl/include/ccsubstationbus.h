@@ -18,6 +18,7 @@
 #include "ccmonitorpoint.h"
 #include "Controllable.h"
 #include "sorted_vector.h"
+#include "PointResponse.h"
 
 namespace Cti {
 namespace Database {
@@ -46,6 +47,7 @@ enum CtiCCMultiBusState
     POST_OP_SCAN_PENDING,
     RECORD_ADAPTIVE_VOLTAGE,
 };
+
 
 class CtiCCSubstationBus : public RWCollectable, public Controllable
 {
@@ -98,9 +100,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getCurrentWattPointQuality() const;
     LONG getCurrentVoltPointQuality() const;
     BOOL getWaiveControlFlag() const;
-    BOOL getVerificationFlag() const;
-    BOOL getPerformingVerificationFlag() const;
-    BOOL getVerificationDoneFlag() const;
+    bool getVerificationFlag() const;
+    bool getPerformingVerificationFlag() const;
+    bool getVerificationDoneFlag() const;
     LONG getCurrentVerificationFeederId() const;
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
@@ -304,9 +306,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL scanAllMonitorPoints();
     BOOL isBusAnalysisNeeded(const CtiTime& currentDateTime);
     BOOL isMultiVoltBusAnalysisNeeded(const CtiTime& currentDateTime);
-    BOOL areAllMonitorPointsInVoltageRange(CtiCCMonitorPoint* oorPoint);
-    CtiCCCapBank* getMonitorPointParentBankAndFeeder(CtiCCMonitorPoint* point, CtiCCFeeder* feed);
-    BOOL voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
+    BOOL areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr oorPoint);
+    CtiCCCapBank* getMonitorPointParentBankAndFeeder(CtiCCMonitorPointPtr point, CtiCCFeeder* feed);
+    BOOL voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
     BOOL areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action);
     BOOL analyzeBusForVarImprovement(CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec &pilMessages);
 
@@ -352,6 +354,18 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
                                     DOUBLE before, DOUBLE after, DOUBLE change, DOUBLE phaseA, DOUBLE phaseB, DOUBLE phaseC);
     void createCannotControlBankText(string text, string commandString, CtiMultiMsg_vec& ccEvents);
     void performDataOldAndFallBackNecessaryCheck();
+
+    bool addMonitorPoint(long pointId, CtiCCMonitorPointPtr monPoint);
+    map <long, CtiCCMonitorPointPtr> getAllMonitorPoints();
+    std::vector <long> CtiCCSubstationBus::getAllMonitorPointIds();
+    void removeAllMonitorPoints();
+    map <Cti::CapControl::PointResponseKey, Cti::CapControl::PointResponsePtr> getAllPointResponses();
+    CtiCCMonitorPointPtr getMonitorPoint(long pointId);
+    Cti::CapControl::PointResponsePtr getPointResponse(Cti::CapControl::PointResponseKey key);
+    void updatePointResponse(Cti::CapControl::PointResponseKey key, Cti::CapControl::PointResponsePtr  pResponse);
+    void addDefaultPointResponses( );
+
+    std::vector<Cti::CapControl::PointResponse> getPointResponsesForDevice(const long deviceId);
 
     BOOL isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
@@ -501,6 +515,9 @@ private:
     CtiRegression regressionA;
     CtiRegression regressionB;
     CtiRegression regressionC;
+
+    map <long, CtiCCMonitorPointPtr> _monitorPoints;
+    map <Cti::CapControl::PointResponseKey, Cti::CapControl::PointResponsePtr> _pointResponses;
 };
 
 typedef CtiCCSubstationBus* CtiCCSubstationBusPtr;

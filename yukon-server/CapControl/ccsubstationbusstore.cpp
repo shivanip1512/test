@@ -448,6 +448,14 @@ CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByPAObjectID(long paobj
     return (iter == _paobject_subbus_map.end() ? NULL : iter->second);
 }
 
+CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByCapBankID(long cap_bank_id)
+{
+    long subBusId = findSubBusIDbyCapBankID(cap_bank_id);
+    if (subBusId == NULL)
+        return NULL;
+    return findSubBusByPAObjectID(subBusId);
+}
+
 CtiCCFeederPtr CtiCCSubstationBusStore::findFeederByPAObjectID(long paobject_id)
 {
     PaoIdToFeederMap::iterator iter = _paobject_feeder_map.find(paobject_id);
@@ -1050,22 +1058,8 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                 for(LONG i=0;i<_ccSubstationBuses->size();i++)
                 {
                     CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
-                    if( currentCCSubstationBus->isDirty() )
-                    {
-                        try
-                        {
-                            currentCCSubstationBus->dumpDynamicData(conn,currentDateTime);
-                        }
-                        catch(...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                    }
-                    if (currentCCSubstationBus->getOperationStats().isDirty())
-                    {
-                        currentCCSubstationBus->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                    }
+                    currentCCSubstationBus->dumpDynamicData(conn,currentDateTime);
+                    
                     CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
                     if( ccFeeders.size() > 0 )
                     {
@@ -1133,12 +1127,11 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                     {
                                         currentCapBank->getOperationStats().dumpDynamicData(conn,currentDateTime);
                                     }
-                                    vector <CtiCCMonitorPointPtr>& monPoints = currentCapBank->getMonitorPoint();
-                                    for (LONG l = 0; l < monPoints.size(); l++)
+                                    for each(CtiCCMonitorPointPtr monPoint in currentCapBank->getMonitorPoint())
                                     {
-                                        if (((CtiCCMonitorPointPtr)monPoints[l])->isDirty())
+                                        if (monPoint->isDirty())
                                         {
-                                            ((CtiCCMonitorPointPtr)monPoints[l])->dumpDynamicData(conn,currentDateTime);
+                                            monPoint->dumpDynamicData(conn,currentDateTime);
                                         }
                                     }
                                     //Update Point Responses
@@ -1344,7 +1337,7 @@ void CtiCCSubstationBusStore::reset()
                 ************************************************************/
                 {
                     reloadMonitorPointsFromDatabase(0, &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
-                                          &_pointid_capbank_map);
+                                          &_pointid_capbank_map, &_pointid_subbus_map);
                 }
 
 
@@ -5403,7 +5396,6 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
             while ( rdr() )
             {
                 rdr["feederid"] >> currentFeederId;
-                //reloadFeederFromDatabase(currentFeederId);
                 reloadFeederFromDatabase(currentFeederId, &_paobject_feeder_map,
                                         &_paobject_subbus_map, &_pointid_feeder_map, &_feeder_subbus_map );
             }
@@ -6082,13 +6074,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
             CtiCCFeederPtr currentFeeder = paobject_feeder_map->find(feederId)->second;
             if (currentFeeder != NULL)
             {
-                CtiCCCapBank_SVector& capBanks = currentFeeder->getCCCapBanks();
-                for (int i = 0; i < capBanks.size(); i++)
-                {
-                    CtiCCCapBankPtr bank = (CtiCCCapBankPtr)capBanks[i];
-
-                    reloadMonitorPointsFromDatabase(bank->getPaoId(), &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map, &_pointid_capbank_map);
-                }
+                reloadMonitorPointsFromDatabase(currentFeeder->getParentId(), &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
             }
         }
         {
@@ -6970,36 +6956,56 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, PaoId
 }
 
 
-void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, PaoIdToCapBankMap *paobject_capbank_map,
+void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, PaoIdToCapBankMap *paobject_capbank_map,
                                                         PaoIdToFeederMap *paobject_feeder_map,
                                                         PaoIdToSubBusMap *paobject_subbus_map,
-                                                        PointIdToCapBankMultiMap *pointid_capbank_map)
+                                                        PointIdToCapBankMultiMap *pointid_capbank_map,
+                                                        PointIdToSubBusMultiMap *pointid_subbus_map)
 {
     try
     {
-        long monPointId = 0;
-
         std::set< std::pair<long, int> >    requiredPointResponses;
 
         CtiTime currentDateTime;
         {
             //LOADING OF MONITOR POINTS.
-            static const string sqlNoID =  "SELECT MB.bankid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
-                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase "
-                                           "FROM ccmonitorbanklist MB";
+            static const string sqlCapBankNoID =  "SELECT YP.type, MB.deviceid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
+                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, FS.substationbusid "
+                                           "FROM ccmonitorbanklist MB, yukonpaobject YP, ccfeederbanklist FB, ccfeedersubassignment FS "
+                                           "WHERE MB.deviceid = FB.deviceid "
+                                           "AND FB.feederid = FS.feederid "
+                                           "AND YP.paobjectid = MB.deviceid ";                
+
+             static const string sqlRegulatorNoID =  "SELECT YP.type, MB.deviceid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
+                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, Z.substationbusid "
+                                           "FROM ccmonitorbanklist MB, yukonpaobject YP, regulatortozonemapping RTZ, zone Z "
+                                           "WHERE MB.deviceid = RTZ.regulatorid "
+                                           "AND RTZ.zoneid = Z.zoneid "
+                                           "AND YP.paobjectid = MB.deviceid "; 
+
+              static const string sqlAdditionalNoID =  "SELECT YP.type, MB.deviceid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
+                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, Z.substationbusid "
+                                           "FROM ccmonitorbanklist MB, yukonpaobject YP, pointtozonemapping PTZ, zone Z, point P "
+                                           "WHERE MB.deviceid = YP.paobjectid "
+                                           "AND PTZ.pointid = P.pointid "
+                                           "AND P.paobjectid = YP.paobjectid "
+                                           "AND PTZ.zoneid = Z.zoneid "; 
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
-            if(capBankId > 0)
+            if(subBusId > 0)
             {
-                static const string sqlID = string(sqlNoID + " WHERE MB.bankid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << capBankId;
+                static const string sqlUnionID = string(sqlCapBankNoID + " AND FS.substationbusid = ?") +
+                                            string(" UNION " + sqlRegulatorNoID + " AND Z.substationbusid = ?") +
+                                            string(" UNION " + sqlAdditionalNoID + " AND Z.substationbusid = ?");
+                rdr.setCommandText(sqlUnionID);
+                rdr << subBusId << subBusId << subBusId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                static const string sqlUnion = string(sqlCapBankNoID) + " UNION " + sqlRegulatorNoID + " UNION " + sqlAdditionalNoID;
+                rdr.setCommandText(sqlUnion);
             }
 
             rdr.execute();
@@ -7013,92 +7019,80 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
                 }
             }
 
-            CtiCCMonitorPointPtr currentMonPoint = NULL;
             while ( rdr() )
             {
-                long currentCapBankId;
-                long currentPointId;
-                rdr["bankid"] >> currentCapBankId;
+                string devType;
+                long currentBankId, currentPointId, currentBusId;
+                rdr["type"] >> devType;
+                rdr["deviceid"] >> currentBankId;
                 rdr["pointid"] >> currentPointId;
+                rdr["substationbusid"] >> currentBusId;
 
-                currentMonPoint = new CtiCCMonitorPoint(rdr);
-                if (capBankId > 0)
+                CtiCCMonitorPointPtr currentMonPoint = CtiCCMonitorPointPtr(new CtiCCMonitorPoint(rdr));
+                if (stringContainsIgnoreCase(devType, "cap bank"))  
                 {
-                    monPointId = currentPointId;
-                }
-
-                CtiCCCapBankPtr currentBankPtr = paobject_capbank_map->find(currentMonPoint->getBankId())->second;
-                if (currentBankPtr != NULL)
-                {
-                    //This is to store and track the monitor point
-                    currentBankPtr->getMonitorPoint().push_back(currentMonPoint);
-                    pointid_capbank_map->insert(make_pair(currentMonPoint->getPointId(),currentBankPtr));
-
-                    //The following is to setup the defaults for dynamic tables.
-                    if (currentBankPtr->getParentId() <= 0)
+                    if (!loadCapBankMonitorPoint(currentMonPoint, requiredPointResponses, paobject_capbank_map, paobject_feeder_map, paobject_subbus_map, pointid_capbank_map))
                     {
-                        //This is an orphaned Bank
-                        break;
-                    }
-
-                    CtiCCFeederPtr feederPtr = paobject_feeder_map->find(currentBankPtr->getParentId())->second;
-                    if(feederPtr == NULL)
-                    {
-                        break;
-                    }
-
-                    if(ciStringEqual(feederPtr->getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod))
-                    {
-                        //Get all banks on SubBus all Feeders.
-                        CtiCCSubstationBusPtr subBusPtr = paobject_subbus_map->find(feederPtr->getParentId())->second;
-                        if (subBusPtr == NULL)
-                        {
-                            break;
-                        }
-
-                        CtiFeeder_vec& feeders = subBusPtr->getCCFeeders();
-
-                        for each (CtiCCFeeder* feeder in feeders)
-                        {
-                            CtiCCCapBank_SVector& banks = feeder->getCCCapBanks();
-                            for each (CtiCCCapBankPtr bank in banks)
-                            {
-                                requiredPointResponses.insert( std::make_pair(currentMonPoint->getPointId(), bank->getPaoId() ) );
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //Get only this feeders banks
-                        CtiCCCapBank_SVector& banks = feederPtr->getCCCapBanks();
-                        for each (CtiCCCapBankPtr bank in banks)
-                        {
-                            requiredPointResponses.insert( std::make_pair(currentMonPoint->getPointId(), bank->getPaoId() ) );
-                        }
+                        currentMonPoint.reset();
+                        continue;
                     }
                 }
+                //Get all banks on SubBus all Feeders.
+                if (paobject_subbus_map->find(currentBusId) == paobject_subbus_map->end())
+                {
+                    continue;
+                }
+                
+                CtiCCSubstationBusPtr subBusPtr = paobject_subbus_map->find(currentBusId)->second;
+                if (!subBusPtr->addMonitorPoint(currentPointId, currentMonPoint))
+                {
+                    currentMonPoint.reset();
+                    continue;
+                }
+                subBusPtr->addDefaultPointResponses( );     
+                pointid_subbus_map->insert(make_pair(currentMonPoint->getPointId(),subBusPtr));
+                subBusPtr->addPointId(currentPointId);
+                           
             }
         }
 
         {
-            static const string sqlNoID = "SELECT MBH.bankid, MBH.pointid, MBH.value, MBH.datetime, MBH.scaninprogress "
-                                          "FROM dynamicccmonitorbankhistory MBH";
+            static const string sqlCapBankNoID = "SELECT MBH.deviceid, MBH.pointid, MBH.value, MBH.datetime, MBH.scaninprogress, FS.substationbusid "
+                                          "FROM dynamicccmonitorbankhistory MBH, yukonpaobject YP, ccfeederbanklist FB, ccfeedersubassignment FS "
+                                           "WHERE MBH.deviceid = FB.deviceid "
+                                           "AND FB.feederid = FS.feederid "
+                                           "AND YP.paobjectid = MBH.deviceid ";                
+
+             static const string sqlRegulatorNoID =  "SELECT MBH.deviceid, MBH.pointid, MBH.value, MBH.datetime, MBH.scaninprogress, Z.substationbusid "
+                                          "FROM dynamicccmonitorbankhistory MBH, yukonpaobject YP, regulatortozonemapping RTZ, zone Z "
+                                           "WHERE MBH.deviceid = RTZ.regulatorid "
+                                           "AND RTZ.zoneid = Z.zoneid "
+                                           "AND YP.paobjectid = MBH.deviceid "; 
+
+              static const string sqlAdditionalNoID =  "SELECT MBH.deviceid, MBH.pointid, MBH.value, MBH.datetime, MBH.scaninprogress, Z.substationbusid  "
+                                          "FROM dynamicccmonitorbankhistory MBH, yukonpaobject YP, pointtozonemapping PTZ, zone Z, point P "
+                                           "WHERE MBH.deviceid = YP.paobjectid "
+                                           "AND PTZ.pointid = P.pointid "
+                                           "AND P.paobjectid = YP.paobjectid "
+                                           "AND PTZ.zoneid = Z.zoneid "; 
 
             Cti::Database::DatabaseConnection connection;
             Cti::Database::DatabaseReader rdr(connection);
 
-            if(capBankId > 0)
+            if(subBusId > 0)
             {
-                static const string sqlID = string(sqlNoID + " WHERE MBH.bankid = ? OR MBH.pointid = ?");
-                rdr.setCommandText(sqlID);
-                rdr << capBankId
-                    << monPointId;
+                static const string sqlUnionID = string(sqlCapBankNoID + " AND FS.substationbusid = ?") +
+                                            string(" UNION " + sqlRegulatorNoID + " AND Z.substationbusid = ?") +
+                                            string(" UNION " + sqlAdditionalNoID + " AND Z.substationbusid = ?");
+                rdr.setCommandText(sqlUnionID);
+                rdr << subBusId << subBusId << subBusId;
             }
             else
             {
-                rdr.setCommandText(sqlNoID);
+                static const string sqlUnion = string(sqlCapBankNoID) + " UNION " + sqlRegulatorNoID + " UNION " + sqlAdditionalNoID;
+                rdr.setCommandText(sqlUnion);
             }
-
+            
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -7110,25 +7104,22 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
                 }
             }
 
-            CtiCCMonitorPoint* currentMonPoint = NULL;
             while ( rdr() )
             {
-                long currentCapBankId, currentPointId;
+                long currentDevId, currentPointId, currentBusId;
                 float value;
-                rdr["bankid"] >> currentCapBankId;
+                rdr["deviceid"] >> currentDevId;
                 rdr["pointid"] >> currentPointId;
+                rdr["substationbusid"] >> currentBusId;
 
-                CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentCapBankId)->second;
-                vector <CtiCCMonitorPoint*>& monPoints = currentCCCapBank->getMonitorPoint();
-                for (int i = 0; i < monPoints.size(); i++)
+                if ( paobject_subbus_map->find(currentBusId) ==  paobject_subbus_map->end())
                 {
-                    currentMonPoint = (CtiCCMonitorPoint*)monPoints[i];
-                    if (currentMonPoint->getPointId() == currentPointId)
-                    {
-                        currentMonPoint->setDynamicData(rdr);
-                        break;
-                    }
+                    continue;
                 }
+                CtiCCSubstationBusPtr bus = paobject_subbus_map->find(currentBusId)->second;
+                CtiCCMonitorPointPtr currentMonPoint = bus->getMonitorPoint(currentPointId);
+                if (currentMonPoint != NULL) 
+                    currentMonPoint->setDynamicData(rdr);
 
             }
         }
@@ -7138,35 +7129,52 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
             PointResponseDaoPtr pointResponseDao = _daoFactory->getPointResponseDao();
 
             std::vector<PointResponse> pointResponses;
-            if (capBankId > 0)
+            if (subBusId > 0)
             {
-                pointResponses = pointResponseDao->getPointResponsesByBankId(capBankId);
-                std::vector<PointResponse> pResponsesByPoint = pointResponseDao->getPointResponsesByPointId(monPointId);
-                pointResponses.insert(pointResponses.end(),pResponsesByPoint.begin(), pResponsesByPoint.end());
+                pointResponses = pointResponseDao->getPointResponsesBySubBusId(subBusId);
             }
             else
             {
                 pointResponses = pointResponseDao->getAllPointResponses();
             }
 
+
             for each (PointResponse pointResponse in pointResponses)
             {
-                PaoIdToCapBankMap::const_iterator bank_itr = paobject_capbank_map->find(pointResponse.getBankId());
+                requiredPointResponses.erase( std::make_pair(pointResponse.getPointId(), pointResponse.getDeviceId() ) );
+
+                PaoIdToCapBankMap::const_iterator bank_itr = paobject_capbank_map->find(pointResponse.getDeviceId());
                 if (bank_itr != paobject_capbank_map->end())
                 {
                     CtiCCCapBankPtr bank = bank_itr->second;
                     bank->addPointResponse(pointResponse);
-                    requiredPointResponses.erase( std::make_pair(pointResponse.getPointId(), pointResponse.getBankId() ) );
+                }
+                
+                if ( paobject_subbus_map->find(pointResponse.getSubBusId()) ==  paobject_subbus_map->end())
+                {
+                    continue;
+                }
+                CtiCCSubstationBusPtr bus = paobject_subbus_map->find(pointResponse.getSubBusId())->second;
+                bus->updatePointResponse(PointResponseKey(pointResponse.getDeviceId(),pointResponse.getPointId()), PointResponsePtr(new PointResponse(pointResponse)));
+
+            }
+            for each ( std::pair<long, int>  thePair in requiredPointResponses )
+            {
+                long busId = findSubBusIDbyCapBankID(thePair.first);
+                if (busId == NULL)
+                {
+                    continue;
+                }
+                
+                PointResponse defaultPointResponse(thePair.first, thePair.second, 0, _IVVC_DEFAULT_DELTA, false, busId);
+                if (paobject_capbank_map->find(thePair.second) != paobject_capbank_map->end())
+                {
+                    CtiCCCapBankPtr bank = paobject_capbank_map->find(thePair.second)->second;
+                    bank->addPointResponse(defaultPointResponse);
                 }
             }
 
-            for each ( std::pair<long, int>  thePair in requiredPointResponses )
-            {
-                CtiCCCapBankPtr bank = paobject_capbank_map->find(thePair.second)->second;
 
-                PointResponse defaultPointResponse(thePair.first, thePair.second, 0, _IVVC_DEFAULT_DELTA, false);
-                bank->addPointResponse(defaultPointResponse);
-            }
         }
     }
     catch(...)
@@ -7176,6 +7184,76 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, Pa
     }
 }
 
+
+
+bool CtiCCSubstationBusStore::loadCapBankMonitorPoint(CtiCCMonitorPointPtr currentMonPoint, std::set< std::pair<long, int> >  &requiredPointResponses, 
+                                                        PaoIdToCapBankMap *paobject_capbank_map,
+                                                        PaoIdToFeederMap *paobject_feeder_map,
+                                                        PaoIdToSubBusMap *paobject_subbus_map,
+                                                        PointIdToCapBankMultiMap *pointid_capbank_map)
+{
+    if (paobject_capbank_map->find(currentMonPoint->getDeviceId()) == paobject_capbank_map->end())
+    {
+        return false;
+    }
+    CtiCCCapBankPtr currentBankPtr = paobject_capbank_map->find(currentMonPoint->getDeviceId())->second;
+
+    //This is to store and track the monitor point
+    if (!currentBankPtr->addMonitorPoint(currentMonPoint))
+    {
+        return false;
+    }
+
+    pointid_capbank_map->insert(make_pair(currentMonPoint->getPointId(),currentBankPtr));
+
+    //The following is to setup the defaults for dynamic tables.
+    if (currentBankPtr->getParentId() <= 0)
+    {
+        //This is an orphaned Bank
+        return false;
+    }
+    
+    if (paobject_feeder_map->find(currentBankPtr->getParentId()) == paobject_feeder_map->end())
+    {
+        return false;
+    }
+    CtiCCFeederPtr feederPtr = paobject_feeder_map->find(currentBankPtr->getParentId())->second;
+    
+    if(ciStringEqual(feederPtr->getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod))
+    {
+        //Get all banks on SubBus all Feeders.
+        if (paobject_subbus_map->find(feederPtr->getParentId()) == paobject_subbus_map->end())
+        {
+            return false;
+        }
+        CtiCCSubstationBusPtr subBusPtr = paobject_subbus_map->find(feederPtr->getParentId())->second;
+                
+        if (!subBusPtr->addMonitorPoint(currentMonPoint->getPointId(), currentMonPoint))
+        {
+            return false;
+        }
+
+        for each (CtiCCFeeder* feeder in subBusPtr->getCCFeeders())
+        {
+            for each (CtiCCCapBankPtr bank in feeder->getCCCapBanks())
+            {
+                requiredPointResponses.insert( std::make_pair(currentMonPoint->getPointId(), bank->getPaoId() ) );
+            }
+        }
+    }
+    else
+    {
+        //Get only this feeders banks
+        CtiCCCapBank_SVector& banks = feederPtr->getCCCapBanks();
+        for each (CtiCCCapBankPtr bank in banks)
+        {
+            requiredPointResponses.insert( std::make_pair(currentMonPoint->getPointId(), bank->getPaoId() ) );
+        }
+    }
+    return true;
+    
+
+}
 
 void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 {
@@ -7844,6 +7922,12 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                     _pointid_subbus_map.erase(pointid);
            }
            subToDelete->getPointIds()->clear();
+           for each(long pointid in subToDelete->getAllMonitorPointIds() )
+           {
+               _pointid_subbus_map.erase(pointid);
+           }
+
+           subToDelete->removeAllMonitorPoints();
         }
         catch(...)
         {
@@ -8057,11 +8141,13 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
 
 
 
-            for (int i = 0; i < capBankToDelete->getMonitorPoint().size(); i++)
+            for each (CtiCCMonitorPointPtr mPoint in capBankToDelete->getMonitorPoint())
             {
-                LONG pointid =  ((CtiCCMonitorPointPtr)capBankToDelete->getMonitorPoint()[i])->getPointId();
-                _pointid_capbank_map.erase(pointid);
+                _pointid_capbank_map.erase(mPoint->getPointId());
+                mPoint.reset();
             }
+            capBankToDelete->getMonitorPoint().clear();
+
             try
             {
                 CtiCCFeederPtr feeder = NULL;
@@ -8228,8 +8314,12 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(LONG reloadId, BYTE reloadAc
          reloadCapBankFromDatabase(reloadId, &_paobject_capbank_map, &_paobject_feeder_map,
                                    &_paobject_subbus_map, &_pointid_capbank_map, &_capbank_subbus_map,
                                    &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
-         reloadMonitorPointsFromDatabase(reloadId, &_paobject_capbank_map, &_paobject_feeder_map,
-                                   &_paobject_subbus_map, &_pointid_capbank_map);
+         long busId = findSubBusIDbyCapBankID(reloadId);
+         if (busId != NULL)
+         {
+             reloadMonitorPointsFromDatabase(busId, &_paobject_capbank_map, &_paobject_feeder_map,
+                                       &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
+         }
 
          if(isCapBankOrphan(reloadId) )
             removeFromOrphanList(reloadId);

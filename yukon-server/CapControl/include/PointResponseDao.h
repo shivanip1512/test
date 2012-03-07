@@ -10,7 +10,8 @@ namespace CapControl {
 class PointResponseDao
 {
     public:
-        virtual std::vector<PointResponse> getPointResponsesByBankId(int bankId)=0;
+        virtual std::vector<PointResponse> getPointResponsesByDeviceId(int deviceId)=0;
+        virtual std::vector<PointResponse> getPointResponsesBySubBusId(int subBusId)=0;
         virtual std::vector<PointResponse> getPointResponsesByPointId(int pointId)=0;
 
         virtual std::vector<PointResponse> getAllPointResponses()=0;

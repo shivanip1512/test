@@ -127,10 +127,9 @@ CtiCCCapBank::~CtiCCCapBank()
 {
     if (!_monitorPoint.empty())
     {
-        for (int i = 0; i < _monitorPoint.size(); i++)
+        for each (CtiCCMonitorPointPtr monPoint in _monitorPoint)
         {
-            CtiCCMonitorPointPtr monPoint = (CtiCCMonitorPointPtr)_monitorPoint[i];
-            delete monPoint;
+            monPoint.reset();
         }
         _monitorPoint.clear();
     }
@@ -1805,7 +1804,7 @@ bool CtiCCCapBank::handlePointResponseDeltaChange(long pointId, double newDelta,
     return _pointResponseManager.handlePointResponseDeltaChange(pointId,newDelta,staticDelta);
 }
 
-bool CtiCCCapBank::updatePointResponseDelta(CtiCCMonitorPoint* point)
+bool CtiCCCapBank::updatePointResponseDelta(CtiCCMonitorPointPtr point)
 {
     return _pointResponseManager.updatePointResponseDelta(*point);
 }
@@ -1998,7 +1997,7 @@ CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::set<long>& pointAddMsg
     return *this;
 }
 
-Cti::CapControl::PointResponse CtiCCCapBank::getPointResponse(CtiCCMonitorPoint* point)
+Cti::CapControl::PointResponse CtiCCCapBank::getPointResponse(CtiCCMonitorPointPtr point)
 {
     return _pointResponseManager.getPointResponse(point->getPointId());
 }
@@ -2021,6 +2020,17 @@ void CtiCCCapBank::addPointResponse(Cti::CapControl::PointResponse pointResponse
 PointResponseManager& CtiCCCapBank::getPointResponseManager()
 {
     return _pointResponseManager;
+}
+
+bool CtiCCCapBank::addMonitorPoint(CtiCCMonitorPointPtr monPoint)
+{
+    for each (CtiCCMonitorPointPtr x in _monitorPoint)
+    {
+		if (x->getPointId() == monPoint->getPointId())
+			return false;
+    }
+	_monitorPoint.push_back(monPoint);
+    return true;
 }
 
 /*---------------------------------------------------------------------------

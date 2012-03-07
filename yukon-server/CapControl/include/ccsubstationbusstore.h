@@ -188,6 +188,7 @@ public:
     CtiCCSubstationBusPtr findSubBusByPAObjectID(long paobject_id);
     CtiCCFeederPtr findFeederByPAObjectID(long paobject_id);
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
+    CtiCCSubstationBusPtr findSubBusByCapBankID(long cap_bank_id);
 
     long findAreaIDbySubstationID(long substationId);
     bool findSpecialAreaIDbySubstationID(long substationId, ChildToParentMultiMap::iterator &begin, ChildToParentMultiMap::iterator &end);
@@ -217,10 +218,11 @@ public:
                                    ChildToParentMap *capbank_feeder_map,
                                    ChildToParentMap *feeder_subbus_map,
                                    ChildToParentMap *cbc_capbank_map);
-    void reloadMonitorPointsFromDatabase(long capBankId, PaoIdToCapBankMap *paobject_capbank_map,
+    void reloadMonitorPointsFromDatabase(long subBusId, PaoIdToCapBankMap *paobject_capbank_map,
                                    PaoIdToFeederMap *paobject_feeder_map,
                                    PaoIdToSubBusMap *paobject_subbus_map,
-                                   PointIdToCapBankMultiMap *pointid_capbank_map);
+                                   PointIdToCapBankMultiMap *pointid_capbank_map,
+                                   PointIdToSubBusMultiMap *pointid_subbus_map);
     void reloadFeederFromDatabase(long feederId,
                                   PaoIdToFeederMap *paobject_feeder_map,
                                   PaoIdToSubBusMap *paobject_subbus_map,
@@ -261,6 +263,11 @@ public:
                                                         PaoIdToSpecialAreaMap *paobject_specialarea_map );
     void reloadAndAssignHolidayStrategysFromDatabase(long strategyId);
     void reloadStrategyParametersFromDatabase(long strategyId);
+    bool loadCapBankMonitorPoint(CtiCCMonitorPointPtr currentMonPoint, std::set< std::pair<long, int> >  &requiredPointResponses, 
+                                                        PaoIdToCapBankMap *paobject_capbank_map,
+                                                        PaoIdToFeederMap *paobject_feeder_map,
+                                                        PaoIdToSubBusMap *paobject_subbus_map,
+                                                        PointIdToCapBankMultiMap *pointid_capbank_map);
 
     void reCalculateOperationStatsFromDatabase( );
     void resetAllOperationStats();

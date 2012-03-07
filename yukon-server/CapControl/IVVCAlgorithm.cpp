@@ -1459,8 +1459,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                  (isCapBankOpen || isCapBankClosed) &&
                  (deltas.find(currentBank->getPointIdByAttribute(PointAttribute::CbcVoltage)) != deltas.end()))
             {
-
-                std::vector<PointResponse> responses = currentBank->getPointResponses();
+                std::vector<PointResponse> responses = subbus->getPointResponsesForDevice( currentBank->getPaoId() );
 
                 for each (PointResponse currentResponse in responses)
                 {
@@ -1676,9 +1675,6 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
                 // Capbanks
 
-                // this guy is a helper for the individual bandwidths...
-                std::map<long, CtiCCMonitorPointPtr>    _monitorMap;
-
                 for each ( const Zone::IdSet::value_type & capBankId in zone->getBankIds() )
                 {
                     CtiCCCapBankPtr bank = store->getCapBankByPaoId( capBankId );
@@ -1695,8 +1691,6 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                                 if ( iter != pointValues.end() )    // found
                                 {
                                     zonePointValues.insert( *iter );
-
-                                    _monitorMap.insert( std::make_pair( point->getPointId(), point ) );
                                 }
                             }
                         }
@@ -1721,7 +1715,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                     }
                 }
 
-                state->_tapOps[ regulator->getPaoId() ] = calculateVte(zonePointValues, strategy, _monitorMap, isPeakTime);
+                state->_tapOps[ regulator->getPaoId() ] = calculateVte(zonePointValues, strategy, subbus->getAllMonitorPoints(), isPeakTime);
             }
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
@@ -1937,7 +1931,7 @@ int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, IVVCStrategy* str
         {
             std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = _monitorMap.find( b->first );
 
-            if ( iter != _monitorMap.end() )    // this is a capbank monitor point - use its bandwidth instead
+            if ( iter != _monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
             {
                 Vmax = iter->second->getUpperBandwidth();
                 Vmin = iter->second->getLowerBandwidth();

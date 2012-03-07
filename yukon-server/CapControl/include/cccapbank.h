@@ -152,6 +152,7 @@ public:
     int getAssumedOrigVerificationState() const;
 
     std::vector <CtiCCMonitorPointPtr>& getMonitorPoint() {return _monitorPoint;};
+    bool addMonitorPoint(CtiCCMonitorPointPtr monPoint);
 
     CtiCCCapBank& setParentId(LONG parentId);
     CtiCCCapBank& setAlarmInhibitFlag(BOOL alarminhibit);
@@ -239,13 +240,13 @@ public:
     bool isControlDeviceTwoWay();
     int getPointIdByAttribute(const PointAttribute & attribute);
 
-    Cti::CapControl::PointResponse getPointResponse(CtiCCMonitorPoint* point);
+    Cti::CapControl::PointResponse getPointResponse(CtiCCMonitorPointPtr point);
     std::vector<Cti::CapControl::PointResponse> getPointResponses();
     void addPointResponse(Cti::CapControl::PointResponse pointResponse);
     Cti::CapControl::PointResponseManager& getPointResponseManager();
 
     bool handlePointResponseDeltaChange(long pointId, double newDelta, bool staticDelta);
-    bool updatePointResponseDelta(CtiCCMonitorPoint* point);
+    bool updatePointResponseDelta(CtiCCMonitorPointPtr point);
     bool updatePointResponsePreOpValue(long pointId, double value);
 
     bool isExpresscom();
@@ -401,7 +402,7 @@ private:
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    std::vector <CtiCCMonitorPoint*>  _monitorPoint; //normally this is just one, but if display order is > 1 then we have more
+    std::vector <CtiCCMonitorPointPtr>  _monitorPoint; //normally this is just one, but if display order is > 1 then we have more
                                                     // than one monitor point attached to a capbank!!!
 
     Cti::CapControl::PointResponseManager _pointResponseManager;

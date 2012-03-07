@@ -17,23 +17,57 @@ namespace Cti {
 namespace CapControl {
 namespace Database {
 
-const string PointResponseDatabaseDao::_selectSql = "select BankID,PointID,PreOpValue,Delta,StaticDelta from dynamicccmonitorpointresponse ";
+const string PointResponseDatabaseDao::_selectSqlForBanksBySubBus = "select DMPR.DeviceID,DMPR.PointID,DMPR.PreOpValue,DMPR.Delta,DMPR.StaticDelta, FS.SubstationBusId "
+                                                            "FROM dynamicccmonitorpointresponse DMPR, ccfeederbanklist FB, ccfeedersubassignment FS "
+                                                            "WHERE DMPR.DeviceID = FB.DeviceID "
+                                                            "AND FB.feederID = FS.feederID ";
+const string PointResponseDatabaseDao::_selectSqlForRegulatorsBySubBus = "select DMPR.DeviceID,DMPR.PointID,DMPR.PreOpValue,DMPR.Delta,DMPR.StaticDelta, Z.SubstationBusId "
+                                                            "FROM dynamicccmonitorpointresponse DMPR, regulatortozonemapping RTZ, zone Z "
+                                                            "WHERE DMPR.DeviceID = RTZ.RegulatorID "
+                                                            "AND RTZ.zoneID = Z.zoneID ";
+const string PointResponseDatabaseDao::_selectSqlForAdditionalBySubBus = "select DMPR.DeviceID,DMPR.PointID,DMPR.PreOpValue,DMPR.Delta,DMPR.StaticDelta, Z.SubstationBusId "
+                                                            "FROM dynamicccmonitorpointresponse DMPR, pointtozonemapping PTZ, zone Z, point P "
+                                                            "WHERE DMPR.DeviceID = P.paobjectid "
+                                                            "AND P.pointid = PTZ.pointid "
+                                                            "and PTZ.zoneid = Z.zoneid ";
+
+const string PointResponseDatabaseDao::_selectSql = _selectSqlForBanksBySubBus + " UNION " + _selectSqlForRegulatorsBySubBus + " UNION " + _selectSqlForAdditionalBySubBus;
 
 PointResponseDatabaseDao::PointResponseDatabaseDao()
 {
 
 }
 
-vector<PointResponse> PointResponseDatabaseDao::getPointResponsesByBankId(int bankId)
+vector<PointResponse> PointResponseDatabaseDao::getPointResponsesBySubBusId(int subBusId)
 {
     DatabaseConnection databaseConnection;
-    static const string sql = _selectSql + " where BankID = ? ";
+    static const string sql = _selectSqlForBanksBySubBus + " AND FS.SubstationBusID = ? " + " UNION " + 
+                              _selectSqlForRegulatorsBySubBus + " AND Z.SubstationBusID = ? " + " UNION " + 
+                              _selectSqlForAdditionalBySubBus + " AND Z.SubstationBusID = ? ";
 
     vector<PointResponse> pointResponses;
 
     DatabaseReader dbReader(databaseConnection,sql);
 
-    dbReader << bankId;
+    dbReader << subBusId << subBusId << subBusId;
+
+    performDatabaseOperation(dbReader,pointResponses);
+
+    return pointResponses;
+}
+
+vector<PointResponse> PointResponseDatabaseDao::getPointResponsesByDeviceId(int deviceId)
+{
+    DatabaseConnection databaseConnection;
+    static const string sql = _selectSqlForBanksBySubBus + " AND DMPR.DeviceID = ? " + " UNION " + 
+                              _selectSqlForRegulatorsBySubBus + " AND DMPR.DeviceID = ? " + " UNION " + 
+                              _selectSqlForAdditionalBySubBus + " AND DMPR.DeviceID = ? ";
+
+    vector<PointResponse> pointResponses;
+
+    DatabaseReader dbReader(databaseConnection,sql);
+
+    dbReader << deviceId << deviceId << deviceId;
 
     performDatabaseOperation(dbReader,pointResponses);
 
@@ -43,13 +77,15 @@ vector<PointResponse> PointResponseDatabaseDao::getPointResponsesByBankId(int ba
 vector<PointResponse> PointResponseDatabaseDao::getPointResponsesByPointId(int pointId)
 {
     DatabaseConnection databaseConnection;
-    static const string sql = _selectSql + " where PointID = ? ";
+    static const string sql = _selectSqlForBanksBySubBus + " AND DMPR.PointID = ? " + " UNION " + 
+                              _selectSqlForRegulatorsBySubBus + " AND DMPR.PointID = ? " + " UNION " + 
+                              _selectSqlForAdditionalBySubBus + " AND DMPR.PointID = ? ";
 
     vector<PointResponse> pointResponses;
 
     DatabaseReader dbReader(databaseConnection,sql);
 
-    dbReader << pointId;
+    dbReader << pointId << pointId << pointId;
 
     performDatabaseOperation(dbReader,pointResponses);
 
@@ -79,7 +115,7 @@ bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databas
 {
     static const string sql = "UPDATE dynamicccmonitorpointresponse "
                                     " SET PreOpValue = ?,Delta = ?,StaticDelta = ? "
-                                    " WHERE BankId = ? AND PointId = ? ";
+                                    " WHERE DeviceId = ? AND PointId = ? ";
 
     DatabaseWriter dbUpdater(databaseConnection, sql);
 
@@ -93,7 +129,7 @@ bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databas
     dbUpdater << pointResponse.getPreOpValue()
               << pointResponse.getDelta()
               << tempString
-              << pointResponse.getBankId()
+              << pointResponse.getDeviceId()
               << pointResponse.getPointId();
 
     bool success = executeDbCommand(dbUpdater,(_CC_DEBUG & CC_DEBUG_DATABASE));
@@ -130,7 +166,7 @@ bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databas
         tempString = "Y";
     }
 
-    dbInserter << pointResponse.getBankId()
+    dbInserter << pointResponse.getDeviceId()
                << pointResponse.getPointId()
                << pointResponse.getPreOpValue()
                << pointResponse.getDelta()
@@ -176,20 +212,21 @@ void PointResponseDatabaseDao::buildPointResponseFromReader(DatabaseReader& read
 {
     while(reader())
     {
-        long bankId,pointId;
+        long deviceId,pointId, subBusId;
         double preOpValue,delta;
         bool staticDelta;
         string tempString;
 
-        reader["BankID"] >> bankId;
+        reader["DeviceID"] >> deviceId;
         reader["PointID"] >> pointId;
         reader["PreOpValue"] >> preOpValue;
         reader["Delta"] >> delta;
         reader["StaticDelta"] >> tempString;
+        reader["SubstationBusId"] >> subBusId;
 
         staticDelta = (tempString=="Y"?true:false);
 
-        PointResponse pointResponse(pointId,bankId,preOpValue,delta,staticDelta);
+        PointResponse pointResponse(pointId,deviceId,preOpValue,delta,staticDelta, subBusId);
 
         pointResponses.push_back(pointResponse);
     }

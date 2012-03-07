@@ -1911,6 +1911,12 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                     regMsg->insert( currentSubstationBus->getOperationStats().getMonthlyOpSuccessPercentId());
                 }
 
+                for each (long pointId in currentSubstationBus->getAllMonitorPointIds())
+                {
+                    registrationIds.insert(pointId);
+                    regMsg->insert(pointId);
+                }
+
 
                 CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
 
@@ -3301,6 +3307,13 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                     }
                 }
                 checkDisablePaoPoint(currentSubstationBus, pointID, value, CapControlCommand::ENABLE_SUBSTATION_BUS, CapControlCommand::DISABLE_SUBSTATION_BUS);
+
+                CtiCCMonitorPointPtr currentMonPoint = currentSubstationBus->getMonitorPoint(pointID);
+                if( currentMonPoint != NULL  && currentMonPoint->getValue() != value)
+                {
+                    currentMonPoint->setValue(value);
+                    currentMonPoint->setTimeStamp(timestamp);
+                }
             }
         }
         catch(...)

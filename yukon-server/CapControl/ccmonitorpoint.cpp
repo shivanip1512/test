@@ -35,7 +35,7 @@ RWDEFINE_COLLECTABLE( CtiCCMonitorPoint, CTICCMONITORPOINT_ID )
 CtiCCMonitorPoint::CtiCCMonitorPoint() :
 _phase(Cti::CapControl::Phase_Unknown),
 _pointId(0),
-_bankId(0),
+_deviceId(0),
 _displayOrder(0),
 _scannable(false),
 _nInAvg(0),
@@ -79,9 +79,9 @@ LONG CtiCCMonitorPoint::getPointId() const
 
     Returns the bankId of the monitor point
 ---------------------------------------------------------------------------*/
-LONG CtiCCMonitorPoint::getBankId() const
+LONG CtiCCMonitorPoint::getDeviceId() const
 {
-    return _bankId;
+    return _deviceId;
 }
 /*---------------------------------------------------------------------------
     getValue
@@ -177,9 +177,9 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setPointId(LONG pointId)
 
     Sets the bankId of the monitorPoint- use with caution
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::setBankId(LONG bankId)
+CtiCCMonitorPoint& CtiCCMonitorPoint::setDeviceId(LONG devId)
 {
-    _bankId = bankId;
+    _deviceId = devId;
     //do not notify observers of this !
     return *this;
 }
@@ -331,7 +331,7 @@ void CtiCCMonitorPoint::restoreGuts(RWvistream& istrm)
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _pointId
-        >> _bankId
+        >> _deviceId
         >> _value
         >> tempTime1
         >> _scanInProgress;
@@ -349,7 +349,7 @@ void CtiCCMonitorPoint::saveGuts(RWvostream& ostrm ) const
     RWCollectable::saveGuts( ostrm );
     LONG tempTime = _timeStamp.seconds();
     ostrm << _pointId
-        << _bankId
+        << _deviceId
         << _value
         << tempTime
         << _scanInProgress;
@@ -366,7 +366,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::operator=(const CtiCCMonitorPoint& rght)
     {
         _phase = rght._phase;
         _pointId = rght._pointId;
-        _bankId = rght._bankId;
+        _deviceId = rght._deviceId;
         _displayOrder = rght._displayOrder;
         _scannable = rght._scannable;
         _nInAvg = rght._nInAvg;
@@ -389,7 +389,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::operator=(const CtiCCMonitorPoint& rght)
 int CtiCCMonitorPoint::operator==(const CtiCCMonitorPoint& rght) const
 {
     return (getPointId() == rght.getPointId() &&
-            getBankId() == rght.getBankId());
+            getDeviceId() == rght.getDeviceId());
 }
 
 /*---------------------------------------------------------------------------
@@ -398,7 +398,7 @@ int CtiCCMonitorPoint::operator==(const CtiCCMonitorPoint& rght) const
 int CtiCCMonitorPoint::operator!=(const CtiCCMonitorPoint& rght) const
 {
     return (getPointId() != rght.getPointId() ||
-            getBankId() != rght.getBankId());
+            getDeviceId() != rght.getDeviceId());
 }
 
 
@@ -423,7 +423,7 @@ void CtiCCMonitorPoint::restore(Cti::RowReader& rdr)
         _phase = Cti::CapControl::resolvePhase(phaseStr);
     }
 
-    rdr["bankid"] >> _bankId;
+    rdr["deviceid"] >> _deviceId;
     rdr["pointid"] >> _pointId;
     rdr["displayorder"] >> _displayOrder;
     rdr["scannable"] >> tempBoolString;
@@ -467,9 +467,9 @@ void CtiCCMonitorPoint::setDynamicData(Cti::RowReader& rdr)
 
     Restores self's operation fields.
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint* CtiCCMonitorPoint::replicate() const
+boost::shared_ptr<CtiCCMonitorPoint> CtiCCMonitorPoint::replicate() const
 {
-    return(new CtiCCMonitorPoint(*this));
+    return(CtiCCMonitorPointPtr(new CtiCCMonitorPoint(*this)));
 }
 
 /*---------------------------------------------------------------------------
@@ -479,7 +479,7 @@ CtiCCMonitorPoint* CtiCCMonitorPoint::replicate() const
 ---------------------------------------------------------------------------*/
 int CtiCCMonitorPoint::compareTo(const RWCollectable* rght) const
 {
-    return 1;// _controlorder == ((CtiCCMonitorPoint*)rght)->getDisplayOrder() ? 0 : (_controlorder > ((CtiCCMonitorPoint*)rght)->getControlOrder() ? 1 : -1);
+    return 1;// _controlorder == ((CtiCCMonitorPointPtr)rght)->getDisplayOrder() ? 0 : (_controlorder > ((CtiCCMonitorPointPtr)rght)->getControlOrder() ? 1 : -1);
 }
 
 /*---------------------------------------------------------------------------
@@ -507,7 +507,7 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
                                             "datetime = ?, "
                                             "scaninprogress = ? "
                                             " where "
-                                            "bankid = ? AND "
+                                            "deviceid = ? AND "
                                             "pointid = ?";
 
             Cti::Database::DatabaseWriter updater(conn, updateSql);
@@ -516,7 +516,7 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
             << _value
             << _timeStamp
             << (string)(_scanInProgress?"Y":"N")
-            << _bankId
+            << _deviceId
             << _pointId;
 
             if(updater.execute())    // No error occured!
@@ -549,7 +549,7 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
 
             Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
 
-            dbInserter << _bankId
+            dbInserter << _deviceId
             <<  _pointId
             << _value
             << _timeStamp

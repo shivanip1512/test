@@ -3029,6 +3029,9 @@ void CtiCCCommandExecutor::EnableArea()
                         }
                     }
                 }
+                store->cascadeAreaStrategySettings(currentSpArea);
+                store->cascadeAreaStrategySettings(currentSpArea);
+                store->cascadeAreaStrategySettings(currentSpArea);
             }
         }
     }

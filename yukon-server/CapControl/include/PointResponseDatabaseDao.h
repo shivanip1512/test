@@ -16,7 +16,8 @@ class PointResponseDatabaseDao : public PointResponseDao
     public:
         PointResponseDatabaseDao();
 
-        virtual std::vector<PointResponse> getPointResponsesByBankId(int bankId);
+        virtual std::vector<PointResponse> getPointResponsesByDeviceId(int deviceId);
+        virtual std::vector<PointResponse> getPointResponsesBySubBusId(int subBusId);
         virtual std::vector<PointResponse> getPointResponsesByPointId(int pointId);
 
         virtual std::vector<PointResponse> getAllPointResponses();
@@ -33,6 +34,10 @@ class PointResponseDatabaseDao : public PointResponseDao
         void buildPointResponseFromReader(Cti::Database::DatabaseReader& reader, std::vector<PointResponse>& pointResponses);
 
         static const std::string _selectSql;
+        static const std::string _selectSqlForBanksBySubBus;
+        static const std::string _selectSqlForRegulatorsBySubBus;
+        static const std::string _selectSqlForAdditionalBySubBus;
+
 };
 
 }
