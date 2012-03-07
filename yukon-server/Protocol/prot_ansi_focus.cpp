@@ -22,7 +22,7 @@
 #include "pointdefs.h"
 
 using std::endl;
-
+using namespace Cti::Protocols::Ansi;
 //=========================================================================================================================================
 //=========================================================================================================================================
 
@@ -83,8 +83,8 @@ int CtiProtocolANSI_focus::calculateLPDataBlockStartIndex(ULONG lastLPTime)
         dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Last Load Profile Time  " <<CtiTime(getlastLoadProfileTime()) << endl;
         dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Nbr of Requested Intervals  " <<nbrIntervals << endl;
     }
-    setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::Focus_SetLpReadControl,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (Cti::Protocols::Ansi::Focus_SetLpReadControl, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(Focus_SetLpReadControl,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (Focus_SetLpReadControl, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
 
     //Bogus - not used for this...just populating with dummy zeros.
     Cti::Protocols::Ansi::REQ_DATA_RCD reqData;
@@ -119,9 +119,9 @@ int CtiProtocolANSI_focus::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 
 void CtiProtocolANSI_focus::convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID )
 {
-    switch( aTableID - 0x0800)
+    switch( aTableID )
     {
-         case 4:
+         case Focus_InstantaneouMeasurements:
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -132,7 +132,7 @@ void CtiProtocolANSI_focus::convertToManufacturerTable( BYTE *data, BYTE numByte
                 break;
             }
             
-        case 13:
+        case FocusAX_InstantaneouMeasurements:
         {
             {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -152,16 +152,16 @@ void CtiProtocolANSI_focus::convertToManufacturerTable( BYTE *data, BYTE numByte
 
 void CtiProtocolANSI_focus::updateMfgBytesExpected()
 {
-    switch( (getCurrentTableId() - 0x800) )
+    switch( (getCurrentTableId()) )
     {
-        case 4:
+        case Focus_InstantaneouMeasurements:
         {
-            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::Focus_InstantaneouMeasurements,0,8,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            setCurrentAnsiWantsTableValues(Focus_InstantaneouMeasurements,0,8,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
             break;
         }
-        case 13:
+        case FocusAX_InstantaneouMeasurements:
         {
-            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::FocusAX_InstantaneouMeasurements,0,53,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            setCurrentAnsiWantsTableValues(FocusAX_InstantaneouMeasurements,0,53,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
             break;
         }
         default:

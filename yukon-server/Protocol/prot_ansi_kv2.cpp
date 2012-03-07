@@ -5,6 +5,7 @@
 #include "prot_ansi_kv2.h"
 
 using std::endl;
+using namespace Cti::Protocols::Ansi;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -48,9 +49,9 @@ void CtiProtocolANSI_kv2::destroyManufacturerTables( void )
 void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID )
 {
 
-    switch( aTableID - 0x0800)
+    switch( aTableID )
     {
-        case 0:
+        case KV2_MfgInfo:
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -60,7 +61,7 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes,
                 _table000->printResult();
                 break;
             }
-        case 70:
+        case KV2_DisplayConfiguration:
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -71,7 +72,7 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes,
                 _table070->printResult();
                 break;
             }
-        case 110:
+        case KV2_PresentRegisterData:
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -99,8 +100,8 @@ void CtiProtocolANSI_kv2::setAnsiDeviceType()
 bool CtiProtocolANSI_kv2::snapshotData()
 {
 
-    setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::ProcedureInitiate,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (Cti::Protocols::Ansi::ProcedureInitiate, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(ProcedureInitiate,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (ProcedureInitiate, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
 
     Cti::Protocols::Ansi::REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 84;
@@ -186,25 +187,25 @@ bool CtiProtocolANSI_kv2::retreiveMfgPresentValue( int offset, double *value )
 
 void CtiProtocolANSI_kv2::updateMfgBytesExpected()
 {
-    switch( (getCurrentTableId()  - 0x800) )
+    switch( (getCurrentTableId()) )
     {
-        case 0:
+        case KV2_MfgInfo:
         {
 
-            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::KV2_MfgInfo,0,59,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            setCurrentAnsiWantsTableValues(KV2_MfgInfo,0,59,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
             break;
         }
         
-        case 70:
+        case KV2_DisplayConfiguration:
         {
 
-            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::KV2_DisplayConfiguration,0,46,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            setCurrentAnsiWantsTableValues(KV2_DisplayConfiguration,0,46,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
             break;
         }
-        case 110:
+        case KV2_PresentRegisterData:
         {
 
-            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::KV2_PresentRegisterData,0,166,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            setCurrentAnsiWantsTableValues(KV2_PresentRegisterData,0,166,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
             break;
         }
 

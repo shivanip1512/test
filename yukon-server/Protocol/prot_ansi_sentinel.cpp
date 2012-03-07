@@ -20,6 +20,7 @@
 #include "ctidate.h"
 
 using std::endl;
+using namespace Cti::Protocols::Ansi;
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -49,47 +50,16 @@ CtiProtocolANSI_sentinel::~CtiProtocolANSI_sentinel( void )
 
 void CtiProtocolANSI_sentinel::destroyManufacturerTables( void )
 {
-   /*if( _tableZero != NULL )
-   {
-      delete _tableZero;
-      _tableZero = NULL;
-   }
 
-   if( _tableSeventy != NULL )
-   {
-      delete _tableSeventy;
-      _tableSeventy = NULL;
-   } */
-
-  /* if( _table_110 != NULL )
-   {
-      delete _table_110;
-      _table_110 = NULL;
-   } */
 }
 
 void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID )
 {
 
-    switch( aTableID - 0x0800)
+    switch( aTableID )
     {
-        /*case 0:
-            {
-                {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " Creating KV2 table 0" << endl;
-                }
-                _tableZero = new CtiAnsiKV2ManufacturerTableZero( data );
-                _tableZero->printResult();
-                break;
-            }
-            */
-    case 1:
-        {
-            break;
-        }
 
-    case 2:
+    case Sentinel_BatteryLifeResponse:
       {
           memcpy((void *)&_daysSinceDemandReset, data, sizeof(unsigned char) * 2);
           data += 2;
@@ -138,8 +108,8 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
 int CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 {
 
-    setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::ProcedureInitiate,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (Cti::Protocols::Ansi::ProcedureInitiate, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(ProcedureInitiate,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (ProcedureInitiate, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_WRITE);
 
     Cti::Protocols::Ansi::REQ_DATA_RCD reqData;
     reqData.proc.tbl_proc_nbr = 22;
@@ -173,8 +143,8 @@ void CtiProtocolANSI_sentinel::setAnsiDeviceType()
 
 bool CtiProtocolANSI_sentinel::batteryLifeData()
 {
-    setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::Sentinel_BatteryLifeRequest,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
-    getApplicationLayer().initializeTableRequest (Cti::Protocols::Ansi::Sentinel_BatteryLifeRequest, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    setCurrentAnsiWantsTableValues(Sentinel_BatteryLifeRequest,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
+    getApplicationLayer().initializeTableRequest (Sentinel_BatteryLifeRequest, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
 
     //Bogus - not used for this...just populating with dummy zeros.
     Cti::Protocols::Ansi::REQ_DATA_RCD reqData;
@@ -273,12 +243,12 @@ int CtiProtocolANSI_sentinel::getDaysOnBatteryReading()
 
 void CtiProtocolANSI_sentinel::updateMfgBytesExpected()
 {
-    switch( (getCurrentTableId() - 0x800) )
+    switch( (getCurrentTableId()) )
     {
         
-        case 2:
+        case Sentinel_BatteryLifeResponse:
         {
-            setCurrentAnsiWantsTableValues(Cti::Protocols::Ansi::Sentinel_BatteryLifeResponse,0,20,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            setCurrentAnsiWantsTableValues(Sentinel_BatteryLifeResponse,0,20,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
             break;
         }
         
