@@ -55,7 +55,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, paoType);
         
         //copy device from a template
-        DeviceBase newDevice = getNewDeviceFromTemplate(templateDevice,newDeviceName);
+        DeviceBase newDevice = buildNewDeviceFromTemplate(templateDevice,newDeviceName);
 
         //create new device
         SimpleDevice newYukonDevice = createNewDeviceByTemplate(newDevice, templateIdentifier, templateName, copyPoints);
@@ -83,7 +83,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
         
         // copy device
-        RfnBase newDevice = (RfnBase) getNewDeviceFromTemplate(templateDevice,newDeviceName);
+        RfnBase newDevice = (RfnBase) buildNewDeviceFromTemplate(templateDevice,newDeviceName);
         
         // set RFN values
         newDevice.getRfnAddress().setSerialNumber(serialNumber);
@@ -197,14 +197,14 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
 
     }
     
-    private DeviceBase getNewDeviceFromTemplate(DeviceBase templateDevice, String newDeviceName){
+    private DeviceBase buildNewDeviceFromTemplate(DeviceBase templateDevice, String newDeviceName) {
 
         int newDeviceId = paoDao.getNextPaoId();
         DeviceBase newDevice = templateDevice;
         newDevice.setDeviceID(newDeviceId);
         newDevice.setPAOName(newDeviceName);
         return newDevice;
-        
+
     }
     
     private DeviceBase retrieveExistingDeviceByTemplate(String templateName) {
