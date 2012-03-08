@@ -395,7 +395,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         // This will throw if the parent doesn't exist, preventing creation of the child, as
         // desired.
         String parentName = hierarchyImportData.getParent();
-        if (parentName != null) {
+        if (!StringUtils.isBlank(parentName)) {
             int parentId = getParentId(parentName, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
             if (!createHierarchyParentLink(hierarchyImportData, parentId, childId, results)) {
                 // Invalid child type or parent type. We don't have a success here.
