@@ -66,7 +66,7 @@ CREATE TABLE ExtToYukonMessageIdMapping  (
 );
 
 ALTER TABLE ExtToYukonMessageIdMapping
-    ADD CONSTRAINT FK_EToYMIMap_User FOREIGN KEY (UserId)
+    ADD CONSTRAINT FK_ExtToYukMessIdMap_YukonUser FOREIGN KEY (UserId)
         REFERENCES YukonUser (UserId)
             ON DELETE CASCADE;
             

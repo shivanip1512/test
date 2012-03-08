@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/7/2012 10:12:56 AM                         */
+/* Created on:     3/8/2012 10:56:09 AM                         */
 /*==============================================================*/
 
 
@@ -4572,7 +4572,7 @@ create table ExtToYukonMessageIdMapping  (
    YukonMessageId       NUMBER                          not null,
    UserId               NUMBER                          not null,
    MessageEndTime       DATE                            not null,
-   constraint PK_EXTTOYUKONMESSAGEIDMAPPING primary key (ExternalMessageId)
+   constraint PK_ExtToYukonMessageIdMapping primary key (ExternalMessageId)
 );
 
 /*==============================================================*/
@@ -11243,7 +11243,7 @@ alter table EventWorkOrder
       references WorkOrderBase (OrderID);
 
 alter table ExtToYukonMessageIdMapping
-   add constraint FK_EToYMIMap_User foreign key (UserId)
+   add constraint FK_ExtToYukMessIdMap_YukonUser foreign key (UserId)
       references YukonUser (UserID)
       on delete cascade;
 

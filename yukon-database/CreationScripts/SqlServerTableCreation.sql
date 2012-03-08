@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/7/2012 10:13:54 AM                         */
+/* Created on:     3/8/2012 11:21:43 AM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -4809,7 +4809,7 @@ create table ExtToYukonMessageIdMapping (
    YukonMessageId       numeric              not null,
    UserId               numeric              not null,
    MessageEndTime       datetime             not null,
-   constraint PK_EXTTOYUKONMESSAGEIDMAPPING primary key (ExternalMessageId)
+   constraint PK_ExtToYukonMessageIdMapping primary key (ExternalMessageId)
 )
 go
 
@@ -12066,7 +12066,7 @@ alter table EventWorkOrder
 go
 
 alter table ExtToYukonMessageIdMapping
-   add constraint FK_EToYMIMap_User foreign key (UserId)
+   add constraint FK_ExtToYukMessIdMap_YukonUser foreign key (UserId)
       references YukonUser (UserID)
          on delete cascade
 go
