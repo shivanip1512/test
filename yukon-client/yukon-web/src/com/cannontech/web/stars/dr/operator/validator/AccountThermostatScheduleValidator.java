@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -29,6 +30,10 @@ public class AccountThermostatScheduleValidator extends SimpleValidator<AccountT
 
     @Override
     protected void doValidation(AccountThermostatSchedule target, Errors errors) {
+        
+        if (StringUtils.isBlank(target.getScheduleName())) {
+            errors.rejectValue("scheduleName", "yukon.web.components.thermostat.schedule.error.blankName");
+        }
         
         //we only care about the schedule name on real accounts.  per com.cannontech.stars.dr.thermostat.dao.impl.DefaultAccountThermostatScheduleHelper
         //the default schedules have an accountId of 0
