@@ -18,6 +18,7 @@ public class ThermostatValidator extends SimpleValidator<Thermostat> {
 
         /* Device Label */
         YukonValidationUtils.checkExceedsMaxLength(errors, "deviceLabel", thermostat.getDeviceLabel(), 60);
+        YukonValidationUtils.checkIsBlank(errors, "deviceLabel", thermostat.getDeviceLabel());
         
         /* Hardware Type */
         /* Inventory Category */

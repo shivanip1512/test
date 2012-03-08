@@ -10,6 +10,7 @@
     <entry key="yukon.web.error.genericSubMessageWithKey">Try to execute your request again ({0}).</entry>
 
     <entry key="yukon.web.error.required">Field is required.</entry>
+    <entry key="yukon.web.error.isBlank">Cannot be blank.</entry>
     <entry key="yukon.web.error.exceedsMaximumLength">Exceeds maximum length of {0}.</entry>
     <entry key="yukon.web.error.outOfRange">Must be between {0} and {1}.</entry>
     <entry key="yukon.web.error.fieldErrorExists">Error found, check fields.</entry>

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -23,6 +24,13 @@ public class YukonValidationUtils extends ValidationUtils {
 		}
 	}
 
+   public static void checkIsBlank(Errors errors, String field, String fieldValue) {
+        
+        if (fieldValue != null && StringUtils.isBlank(fieldValue)) {
+            errors.rejectValue(field, "yukon.web.error.isBlank", "Cannot be blank.");
+        }
+    }
+   
     public static <T extends Comparable<T>> void checkRange(Errors errors,
             String field, T fieldValue, T min, T max, boolean required) {
         if (fieldValue == null) {
