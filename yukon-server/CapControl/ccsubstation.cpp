@@ -212,6 +212,7 @@ void CtiCCSubstation::restore(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    if ( _dirty )
     {
         if( !_insertDynamicDataFlag )
         {
@@ -297,8 +298,7 @@ void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, C
             }
         }
 
-        if (getOperationStats().isDirty())
-            getOperationStats().dumpDynamicData(conn, currentDateTime);
+        getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
 }
 void CtiCCSubstation::setDynamicData(Cti::RowReader& rdr)

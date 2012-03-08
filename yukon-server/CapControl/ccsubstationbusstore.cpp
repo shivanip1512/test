@@ -988,22 +988,8 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                     for(LONG i=0;i<_ccGeoAreas->size();i++)
                     {
                         CtiCCArea* currentCCArea = (CtiCCArea*)(*_ccGeoAreas)[i];
-                        if( currentCCArea->isDirty() )
-                        {
-                            try
-                            {
-                                currentCCArea->dumpDynamicData(conn,currentDateTime);
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-                        }
-                        if (currentCCArea->getOperationStats().isDirty())
-                        {
-                            currentCCArea->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                        }
+                        currentCCArea->dumpDynamicData(conn,currentDateTime);
+                        currentCCArea->getOperationStats().dumpDynamicData(conn,currentDateTime);
                     }
                 }
                 if(_ccSpecialAreas->size() > 0 )
@@ -1011,22 +997,8 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                     for(LONG i=0;i<_ccSpecialAreas->size();i++)
                     {
                         CtiCCSpecial* currentSpecial = (CtiCCSpecial*)(*_ccSpecialAreas)[i];
-                        if( currentSpecial->isDirty() )
-                        {
-                            try
-                            {
-                                currentSpecial->dumpDynamicData(conn,currentDateTime);
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-                        }
-                       if (currentSpecial->getOperationStats().isDirty())
-                        {
-                            currentSpecial->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                        }
+                        currentSpecial->dumpDynamicData(conn,currentDateTime);
+                        currentSpecial->getOperationStats().dumpDynamicData(conn,currentDateTime);
                     }
                 }
                 if( _ccSubstations->size() > 0 )
@@ -1034,22 +1006,8 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                     for(LONG i=0;i<_ccSubstations->size();i++)
                     {
                         CtiCCSubstation* currentCCSubstation = (CtiCCSubstation*)(*_ccSubstations)[i];
-                        if( currentCCSubstation->isDirty() )
-                        {
-                            try
-                            {
-                                currentCCSubstation->dumpDynamicData(conn,currentDateTime);
-                            }
-                            catch(...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-                        }
-                        if (currentCCSubstation->getOperationStats().isDirty())
-                        {
-                            currentCCSubstation->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                        }
+                        currentCCSubstation->dumpDynamicData(conn,currentDateTime);
+                        currentCCSubstation->getOperationStats().dumpDynamicData(conn,currentDateTime);
                     }
                 }
 
@@ -1066,22 +1024,8 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                         for(LONG j=0;j<ccFeeders.size();j++)
                         {
                             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[j];
-                            if( currentFeeder->isDirty() )
-                            {
-                                try
-                                {
-                                    currentFeeder->dumpDynamicData(conn,currentDateTime);
-                                }
-                                catch(...)
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                }
-                            }
-                            if (currentFeeder->getOperationStats().isDirty())
-                            {
-                                currentFeeder->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                            }
+                            currentFeeder->dumpDynamicData(conn,currentDateTime);
+                            currentFeeder->getOperationStats().dumpDynamicData(conn,currentDateTime);
 
                             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
                             if( ccCapBanks.size() > 0 )
@@ -1089,32 +1033,14 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                 for(LONG k=0;k<ccCapBanks.size();k++)
                                 {
                                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                                    if( currentCapBank->isDirty() )
-                                    {
-                                        /*{
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime().second() << "." << clock() << " -         Store START Cap Bank dumpDynamicData" << endl;
-                                        }*/
-                                        try
-                                        {
-                                            currentCapBank->dumpDynamicData(conn,currentDateTime);
-                                        }
-                                        catch(...)
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                        }
-                                    }
+                                    currentCapBank->dumpDynamicData(conn,currentDateTime);
 
                                     try
                                     {
                                         if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(), "CBC 702") )
                                         {
                                             CtiCCTwoWayPoints* twoWayPts = currentCapBank->getTwoWayPoints();
-                                            if (twoWayPts->isDirty())
-                                            {
-                                                twoWayPts->dumpDynamicData(conn,currentDateTime);
-                                            }
+                                            twoWayPts->dumpDynamicData(conn,currentDateTime);
                                         }
                                     }
                                     catch(...)
@@ -1123,16 +1049,10 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                     }
 
-                                    if (currentCapBank->getOperationStats().isDirty())
-                                    {
-                                        currentCapBank->getOperationStats().dumpDynamicData(conn,currentDateTime);
-                                    }
+                                    currentCapBank->getOperationStats().dumpDynamicData(conn,currentDateTime);
                                     for each(CtiCCMonitorPointPtr monPoint in currentCapBank->getMonitorPoint())
                                     {
-                                        if (monPoint->isDirty())
-                                        {
-                                            monPoint->dumpDynamicData(conn,currentDateTime);
-                                        }
+                                        monPoint->dumpDynamicData(conn,currentDateTime);
                                     }
                                     //Update Point Responses
                                     currentCapBank->dumpDynamicPointResponseData(conn);
@@ -7671,6 +7591,11 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
                     break;
                 }
             }
+            if ( substationToDelete != NULL )
+            {
+                delete substationToDelete;
+                substationToDelete = NULL;
+            }
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -7768,7 +7693,11 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                         break;
                     }else
                         ++itr;
-
+                }
+                if ( areaToDelete != NULL )
+                {
+                    delete areaToDelete;
+                    areaToDelete = NULL;
                 }
                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
@@ -7861,6 +7790,11 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                     }else
                         ++itr;
 
+                }
+                if ( spAreaToDelete != NULL )
+                {
+                    delete spAreaToDelete;
+                    spAreaToDelete = NULL;
                 }
                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
@@ -7999,6 +7933,11 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
                     ++itr;
 
             }
+            if ( subToDelete != NULL )
+            {
+                delete subToDelete;
+                subToDelete = NULL;
+            }
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -8070,6 +8009,12 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
             _paobject_feeder_map.erase(feederToDelete->getPaoId());
             _feeder_subbus_map.erase(feederToDelete->getPaoId());
 
+            if (feederToDelete != NULL)
+            {
+                delete feederToDelete;
+                feederToDelete = NULL;
+            }
+
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -8099,9 +8044,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
     {
         if (capBankToDelete != NULL)
         {
-          //  capBankToDelete->dumpDynamicData();
-
-            //Delete pointids on this feeder
+          //Delete pointids on this feeder
             for each (long pointid in *capBankToDelete->getPointIds())
             {
                 int ptCount = getNbrOfCapBanksWithPointID(pointid);
@@ -8122,25 +8065,6 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                     _pointid_capbank_map.erase(pointid);
             }
             capBankToDelete->getPointIds()->clear();
-
-            if( _CC_DEBUG & CC_DEBUG_DELETION )
-            {
-                if (_pointid_capbank_map.size() > 0)
-                {
-                    PointIdToCapBankMultiMap::iterator iter = _pointid_capbank_map.begin();
-                    while (iter != _pointid_capbank_map.end())
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " pointid " <<iter->first<< endl;
-                        }
-                        iter++;
-                    }
-                }
-            }
-
-
-
             for each (CtiCCMonitorPointPtr mPoint in capBankToDelete->getMonitorPoint())
             {
                 _pointid_capbank_map.erase(mPoint->getPointId());
@@ -8163,83 +8087,19 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
 
                 string capBankName = capBankToDelete->getPaoName();
                 _paobject_capbank_map.erase(capBankToDelete->getPaoId());
-                if( _CC_DEBUG & CC_DEBUG_DELETION )
-                {
-                    if (_paobject_capbank_map.size() > 0)
-                    {
-                        PaoIdToCapBankMap::iterator iter = _paobject_capbank_map.begin();
-                        while (iter != _paobject_capbank_map.end())
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " capbankid " <<iter->first<< endl;
-                            }
-                            iter++;
-                        }
-                    }
-                }
-
                 _capbank_subbus_map.erase(capBankToDelete->getPaoId());
-                if( _CC_DEBUG & CC_DEBUG_DELETION )
-                {
-                    if (_capbank_subbus_map.size() > 0)
-                    {
-                        ChildToParentMap::iterator iter = _capbank_subbus_map.begin();
-                        while (iter != _capbank_subbus_map.end())
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " capid " <<iter->first<<" on sub "<<iter->second<<endl;
-                            }
-                            iter++;
-                        }
-                    }
-                }
                 _capbank_feeder_map.erase(capBankToDelete->getPaoId());
-                if( _CC_DEBUG & CC_DEBUG_DELETION )
-                {
-                    if (_capbank_feeder_map.size() > 0)
-                    {
-                        ChildToParentMap::iterator iter = _capbank_feeder_map.begin();
-                        while (iter != _capbank_feeder_map.end())
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " capid " <<iter->first<<" on feed "<<iter->second<<endl;
-                            }
-                            iter++;
-                        }
-                    }
-                }
                 _cbc_capbank_map.erase(capBankToDelete->getControlDeviceId());
-                if( _CC_DEBUG & CC_DEBUG_DELETION )
-                {
-                    if (_cbc_capbank_map.size() > 0)
-                    {
-                        ChildToParentMap::iterator iter = _cbc_capbank_map.begin();
-                        while (iter != _cbc_capbank_map.end())
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " cbcid " <<iter->first<< endl;
-                            }
-                            iter++;
-                        }
-                    }
-                }
-                capBankToDelete = findCapBankByPAObjectID(capBankId);
+                
                 if (capBankToDelete != NULL)
                 {
-
+                    delete capBankToDelete;
                     capBankToDelete = NULL;
                 }
-                else
+                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
-                    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << "CAPBANK: " << capBankName <<" has been deleted." << endl;
-                    }
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << "CAPBANK: " << capBankName <<" has been deleted." << endl;
                 }
             }
             catch(...)

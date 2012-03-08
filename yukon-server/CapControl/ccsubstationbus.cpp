@@ -6798,13 +6798,11 @@ void CtiCCSubstationBus::dumpDynamicData(Cti::Database::DatabaseConnection& conn
         }
     }
 
-    if (getOperationStats().isDirty())
-        getOperationStats().dumpDynamicData(conn, currentDateTime);
+    getOperationStats().dumpDynamicData(conn, currentDateTime);
     for each (const map<long, CtiCCMonitorPointPtr>::value_type & entry in _monitorPoints )
     {
         CtiCCMonitorPointPtr monPoint = entry.second;
-        if (monPoint->isDirty())
-            monPoint->dumpDynamicData(conn,currentDateTime);
+        monPoint->dumpDynamicData(conn,currentDateTime);
     }
 
 }
@@ -10154,7 +10152,7 @@ void CtiCCSubstationBus::updatePointResponse(PointResponseKey key, PointResponse
     }
     _pointResponses.insert(make_pair(key, pResponse));
 }
-map <long, CtiCCMonitorPointPtr> CtiCCSubstationBus::getAllMonitorPoints()
+const map <long, CtiCCMonitorPointPtr>& CtiCCSubstationBus::getAllMonitorPoints()
 {
     return _monitorPoints;
 }
@@ -10170,11 +10168,6 @@ void CtiCCSubstationBus::removeAllMonitorPoints()
 {
     _monitorPoints.clear();
     _pointResponses.clear();
-}
-
-map <PointResponseKey, PointResponsePtr> CtiCCSubstationBus::getAllPointResponses()
-{
-    return _pointResponses;
 }
 
 CtiCCMonitorPointPtr CtiCCSubstationBus::getMonitorPoint(long pointIdKey)

@@ -499,6 +499,7 @@ BOOL CtiCCMonitorPoint::isDirty() const
 ---------------------------------------------------------------------------*/
 void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    if (_dirty)
     {
         if( !_insertDynamicDataFlag )
         {

@@ -443,7 +443,7 @@ BOOL CtiCCOperationStats::isDirty()
 }
 void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-
+    if (_dirty)
     {
         if( !_insertDynamicDataFlag )
         {

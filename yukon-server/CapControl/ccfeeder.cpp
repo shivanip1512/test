@@ -6095,6 +6095,7 @@ BOOL CtiCCFeeder::isDirty() const
 ---------------------------------------------------------------------------*/
 void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    if( _dirty )
     {
         if( !_insertDynamicDataFlag )
         {
@@ -6290,10 +6291,8 @@ void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTi
 
 
         }
-        if( getOriginalParent().isDirty() )
-            getOriginalParent().dumpDynamicData(conn, currentDateTime);
-        if (getOperationStats().isDirty())
-            getOperationStats().dumpDynamicData(conn, currentDateTime);
+        getOriginalParent().dumpDynamicData(conn, currentDateTime);
+        getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
 }
 

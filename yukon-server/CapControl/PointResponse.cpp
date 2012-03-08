@@ -46,7 +46,7 @@ PointResponse& PointResponse::operator=(const PointResponse& right)
 
 bool PointResponse::operator != (const PointResponse& right) const
 {
-    return ( _pointId != right._pointId && _deviceId != right._deviceId);
+    return ( _pointId != right._pointId || _deviceId != right._deviceId);
 }
 
 

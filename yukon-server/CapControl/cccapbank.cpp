@@ -125,15 +125,6 @@ CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank::~CtiCCCapBank()
 {
-    if (!_monitorPoint.empty())
-    {
-        for each (CtiCCMonitorPointPtr monPoint in _monitorPoint)
-        {
-            monPoint.reset();
-        }
-        _monitorPoint.clear();
-    }
-
     try
     {
         if (_twoWayPoints != NULL)
@@ -2380,6 +2371,7 @@ BOOL CtiCCCapBank::isDirty() const
 ---------------------------------------------------------------------------*/
 void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    if( _dirty )
     {
         if( !_insertDynamicDataFlag )
         {
@@ -2545,16 +2537,12 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
                 }
             }
         }
-        if (getOriginalParent().isDirty())
-            getOriginalParent().dumpDynamicData(conn, currentDateTime);
-
-        if (getOperationStats().isDirty())
-            getOperationStats().dumpDynamicData(conn, currentDateTime);
+        getOriginalParent().dumpDynamicData(conn, currentDateTime);
+        getOperationStats().dumpDynamicData(conn, currentDateTime);
 
         for each (CtiCCMonitorPointPtr monPoint in getMonitorPoint())
         {
-            if (monPoint->isDirty())
-                monPoint->dumpDynamicData(conn,currentDateTime);
+            monPoint->dumpDynamicData(conn,currentDateTime);
         }
     }
 }

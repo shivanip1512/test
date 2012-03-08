@@ -84,7 +84,10 @@ void CtiCCSpecial::saveGuts(RWvostream& ostrm ) const
     CtiCCAreaBase::saveGuts(ostrm);
     Cti::CapControl::PaoIdVector substationIds = getSubstationIds();
     ostrm << substationIds.size();
-    ostrm << substationIds;
+    for each (long subId in getSubstationIds())
+    {
+        ostrm << subId;
+    }
     double pfDisplayValue = getPFactor();
     double estPfDisplayValue = getEstPFactor();
 
@@ -149,6 +152,7 @@ void CtiCCSpecial::restore(Cti::RowReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    if ( isDirty() )
     {
         if( !_insertDynamicDataFlag )
         {
@@ -221,8 +225,7 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
             }
         }
 
-        if (getOperationStats().isDirty())
-            getOperationStats().dumpDynamicData(conn, currentDateTime);
+        getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
 }
 void CtiCCSpecial::setDynamicData(Cti::RowReader& rdr)

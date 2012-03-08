@@ -49,6 +49,7 @@ vector<PointResponse> PointResponseDatabaseDao::getPointResponsesBySubBusId(int 
 
     DatabaseReader dbReader(databaseConnection,sql);
 
+    //intentional insertion of same parameter to dbReader.
     dbReader << subBusId << subBusId << subBusId;
 
     performDatabaseOperation(dbReader,pointResponses);

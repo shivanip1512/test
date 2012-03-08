@@ -277,9 +277,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void checkForMaxDailyOpsHit();
 
 
-        int getNumOfBanksInState(std::set<int> s);
+    int getNumOfBanksInState(std::set<int> s);
     std::vector<CtiCCCapBankPtr> getAllCapBanks( );
-        std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks( );
+    std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks( );
     CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                         CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
@@ -356,10 +356,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void performDataOldAndFallBackNecessaryCheck();
 
     bool addMonitorPoint(long pointId, CtiCCMonitorPointPtr monPoint);
-    map <long, CtiCCMonitorPointPtr> getAllMonitorPoints();
-    std::vector <long> CtiCCSubstationBus::getAllMonitorPointIds();
+    const map <long, CtiCCMonitorPointPtr>& getAllMonitorPoints();
+    std::vector <long> getAllMonitorPointIds();
     void removeAllMonitorPoints();
-    map <Cti::CapControl::PointResponseKey, Cti::CapControl::PointResponsePtr> getAllPointResponses();
     CtiCCMonitorPointPtr getMonitorPoint(long pointId);
     Cti::CapControl::PointResponsePtr getPointResponse(Cti::CapControl::PointResponseKey key);
     void updatePointResponse(Cti::CapControl::PointResponseKey key, Cti::CapControl::PointResponsePtr  pResponse);

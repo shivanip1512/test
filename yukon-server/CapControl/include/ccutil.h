@@ -48,24 +48,6 @@ enum Phase
     Phase_Poly
 };
 
-
-struct PointResponseKey
-{
-    long              deviceId;
-    long              pointId;
-
-    PointResponseKey(long dId,long pId) : deviceId(dId), pointId(pId) {}
-    bool operator<(const PointResponseKey &rhs) const
-    {
-        if( deviceId < rhs.deviceId || (deviceId == rhs.deviceId && pointId < rhs.pointId) )
-        {
-            return true;
-        }
-        else
-            return false;
-    }
-};
-
 Phase       resolvePhase( const std::string & p );
 std::string desolvePhase( const Phase & p );
 
