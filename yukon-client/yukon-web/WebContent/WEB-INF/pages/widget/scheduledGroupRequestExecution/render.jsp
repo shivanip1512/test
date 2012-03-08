@@ -100,6 +100,7 @@
 
 <c:otherwise>
 	<i:inline key=".noSchedules"/>
+	<br>
 </c:otherwise>
 </c:choose>
 
