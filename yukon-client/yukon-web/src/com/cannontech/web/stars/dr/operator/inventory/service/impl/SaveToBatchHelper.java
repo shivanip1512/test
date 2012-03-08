@@ -11,7 +11,7 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.inventory.SaveToBatchController;
+import com.cannontech.web.stars.dr.operator.inventory.SaveToBatchInfo;
 import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
 import com.google.common.collect.Lists;
@@ -23,18 +23,16 @@ public class SaveToBatchHelper extends InventoryActionsHelper {
         Map<Integer,Integer> inventoryIdsToAccountIds;
         private YukonUserContext userContext;
         private YukonEnergyCompany energyCompany;
-        private String routeId;
-        private String groupId;
+        private SaveToBatchInfo saveToBatchInfo;
         
         public SaveToBatchTask(YukonUserContext userContext, YukonEnergyCompany energyCompany,
                 InventoryCollection inventoryCollection, Map<Integer,Integer> inventoryIdsToAccountIds,
-                String routeId, String groupId) {
+                SaveToBatchInfo saveToBatchInfo) {
             this.collection = inventoryCollection;
             this.userContext = userContext;
             this.energyCompany = energyCompany;
-            this.routeId = routeId;
-            this.groupId = groupId;
             this.inventoryIdsToAccountIds = inventoryIdsToAccountIds;
+            this.saveToBatchInfo = saveToBatchInfo;
         }
 
         @Override
@@ -68,20 +66,29 @@ public class SaveToBatchHelper extends InventoryActionsHelper {
                     }
                     
                     String options = null;
-                    if (groupId != null && !groupId.equals(SaveToBatchController.useCurrentGroups.toString())) {
-                        options = "GroupID:" + groupId;
-                    }
-                    if (routeId != null && !routeId.equals(SaveToBatchController.useCurrentRoutes.toString())) {
-                        if (routeId.equals(SaveToBatchController.useEcDefaultRoute)) {
-                            routeId = SaveToBatchController.yukonDefaultRoute;
-                        }
-                        if (options == null){
+                    if (saveToBatchInfo.getUseRoutes().equals("new")) {
+                        int routeId = saveToBatchInfo.getRouteId();
+                        if (routeId > 0) {
                             options = "RouteID:" + routeId;
                         }
-                        else {
-                            options += ";RouteID:" + routeId;
+                    } else if (saveToBatchInfo.getUseRoutes().equals("default")) {
+                        int defaultRouteId = saveToBatchInfo.getEcDefaultRoute();
+                        if (defaultRouteId > 0) {
+                            options = "RouteID:" + defaultRouteId;
                         }
-                    }
+                    } //if saveToBatchInfo.getUseRoutes() equals "current" do nothing.
+                    
+                    if (saveToBatchInfo.getUseGroups().equals("new")) {
+                        int groupId = saveToBatchInfo.getGroupId();
+                        if (groupId > 0) {
+                            if (options == null){
+                                options = "GroupID:" + groupId;
+                            }
+                            else {
+                                options += ";GroupID:" + groupId;
+                            }
+                        }
+                    } //if saveToBatchInfo.getUseGroups() equals "current" do nothing.
                     
                     // Build map of inventoryId to account Id
                     List<Integer> inventoryIds = Lists.newArrayList();

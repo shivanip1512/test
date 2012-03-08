@@ -189,25 +189,29 @@
     <entry key="yukon.web.modules.operator.inventoryActions.changeServiceCompanyDescription">Change the service company.</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.changeWarehouse.label">Change Warehouse</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.changeWarehouseDescription">Change the warehouse.</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.saveToBatch">Save collection to batch.</entry>
-    <entry key="yukon.web.modules.operator.inventoryActions.saveToBatch.label">Save To Batch</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.saveToFile">Write collection to a batch configuration file.</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.saveToFile.label">Save To File</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.resendConfig.label">Resend ZigBee Config</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.resendConfigDescription">Resend configurations for ZigBee devices.</entry>
 
     <!-- /inventory/inventoryOperations/saveBatch.jsp -->
-    <entry key="yukon.web.modules.operator.saveToBatch.title">Configure Batch Settings</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.instructionsLabel">Warning:</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.instructions">It is possible to create a batch that will change the route &amp; group of all inventory in the selected inventory collection.</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.note">Note:</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.multipleHardwareConfigTypes">The hardware collection contains multiple hardware configuration types.</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.enforceSingleHardwareConfigType">Inventory configuration can only be updated when all devices share a single hardware configuration type.</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.useCurrentRoutes">Use routes assigned to the switches</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.ecDefaultRouteLabel">Energy Company Default Route - </entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.noDefaultRoute">Energy Company Default Route - None</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.useCurrentConfiguration">Use configuration stored in the switches</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.progress">Progress</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.route">Route</entry>
-    <entry key="yukon.web.modules.operator.saveToBatch.group">Group</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.pageName">Save To File</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.title">Batch File Settings</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.instructionsLabel">Warning:</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.instructions">It is possible to create a batch file that will affect the route &amp; group of all inventory in the selected inventory collection.</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.note">Note:</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.multipleHardwareConfigTypes">The hardware collection contains multiple hardware configuration types.</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.enforceSingleHardwareConfigType">Inventory configuration can only be updated when all devices share a single hardware configuration type.</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.route">Route</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.selectRoute">Select a route:</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.useCurrentRoutes">Use routes assigned to the switches</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.useDefaultRoute">Use default route: </entry>
+    <entry key="yukon.web.modules.operator.saveToFile.group">Group</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.useCurrentConfiguration">Use devices' currently assigned configuration.</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.selectGroup">Assign configuration from group:</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.groupPicker.label">Choose Load Group</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.groupPicker.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.progress">Progress</entry>
     
     <!-- /inventory/deleteInventory.jsp -->
     <entry key="yukon.web.modules.operator.deleteInventory.pageName">Delete Inventory</entry>

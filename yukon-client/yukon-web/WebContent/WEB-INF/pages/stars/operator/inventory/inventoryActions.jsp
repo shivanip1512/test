@@ -115,19 +115,21 @@
                 </table>
             </cti:dataGridCell>
             
-            <cti:dataGridCell>
-                <table>
-                    <tr>
-                        <td class="actionCell">
-                            <form action="saveToBatch/setup" method="get">
-                                <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                                <cti:button nameKey="saveToBatch" type="submit" styleClass="buttonGroup"/>
-                            </form>
-                        </td>
-                        <td class="actionCell"><i:inline key=".saveToBatch"/></td>
-                    </tr>
-                </table>
-            </cti:dataGridCell>
+            <c:if test="${showSaveToFile}">
+                <cti:dataGridCell>
+                    <table>
+                        <tr>
+                            <td class="actionCell">
+                                <form action="saveToBatch/setup" method="get">
+                                    <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
+                                    <cti:button nameKey="saveToFile" type="submit" styleClass="buttonGroup"/>
+                                </form>
+                            </td>
+                            <td class="actionCell"><i:inline key=".saveToFile"/></td>
+                        </tr>
+                    </table>
+                </cti:dataGridCell>
+            </c:if>
         
             <cti:checkRolesAndProperties value="DEVICE_RECONFIG">
                 <c:if test="${digiEnabled}">

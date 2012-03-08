@@ -92,3 +92,7 @@ span.newOpLink {
 ul.resultList {
     padding: 4px;
 }
+
+div.saveToBatchOption {
+    padding-bottom: 8px;
+}
