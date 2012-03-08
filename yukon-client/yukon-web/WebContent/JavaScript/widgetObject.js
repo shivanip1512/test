@@ -99,7 +99,7 @@ function JsWidgetObject(shortName, parameters) {
         _self.onSuccess(xhr);
     }
     
-    oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key]);
+    var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[args.key]);
     
     var url = "/spring/widget/" + this.shortName + "/" + args.command;
 
@@ -166,7 +166,7 @@ function JsWidgetObject(shortName, parameters) {
     $(actionSpan).getElementsBySelector('span').innerHTML = waitingLabel;
     $(this.container).getElementsBySelector('input').invoke('disable');
     
-    oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[key]);
+    var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[key]);
     
     var url = "/spring/widget/" + this.shortName + "/" + cmd;
     
@@ -196,7 +196,7 @@ function JsWidgetObject(shortName, parameters) {
       if (container == undefined || container == '') {
           containerToUse = this.container;
       }
-      oldParams = jQuery.extend(true, this.getWidgetParameters(), newParams);
+      var oldParams = jQuery.extend(true, this.getWidgetParameters(), newParams);
       
       var url = "/spring/widget/" + this.shortName + "/" + cmd;
       return new Ajax.PeriodicalUpdater(containerToUse, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccessPeriodic.bind(this), 'frequency': period});
@@ -245,7 +245,7 @@ function JsWidgetObject(shortName, parameters) {
   
   
   this.doActionPopup = function(cmd, actionSpan, key, dialogId, width, height) {
-	    oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[key]);
+	    var oldParams = jQuery.extend(true, this.getWidgetParameters(), this.linkInfo[key]);
 
 	    var url = "/spring/widget/" + this.shortName + "/" + cmd;
 
