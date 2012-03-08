@@ -194,9 +194,9 @@
     <entry key="yukon.web.modules.operator.inventoryActions.resendConfig.label">Resend ZigBee Config</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.resendConfigDescription">Resend configurations for ZigBee devices.</entry>
 
-    <!-- /inventory/inventoryOperations/saveBatch.jsp -->
+    <!-- /inventory/inventoryOperations/saveBatchFile.jsp -->
     <entry key="yukon.web.modules.operator.saveToFile.pageName">Save To File</entry>
-    <entry key="yukon.web.modules.operator.saveToFile.title">Batch File Settings</entry>
+    <entry key="yukon.web.modules.operator.saveToFile.title">File Settings</entry>
     <entry key="yukon.web.modules.operator.saveToFile.instructionsLabel">Warning:</entry>
     <entry key="yukon.web.modules.operator.saveToFile.instructions">It is possible to create a batch file that will affect the route &amp; group of all inventory in the selected inventory collection.</entry>
     <entry key="yukon.web.modules.operator.saveToFile.note">Note:</entry>
@@ -332,9 +332,5 @@
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notesLabel">Note:</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notes">Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.newOperation">Choose A New Operation For Inventory</entry>
-    
-    <!-- /inventory/saveBatch.jsp -->
-    <entry key="yukon.web.modules.operator.saveToBatch.pageName">Save To Batch</entry>
-    
     
 </properties>

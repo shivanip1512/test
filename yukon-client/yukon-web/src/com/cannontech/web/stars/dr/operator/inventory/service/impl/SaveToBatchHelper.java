@@ -40,13 +40,6 @@ public class SaveToBatchHelper extends InventoryActionsHelper {
             return new Runnable() {
                 @Override
                 public void run() {
-                    if (userContext == null) {
-                        return;
-                    }
-                    if (collection == null) {
-                        return;
-                    }
-                    
                     // Read switch_commands.txt from the stars_temp directory, or get the existing instance.
                     SwitchCommandQueue commandQueue = SwitchCommandQueue.getInstance();
                     
@@ -109,7 +102,7 @@ public class SaveToBatchHelper extends InventoryActionsHelper {
                         successCount++;
                         completedItems++;
                     }
-                    // Write out the file.
+                    // Write out the file by passing 'true' as the second parameter to addCommand().
                     commandQueue.addCommand(null, true);
                 }
             };

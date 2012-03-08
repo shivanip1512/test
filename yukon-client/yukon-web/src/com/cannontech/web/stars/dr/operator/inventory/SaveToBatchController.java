@@ -96,7 +96,7 @@ public class SaveToBatchController {
         return "/operator/inventory/saveBatchFile.jsp";
     }
     
-    @RequestMapping(value="do", params="start")
+    @RequestMapping(value="do", params="save")
     public String startTask(HttpServletRequest request, ModelMap model, String taskId, YukonUserContext userContext,
             @ModelAttribute("saveToBatchInfo") SaveToBatchInfo saveToBatchInfo, BindingResult bindingResult) throws ServletRequestBindingException {
         YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());

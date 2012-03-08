@@ -44,7 +44,7 @@ public class InventoryActionsController {
         boolean digiEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
         modelMap.addAttribute("digiEnabled", digiEnabled);
         
-        boolean showSaveToFile = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_SAVE_TO_FILE);
+        boolean showSaveToFile = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_INVENTORY_SAVE_TO_FILE);
         modelMap.addAttribute("showSaveToFile", showSaveToFile);
         
         return "operator/inventory/inventoryActions.jsp";

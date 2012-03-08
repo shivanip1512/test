@@ -10,27 +10,26 @@
     
     <script type="text/javascript">
         jQuery(document).ready(function() {
-        	var singleHwConfigType = ${uniformHardwareConfigType};
-        	if(${!uniformHardwareConfigType}) {
-        		jQuery('#groups').attr('disabled','disabled');
-        	}
-        	
-        	jQuery(document).delegate("#routes input:radio", "change", function(e){
+        	jQuery(document).delegate('#routes input:radio', 'change', function(e){
         		var currentTarget = jQuery(this);
         		
-        		currentTarget.closest('div').siblings().addClass('disabled').find("input[type!=radio], select, textarea, button").attr('disabled', 'disabled');
-        		currentTarget.closest('div').removeClass('disabled').find("input,select,textarea,button").removeAttr('disabled');
+        		currentTarget.closest('div').siblings().addClass('disabled').find('input[type!=radio], select, textarea, button').attr('disabled', 'disabled');
+        		currentTarget.closest('div').removeClass('disabled').find('input,select,textarea,button').removeAttr('disabled');
         	});
-        	
-        	jQuery(document).delegate("#groups input:radio", "change", function(e){
-                var currentTarget = jQuery(this);
-                
-                currentTarget.closest('div').siblings().addClass('disabled').find('input[type!=radio],select,textarea,button').attr('disabled', 'disabled');
-                currentTarget.closest('div').removeClass('disabled').find('input,select,textarea,button').removeAttr('disabled');
-            });
-        	
         	jQuery("#routes input:radio:checked").trigger("change");
-        	jQuery("#groups input:radio:checked").trigger("change");
+        	
+        	var singleHwConfigType = ${uniformHardwareConfigType};
+            if(!singleHwConfigType) {
+                jQuery('#groups').addClass('disabled').find(':input').attr('disabled', 'disabled');
+            } else {
+            	jQuery(document).delegate('#groups input:radio', 'change', function(e){
+                    var currentTarget = jQuery(this);
+                    
+                    currentTarget.closest('div').siblings().addClass('disabled').find('input[type!=radio],select,textarea,button').attr('disabled', 'disabled');
+                    currentTarget.closest('div').removeClass('disabled').find('input,select,textarea,button').removeAttr('disabled');
+                });
+        	    jQuery('#groups input:radio:checked').trigger('change');
+            }
         });
     </script>
     
@@ -121,7 +120,7 @@
                     </tags:nameValueContainer2>
                 </div>
                 <cti:button nameKey="cancel" type="submit" name="cancel"/>
-                <cti:button nameKey="start" type="submit" name="start"/>
+                <cti:button nameKey="save" type="submit" name="save"/>
             </form:form>
         </c:if>
         <c:if test="${not empty task}">
