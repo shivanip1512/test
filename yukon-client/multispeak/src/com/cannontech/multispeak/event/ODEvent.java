@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -71,7 +71,7 @@ public class ODEvent extends MultispeakEvent{
      */
     public boolean messageReceived(Return returnMsg) {
 
-        Meter meter = meterDao.getForId(returnMsg.getDeviceID());
+        YukonMeter meter = meterDao.getYukonMeterForId(returnMsg.getDeviceID());
         OutageDetectionEvent ode = new OutageDetectionEvent();
         String meterNumber = meter.getMeterNumber();
         

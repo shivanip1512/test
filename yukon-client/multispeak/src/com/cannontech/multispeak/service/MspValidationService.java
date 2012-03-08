@@ -3,7 +3,7 @@ package com.cannontech.multispeak.service;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -22,7 +22,7 @@ public interface MspValidationService {
      * Returns Meter for the meterNumber if MeterNumber is a Yukon MeterNumber.
      * Throws a RemoteException if the meterNumber is not found in Yukon. 
      */
-    public Meter isYukonMeterNumber(String meterNumber) throws RemoteException;
+    public YukonMeter isYukonMeterNumber(String meterNumber) throws RemoteException;
     
     /**
      * Returns an ErrorObject when the scadaAnalog does not have all required information

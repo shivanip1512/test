@@ -9,8 +9,9 @@ package com.cannontech.multispeak.event;
 
 import java.rmi.RemoteException;
 
+
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.PointDao;
@@ -46,7 +47,7 @@ public class MeterReadEvent extends MultispeakEvent{
      * @param pilMessageID_
      * @param returnMessages_
      */
-    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter, 
+    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, YukonMeter meter, 
             int returnMessages_, String transactionID_) {
         super(mspVendor_, pilMessageID_, returnMessages_, transactionID_);
         setDevice(MeterReadFactory.createMeterReadObject(meter));
@@ -56,7 +57,7 @@ public class MeterReadEvent extends MultispeakEvent{
      * @param mspVendor_
      * @param pilMessageID_
      */
-    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter,
+    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, YukonMeter meter,
             String transactionID_) {
         this(mspVendor_, pilMessageID_, meter, 1, transactionID_);
     }
@@ -105,11 +106,11 @@ public class MeterReadEvent extends MultispeakEvent{
 
     public boolean messageReceived(Return returnMsg) {
 
-        Meter meter = meterDao.getForId(returnMsg.getDeviceID());
+        YukonMeter yukonMeter = meterDao.getYukonMeterForId(returnMsg.getDeviceID());
         
         if( returnMsg.getStatus() != 0) {
             
-            String result = "MeterReadEvent(" + meter.getMeterNumber() + ") - Reading Failed (ERROR:" + returnMsg.getStatus() + ") " + returnMsg.getResultString();
+            String result = "MeterReadEvent(" + yukonMeter.getMeterNumber() + ") - Reading Failed (ERROR:" + returnMsg.getStatus() + ") " + returnMsg.getResultString();
             CTILogger.info(result);
             //TODO Should we send old data if a new reading fails?
             getDevice().populateWithPointData(returnMsg.getDeviceID());
@@ -118,7 +119,7 @@ public class MeterReadEvent extends MultispeakEvent{
         }
         else {
             
-            CTILogger.info("MeterReadEvent(" + meter.getMeterNumber() + ") - Reading Successful" );
+            CTILogger.info("MeterReadEvent(" + yukonMeter.getMeterNumber() + ") - Reading Successful" );
             if(returnMsg.getVector().size() > 0 )
             {
                 PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);

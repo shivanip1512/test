@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.block.data.FormattedBlockBase;
@@ -58,7 +58,7 @@ public class LoadBlockProcessingServiceImpl  extends FormattedBlockProcessingSer
     }
     
     @Override
-    public LoadBlock createBlock(Meter meter) {
+    public LoadBlock createBlock(YukonMeter meter) {
         LoadBlock block = new LoadBlock();
         block.setMeterNumber(meter.getMeterNumber());
         return block;

@@ -16,6 +16,7 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -102,11 +103,11 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 	    Meter meter = new Meter();
 
 	    int paobjectID = rset.getInt(1);
-	    meter.setDeviceId(paobjectID);
 	    String paoName = rset.getString(2);
 	    meter.setName(paoName);
         PaoType paoType = PaoType.getForDbString(rset.getString(3));
-        meter.setPaoType(paoType);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
+        meter.setPaoIdentifier(paoIdentifier);
 	    boolean disabled = CtiUtilities.isTrue(rset.getString(4).charAt(0));
 	    meter.setDisabled(disabled);
 	    String meterNumber = rset.getString(5);

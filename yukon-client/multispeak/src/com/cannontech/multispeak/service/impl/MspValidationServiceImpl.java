@@ -7,7 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.block.Block;
@@ -39,18 +39,18 @@ public class MspValidationServiceImpl implements MspValidationService {
     }
 
     @Override
-    public Meter isYukonMeterNumber(String meterNumber) throws RemoteException {
-        Meter meter;
+    public YukonMeter isYukonMeterNumber(String meterNumber) throws RemoteException {
+        YukonMeter yukonMeter;
         if( StringUtils.isBlank(meterNumber))
             throw new RemoteException("Meter Number is invalid.  Meter number is blank or null");
 
         try {
-            meter = meterDao.getForMeterNumber(meterNumber);
+            yukonMeter = meterDao.getYukonMeterForMeterNumber(meterNumber);
         }catch (NotFoundException e){
             CTILogger.info("Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.");
             throw new RemoteException( "Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.");
         }
-        return meter;
+        return yukonMeter;
     }
     
     @Override

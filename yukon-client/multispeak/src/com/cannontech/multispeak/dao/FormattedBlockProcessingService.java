@@ -3,7 +3,7 @@ package com.cannontech.multispeak.dao;
 import java.util.EnumSet;
 import java.util.List;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.block.Block;
@@ -29,7 +29,7 @@ public interface FormattedBlockProcessingService <T extends Block> {
     /**
      * Simple helper to create a blank Block for a given Meter.
      */
-    public T createBlock(Meter meter);
+    public T createBlock(YukonMeter meter);
 
     /**
      * This is an immediate version of the buildFormattedBlockUpdater that updates a FormattedBlock

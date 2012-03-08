@@ -1,6 +1,6 @@
 package com.cannontech.multispeak.data;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.PaoType;
 
 /**
@@ -75,7 +75,7 @@ public class MeterReadFactory {
         return meterReadObject;
     }
     
-    public static MeterReadBase createMeterReadObject(Meter meter) {
-        return createMeterReadObject(meter.getPaoType(), meter.getMeterNumber());
+    public static MeterReadBase createMeterReadObject(YukonMeter meter) {
+        return createMeterReadObject(meter.getPaoIdentifier().getPaoType(), meter.getMeterNumber());
     }
 }

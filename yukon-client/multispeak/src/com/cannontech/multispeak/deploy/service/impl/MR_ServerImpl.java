@@ -7,7 +7,6 @@
 
 package com.cannontech.multispeak.deploy.service.impl;
 
-import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.clientutils.LogHelper;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -28,7 +27,6 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
@@ -45,7 +43,6 @@ import com.cannontech.multispeak.dao.MspRawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.data.MspBlockReturnList;
 import com.cannontech.multispeak.data.MspMeterReadReturnList;
 import com.cannontech.multispeak.data.MspMeterReturnList;
-import com.cannontech.multispeak.data.MspReturnList;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.CustomersAffectedByOutage;
 import com.cannontech.multispeak.deploy.service.DomainMember;
@@ -150,13 +147,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         MspMeterReturnList meterList = null;
         Date timerStart = new Date();
-        try {
-            meterList = mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
-        } catch(NotFoundException nfe) {
-            //Not an error, it could happen that there are no more entries.
-        }
+        meterList = mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
 
-        updateResponseHeader(meterList);
+        multispeakFuncs.updateResponseHeader(meterList);
 
         Meter[] meters = new Meter[meterList.getMeters().size()];
         meterList.getMeters().toArray(meters);
@@ -195,7 +188,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
                                                                           lastReceived,
                                                                           vendor.getMaxReturnRecords());
 
-        updateResponseHeader(mspMeterReadReturnList);
+        multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
 
         MeterRead[] meterReadArray = new MeterRead[mspMeterReadReturnList.getMeterReads().size()];
         mspMeterReadReturnList.getMeterReads().toArray(meterReadArray);
@@ -230,11 +223,11 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         init(); //init is already performed on the call to isAMRMeter()
 
         //Validate the meterNo is a Yukon meterNumber
-        com.cannontech.amr.meter.model.Meter meter = mspValidationService.isYukonMeterNumber(meterNo);
+        YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         
-    	boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
+    	boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
     	
         //Custom hack put in only for SEDC.  Performs an actual meter read instead of simply replying from the database.
         if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") && canInitiatePorterRequest) {
@@ -544,7 +537,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, null, lastReceived, vendor.getMaxReturnRecords());
 
-        updateResponseHeader(mspMeterReadReturnList);
+        multispeakFuncs.updateResponseHeader(mspMeterReadReturnList);
 
         MeterRead[] meterReadArray = new MeterRead[mspMeterReadReturnList.getMeterReads().size()];
         mspMeterReadReturnList.getMeterReads().toArray(meterReadArray);
@@ -554,7 +547,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     @Override
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo, String readingType) throws RemoteException {
         init();
-        com.cannontech.amr.meter.model.Meter meter = mspValidationService.isYukonMeterNumber(meterNo);
+        YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
         
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
             mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
@@ -599,7 +592,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         
         FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
-        updateResponseHeader(mspBlockReturnList);
+        multispeakFuncs.updateResponseHeader(mspBlockReturnList);
         return formattedBlocks;
     }
     
@@ -620,7 +613,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         FormattedBlock formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{formattedBlock};
-        updateResponseHeader(mspBlockReturnList);
+        multispeakFuncs.updateResponseHeader(mspBlockReturnList);
         return formattedBlocks;
     }
 
@@ -704,20 +697,6 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         return null;
     }
 
-    /**
-     * Helper method to update responseHeader.objectsRemaining and responseHeader.lastSent
-     * @param returnResultsSize
-     * @param vendor
-     * @return
-     */
-    private void updateResponseHeader(MspReturnList returnList) throws RemoteException {
-        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(returnList.getObjectsRemaining())));
-        LogHelper.debug(log, "Updated MspMessageHeader.ObjectsRemaining %s", returnList.getObjectsRemaining());
-        
-        multispeakFuncs.getResponseHeader().setLastSent(returnList.getLastSent());
-        LogHelper.debug(log, "Updated MspMessageHeader.LastSent %s", returnList.getLastSent());
-    }
-	
     @Autowired
     public void setMspMeterDao(MspMeterDao mspMeterDao) {
         this.mspMeterDao = mspMeterDao;

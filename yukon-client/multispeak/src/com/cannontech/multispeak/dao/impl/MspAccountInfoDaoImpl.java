@@ -6,7 +6,7 @@ import com.cannontech.amr.account.dao.AccountInfoDao;
 import com.cannontech.amr.account.model.AccountInfo;
 import com.cannontech.amr.account.model.ServiceLocation;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -38,14 +38,14 @@ public class MspAccountInfoDaoImpl implements AccountInfoDao {
     
     public AccountInfo getAccount(int deviceId) throws RemoteException { 
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        Meter meter = meterDao.getForId(deviceId);
+        YukonMeter meter = meterDao.getYukonMeterForId(deviceId);
         com.cannontech.multispeak.deploy.service.Customer mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
         return mapToAccountInfo(mspCustomer);
     }
     
     public ServiceLocation getServiceLocation(int deviceId) throws RemoteException {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        Meter meter = meterDao.getForId(deviceId);
+        YukonMeter meter = meterDao.getYukonMeterForId(deviceId);
         com.cannontech.multispeak.deploy.service.ServiceLocation mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
         return mapToServicLocation(mspServLoc);
     }

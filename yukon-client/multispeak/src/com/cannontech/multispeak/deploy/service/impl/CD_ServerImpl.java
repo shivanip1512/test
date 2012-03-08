@@ -1,18 +1,27 @@
 package com.cannontech.multispeak.deploy.service.impl;
 
-import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.point.PointQuality;
+import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.multispeak.data.MspMeterReturnList;
 import com.cannontech.multispeak.deploy.service.CDDevice;
 import com.cannontech.multispeak.deploy.service.CDDeviceExchange;
 import com.cannontech.multispeak.deploy.service.CD_ServerSoap_PortType;
@@ -27,10 +36,15 @@ import com.cannontech.multispeak.service.MultispeakMeterService;
 
 public class CD_ServerImpl implements CD_ServerSoap_PortType
 {
-    public MultispeakMeterService multispeakMeterService;
-    public MultispeakFuncs multispeakFuncs;
-    public MspMeterDao mspMeterDao;
-    public MspValidationService mspValidationService;
+    private final Logger log = YukonLogManager.getLogger(OD_ServerImpl.class);
+    
+    @Autowired public MultispeakMeterService multispeakMeterService;
+    @Autowired public MultispeakFuncs multispeakFuncs;
+    @Autowired public MspMeterDao mspMeterDao;
+    @Autowired public MspValidationService mspValidationService;
+    @Autowired public AttributeService attributeService;
+    @Autowired public DynamicDataSource dynamicDataSource;
+    @Autowired public PaoDefinitionDao paoDefinitionDao;
 
     private void init() throws RemoteException{
         multispeakFuncs.init();
@@ -71,20 +85,15 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
-        List<Meter> meterList = null;
+        MspMeterReturnList meterList = null;
         Date timerStart = new Date();
-        try {
-            meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
-        } catch(NotFoundException nfe) {
-            //Not an error, it could happen that there are no more entries.
-        }
+        meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
         
-        Meter[] meters = new Meter[meterList.size()];
-        meterList.toArray(meters);
-        CTILogger.info("Returning " + meters.length + " CD Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
-        //TODO = need to get the true number of meters remaining
-        int numRemaining = (meters.length <= vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
-        multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
+        multispeakFuncs.updateResponseHeader(meterList);
+        
+        Meter[] meters = new Meter[meterList.getMeters().size()];
+        meterList.getMeters().toArray(meters);
+        log.info("Returning " + meters.length + " CD Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
         return meters;
     }
     
@@ -99,10 +108,19 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
-        com.cannontech.amr.meter.model.Meter meter = mspValidationService.isYukonMeterNumber(meterNo);
-        LoadActionCode loadActionCode = multispeakMeterService.CDMeterState(vendor, meter, null);
+        YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
+
+        boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
         
-        return loadActionCode;
+        // Performs an actual meter read instead of simply replying from the database.
+        // CDMeterState can handle multiple types of communications, 
+        //  but there is no gain from performing a real time read for non-porter meters...to-date. 
+        if (canInitiatePorterRequest) {
+            LoadActionCode loadActionCode = multispeakMeterService.CDMeterState(vendor, meter);
+            return loadActionCode;
+        } else {    // if we can't initiate a new request (aka RFN meter), then just return what dispatch has stored.
+            return getLoadActionCodeFromCache(meter);
+        }
     }
 
     @Override
@@ -164,22 +182,30 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
         return null;
     }
 
-    @Autowired
-    public void setMultispeakMeterService(
-			MultispeakMeterService multispeakMeterService) {
-		this.multispeakMeterService = multispeakMeterService;
-	}
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    @Autowired
-    public void setMspMeterDao(MspMeterDao mspMeterDao) {
-        this.mspMeterDao = mspMeterDao;
-    }
-    @Autowired
-    public void setMspValidationService(
-            MspValidationService mspValidationService) {
-        this.mspValidationService = mspValidationService;
+    /**
+     * Retrieves DISCONNECT_STATUS attribute's pointData from dispatch.
+     * Translates the rawState into a loadActionCode based on the type of meter and expected state group for that type.
+     * Returns loadActionCode.Unknonw when cannot be determined.
+     * @param meter
+     * @return
+     * @throws RemoteException
+     */
+    private LoadActionCode getLoadActionCodeFromCache(YukonMeter meter) throws RemoteException {
+        
+        try {
+            LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
+            PointValueQualityHolder pointValueQualityHolder = dynamicDataSource.getPointValue(litePoint.getPointID());
+            
+            // dispatch cache could potentially give us an Uninit value
+            if( pointValueQualityHolder != null && 
+                    pointValueQualityHolder.getPointQuality() != PointQuality.Uninitialized) {
+                return LoadActionCode.Unknown;
+            }
+            return multispeakFuncs.getLoadActionCode(meter, pointValueQualityHolder);
+        } catch (DynamicDataAccessException e) {
+            String message = "Connection to dispatch is invalid";
+            log.error(message);
+            throw new RemoteException(message);
+        }
     }
 }

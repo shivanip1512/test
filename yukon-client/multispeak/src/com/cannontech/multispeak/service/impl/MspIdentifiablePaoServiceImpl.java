@@ -3,7 +3,7 @@ package com.cannontech.multispeak.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -24,7 +24,7 @@ public class MspIdentifiablePaoServiceImpl implements MspIdentifiablePaoService 
         if (paoIdentifier == null) {
             returnString = null;
         } else if (paoDefinitionDao.isTagSupported(paoIdentifier.getPaoIdentifier().getPaoType(), PaoTag.USES_METER_NUMBER_FOR_MSP)) {
-            Meter meter = meterDao.getForId(paoIdentifier.getPaoIdentifier().getPaoId());
+            YukonMeter meter = meterDao.getYukonMeterForId(paoIdentifier.getPaoIdentifier().getPaoId());
             returnString = meter.getMeterNumber();
         } else {
             returnString = paoDao.getYukonPAOName(paoIdentifier.getPaoIdentifier().getPaoId());

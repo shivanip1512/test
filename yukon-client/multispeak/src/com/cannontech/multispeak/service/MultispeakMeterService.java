@@ -8,6 +8,7 @@ package com.cannontech.multispeak.service;
 
 import java.rmi.RemoteException;
 
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -33,6 +34,8 @@ public interface MultispeakMeterService {
 	
     /** 
      * Returns the LoadActionCode (or connected status) for meter
+     * Performs a read of DISCONNECT_STATUS attribute. 
+     * Waits for response, timesout after mspVendor.maxRequestTimeout 
      * @param mspVendor
      * @param meter
      * @param transactionID
@@ -40,8 +43,7 @@ public interface MultispeakMeterService {
      * @throws RemoteException
      */
     public LoadActionCode CDMeterState(MultispeakVendor mspVendor, 
-            com.cannontech.amr.meter.model.Meter meter,
-            String transactionID) throws RemoteException;
+            YukonMeter meter) throws RemoteException;
 
     /**
      * This is a workaround method for SEDC.  This method is used to perform an actual meter interrogation and then return
@@ -52,7 +54,7 @@ public interface MultispeakMeterService {
      * @throws RemoteException
      */
     public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, 
-            com.cannontech.amr.meter.model.Meter meter,
+            YukonMeter meter,
             String transactionID);
 
 	/**

@@ -17,6 +17,7 @@ import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -95,10 +96,11 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	public void addDataRow(ResultSet rs) throws SQLException {
 		    
 	    final Meter meter = new Meter();
-	    meter.setDeviceId(rs.getInt("PAOBJECTID"));
+	    int paobjectId = rs.getInt("PAOBJECTID");
 	    meter.setName(rs.getString("PAONAME"));
         PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
-        meter.setPaoType(paoType);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectId, paoType);
+        meter.setPaoIdentifier(paoIdentifier);
 	    meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
 	    meter.setMeterNumber(rs.getString("METERNUMBER"));
 	    meter.setAddress(rs.getString("ADDRESS"));

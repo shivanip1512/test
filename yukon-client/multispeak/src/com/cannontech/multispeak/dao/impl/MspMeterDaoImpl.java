@@ -9,12 +9,12 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -38,10 +38,12 @@ public final class MspMeterDaoImpl implements MspMeterDao
     private static String selectSql;
     
     static {
-    	selectSql = "SELECT MeterNumber, PaobjectId, Address, Type, DisconnectAddress " +
-			"FROM YukonPaobject pao JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId " +
-			"JOIN DeviceCarrierSettings dcs ON pao.paobjectId = dcs.deviceId " +
-			"LEFT OUTER JOIN DeviceMCT400Series mct ON pao.paobjectId = mct.deviceId ";
+        selectSql = "SELECT MeterNumber, PaobjectId, Type, Address, SerialNumber, DisconnectAddress " +
+                    "FROM YukonPaobject pao " +
+                        "JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId " +
+                        "LEFT JOIN DeviceCarrierSettings dcs on pao.PAObjectID = dcs.DEVICEID " +
+                        "LEFT JOIN DeviceMCT400Series mct ON pao.paobjectId = mct.deviceId " + 
+                        "LEFT JOIN RFNAddress rfn ON pao.PAObjectID = rfn.DeviceId";
     };
     
     private static final YukonRowMapper<Meter> mspMeterRowMapper = new YukonRowMapper<Meter>() {
@@ -49,55 +51,52 @@ public final class MspMeterDaoImpl implements MspMeterDao
             String meterNumber = rset.getString("meternumber");
             int paobjectID = rset.getInt("paobjectid");
             String address = rset.getString("address");
+            String serialNumber = rset.getString("serialnumber");
             PaoType paoType = rset.getEnum("type", PaoType.class);
             String discAddress = rset.getString("disconnectaddress");
-
-            Meter mspMeter = createMeter(meterNumber, paoType, address, discAddress);
+            PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
+            Meter mspMeter = createMeter(paoIdentifier, meterNumber, address, serialNumber, discAddress);
             return mspMeter;
     	};
    };
 
     public MspMeterReturnList getAMRSupportedMeters(String lastReceived, int maxRecords) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(selectSql);
-            if(lastReceived != null) {
-            	sql.append("WHERE MeterNumber").gt(lastReceived);
-            }
-            sql.append("ORDER BY METERNUMBER"); 
-            List<Meter> mspMeters = new ArrayList<Meter>();
-            CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
-            yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
-            MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
-            mspMeterReturnList.setMeters(mspMeters);
-            mspMeterReturnList.setReturnFields(mspMeters, maxRecords);
-            return mspMeterReturnList;
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("No results found > MeterNumber" + lastReceived + ".");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectSql);
+        if(lastReceived != null) {
+        	sql.append("WHERE MeterNumber").gt(lastReceived);
         }
+        sql.append("ORDER BY METERNUMBER"); 
+        List<Meter> mspMeters = new ArrayList<Meter>();
+        CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
+        yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
+        MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
+        mspMeterReturnList.setMeters(mspMeters);
+        mspMeterReturnList.setReturnFields(mspMeters, maxRecords);
+        return mspMeterReturnList;
     }
 
-    public List<Meter> getCDSupportedMeters(String lastReceived, int maxRecords) {
+    public MspMeterReturnList getCDSupportedMeters(String lastReceived, int maxRecords) {
 
     	Collection<PaoType> collection = getIntegratedDisconnectPaoDefinitions();
         
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(selectSql);
-            sql.append("WHERE (pao.type IN (").appendArgumentList(collection).append(")");
-            sql.append(" OR (DisconnectAddress IS NOT NULL) )");
-            if(lastReceived != null) {
-            	sql.append("AND MeterNumber").gt(lastReceived);
-            }
-            sql.append("ORDER BY MeterNumber");
-
-            List<Meter> mspMeters = new ArrayList<Meter>();
-            CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
-            yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
-            return mspMeters;
-        } catch (IncorrectResultSizeDataAccessException e) {
-        	throw new NotFoundException("No results found > MeterNumber " + lastReceived + ".");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectSql);
+        sql.append("WHERE (pao.type IN (").appendArgumentList(collection).append(")");
+        sql.append(" OR (DisconnectAddress IS NOT NULL) )");
+        if(lastReceived != null) {
+        	sql.append("AND MeterNumber").gt(lastReceived);
         }
+        sql.append("ORDER BY MeterNumber");
+
+        List<Meter> mspMeters = new ArrayList<Meter>();
+        CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
+        yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
+    
+        MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
+        mspMeterReturnList.setMeters(mspMeters);
+        mspMeterReturnList.setReturnFields(mspMeters, maxRecords);
+        return mspMeterReturnList;
     }
 
     /**
@@ -131,7 +130,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
      * @param address The meter's transponderID (Physical Address)
      * @return
      */
-    public static Meter createMeter(String meterNumber, PaoType paoType, String address, String discAddress)
+    public static Meter createMeter(PaoIdentifier paoIdentifier, String meterNumber, String carrierAddress, String rfnSerialNumber, String discCollarAddress)
     {
         Meter meter = new Meter();
         meter.setObjectID(meterNumber);
@@ -141,20 +140,24 @@ public final class MspMeterDaoImpl implements MspMeterDao
 //        ext.set_any(new MessageElement[]{element2});
 //        meter.setExtensions(ext);
         meter.setMeterNo(meterNumber);
-//        meter.setSerialNumber( );    //Meter serial number. This is the original number assigned to the meter by the manufacturer.
-        meter.setMeterType(paoType.getPaoTypeName());  //Meter type/model.
+//        meter.setSerialNumber( );    //Meter serial number. This is the original number assigned to the meter by the manufacturer. This is NOT rfnSerialNumber.
+        meter.setMeterType(paoIdentifier.getPaoType().getPaoTypeName());  //Meter type/model.
 //        meter.setManufacturer();    //Meter manufacturer.
 //        meter.setSealNumberList(null);  //Seal Number List
 //        meter.setAMRDeviceType(paoType);	//This is the Yukon Template Field, Yukon doesn't store what this meter used as it's template.
         meter.setAMRVendor(MultispeakDefines.AMR_VENDOR);
-        meter.setNameplate(getNameplate(meterNumber, address));
+        if (carrierAddress != null) {
+            meter.setNameplate(getNameplate(meterNumber, carrierAddress));
+        } else if (rfnSerialNumber != null) {
+            meter.setNameplate(getNameplate(meterNumber, rfnSerialNumber));
+        }
 //        meter.setSealNumberList(null);  //List of seals applied to this meter.
 //        meter.setUtilityInfo(null);     //This information relates the meter to the account with which it is associated
         
         //Add Module for Disconnect information
-        if( discAddress != null) {
+        if( discCollarAddress != null) {
 	        Module discModule = new Module();
-	        discModule.setObjectID(discAddress);
+	        discModule.setObjectID(discCollarAddress);
 	        discModule.setModuleType("Disconnect Collar");
 	        meter.setModuleList(new Module[]{discModule}); 
         }
@@ -239,11 +242,13 @@ public final class MspMeterDaoImpl implements MspMeterDao
         Set<PaoDefinition> disc410 = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_410);
         Set<PaoDefinition> disc310 = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_310);
         Set<PaoDefinition> disc213 = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_213);
+        Set<PaoDefinition> discRfn = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_RFN);
 
     	List<PaoDefinition> discIntegrated = Lists.newArrayList();
     	discIntegrated.addAll(disc410);
     	discIntegrated.addAll(disc310);
     	discIntegrated.addAll(disc213);
+    	discIntegrated.addAll(discRfn);
     	discIntegrated.removeAll(discCollar);	// Remove disconnect collar compatible
 
     	Collection<PaoType> collection = Collections2.transform(discIntegrated, new Function<PaoDefinition, PaoType>() {

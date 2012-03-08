@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlProvidingRowMapper;
@@ -24,11 +25,12 @@ public abstract class BaseMeterRowMapper<T> implements SqlProvidingRowMapper<T> 
 
     protected void fillInMeter(ResultSet rs, Meter meter) throws SQLException {
         int paObjectId = rs.getInt("paObjectId");
-        meter.setDeviceId(paObjectId);
+        PaoType paoType = PaoType.getForDbString(rs.getString("type").intern());
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paObjectId, paoType);
+        meter.setPaoIdentifier(paoIdentifier);
+
         String paoName = rs.getString("paoName");
         meter.setName(paoName);
-        PaoType paoType = PaoType.getForDbString(rs.getString("type").intern());
-        meter.setPaoType(paoType);
         String meterNumber = rs.getString("meterNumber");
         meter.setMeterNumber(meterNumber);
         char disabledChar = rs.getString("disableFlag").charAt(0);

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -17,6 +18,8 @@ public interface MeterDao {
     
     public Meter getForMeterNumber(String meterNumber);
     
+    public YukonMeter getYukonMeterForMeterNumber(String meterNumber);
+    
     public Meter getForPhysicalAddress(String address);
 
     public Meter getForPaoName(String paoName);
@@ -24,6 +27,8 @@ public interface MeterDao {
     public Meter getForYukonDevice(YukonDevice yukonDevice);
     
     public Meter getForId(Integer id);
+    
+    public YukonMeter getYukonMeterForId(Integer id);
     
     public List<Meter> getMetersForMeterNumbers(List<String> meterNumbers);
     

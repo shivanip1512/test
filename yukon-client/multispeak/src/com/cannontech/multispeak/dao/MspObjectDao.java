@@ -3,7 +3,7 @@ package com.cannontech.multispeak.dao;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.Customer;
@@ -20,7 +20,7 @@ public interface MspObjectDao {
      * @param mspVendor The Multispeak Vendor to ask for the information from.
      * @return
      */
-    public Customer getMspCustomer(Meter meter, MultispeakVendor mspVendor);
+    public Customer getMspCustomer(YukonMeter meter, MultispeakVendor mspVendor);
     
     /**
      * Returns a Msp Customer for the meterNo.
@@ -40,7 +40,7 @@ public interface MspObjectDao {
      * @param mspVendor The Multispeak Vendor to ask for the information from.
      * @return
      */
-    public ServiceLocation getMspServiceLocation(Meter meter, MultispeakVendor mspVendor);
+    public ServiceLocation getMspServiceLocation(YukonMeter meter, MultispeakVendor mspVendor);
 
     /**
      * Returns a Msp ServiceLocation for the meterNo.
@@ -61,7 +61,7 @@ public interface MspObjectDao {
      * @param mspVendor The Multispeak Vendor to ask for the information from.
      * @return
      */
-    public com.cannontech.multispeak.deploy.service.Meter getMspMeter(Meter meter, MultispeakVendor mspVendor);
+    public com.cannontech.multispeak.deploy.service.Meter getMspMeter(YukonMeter meter, MultispeakVendor mspVendor);
 
     /**
      * Returns a Msp Meter for the meterNo.

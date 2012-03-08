@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.TransactionStatus;
@@ -26,16 +27,27 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.WaitableDeviceAttributeReadCallback;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterBy;
+import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
+import com.cannontech.amr.rfn.model.RfnMeter;
+import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
+import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -43,6 +55,7 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
 import com.cannontech.common.model.Route;
@@ -57,6 +70,7 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -78,6 +92,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.database.db.point.stategroup.RFNDisconnectStatusState;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -95,6 +110,8 @@ import com.cannontech.multispeak.dao.MeterReadUpdater;
 import com.cannontech.multispeak.dao.MeterReadUpdaterChain;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
+import com.cannontech.multispeak.data.MspLoadActionCode;
+import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.deploy.service.EA_ServerSoap_PortType;
@@ -109,12 +126,13 @@ import com.cannontech.multispeak.deploy.service.OutageEventType;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.multispeak.event.CDEvent;
-import com.cannontech.multispeak.event.CDStatusEvent;
 import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.multispeak.service.MultispeakMeterService;
+import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.UserUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
@@ -157,6 +175,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private AttributeService attributeService;
     private PointDao pointDao;
     private MeterReadProcessingService meterReadProcessingService;
+    @Autowired CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+    @Autowired RfnMeterDisconnectService rfnMeterDisconnectService;
+    @Autowired RfnMeterDao rfnMeterDao;
 
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -262,47 +283,79 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 			}
 		}
 	}
-	
+    
     @Override
-    public LoadActionCode CDMeterState(MultispeakVendor mspVendor, 
-            com.cannontech.amr.meter.model.Meter meter,
-            String transactionID) throws RemoteException
-    {
+    public LoadActionCode CDMeterState(final MultispeakVendor mspVendor, final YukonMeter meter) throws RemoteException {
+        
+        log.info("Received " + meter.getMeterNumber() + " for CDMeterState from " + mspVendor.getCompanyName());
         if ( ! porterConnection.isValid() ) {
             throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
-
-        long id = generateMessageID();
-        CDStatusEvent event = new CDStatusEvent(mspVendor, id, transactionID);
         
-        final String meterNumber = meter.getMeterNumber();
-        if (meter != null) {
-            event.setMeterNumber(meterNumber);
-            getEventsMap().put(new Long(id), event);
-            
-            log.info("Received " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
+        List<YukonMeter> allPaosToRead = Collections.singletonList(meter);
+        final EnumSet<BuiltInAttribute> attributes = EnumSet.of(BuiltInAttribute.DISCONNECT_STATUS);
+                
 
-            String commandStr = "getstatus disconnect";
-            writePilRequest(meter, commandStr, id, 13);
-            mspObjectDao.logMSPActivity("getCDMeterState",
-            				"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
-            				mspVendor.getCompanyName());    
+        LACWaitableDeviceAttributeReadCallback waitableCallback = new LACWaitableDeviceAttributeReadCallback(mspVendor.getRequestMessageTimeout()) {
 
-            synchronized (event) {
-                boolean timeout = !waitOnEvent(event, mspVendor.getRequestMessageTimeout());
-                if( timeout ) {
-                    
-                    event.setResultMessage("Reading Timed out after " + (mspVendor.getRequestMessageTimeout()/1000)+ " seconds.");
-                    mspObjectDao.logMSPActivity("getCDMeterState", "Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
-                    if(event.getLoadActionCode() == null)
-                        event.setLoadActionCode(LoadActionCode.Unknown);
-                }
-
+            @Override
+            public void complete() {
+                super.complete();
+                // do we need to do anything here once we received all of the data?
+                log.debug("deviceAttributeReadCallback.complete for cdEvent");
             }
-      }
 
-        return event.getLoadActionCode();
+            @Override
+            public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
+                // the following is expensive but unavoidable until PointData is changed
+                PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
+                BuiltInAttribute thisAttribute = getAttributeForPoint(paoPointIdentifier, attributes);
+                if (thisAttribute == null) return;
+                if (thisAttribute == BuiltInAttribute.DISCONNECT_STATUS) {
+                    setLoadActionCode(multispeakFuncs.getLoadActionCode(meter, value));
+                }
+            }
+            
+            @Override
+            public void receivedLastValue(PaoIdentifier pao) {
+                log.debug("deviceAttributeReadCallback.receivedLastValue for cdEvent");
+            }
+
+            @Override
+            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+                // do we need to send something to the foreign system here?
+                log.warn("received error for " + pao + ": " + error);
+            }
+
+            @Override
+            public void receivedException(DeviceAttributeReadError error) {
+                log.warn("received exception in meterReadEvent callback: " + error);
+            }
+            
+        };
+        deviceAttributeReadService.initiateRead(allPaosToRead, attributes, waitableCallback, DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
+        try {
+            waitableCallback.waitForCompletion();
+        } catch (InterruptedException e) { /* Ignore */ }
+        return waitableCallback.getLoadActionCode();
     }
+    
+    /**
+     * Wrapper class for holding attribute read response value.
+     */
+    private abstract class LACWaitableDeviceAttributeReadCallback extends WaitableDeviceAttributeReadCallback {
+        private LoadActionCode loadActionCode = LoadActionCode.Unknown;
+
+        public LACWaitableDeviceAttributeReadCallback(long timeoutInMillis) {
+            super(timeoutInMillis);
+        }
+        public void setLoadActionCode(LoadActionCode loadActionCode) {
+            this.loadActionCode = loadActionCode;
+        }
+        public LoadActionCode getLoadActionCode() {
+            return loadActionCode;
+        }
+    };
     
     /**
      * This method still does not support attributes.
@@ -312,7 +365,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      */
     @Override
     public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, 
-            com.cannontech.amr.meter.model.Meter meter,
+            YukonMeter meter,
             String transactionID)
     {
     	long id = generateMessageID();      
@@ -320,14 +373,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         getEventsMap().put(new Long(id), event);
         String commandStr = "getvalue kwh";
-        if( DeviceTypesFuncs.isMCT4XX(meter.getPaoType().getDeviceTypeId()) )
+        if( DeviceTypesFuncs.isMCT4XX(meter.getPaoIdentifier().getPaoType().getDeviceTypeId()) )
             commandStr = "getvalue peak";    // getvalue peak returns the peak kW and the total kWh
         
         final String meterNumber = meter.getMeterNumber();
         log.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
         writePilRequest(meter, commandStr, id, 13);
         mspObjectDao.logMSPActivity("getLatestReadingByMeterNo",
-						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
+						"(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
 						mspVendor.getCompanyName());
 
         synchronized (event) {
@@ -368,9 +421,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 		
         for (String meterNumber : meterNumbers) {
             
-			com.cannontech.amr.meter.model.Meter meter;
+			YukonMeter meter;
 			try {
-				meter = meterDao.getForMeterNumber(meterNumber);
+				meter = meterDao.getYukonMeterForMeterNumber(meterNumber);
 				long id = generateMessageID();		
 				ODEvent event = new ODEvent(vendor, id, transactionID);
 				getEventsMap().put(new Long(id), event);
@@ -400,11 +453,11 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             return new ErrorObject[0];	//return without any processing, since we have no one to send to when we're done anyways.
         }
         
-        List<com.cannontech.amr.meter.model.Meter> allPaosToRead = Lists.newArrayListWithCapacity(meterNumbers.length);
+        List<YukonMeter> allPaosToRead = Lists.newArrayListWithCapacity(meterNumbers.length);
         for (String meterNumber : meterNumbers) {
         	
             try {
-                com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber); //TODO probably need a better load method
+                YukonMeter meter = meterDao.getYukonMeterForMeterNumber(meterNumber); //TODO probably need a better load method
                 allPaosToRead.add(meter);
  	        } catch (NotFoundException e) {
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", vendor.getCompanyName());
@@ -412,7 +465,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
         }
         
-        final ImmutableMap<PaoIdentifier, com.cannontech.amr.meter.model.Meter> meterLookup =
+        final ImmutableMap<PaoIdentifier, YukonMeter> meterLookup =
             PaoUtils.indexYukonPaos(allPaosToRead);
         
         final EnumSet<BuiltInAttribute> attributes = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
@@ -457,7 +510,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
              */
             @Override
             public void receivedLastValue(PaoIdentifier pao) {
-                com.cannontech.amr.meter.model.Meter meter = meterLookup.get(pao);
+                YukonMeter meter = meterLookup.get(pao);
                 MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
                 
                 // because we were so careful about putting updater or updater chains into the
@@ -521,9 +574,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             return new ErrorObject[0];	//return without any processing, since we have no one to send to when we're done anyways. 
         }
         
-        final com.cannontech.amr.meter.model.Meter paoToRead;
+        final YukonMeter paoToRead;
         try {
-            paoToRead = meterDao.getForMeterNumber(meterNumber);
+            paoToRead = meterDao.getYukonMeterForMeterNumber(meterNumber);
         } catch (NotFoundException e) {
             ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", vendor.getCompanyName());
             errorObjects.add(err);
@@ -624,10 +677,196 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         return mspObjectDao.toErrorObject(errorObjects);
     }
     
+    /**
+     * This method is still in the works and being tested. SLN 20120307
+     * It will eventually replace cdEvent.
+     * @param vendor
+     * @param cdEvents
+     * @param transactionId
+     * @return
+     * @throws RemoteException
+     */
+    public synchronized ErrorObject[] cdEvent_DO_NOT_USE_YET(final MultispeakVendor vendor, 
+            ConnectDisconnectEvent [] cdEvents,
+            final String transactionId) throws RemoteException
+    {
+        
+        if ( ! porterConnection.isValid() )
+            throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
+
+        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        log.info("Received " + cdEvents.length + " Meter(s) for Connect/Disconnect from " + vendor.getCompanyName());
+        List<CommandRequestDevice> plcCommandRequests = Lists.newArrayList();
+        
+        for (ConnectDisconnectEvent cdEvent : cdEvents) {
+
+            String meterNumber = getMeterNumberFromCDEvent(cdEvent);
+            try {
+                if (mspMeterDao.isCDSupportedMeter(meterNumber)) {
+                    YukonMeter meter = meterDao.getYukonMeterForMeterNumber(meterNumber);
+                    
+                    MspLoadActionCode mspLoadActionCode = MspLoadActionCode.getForLoadActionCode(cdEvent.getLoadActionCode());
+                    
+                    boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
+                    if (isRfnDisconnect) {
+                        RfnMeter rfnMeter = rfnMeterDao.getMeter(meter);
+                        doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), vendor, transactionId);
+                        
+                    } else {
+                        if (mspLoadActionCode.getPlcCommandString() == null) {
+                            ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
+                                                                          "MeterNumber (" + meterNumber + ") - No command exists to control this meter. LoadActionCode="
+                                                                                      + cdEvent.getLoadActionCode(),
+                                                                          "Meter",
+                                                                          "CDEvent", vendor.getCompanyName());
+                            errorObjects.add(err);
+                        } else {
+                            CommandRequestDevice request = new CommandRequestDevice();
+                            request.setDevice(new SimpleDevice(meter));
+                            request.setCommandCallback(new CommandCallbackBase(mspLoadActionCode.getPlcCommandString()));
+                            plcCommandRequests.add(request);
+                            mspObjectDao.logMSPActivity("initiateConnectDisconnect",
+                                                      "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + mspLoadActionCode.getPlcCommandString() + 
+                                                      ((cdEvent.getReasonCode() != null) ? " sent for ReasonCode: " + cdEvent.getReasonCode().getValue() : ""),
+                                                      vendor.getCompanyName());
+                        }
+                    }
+                } else {
+                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
+                                                                  "MeterNumber (" + meterNumber + ") - Invalid Yukon Connect/Disconnect Meter.",
+                                                                  "Meter",
+                                                                  "CDEvent", vendor.getCompanyName());
+                  errorObjects.add(err);
+                }
+            } 
+            catch (NotFoundException e) {
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "CDEvent", vendor.getCompanyName());
+                errorObjects.add(err);
+            }
+            
+        }
+        
+        doPlcConnectDisconnect(plcCommandRequests, vendor, transactionId);
+
+        return mspObjectDao.toErrorObject(errorObjects);
+    }
+    
+    private void doPlcConnectDisconnect(List<CommandRequestDevice> plcCommandRequests, final MultispeakVendor vendor, final String transactionId) {
+        YukonUserContext yukonUserContext = new SystemUserContext();
+        
+        CommandCompletionCallbackAdapter<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+            
+            @Override
+            public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                log.debug("receivedIntermediateError for cdEvent " + error.getDescription());
+            }
+            
+            @Override
+            public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
+                log.debug("receivedIntermediateResultString for cdEvent " + value);
+            }
+            
+            @Override
+            public void receivedValue(CommandRequestDevice command, PointValueHolder value) {
+                log.debug("receivedValue for cdEvent" + value);
+            }
+            
+            @Override
+            public void receivedLastResultString(CommandRequestDevice command, String value) {
+                log.debug("receivedLastResultString for cdEvent "  + value);
+                // THIS IS NOT CORRECT!!!! Figure out a better way to handle in the future.
+                YukonMeter yukonMeter = meterDao.getYukonMeterForId(command.getDevice().getDeviceId());
+                sendCDEventNotification(yukonMeter, LoadActionCode.Unknown, vendor, transactionId);
+            }
+            
+            @Override
+            public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                log.debug("receivedLastError for cdEvent " + error.getDescription());
+            }
+            
+            @Override
+            public void complete() {
+                log.debug("complete for cdEvent");
+            }
+            
+            @Override
+            public void processingExceptionOccured(String reason) {
+                log.debug("processingExceptionOccured for cdEvent " + reason);   
+            }
+        };
+        
+        commandRequestDeviceExecutor.execute(plcCommandRequests, callback, DeviceRequestType.CONTROL_CONNECT_DISCONNECT_COMAMND, yukonUserContext.getYukonUser());
+    }
+    
+    private void doRfnConnectDisconnect(final RfnMeter meter, RfnMeterDisconnectStatusType action, final MultispeakVendor vendor, final String transactionId) {
+
+        RfnMeterDisconnectCallback rfnCallback = new RfnMeterDisconnectCallback() {
+            
+            @Override
+            public void receivedSuccess(RFNDisconnectStatusState state) {
+                log.debug("rfn receivedSuccess for cdEvent " + state);
+                MspLoadActionCode mspLoadActionCode = MspLoadActionCode.getForRfnState(state);
+                sendCDEventNotification(meter, mspLoadActionCode.getLoadActionCode(), vendor, transactionId);
+            }
+            
+            @Override
+            public void receivedError(MessageSourceResolvable message) {
+                log.debug("rfn receivedError for cdEvent " + message);
+                sendCDEventNotification(meter, LoadActionCode.Unknown, vendor, transactionId);
+            }
+            
+            @Override
+            public void processingExceptionOccured(MessageSourceResolvable message) {
+                log.debug("rfn processingExceptionOccured for cdEvent " + message);
+            }
+            
+            @Override
+            public void complete() {
+                log.debug("rfn complete for cdEvent");
+            }
+        };
+        
+        rfnMeterDisconnectService.send(meter, action, rfnCallback);
+    }
+    
+    private String getMeterNumberFromCDEvent(ConnectDisconnectEvent cdEvent) {
+        String meterNumber = cdEvent.getObjectID();
+        
+        //Try to load MeterNumber from another element
+        if( StringUtils.isBlank(meterNumber)) {
+            meterNumber = cdEvent.getMeterID(); //SEDC
+            if( StringUtils.isBlank(meterNumber)) {
+                meterNumber = cdEvent.getMeterNo();
+            }
+        }
+        if (meterNumber != null) {
+            meterNumber = meterNumber.trim();
+        }
+        return meterNumber;
+    }
+    
+    private void sendCDEventNotification(YukonMeter yukonMeter, LoadActionCode loadActionCode, MultispeakVendor vendor, String transactionId) {
+
+        String endpointURL = vendor.getEndpointURL(MultispeakDefines.CB_CD_STR);
+        log.info("Sending CDStateChangedNotification ("+ endpointURL+ "): Meter Number " + yukonMeter.getMeterNumber());
+
+        try {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(vendor);
+            if (port != null) {
+                port.CDStateChangedNotification(yukonMeter.getMeterNumber(), loadActionCode, transactionId);
+            } else {
+                log.error("Port not found for CB_Server (" + vendor.getCompanyName() + ")");
+            }  
+        } catch (RemoteException e) {
+            log.error("TargetService: " + endpointURL + " - initiateConnectDisconnect (" + vendor.getCompanyName() + ")");
+            log.error("RemoteExceptionDetail: "+e.getMessage());
+        }   
+    }
+    
     @Override
     public synchronized ErrorObject[] cdEvent(MultispeakVendor vendor, 
             ConnectDisconnectEvent [] cdEvents,
-            String transactionID) throws RemoteException
+            String transactionId) throws RemoteException
     {
         if ( ! porterConnection.isValid() )
             throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
@@ -637,40 +876,41 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         log.info("Received " + cdEvents.length + " Meter(s) for Connect/Disconnect from " + vendor.getCompanyName());
         
         for (ConnectDisconnectEvent cdEvent : cdEvents) {
-            String meterNumber = cdEvent.getObjectID();
-            
-            //Try to load MeterNumber from another element
-            if( StringUtils.isBlank(meterNumber)) {
-                meterNumber = cdEvent.getMeterID(); //SEDC
-                if( StringUtils.isBlank(meterNumber)) {
-                    meterNumber = cdEvent.getMeterNo();
-                }
-            }
-            if (meterNumber != null) {
-                meterNumber = meterNumber.trim();
-            }
-            
-            com.cannontech.amr.meter.model.Meter meter;
-            try {
- 	        	meter = meterDao.getForMeterNumber(meterNumber);
+            String meterNumber = getMeterNumberFromCDEvent(cdEvent) ;
 
-        		if (mspMeterDao.isCDSupportedMeter(meterNumber)){
- 	                long id = generateMessageID();      
- 	                CDEvent event = new CDEvent(vendor, id, transactionID);
- 	                getEventsMap().put(new Long(id), event);
- 	                
- 	                String commandStr = "control "; //connect|disconnect
- 	                String loadActionCode = cdEvent.getLoadActionCode().getValue();
- 	                if( loadActionCode.equalsIgnoreCase(LoadActionCode._Connect))
- 	                    commandStr += "connect";
- 	                else if( loadActionCode.equalsIgnoreCase(LoadActionCode._Disconnect))
- 	                    commandStr += "disconnect";
- 	                
- 	                writePilRequest(meter, commandStr, id, 13);
- 	                mspObjectDao.logMSPActivity("initiateConnectDisconnect",
- 	        						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr + 
- 	        						((cdEvent.getReasonCode() != null) ? " sent for ReasonCode: " + cdEvent.getReasonCode().getValue() : ""),
- 	        						vendor.getCompanyName());
+            try {
+ 	        	YukonMeter meter = meterDao.getYukonMeterForMeterNumber(meterNumber);
+                MspLoadActionCode mspLoadActionCode = MspLoadActionCode.getForLoadActionCode(cdEvent.getLoadActionCode());
+
+        		if (mspMeterDao.isCDSupportedMeter(meterNumber)) {
+
+        		    boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
+                    if (isRfnDisconnect) {
+                        RfnMeter rfnMeter = rfnMeterDao.getMeter(meter);
+                        doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), vendor, transactionId);
+                        
+                    } else {    //do the archaic way
+    
+     	                long id = generateMessageID();      
+     	                CDEvent event = new CDEvent(vendor, id, transactionId);
+     	                getEventsMap().put(new Long(id), event);
+     	                
+                        if (mspLoadActionCode.getPlcCommandString() == null) {
+                            ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
+                                                                          "MeterNumber (" + meterNumber + ") - No command exists to control this meter. LoadActionCode="
+                                                                                      + cdEvent.getLoadActionCode(),
+                                                                          "Meter",
+                                                                          "CDEvent", vendor.getCompanyName());
+                            errorObjects.add(err);
+                        } else {
+         	                writePilRequest(meter, mspLoadActionCode.getPlcCommandString(), id, 13);
+         	                mspObjectDao.logMSPActivity("initiateConnectDisconnect",
+         	        						"(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + 
+         	        						        mspLoadActionCode.getPlcCommandString() + 
+         	        						((cdEvent.getReasonCode() != null) ? " sent for ReasonCode: " + cdEvent.getReasonCode().getValue() : ""),
+         	        						vendor.getCompanyName());
+                        }
+                    }
  	            } else {
  	                ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
  	                												"MeterNumber (" + meterNumber + ") - Invalid Yukon Connect/Disconnect Meter.",
@@ -693,18 +933,18 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * Writes a request to pil for the meter and commandStr using the id for mspVendor.
      * log a message for the method name.
      */
-    private void writePilRequest(com.cannontech.amr.meter.model.Meter meter, String commandStr, long id, int priority) {
+    private void writePilRequest(YukonMeter meter, String commandStr, long id, int priority) {
         
         Request pilRequest = setupPilRequest(meter, commandStr, id, priority);
         doWritePilRequest(pilRequest);
     }
     
-    private Request setupPilRequest(com.cannontech.amr.meter.model.Meter meter, String commandStr, long id, int priority) {
+    private Request setupPilRequest(YukonMeter meter, String commandStr, long id, int priority) {
         
         Request pilRequest = null;
         commandStr += " update";
         commandStr += " noqueue";
-        pilRequest = new Request(meter.getDeviceId(), commandStr, id);
+        pilRequest = new Request(meter.getPaoIdentifier().getPaoId(), commandStr, id);
         pilRequest.setPriority(priority);
         
         return pilRequest;
@@ -1353,7 +1593,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param logActionStr
      * @param mspVendor
      */
-    private void removeFromGroup(com.cannontech.amr.meter.model.Meter meter, SystemGroupEnum systemGroup, 
+    private void removeFromGroup(YukonMeter meter, SystemGroupEnum systemGroup, 
             String logActionStr, MultispeakVendor mspVendor){
 
         DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
@@ -1371,7 +1611,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      * @param logActionStr
      * @param mspVendor
      */
-    private void addToGroup(com.cannontech.amr.meter.model.Meter meter, SystemGroupEnum systemGroup, 
+    private void addToGroup(YukonMeter meter, SystemGroupEnum systemGroup, 
             String logActionStr, MultispeakVendor mspVendor){
 
         DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
@@ -1394,9 +1634,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
 
         for (String meterNumber : meterNos) {
-            com.cannontech.amr.meter.model.Meter meter;
             try {
-                meter = meterDao.getForMeterNumber(meterNumber);
+                YukonMeter meter = meterDao.getYukonMeterForMeterNumber(meterNumber);
                 addToGroup(meter, systemGroup, logActionStr, mspVendor);
             } 
             catch (NotFoundException e) {
@@ -1420,9 +1659,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
 
         for (String meterNumber : meterNos) {
-            com.cannontech.amr.meter.model.Meter meter;
             try {
-                meter = meterDao.getForMeterNumber(meterNumber);
+                YukonMeter meter = meterDao.getYukonMeterForMeterNumber(meterNumber);
                 removeFromGroup(meter, systemGroup, logActionStr, mspVendor);
             } 
             catch (NotFoundException e) {

@@ -2,28 +2,22 @@ package com.cannontech.amr.rfn.model;
 
 import java.io.Serializable;
 
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 
-public class RfnMeter implements YukonDevice, DisplayablePao, Serializable {
+public class RfnMeter extends YukonMeter implements DisplayablePao, Serializable {
     private static final long serialVersionUID = 1L;
-    private PaoIdentifier paoIdentifier;
+
     private RfnMeterIdentifier meterIdentifier;
 
     public RfnMeter(YukonPao pao, RfnMeterIdentifier meterIdentifier) {
-        this.paoIdentifier = pao.getPaoIdentifier();
+        super.setPaoIdentifier(pao.getPaoIdentifier());
         this.meterIdentifier = meterIdentifier;
     }
 
     public RfnMeterIdentifier getMeterIdentifier() {
         return meterIdentifier;
-    }
-
-    @Override
-    public PaoIdentifier getPaoIdentifier() {
-        return paoIdentifier;
     }
     
     @Override
@@ -35,7 +29,7 @@ public class RfnMeter implements YukonDevice, DisplayablePao, Serializable {
     @Override
     public String toString() {
         return String.format("RfnMeter [paoIdentifier=%s, meterIdentifier=%s]",
-                             paoIdentifier,
+                             getPaoIdentifier(),
                              meterIdentifier);
     }
 
@@ -44,7 +38,7 @@ public class RfnMeter implements YukonDevice, DisplayablePao, Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((meterIdentifier == null) ? 0 : meterIdentifier.hashCode());
-        result = prime * result + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
+        result = prime * result + ((getPaoIdentifier() == null) ? 0 : getPaoIdentifier().hashCode());
         return result;
     }
 
@@ -62,14 +56,11 @@ public class RfnMeter implements YukonDevice, DisplayablePao, Serializable {
                 return false;
         } else if (!meterIdentifier.equals(other.meterIdentifier))
             return false;
-        if (paoIdentifier == null) {
-            if (other.paoIdentifier != null)
+        if (getPaoIdentifier() == null) {
+            if (other.getPaoIdentifier() != null)
                 return false;
-        } else if (!paoIdentifier.equals(other.paoIdentifier))
+        } else if (!getPaoIdentifier().equals(other.getPaoIdentifier()))
             return false;
         return true;
     }
-
-    
-    
 }

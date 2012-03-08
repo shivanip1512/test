@@ -20,9 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.DisplayableMeter;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
@@ -34,6 +36,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.impl.PaoLoader;
@@ -107,6 +110,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     }
 
+    @Override
     public Meter getForId(Integer id) {
         try {
             return yukonJdbcTemplate.queryForObject(retrieveOneByIdSql, meterRowMapper, id);
@@ -115,6 +119,33 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         }
     }
     
+    @Override
+    public YukonMeter getYukonMeterForId(Integer id) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.PAObjectID, ypo.Type, MeterNumber");
+        sql.append("FROM YukonPaObject ypo");
+        sql.append(  "JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DeviceId");
+        sql.append("where ypo.PaobjectId").eq(id);
+        
+        
+        YukonMeter yukonMeter = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<YukonMeter>() {
+            public YukonMeter mapRow(YukonResultSet rs) throws SQLException {
+                int paoID = rs.getInt("PAObjectID");
+                String paoType = rs.getString("Type").trim();
+
+                PaoType type = PaoType.getForDbString(paoType);
+                PaoIdentifier paoIdentifier = new PaoIdentifier(paoID, type);
+
+                String meterNumber = rs.getString("MeterNumber").trim();
+                YukonMeter yukonMeter = new YukonMeter(paoIdentifier, meterNumber);
+                
+                return yukonMeter;
+            }
+        });
+        return yukonMeter;
+    }
+    
+    @Override
     public Meter getForYukonDevice(YukonDevice yukonDevice) {
         if (yukonDevice instanceof Meter) {
             return (Meter) yukonDevice;
@@ -123,6 +154,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         }
     }
 
+    @Override
     public Meter getForMeterNumber(String meterNumber) {
         try {
             Meter meter = yukonJdbcTemplate.queryForObject(retrieveOneByMeterNumberSql,
@@ -133,6 +165,24 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
             throw new NotFoundException("Unknown meter number " + meterNumber);
         }
     }
+    
+    @Override
+    public YukonMeter getYukonMeterForMeterNumber(String meterNumber) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.PAObjectID, ypo.Type, MeterNumber");
+        sql.append("FROM YukonPaObject ypo");
+        sql.append(  "JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DeviceId");
+        sql.append("where dmg.MeterNumber").eq(meterNumber);
+        
+        try {
+            PaoIdentifier pao = yukonJdbcTemplate.queryForObject(sql, new YukonPaoRowMapper());
+            YukonMeter yukonMeter = new YukonMeter(pao, meterNumber);
+            return yukonMeter;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("no meter matches " + meterNumber);
+        }
+    }
+    
     @Override
     public Meter getForPhysicalAddress(String address) {
         try {
@@ -197,6 +247,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         throw new UnsupportedOperationException("maybe someday...");
     }
 
+    @Override
     public String getFormattedDeviceName(Meter device) throws IllegalArgumentException{
         
         MeterDisplayFieldEnum meterDisplayFieldEnum = 
@@ -316,6 +367,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
      * (order ASC by MeterNumber) to return. MaxRecordCount is the maximum
      * number of records to return in the Meter list.
      */
+    @Override
     public List<Meter> getMetersByMeterNumber(String lastReceived,
             int maxRecordCount) {
         if (lastReceived == null)
@@ -339,6 +391,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
      * (order ASC by PaoName) to return. MaxRecordCount is the maximum number of
      * records to return in the Meter list.
      */
+    @Override
     public List<Meter> getMetersByPaoName(String lastReceived,
             int maxRecordCount) {
         if (lastReceived == null)
@@ -357,6 +410,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         return mspMeters;
     }
     
+    @Override
     public int getMeterCount() {
     	
     	String sql = "SELECT COUNT(*) FROM DeviceMeterGroup";
@@ -364,6 +418,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     	return jdbcOps.queryForInt(sql);
     }
 
+    @Override
     public Comparator<Meter> getMeterComparator() {
         final NaturalOrderComparator naturalOrderComparator = new NaturalOrderComparator();
         return new Comparator<Meter>() {

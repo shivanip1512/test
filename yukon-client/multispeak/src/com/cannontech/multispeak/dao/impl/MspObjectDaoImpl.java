@@ -14,7 +14,7 @@ import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.point.PointTypes;
@@ -48,7 +48,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
     
     @Override
-	public Customer getMspCustomer(Meter meter, MultispeakVendor mspVendor) {
+	public Customer getMspCustomer(YukonMeter meter, MultispeakVendor mspVendor) {
         return getMspCustomer(meter.getMeterNumber(), mspVendor);
     }
     @Override
@@ -71,7 +71,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
         return mspCustomer;
     }
     @Override
-    public ServiceLocation getMspServiceLocation(Meter meter, MultispeakVendor mspVendor) {
+    public ServiceLocation getMspServiceLocation(YukonMeter meter, MultispeakVendor mspVendor) {
         return getMspServiceLocation(meter.getMeterNumber(), mspVendor);
     }
     @Override
@@ -93,7 +93,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
        return mspServiceLocation;
     }
     @Override
-    public com.cannontech.multispeak.deploy.service.Meter getMspMeter(Meter meter, MultispeakVendor mspVendor) {
+    public com.cannontech.multispeak.deploy.service.Meter getMspMeter(YukonMeter meter, MultispeakVendor mspVendor) {
         return getMspMeter(meter.getMeterNumber(), mspVendor);
     }
     @Override

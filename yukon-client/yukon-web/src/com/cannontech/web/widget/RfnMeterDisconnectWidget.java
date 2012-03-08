@@ -1,11 +1,8 @@
 package com.cannontech.web.widget;
 
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.ui.ModelMap;
@@ -13,21 +10,17 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.dao.RfnMeterDao;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.amr.rfn.service.WaitableRfnMeterDisconnectCallback;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
-import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.database.db.point.stategroup.RFNDisconnectStatusState;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -35,11 +28,8 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     
     @Autowired private RfnMeterDao rfnMeterDao;
     @Autowired private AttributeService attributeService;
-    @Autowired private DynamicDataSource dynamicDataSource;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private ConfigurationSource configurationSource;
-    
-    private static final Logger log = YukonLogManager.getLogger(RfnMeterDisconnectWidget.class);
     
     @RequestMapping
     public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -114,19 +104,8 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
             }
 
             @Override
-            public void receivedSuccess(RfnMeterDisconnectState state) {
-                // State will only be used as the state of the meter when doing
-                // a 'QUERY' command for now.  This may change based on what
-                // NM will decide to set this as for connect/disconnect/arm commands.
-                // For now we assume that if the user clicked the disconnect button and
-                // the response was successful we set the state to disconnect regardless
-                // of what NM has set the state to in the success message.
+            public void receivedSuccess(RFNDisconnectStatusState state) {
                 model.addAttribute("responseSuccess", true);
-                if (action == RfnMeterDisconnectStatusType.QUERY) {
-                    publishPointData(state.getRawState(), meter);
-                } else {
-                    publishPointData(RfnMeterDisconnectState.getForType(action).getRawState(), meter);
-                }
             }
 
             @Override
@@ -136,26 +115,12 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
             }
         };
         
-        rfnMeterDisconnectService.send(meter.getMeterIdentifier(), action, waitableCallback);
+        rfnMeterDisconnectService.send(meter, action, waitableCallback);
         
         try {
             waitableCallback.waitForCompletion();
         } catch (InterruptedException e) { /* Ignore */ }
         
-    }
-    
-    private void publishPointData(int rawState, RfnMeter meter) {
-        LitePoint point = getDisconnectStatusPoint(meter);
-        PointData pointData = new PointData();
-        pointData.setId(point.getLiteID());
-        pointData.setPointQuality(PointQuality.Normal);
-        pointData.setValue(rawState);
-        pointData.setTime(new Date());
-        pointData.setType(point.getPointType());
-        
-        dynamicDataSource.putValue(pointData);
-        
-        log.debug("PointData generated for RfnMeterDisconnectRequest");
     }
 
     private boolean isArming() {

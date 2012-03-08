@@ -1,8 +1,11 @@
 package com.cannontech.amr.rfn.service;
 
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -10,17 +13,30 @@ import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationR
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.amr.rfn.model.RfnMeter;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
+import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.point.stategroup.RFNDisconnectStatusState;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.message.dispatch.message.PointData;
 
 public class RfnMeterDisconnectService {
-    
-    private ConnectionFactory connectionFactory;
-    private ConfigurationSource configurationSource;
+
+    private static final Logger log = YukonLogManager.getLogger(RfnMeterDisconnectService.class);
+
     private RequestReplyReplyTemplate rrrTemplate;
+    
+    @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private AttributeService attributeService;
+    @Autowired private DynamicDataSource dynamicDataSource;
     
     /**
      * Attempts to send a disconnect request for a RFN meter.  Will use a separate thread to make the request.
@@ -44,7 +60,7 @@ public class RfnMeterDisconnectService {
      * @param meter The meter to disconnect.
      * @param callback The callback to use for updating status, errors and disconnect result.
      */
-    public void send(final RfnMeterIdentifier meter, final RfnMeterDisconnectStatusType action, final RfnMeterDisconnectCallback callback) {
+    public void send(final RfnMeter meter, final RfnMeterDisconnectStatusType action, final RfnMeterDisconnectCallback callback) {
         JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> handler = new JmsReplyReplyHandler<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply>() {
 
             @Override
@@ -91,6 +107,17 @@ public class RfnMeterDisconnectService {
                         YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.confirmError", confirmationReplyMessage);
                     callback.receivedError(message);
                 } else {
+                    // State will only be used as the state of the meter when doing
+                    // a 'QUERY' command for now.  This may change based on what
+                    // NM will decide to set this as for connect/disconnect/arm commands.
+                    // For now we assume that if the user clicked the disconnect button and
+                    // the response was successful we set the state to disconnect regardless
+                    // of what NM has set the state to in the success message.
+                    if (action == RfnMeterDisconnectStatusType.QUERY) {
+                        publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
+                    } else {
+                        publishPointData(RFNDisconnectStatusState.getForType(action).getRawState(), meter);
+                    }
                     /* Confirmation response successful, process point data */
                     callback.receivedSuccess(confirmationReplyMessage.getState());
                 }
@@ -111,19 +138,23 @@ public class RfnMeterDisconnectService {
             }
         };
         
-        rrrTemplate.send(new RfnMeterDisconnectRequest(meter, action), handler);
+        rrrTemplate.send(new RfnMeterDisconnectRequest(meter.getMeterIdentifier(), action), handler);
     }
     
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+    private void publishPointData(int rawState, RfnMeter meter) {
+        LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
+        PointData pointData = new PointData();
+        pointData.setId(point.getLiteID());
+        pointData.setPointQuality(PointQuality.Normal);
+        pointData.setValue(rawState);
+        pointData.setTime(new Date());
+        pointData.setType(point.getPointType());
+        
+        dynamicDataSource.putValue(pointData);
+        
+        log.debug("PointData generated for RfnMeterDisconnectRequest");
     }
     
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-
     @PostConstruct
     public void initialize() {
         rrrTemplate = new RequestReplyReplyTemplate();

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.block.data.FormattedBlockBase;
@@ -34,7 +34,7 @@ public class OutageBlockProcessingServiceImpl  extends FormattedBlockProcessingS
     }
     
     @Override
-    public OutageBlock createBlock(Meter meter) {
+    public OutageBlock createBlock(YukonMeter meter) {
         OutageBlock block = new OutageBlock();
         block.setMeterNumber(meter.getMeterNumber());
         return block;

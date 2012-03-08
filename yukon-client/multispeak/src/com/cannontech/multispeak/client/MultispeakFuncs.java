@@ -6,6 +6,7 @@
  */
 package com.cannontech.multispeak.client;
 
+import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 
@@ -17,26 +18,42 @@ import org.apache.axis.message.PrefixedQName;
 import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.message.SOAPHeader;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.LogHelper;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.PointFormattingService;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.point.stategroup.Disconnect410State;
+import com.cannontech.database.db.point.stategroup.PointStateHelper;
+import com.cannontech.database.db.point.stategroup.RFNDisconnectStatusState;
 import com.cannontech.multispeak.dao.MultispeakDao;
+import com.cannontech.multispeak.data.MspLoadActionCode;
+import com.cannontech.multispeak.data.MspReturnList;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.user.SystemUserContext;
 
 /**
  * @author stacey
@@ -46,10 +63,14 @@ import com.cannontech.multispeak.deploy.service.ServiceLocation;
  */
 public class MultispeakFuncs
 {
-    public MultispeakDao multispeakDao;
-    public RolePropertyDao rolePropertyDao;
-    public DeviceGroupService deviceGroupService;
-    public AuthenticationService authenticationService;
+    private final Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
+    
+    @Autowired public MultispeakDao multispeakDao;
+    @Autowired public RolePropertyDao rolePropertyDao;
+    @Autowired public DeviceGroupService deviceGroupService;
+    @Autowired public AuthenticationService authenticationService;
+    @Autowired public PaoDefinitionDao paoDefinitionDao;
+    @Autowired public PointFormattingService pointFormattingService;
 
     public void logStrings(String intfaceName, String methodName, String[] strings)
 	{
@@ -57,7 +78,7 @@ public class MultispeakFuncs
 		{
 			for (int i = 0; i < strings.length; i++)
 			{
-				CTILogger.info("Return from " + intfaceName + " (" + methodName + "): " + strings[i]);
+				log.info("Return from " + intfaceName + " (" + methodName + "): " + strings[i]);
 			}
 		}
 	}
@@ -68,7 +89,7 @@ public class MultispeakFuncs
 		{
 			for (int i = 0; i < objects.length; i++)
 			{
-				CTILogger.info("Error Return from " + intfaceName + "(" + methodName + "): " + (objects[i] == null? "Null" : objects[i].getObjectID() +" - " + objects[i].getErrorString()));
+			    log.info("Error Return from " + intfaceName + "(" + methodName + "): " + (objects[i] == null? "Null" : objects[i].getObjectID() +" - " + objects[i].getErrorString()));
 			}
 		}
 	}
@@ -106,9 +127,9 @@ public class MultispeakFuncs
 	public void init() throws RemoteException
 	{
 		try {
-			CTILogger.info("MSP MESSAGE RECEIVED: " + MessageContext.getCurrentContext().getCurrentMessage().getSOAPPartAsString().toString());
+		    log.info("MSP MESSAGE RECEIVED: " + MessageContext.getCurrentContext().getCurrentMessage().getSOAPPartAsString().toString());
 		} catch (AxisFault e) {
-			CTILogger.error(e);
+		    log.error(e);
 		}
 		loadResponseHeader();
 	}
@@ -148,7 +169,7 @@ public class MultispeakFuncs
 			}
 		}
 		catch (SOAPException e) {
-			CTILogger.error(e);
+		    log.error(e);
 		}
 		return attributeValue;
 	}
@@ -376,22 +397,49 @@ public class MultispeakFuncs
         }
         return null;
     }
+ 
+    /**
+     * Helper method to update responseHeader.objectsRemaining and responseHeader.lastSent
+     * @param returnResultsSize
+     * @param vendor
+     * @return
+     */
+    public void updateResponseHeader(MspReturnList returnList) throws RemoteException {
+        getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(returnList.getObjectsRemaining())));
+        LogHelper.debug(log, "Updated MspMessageHeader.ObjectsRemaining %s", returnList.getObjectsRemaining());
+        
+        getResponseHeader().setLastSent(returnList.getLastSent());
+        LogHelper.debug(log, "Updated MspMessageHeader.LastSent %s", returnList.getLastSent());
+    }
     
-    @Autowired
-    public void setMultispeakDao(MultispeakDao multispeakDao) {
-        this.multispeakDao = multispeakDao;
-    }
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    @Autowired
-    public void setAuthenticationService(
-			AuthenticationService authenticationService) {
-		this.authenticationService = authenticationService;
-	}
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
+
+    /**
+     * Translates the rawState into a loadActionCode based on the type of meter and expected state group for that type.
+     * Returns loadActionCode.Unknonw when cannot be determined.
+     * @param meter
+     * @return
+     */
+    public LoadActionCode getLoadActionCode(YukonDevice yukonDevice, PointValueHolder pointValueHolder) {
+
+        MspLoadActionCode mspLoadActionCode;
+        try {
+            log.info("Returning disconnect status from cache:" + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL, new SystemUserContext()));
+
+            boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(yukonDevice.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
+            if (isRfnDisconnect) {
+                RFNDisconnectStatusState pointState = PointStateHelper.decodeRawState(RFNDisconnectStatusState.class, pointValueHolder.getValue());
+                mspLoadActionCode = MspLoadActionCode.getForRfnState(pointState);
+            } else {    //assume everything else is PLC
+                Disconnect410State pointState = PointStateHelper.decodeRawState(Disconnect410State.class, pointValueHolder.getValue());
+                mspLoadActionCode = MspLoadActionCode.getForPlcState(pointState);
+            }
+        } catch (IllegalArgumentException e) {
+            // we couldn't get the point data from dispatch, or we were unable to decode the rawState
+            return LoadActionCode.Unknown;
+        } catch (IllegalUseOfAttribute e) {
+            // meter doesn't have a point for the attribute
+            return LoadActionCode.Unknown;
+        }
+        return mspLoadActionCode.getLoadActionCode();
     }
 }

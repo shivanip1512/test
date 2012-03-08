@@ -9,7 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -96,7 +96,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
     }
     
     @Override
-    public MeterRead createMeterRead(Meter meter) {
+    public MeterRead createMeterRead(YukonMeter meter) {
         MeterRead reading = new MeterRead();
         reading.setMeterNo(meter.getMeterNumber());
         reading.setObjectID(meter.getMeterNumber());

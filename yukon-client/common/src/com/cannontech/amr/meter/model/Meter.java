@@ -2,21 +2,18 @@ package com.cannontech.amr.meter.model;
 
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonDevice;
 
 
-public class Meter implements YukonDevice { 
-    private int deviceId;
-    private PaoType paoType;
-
+/** 
+ * This is the "PLC" meter.
+ */
+public class Meter extends YukonMeter { 
     private String name;
     private boolean disabled;
     private String route;
     private int routeId;
     private String address;
-    private String meterNumber;
 
     public Meter() {
     }
@@ -30,17 +27,6 @@ public class Meter implements YukonDevice {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    /**
-     * @return the meter number or "" if none is assigned
-     */
-    public String getMeterNumber() {
-        return meterNumber;
-    }
-
-    public void setMeterNumber(String meterNumber) {
-        this.meterNumber = meterNumber;
     }
 
     public String getName() {
@@ -79,32 +65,19 @@ public class Meter implements YukonDevice {
     }
 
     @Override
-    public PaoIdentifier getPaoIdentifier() {
-        return new PaoIdentifier(deviceId, paoType);
-    }
-
-    @Override
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("name", getName());
-        tsc.append("deviceId", getDeviceId());
-        tsc.append("type", getPaoType());
+        tsc.append("deviceId", getPaoIdentifier().getPaoId());
+        tsc.append("type", getPaoIdentifier().getPaoType());
         return tsc.toString();
     }
 
     public int getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(int deviceId) {
-        this.deviceId = deviceId;
+        return getPaoIdentifier().getPaoId();
     }
 
     public PaoType getPaoType() {
-        return paoType;
-    }
-
-    public void setPaoType(PaoType paoType) {
-        this.paoType = paoType;
+        return getPaoIdentifier().getPaoType();
     }
 }

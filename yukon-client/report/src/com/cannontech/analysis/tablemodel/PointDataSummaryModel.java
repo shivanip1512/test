@@ -23,6 +23,7 @@ import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -447,8 +448,8 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
                     }
 
                     Meter meter = new Meter();
-                    meter.setDeviceId(paobjectID);
-	                meter.setPaoType(paoType);
+                    PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
+	                meter.setPaoIdentifier(paoIdentifier);
                     meter.setName(paoName);
                     if (address != null)
                         meter.setAddress(address);

@@ -1,6 +1,6 @@
 package com.cannontech.multispeak.dao;
 
-import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.deploy.service.MeterRead;
@@ -19,7 +19,7 @@ public interface MeterReadProcessingService {
     /**
      * Simple helper to create a blank MeterRead for a given Meter.
      */
-    public MeterRead createMeterRead(Meter meter);
+    public MeterRead createMeterRead(YukonMeter meter);
 
     /**
      * This is an immediate version of the buildMeterReadUpdater that updates a MeterRead

@@ -11,6 +11,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -109,11 +110,11 @@ public class CarrierDBModel extends ReportModelBase<Meter>
 	                Meter meter = new Meter();
 
 	                int paobjectID = rset.getInt(1);
-	                meter.setDeviceId(paobjectID);
 	                String paoName = rset.getString(2);
 	                meter.setName(paoName);
 	                PaoType paoType = PaoType.getForDbString(rset.getString(3));
-	                meter.setPaoType(paoType);
+	                PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
+	                meter.setPaoIdentifier(paoIdentifier);
 	                String disabledStr = rset.getString(4);
 	                boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
 	                meter.setDisabled(disabled);

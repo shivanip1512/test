@@ -18,6 +18,7 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFilter;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
@@ -156,8 +157,8 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 
 	    //Using only a partially loaded lPao because that is all the information this report cares about.  Maybe a bad decision?!
 	    Meter meter = new Meter();
-	    meter.setDeviceId(paobjectID);
-        meter.setPaoType(paoType);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
+        meter.setPaoIdentifier(paoIdentifier);
 	    meter.setName(paoName);
 	    MeterAndPointData mpData = new MeterAndPointData(meter, new Integer(pointID), pointName, 
 	                                                     cal.getTime(), new Double(value), new Integer(quality));

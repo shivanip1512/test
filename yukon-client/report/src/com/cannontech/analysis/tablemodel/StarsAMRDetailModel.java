@@ -195,10 +195,11 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
                 public StarsAMRDetail mapRow(ResultSet rs, int rowNum) throws SQLException {
                     
                     final Meter meter = new Meter();
-                    meter.setDeviceId(rs.getInt("PAOBJECTID"));
+                    int paobjectId = rs.getInt("PAOBJECTID");
                     meter.setName(rs.getString("PAONAME"));
                     PaoType paoType = PaoType.getForDbString(rs.getString("TYPE"));
-	                meter.setPaoType(paoType);
+                    PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectId, paoType);
+                    meter.setPaoIdentifier(paoIdentifier);
                     meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
                     meter.setMeterNumber(rs.getString("METERNUMBER"));
                     meter.setAddress(rs.getString("ADDRESS"));
