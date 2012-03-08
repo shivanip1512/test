@@ -82,12 +82,8 @@ CtiCCSpecial::~CtiCCSpecial()
 void CtiCCSpecial::saveGuts(RWvostream& ostrm ) const
 {
     CtiCCAreaBase::saveGuts(ostrm);
-    Cti::CapControl::PaoIdVector substationIds = getSubstationIds();
-    ostrm << substationIds.size();
-    for each (long subId in getSubstationIds())
-    {
-        ostrm << subId;
-    }
+    ostrm << getSubstationIds();
+    
     double pfDisplayValue = getPFactor();
     double estPfDisplayValue = getEstPFactor();
 
