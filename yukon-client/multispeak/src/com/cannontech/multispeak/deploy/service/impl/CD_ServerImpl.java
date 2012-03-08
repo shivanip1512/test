@@ -209,8 +209,7 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
             return LoadActionCode.Unknown;
         } catch (DynamicDataAccessException e) {
             String message = "Connection to dispatch is invalid";
-            log.error(message);
-            e.printStackTrace();
+            log.error(message, e);
             throw new RemoteException(message);
         }
     }

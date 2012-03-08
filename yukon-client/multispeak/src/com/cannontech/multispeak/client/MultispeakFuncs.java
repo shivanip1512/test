@@ -422,9 +422,8 @@ public class MultispeakFuncs
 
         MspLoadActionCode mspLoadActionCode;
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("Returning disconnect status from cache:" + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL, new SystemUserContext()));
-            }
+
+            LogHelper.debug(log, "Returning disconnect status from cache: %s", pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL, new SystemUserContext()));
 
             boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(yukonDevice.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
             if (isRfnDisconnect) {
