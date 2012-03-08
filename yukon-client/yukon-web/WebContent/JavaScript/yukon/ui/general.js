@@ -439,9 +439,11 @@ jQuery.fn.selectText = function() {
     }
 };
 
-jQuery.fn.toggleDisabled = function(){
-    return this.each(function(){
-        this.disabled = !this.disabled;
+jQuery.fn.toggleDisabled = function() {
+    return this.each(function() {
+    	if (jQuery(this).is(":input")) {
+    		this.disabled = !this.disabled;
+    	}
     });
 };
 
