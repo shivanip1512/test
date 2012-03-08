@@ -24,7 +24,6 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
@@ -120,7 +119,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     }
     
     @Override
-    public YukonMeter getYukonMeterForId(Integer id) {
+    public YukonMeter getYukonMeterForId(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.PAObjectID, ypo.Type, MeterNumber");
         sql.append("FROM YukonPaObject ypo");
@@ -130,12 +129,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         
         YukonMeter yukonMeter = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<YukonMeter>() {
             public YukonMeter mapRow(YukonResultSet rs) throws SQLException {
-                int paoID = rs.getInt("PAObjectID");
-                String paoType = rs.getString("Type").trim();
-
-                PaoType type = PaoType.getForDbString(paoType);
-                PaoIdentifier paoIdentifier = new PaoIdentifier(paoID, type);
-
+                PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PAObjectID", "Type");
                 String meterNumber = rs.getString("MeterNumber").trim();
                 YukonMeter yukonMeter = new YukonMeter(paoIdentifier, meterNumber);
                 
@@ -172,7 +166,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
         sql.append("SELECT ypo.PAObjectID, ypo.Type, MeterNumber");
         sql.append("FROM YukonPaObject ypo");
         sql.append(  "JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DeviceId");
-        sql.append("where dmg.MeterNumber").eq(meterNumber);
+        sql.append("WHERE UPPER(dmg.MeterNumber)").eq(meterNumber.toUpperCase());
         
         try {
             PaoIdentifier pao = yukonJdbcTemplate.queryForObject(sql, new YukonPaoRowMapper());

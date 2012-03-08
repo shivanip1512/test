@@ -10,6 +10,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
@@ -184,8 +185,8 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
 
     /**
      * Retrieves DISCONNECT_STATUS attribute's pointData from dispatch.
-     * Translates the rawState into a loadActionCode based on the type of meter and expected state group for that type.
-     * Returns loadActionCode.Unknonw when cannot be determined.
+     * Gets the LoadActionCode based on the type of meter and expected state group for that type.
+     * Returns loadActionCode.Unknown when cannot be determined.
      * @param meter
      * @return
      * @throws RemoteException
@@ -202,9 +203,14 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
                 return LoadActionCode.Unknown;
             }
             return multispeakFuncs.getLoadActionCode(meter, pointValueQualityHolder);
+        } catch (IllegalUseOfAttribute e) {
+            // meter doesn't have a point for DISCONNECT_STATUS attribute
+            log.warn("Unable to find point for DISCONNECT_STATUS. meterNumber:" + meter.getMeterNumber());
+            return LoadActionCode.Unknown;
         } catch (DynamicDataAccessException e) {
             String message = "Connection to dispatch is invalid";
             log.error(message);
+            e.printStackTrace();
             throw new RemoteException(message);
         }
     }

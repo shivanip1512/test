@@ -41,7 +41,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
         selectSql = "SELECT MeterNumber, PaobjectId, Type, Address, SerialNumber, DisconnectAddress " +
                     "FROM YukonPaobject pao " +
                         "JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId " +
-                        "LEFT JOIN DeviceCarrierSettings dcs on pao.PAObjectID = dcs.DEVICEID " +
+                        "LEFT JOIN DeviceCarrierSettings dcs ON pao.PAObjectID = dcs.DEVICEID " +
                         "LEFT JOIN DeviceMCT400Series mct ON pao.paobjectId = mct.deviceId " + 
                         "LEFT JOIN RFNAddress rfn ON pao.PAObjectID = rfn.DeviceId";
     };
@@ -49,12 +49,10 @@ public final class MspMeterDaoImpl implements MspMeterDao
     private static final YukonRowMapper<Meter> mspMeterRowMapper = new YukonRowMapper<Meter>() {
     	public Meter mapRow(YukonResultSet rset) throws SQLException {
             String meterNumber = rset.getString("meternumber");
-            int paobjectID = rset.getInt("paobjectid");
             String address = rset.getString("address");
             String serialNumber = rset.getString("serialnumber");
-            PaoType paoType = rset.getEnum("type", PaoType.class);
             String discAddress = rset.getString("disconnectaddress");
-            PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectID, paoType);
+            PaoIdentifier paoIdentifier = rset.getPaoIdentifier("paobjectid", "type");
             Meter mspMeter = createMeter(paoIdentifier, meterNumber, address, serialNumber, discAddress);
             return mspMeter;
     	};

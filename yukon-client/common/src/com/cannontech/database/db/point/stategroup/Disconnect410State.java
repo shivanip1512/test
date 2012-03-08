@@ -7,7 +7,7 @@ public enum Disconnect410State implements PointState {
     CONNECT_ARMED(3),
     ;
     
-    private int rawState;
+    private final int rawState;
     
     private Disconnect410State(int rawState) {
         this.rawState = rawState;

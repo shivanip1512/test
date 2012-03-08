@@ -2,13 +2,11 @@ package com.cannontech.amr.rfn.message.disconnect;
 
 import java.io.Serializable;
 
-import com.cannontech.database.db.point.stategroup.RFNDisconnectStatusState;
-
 public class RfnMeterDisconnectConfirmationReply implements Serializable {
 
     private static final long serialVersionUID = 2L;
     private RfnMeterDisconnectConfirmationReplyType replyType = RfnMeterDisconnectConfirmationReplyType.TIMEOUT;
-    private RFNDisconnectStatusState state;
+    private RfnMeterDisconnectState state;
     
     public boolean isSuccess() {
         return replyType == RfnMeterDisconnectConfirmationReplyType.SUCCESS;
@@ -22,11 +20,11 @@ public class RfnMeterDisconnectConfirmationReply implements Serializable {
         return replyType;
     }
     
-    public void setState(RFNDisconnectStatusState state) {
+    public void setState(RfnMeterDisconnectState state) {
         this.state = state;
     }
     
-    public RFNDisconnectStatusState getState() {
+    public RfnMeterDisconnectState getState() {
         return state;
     }
 

@@ -12,6 +12,7 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -23,7 +24,6 @@ import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.db.point.stategroup.RFNDisconnectStatusState;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.PointData;
 
@@ -55,7 +55,7 @@ public class RfnMeterDisconnectService {
      *  RFN_METER_DISCONNECT_REPLY1_TIMEOUT
      *  RFN_METER_DISCONNECT_REPLY2_TIMEOUT
      *  
-     *  If not provided they default to 10 seconds and 30 minutes.
+     *  If not provided they default to 1 minute and 10 minutes.
      *  
      * @param meter The meter to disconnect.
      * @param callback The callback to use for updating status, errors and disconnect result.
@@ -116,7 +116,7 @@ public class RfnMeterDisconnectService {
                     if (action == RfnMeterDisconnectStatusType.QUERY) {
                         publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
                     } else {
-                        publishPointData(RFNDisconnectStatusState.getForType(action).getRawState(), meter);
+                        publishPointData(RfnMeterDisconnectState.getForType(action).getRawState(), meter);
                     }
                     /* Confirmation response successful, process point data */
                     callback.receivedSuccess(confirmationReplyMessage.getState());

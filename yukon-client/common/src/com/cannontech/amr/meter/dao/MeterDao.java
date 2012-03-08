@@ -28,7 +28,7 @@ public interface MeterDao {
     
     public Meter getForId(Integer id);
     
-    public YukonMeter getYukonMeterForId(Integer id);
+    public YukonMeter getYukonMeterForId(int id);
     
     public List<Meter> getMetersForMeterNumbers(List<String> meterNumbers);
     

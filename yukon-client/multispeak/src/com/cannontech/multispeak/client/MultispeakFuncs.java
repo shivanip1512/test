@@ -29,7 +29,6 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -45,7 +44,7 @@ import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
-import com.cannontech.database.db.point.stategroup.RFNDisconnectStatusState;
+import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.data.MspLoadActionCode;
 import com.cannontech.multispeak.data.MspReturnList;
@@ -415,7 +414,7 @@ public class MultispeakFuncs
 
     /**
      * Translates the rawState into a loadActionCode based on the type of meter and expected state group for that type.
-     * Returns loadActionCode.Unknonw when cannot be determined.
+     * Returns loadActionCode.Unknown when cannot be determined.
      * @param meter
      * @return
      */
@@ -423,23 +422,23 @@ public class MultispeakFuncs
 
         MspLoadActionCode mspLoadActionCode;
         try {
-            log.info("Returning disconnect status from cache:" + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL, new SystemUserContext()));
+            if (log.isDebugEnabled()) {
+                log.debug("Returning disconnect status from cache:" + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL, new SystemUserContext()));
+            }
 
             boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(yukonDevice.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
             if (isRfnDisconnect) {
-                RFNDisconnectStatusState pointState = PointStateHelper.decodeRawState(RFNDisconnectStatusState.class, pointValueHolder.getValue());
+                RfnDisconnectStatusState pointState = PointStateHelper.decodeRawState(RfnDisconnectStatusState.class, pointValueHolder.getValue());
                 mspLoadActionCode = MspLoadActionCode.getForRfnState(pointState);
             } else {    //assume everything else is PLC
                 Disconnect410State pointState = PointStateHelper.decodeRawState(Disconnect410State.class, pointValueHolder.getValue());
                 mspLoadActionCode = MspLoadActionCode.getForPlcState(pointState);
             }
         } catch (IllegalArgumentException e) {
-            // we couldn't get the point data from dispatch, or we were unable to decode the rawState
+            // we were unable to decode the rawState
+            log.warn("Unable to decode rawState. value:" + pointValueHolder.getValue());
             return LoadActionCode.Unknown;
-        } catch (IllegalUseOfAttribute e) {
-            // meter doesn't have a point for the attribute
-            return LoadActionCode.Unknown;
-        }
+        } 
         return mspLoadActionCode.getLoadActionCode();
     }
 }

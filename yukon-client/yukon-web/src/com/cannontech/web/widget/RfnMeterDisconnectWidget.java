@@ -10,6 +10,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
@@ -20,7 +21,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.db.point.stategroup.RFNDisconnectStatusState;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -104,7 +104,7 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
             }
 
             @Override
-            public void receivedSuccess(RFNDisconnectStatusState state) {
+            public void receivedSuccess(RfnMeterDisconnectState state) {
                 model.addAttribute("responseSuccess", true);
             }
 

@@ -35,7 +35,7 @@ public interface MultispeakMeterService {
     /** 
      * Returns the LoadActionCode (or connected status) for meter
      * Performs a read of DISCONNECT_STATUS attribute. 
-     * Waits for response, timesout after mspVendor.maxRequestTimeout 
+     * Waits for response, times out after mspVendor.maxRequestTimeout 
      * @param mspVendor
      * @param meter
      * @param transactionID
@@ -47,7 +47,7 @@ public interface MultispeakMeterService {
 
     /**
      * This is a workaround method for SEDC.  This method is used to perform an actual meter interrogation and then return
-     * the collected reading if message recieved within 2 minutes.
+     * the collected reading if message received within 2 minutes.
      * @param mspVendor
      * @param meterNumber
      * @return
@@ -160,7 +160,7 @@ public interface MultispeakMeterService {
     public ErrorObject[] updateServiceLocation(final MultispeakVendor mspVendor, ServiceLocation[] serviceLocations);
 
     /**
-     * Changes the meter information.  Meter is looked up by the Physical Addres (TransponderId). 
+     * Changes the meter information.  Meter is looked up by the Physical Address (TransponderId). 
      * @param mspVendor
      * @param changedMeters
      * @return
