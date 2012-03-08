@@ -81,6 +81,12 @@ public class ProfileCollectionRequestEndpoint {
 
         boolean doingPast = start.isBefore(now.minus(minOffset));
         boolean schedulingFuture = stop == null || stop.isAfter(now.plus(minOffset));
+        if (!doingPast && !schedulingFuture) {
+            responseElem.addContent(XMLFailureGenerator.makeSimple("InvalidData",
+                    "Start date must be at least one hour in the past and/or stop date must be " +
+                    "at least one hour in the future."));
+            return;
+        }
 
         ProfileAttributeChannel channel = parseChannel(template, responseElem);
         if (channel == null) {
