@@ -27,7 +27,7 @@ public final class PaoSelectionUtil {
     }
 
     public static List<Element> makePaoErrorElements(Map<? extends YukonPao, SpecificDeviceErrorDescription> errors) {
-        List<Element> errorElems = Lists.newArrayList();
+        List<Element> errorElems = Lists.newArrayListWithCapacity(errors.size());
         for (YukonPao device : errors.keySet()) {
             SpecificDeviceErrorDescription error = errors.get(device);
             Element errorElem = new Element("error", ns);

@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
@@ -87,12 +88,12 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
             }
         };
 
-        Job(Token token, int channelNum, Instant start, Instant stop) {
+        Job(Token token, int channelNum, ReadableInstant start, ReadableInstant stop) {
             log.debug(token + " for channel " + channelNum + ", from " + start + " to " + stop);
             this.token = token;
             this.channelNum = channelNum;
-            this.start = start;
-            this.stop = stop;
+            this.start = start.toInstant();
+            this.stop = stop.toInstant();
         }
 
         TokenStatus getStatus() {
@@ -149,8 +150,8 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
             new MapMaker().expireAfterWrite(60, TimeUnit.DAYS).makeMap();
 
     @Override
-    public Token createJob(Set<PaoIdentifier> devices, int channelNum,
-                           Instant start, Instant stop, YukonUserContext userContext) {
+    public Token createJob(Set<PaoIdentifier> devices, int channelNum, ReadableInstant start,
+                           ReadableInstant stop, YukonUserContext userContext) {
         Token token = null;
         Job pastProfileJob = null;
         synchronized (jobs) {

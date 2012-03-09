@@ -2,7 +2,7 @@ package com.cannontech.yukon.api.amr.service;
 
 import java.util.Set;
 
-import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.user.YukonUserContext;
@@ -16,6 +16,6 @@ public interface ProfileCollectionService extends TokenHandler {
      * the returned Token and a call to either {@link #getStatus(Token)} or
      * {@link TokenService#getStatus(Token)}
      */
-    Token createJob(Set<PaoIdentifier> devices, int channelNum, Instant start, Instant stop,
-                    YukonUserContext userContext);
+    Token createJob(Set<PaoIdentifier> devices, int channelNum, ReadableInstant start,
+                    ReadableInstant stop, YukonUserContext userContext);
 }
