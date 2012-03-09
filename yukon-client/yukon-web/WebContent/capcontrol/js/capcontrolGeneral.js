@@ -65,7 +65,7 @@ function showMenuPopup(params) {
         modal: params["modal"],
         title: jQuery("#menuPopup input[id='dialogTitle']").val(),
         position: params["position"],
-        dialogClass: "capControlMenu"
+        dialogClass: "smallDialog"
     });
 }
 
