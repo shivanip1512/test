@@ -50,7 +50,11 @@ Yukon.ui = {
         jQuery(document).delegate('.f_disableAfterClick', 'click', function(){
             if(jQuery(this).is(":submit")){
                 this.disabled = true;
-                jQuery(this.form).trigger('submit');
+              
+                //if this is a submit button, trigger the submit event on the form
+                if(jQuery(this).is(":submit")){
+                    jQuery(this.form).trigger("submit");
+                }
             }
         });
         
