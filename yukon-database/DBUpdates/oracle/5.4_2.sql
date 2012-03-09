@@ -2,6 +2,8 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
+select awesome from nothing
+
 /* Start YUK-10669 */
 UPDATE YukonListEntry
 SET EntryOrder = (SELECT SubQuery.Sort_Order
@@ -29,6 +31,10 @@ ALTER TABLE DynamicCCMonitorBankHistory
 ALTER TABLE DynamicCCMonitorPointResponse
     ADD CONSTRAINT FK_DynCCMonPointResp_Point FOREIGN KEY (PointId)
         REFERENCES Point (PointId)
+            ON DELETE CASCADE;
+ALTER TABLE DynamicCCTwoWayCbc
+    ADD CONSTRAINT FK_DynCCTwoWayCbc_DeviceCbc FOREIGN KEY (DeviceId)
+        REFERENCES DeviceCbc (DeviceId)
             ON DELETE CASCADE;
 /* End YUK-10659 */
             
