@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sendTextMessageResponse xmlns="http://yukon.cannontech.com/api"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../SendTextMessageResponse.xsd"
-           version="1.0">
-    <success/>
+<sendTextMessageResponse xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../SendTextMessageResponse.xsd" version="1.0">
+
+    <requested initiated="3" failedLookup="1" />
+    <invalidMessage>
+        <messageId>276699</messageId>
+        <serialNumbers>
+            <serialNumber>300000005</serialNumber>
+        </serialNumbers>
+    </invalidMessage>
+    <lookupError>
+        <serialNumber>100000</serialNumber>
+    </lookupError>
 </sendTextMessageResponse>

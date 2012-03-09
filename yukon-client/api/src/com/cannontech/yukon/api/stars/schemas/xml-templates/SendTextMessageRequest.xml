@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sendTextMessageRequest xmlns="http://yukon.cannontech.com/api"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://yukon.cannontech.com/api ../SendTextMessageRequest.xsd"
-           version="1.0">
-    <textMessageList>
-        <textMessage>
-            <messageId>42</messageId>
-            <serialNumber>98765400011</serialNumber>
-            <serialNumber>98767600012</serialNumber>
-            <message>Send test message.</message>
-            <displayDurationInMinutes>5</displayDurationInMinutes>
-        </textMessage>
-    </textMessageList>
+<sendTextMessageRequest xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../SendTextMessageRequest.xsd" version="1.0">
+    <textMessage>
+        <messageId>42</messageId>
+        <serialNumber>98765400011</serialNumber>
+        <serialNumber>98767600012</serialNumber>
+        <message>Send test message.</message>
+        <displayDurationInMinutes>5</displayDurationInMinutes>
+    </textMessage>
 </sendTextMessageRequest>

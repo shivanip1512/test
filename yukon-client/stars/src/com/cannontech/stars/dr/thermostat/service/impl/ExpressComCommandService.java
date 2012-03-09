@@ -258,10 +258,8 @@ public class ExpressComCommandService extends AbstractCommandExecutionService {
         }
         for (Integer inventoryId : message.getInventoryIds()) {
             try {
-                StringBuilder serial = new StringBuilder();
-                serial.append(" serial ");
-                serial.append(hardwareSummary.get(inventoryId).getSerialNumber());
-                commandRequestHardwareExecutor.execute(inventoryId, command.toString() + serial.toString(), message.getYukonUser());
+                String serial = " serial " + hardwareSummary.get(inventoryId).getSerialNumber();
+                commandRequestHardwareExecutor.execute(inventoryId, command.toString()+serial, message.getYukonUser());
             } catch (CommandCompletionException e) {
                 //continue sending text messages
                 log.warn("Unable to send text message to thermostat "+ inventoryId, e);
