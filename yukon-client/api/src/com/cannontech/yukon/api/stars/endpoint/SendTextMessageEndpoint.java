@@ -16,6 +16,7 @@ import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -117,6 +118,9 @@ public class SendTextMessageEndpoint {
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "UserNotAuthorized",
                                                              "The user is not authorized to send text messages.");
+            resp.addContent(fe);
+        } catch (DataIntegrityViolationException e) {
+            Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "OtherException", "Message Id is already in use.");
             resp.addContent(fe);
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "OtherException",
