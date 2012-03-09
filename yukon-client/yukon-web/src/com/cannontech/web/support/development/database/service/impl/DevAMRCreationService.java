@@ -182,7 +182,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
     private void createAllMeters(DevAMR devAMR) {
         log.info("Creating Meters ...");
         createCartMeters(devAMR);
-        createRfnMeterTemplates(devAMR);
+        createRfnTemplateMeters(devAMR);
         int addressCount = 0;
         int address = devAMR.getAddressRangeMin();
         for (DevPaoType meterType: devAMR.getMeterTypes()) {
@@ -207,7 +207,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         }
     }
     
-    private void createRfnMeterTemplates(DevAMR devAMR) {
+    private void createRfnTemplateMeters(DevAMR devAMR) {
         if (!devAMR.isCreateRfnTemplates()) return;
         
         log.info("Creating Rfn Template Meters ...");
