@@ -15,7 +15,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.YukonUserDao;
@@ -42,6 +45,7 @@ public class ForgottenPasswordController {
 
     @Autowired private AuthenticationService authenticationService;
     @Autowired private CaptchaService captchaService;
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private ForgottenPasswordService forgottenPasswordService;
     @Autowired private LoginValidatorFactory loginValidatorFactory;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -51,18 +55,19 @@ public class ForgottenPasswordController {
     private Map<UUID, LiteYukonUser> keyToUserMap = new MapMaker().concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).makeMap();
     
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.GET)
-    public String newForgottenPassword(ModelMap map) throws Exception {
+    public String newForgottenPassword(ModelMap model, HttpServletRequest request) throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null);
         boolean captchaEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ENABLE_CAPTCHAS, null);
         
-        map.addAttribute("captchaPublicKey", captchaService.getPublicKey());
-        map.addAttribute("captchaEnabled", captchaEnabled);
+        model.addAttribute("captchaPublicKey", captchaService.getPublicKey());
+        model.addAttribute("captchaEnabled", captchaEnabled);
+        model.addAttribute("locale", RequestContextUtils.getLocale(request));
         
         return "forgottenPassword.jsp";
     }
     
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.POST)
-    public String forgottenPasswordRequest(ModelMap map, FlashScope flashScope, HttpServletRequest request, 
+    public String forgottenPasswordRequest(ModelMap model, FlashScope flashScope, HttpServletRequest request, 
                                            String recaptcha_challenge_field, String recaptcha_response_field, String forgottenPasswordField)
     throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null);
@@ -74,15 +79,15 @@ public class ForgottenPasswordController {
         // The Captcha failed.  return the user the forgotten password page
         if (captchaResponse.isError()) {
             flashScope.setError(captchaResponse.getErrorMessageSourceResolvable());
-            map.addAttribute("captchaPublicKey", captchaService.getPublicKey());
+            model.addAttribute("captchaPublicKey", captchaService.getPublicKey());
             return "forgottenPassword.jsp";
         }
 
         // Getting the need password reset information.
         PasswordResetInfo passwordResetInfo = forgottenPasswordService.getPasswordResetInfo(forgottenPasswordField);
         if (!passwordResetInfo.isPasswordResetInfoValid()) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.passwordChangeNotSupported", forgottenPasswordField));
-            map.addAttribute("captchaPublicKey", captchaService.getPublicKey());
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.invalidProvidedInformation", forgottenPasswordField));
+            model.addAttribute("captchaPublicKey", captchaService.getPublicKey());
             return "forgottenPassword.jsp";
         }
         
@@ -104,10 +109,9 @@ public class ForgottenPasswordController {
     }
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
-    public String changePassword(ModelMap map, FlashScope flashScope, String k)
+    public String changePassword(ModelMap model, FlashScope flashScope, String k)
     throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null);
-        
         LiteYukonUser passwordResetUser = keyToUserMap.get(UUID.fromString(k));
         if (passwordResetUser == null) {
             return "redirect:/login.jsp";
@@ -119,13 +123,13 @@ public class ForgottenPasswordController {
         loginBackingBean.setAuthType(passwordResetUser.getAuthType());
         loginBackingBean.setUsername(passwordResetUser.getUsername());
         
-        map.addAttribute("k", k);
-        map.addAttribute("loginBackingBean", loginBackingBean);
+        model.addAttribute("k", k);
+        model.addAttribute("loginBackingBean", loginBackingBean);
         return "changePassword.jsp";
     }
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-    public String submitChangePassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult, FlashScope flashScope, String k, ModelMap map)
+    public String submitChangePassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult, FlashScope flashScope, String k, ModelMap model)
     throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null);
         
@@ -142,7 +146,7 @@ public class ForgottenPasswordController {
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            map.addAttribute("k", k);
+            model.addAttribute("k", k);
             return "changePassword.jsp";
         }
 
@@ -158,6 +162,17 @@ public class ForgottenPasswordController {
     private String getForgottenPasswordResetUrl(UUID passwordResetKey, HttpServletRequest request) {
         StringBuilder url = new StringBuilder();
         url.append(request.getScheme()+"://");
+        
+        // Get the external base url.
+        StringBuilder defaultYukonExternalUrl = new StringBuilder();
+        defaultYukonExternalUrl.append(request.getServerName());
+        if (request.getServerPort() != 80) {
+            defaultYukonExternalUrl.append(":"+request.getServerPort());
+        }
+        String baseurl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, defaultYukonExternalUrl.toString());
+        url.append(baseurl);
+
+        // We don't need to added 80 as a port since it is used by default
         url.append(request.getServerName());
         if (request.getServerPort() != 80) {
             url.append(":"+request.getServerPort());

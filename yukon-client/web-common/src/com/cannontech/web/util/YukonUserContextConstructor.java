@@ -25,20 +25,8 @@ public class YukonUserContextConstructor implements YukonUserContextResolver {
 
     @Override
     public YukonUserContext resolveContext(HttpServletRequest request) {
-        SimpleYukonUserContext context = new SimpleYukonUserContext();
-        Locale locale = RequestContextUtils.getLocale(request);
-        context.setLocale(locale);
-        LiteYukonUser yukonUser = ServletUtil.getYukonUser(request);
-        context.setYukonUser(yukonUser);
-        TimeZone timeZone = authDao.getUserTimeZone(yukonUser);
-        context.setTimeZone(timeZone);
-        ThemeResolver themeResolver = RequestContextUtils.getThemeResolver(request);
-        if (themeResolver == null) {
-            themeResolver = defaultThemeResolver;
-        }
-        String themeName = themeResolver.resolveThemeName(request);
-        context.setThemeName(themeName);
-        return context;
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        return resolveContext(user, request);
     }
     
     @Override
@@ -55,7 +43,6 @@ public class YukonUserContextConstructor implements YukonUserContextResolver {
         }
         String themeName = themeResolver.resolveThemeName(request);
         context.setThemeName(themeName);
-
         return context;
     }
     

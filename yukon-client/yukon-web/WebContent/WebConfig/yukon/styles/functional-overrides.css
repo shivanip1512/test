@@ -54,6 +54,8 @@ h1, h2, h3, h4, h5, h6, b, strong, .fwb{font-weight:bold}
 .vam {vertical-align:middle;}
 .vab {vertical-align:bottom;}
 
+.ma {margin: auto;}
+
 .vh {visibility:hidden;} /* when you want to hide, but still flow */
 .vv {visibility:visible;}
 

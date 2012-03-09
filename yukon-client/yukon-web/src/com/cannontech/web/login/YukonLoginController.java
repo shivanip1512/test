@@ -33,7 +33,7 @@ public class YukonLoginController extends MultiActionController {
         final ModelAndView mav = new ModelAndView();
         mav.setViewName("login.jsp");
         
-        boolean useOldForgottenPasswordPage = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.USE_OLD_FORGOTTEN_PASSWORD_PAGE, false);
+        boolean useOldForgottenPasswordPage = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.USE_OLD_FORGOTTEN_PASSWORD_PAGE);
         mav.addObject("useOldForgottenPasswordPage", useOldForgottenPasswordPage);
         return mav;
     }

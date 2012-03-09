@@ -24,7 +24,6 @@
         <script type="text/javascript" src="/JavaScript/lib/jQuery/1.6.4/jquery.min.js"></script>
         <script type="text/javascript" src="/JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
         <script type="text/javascript" src="/JavaScript/yukon/ui/general.js"></script>
-        <script type="text/javascript" src="/JavaScript/Captcha.js"></script>
 
         <cti:css key="yukon.web.login.loginStyles"/>
     </head>
@@ -84,14 +83,23 @@
                         <input type="text"  autofocus="autofocus" size="50" name="forgottenPasswordField">
                         <br><br>
                         
-                        <tags:captcha captchaPublicKey="${captchaPublicKey}" captchaTheme="clean" captchaEnabled="${captchaEnabled}"/>
+                        <tags:captcha captchaPublicKey="${captchaPublicKey}" captchaTheme="clean" captchaEnabled="${captchaEnabled}" locale="${locale}"/>
                         <br>
                         
-                        <cti:button type="submit" nameKey="resetPassword" name="resetPassword" styleClass="f_blocker"/>
+                        <cti:button type="submit" nameKey="resetPassword" name="resetPassword" styleClass="f_disableAfterClick"/>
                         <cti:button href="/login.jsp" nameKey="cancel" name="cancel"/>
                     </form:form>
                 </tags:abstractContainer>
             </div>
+            <div class="loginTopSection">
+                <div class="formBottomLogo">
+                    <cti:logo key="yukon.web.login.formBottomLogo"></cti:logo>
+                </div>
+            </div>
+        </div>
+
+        <div class="loginCopyright">
+            <cti:msg key="yukon.web.layout.standard.copyrightFull"></cti:msg>
         </div>
     </body>
 

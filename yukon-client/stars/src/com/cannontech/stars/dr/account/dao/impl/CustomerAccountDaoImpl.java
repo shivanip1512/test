@@ -205,7 +205,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
         return getByAccountNumber(accountNumber, energyCompanyIds);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public CustomerAccount getByAccountNumber(final String accountNumber, List<Integer> energyCompanyIds) {
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
@@ -227,7 +227,6 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao, InitializingB
         return account;
     }
 
-    @Transactional(readOnly = true)
     @Override
     public CustomerAccount findByAccountNumber(final String accountNumber, List<Integer> energyCompanyIds) {
         try {

@@ -56,7 +56,9 @@ public class LoginFilter implements Filter {
     private final static ImmutableList<String> excludedFilePaths =
         ImmutableList.of(LoginController.LOGIN_URL,
                          "/integrationLogin",
-                         "/spring/login/*",
+                         "/spring/login/forgotPassword",
+                         "/spring/login/forgottenPassword",
+                         "/spring/login/changePassword",
                          "/servlet/LoginController",
                          "/servlet/LoggingServlet",
                          "/voice/login.jsp",

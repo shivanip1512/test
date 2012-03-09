@@ -42,6 +42,7 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
+    @Override
     public PasswordResetInfo getPasswordResetInfo(String forgottenPasswordField) {
         // Check to see if we have a user that matches the information supplied
         PasswordResetInfo passwordResetInfo = getPasswordResetInfoByUsername(forgottenPasswordField);
@@ -59,6 +60,7 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
         return passwordResetInfo;
     }
 
+    @Override
     public void sendPasswordResetEmail(String forgottenPasswordResetUrl, LiteContact liteContract, YukonUserContext userContext) {
         
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -81,6 +83,9 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
         }
     }
     
+    /**
+     * 
+     */
     private PasswordResetInfo getPasswordResetInfoByUsername(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
         
@@ -95,6 +100,9 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
         return passwordResetInfo;
     }
 
+    /**
+     * 
+     */
     private PasswordResetInfo getPasswordResetInfoByEmailAddress(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
         
@@ -107,6 +115,9 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
         return passwordResetInfo;
     }
 
+    /**
+     * 
+     */
     private PasswordResetInfo getPasswordResetInfoByAccountNumber(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
         

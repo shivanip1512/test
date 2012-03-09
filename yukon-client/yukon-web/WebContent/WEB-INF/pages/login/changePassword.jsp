@@ -5,10 +5,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ page import="com.cannontech.common.version.VersionTools" %>
-
-<%@ page import="net.tanesha.recaptcha.ReCaptcha" %>
-<%@ page import="net.tanesha.recaptcha.ReCaptchaFactory" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <cti:msgScope paths="modules.login.changePassword">
@@ -80,7 +76,7 @@
 
                         <tags:nameValueContainer2 id="passwordFields">
                             <tags:nameValue2 nameKey=".username">
-                                <spring:htmlEscape defaultHtmlEscape="true">${loginBackingBean.username}</spring:htmlEscape>
+                                ${fn:escapeXml(loginBackingBean.username)}
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".newPassword">
                                 <tags:password path="password1" cssClass="password_editor_field" autocomplete="false" maxlength="64" />
@@ -97,6 +93,15 @@
                     </form:form>
                 </tags:abstractContainer>
             </div>
+            <div class="loginTopSection">
+                <div class="formBottomLogo">
+                    <cti:logo key="yukon.web.login.formBottomLogo"></cti:logo>
+                </div>
+            </div>
+        </div>
+
+        <div class="loginCopyright">
+            <cti:msg key="yukon.web.layout.standard.copyrightFull"></cti:msg>
         </div>
     </body>
 

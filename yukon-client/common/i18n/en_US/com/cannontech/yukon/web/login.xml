@@ -53,7 +53,6 @@
     
     
     <!-- forgottenPassword.jsp -->
-    <entry key="yukon.web.login.title">Energy Welcome to Customer Help Center</entry>
     <entry key="yukon.web.modules.login.forgottenPassword.pageTitle">Energy Services Operations Center</entry>
     <entry key="yukon.web.modules.login.forgottenPassword.forgottenPasswordReset">Forgotten Password Reset</entry>
     
@@ -61,12 +60,13 @@
     <entry key="yukon.web.modules.login.forgottenPassword.forgottenPasswordFields">Email, Username, or Account Number</entry>
     <entry key="yukon.web.modules.login.forgottenPassword.resetPassword.label">Reset Password</entry>
     <entry key="yukon.web.modules.login.forgottenPassword.passwordChangeNotSupported">Password changes are not supported for this authentication type.</entry>
+    <entry key="yukon.web.modules.login.forgottenPassword.invalidProvidedInformation">We were unable to verify the provided information.</entry>
     
-    <entry key="yukon.web.modules.login.forgottenPassword.forgottenPasswordEmailSent">An email has been sent to your email address to allow you to reset your password.</entry>
-    <entry key="yukon.web.modules.login.forgottenPassword.email.subject">Forgotten Password Request</entry>
+    <entry key="yukon.web.modules.login.forgottenPassword.forgottenPasswordEmailSent">An email has been sent to the supplied address with instructions to reset your password.</entry>
+    <entry key="yukon.web.modules.login.forgottenPassword.email.subject">Password Request</entry>
     <entry key="yukon.web.modules.login.forgottenPassword.email.body"><![CDATA[Forgot your password?
 
-This message is a response to the Forgotten Password utility at your energy company.  If you did not use this tool to generate this message, you should contact your energy company.
+This message is a response to the Password Reset utility at your energy company.  If you did not use this tool to generate this message, you should contact your energy company.
 
 To set a new password on your account, visit the URL below by clicking on the link, or by pasting it exactly as it appears into your browser.
 
@@ -78,7 +78,7 @@ When you go to this location you will be allowed to set a new password for your 
     <entry key="yukon.web.modules.login.passwordChange.passwordChangeNotSupported">Password changes are not supported for your login.</entry>
     
     <entry key="yukon.web.modules.login.changePassword.pageTitle">Energy Services Operations Center</entry>
-    <entry key="yukon.web.modules.login.changePassword.forgottenPasswordReset">Forgotten Password Reset</entry>
+    <entry key="yukon.web.modules.login.changePassword.forgottenPasswordReset">Password Reset</entry>
     <entry key="yukon.web.modules.login.changePassword.username">Username</entry>
     <entry key="yukon.web.modules.login.changePassword.newPassword">New Password</entry>
     <entry key="yukon.web.modules.login.changePassword.confirmPassword">Confirm Password</entry>
