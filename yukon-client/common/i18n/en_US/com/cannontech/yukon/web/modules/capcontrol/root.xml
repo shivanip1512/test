@@ -506,6 +506,7 @@
     <entry key="yukon.web.modules.capcontrol.import.cbcImportFile">CBC Import File:</entry>
     <entry key="yukon.web.modules.capcontrol.import.hierarchyImportFile">Hierarchy Import File:</entry>
     <entry key="yukon.web.modules.capcontrol.import.missingDataResult">{0} - Import failed because of missing required fields: {1}.</entry>
+    <entry key="yukon.web.modules.capcontrol.import.invalidDataResult">{0} - Import failed because of invalid data in field(s): {1}</entry>
     <entry key="yukon.web.modules.capcontrol.import.hierarchyAddFailure">{0} - Add failed for object named "{1}"</entry>
     <entry key="yukon.web.modules.capcontrol.import.hierarchyAddSuccess">{0} - Add succeeded for object named "{1}"</entry>
     <entry key="yukon.web.modules.capcontrol.import.hierarchyUpdateFailure">{0} - Update failed for object named "{1}"</entry>

@@ -34,6 +34,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.CompleteCapBank;
 import com.cannontech.common.pao.model.CompleteCapControlArea;
 import com.cannontech.common.pao.model.CompleteCapControlFeeder;
+import com.cannontech.common.pao.model.CompleteCapControlSpecialArea;
 import com.cannontech.common.pao.model.CompleteCapControlSubstation;
 import com.cannontech.common.pao.model.CompleteCapControlSubstationBus;
 import com.cannontech.common.pao.model.CompleteCbcBase;
@@ -75,6 +76,13 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             CompleteYukonPao retrievePao(PaoIdentifier pao,
                                               HierarchyImportData hierarchyImportData) {
                 return paoPersistenceService.retreivePao(pao, CompleteCapControlArea.class);
+            }
+        });
+        builder.put(PaoType.CAP_CONTROL_SPECIAL_AREA, new PaoRetriever() {
+            @Override
+            CompleteYukonPao retrievePao(PaoIdentifier pao,
+                                              HierarchyImportData hierarchyImportData) {
+                return paoPersistenceService.retreivePao(pao, CompleteCapControlSpecialArea.class);
             }
         });
         builder.put(PaoType.CAP_CONTROL_FEEDER, new PaoRetriever() {

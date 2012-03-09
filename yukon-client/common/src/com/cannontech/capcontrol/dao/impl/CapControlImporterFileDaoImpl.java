@@ -20,6 +20,7 @@ import com.cannontech.capcontrol.creation.model.CbcImportResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResultType;
 import com.cannontech.capcontrol.creation.model.HierarchyImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
+import com.cannontech.capcontrol.creation.model.HierarchyImportInvalidDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportMissingDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
@@ -154,6 +155,15 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		}
 	}
 	
+	/**
+	 * Creates a {@link HierarchyImportData} object from the required information provided by
+	 * the user. 
+	 * @param line the line of input
+	 * @param headerColumnMap the line of header columns.
+	 * @return a {@link HierarchyImportData} object populated with the minimal required data.
+	 * @throws CapControlHierarchyImportException if the input is missing or has invalid required
+	 *     data.
+	 */
 	private HierarchyImportData createHierarchyImportData(final String[] line, Map<CapControlImporterHierarchyField, Integer> headerColumnMap) 
 	                        throws CapControlHierarchyImportException {
 	    PaoType paoType;
@@ -294,22 +304,36 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        	
 	        	try {
 	        		validateHierarchyImporterRow(headerColumnMap, line, missingColumns);
+	        	} catch (CapControlHierarchyFileImporterException e) {
+                    log.error(e.getMessage());
+                    results.add(new HierarchyImportMissingDataResult(e.getColumns()));
+                    line = csvReader.readNext();
+                    continue;
+                }
 	        	
+	        	try {
 	        		data = createHierarchyImportData(line, headerColumnMap);
-	        		
+	        	} catch (CapControlHierarchyImportException e) {
+                    log.error(e.getMessage());
+                    results.add(new HierarchyImportInvalidDataResult(CapControlImporterHierarchyField.TYPE,
+                                                                     HierarchyImportResultType.INVALID_TYPE));
+                    line = csvReader.readNext();
+                    continue;
+                }
+	        	
+	        	try {
 	        		// Create the data from the line.
 	        		populateHierarchyImportData(line, headerColumnMap, data);
 	        		
 	        		hierarchyImportData.add(data);
-	        	} catch (CapControlHierarchyFileImporterException e) {
-	        		log.error(e.getMessage());
-	        		results.add(new HierarchyImportMissingDataResult(e.getColumns()));
 	        	} catch (CapControlHierarchyImportException e) {
                     log.error(e.getMessage());
                     results.add(new HierarchyImportCompleteDataResult(data, e.getImportResultType()));
-                } finally {
-	        		line = csvReader.readNext();
-	        	}
+                    line = csvReader.readNext();
+                    continue;
+                }
+
+	        	line = csvReader.readNext();
 	        }
 		        
 		    csvReader.close();
