@@ -64,7 +64,8 @@ function showMenuPopup(params) {
         width: "auto",
         modal: params["modal"],
         title: jQuery("#menuPopup input[id='dialogTitle']").val(),
-        position: params["position"]
+        position: params["position"],
+        dialogClass: "capControlMenu"
     });
 }
 

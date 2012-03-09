@@ -467,6 +467,11 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
     -moz-box-shadow: #BBB 3px 3px 3px;
     box-shadow: #BBB 3px 3px 3px;
 }
+
+.ui-dialog.capControlMenu {
+	border: 6px solid #666;
+}
+
 .ui-dialog .ui-dialog-titlebar {
     position: relative;
     background-color: #F7F7F7;
