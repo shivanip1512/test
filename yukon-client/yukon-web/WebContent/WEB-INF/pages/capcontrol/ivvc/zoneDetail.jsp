@@ -452,6 +452,9 @@
 				<cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />
 				<cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
 					<div class="largeDialogScrollArea">
+						<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
+					    	<cti:param name="zoneId" value="${zoneId}"/>
+					    </cti:url>
 						<%@ include file="voltagePoints.jspf" %>
 					</div>
 				</cti:tabbedContentSelectorContent>

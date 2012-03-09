@@ -6,6 +6,19 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:msgScope paths="modules.capcontrol.ivvc.voltagePoints">
+	<strong>
+		<c:choose>
+			<c:when test="${zoneDetailUrl != null}">
+				<a href="${zoneDetailUrl}">
+					<spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody>
+				</a>
+			</c:when>
+			<c:otherwise>
+				<spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody>
+			</c:otherwise>
+		</c:choose>
+	</strong>
+	(<a href="${zoneVoltagePointsUrl}"><i:inline key=".editPoints"/></a>)
 	<tags:alternateRowReset />
 	<table class="compactResultsTable zoneVoltagePoints">
 		<tr>
@@ -23,7 +36,7 @@
 		</tr>
 		<c:forEach var="voltagePoint" items="${zoneVoltagePointsHolder.points}" varStatus="status">
 			<c:set var="overrideStrategyClass" value="fwb"/>
-			<c:if test="${!voltagePoint.overrideStrategy && !editMode}">
+			<c:if test="${!voltagePoint.overrideStrategy}">
 				<c:set var="overrideStrategyClass" value="disabled"/>
 			</c:if>
 			<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
@@ -55,12 +68,4 @@
 			</tr>
 		</c:forEach>
 	</table>
-	<c:if test="${hasEditingRole && !hideEditButton}">
-		<div class="actionArea">
-			<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
-		    	<cti:param name="zoneId" value="${zoneId}"/>
-		    </cti:url>
-			<cti:button nameKey="edit" href="${zoneVoltagePointsUrl}"/>
-		</div>
-	</c:if>
 </cti:msgScope>

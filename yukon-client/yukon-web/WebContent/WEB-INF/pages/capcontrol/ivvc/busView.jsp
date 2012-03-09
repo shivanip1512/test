@@ -292,18 +292,13 @@
 				<cti:tabbedContentSelectorContent selectorName="${voltagePointsTab}">
 					<div class="largeDialogScrollArea">
 						<c:forEach items="${zoneVoltagePointsHolders}" var="zoneVoltagePointsHolder">
-							<c:set var="zoneId" value="${zoneVoltagePointsHolder.zoneId}"/>
-							<c:set var="hideEditButton" value="true"/>
+							<c:set var="zoneName" value="${zoneVoltagePointsHolder.zoneName}"/>
 	    					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
-	    				    	<cti:param name="zoneId" value="${zoneId}"/>
+	    				    	<cti:param name="zoneId" value="${zoneVoltagePointsHolder.zoneId}"/>
 	    				    </cti:url>
 							<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
-						    	<cti:param name="zoneId" value="${zoneId}"/>
+						    	<cti:param name="zoneId" value="${zoneVoltagePointsHolder.zoneId}"/>
 						    </cti:url>
-							<strong>
-								<a href="${zoneDetailUrl}"><spring:escapeBody htmlEscape="true">${zoneVoltagePointsHolder.zoneName}</spring:escapeBody></a>
-							</strong>
-							(<a href="${zoneVoltagePointsUrl}"><i:inline key=".voltagePoints.editPoints"/></a>)
 							<%@ include file="voltagePoints.jspf" %>
 							<br>
 						</c:forEach>
