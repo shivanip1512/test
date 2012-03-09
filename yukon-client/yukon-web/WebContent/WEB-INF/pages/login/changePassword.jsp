@@ -65,7 +65,7 @@
             </div>
 
             <div class="loginMainSection">
-                <cti:msg2 var="passwordResetTitle"  key=".forgottenPasswordReset" />
+                <cti:msg2 var="passwordResetTitle"  key=".passwordReset" />
                 <tags:abstractContainer title="${passwordResetTitle}" type="rounded">
                     <cti:flashScopeMessages/>
 
