@@ -48,7 +48,7 @@ Yukon.ui = {
         
      // Disable a form element after clicked
         jQuery(document).delegate('.f_disableAfterClick', 'click', function(){
-            if(jQuery(this).is(":submit")){
+            if(jQuery(this).is(":input")){
                 this.disabled = true;
               
                 //if this is a submit button, trigger the submit event on the form
