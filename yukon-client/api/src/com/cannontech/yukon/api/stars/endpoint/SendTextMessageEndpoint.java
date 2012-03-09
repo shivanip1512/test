@@ -120,7 +120,8 @@ public class SendTextMessageEndpoint {
                                                              "The user is not authorized to send text messages.");
             resp.addContent(fe);
         } catch (DataIntegrityViolationException e) {
-            Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "OtherException", "Message Id is already in use.");
+            Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "OtherException", 
+                                                             "Message Id is already in use.");
             resp.addContent(fe);
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "OtherException",
