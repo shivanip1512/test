@@ -1,5 +1,4 @@
 <Context path="api" 
-   reloadable="true" 
    docBase="C:\Yukon\Server\Extras\Enterprise Integration Module\api.war" >
 
   <Environment name="yukon.base" value="C:\Yukon"
