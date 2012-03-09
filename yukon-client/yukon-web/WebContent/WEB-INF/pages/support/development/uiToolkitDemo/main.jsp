@@ -112,7 +112,7 @@ document.observe("dom:loaded", function() {
                 <tr>
                     <td><label>Something Important:</label><input type="text" name="important"
                         class="f_focus" /></td>
-                    <td>Add the <b>f_focus</b> class to the input. <br /> <br /> <pre>
+                    <td>Add the <b>f_focus</b> class to the input. <br /> <br /> <pre class="code">
 &lt;input type="text" name="something" class="f_focus"/&gt;
             </pre></td>
                 </tr>
@@ -141,23 +141,63 @@ document.observe("dom:loaded", function() {
                             <label for="address">Address:</label><input type="text" name="address" />
                             <br /> <br /> <label for="City">City:</label><input type="text"
                                 name="City" /> <br /> <br />
-                            <button name="save">Save</button>
+                            <button name="save" >Save</button>
                             <button name="save">Delete</button>
                         </div></td>
                     <td>Works on page load and clicking a checkbox. <br /> Add the <b>f_toggle</b>
                         class to the checkbox input.<br />Then wrap the inputs you want to be
-                        toggled in a div with a <b>f_toggle</b> class. <br /> <br /> <pre>
+                        toggled in a div with a <b>f_toggle</b> class. <br /> <br /> <pre class="code">
 &lt;input type="checkbox" name="enabled" class="f_toggle"/&gt;
 
 &lt;div class="f_toggle"&gt;
     ...INPUTS HERE...
 &lt;/div&gt;
-        </pre> <br /> <br /> Will disable the following: <pre>
+        </pre> <br /> <br /> Will disable the following: <pre class="code">
 input
 select
 textarea
 button
         </pre>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Button Behaviors</th>
+                    <td>Relevant Markup</td>
+                </tr>
+                <tr>
+                    <td>
+                        Disable a button after clicking on it.<br/>
+                        <button class="f_disableAfterClick">Button Tag</button>
+                    </td>
+                    <td>
+                        Add the <strong>'f_disableAfterClick'</strong> class to any input element - though this is of little use on text, password, select and textarea elements.
+                        <pre class="code">
+&lt;button class="f_disableAfterClick"&gt;Button Tag&lt;/button&gt;
+                        </pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Disable an input after clicking on it.<br/>
+                        <input type="button" class="f_disableAfterClick" value="Input Tag" />
+                    </td>
+                    <td>
+                        Also works on <strong>inputs</strong> of type <strong>button</strong>.
+                        <pre class="code">
+&lt;input type="button" class="f_disableAfterClick"&gt;Input Tag&lt;/button&gt;
+                        </pre>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Disable a checkbox after clicking on it.<br/>
+                        <input type="checkbox" class="f_disableAfterClick" />
+                    </td>
+                    <td>
+                        Sort of pointless here, but it you can see it does work.
+                        <pre class="code">
+&lt;input type="checkbox" class="f_disableAfterClick" /&gt;
+                        </pre>
                     </td>
                 </tr>
             </table>
@@ -176,10 +216,10 @@ button
                         <br /> <small>In this example, hit the 'ESC' key to unblock the
                             page.</small>
                     </td>
-                    <td>Add the <b>f_blocker</b> class to the tag/button. <br /> <br /> <pre>
+                    <td>Add the <b>f_blocker</b> class to the tag/button. <br /> <br /> <pre class="code">
 &lt;button type="submit" name="button1" value="who cares?" class="f_blocker"&gt;standard&lt;/button&gt;
         </pre> <br /> <br /> To clear this blocked page you must create your own event handler as such:
-                        <br /> <br /> <pre>
+                        <br /> <br /> <pre class="code">
 $("myCloseButton").observe('click', function(){
     Yukon.ui.unblockPage();
 });
@@ -198,7 +238,7 @@ $("myCloseButton").observe('click', function(){
                         requires a bit of setup. <br />You must explicitly tell the library to
                         block and unblock and element. <br /> <br />In this example, we have a
                         click handler on the <em>Block Element</em> button. The <br />function for
-                        the handler looks like this: <br /> <br /> <pre>
+                        the handler looks like this: <br /> <br /> <pre class="code">
 $("blockTheWhiteContainer").observe('click', function(elem){
     ...
     var elem = $(&lt;THE_ELEMENT_I_WANT_TO_BLOCK&gt;);
@@ -206,7 +246,7 @@ $("blockTheWhiteContainer").observe('click', function(elem){
     Yukon.ui.blockElement({element:elem, opacity:0.5});
     ...
 });
-        </pre> <br /> Similarly, we need to tell the library to unblock the element: <pre>
+        </pre> <br /> Similarly, we need to tell the library to unblock the element: <pre class="code">
 ...
 var elem = $(&lt;THE_SAME_ELEMENT_YOU_CHOOSE_TO_BLOCK&gt;);
 ...
@@ -228,8 +268,8 @@ Yukon.ui.unblockElement({element:elem});
                 <tr>
                     <td><label>Phone 1:</label><input type="text" name="phone1"
                         class="f_formatPhone" /></td>
-                    <td>Add the <b>f_formatPhone</b> class to the tag/button. <br /> <br /> <pre>
-                &lt;input type="text" name="phone1" class="f_formatPhone"/&gt;
+                    <td>Add the <b>f_formatPhone</b> class to the tag/button. <br /> <br /> <pre class="code">
+&lt;input type="text" name="phone1" class="f_formatPhone"/&gt;
             </pre>
                     </td>
                 </tr>

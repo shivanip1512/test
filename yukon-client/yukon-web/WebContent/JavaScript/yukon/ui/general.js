@@ -46,6 +46,13 @@ Yukon.ui = {
         // clear page blocker
         jQuery(document).delegate('.f_clearBlocker', 'click', Yukon.ui.unblockPage);
         
+     // Disable a form element after clicked
+        jQuery(document).delegate('.f_disableAfterClick', 'click', function(){
+            if(jQuery(this).is(":input")){
+                this.disabled = true;
+            }
+        });
+        
         // close popup on submit event
         
         // close popup on submit event
