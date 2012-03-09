@@ -2,8 +2,6 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
-select awesome from nothing
-
 /* Start YUK-10669 */
 UPDATE YukonListEntry
 SET EntryOrder = (SELECT SubQuery.Sort_Order

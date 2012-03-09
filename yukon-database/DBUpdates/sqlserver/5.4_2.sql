@@ -2,8 +2,6 @@
 /**** SQL Server DBupdates             ****/ 
 /******************************************/ 
 
-select awesome from nothing
-
 /* Start YUK-10669 */
 UPDATE YukonListEntry
 SET EntryOrder = SubQuery.Sort_Order
