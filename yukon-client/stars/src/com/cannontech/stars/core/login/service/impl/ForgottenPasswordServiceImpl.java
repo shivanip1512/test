@@ -13,6 +13,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
@@ -25,6 +26,7 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.tools.email.DefaultEmailMessage;
+import com.cannontech.tools.email.EmailException;
 import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
@@ -61,10 +63,13 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
     }
 
     @Override
-    public void sendPasswordResetEmail(String forgottenPasswordResetUrl, LiteContact liteContract, YukonUserContext userContext) {
+    public void sendPasswordResetEmail(String forgottenPasswordResetUrl, LiteContact liteContact, YukonUserContext userContext) {
         
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        List<LiteContactNotification> emailAddresses = contactNotificationDao.getNotificationsForContactByType(liteContract, ContactNotificationType.EMAIL);
+        List<LiteContactNotification> emailAddresses = contactNotificationDao.getNotificationsForContactByType(liteContact, ContactNotificationType.EMAIL);
+        if (emailAddresses.isEmpty()) {
+            throw new NotFoundException("A valid email address was not found for the supplied contact "+liteContact);
+        }
         
         MessageSourceResolvable subjectKey = new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.email.subject");
         String subject = messageSourceAccessor.getMessage(subjectKey);
@@ -79,6 +84,7 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
                 emailService.sendMessage(emailMessage);
             } catch (MessagingException e) {
                 logger.error(e);
+                throw new EmailException(e);
             }
         }
     }
@@ -133,10 +139,12 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
         
         CustomerAccount passwordResetCustomerAccount = customerAccountDao.findByAccountNumber(forgottenPasswordField, allEnergyCompanyIds);
         // getYukonUserByAccountId is more of a find method.  It returns null if it doesn't exist.
-        passwordResetInfo.setUser(customerAccountDao.getYukonUserByAccountId(passwordResetCustomerAccount.getAccountId()));
-        if (passwordResetInfo.isValidUser()) {
-            // getLiteContact is more of a find method.  It returns null if it doesn't exist.
-            passwordResetInfo.setContact(yukonUserDao.getLiteContact(passwordResetInfo.getUser().getUserID()));
+        if (passwordResetCustomerAccount != null) {
+            passwordResetInfo.setUser(customerAccountDao.getYukonUserByAccountId(passwordResetCustomerAccount.getAccountId()));
+            if (passwordResetInfo.isValidUser()) {
+                // getLiteContact is more of a find method.  It returns null if it doesn't exist.
+                passwordResetInfo.setContact(yukonUserDao.getLiteContact(passwordResetInfo.getUser().getUserID()));
+            }
         }
         
         return passwordResetInfo;

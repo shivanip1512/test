@@ -21,6 +21,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -79,16 +80,14 @@ public class ForgottenPasswordController {
         // The Captcha failed.  return the user the forgotten password page
         if (captchaResponse.isError()) {
             flashScope.setError(captchaResponse.getErrorMessageSourceResolvable());
-            model.addAttribute("captchaPublicKey", captchaService.getPublicKey());
-            return "forgottenPassword.jsp";
+            return "redirect:forgottenPassword";
         }
 
         // Getting the need password reset information.
         PasswordResetInfo passwordResetInfo = forgottenPasswordService.getPasswordResetInfo(forgottenPasswordField);
         if (!passwordResetInfo.isPasswordResetInfoValid()) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.invalidProvidedInformation", forgottenPasswordField));
-            model.addAttribute("captchaPublicKey", captchaService.getPublicKey());
-            return "forgottenPassword.jsp";
+            return "redirect:forgottenPassword";
         }
         
         // Are we allowed to set this password.
@@ -102,8 +101,14 @@ public class ForgottenPasswordController {
         keyToUserMap.put(passwordResetKey, passwordResetInfo.getUser());
         String forgottenPasswordResetUrl = getForgottenPasswordResetUrl(passwordResetKey, request);
         YukonUserContext passwordResetUserContext = yukonUserContextResolver.resolveContext(passwordResetInfo.getUser(), request);
-        forgottenPasswordService.sendPasswordResetEmail(forgottenPasswordResetUrl, passwordResetInfo.getContact(), passwordResetUserContext);
-        
+
+        try {
+            forgottenPasswordService.sendPasswordResetEmail(forgottenPasswordResetUrl, passwordResetInfo.getContact(), passwordResetUserContext);
+        } catch (NotFoundException e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.emailNotFound"));
+            return "redirect:login.jsp";
+        }
+
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.forgottenPasswordEmailSent"));
         return "redirect:/login.jsp";
     }
