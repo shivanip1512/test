@@ -35,7 +35,7 @@ ALTER TABLE DynamicCCMonitorPointResponse
 /* Start YUK-10674 */
 UPDATE Point 
 SET PointName = 'Capacitor Bank State'
-WHERE pointId IN (SELECT p.pointId 
+WHERE PointId IN (SELECT p.PointId 
                   FROM Point p, YukonPaobject yp
                   WHERE p.PAObjectID = yp.PAObjectID 
                     AND p.PointName = 'Bank Status'

@@ -131,7 +131,7 @@ ALTER TABLE CCMonitorBankList
 DROP CONSTRAINT FK_CCMonBankList_CapBank;
 
 INSERT INTO CCMonitorBankList 
-SELECT p.PAObjectId, ptz.pointId, 1, 'Y', 3, 
+SELECT p.PAObjectId, ptz.PointId, 1, 'Y', 3, 
 CASE
     WHEN (seasStratBus.StrategyId > 0) THEN stratBusUpper.SettingValue
     ELSE stratAreaUpper.SettingValue
@@ -155,7 +155,7 @@ LEFT JOIN CCStrategyTargetSettings stratBusUpper ON stratBusUpper.StrategyId = s
 LEFT JOIN CCStrategyTargetSettings stratBusLower ON stratBusLower.StrategyId = seasStratBus.StrategyId AND stratBusLower.SettingName = 'Lower Volt Limit' AND stratBusLower.SettingType = 'PEAK';
 
 INSERT INTO CCMonitorBankList 
-SELECT rtz.RegulatorId, epp.pointId, 1, 'Y', 3, 
+SELECT rtz.RegulatorId, epp.PointId, 1, 'Y', 3, 
 CASE
     WHEN (seasStratBus.StrategyId > 0) THEN stratBusUpper.SettingValue
     ELSE stratAreaUpper.SettingValue
@@ -177,9 +177,11 @@ LEFT JOIN CCStrategyTargetSettings stratAreaUpper ON stratAreaUpper.StrategyId =
 LEFT JOIN CCStrategyTargetSettings stratAreaLower ON stratAreaLower.StrategyId = seasStratArea.StrategyId AND stratAreaLower.SettingName = 'Lower Volt Limit' AND stratAreaLower.SettingType = 'PEAK' 
 LEFT JOIN CCStrategyTargetSettings stratBusUpper ON stratBusUpper.StrategyId = seasStratBus.StrategyId AND stratBusUpper.SettingName = 'Upper Volt Limit' AND stratBusUpper.SettingType = 'PEAK' 
 LEFT JOIN CCStrategyTargetSettings stratBusLower ON stratBusLower.StrategyId = seasStratBus.StrategyId AND stratBusLower.SettingName = 'Lower Volt Limit' AND stratBusLower.SettingType = 'PEAK';
-
+GO
 sp_rename 'CcMonitorBankList.BankId', 'DeviceId', 'COLUMN';
+GO
 sp_rename 'DynamicCCMonitorBankHistory.BankId', 'DeviceId', 'COLUMN';
+GO
 sp_rename 'DynamicCCMonitorPointResponse.BankId', 'DeviceId', 'COLUMN';
 /* End YUK-10707 */
 
