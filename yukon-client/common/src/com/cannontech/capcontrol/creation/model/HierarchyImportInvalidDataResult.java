@@ -11,10 +11,26 @@ public class HierarchyImportInvalidDataResult implements HierarchyImportResult {
     private final CapControlImporterHierarchyField invalidField;
     private final HierarchyImportResultType resultType;
     
-    public HierarchyImportInvalidDataResult(CapControlImporterHierarchyField invalidField, 
-                                            HierarchyImportResultType resultType) {
-        this.invalidField = invalidField;
+    public HierarchyImportInvalidDataResult(HierarchyImportResultType resultType) {
         this.resultType = resultType;
+        this.invalidField = getFieldForType(resultType);
+    }
+    
+    private CapControlImporterHierarchyField getFieldForType(HierarchyImportResultType resultType) {
+        switch(resultType) {
+        case INVALID_DISABLED_VALUE:
+            return CapControlImporterHierarchyField.DISABLED;
+        case INVALID_IMPORT_ACTION:
+            return CapControlImporterHierarchyField.IMPORT_ACTION;
+        case INVALID_OPERATIONAL_STATE:
+            return CapControlImporterHierarchyField.OPERATIONAL_STATE;
+        case INVALID_PARENT:
+            return CapControlImporterHierarchyField.PARENT;
+        case INVALID_TYPE:
+            return CapControlImporterHierarchyField.TYPE;
+        default:
+            return null;
+        }
     }
     
     @Override

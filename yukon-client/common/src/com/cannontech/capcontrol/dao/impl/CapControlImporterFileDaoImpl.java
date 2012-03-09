@@ -167,6 +167,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	private HierarchyImportData createHierarchyImportData(final String[] line, Map<CapControlImporterHierarchyField, Integer> headerColumnMap) 
 	                        throws CapControlHierarchyImportException {
 	    PaoType paoType;
+	    ImportAction importAction;
         
         String name = line[headerColumnMap.get(CapControlImporterHierarchyField.NAME)];
         String ccType = line[headerColumnMap.get(CapControlImporterHierarchyField.TYPE)];    
@@ -180,7 +181,12 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
         
         // There are required fields we KNOW are here. Set them, then try the non-requireds.
         String action = line[headerColumnMap.get(CapControlImporterHierarchyField.IMPORT_ACTION)];
-        ImportAction importAction = ImportAction.getForDbString(action);
+        try {
+            importAction = ImportAction.getForDbString(action);
+        } catch (IllegalArgumentException e) {
+            throw new CapControlHierarchyImportException("Import of " + name + " failed. Unknown Import Action" +
+                                                         action, HierarchyImportResultType.INVALID_IMPORT_ACTION, e);
+        }
         
         // We got everything we need, lets make the HierarchyImportData object.
         return new HierarchyImportData(paoType, name, importAction);
@@ -190,51 +196,58 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
                                            HierarchyImportData data) {
 		Integer descColumn = headerColumnMap.get(CapControlImporterHierarchyField.DESCRIPTION);
 		if (descColumn != null && !StringUtils.isBlank(line[descColumn])) {
-			data.setDescription(line[descColumn]);
+		    data.setDescription(line[descColumn]);
 		}
 		
 		Integer disabledColumn = headerColumnMap.get(CapControlImporterHierarchyField.DISABLED);
 		if (disabledColumn != null && !StringUtils.isBlank(line[disabledColumn])) {
-			String disabled = line[disabledColumn];
-			if (disabled.equalsIgnoreCase("Y")) {
-				data.setDisabled(true);
-			} else if (disabled.equalsIgnoreCase("N")) {
-				data.setDisabled(false);
-			} else {
-			    throw new CapControlHierarchyImportException("Disabled field contained invalid data. Please " +
-                                                             "change to 'Y' or 'N'", 
-                                                             HierarchyImportResultType.INVALID_DISABLED_VALUE);
-			}
-		}
-		
-		Integer mapColumn = headerColumnMap.get(CapControlImporterHierarchyField.MAP_LOCATION_ID);
-		if (mapColumn != null && !StringUtils.isBlank(line[mapColumn])) {
-			data.setMapLocationId(line[mapColumn]);
-		}
-		
-		Integer parentColumn = headerColumnMap.get(CapControlImporterHierarchyField.PARENT);
-		if (parentColumn != null) {
-		    if (!StringUtils.isBlank(line[parentColumn])) {
-		        data.setParent(line[parentColumn]);
+		    String disabled = line[disabledColumn];
+		    if (disabled.equalsIgnoreCase("Y")) {
+		        data.setDisabled(true);
+		    } else if (disabled.equalsIgnoreCase("N")) {
+		        data.setDisabled(false);
 		    } else {
-		        data.setParent(new String());
+		        throw new CapControlHierarchyImportException("Disabled field contained invalid data. Please " +
+		                "change to 'Y' or 'N'", 
+		                HierarchyImportResultType.INVALID_DISABLED_VALUE);
 		    }
 		}
 		
-		Integer opStateColumn = headerColumnMap.get(CapControlImporterHierarchyField.OPERATIONAL_STATE);
-		if (opStateColumn != null && !StringUtils.isBlank(line[opStateColumn])) {
-		    try {
-		        BankOpState bankOpState = BankOpState.getStateByName(line[opStateColumn]);
-		        data.setBankOpState(bankOpState);
-		    } catch (IllegalArgumentException e) {
-		        throw new CapControlHierarchyImportException("Operational state field contained invalid data.", 
-		                                                     HierarchyImportResultType.INVALID_OPERATIONAL_STATE, e);
-		    }
-		}
-		
-		Integer capBankSizeColumn = headerColumnMap.get(CapControlImporterHierarchyField.CAPBANK_SIZE);
-		if (capBankSizeColumn != null && !StringUtils.isBlank(line[capBankSizeColumn])) {
-		    data.setCapBankSize(Integer.valueOf(line[capBankSizeColumn]));
+		if (data.getPaoType() != PaoType.CAP_CONTROL_AREA && 
+		    data.getPaoType() != PaoType.CAP_CONTROL_SPECIAL_AREA) {
+		    // We don't care about the parent or location if it's an Area or Special area, ignore them.
+	        Integer mapColumn = headerColumnMap.get(CapControlImporterHierarchyField.MAP_LOCATION_ID);
+	        if (mapColumn != null && !StringUtils.isBlank(line[mapColumn])) {
+	            data.setMapLocationId(line[mapColumn]);
+	        }
+	        
+    		Integer parentColumn = headerColumnMap.get(CapControlImporterHierarchyField.PARENT);
+    		if (parentColumn != null) {
+    		    if (!StringUtils.isBlank(line[parentColumn])) {
+    		        data.setParent(line[parentColumn]);
+    		    } else {
+    		        data.setParent(new String());
+    		    }
+    		}
+    		
+    		if (PaoType.CAPBANK == data.getPaoType()) {
+    		    // These columns only matter for cap banks, no need to validate or even look at them otherwise.
+    		    Integer opStateColumn = headerColumnMap.get(CapControlImporterHierarchyField.OPERATIONAL_STATE);
+    		    if (opStateColumn != null && !StringUtils.isBlank(line[opStateColumn])) {
+    		        try {
+    		            BankOpState bankOpState = BankOpState.getStateByName(line[opStateColumn]);
+    		            data.setBankOpState(bankOpState);
+    		        } catch (IllegalArgumentException e) {
+    		            throw new CapControlHierarchyImportException("Operational state field contained invalid data.", 
+    		                                                         HierarchyImportResultType.INVALID_OPERATIONAL_STATE, e);
+    		        }
+    		    }
+    		    
+    		    Integer capBankSizeColumn = headerColumnMap.get(CapControlImporterHierarchyField.CAPBANK_SIZE);
+    		    if (capBankSizeColumn != null && !StringUtils.isBlank(line[capBankSizeColumn])) {
+    		        data.setCapBankSize(Integer.valueOf(line[capBankSizeColumn]));
+    		    }
+    		}
 		}
 	}
 	
@@ -315,8 +328,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        		data = createHierarchyImportData(line, headerColumnMap);
 	        	} catch (CapControlHierarchyImportException e) {
                     log.error(e.getMessage());
-                    results.add(new HierarchyImportInvalidDataResult(CapControlImporterHierarchyField.TYPE,
-                                                                     HierarchyImportResultType.INVALID_TYPE));
+                    results.add(new HierarchyImportInvalidDataResult(e.getImportResultType()));
                     line = csvReader.readNext();
                     continue;
                 }
