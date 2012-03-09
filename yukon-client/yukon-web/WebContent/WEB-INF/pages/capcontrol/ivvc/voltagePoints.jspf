@@ -9,9 +9,7 @@
 	<strong>
 		<c:choose>
 			<c:when test="${zoneDetailUrl != null}">
-				<a href="${zoneDetailUrl}">
-					<spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody>
-				</a>
+				<a href="${zoneDetailUrl}"><spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody></a>
 			</c:when>
 			<c:otherwise>
 				<spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody>
