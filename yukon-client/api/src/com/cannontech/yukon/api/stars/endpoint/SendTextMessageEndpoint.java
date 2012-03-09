@@ -71,8 +71,7 @@ public class SendTextMessageEndpoint {
     @PayloadRoot(namespace = "http://yukon.cannontech.com/api", localPart = "sendTextMessageRequest")
     public Element invoke(Element sendTextMessage, LiteYukonUser user) throws Exception {
 
-        XmlVersionUtils.verifyYukonMessageVersion(sendTextMessage,
-                                                  XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        XmlVersionUtils.verifyYukonMessageVersion(sendTextMessage, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         // create template and parse data
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(sendTextMessage);
@@ -84,48 +83,44 @@ public class SendTextMessageEndpoint {
 
         try {
 
-            DeviceTextMessage deviceTextMessage =
-                requestTemplate.evaluateAsObject("//y:textMessage",
+            DeviceTextMessage deviceTextMessage = requestTemplate.evaluateAsObject("//y:textMessage",
                                       new NodeToElementMapperWrapper<DeviceTextMessage>(new TextMessageElementRequestMapper()));
 
             YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-            
+
             // Check authorization
             rolePropertyDao.verifyRole(YukonRole.INVENTORY, user);
 
-            //Validate text message
+            // Validate text message
             Matcher matcher = pattern.matcher(deviceTextMessage.getMessage());
             if (matcher.matches()) {
                 Map<String, Integer> serialNumberToInventoryIdMap =
                     inventoryDao.getSerialNumberToInventoryIdMap(deviceTextMessage.getSerialNumbers(),
                                                                  yukonEnergyCompany.getEnergyCompanyId());
-                //Remove invalid serial numbers
+                // Remove invalid serial numbers
                 List<String> lookupFailedSerialNumbers = removeInvalidSerialNumbers(deviceTextMessage, serialNumberToInventoryIdMap);
 
                 if (!deviceTextMessage.getSerialNumbers().isEmpty()) {
-                    YukonTextMessage yukonTextMessage =
-                        getYukonTextMessage(deviceTextMessage, serialNumberToInventoryIdMap, user);
+                    YukonTextMessage yukonTextMessage = getYukonTextMessage(deviceTextMessage, serialNumberToInventoryIdMap, user);
 
                     // Send out message
                     thermostatService.sendTextMessage(yukonTextMessage);
                 }
-                //build a response
-                addRequestedNode(deviceTextMessage.getSerialNumbers().size(), lookupFailedSerialNumbers.size(),
-                                 resp);
+                // build a response
+                addRequestedNode(deviceTextMessage.getSerialNumbers().size(), lookupFailedSerialNumbers.size(), resp);
                 addLookupErrorsNode(lookupFailedSerialNumbers, resp);
             } else {
-                //build a response
-                addRequestedNode(0, 0, resp);
+                // build a response
                 addInvalidMessageNode(deviceTextMessage, resp);
             }
 
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "UserNotAuthorized",
-                                     "The user is not authorized to send text messages.");
+                                                             "The user is not authorized to send text messages.");
             resp.addContent(fe);
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "OtherException",
-                                                    "An exception has been caught.");
+                                                             "An exception has been caught.");
             resp.addContent(fe);
             log.error(e.getMessage(), e);
         }
@@ -135,8 +130,8 @@ public class SendTextMessageEndpoint {
     /**
      * This method converts a text message to Yukon text message object. Yukon text message object
      * can then be passed to the Yukon Message Handler and sent out.
-     *
-     * @param textMessage 
+     * 
+     * @param textMessage
      * @param serialNumberToInventoryIdMap
      * @param user
      * @return
@@ -156,9 +151,7 @@ public class SendTextMessageEndpoint {
         // Adding the mapping to the database.
         Instant endTime = textMessage.getStartTime().plus(textMessage.getDisplayDuration());
         long yukonMessageId = nextValueHelper.getNextValue("ExternalToYukonMessageIdMapping");
-        yukonTextMessageDao.addMessageIdMapping(textMessage.getMessageId(), yukonMessageId, user,
-                                                endTime);
-
+        yukonTextMessageDao.addMessageIdMapping(textMessage.getMessageId(), yukonMessageId, user, endTime);
         yukonTextMessage.setMessageId(yukonMessageId);
         yukonTextMessage.setYukonUser(user);
         yukonTextMessage.setInventoryIds(Sets.newHashSet(inventoryIds));
@@ -173,7 +166,7 @@ public class SendTextMessageEndpoint {
 
     /**
      * Removes the invalid serial numbers.
-     *
+     * 
      * @param deviceTextMessage
      * @param serialNumberToInventoryIdMap
      * @return
@@ -192,9 +185,9 @@ public class SendTextMessageEndpoint {
 
     /**
      * Adds the lookup errors node.
-     *
+     * 
      * @param serialNumbers
-     * @param 
+     * @param
      */
     private void addLookupErrorsNode(List<String> serialNumbers, Element parent) {
         if (!serialNumbers.isEmpty()) {
@@ -208,9 +201,9 @@ public class SendTextMessageEndpoint {
 
     /**
      * Adds the requested node.
-     *
-     * @param initiated 
-     * @param failed 
+     * 
+     * @param initiated
+     * @param failed
      * @param parent
      */
     private void addRequestedNode(int initiated, int failed, Element parent) {
@@ -224,23 +217,21 @@ public class SendTextMessageEndpoint {
 
     /**
      * Adds the invalid message node.
-     *
+     * 
      * @param deviceTextMessage
      * @param parent
      */
     private void addInvalidMessageNode(DeviceTextMessage deviceTextMessage, Element parent) {
         Element invalidMessageElem = new Element("invalidMessage", ns);
-        invalidMessageElem.addContent(XmlUtils.createLongElement("messageId", ns,
-                                                                 deviceTextMessage.getMessageId()));
+        invalidMessageElem.addContent(XmlUtils.createLongElement("messageId", ns, deviceTextMessage.getMessageId()));
         Element serialNumbers = new Element("serialNumbers", ns);
         for (String serialNumber : deviceTextMessage.getSerialNumbers()) {
-            serialNumbers
-                .addContent(XmlUtils.createStringElement("serialNumber", ns, serialNumber));
+            serialNumbers.addContent(XmlUtils.createStringElement("serialNumber", ns, serialNumber));
         }
         invalidMessageElem.addContent(serialNumbers);
         parent.addContent(invalidMessageElem);
     }
-    
+
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
