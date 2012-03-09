@@ -13,8 +13,8 @@ import org.apache.log4j.Logger;
 import com.cannontech.capcontrol.BankOpState;
 import com.cannontech.capcontrol.creation.CapControlImporterCbcField;
 import com.cannontech.capcontrol.creation.CapControlImporterHierarchyField;
-import com.cannontech.capcontrol.creation.model.CbcImportCompleteDataResult;
 import com.cannontech.capcontrol.creation.model.CbcImportData;
+import com.cannontech.capcontrol.creation.model.CbcImportInvalidDataResult;
 import com.cannontech.capcontrol.creation.model.CbcImportMissingDataResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResult;
 import com.cannontech.capcontrol.creation.model.CbcImportResultType;
@@ -282,7 +282,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 	        		results.add(new CbcImportMissingDataResult(e.getColumns()));
 	        	} catch (CapControlCbcImportException e) {
 	        	    log.error(e.getMessage());
-	        	    results.add(new CbcImportCompleteDataResult(cbcData, e.getImportResultType()));
+	        	    results.add(new CbcImportInvalidDataResult(e.getImportResultType()));
 	        	} finally {
 	        		line = csvReader.readNext();
 	        	}
@@ -379,24 +379,29 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 		if (StringUtils.isBlank(line[actionColumnId])) {
 			missingColumns.add(CapControlImporterCbcField.IMPORT_ACTION);
 		} else {
-			action = ImportAction.getForDbString(line[actionColumnId]);
-		
-			if (action == ImportAction.REMOVE) {
-				// In Remove cases, we only care about the name of the CBC, the rest is irrelevant.
-				int cbcNameColumnId = headerColumnMap.get(CapControlImporterCbcField.CBC_NAME);
-				
-				if (StringUtils.isBlank(line[cbcNameColumnId])) {
-					missingColumns.add(CapControlImporterCbcField.CBC_NAME);
-				}
-			} else {
-				for (CapControlImporterCbcField column : columns) {
-					int columnId = headerColumnMap.get(column);
-					
-					if (column.isRequired() && StringUtils.isBlank(line[columnId])) {
-						missingColumns.add(column);
-					}
-				}
-			}
+		    try {
+		        action = ImportAction.getForDbString(line[actionColumnId]);
+	            
+	            if (action == ImportAction.REMOVE) {
+	                // In Remove cases, we only care about the name of the CBC, the rest is irrelevant.
+	                int cbcNameColumnId = headerColumnMap.get(CapControlImporterCbcField.CBC_NAME);
+	                
+	                if (StringUtils.isBlank(line[cbcNameColumnId])) {
+	                    missingColumns.add(CapControlImporterCbcField.CBC_NAME);
+	                }
+	            } else {
+	                for (CapControlImporterCbcField column : columns) {
+	                    int columnId = headerColumnMap.get(column);
+	                    
+	                    if (column.isRequired() && StringUtils.isBlank(line[columnId])) {
+	                        missingColumns.add(column);
+	                    }
+	                }
+	            }
+		    } catch (IllegalArgumentException e) {
+		        throw new CapControlCbcImportException("Invalid import action entered.", 
+		                                               CbcImportResultType.INVALID_IMPORT_ACTION, e);
+		    }
 		}
 
 		if(missingColumns.size() > 0) {
