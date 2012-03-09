@@ -178,7 +178,9 @@ LEFT JOIN CCStrategyTargetSettings stratAreaLower ON stratAreaLower.StrategyId =
 LEFT JOIN CCStrategyTargetSettings stratBusUpper ON stratBusUpper.StrategyId = seasStratBus.StrategyId AND stratBusUpper.SettingName = 'Upper Volt Limit' AND stratBusUpper.SettingType = 'PEAK' 
 LEFT JOIN CCStrategyTargetSettings stratBusLower ON stratBusLower.StrategyId = seasStratBus.StrategyId AND stratBusLower.SettingName = 'Lower Volt Limit' AND stratBusLower.SettingType = 'PEAK';
 
-sp_rename 'CcMonitorBankList.BankId ', 'DeviceId', 'COLUMN';
+sp_rename 'CcMonitorBankList.BankId', 'DeviceId', 'COLUMN';
+sp_rename 'DynamicCCMonitorBankHistory.BankId', 'DeviceId', 'COLUMN';
+sp_rename 'DynamicCCMonitorPointResponse.BankId', 'DeviceId', 'COLUMN';
 /* End YUK-10707 */
 
 /**************************************************************/ 

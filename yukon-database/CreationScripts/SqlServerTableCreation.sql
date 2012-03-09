@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/8/2012 11:21:43 AM                         */
+/* Created on:     3/9/2012 10:14:00 AM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -4186,12 +4186,12 @@ go
 /* Table: DynamicCCMonitorBankHistory                           */
 /*==============================================================*/
 create table DynamicCCMonitorBankHistory (
-   BankID               numeric              not null,
+   DeviceId             numeric              not null,
    PointID              numeric              not null,
    Value                float                not null,
    DateTime             datetime             not null,
    ScanInProgress       char(1)              not null,
-   constraint PK_DYNAMICCCMONITORBANKHISTORY primary key (BankID, PointID)
+   constraint PK_DYNAMICCCMONITORBANKHISTORY primary key (DeviceId, PointID)
 )
 go
 
@@ -4199,12 +4199,12 @@ go
 /* Table: DynamicCCMonitorPointResponse                         */
 /*==============================================================*/
 create table DynamicCCMonitorPointResponse (
-   BankID               numeric              not null,
+   DeviceId             numeric              not null,
    PointID              numeric              not null,
    PreOpValue           float                not null,
    Delta                float                not null,
    StaticDelta          char(1)              not null,
-   constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (BankID, PointID)
+   constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (DeviceId, PointID)
 )
 go
 

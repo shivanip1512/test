@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/8/2012 10:56:09 AM                         */
+/* Created on:     3/9/2012 10:29:59 AM                         */
 /*==============================================================*/
 
 
@@ -3996,24 +3996,24 @@ create table DynamicCCFeeder  (
 /* Table: DynamicCCMonitorBankHistory                           */
 /*==============================================================*/
 create table DynamicCCMonitorBankHistory  (
-   BankID               NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
    PointID              NUMBER                          not null,
    Value                FLOAT                           not null,
    DateTime             DATE                            not null,
    ScanInProgress       CHAR(1)                         not null,
-   constraint PK_DYNAMICCCMONITORBANKHISTORY primary key (BankID, PointID)
+   constraint PK_DYNAMICCCMONITORBANKHISTORY primary key (DeviceId, PointID)
 );
 
 /*==============================================================*/
 /* Table: DynamicCCMonitorPointResponse                         */
 /*==============================================================*/
 create table DynamicCCMonitorPointResponse  (
-   BankID               NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
    PointID              NUMBER                          not null,
    PreOpValue           FLOAT                           not null,
    Delta                FLOAT                           not null,
    StaticDelta          CHAR(1)                         not null,
-   constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (BankID, PointID)
+   constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (DeviceId, PointID)
 );
 
 /*==============================================================*/

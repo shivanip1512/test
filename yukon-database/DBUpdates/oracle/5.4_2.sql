@@ -174,7 +174,9 @@ LEFT JOIN CCStrategyTargetSettings stratAreaLower ON stratAreaLower.StrategyId =
 LEFT JOIN CCStrategyTargetSettings stratBusUpper ON stratBusUpper.StrategyId = seasStratBus.StrategyId AND stratBusUpper.SettingName = 'Upper Volt Limit' AND stratBusUpper.SettingType = 'PEAK' 
 LEFT JOIN CCStrategyTargetSettings stratBusLower ON stratBusLower.StrategyId = seasStratBus.StrategyId AND stratBusLower.SettingName = 'Lower Volt Limit' AND stratBusLower.SettingType = 'PEAK';
 
-ALTER TABLE CcMonitorBankList RENAME COLUMN BankId to DeviceId;
+ALTER TABLE CcMonitorBankList RENAME COLUMN BankId TO DeviceId;
+ALTER TABLE DynamicCCMonitorBankHistory RENAME COLUMN BankId TO DeviceId;
+ALTER TABLE DynamicCCMonitorPointResponse RENAME COLUMN BankId TO DeviceId;
 /* End YUK-10707 */
 
 /**************************************************************/ 
