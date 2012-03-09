@@ -3136,7 +3136,7 @@ bool CtiCCSubstationBusStore::updateDisableFlag(unsigned int paoid, bool isDisab
     Updates a disable flag in the yukonpaobject table in the database for
     the cap bank.
 ---------------------------------------------------------------------------*/
-bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag)
+bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag, bool forceFullReload)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
@@ -3146,7 +3146,15 @@ bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool 
                                                   pao->getPaoCategory(),
                                                   pao->getPaoType(),
                                                   ChangeTypeUpdate);
-    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+
+    if (forceFullReload)
+    {
+        dbChange->setSource(CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE);
+    }
+    else
+    {
+        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+    }
     
     if (disableFlag)
     {
@@ -10534,5 +10542,5 @@ const string CtiCCSubstationBusStore::m3iAMFMSwitchedString = "SWITCHED";
 const string CtiCCSubstationBusStore::m3iAMFMNullString = "(NULL)";
 
 const string CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE = "CAP_CONTROL_SERVER";
-const string CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE2 = "CAP_CONTROL_SERVER_FORCED_RELOAD";
+const string CtiCCSubstationBusStore::CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE = "CAP_CONTROL_SERVER_FORCED_RELOAD";
 

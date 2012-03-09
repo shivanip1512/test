@@ -159,7 +159,7 @@ public:
     void calculateParentPowerFactor(LONG subBusId);
 
     bool UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus);
-    virtual bool UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag);
+    virtual bool UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag, bool forceFullReload = false);
     bool UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank);
     bool UpdateCapBankInDB(CtiCCCapBank* capbank);
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
@@ -450,7 +450,7 @@ public:
     PaoIdToSpecialAreaMap* getPAOSpecialAreaMap();
 
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
-    static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE2;
+    static const string CAP_CONTROL_RELOAD_DBCHANGE_MSG_SOURCE;
     static void sendUserQuit(void *who);
     static void periodicComplain( void *la );
 

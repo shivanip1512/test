@@ -3014,7 +3014,7 @@ void CtiCCCommandExecutor::EnableArea()
                 pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
                 ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-                store->UpdatePaoDisableFlagInDB(currentSpArea, false);
+                store->UpdatePaoDisableFlagInDB(currentSpArea, false, true);
 
                  for each (long subId in currentSpArea->getSubstationIds())
                  {
@@ -3028,8 +3028,7 @@ void CtiCCCommandExecutor::EnableArea()
                             currentSubstation->setSaEnabledId(areaId);
                         }
                     }
-                }
-                store->cascadeAreaStrategySettings(currentSpArea);
+                 }
             }
         }
     }
@@ -3071,6 +3070,7 @@ void CtiCCCommandExecutor::DisableArea()
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
     CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
 
+
     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
 
     CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(areaId);
@@ -3100,7 +3100,7 @@ void CtiCCCommandExecutor::DisableArea()
             pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
             ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPaoId(), 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
-            store->UpdatePaoDisableFlagInDB(currentSpArea, true);
+            store->UpdatePaoDisableFlagInDB(currentSpArea, true, true);
 
              for each (long subId in currentSpArea->getSubstationIds())
              {
