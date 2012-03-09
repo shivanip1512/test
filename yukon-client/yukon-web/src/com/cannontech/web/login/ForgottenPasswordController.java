@@ -166,17 +166,13 @@ public class ForgottenPasswordController {
         // Get the external base url.
         StringBuilder defaultYukonExternalUrl = new StringBuilder();
         defaultYukonExternalUrl.append(request.getServerName());
+        // We don't need to added 80 as a port since it is used by default
         if (request.getServerPort() != 80) {
             defaultYukonExternalUrl.append(":"+request.getServerPort());
         }
         String baseurl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, defaultYukonExternalUrl.toString());
         url.append(baseurl);
 
-        // We don't need to added 80 as a port since it is used by default
-        url.append(request.getServerName());
-        if (request.getServerPort() != 80) {
-            url.append(":"+request.getServerPort());
-        }
         url.append(request.getServletPath());
         url.append("/changePassword?k="+passwordResetKey);
         
