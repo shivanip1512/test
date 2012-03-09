@@ -22,7 +22,8 @@
                         <ul>
                             <li>
                                 <tags:nameValueContainer2>
-                                    <tags:checkbox path="devAMR.createCartObjects" descriptionNameKey=".setupDevDatabase.option.amr.createCartObjects"/>
+                                    <tags:checkbox path="devAMR.createCartObjects" descriptionNameKey=".setupDevDatabase.option.amr.createCartObjects"/><br>
+                                    <tags:checkbox path="devAMR.createRfnTemplates" descriptionNameKey=".setupDevDatabase.option.amr.createRfnTemplateMeters"/>
                                     <tags:inputNameValue path="devAMR.numAdditionalMeters" nameKey=".setupDevDatabase.option.amr.numAdditionalMeters" size="4"/>
                                     <tags:selectNameValue path="devAMR.routeId" nameKey=".setupDevDatabase.option.amr.routeId" items="${allRoutes}" itemLabel="paoName" itemValue="liteID"/>
                                     <tags:inputNameValue path="devAMR.addressRangeMin" nameKey=".setupDevDatabase.option.amr.addressRangeMin" size="10"/>

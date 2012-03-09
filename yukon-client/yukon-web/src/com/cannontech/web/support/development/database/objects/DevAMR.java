@@ -7,8 +7,9 @@ import com.google.common.collect.Lists;
 
 public class DevAMR extends DevObject {
     private boolean createCartObjects = true;
+    private boolean createRfnTemplates = true;
     private int routeId;
-    private int numAdditionalMeters = 10;
+    private int numAdditionalMeters = 0;
     private int addressRangeMin = 1000000;
     private int addressRangeMax = 999999999;
     private List<DevPaoType> meterTypes =
@@ -23,6 +24,14 @@ public class DevAMR extends DevObject {
                           new DevPaoType(PaoType.MCT430S4),
                           new DevPaoType(PaoType.MCT470));
     
+    public boolean isCreateRfnTemplates() {
+        return createRfnTemplates;
+    }
+
+    public void setCreateRfnTemplates(boolean createRfnTemplates) {
+        this.createRfnTemplates = createRfnTemplates;
+    }
+
     public boolean isCreateCartObjects() {
         return createCartObjects;
     }
@@ -70,11 +79,12 @@ public class DevAMR extends DevObject {
         if (!isCreate()) {
             return 0;
         }
-        int total;
+        int total = getNumObjectsToCreate();
         if (createCartObjects) {
-            total = getNumObjectsToCreate() + DevMeter.values().length;
-        } else {
-            total = getNumObjectsToCreate();
+            total += DevMeter.values().length;
+        }
+        if (createRfnTemplates) {
+            total += DevRfnTemplateMeter.values().length;
         }
         return total;
     }

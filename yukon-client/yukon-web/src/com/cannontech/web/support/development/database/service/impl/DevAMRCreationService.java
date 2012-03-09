@@ -32,6 +32,7 @@ import com.cannontech.web.support.development.database.objects.DevCCU;
 import com.cannontech.web.support.development.database.objects.DevCommChannel;
 import com.cannontech.web.support.development.database.objects.DevMeter;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
+import com.cannontech.web.support.development.database.objects.DevRfnTemplateMeter;
 
 public class DevAMRCreationService extends DevObjectCreationBase {
     
@@ -180,12 +181,8 @@ public class DevAMRCreationService extends DevObjectCreationBase {
 
     private void createAllMeters(DevAMR devAMR) {
         log.info("Creating Meters ...");
-        if (devAMR.isCreateCartObjects()) {
-            DevMeter[] meters = DevMeter.values();
-            for (DevMeter meter : meters) {
-                createMeter(devAMR, meter);
-            }
-        }
+        createCartMeters(devAMR);
+        createRfnMeterTemplates(devAMR);
         int addressCount = 0;
         int address = devAMR.getAddressRangeMin();
         for (DevPaoType meterType: devAMR.getMeterTypes()) {
@@ -193,28 +190,39 @@ public class DevAMRCreationService extends DevObjectCreationBase {
                 for (int i = 0; i < devAMR.getNumAdditionalMeters(); i++) {
                     address = devAMR.getAddressRangeMin() + addressCount;
                     String meterName = meterType.getPaoType().getPaoTypeName() + " " + address;
-                    createMeter(devAMR, meterType.getPaoType().getDeviceTypeId(), meterName, address, devAMR.getRouteId(), true);
+                    createPlcMeter(devAMR, meterType.getPaoType(), meterName, address, devAMR.getRouteId(), true);
                     addressCount++;
                 }
             }
         }
     }
+    
+    private void createCartMeters(DevAMR devAMR) {
+        if (!devAMR.isCreateCartObjects()) return;
 
-    private void createMeter(DevAMR devAMR, DevMeter meter) {
-        int routeId = getRouteIdForMeter(meter);
-        createMeter(devAMR, meter.getPaoType().getDeviceTypeId(), meter.getName(), meter.getAddress(), routeId, true);
-    }
-
-    private void createMeter(DevAMR devAMR, int type, String name, int address, int routeId, boolean createPoints) {
-        checkIsCancelled();
-        if (address >= devAMR.getAddressRangeMax()) {
-            log.info("Meter with name " + name + " has address greater than max address range of "
-                     + devAMR.getAddressRangeMax() + " . Skipping.");
-            devAMR.incrementFailureCount();
-            return;
+        log.info("Creating Software Cart Meters ...");
+        for (DevMeter meter : DevMeter.values()) {
+            int routeId = getRouteIdForMeter(meter);
+            createPlcMeter(devAMR, meter.getPaoType(), meter.getName(), meter.getAddress(), routeId, true);
         }
-        if (routeId <= 0) {
-            routeId = getDefaultRouteId();
+    }
+    
+    private void createRfnMeterTemplates(DevAMR devAMR) {
+        if (!devAMR.isCreateRfnTemplates()) return;
+        
+        log.info("Creating Rfn Template Meters ...");
+        for (DevRfnTemplateMeter meter : DevRfnTemplateMeter.values()) {
+            createRfnMeter(devAMR, meter.getPaoType(), meter.getName(), null, null, null, true);
+        }
+    }
+    
+    private boolean canCreateMeter(DevAMR devAMR, String name, Integer address) {
+        checkIsCancelled();
+        if (address != null && address >= devAMR.getAddressRangeMax()) {
+            log.info("Meter with name " + name + " has address greater than max address range of "
+                    + devAMR.getAddressRangeMax() + " . Skipping.");
+            devAMR.incrementFailureCount();
+            return false;
         }
         try {
             // if this device exists already, then return
@@ -222,15 +230,32 @@ public class DevAMRCreationService extends DevObjectCreationBase {
             if (existingMeter != null) {
                 log.info("Meter with name " + name + " already exists. Skipping.");
                 devAMR.incrementFailureCount();
-                return;
+                return false;
             }
         } catch (NotFoundException e) {
             // ignoring and continuing to create this meter
         }
+        return true;
+    }
 
-        deviceCreationService.createCarrierDeviceByDeviceType(type, name, address, routeId, createPoints);
+    private void createPlcMeter(DevAMR devAMR, PaoType type, String name, int address, int routeId, boolean createPoints) {
+        if (!canCreateMeter(devAMR, name, address)) return;
+        
+        if (routeId <= 0) {
+            routeId = getDefaultRouteId();
+        }
+
+        deviceCreationService.createCarrierDeviceByDeviceType(type.getDeviceTypeId(), name, address, routeId, createPoints);
         devAMR.incrementSuccessCount();
-        log.info("Meter with name " + name + " created.");
+        log.info("Plc Meter with name " + name + " created.");
+    }
+    
+    private void createRfnMeter(DevAMR devAMR, PaoType type, String name, String model, String manufacturer, String serialNumber, boolean createPoints) {
+        if (!canCreateMeter(devAMR, name, null)) return;
+        
+        deviceCreationService.createRfnDeviceByDeviceType(type, name, model, manufacturer, serialNumber, createPoints);
+        devAMR.incrementSuccessCount();
+        log.info("Rfn Meter with name " + name + " created.");
     }
     
     private int getDefaultRouteId() {
