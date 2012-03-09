@@ -121,7 +121,7 @@ public class SendTextMessageEndpoint {
             resp.addContent(fe);
         } catch (DataIntegrityViolationException e) {
             Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "OtherException", 
-                                                             "Message Id is already in use.");
+                                                             "Perhaps message id is already in use.");
             resp.addContent(fe);
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(sendTextMessage, e, "OtherException",
