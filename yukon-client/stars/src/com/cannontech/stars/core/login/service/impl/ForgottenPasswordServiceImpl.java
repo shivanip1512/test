@@ -84,7 +84,8 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
     }
     
     /**
-     * 
+     * This method will attempt to get the passwordResetInfo by the username.  If there are more than one contact
+     * associated with an account it will use the first one.
      */
     private PasswordResetInfo getPasswordResetInfoByUsername(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
@@ -101,7 +102,8 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
     }
 
     /**
-     * 
+     * This method will attempt to get the passwordResetInfo by the email address.  It will attempt to get a user attached to that email
+     * address or set the user to null if one doesn't exist.
      */
     private PasswordResetInfo getPasswordResetInfoByEmailAddress(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
@@ -116,7 +118,8 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
     }
 
     /**
-     * 
+     * This method will attempt to get the passwordResetInfo by the account number.  This method will use all the energy companies in 
+     * the system to track down the supplied account.  After that it will use the account to derive the user and primary contact information.
      */
     private PasswordResetInfo getPasswordResetInfoByAccountNumber(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
@@ -129,12 +132,11 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
             }});
         
         CustomerAccount passwordResetCustomerAccount = customerAccountDao.findByAccountNumber(forgottenPasswordField, allEnergyCompanyIds);
-        if (passwordResetCustomerAccount != null) {
-            // getContactByEmailNotif is more of a find method.  It returns null if it doesn't exist.
-            passwordResetInfo.setContact(contactDao.getContactByEmailNotif(forgottenPasswordField));
-            if (passwordResetInfo.isValidContact()) {
-                passwordResetInfo.setUser(yukonUserDao.getLiteYukonUser(passwordResetInfo.getContact().getLoginID()));
-            }
+        // getYukonUserByAccountId is more of a find method.  It returns null if it doesn't exist.
+        passwordResetInfo.setUser(customerAccountDao.getYukonUserByAccountId(passwordResetCustomerAccount.getAccountId()));
+        if (passwordResetInfo.isValidUser()) {
+            // getLiteContact is more of a find method.  It returns null if it doesn't exist.
+            passwordResetInfo.setContact(yukonUserDao.getLiteContact(passwordResetInfo.getUser().getUserID()));
         }
         
         return passwordResetInfo;
