@@ -30,7 +30,7 @@
         <exec failonerror="false"
               dir="${basedir}"
               output="${basedir}/yukon-client/common/src/com/cannontech/build-info.xml"
-              resultproperty="builderrorcode"
+              resultproperty="errorcode"
               executable="svn.exe" >
             <arg value="info"/>
             <arg value="--xml"/>
@@ -122,13 +122,13 @@
 		</ant>
 		
 		<!--
-        <exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe" resultproperty="builderrorcode">
+        <exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe" resultproperty="errorcode">
             <arg line='/c antExit.bat -Dyukon.build.version="${yukon.build.label}" -Dyukon.build.details="${yukon.build.details}" clean build'/>
         </exec>
 
         <fail>
             <condition>
-                <isfailure code="${builderrorcode}" />
+                <isfailure code="${errorcode}" />
             </condition>
         </fail>
 		-->
@@ -150,7 +150,7 @@
         <!-- build it -->
         <exec failonerror="true" 
               dir="${basedir}/yukon-server/"
-              resultproperty="builderrorcode"
+              resultproperty="serverbuilderrorcode"
               executable="cmd.exe" >
             <arg value="/c" />
             <arg value="${basedir}\yukon-server\b.cmd" />
@@ -164,7 +164,7 @@
 
         <fail message="yukon-server build FAILED">
             <condition>
-                <isfailure code="${builderrorcode}" />
+                <isfailure code="${serverbuilderrorcode}" />
             </condition>
         </fail>
 
@@ -289,7 +289,7 @@
         <!-- <property name="isfile" location="yukon-build/Yukon Installer/Yukon Installer.ism" /> -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
 
-        <exec failonerror="false" executable="${isshield}" resultproperty="builderrorcode">
+        <exec failonerror="false" executable="${isshield}" resultproperty="installererrorcode">
             <arg line="-p '${isfile}'" />
             <!-- Populate the YukonBuildVersion environment variable so installer version matches yukon version -->
             <env key="YukonBuildVersion" value="${internal}" />
@@ -310,7 +310,7 @@
 
         <fail message="${errormessage}">
             <condition>
-                <isfailure code="${builderrorcode}" />
+                <isfailure code="${installererrorcode}" />
             </condition>
         </fail>
     </target>
