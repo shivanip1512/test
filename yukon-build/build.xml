@@ -285,7 +285,7 @@
         
         <!-- This will be pointing to the install engine in yukon-install module -->
         <!--  <property name="isshield" location="C:\Program Files\Macrovision\IS12\System\IsCmdBld.exe" /> -->
-        <property name="isshield" location="C:\Program Files\InstallShield\2010\System\IsCmdBld.exe" />
+        <property name="isshield" location="C:\Program Files (x86)\InstallShield\2010\System\IsCmdBld.exe" />
         <!-- <property name="isfile" location="yukon-build/Yukon Installer/Yukon Installer.ism" /> -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
 
