@@ -18,6 +18,8 @@
         <echo message=" clean-dist      - delete old packages and zip files" />
         <echo message="" />
         <echo message=" build           - clean, compile, and package everything" />
+        <echo message=" build-release   - clean, compile, and package everything and store symbols"/>
+        <echo message="" />
         <echo message=" build-client    - compile yukon-client module" />
         <echo message=" build-server    - compile yukon-server module" />
         <echo message=" build-install   - InstallShield"/>
@@ -107,7 +109,10 @@
                    replace="_"/>
     </target>
     
+    <!-- build-release is now the only way to store symbols -->
     <target name="build" depends="init,clean,svn-info-build,buildTarget,build-dist" />
+    <target name="build-release" depends="init,clean,svn-info-build,buildTarget,symstore,build-dist" />
+
     <target name="buildTarget" depends="build-client,build-server,build-install" />
     
     <target name="build-client" depends="init,clean,svn-info-build">
@@ -121,18 +126,6 @@
 			<property name="yukon.build.details" value="${yukon.build.details}"/>
 		</ant>
 		
-		<!--
-        <exec failonerror="false" dir="${basedir}/yukon-client/build" executable="cmd.exe" resultproperty="errorcode">
-            <arg line='/c antExit.bat -Dyukon.build.version="${yukon.build.label}" -Dyukon.build.details="${yukon.build.details}" clean build'/>
-        </exec>
-
-        <fail>
-            <condition>
-                <isfailure code="${errorcode}" />
-            </condition>
-        </fail>
-		-->
-
         <!-- yukon-help.jar -->
         <ant dir="${basedir}/yukon-client/build"
         	 target="help"
@@ -296,9 +289,6 @@
         </exec>
 
         <!-- NOT YET <delete dir="${install.lib}"/> NOT YET -->
-
-        <antcall target="symstore" />
-
 
         <condition property="out" value="${erroroutput}" else="">
             <length file="${log.dir}/install-error.log" when="ne" length="0" />
