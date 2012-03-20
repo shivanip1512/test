@@ -18,8 +18,8 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -48,6 +48,8 @@ public class ChangeDeviceTypeController {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
+    @Autowired private YukonListDao yukonListDao;
+   
     private RecentResultsCache<AbstractInventoryTask> resultsCache;
 
     @RequestMapping
@@ -57,16 +59,16 @@ public class ChangeDeviceTypeController {
         
         YukonSelectionList list = lec.getYukonSelectionList(YukonSelectionListEnum.DEVICE_TYPE.getListName());
         List<YukonListEntry> deviceTypes = list.getYukonListEntries();
-        List<Pair<HardwareType, String>> validTypes = Lists.newArrayList();
+        List<YukonListEntry> validEntries = Lists.newArrayList();
         
         for (YukonListEntry entry : deviceTypes) {
             HardwareType type = HardwareType.valueOf(entry.getDefinition().getDefinitionId());
             if (type.isSupportsChangeType()) {
-                validTypes.add(new Pair<HardwareType, String>(type, entry.getEntryText()));
+                validEntries.add(entry);
             }
         }
         
-        model.addAttribute("validTypes", validTypes);
+        model.addAttribute("validEntries", validEntries);
         inventoryCollectionFactory.addCollectionToModelMap(request, model);
         
         if (taskId != null) {
@@ -78,9 +80,10 @@ public class ChangeDeviceTypeController {
     }
 
     @RequestMapping(value="do", params="start")
-    public String changeType(HttpServletRequest request, YukonUserContext context, ModelMap model, HardwareType type) throws ServletRequestBindingException {
-        InventoryCollection collection = inventoryCollectionFactory.createCollection(request);
-        ChangeTypeTask task = helper.new ChangeTypeTask(collection, context, type);
+    public String changeType(HttpServletRequest request, YukonUserContext context, ModelMap model, Integer entry) throws ServletRequestBindingException {
+        InventoryCollection collection = inventoryCollectionFactory.createCollection(request);      
+        YukonListEntry typeEntry = yukonListDao.getYukonListEntry(entry);
+        ChangeTypeTask task = helper.new ChangeTypeTask(collection, context, typeEntry);
         String taskId = helper.startTask(task);
         
         model.addAttribute("taskId", taskId);

@@ -4,8 +4,8 @@ import java.sql.SQLException;
 
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
@@ -28,10 +28,10 @@ public interface HardwareService {
      * Changes the device type of the inventory
      * @param context
      * @param inventory
-     * @param type
+     * @param typeEntry
      * @throws ObjectInOtherEnergyCompanyException 
      */
-    public void changeType(YukonUserContext context, InventoryIdentifier inv, HardwareType type) throws ObjectInOtherEnergyCompanyException;
+    public void changeType(YukonUserContext context, InventoryIdentifier inv, YukonListEntry typeEntry) throws ObjectInOtherEnergyCompanyException;
     
     /**
      * Change the device status of the inventory, The session is needed since

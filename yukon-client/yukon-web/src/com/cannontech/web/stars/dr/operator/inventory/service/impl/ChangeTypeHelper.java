@@ -3,7 +3,7 @@ package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 import java.util.Set;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
-import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.stars.dr.hardware.service.NotSupportedException;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -19,22 +19,22 @@ public class ChangeTypeHelper extends InventoryActionsHelper {
         private Set<InventoryIdentifier> successful = Sets.newHashSet();
         private Set<InventoryIdentifier> failed = Sets.newHashSet();
         
-        private HardwareType type;
+        private  YukonListEntry typeEntry;
         
-        public ChangeTypeTask(InventoryCollection collection, YukonUserContext context, HardwareType type) {
+        public ChangeTypeTask(InventoryCollection collection, YukonUserContext context, YukonListEntry typeEntry) {
             this.collection = collection;
             this.context = context;
-            this.type = type;
+            this.typeEntry = typeEntry;
         }
         
-        public HardwareType getType() {
-            return type;
+        public YukonListEntry getTypeEntry() {
+            return typeEntry;
         }
-        
-        public void setType(HardwareType type) {
-            this.type = type;
+
+        public void setTypeEntry(YukonListEntry typeEntry) {
+            this.typeEntry = typeEntry;
         }
-        
+
         public Set<InventoryIdentifier> getSuccessful() {
             return successful;
         }
@@ -54,7 +54,7 @@ public class ChangeTypeHelper extends InventoryActionsHelper {
                     for (InventoryIdentifier inv : collection.getList()) {
                         if (canceled) break;
                         try {
-                            hardwareService.changeType(context, inv, type);
+                            hardwareService.changeType(context, inv, typeEntry);
                             successful.add(inv);
                             successCount++;
                         } catch (NotSupportedException nse) {

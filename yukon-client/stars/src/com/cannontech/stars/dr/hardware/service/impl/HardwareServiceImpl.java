@@ -194,7 +194,8 @@ public class HardwareServiceImpl implements HardwareService {
     }
 
     @Override
-    public void changeType(YukonUserContext context, InventoryIdentifier inv, HardwareType type) throws ObjectInOtherEnergyCompanyException {
+    public void changeType(YukonUserContext context, InventoryIdentifier inv, YukonListEntry typeEntry) throws ObjectInOtherEnergyCompanyException {
+        HardwareType type = HardwareType.valueOf(typeEntry.getDefinition().getDefinitionId());
         if (!type.isSupportsChangeType()) {
             throw new NotSupportedException(inv);
         } else {
@@ -202,6 +203,7 @@ public class HardwareServiceImpl implements HardwareService {
             if (type != original) {
                 Hardware hardware = hardwareUiService.getHardware(inv.getInventoryId());
                 hardware.setHardwareType(type);
+                hardware.setHardwareTypeEntryId(typeEntry.getEntryID());
                 hardwareUiService.updateHardware(context.getYukonUser(), hardware);
             }
         }

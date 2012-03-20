@@ -32,11 +32,9 @@
                 <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".newType">
-                        <select name="type">
-                            <c:forEach items="${validTypes}" var="pair">
-                                <c:set var="hardwareType" value="${pair.first}"/>
-                                <c:set var="entryText" value="${pair.second}"/>
-                                <option value="${hardwareType}"><spring:escapeBody htmlEscape="true">${entryText}</spring:escapeBody></option>
+                        <select name="entry">
+                            <c:forEach items="${validEntries}" var="entry">
+                                <option value="${entry.entryID}"><spring:escapeBody htmlEscape="true">${entry.entryText}</spring:escapeBody></option>
                             </c:forEach>
                         </select>
                     </tags:nameValue2>
