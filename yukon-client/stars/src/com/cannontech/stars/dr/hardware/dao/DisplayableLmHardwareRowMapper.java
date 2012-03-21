@@ -19,7 +19,8 @@ public class DisplayableLmHardwareRowMapper extends
         SqlStatementBuilder retVal = new SqlStatementBuilder();
         retVal.append("SELECT lmhw.inventoryId inventoryId, " +
                       "lmhw.manufacturerSerialNumber serialNumber," +
-                      "yle.entryText deviceType");
+                      "yle.entryText deviceType,"+
+                      "ib.DeviceLabel deviceLabel");
         retVal.append("FROM LMHardwareBase lmhw");
         retVal.append("JOIN InventoryBase ib ON ib.inventoryId = lmhw.inventoryId");
         retVal.append("JOIN YukonListEntry yle ON yle.entryId = lmhw.LMHardwareTypeId");
@@ -38,11 +39,13 @@ public class DisplayableLmHardwareRowMapper extends
         int inventoryId = rs.getInt("inventoryId");
         String serialNumber = rs.getString("serialNumber");
         String deviceType = rs.getString("deviceType");
+        String deviceLabel = rs.getString("deviceLabel");
 
         DisplayableLmHardware retVal = new DisplayableLmHardware();
         retVal.setInventoryId(inventoryId);
         retVal.setSerialNumber(serialNumber);
         retVal.setDeviceType(deviceType);
+        retVal.setLabel(deviceLabel);
 
         return retVal;
     }
