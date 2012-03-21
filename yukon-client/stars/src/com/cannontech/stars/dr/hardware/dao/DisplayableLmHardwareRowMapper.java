@@ -22,7 +22,7 @@ public class DisplayableLmHardwareRowMapper extends
         SqlStatementBuilder retVal = new SqlStatementBuilder();
         retVal.append("SELECT lmhw.inventoryId inventoryId, " +
                       "lmhw.manufacturerSerialNumber serialNumber," +
-                      "yle.entryText deviceType,"+
+                      "yle.entryText deviceType," +
                       "ib.DeviceLabel deviceLabel");
         retVal.append("FROM LMHardwareBase lmhw");
         retVal.append("JOIN InventoryBase ib ON ib.inventoryId = lmhw.inventoryId");
