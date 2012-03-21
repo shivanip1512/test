@@ -111,11 +111,7 @@
         <requireRoleProperty value="INVENTORY" />
 
         <options>
-          <option name="inventory">
-            <link>/operator/Hardware/Filter.jsp</link>
-            <requireRoleProperty value="INVENTORY_SHOW_ALL" />
-          </option>
-
+        
           <option name="purchasing">
             <link>/operator/Hardware/PurchaseTrack.jsp</link>
             <requireRoleProperty value="PURCHASING_ACCESS" />
