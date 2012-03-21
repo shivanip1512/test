@@ -3,9 +3,12 @@ package com.cannontech.stars.dr.hardware.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 
 public class DisplayableLmHardwareRowMapper extends
@@ -39,7 +42,7 @@ public class DisplayableLmHardwareRowMapper extends
         int inventoryId = rs.getInt("inventoryId");
         String serialNumber = rs.getString("serialNumber");
         String deviceType = rs.getString("deviceType");
-        String deviceLabel = rs.getString("deviceLabel");
+        String deviceLabel = SqlUtils.convertDbValueToString(rs.getString("deviceLabel"));
 
         DisplayableLmHardware retVal = new DisplayableLmHardware();
         retVal.setInventoryId(inventoryId);
