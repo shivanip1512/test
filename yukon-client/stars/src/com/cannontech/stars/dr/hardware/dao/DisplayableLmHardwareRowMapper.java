@@ -23,7 +23,7 @@ public class DisplayableLmHardwareRowMapper extends
         retVal.append("SELECT lmhw.inventoryId inventoryId, " +
                       "lmhw.manufacturerSerialNumber serialNumber," +
                       "yle.entryText deviceType," +
-                      "ib.DeviceLabel deviceLabel");
+                      "ib.deviceLabel deviceLabel");
         retVal.append("FROM LMHardwareBase lmhw");
         retVal.append("JOIN InventoryBase ib ON ib.inventoryId = lmhw.inventoryId");
         retVal.append("JOIN YukonListEntry yle ON yle.entryId = lmhw.LMHardwareTypeId");
