@@ -130,6 +130,10 @@ SET OverrideStrategy = (SELECT StrategyOverrideSetting
                              ) x 
                         WHERE x.BankId = CCMonitorBankList.BankId AND x.PointId = CCMonitorBankList.PointId
                        );
+                       
+UPDATE CCMonitorBankList
+SET OverrideStrategy = 'N'
+WHERE OverrideStrategy IS NULL;
 
 ALTER TABLE CCMonitorBankList 
 ALTER COLUMN OverrideStrategy CHAR(1) NOT NULL;
