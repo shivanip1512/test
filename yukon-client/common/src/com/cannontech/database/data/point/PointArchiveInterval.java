@@ -32,6 +32,15 @@ public enum PointArchiveInterval {
 		this.seconds = (int)period.toStandardDuration().getStandardSeconds();
 	}
 	
+    public static PointArchiveInterval getIntervalBySeconds(int seconds) {
+        for (PointArchiveInterval value : PointArchiveInterval.values()) {
+            if (value.getSeconds() == seconds) {
+                return value;
+            }
+        }
+        return ZERO;
+    }
+
 	public int getSeconds() {
 		return seconds;
 	}

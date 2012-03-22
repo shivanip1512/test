@@ -1,8 +1,9 @@
 package com.cannontech.web.bulk;
 
 import java.util.LinkedHashMap;
-
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -35,7 +36,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
 public class ChangeDeviceTypeController extends BulkControllerBase {
@@ -61,12 +62,18 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         mav.addObject("deviceCollection", deviceCollection);
-        
+
+        Set<PaoType> paoTypes = Sets.newHashSet();
+        for (SimpleDevice device : deviceCollection.getDeviceList()) {
+            paoTypes.add(device.getDeviceType());
+        }
+
+        // Only add device types that are valid for the collection 
         Map<String, Integer> deviceTypes = new LinkedHashMap<String, Integer>();
-        Multimap<String, PaoDefinition> deviceGroupMap = paoDefinitionService.getPaoDisplayGroupMap();
-        for (String key : deviceGroupMap.keySet()) {
-            for (PaoDefinition def :  deviceGroupMap.get(key)) {
-                deviceTypes.put(def.getDisplayName(), def.getType().getDeviceTypeId());
+        for (PaoType paoType : paoTypes) {
+            Set<PaoDefinition> changeablePaos = paoDefinitionService.getChangeablePaos(paoType);
+            for (PaoDefinition paoDefinition : changeablePaos) {
+                deviceTypes.put(paoDefinition.getDisplayName(), paoDefinition.getType().getDeviceTypeId());
             }
         }
         mav.addObject("deviceTypes", deviceTypes);

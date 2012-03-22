@@ -4,13 +4,21 @@
  */
 package com.cannontech.database.data.point;
 
+import java.util.List;
+
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.model.CalcPointComponent;
+import com.cannontech.common.pao.definition.model.CalcPointInfo;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.TypeBase;
 import com.cannontech.database.db.CTIDbChange;
@@ -18,10 +26,13 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointUnit;
+import com.cannontech.database.db.point.calculation.CalcBase;
+import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Lists;
 
 /**
  * @author yao To change the template for this generated type comment go to
@@ -30,6 +41,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class PointUtil {
     
     private static PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+    private static PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
 
     public static PointBase createPoint(int type, String name, Integer paoId, boolean disabled) 
         throws TransactionException {
@@ -224,6 +236,33 @@ public class PointUtil {
 			pointTemplate.setStateGroupId(accumulatorPoint.getPoint().getStateGroupID());
 			pointTemplate.setUnitOfMeasure(accumulatorPoint.getPointUnit().getUomID());
 			
+        } else if (pointBase instanceof CalculatedPoint) {
+            CalculatedPoint calcPoint = (CalculatedPoint)pointBase;
+            
+            pointTemplate.setStateGroupId(calcPoint.getPoint().getStateGroupID());
+            pointTemplate.setUnitOfMeasure(calcPoint.getPointUnit().getUomID());
+            pointTemplate.setDecimalPlaces(calcPoint.getPointUnit().getDecimalPlaces());
+            pointTemplate.setPointArchiveType(PointArchiveType.getByDisplayName(calcPoint.getPoint().getArchiveType()));
+            pointTemplate.setPointArchiveInterval(PointArchiveInterval.getIntervalBySeconds(calcPoint.getPoint().getArchiveInterval()));
+            
+            CalcPointInfo calcPointInfo = new CalcPointInfo(calcPoint.getCalcBase().getUpdateType(), 
+                                                            calcPoint.getCalcBase().getPeriodicRate(), false);
+            List<CalcPointComponent> components = Lists.newArrayListWithExpectedSize(calcPoint.getCalcComponents().size());
+            
+            for (CalcComponent calcComponent : calcPoint.getCalcComponents()) {
+                int pointId = calcComponent.getComponentPointID();
+                String componentType = calcComponent.getComponentType();
+                String operation = calcComponent.getOperation();
+                
+                LitePoint litePoint = pointDao.getLitePoint(pointId);
+                PointIdentifier pointIdentifier = new PointIdentifier(PointType.getForId(litePoint.getPointType()),
+                                                                      litePoint.getPointOffset());
+                
+                CalcPointComponent newComponent = new CalcPointComponent(pointIdentifier, componentType, operation);
+                components.add(newComponent);
+            }
+            calcPointInfo.setComponents(components);
+            pointTemplate.setCalcPointInfo(calcPointInfo);
         } else {
         	throw new IllegalArgumentException("Unsupported PointBase type: " + pointBase);
         }
@@ -266,8 +305,47 @@ public class PointUtil {
         	accumulatorPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
         	accumulatorPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
 			
+        } else if (pointBase instanceof CalculatedPoint) {
+            addCalcPointTemplateAttributesToPointBase(pointTemplate, pointBase);
         } else {
         	throw new IllegalArgumentException("Unsupported PointBase type: " + pointBase);
         }
 	}
+
+	// TODO: Change the very similar PointFactory.createCalculatedPoint code to use this method
+    private static void addCalcPointTemplateAttributesToPointBase(PointTemplate pointTemplate, PointBase pointBase) {
+        if (!(pointBase instanceof CalculatedPoint)) {
+            return;
+        }
+
+        CalculatedPoint calcPoint = (CalculatedPoint)pointBase;
+        calcPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
+        calcPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
+        calcPoint.getPointUnit().setDecimalPlaces(pointTemplate.getDecimalPlaces());
+        calcPoint.getPoint().setArchiveType(pointTemplate.getPointArchiveType().getPointArchiveTypeName());
+        calcPoint.getPoint().setArchiveInterval(pointTemplate.getPointArchiveInterval().getSeconds());
+        
+        CalcBase calcBase = new CalcBase();
+        calcBase.setUpdateType(pointTemplate.getCalcPointInfo().getUpdateType());
+        calcBase.setPeriodicRate(pointTemplate.getCalcPointInfo().getPeriodicRate());
+        calcBase.setCalculateQuality(pointTemplate.getCalcPointInfo().isForceQualityNormal() ? "Y" : "N");
+        
+        int order = 1;
+        List<CalcComponent> calcComponents = Lists.newArrayListWithExpectedSize(pointTemplate.getCalcPointInfo().getComponents().size());
+        for (CalcPointComponent calcPointComponent: pointTemplate.getCalcPointInfo().getComponents()) {
+            if (calcPointComponent.getPointId() == null) {
+                // If this CalcPointComponent's pointId isn't set by now... we assume it's pointIdentifier refers to this same paoIdentifier
+                YukonPao yukonPao = paoDao.getYukonPao(calcPoint.getPoint().getPaoID());
+                LitePoint litePoint = pointDao.getLitePoint(new PaoPointIdentifier(yukonPao.getPaoIdentifier(), calcPointComponent.getPointIdentifier()));
+                calcPointComponent.setPointId(litePoint.getPointID());
+            }
+            Integer componentPointId = calcPointComponent.getPointId();
+            String componentType = calcPointComponent.getCalcComponentType();
+            String operation = calcPointComponent.getOperation();
+            
+            calcComponents.add(new CalcComponent( calcPoint.getPointUnit().getPointID(), order++, componentType, componentPointId, operation, 0.0, "(none)" ) );                
+        }
+        calcPoint.setCalcComponents(calcComponents);
+    }
+	
 }

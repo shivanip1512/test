@@ -6,7 +6,6 @@ package com.cannontech.dbeditor.editor.point;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.core.dao.DaoFactory;
@@ -20,6 +19,7 @@ import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 public class PointCalcComponentEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.MouseListener {
 
@@ -1034,11 +1034,11 @@ public Object getValue(Object val)
 
 	Integer pointID = calcPoint.getPoint().getPointID();
 	com.cannontech.database.db.point.calculation.CalcComponent newCalcComponent = null;
-	Vector<CalcComponent> calcComponentsVector = null;
+	List<CalcComponent> calcComponents = null;
 
 	if (getComponentsTable().getRowCount() > 0)
 	{
-		calcComponentsVector = new Vector<CalcComponent>();
+		calcComponents = Lists.newArrayList();
 		String type = null;
 		Object operand = null;
 		String operation = null;
@@ -1092,14 +1092,14 @@ public Object getValue(Object val)
 
 			}
 
-			calcComponentsVector.addElement(newCalcComponent);
+			calcComponents.add(newCalcComponent);
 		}
 	}
 
 	if(calcPoint instanceof CalcStatusPoint)
-		((CalcStatusPoint)calcPoint).setCalcComponentVector(calcComponentsVector);
+		((CalcStatusPoint)calcPoint).setCalcComponents(calcComponents);
 	else
-		((CalculatedPoint)calcPoint).setCalcComponentVector(calcComponentsVector);
+		((CalculatedPoint)calcPoint).setCalcComponents(calcComponents);
 	
 	return val;
 
@@ -1338,12 +1338,12 @@ public void setValue(Object val)
 //		}
 
 		//fill in the calc components of this point
-		java.util.Vector calcComponents = new java.util.Vector();
+		List<CalcComponent> calcComponents;
 		
 		if(calcPoint instanceof CalcStatusPoint)
-			calcComponents = ((CalcStatusPoint)calcPoint).getCalcComponentVector();
+			calcComponents = ((CalcStatusPoint)calcPoint).getCalcComponents();
 		else
-			 calcComponents = ((CalculatedPoint)calcPoint).getCalcComponentVector();
+			 calcComponents = ((CalculatedPoint)calcPoint).getCalcComponents();
 		com.cannontech.database.data.lite.LiteBaseline temp = new com.cannontech.database.data.lite.LiteBaseline();
 		basilHolder = temp.getAllBaselines();
  

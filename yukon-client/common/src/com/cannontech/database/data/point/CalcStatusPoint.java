@@ -3,14 +3,17 @@ package com.cannontech.database.data.point;
 /**
  * This type was created in VisualAge.
  */
+import java.util.List;
+
 import com.cannontech.database.db.point.DynamicCalcHistorical;
 import com.cannontech.database.db.point.calculation.CalcBase;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcPointBaseline;
+import com.google.common.collect.Lists;
 
 public class CalcStatusPoint extends StatusPoint {
 	private CalcBase calcBase = null;
-	private java.util.Vector calcComponentVector = null;
+	private List<CalcComponent> calcComponents = null;
 	private CalcPointBaseline calcBaselinePoint = null;
 	private boolean baselineAssigned = false;
 /**
@@ -41,9 +44,9 @@ public void add() throws java.sql.SQLException
 	d.setDbConnection( getDbConnection() );
 	d.add();
 
-	
-	for( int i = 0; i < getCalcComponentVector().size(); i++ )
-		((CalcComponent) getCalcComponentVector().elementAt(i)).add();
+    for (CalcComponent calcComponent : getCalcComponents()) {
+        calcComponent.add();
+    }
 
 	if(baselineAssigned)
 	{
@@ -108,16 +111,13 @@ public CalcBase getCalcBaseDefaults()
 	getCalcBase().setUpdateType("On First Change");
 	return getCalcBase();
 }
-/**
- * This method was created in VisualAge.
- * @return java.util.Vector
- */
-public java.util.Vector getCalcComponentVector() {
 
-	if( calcComponentVector == null )
-		calcComponentVector = new java.util.Vector();
+public List<CalcComponent> getCalcComponents() {
+
+	if( calcComponents == null )
+		calcComponents = Lists.newArrayList();
 	
-	return calcComponentVector;
+	return calcComponents;
 }
 /**
  * This method was created in VisualAge.
@@ -142,7 +142,7 @@ public void retrieve() throws java.sql.SQLException{
 
 	getCalcBase().retrieve();
 
-	calcComponentVector = CalcComponent.getCalcComponents(getPoint().getPointID());
+	calcComponents = CalcComponent.getCalcComponents(getPoint().getPointID());
 	
 	calcBaselinePoint = CalcPointBaseline.getCalcBaselinePoint(getPoint().getPointID());
 }
@@ -154,17 +154,10 @@ public void setCalcBase(CalcBase newValue) {
 	this.calcBase = newValue;
 }
 
-/**
- * This method was created in VisualAge.
- * @param newValue java.util.Vector
- */
-public void setCalcComponentVector(java.util.Vector newValue) {
-	this.calcComponentVector = newValue;
+public void setCalcComponents(List<CalcComponent> newValue) {
+	this.calcComponents = newValue;
 }
-/**
- * This method was created in VisualAge.
- * @param newValue java.util.Vector
- */
+
 public void setCalcBaselinePoint(CalcPointBaseline newValue) {
 	this.calcBaselinePoint = newValue;
 }
@@ -182,10 +175,11 @@ public void setDbConnection(java.sql.Connection conn)
 	super.setDbConnection(conn);
 
 	getCalcBase().setDbConnection(conn);
+	
+	for (CalcComponent calcComponent : getCalcComponents()) {
+	    calcComponent.setDbConnection(conn);
+	}
 
-	for( int i = 0; i < getCalcComponentVector().size(); i++ )
-		((CalcComponent) getCalcComponentVector().elementAt(i)).setDbConnection(conn);
-		
 	((CalcPointBaseline) getCalcBaselinePoint()).setDbConnection(conn);
 }
 /**
@@ -197,8 +191,9 @@ public void setPointID(Integer pointID) {
 
 	getCalcBase().setPointID(pointID);
 
-	for( int i = 0; i < getCalcComponentVector().size(); i++ )
-		((CalcComponent) getCalcComponentVector().elementAt(i)).setPointID(pointID);
+    for (CalcComponent calcComponent : getCalcComponents()) {
+        calcComponent.setPointID(pointID);
+    }
 	
 	((CalcPointBaseline) getCalcBaselinePoint()).setPointID(pointID);		
 }
@@ -211,8 +206,9 @@ public void update() throws java.sql.SQLException {
 	getCalcBase().update();
 
 	CalcComponent.deleteCalcComponents( getPoint().getPointID(), getDbConnection() );
-	for( int i = 0; i < getCalcComponentVector().size(); i++ )
-		((CalcComponent) getCalcComponentVector().elementAt(i)).add();
+    for (CalcComponent calcComponent : getCalcComponents()) {
+        calcComponent.add();
+    }
 	
 	CalcPointBaseline.deleteCalcBaselinePoint(getPoint().getPointID(), getDbConnection());	
 	

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.CalcPointComponent;
@@ -119,20 +120,28 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
     }
 
     public boolean isPaoTypeChangeable(YukonPao pao) {
-        PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(pao.getPaoIdentifier().getPaoType());
+        return isPaoTypeChangeable(pao.getPaoIdentifier().getPaoType());
+    }
+    
+    public boolean isPaoTypeChangeable(PaoType paoType) {
+        PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(paoType);
         return paoDefinition.isChangeable();
     }
 
     public Set<PaoDefinition> getChangeablePaos(YukonPao pao) {
+        return getChangeablePaos(pao.getPaoIdentifier().getPaoType());
+    }
 
-        // Make sure this pao can be changed
-        if (!this.isPaoTypeChangeable(pao)) {
+    public Set<PaoDefinition> getChangeablePaos(PaoType paoType) {
+
+        // Make sure this paoType can be changed
+        if (!this.isPaoTypeChangeable(paoType)) {
             return Collections.emptySet();
         }
 
-        PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(pao.getPaoIdentifier().getPaoType());
+        PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(paoType);
 
-        // Get all of the paos in the pao's change group
+        // Get all of the paoDefinitions in the paoType's change group
         Set<PaoDefinition> paos = paoDefinitionDao.getPaosThatPaoCanChangeTo(paoDefinition);
         return paos;
     }

@@ -26,7 +26,7 @@ public enum PointArchiveType implements DatabaseRepresentationSource {
 		return displayName;
 	}
 	
-	public PointArchiveType getByDisplayName(String name) {
+	public static PointArchiveType getByDisplayName(String name) {
         for (PointArchiveType value : PointArchiveType.values()) {
             if (value.getPointArchiveTypeName().equalsIgnoreCase(name)) {
                 return value;

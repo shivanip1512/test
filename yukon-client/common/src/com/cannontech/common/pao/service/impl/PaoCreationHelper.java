@@ -114,7 +114,7 @@ public class PaoCreationHelper {
             point.getPoint().setPaoID(paoId);
             
             CalculatedPoint calcPoint = (CalculatedPoint) point;
-            for (CalcComponent calcComponent: calcPoint.getCalcComponentVector()) {
+            for (CalcComponent calcComponent: calcPoint.getCalcComponents()) {
                 Integer componentPointID = calcComponent.getComponentPointID();
                 if (componentPointID == null) continue;
                 

@@ -508,7 +508,7 @@ public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, Strin
             
             calcComponents.add(new CalcComponent( pointId, order++, componentType, componentPointId, operation, 0.0, "(none)" ) );                
         }
-        ((CalculatedPoint) point).setCalcComponentVector(calcComponents);
+        ((CalculatedPoint) point).setCalcComponents(calcComponents);
     }
     
     return point;

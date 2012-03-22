@@ -1361,7 +1361,7 @@ public class PointImportUtility
                             cmp.getComponentPointID() + " " + cmp.getOperation() + " " + cmp.getConstant() + " " + cmp.getFunctionName() );
                     
                     //add object to vector
-                    calcPoint.getCalcComponentVector().add(cmp);
+                    calcPoint.getCalcComponents().add(cmp);
                     
                     cmpOrder++;
                 }while(ok);

@@ -1,11 +1,11 @@
 package com.cannontech.common.pao.definition.service;
 
 import java.util.List;
-
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
@@ -107,6 +107,13 @@ public interface PaoDefinitionService {
     public boolean isPaoTypeChangeable(YukonPao pao);
 
     /**
+     * Method used to determine if a pao with passed in PaoType can be changed
+     * @param paoType - PaoType to change
+     * @return True if the PaoType can be changed
+     */
+    public boolean isPaoTypeChangeable(PaoType paoType);
+
+    /**
      * Method to get a set of pao definitions for paos that the given
      * pao can be changed into
      * @param pao - Pao to change
@@ -114,6 +121,15 @@ public interface PaoDefinitionService {
      *         (returns a new copy each time the method is called)
      */
     public Set<PaoDefinition> getChangeablePaos(YukonPao pao);
+    
+    /**
+     * Method to get a set of pao definitions that the given
+     * paoType can be changed into
+     * @param paoType - PaoType to change
+     * @return A set of pao definitions that the given paoType can change into
+     *         (returns a new copy each time the method is called)
+     */
+    public Set<PaoDefinition> getChangeablePaos(PaoType paoType);
     
     /**
      * Method to get a set of point templates that will be added to the given
