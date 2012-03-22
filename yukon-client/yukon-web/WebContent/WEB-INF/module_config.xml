@@ -116,7 +116,7 @@
             <link>/operator/Hardware/PurchaseTrack.jsp</link>
             <requireRoleProperty value="PURCHASING_ACCESS" />
           </option>
-          <option name="deviceReconfig">
+          <option name="inventory">
             <link>/spring/stars/operator/inventory/home</link>
           </option>
 
