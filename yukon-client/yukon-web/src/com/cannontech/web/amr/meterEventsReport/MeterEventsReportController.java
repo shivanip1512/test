@@ -366,7 +366,7 @@ public class MeterEventsReportController {
 
             for (Entry<PaoIdentifier, PointValueQualityHolder> entry : attributeData.entries()) {
                 PointValueQualityHolder pointValueHolder = entry.getValue();
-                if (backingBean.isOnlyActiveEvents()) {
+                if (backingBean.isOnlyAbnormalEvents()) {
                     String valueString = pointFormattingService.getValueString(pointValueHolder, Format.VALUE, userContext);
                     // StateGroup: "Event Status" has states "cleared" and "active"
                     // StateGroup: "Outage Status" has states "good", "questionable", and "bad"

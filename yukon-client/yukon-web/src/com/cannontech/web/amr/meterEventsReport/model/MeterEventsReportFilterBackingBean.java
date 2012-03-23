@@ -22,7 +22,7 @@ public class MeterEventsReportFilterBackingBean extends ListBackingBean {
     private Date toDate = new Date();
     private Date fromDate = new DateTime().minus(Duration.standardDays(7)).toDate();
     private Map<BuiltInAttribute, Boolean> meterEventTypesMap;
-    private boolean onlyActiveEvents = true;
+    private boolean onlyAbnormalEvents = true;
     private boolean onlyLatestEvent = true;
     private boolean includeDisabledPaos;
 
@@ -92,12 +92,12 @@ public class MeterEventsReportFilterBackingBean extends ListBackingBean {
         return events;
     }
 
-    public boolean isOnlyActiveEvents() {
-        return onlyActiveEvents;
+    public boolean isOnlyAbnormalEvents() {
+        return onlyAbnormalEvents;
     }
 
-    public void setOnlyActiveEvents(boolean onlyActiveEvents) {
-        this.onlyActiveEvents = onlyActiveEvents;
+    public void setOnlyAbnormalEvents(boolean onlyAbnormalEvents) {
+        this.onlyAbnormalEvents = onlyAbnormalEvents;
     }
 
     public boolean isOnlyLatestEvent() {

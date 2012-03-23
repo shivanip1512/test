@@ -37,7 +37,7 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnArchiveRequest>
         private volatile boolean shutdown = false;
 
         protected WorkerBase(int workerNumber, int queueSize) {
-            super("RfnProcessor-" + workerNumber);
+            super("RfnProcessor: " + workerNumber);
             inQueue = new ArrayBlockingQueue<T>(queueSize);
         }
 

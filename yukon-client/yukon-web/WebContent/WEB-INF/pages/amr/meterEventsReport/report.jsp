@@ -165,20 +165,20 @@
 							<tags:dateInputCalendar fieldName="toDate" springInput="true" />
 						</tags:nameValue2>
 			
-						<tags:nameValue2 nameKey=".filter.onlyActiveEvents">
-							<form:checkbox path="onlyActiveEvents" cssClass="fl"/>
-							<span class="focusableFieldHolder">
-								<a id="activeEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
-							</span>
-				            <span class="focusedFieldDescription"><i:inline key=".filter.onlyActiveEvents.help.text"/></span>
-						</tags:nameValue2>
-			
 						<tags:nameValue2 nameKey=".filter.onlyLatestEvent">
 							<form:checkbox path="onlyLatestEvent" cssClass="fl"/>
 							<span class="focusableFieldHolder">
 								<a id="latestEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
 							</span>
 							<span class="focusedFieldDescription"><i:inline key=".filter.onlyLatestEvents.help.text"/></span>
+						</tags:nameValue2>
+			
+						<tags:nameValue2 nameKey=".filter.onlyAbnormalEvents">
+							<form:checkbox path="onlyAbnormalEvents" cssClass="fl"/>
+							<span class="focusableFieldHolder">
+								<a id="activeEventsHelp" class="icon icon_help"><i:inline key=".filter.helpText"/></a>
+							</span>
+				            <span class="focusedFieldDescription"><i:inline key=".filter.onlyAbnormalEvents.help.text"/></span>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
@@ -263,7 +263,7 @@
 		<tags:sortFields backingBean="${backingBean}" />
 		<form:hidden path="toDate" id="toDate_csv"/>
 		<form:hidden path="fromDate" id="fromDate_csv"/>
-		<form:hidden path="onlyActiveEvents" id="onlyActiveEvents_csv"/>
+		<form:hidden path="onlyAbnormalEvents" id="onlyAbnormalEvents_csv"/>
 		<form:hidden path="onlyLatestEvent" id="onlyLatestEvent_csv"/>
 		<form:hidden path="includeDisabledPaos" id="includeDisabledPaos_csv"/>
 		<cti:button nameKey="csv" renderMode="labeledImage" type="submit" />
