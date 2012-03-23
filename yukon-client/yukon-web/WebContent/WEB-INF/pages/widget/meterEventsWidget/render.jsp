@@ -39,6 +39,7 @@
     	<cti:url value="/spring/amr/meterEventsReport/reportAll" var="meterEventsReportUrl">
     		<cti:param name="collectionType" value="idList"/>
     		<cti:param name="idList.ids" value="${deviceId}"/>
+    		<cti:param name="includeDisabledPaos" value="${meter.disabled}"/>
     	</cti:url>
 		<c:if test="${not empty valueMap}">
 	    	<a href="${meterEventsReportUrl}" class="meterEventsReportLink">

@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
@@ -30,7 +30,7 @@ import com.google.common.collect.Lists;
 public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     
     @Autowired RawPointHistoryDao rawPointHistoryDao;
-    @Autowired PaoDao paoDao;
+    @Autowired MeterDao meterDao;
     @Autowired MeterEventLookupService meterEventLookupService;
     @Autowired PointDao pointDao;
 
@@ -67,13 +67,14 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     }
 
     public void setupModel(int deviceId, ModelMap model) {
-        YukonPao meter = paoDao.getYukonPao(deviceId);
+        Meter meter = meterDao.getForId(deviceId);
         List<EventHolder> sortedLimitedAttributeValueMap = getRphSortedLimitedAttributeValueMap(meter);
         model.addAttribute("valueMap", sortedLimitedAttributeValueMap);
         model.addAttribute("deviceId", deviceId);
+        model.addAttribute("meter", meter);
     }
     
-    private List<EventHolder> getRphSortedLimitedAttributeValueMap(YukonPao meter) {
+    private List<EventHolder> getRphSortedLimitedAttributeValueMap(Meter meter) {
         Set<BuiltInAttribute> availableEventAttributes =
             meterEventLookupService.getAvailableEventAttributes(Collections.singletonList(meter));
         List<EventHolder> events = Lists.newArrayList();

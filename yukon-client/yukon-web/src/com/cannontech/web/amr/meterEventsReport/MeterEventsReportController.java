@@ -126,11 +126,12 @@ public class MeterEventsReportController {
 
 
     @RequestMapping
-    public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
+    public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext, boolean includeDisabledPaos)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         MeterEventsReportFilterBackingBean backingBean = new MeterEventsReportFilterBackingBean();
         backingBean.setFromDate(null);
         backingBean.setToDate(null);
+        backingBean.setIncludeDisabledPaos(includeDisabledPaos);
         setupModelMap(backingBean, request, model, null, null, userContext, null);
         return "meterEventsReport/report.jsp";
     }
@@ -350,7 +351,7 @@ public class MeterEventsReportController {
                                                            backingBean.getFromDate(),
                                                            backingBean.getToDate(),
                                                            1,
-                                                           backingBean.isIncludeDisabledPaos(),
+                                                           !backingBean.isIncludeDisabledPaos(),
                                                            Clusivity.INCLUSIVE_INCLUSIVE,
                                                            Order.REVERSE);
             } else {

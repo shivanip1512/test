@@ -211,8 +211,8 @@
 					</div>
 				</i:simplePopup>
 				<div class="pageActionArea">
-					<cti:button nameKey="update" type="submit" styleClass="f_blocker" />
-					<cti:button nameKey="reset" styleClass="f_blocker" id="resetButton"/>
+					<cti:button nameKey="update" type="submit"/>
+					<cti:button nameKey="reset" id="resetButton"/>
 				</div>
 			</cti:dataGridCell>
 
