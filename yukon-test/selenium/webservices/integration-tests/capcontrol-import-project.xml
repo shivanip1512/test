@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project name="Copy" resourceRoot="" soapui-version="4.0.1.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="capcontrolPortSoap11" type="wsdl" bindingName="{http://yukon.cannontech.com/service}capcontrolPortSoap11" soapVersion="1_1" anonymous="optional" definition="http://10.106.33.143:8081/api/soap/capcontrol.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://10.106.33.143:8081/api/soap/capcontrol.wsdl"><con:part><con:url>http://10.106.33.143:8081/api/soap/capcontrol.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://yukon.cannontech.com/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://yukon.cannontech.com/api" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://yukon.cannontech.com/service">
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://yukon.cannontech.com/api" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api">
+      <xsd:complexType name="YukonMessage">
+        <xsd:attribute name="version" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:element name="yukonUser">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="extra">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any processContents="skip"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="Success"/>
+      <xsd:complexType name="Failure">
+        <xsd:sequence>
+          <xsd:element name="errorCode" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="errorReference" type="xsd:string"/>
+          <xsd:element name="errorDescription" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="SimpleSuccessOrFailure">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success" type="yukon:Success"/>
+              <xsd:element name="error" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ImportBase">
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="action" type="yukon:ImportAction" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="CbcImportData">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:ImportBase">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="templateName" type="xsd:string"/>
+              <xsd:element name="type" type="yukon:CbcTypes"/>
+              <xsd:element name="serialNumber" type="xsd:integer"/>
+              <xsd:element minOccurs="0" name="capBankName" type="xsd:string"/>
+              <xsd:element name="masterAddress" type="xsd:integer"/>
+              <xsd:element name="slaveAddress" type="xsd:integer"/>
+              <xsd:element name="commChannel" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="scanInterval" type="xsd:integer"/>
+              <xsd:element minOccurs="0" name="altInterval" type="xsd:integer"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="HierarchyImportData">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:ImportBase">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="parent" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="description" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="disabled" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="mapLocationId" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="operationalState" type="yukon:CapBankOperationalState"/>
+              <xsd:element minOccurs="0" name="capBankSize" type="xsd:integer"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:simpleType name="CapBankOperationalState">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Fixed"/>
+          <xsd:enumeration value="Switched"/>
+          <xsd:enumeration value="StandAlone"/>
+          <xsd:enumeration value="Uninstalled"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="ImportAction">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Add"/>
+          <xsd:enumeration value="Update"/>
+          <xsd:enumeration value="Remove"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="CbcTypes">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="CBC 7010"/>
+          <xsd:enumeration value="CBC 7020"/>
+          <xsd:enumeration value="CBC 7022"/>
+          <xsd:enumeration value="CBC 7023"/>
+          <xsd:enumeration value="CBC 7024"/>
+          <xsd:enumeration value="CBC 7011"/>
+          <xsd:enumeration value="CBC 7012"/>
+          <xsd:enumeration value="CBC 8020"/>
+          <xsd:enumeration value="CBC 8024"/>
+          <xsd:enumeration value="CBC DNP"/>
+          <xsd:enumeration value="CBC FP-2800"/>
+          <xsd:enumeration value="CBC Versacom"/>
+          <xsd:enumeration value="CBC Expresscom"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="HierarchyList">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="area" type="yukon:HierarchyImportData"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="specialArea" type="yukon:HierarchyImportData"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="substation" type="yukon:HierarchyImportData"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="substationBus" type="yukon:HierarchyImportData"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="feeder" type="yukon:HierarchyImportData"/>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="capBank" type="yukon:HierarchyImportData"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="CbcList">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="cbc" type="yukon:CbcImportData"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="CapControlImportRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="hierarchyList" type="yukon:HierarchyList"/>
+              <xsd:element minOccurs="0" name="cbcList" type="yukon:CbcList"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="capControlImportRequest" type="yukon:CapControlImportRequest"/>
+      <xsd:complexType name="CbcImportResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="cbcImportResultType" type="yukon:CbcImportResultType"/>
+          <xsd:element minOccurs="0" name="resultDetail" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="success" type="xsd:boolean" use="required"/>
+        <xsd:attribute name="errorCode" type="xsd:int" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="HierarchyImportResponse">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="hierarchyImportResultType" type="yukon:HierarchyImportResultType"/>
+          <xsd:element minOccurs="0" name="resultDetail" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="success" type="xsd:boolean" use="required"/>
+        <xsd:attribute name="errorCode" type="xsd:int" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="HierarchyResponseList">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="hierarchyImportResponse" type="yukon:HierarchyImportResponse"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="CbcResponseList">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="cbcImportResponse" type="yukon:CbcImportResponse"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:simpleType name="CbcImportResultType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Missing Data"/>
+          <xsd:enumeration value="Invalid Comm Channel"/>
+          <xsd:enumeration value="Invalid Serial Number"/>
+          <xsd:enumeration value="Invalid Import Action"/>
+          <xsd:enumeration value="Invalid Type"/>
+          <xsd:enumeration value="Device Already Exists"/>
+          <xsd:enumeration value="Object Already Exists"/>
+          <xsd:enumeration value="Object Doesn't Exist"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HierarchyImportResultType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Invalid Parent Name"/>
+          <xsd:enumeration value="Invalid Hierarchy Type"/>
+          <xsd:enumeration value="Invalid Import Action"/>
+          <xsd:enumeration value="Invalid Disabled Value"/>
+          <xsd:enumeration value="Missing Data"/>
+          <xsd:enumeration value="Object Already Exists"/>
+          <xsd:enumeration value="Object Doesn't Exist"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="CapControlImportResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="hierarchyResponseList" type="yukon:HierarchyResponseList"/>
+              <xsd:element minOccurs="0" name="cbcResponseList" type="yukon:CbcResponseList"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="capControlImportResponse" type="yukon:CapControlImportResponse"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="capControlImportResponse">
+    <wsdl:part element="sch:capControlImportResponse" name="capControlImportResponse"/>
+  </wsdl:message>
+  <wsdl:message name="extraHeader">
+    <wsdl:part element="sch:extra" name="extra"/>
+  </wsdl:message>
+  <wsdl:message name="capControlImportRequest">
+    <wsdl:part element="sch:capControlImportRequest" name="capControlImportRequest"/>
+  </wsdl:message>
+  <wsdl:message name="yukonUserHeader">
+    <wsdl:part element="sch:yukonUser" name="yukonUser"/>
+  </wsdl:message>
+  <wsdl:portType name="capcontrolPort">
+    <wsdl:operation name="capControlImport">
+      <wsdl:input message="tns:capControlImportRequest" name="capControlImportRequest"/>
+      <wsdl:output message="tns:capControlImportResponse" name="capControlImportResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="capcontrolPortSoap11" type="tns:capcontrolPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="capControlImport">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="capControlImportRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="capControlImportResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="capcontrolService">
+    <wsdl:port binding="tns:capcontrolPortSoap11" name="capcontrolPortSoap11">
+      <soap:address location="http://10.106.33.143:8081/api/soap"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="capControlImport" bindingOperationName="capControlImport" type="Request-Response" outputName="capControlImportResponse" inputName="capControlImportRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:capControlImportRequest version="?">
+         <!--Optional:-->
+         <api:hierarchyList>
+            <!--Zero or more repetitions:-->
+            <api:area action="?">
+               <api:name>?</api:name>
+               <!--Optional:-->
+               <api:parent>?</api:parent>
+               <!--Optional:-->
+               <api:description>?</api:description>
+               <!--Optional:-->
+               <api:disabled>?</api:disabled>
+               <!--Optional:-->
+               <api:mapLocationId>?</api:mapLocationId>
+               <!--Optional:-->
+               <api:operationalState>?</api:operationalState>
+               <!--Optional:-->
+               <api:capBankSize>?</api:capBankSize>
+            </api:area>
+            <!--Zero or more repetitions:-->
+            <api:specialArea action="?">
+               <api:name>?</api:name>
+               <!--Optional:-->
+               <api:parent>?</api:parent>
+               <!--Optional:-->
+               <api:description>?</api:description>
+               <!--Optional:-->
+               <api:disabled>?</api:disabled>
+               <!--Optional:-->
+               <api:mapLocationId>?</api:mapLocationId>
+               <!--Optional:-->
+               <api:operationalState>?</api:operationalState>
+               <!--Optional:-->
+               <api:capBankSize>?</api:capBankSize>
+            </api:specialArea>
+            <!--Zero or more repetitions:-->
+            <api:substation action="?">
+               <api:name>?</api:name>
+               <!--Optional:-->
+               <api:parent>?</api:parent>
+               <!--Optional:-->
+               <api:description>?</api:description>
+               <!--Optional:-->
+               <api:disabled>?</api:disabled>
+               <!--Optional:-->
+               <api:mapLocationId>?</api:mapLocationId>
+               <!--Optional:-->
+               <api:operationalState>?</api:operationalState>
+               <!--Optional:-->
+               <api:capBankSize>?</api:capBankSize>
+            </api:substation>
+            <!--Zero or more repetitions:-->
+            <api:substationBus action="?">
+               <api:name>?</api:name>
+               <!--Optional:-->
+               <api:parent>?</api:parent>
+               <!--Optional:-->
+               <api:description>?</api:description>
+               <!--Optional:-->
+               <api:disabled>?</api:disabled>
+               <!--Optional:-->
+               <api:mapLocationId>?</api:mapLocationId>
+               <!--Optional:-->
+               <api:operationalState>?</api:operationalState>
+               <!--Optional:-->
+               <api:capBankSize>?</api:capBankSize>
+            </api:substationBus>
+            <!--Zero or more repetitions:-->
+            <api:feeder action="?">
+               <api:name>?</api:name>
+               <!--Optional:-->
+               <api:parent>?</api:parent>
+               <!--Optional:-->
+               <api:description>?</api:description>
+               <!--Optional:-->
+               <api:disabled>?</api:disabled>
+               <!--Optional:-->
+               <api:mapLocationId>?</api:mapLocationId>
+               <!--Optional:-->
+               <api:operationalState>?</api:operationalState>
+               <!--Optional:-->
+               <api:capBankSize>?</api:capBankSize>
+            </api:feeder>
+            <!--Zero or more repetitions:-->
+            <api:capBank action="?">
+               <api:name>?</api:name>
+               <!--Optional:-->
+               <api:parent>?</api:parent>
+               <!--Optional:-->
+               <api:description>?</api:description>
+               <!--Optional:-->
+               <api:disabled>?</api:disabled>
+               <!--Optional:-->
+               <api:mapLocationId>?</api:mapLocationId>
+               <!--Optional:-->
+               <api:operationalState>?</api:operationalState>
+               <!--Optional:-->
+               <api:capBankSize>?</api:capBankSize>
+            </api:capBank>
+         </api:hierarchyList>
+         <!--Optional:-->
+         <api:cbcList>
+            <!--Zero or more repetitions:-->
+            <api:cbc action="?">
+               <api:name>?</api:name>
+               <!--Optional:-->
+               <api:templateName>?</api:templateName>
+               <api:type>?</api:type>
+               <api:serialNumber>?</api:serialNumber>
+               <!--Optional:-->
+               <api:capBankName>?</api:capBankName>
+               <api:masterAddress>?</api:masterAddress>
+               <api:slaveAddress>?</api:slaveAddress>
+               <api:commChannel>?</api:commChannel>
+               <!--Optional:-->
+               <api:scanInterval>?</api:scanInterval>
+               <!--Optional:-->
+               <api:altInterval>?</api:altInterval>
+            </api:cbc>
+         </api:cbcList>
+      </api:capControlImportRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/capcontrolPort/capControlImportRequest"/></con:call></con:operation></con:interface><con:testSuite name="TestSuite 1"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="TestCase 1" searchProperties="true" id="bda49e5e-d912-42a0-83b6-1242027a091b"><con:settings/><con:testStep type="request" name="Create Feeder"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>capcontrolPortSoap11</con:interface><con:operation>capControlImport</con:operation><con:request name="Create Feeder"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+<capControlImportRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlImportRequest.xsd"
+           version="1.0">
+    <hierarchyList>
+        <feeder action="Add">
+            <name>ImportFeeder</name>
+            <description>Import Test</description>
+            <disabled>N</disabled>
+            <mapLocationId>T1S1SS1F1</mapLocationId>
+        </feeder>
+    </hierarchyList>
+    
+</capControlImportRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:assertion type="XPath Match" name="Match content of [@success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@success</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@errorCode]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@errorCode</path><content>0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check count of [y:hierarchyImportResponse]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+count( //y:capControlImportResponse/y:hierarchyResponseList/y:hierarchyImportResponse)</path><content>1</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="Update Feeder"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>capcontrolPortSoap11</con:interface><con:operation>capControlImport</con:operation><con:request name="Update Feeder"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+<capControlImportRequest xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlImportRequest.xsd" version="1.0" xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <hierarchyList>
+        <feeder action="Update">
+            <name>ImportFeeder</name>
+            <description>Import Test</description>
+            <disabled>N</disabled>
+            <mapLocationId>T1S1SS1F1</mapLocationId>
+        </feeder>
+    </hierarchyList>
+    
+</capControlImportRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:assertion type="XPath Match" name="Match content of [@success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@success</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@errorCode]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@errorCode</path><content>0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check count of [y:hierarchyImportResponse]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+count( //y:capControlImportResponse/y:hierarchyResponseList/y:hierarchyImportResponse)</path><content>1</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="Add Capbank"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>capcontrolPortSoap11</con:interface><con:operation>capControlImport</con:operation><con:request name="Add Capbank"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+<capControlImportRequest xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlImportRequest.xsd" version="1.0" xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <hierarchyList>
+        <capBank action="Add">
+            <name>ImportCapBank</name>
+            <description>Import Test</description>
+            <disabled>N</disabled>
+            <mapLocationId>T1S1SS1F1C1</mapLocationId>
+            <operationalState>StandAlone</operationalState>
+            <capBankSize>1200</capBankSize>
+        </capBank>
+    </hierarchyList>
+    
+</capControlImportRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:assertion type="XPath Match" name="Match content of [@success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@success</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@errorCode]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@errorCode</path><content>0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check count of [y:hierarchyImportResponse]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+count( //y:capControlImportResponse/y:hierarchyResponseList/y:hierarchyImportResponse)</path><content>1</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="Update Capbank"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>capcontrolPortSoap11</con:interface><con:operation>capControlImport</con:operation><con:request name="Update Capbank"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+<capControlImportRequest xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlImportRequest.xsd" version="1.0" xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <hierarchyList>
+        <capBank action="Update">
+            <name>ImportCapBank</name>
+		<parent>ImportFeeder</parent>
+        </capBank>
+    </hierarchyList>
+    
+</capControlImportRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:assertion type="XPath Match" name="Match content of [@success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@success</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@errorCode]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@errorCode</path><content>0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check count of [y:hierarchyImportResponse]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+count( //y:capControlImportResponse/y:hierarchyResponseList/y:hierarchyImportResponse)</path><content>1</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="Remove Capbank"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>capcontrolPortSoap11</con:interface><con:operation>capControlImport</con:operation><con:request name="Remove Capbank"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+<capControlImportRequest xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlImportRequest.xsd" version="1.0" xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <hierarchyList>
+        <capBank action="Remove">
+            <name>ImportCapBank</name>
+        </capBank>
+    </hierarchyList>
+    
+</capControlImportRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:assertion type="XPath Match" name="Match content of [@success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@success</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@errorCode]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@errorCode</path><content>0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check count of [y:hierarchyImportResponse]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+count( //y:capControlImportResponse/y:hierarchyResponseList/y:hierarchyImportResponse)</path><content>1</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="Remove Feeder"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>capcontrolPortSoap11</con:interface><con:operation>capControlImport</con:operation><con:request name="Remove Feeder"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+<capControlImportRequest xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlImportRequest.xsd" version="1.0" xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <hierarchyList>
+        <feeder action="Remove">
+            <name>ImportFeeder</name>
+        </feeder>
+    </hierarchyList>
+    
+</capControlImportRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:assertion type="Schema Compliance"><con:configuration/></con:assertion><con:assertion type="SOAP Fault Assertion"/><con:assertion type="XPath Match" name="Match content of [@success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@success</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@errorCode]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/y:hierarchyResponseList[1]/y:hierarchyImportResponse[1]/@errorCode</path><content>0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check count of [y:hierarchyImportResponse]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+count( //y:capControlImportResponse/y:hierarchyResponseList/y:hierarchyImportResponse)</path><content>1</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:capControlImportResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:requirements/><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:reporting><con:reportTemplates/><con:xmlTemplates/><con:parameters/></con:reporting><con:sensitiveInformation/></con:soapui-project>

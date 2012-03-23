@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-workspace name="Projects" 
+                      soapui-version="4.0.1.1" 
+                      projectRoot="${workspaceDir}\yukon-integration" 
+                      xmlns:con="http://eviware.com/soapui/config">
+  <con:settings/>
+  <con:project name="asdf">integration-tests/capcontrol-import-project.xml</con:project>
+</con:soapui-workspace>

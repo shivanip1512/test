@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<project name="Continuous Integration Tests" default="targets" basedir=".">
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+	<property environment="env"/>
+
+	<property name="soapUI.home" value="C:/Program Files (x86)/SmartBear/soapUI-4.5.0-Beta1"/>
+	
+	<target name="targets">
+		<echo message="The following targets are available"/>
+		<echo message=" soapui-tests   - runs all SoapUI tests"/>
+		<echo message=" selenium-tests - runs all Selenium tests"/>
+	</target>
+
+	<target name="callall" depends="soapui-tests, selenium"/>
+
+    <target name="checkos">
+        <condition property="testrunner.cmd" value="${soapUI.home}/bin/testrunner.bat">
+                <os family="windows" />
+        </condition>
+        <condition property="testrunner.cmd" value="${soapUI.home}/bin/testrunner.sh">
+                <os family="unix" />
+        </condition>
+    </target>
+	
+    <target name="soapui-tests" depends="checkos">
+       <for param="file">
+        <path> 
+          <fileset dir="integration-tests" casesensitive="yes" includes="*.xml"/>
+        </path>
+        <sequential>
+          <exec executable="${testrunner.cmd}"
+             failonerror="yes"
+              failifexecutionfails="yes"
+           >
+             <arg path="@{file}"/>
+         </exec>
+        </sequential>
+       </for>
+     </target>
+    
+	<target name="selenium">
+    
+    </target>	
+	
+</project>
