@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+
+    <Parameter name="devicename">
+        <value>MCT-410iL-02 (1471788)</value>
+        <value>MCT-410CL-01 (130393)</value>
+        <value>MCT-410FL-04 (100600)</value>
+        <value>MCT-430A-01 (636896)</value>
+        <value>MCT-430S4-01 (638717)</value>
+        <value>MCT-470A3-01 (514146)</value>
+    </Parameter>
+   
+</testConfig>

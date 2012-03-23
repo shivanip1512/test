@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Add">
+	<value>Ceiling Fan - 1</value>
+	<value>Central Air - 1</value>
+	<value>Window Unit - Big</value></Parameter>
+	
+	<Parameter name="Initial Number of Entries">
+	<value>8</value></Parameter>
+	
+	<Parameter name="Edit">
+	<value>Ceiling Fan - 1 Old</value>
+	<value>Central Air - 1 Old</value>
+	<value>Window Unit - Big Old</value></Parameter>
+	
+	<Parameter name="Remove">
+	<value>Ceiling Fan - 1 Old</value>
+	<value>Central Air - 1 Old</value>
+	<value>Window Unit - Big Old</value></Parameter></testConfig>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+    
+    <Parameter name="schedule1">
+    	<value>Schedule-1</value>
+    </Parameter> 
+   
+   <Parameter name="schedule2">
+    	<value>Schedule-2</value>
+    </Parameter>     
+    
+    <Parameter name="schedules">
+    	<value>Schedule-1</value>
+        <value>Schedule-2</value>
+        <value>Schedule-3</value>
+        <value>Schedule-4</value>
+        <value>Schedule-5</value>
+        <value>Schedule-6</value>
+        <value>Schedule-7</value>
+        <value>Schedule-8</value>
+        <value>Schedule-9</value>
+        <value>Schedule-10</value>
+    </Parameter>
+</testConfig>

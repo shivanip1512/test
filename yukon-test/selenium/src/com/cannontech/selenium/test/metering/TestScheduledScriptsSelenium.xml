@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+    
+    <Parameter name="tableClass">
+    	<value>resultsTable</value>
+    </Parameter>    
+
+</testConfig>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+
+	<Parameter name="Add">
+	<value>Meter is ready to be installed</value>
+	<value>New Thermostat is on the way</value></Parameter>
+	
+	<Parameter name="Option">
+	<value>Available</value>
+	<value>Shipped</value></Parameter>
+	
+	<Parameter name="Initial Number of Entries">
+	<value>9</value></Parameter>
+	
+	<Parameter name="Edit">
+	<value>Meter is ready to be installed - but removed now</value>
+	<value>New Thermostat is on the way - Now Available</value></Parameter>
+	
+	<Parameter name="Option Edit">
+	<value>Removed</value>
+	<value>Available</value></Parameter>
+	
+	<Parameter name="Remove">
+	<value>Meter is ready to be installed - but removed now</value>
+	<value>New Thermostat is on the way - Now Available</value></Parameter></testConfig>

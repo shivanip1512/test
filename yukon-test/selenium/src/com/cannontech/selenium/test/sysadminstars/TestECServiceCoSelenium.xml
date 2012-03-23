@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	
+	<Parameter name="Name">
+	<value>QA_Service</value>
+	<value>QA_Service1</value></Parameter>
+	
+	<Parameter name="Name Edit">
+	<value>QA_Service_Edit</value>
+	<value>QA_Service1_Edit</value></Parameter>
+	
+	<Parameter name="Main Phone">
+	<value>555-555-1412</value>
+	<value>555-555-1413</value></Parameter>
+	
+	<Parameter name="Main Phone Edit">
+	<value>(555) 555-1412</value>
+	<value>(555) 555-1413</value></Parameter>
+	
+	<Parameter name="Main Fax">
+	<value>555-555-1414</value>
+	<value>555-555-1415</value></Parameter>
+	
+	<Parameter name="Main Fax Edit">
+	<value>(555) 555-1414</value>
+	<value>(555) 555-1415</value></Parameter>
+	
+	<Parameter name="Email">
+	<value>pspl-qa200@gmail.com</value>
+	<value>pspl-qa200@gmail.com</value></Parameter>
+	
+	<Parameter name="Company Type">
+	<value>Install and Serv</value>
+	<value>Shake and Bake</value></Parameter>
+	
+	<Parameter name="Street Address 1">
+	<value>123 QA St</value>
+	<value>789 QA Ave.</value></Parameter>
+	
+	<Parameter name="Street Address 2">
+	<value>STE 1200</value>
+	<value>STE 1100</value></Parameter>
+	
+	<Parameter name="City">
+	<value>QA City</value>
+	<value>QA City</value></Parameter>
+	
+	<Parameter name="State">
+	<value>MN</value>
+	<value>MN</value></Parameter>
+	
+	<Parameter name="Zip">
+	<value>99123</value>
+	<value>99124</value></Parameter>
+	
+	<Parameter name="First Name">
+	<value>Quirky</value>
+	<value>Excellent</value></Parameter>
+	
+	<Parameter name="First Name Edit">
+	<value>Quirky_Edit</value>
+	<value>Excellent_Edit</value></Parameter>
+	
+	<Parameter name="Last Name">
+	<value>QA</value>
+	<value>QA</value></Parameter>
+	
+	<Parameter name="Last Name Edit">
+	<value>QA_Edit</value>
+	<value>QA_Edit</value></Parameter>
+	
+	<Parameter name="Associated Login">
+	<value>(none)</value>
+	<value>(none)</value></Parameter>
+	</testConfig>

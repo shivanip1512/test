@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Add">
+	<value>West Side - 2</value>
+	<value>East Side - 1</value></Parameter>
+	
+	<Parameter name="Option">
+	<value>(Unknown)</value>
+	<value>(Unknown)</value></Parameter>
+	
+	<Parameter name="Initial Number of Entries">
+	<value>3</value></Parameter>
+	
+	<Parameter name="Edit">
+	<value>West Side - 2 Reinstall</value>
+	<value>East Side - 1 Replace</value></Parameter>
+	
+	<Parameter name="Remove">
+	<value>West Side - 2 Reinstall</value>
+	<value>East Side - 1 Replace</value></Parameter></testConfig>

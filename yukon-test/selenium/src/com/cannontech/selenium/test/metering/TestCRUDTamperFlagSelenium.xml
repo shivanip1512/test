@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Tamper Flag Values -->
+   
+    <Parameter name="tamperFlagName">
+    	<value>Flag-0001</value>
+    	<value>Flag-0002</value>
+    	<value>Flag-0003</value>
+    	<value>Flag-0004</value>
+    	<value>Flag-0005</value>
+    </Parameter>
+    
+    <Parameter name="editTamperFlagName">
+    	<value>Flag-edit-0001</value>
+    	<value>Flag-edit-0002</value>
+    	<value>Flag-edit-0003</value>
+    	<value>Flag-edit-0004</value>
+    	<value>Flag-edit-0005</value>
+    </Parameter>
+
+</testConfig>

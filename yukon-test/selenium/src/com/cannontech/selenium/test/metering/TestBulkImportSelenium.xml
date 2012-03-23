@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+    
+    <Parameter name="BulkImportFile">
+    	<value>\\10.106.33.16\d$\TestData\BulkImport_Rack3.csv</value>
+    </Parameter>    
+
+</testConfig>

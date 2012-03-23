@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+   
+   <!-- Path to import files -->
+    <Parameter name="ImportInsertAccount">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\Stars_Import_Insert-5.csv</value>
+    </Parameter>
+    
+    <Parameter name="EnrollDeviceAccount">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\Stars_Import_DevEnroll-5.csv</value>
+    </Parameter>
+    
+</testConfig>    

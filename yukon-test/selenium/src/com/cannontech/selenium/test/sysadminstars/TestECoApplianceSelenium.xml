@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Programs">
+	<value>TimeRefresh01</value>
+	<value>MasterCycle01</value>
+	<value>SimpleTstatRamp01</value></Parameter>
+	
+	<Parameter name="App Program Add">
+	<value>AC</value>
+	<value>WH</value>
+	<value>I</value></Parameter>
+	
+	<Parameter name="Appliance Name">
+	<value>AC</value>
+	<value>AC-Test</value>
+	<value>WH</value>
+	<value>WH-Test</value>
+	<value>I</value>
+	<value>I-Test</value></Parameter>
+	
+	<Parameter name="Appliance Type">
+	<value>Air Conditioner</value>
+	<value>Air Conditioner</value>
+	<value>Water Heater</value>
+	<value>Water Heater</value>
+	<value>Irrigation</value>
+	<value>Irrigation</value></Parameter>
+	
+	<Parameter name="Add Program Appliance Name">
+	<value>AC</value>
+	<value>WH</value>
+	<value>I</value></Parameter>
+	
+	<Parameter name="Delete Appliance">
+	<value>AC-Test</value>
+	<value>WH-Test</value>
+	<value>I-Test</value></Parameter></testConfig>

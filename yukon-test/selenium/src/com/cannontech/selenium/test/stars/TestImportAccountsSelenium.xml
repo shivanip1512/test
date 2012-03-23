@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+   
+   <!-- Path to import files -->
+    <Parameter name="ImportInsertAccount">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\starsImpAcctInsert55-tmp.csv</value> 
+    </Parameter>
+    
+    <Parameter name="ImportDeleteAccount">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\starsImpAcctDelete55.csv</value> 
+    </Parameter>
+</testConfig>    

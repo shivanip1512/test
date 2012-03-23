@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Parent Company Name">
+		<value>QA_Test10</value>
+		<value>QA_Test20</value></Parameter>
+		
+	<Parameter name="Member Company Name">
+		<value>QA_Test10 Member01</value>
+		<value>QA_Test10 Member02</value>
+		<value>QA_Test20 Member01</value>
+		<value>QA_Test20 Member02</value></Parameter>
+		
+	<Parameter name="Member Primary Login">
+		<value>memberop10-01</value>
+		<value>memberop10-02</value>
+		<value>memberop20-01</value>
+		<value>memberop20-02</value></Parameter>
+		
+	<Parameter name="Member Secondary Login">
+		<value>memberop10-01a</value>
+		<value>memberop10-02a</value>
+		<value>memberop20-01a</value>
+		<value>memberop20-02a</value></Parameter>
+		
+	<Parameter name="EC">
+		<value>QA_Test10</value>
+		<value>QA_Test20</value>
+		<value>QA_Test10 Member01</value>
+		<value>QA_Test10 Member02</value>
+		<value>QA_Test20 Member01</value>
+		<value>QA_Test20 Member02</value></Parameter>
+		
+	<Parameter name="EC Login">
+		<value>starsop11</value>
+		<value>superstarsop</value></Parameter>
+		
+	<Parameter name="EC Login 2">
+		<value>starsop11</value>
+		<value>starsop21</value>
+		<value>memberop10-01</value>
+		<value>memberop10-02</value>
+		<value>memberop20-01</value>
+		<value>memberop20-02</value></Parameter>
+		
+	<Parameter name="Create Operator Login">
+		<value>starsop12</value>
+		<value>starsop22</value>
+		<value>memberop10-01a</value>
+		<value>memberop10-02a</value>
+		<value>memberop20-01a</value>
+		<value>memberop20-02a</value></Parameter>
+		
+	<Parameter name="Login Old">
+		<value>memberop10-02a</value>
+		<value>memberop20-02a</value></Parameter>
+		
+	<Parameter name="Login Edit">
+		<value>memberop10-Edit</value>
+		<value>memberop20-Edit</value></Parameter>
+		
+	<Parameter name="Member Admin Group">
+		<value>QA_Test10 Member01 Admin Grp</value>
+		<value>QA_Test10 Member02 Admin Grp</value>
+		<value>QA_Test20 Member01 Admin Grp</value>
+		<value>QA_Test20 Member02 Admin Grp</value></Parameter>
+		
+	<Parameter name="Member Admin Group2">
+		<value>QA_Test10 Member02 Admin Grp</value>
+		<value>QA_Test20 Member02 Admin Grp</value></Parameter>
+		
+	<Parameter name="Member Admin Group Edit">
+		<value>QA_Test10 Member02 Admin Grp Edit</value>
+		<value>QA_Test20 Member02 Admin Grp Edit</value></Parameter>
+		
+	<Parameter name="Address 1">
+		<value>Mem Addr 1</value>
+		<value>Mem2 Addr 1</value>
+		<value>Mem Addr 1</value>
+		<value>Mem2 Addr 1</value></Parameter>
+		
+	<Parameter name="Address 2">
+		<value>Mem Addr 2</value>
+		<value>Mem2 Addr 2</value>
+		<value>Mem Addr 2</value>
+		<value>Mem2 Addr 2</value></Parameter>
+		
+	<Parameter name="City">
+		<value>MemCity</value>
+		<value>Mem2City</value>
+		<value>MemCity</value>
+		<value>Mem2City</value></Parameter>
+		
+	<Parameter name="County">
+		<value>Mem_Cnty</value>
+		<value>Mem2_Cnty</value>
+		<value>Mem_Cnty</value>
+		<value>Mem2_Cnty</value></Parameter></testConfig>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Add">
+	<value>30</value>
+	<value>40</value></Parameter>
+	
+	<Parameter name="Initial Number of Entries">
+	<value>6</value></Parameter>
+	
+	<Parameter name="Edit">
+	<value>30 - Increase</value>
+	<value>40 - Decrease</value></Parameter>
+	
+	<Parameter name="Remove">
+	<value>30 - Increase</value>
+	<value>40 - Decrease</value></Parameter></testConfig>

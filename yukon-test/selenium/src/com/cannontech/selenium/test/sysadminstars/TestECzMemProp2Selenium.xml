@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Parent EC">
+		<value>QA_Test10</value>
+		<value>QA_Test20</value></Parameter>
+		
+	<Parameter name="Member EC">
+		<value>QA_Test10 Member01</value>
+		<value>QA_Test20 Member01</value></Parameter>
+		
+	<Parameter name="Member EC 2">
+		<value>QA_Test10 Member02</value>
+		<value>QA_Test20 Member02</value></Parameter>
+		
+	<Parameter name="Parent Login">
+		<value>starsop11</value>
+		<value>starsop21</value></Parameter>
+		
+	<Parameter name="Member Login 1">
+		<value>memberop10-01</value>
+		<value>memberop20-01</value></Parameter>
+		
+	<Parameter name="Member Login 2">
+		<value>memberop10-02</value>
+		<value>memberop20-02</value></Parameter>
+		
+	<Parameter name="Parent Add Account Number">
+		<value>72100000</value>
+		<value>72100001</value>
+		<value>721000000</value>
+		<value>721000010</value></Parameter>
+		
+	<Parameter name="Member Add Account Number">
+		<value>72200000</value>
+		<value>72200001</value>
+		<value>722000000</value>
+		<value>722000010</value></Parameter>
+		
+	<Parameter name="Parent Add First Name">
+		<value>Loyal</value>
+		<value>Quirky</value></Parameter>
+			
+	<Parameter name="Parent Add Last Name">
+		<value>QA-Fan</value>
+		<value>QA Nutter</value></Parameter>
+			
+	<Parameter name="Member Add Last Name">
+		<value>QA-Bum</value>
+		<value>QA Nutter</value></Parameter>
+			
+	<Parameter name="Parent Add Home Phone">
+		<value>555-555-1231</value>
+		<value>555-555-1232</value></Parameter>
+			
+	<Parameter name="Member Add Home Phone">
+		<value>555-555-1236</value>
+		<value>555-555-1237</value></Parameter>
+			
+	<Parameter name="Parent Add Address 1">
+		<value>123 QA St.</value>
+		<value>789 QA St.</value></Parameter>
+			
+	<Parameter name="Member Add Address 1">
+		<value>321 QA St.</value>
+		<value>987 QA St.</value></Parameter>
+			
+	<Parameter name="Parent Add Address 2">
+		<value>Cell 22</value>
+		<value>Cell 23</value></Parameter>
+		
+	<Parameter name="Member Add Address 2">
+		<value>Cell 25</value>
+		<value>Cell 26</value></Parameter>	
+		
+	<Parameter name="Parent Search Value">
+		<value>7</value>
+		<value>7</value>
+		<value>72</value>
+		<value>72</value>
+		<value>721</value>
+		<value>722</value></Parameter>
+			
+	<Parameter name="Remove Company Name">
+		<value>QA_Test10 Member02</value>
+		<value>QA_Test20 Member02</value></Parameter>
+				
+	<Parameter name="Delete Company Name">
+		<value>QA_Test10 Member02</value>
+		<value>QA_Test20 Member01</value>
+		<value>QA_Test20 Member02</value></Parameter>
+				
+	<Parameter name="Company Search">
+		<value>QA_Test10 Member01</value>
+		<value>QA_Test10 Member02</value>
+		<value>QA_Test20 Member01</value>
+		<value>QA_Test20 Member02</value></Parameter>
+				
+	<Parameter name="Parent Appliances">
+		<value>AC</value>
+		<value>I</value>
+		<value>WH</value></Parameter>
+				
+	<Parameter name="EC Login">
+		<value>starsop11</value>
+		<value>superstarsop</value></Parameter>
+		
+	<Parameter name="Program">
+		<value>MasterCycle01</value>
+		<value>SmartCycle01</value></Parameter>
+				
+	<Parameter name="Program 2">
+		<value>TrueCycle01</value>
+		<value>Rotation01</value></Parameter>
+		</testConfig>

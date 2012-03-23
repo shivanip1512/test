@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Meter Name Values -->
+   
+    <Parameter name="meterName">
+    	<value>76243201</value>
+    	<value>76243203</value>
+    	<value>98034042</value>
+    	<value>98034043</value>
+    </Parameter>
+
+</testConfig>

@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Meter Name Values -->
+   
+    <Parameter name="meterName">
+    	<value>MCT-410iL-02 (1471788)</value>
+    	<value>MCT-410CL-01 (130393)</value>
+    	<value>MCT-410FL-04 (100600)</value>
+    	<value>MCT-430A-01 (636896)</value>
+    	<value>MCT-430S4-01 (638717)</value>
+    	<value>MCT-470A3-01 (514146)</value>
+    </Parameter>
+    
+    
+    
+    <Parameter name="commonName MCT-410iL-02 (1471788)">    	
+    	<value>Read Energy</value>
+    	<value>Read KW Demand, Current Voltage, Blink Count</value>
+    	<value>Read Meter Config</value>
+    	<value>Read General Info</value>
+    	<value>Ping</value>
+    	<value>Read Min / Max Voltage</value>
+    	<value>Read Date/Time</value>
+    	<value>Read Last TimeSync</value>
+    	<value>Write Time/Date to Meter</value>
+    	<value>Read Current Peak</value>
+    	<value>Read Disconnect Status</value>
+    	<value>Connect Meter</value>
+    	<value>Read frozen demand - kW and kWh</value>
+    	<value>Read frozen voltage - min, max</value>
+    	<value>Read rates for LI, LP, Volt LI, and Volt Profile Demand</value>
+    	<value>Read LP Info</value>
+    	<value>Read the freeze timestamp, counter, and next freeze expected for demand and voltage.</value>
+    	<value>Read Current TOU kWh for rates A, B, C, D.</value>
+    	<value>Read Frozen TOU kWh for rates A, B, C, D.</value>
+    </Parameter>
+    <Parameter name="commandName MCT-410iL-02 (1471788)">    	
+    	<value>getvalue kWh</value>
+    	<value>getvalue demand</value>
+    	<value>getconfig model</value>
+    	<value>getstatus internal</value>
+    	<value>ping</value>
+    	<value>getvalue voltage</value>
+    	<value>getconfig time</value>
+    	<value>getconfig time sync</value>
+    	<value>putconfig emetcon timesync</value>
+    	<value>getvalue peak</value>
+    	<value>getstatus disconnect</value>
+    	<value>control connect</value>
+    	<value>getvalue peak frozen</value>
+    	<value>getvalue voltage frozen</value>
+    	<value>getconfig intervals</value>
+    	<value>getstatus LP</value>
+    	<value>getstatus freeze</value>
+    	<value>getvalue tou kwh</value>
+    	<value>getvalue tou kwh frozen</value>
+    </Parameter>
+    <Parameter name="commonName_P MCT-410iL-02 (1471788)">    	
+    	<value>Read two outages per read. Specify 1(1&amp;2), 3(3&amp;4), 5(5&amp;6)</value>
+    	<value>Read Daily kWh, Peak Demand, Min/Max Voltage (Channel 1).</value>
+    	<value>Read Daily kWh for date range (Channel 1).</value>
+    	<value>Read Daily kWh, Peak kW, and Outages (Channel 1 only, up to 8 days ago)</value>
+    	<value>Read Daily kWh, Peak Demand, Outages (Channel 2 or 3).</value>
+    </Parameter>
+    <Parameter name="commandName_P MCT-410iL-02 (1471788)">    	
+    	<value>getvalue outage 1</value>
+    	<value>getvalue daily read detail channel 1 YESTERDAY</value>
+    	<value>getvalue daily read detail channel 1 2DAYSAGO YESTERDAY</value>
+    	<value>getvalue daily read YESTERDAY</value>
+    	<value>getvalue daily read detail channel 2 YESTERDAY</value>
+    </Parameter>
+	<Parameter name="parameterValues MCT-410iL-02 (1471788)">    	
+    	<value>1</value>
+    	<value>YESTERDAY</value>
+    	<value>2DAYSAGO YESTERDAY</value>
+    	<value>YESTERDAY</value>
+    	<value>2 YESTERDAY</value>
+    </Parameter>
+    
+    
+    
+    
+    <Parameter name="commonName MCT-410CL-01 (130393)">    	
+    	<value>Read Energy</value>
+    	<value>Read KW Demand, Current Voltage, Blink Count</value>
+    	<value>Read Meter Config</value>
+    	<value>Read General Info</value>
+    	<value>Ping</value>
+    	<value>Read Min / Max Voltage</value>
+    	<value>Read Date/Time</value>
+    	<value>Read Last TimeSync</value>
+    	<value>Write Time/Date to Meter</value>
+    	<value>Read Current Peak</value>
+    	<value>Read Disconnect Status</value>
+    	<value>Connect Meter</value>
+    	<value>Read frozen demand - kW and kWh</value>
+    	<value>Read frozen voltage - min, max</value>
+    	<value>Read rates for LI, LP, Volt LI, and Volt Profile Demand</value>
+    	<value>Read LP Info</value>
+    	<value>Read the freeze timestamp, counter, and next freeze expected for demand and voltage.</value>
+    	<value>Read Current TOU kWh for rates A, B, C, D.</value>
+    	<value>Read Frozen TOU kWh for rates A, B, C, D.</value>
+    </Parameter>
+    <Parameter name="commandName MCT-410CL-01 (130393)">    	
+    	<value>getvalue kWh</value>
+    	<value>getvalue demand</value>
+    	<value>getconfig model</value>
+    	<value>getstatus internal</value>
+    	<value>ping</value>
+    	<value>getvalue voltage</value>
+    	<value>getconfig time</value>
+    	<value>getconfig time sync</value>
+    	<value>putconfig emetcon timesync</value>
+    	<value>getvalue peak</value>
+    	<value>getstatus disconnect</value>
+    	<value>control connect</value>
+    	<value>getvalue peak frozen</value>
+    	<value>getvalue voltage frozen</value>
+    	<value>getconfig intervals</value>
+    	<value>getstatus LP</value>
+    	<value>getstatus freeze</value>
+    	<value>getvalue tou kwh</value>
+    	<value>getvalue tou kwh frozen</value>
+    </Parameter>
+    <Parameter name="commonName_P MCT-410CL-01 (130393)">    	
+    	<value>Read two outages per read. Specify 1(1&amp;2), 3(3&amp;4), 5(5&amp;6)</value>
+    	<value>Read Daily kWh, Peak Demand, Min/Max Voltage (Channel 1).</value>
+    	<value>Read Daily kWh for date range (Channel 1).</value>
+    	<value>Read Daily kWh, Peak kW, and Outages (Channel 1 only, up to 8 days ago)</value>
+    	<value>Read Daily kWh, Peak Demand, Outages (Channel 2 or 3).</value>
+    </Parameter>
+    <Parameter name="commandName_P MCT-410CL-01 (130393)">    	
+    	<value>getvalue outage 1</value>
+    	<value>getvalue daily read detail channel 1 YESTERDAY</value>
+    	<value>getvalue daily read detail channel 1 2DAYSAGO YESTERDAY</value>
+    	<value>getvalue daily read YESTERDAY</value>
+    	<value>getvalue daily read detail channel 2 YESTERDAY</value>
+    </Parameter>
+    <Parameter name="parameterValues MCT-410CL-01 (130393)">    	
+    	<value>1</value>
+    	<value>YESTERDAY</value>
+    	<value>2DAYSAGO YESTERDAY</value>
+    	<value>YESTERDAY</value>
+    	<value>2 YESTERDAY</value>
+    </Parameter>
+    
+    
+    
+    
+    <Parameter name="commonName MCT-410FL-04 (100600)">    	
+    	<value>Read Energy</value>
+    	<value>Read KW Demand, Current Voltage, Blink Count</value>
+    	<value>Read Meter Config</value>
+    	<value>Read General Info</value>
+    	<value>Ping</value>
+    	<value>Read Min / Max Voltage</value>
+    	<value>Read Date/Time</value>
+    	<value>Read Last TimeSync</value>
+    	<value>Write Time/Date to Meter</value>
+    	<value>Read Current Peak</value>
+    	<value>Read Disconnect Status</value>
+    	<value>Connect Meter</value>
+    	<value>Read frozen demand - kW and kWh</value>
+    	<value>Read frozen voltage - min, max</value>
+    	<value>Read rates for LI, LP, Volt LI, and Volt Profile Demand</value>
+    	<value>Read LP Info</value>
+    	<value>Read the freeze timestamp, counter, and next freeze expected for demand and voltage.</value>
+    	<value>Read Current TOU kWh for rates A, B, C, D.</value>
+    	<value>Read Frozen TOU kWh for rates A, B, C, D.</value>
+    </Parameter>
+    <Parameter name="commandName MCT-410FL-04 (100600)">    	
+    	<value>getvalue kWh</value>
+    	<value>getvalue demand</value>
+    	<value>getconfig model</value>
+    	<value>getstatus internal</value>
+    	<value>ping</value>
+    	<value>getvalue voltage</value>
+    	<value>getconfig time</value>
+    	<value>getconfig time sync</value>
+    	<value>putconfig emetcon timesync</value>
+    	<value>getvalue peak</value>
+    	<value>getstatus disconnect</value>
+    	<value>control connect</value>
+    	<value>getvalue peak frozen</value>
+    	<value>getvalue voltage frozen</value>
+    	<value>getconfig intervals</value>
+    	<value>getstatus LP</value>
+    	<value>getstatus freeze</value>
+    	<value>getvalue tou kwh</value>
+    	<value>getvalue tou kwh frozen</value>
+    </Parameter>
+    <Parameter name="commonName_P MCT-410FL-04 (100600)">    	
+    	<value>Read two outages per read. Specify 1(1&amp;2), 3(3&amp;4), 5(5&amp;6)</value>
+    	<value>Read Daily kWh, Peak Demand, Min/Max Voltage (Channel 1).</value>
+    	<value>Read Daily kWh for date range (Channel 1).</value>
+    	<value>Read Daily kWh, Peak kW, and Outages (Channel 1 only, up to 8 days ago)</value>
+    	<value>Read Daily kWh, Peak Demand, Outages (Channel 2 or 3).</value>
+    </Parameter>
+    <Parameter name="commandName_P MCT-410FL-04 (100600)">    	
+    	<value>getvalue outage 1</value>
+    	<value>getvalue daily read detail channel 1 YESTERDAY</value>
+    	<value>getvalue daily read detail channel 1 2DAYSAGO YESTERDAY</value>
+    	<value>getvalue daily read YESTERDAY</value>
+    	<value>getvalue daily read detail channel 2 YESTERDAY</value>
+    </Parameter>
+    <Parameter name="parameterValues MCT-410FL-04 (100600)">    	
+    	<value>1</value>
+    	<value>YESTERDAY</value>
+    	<value>2DAYSAGO YESTERDAY</value>
+    	<value>YESTERDAY</value>
+    	<value>2 YESTERDAY</value>
+    </Parameter>
+    
+    
+    
+    
+    <Parameter name="commonName MCT-430A-01 (636896)">    	
+    	<value>Read Meter Config</value>
+    	<value>Read General Info</value>
+    	<value>Ping</value>
+    	<value>Read Date/Time</value>
+    	<value>Read Last TimeSync</value>
+    	<value>Write Time/Date to Meter</value>
+    	<value>Read rates for LI, LP, Volt LI, and Volt Profile Demand</value>
+    	<value>Read LP Info</value>
+    	<value>Read IED Last Interval Demands</value>
+    	<value>Read IED KWH/KW</value>
+    	<value>Read IED Date/Time</value>
+    	<value>Read Current Rate A kWh/Peak kW</value>
+    	<value>Read Frozen Rate A kWh/Peak kW</value>
+    	<value>Reset blink counter</value>
+    	<value>Write rate intervals from database to MCT</value>
+    	<value>Read Current Demand</value>
+    </Parameter>
+    <Parameter name="commandName MCT-430A-01 (636896)">    	
+    	<value>getconfig model</value>
+    	<value>getstatus internal</value>
+    	<value>ping</value>
+    	<value>getconfig time</value>
+    	<value>getconfig time sync</value>
+    	<value>putconfig emetcon timesync</value>
+    	<value>getconfig intervals</value>
+    	<value>getstatus LP</value>
+    	<value>getvalue ied demand</value>
+    	<value>getvalue ied kwht</value>
+    	<value>getconfig ied time</value>
+    	<value>getvalue ied current kwha</value>
+    	<value>getvalue ied frozen kwha</value>
+    	<value>putvalue powerfail reset</value>
+    	<value>putconfig emetcon intervals</value>
+    	<value>getvalue demand</value>
+    </Parameter>
+    <Parameter name="commonName_P MCT-430A-01 (636896)">    	
+    	<value>Read block of data (six intervals) from start date/time specified</value>
+    	<value>Reset and Write current peak demand - kW and kWh to frozen register</value>
+    	<value>Write Timezone to Meter</value>
+    </Parameter>
+    <Parameter name="commandName_P MCT-430A-01 (636896)">    	
+    	<value>getvalue lp channel 1 YESTERDAYMID</value>
+    	<value>putstatus emetcon freeze one</value>
+    	<value>putconfig emetcon timezone ct</value>
+    </Parameter>
+	<Parameter name="parameterValues MCT-430A-01 (636896)">    	
+    	<value>1 YESTERDAYMID</value>
+    	<value>one</value>
+    	<value>ct</value>
+    </Parameter>
+    
+
+
+
+	<Parameter name="commonName MCT-430S4-01 (638717)">    	
+    	<value>Read Meter Config</value>
+    	<value>Read General Info</value>
+    	<value>Ping</value>
+    	<value>Read Date/Time</value>
+    	<value>Read Last TimeSync</value>
+    	<value>Write Time/Date to Meter</value>
+    	<value>Read rates for LI, LP, Volt LI, and Volt Profile Demand</value>
+    	<value>Read LP Info</value>
+    	<value>Read IED Last Interval Demands</value>
+    	<value>Read IED KWH/KW</value>
+    	<value>Read IED Date/Time</value>
+    	<value>Read Current Rate A kWh/Peak kW</value>
+    	<value>Read Frozen Rate A kWh/Peak kW</value>
+    	<value>Reset blink counter</value>
+    	<value>Write rate intervals from database to MCT</value>
+    	<value>Read Current Demand</value>
+    </Parameter>
+    <Parameter name="commandName MCT-430S4-01 (638717)">    	
+    	<value>getconfig model</value>
+    	<value>getstatus internal</value>
+    	<value>ping</value>
+    	<value>getconfig time</value>
+    	<value>getconfig time sync</value>
+    	<value>putconfig emetcon timesync</value>
+    	<value>getconfig intervals</value>
+    	<value>getstatus LP</value>
+    	<value>getvalue ied demand</value>
+    	<value>getvalue ied kwht</value>
+    	<value>getconfig ied time</value>
+    	<value>getvalue ied current kwha</value>
+    	<value>getvalue ied frozen kwha</value>
+    	<value>putvalue powerfail reset</value>
+    	<value>putconfig emetcon intervals</value>
+    	<value>getvalue demand</value>
+    </Parameter>
+    	<Parameter name="commonName_P MCT-430S4-01 (638717)">    	
+    	<value>Read block of data (six intervals) from start date/time specified</value>
+    	<value>Reset and Write current peak demand - kW and kWh to frozen register</value>
+    	<value>Write Timezone to Meter</value>
+    </Parameter>
+    	<Parameter name="commandName_P MCT-430S4-01 (638717)">    	
+    	<value>getvalue lp channel 1 YESTERDAYMID</value>
+    	<value>putstatus emetcon freeze one</value>
+    	<value>putconfig emetcon timezone ct</value>
+    </Parameter>
+    <Parameter name="parameterValues MCT-430S4-01 (638717)">    	
+    	<value>1 YESTERDAYMID</value>
+    	<value>one</value>
+    	<value>ct</value>
+    </Parameter>
+	
+	
+	
+	
+	<Parameter name="commonName MCT-470A3-01 (514146)">    	
+    	<value>Read Energy</value>
+    	<value>Read Meter Config</value>
+    	<value>Read General Info</value>
+    	<value>Ping</value>
+    	<value>Read Date/Time</value>
+    	<value>Read Last TimeSync</value>
+    	<value>Write Time/Date to Meter</value>
+    	<value>Read rates for LI, LP, Volt LI, and Volt Profile Demand</value>
+    	<value>Read LP Info</value>
+    	<value>Read IED Last Interval Demands</value>
+    	<value>Read IED KWH/KW</value>
+    	<value>Read IED Date/Time</value>
+    	<value>Read Current Rate A kWh/Peak kW</value>
+    	<value>Read Frozen Rate A kWh/Peak kW</value>
+    	<value>Reset blink counter</value>
+    	<value>Write rate intervals from database to MCT</value>
+    	<value>Read Current Demand</value>
+    	<value>Read MPKH ()</value>
+    </Parameter>
+    <Parameter name="commandName MCT-470A3-01 (514146)">    	
+    	<value>getvalue kWh</value>
+    	<value>getconfig model</value>
+    	<value>getstatus internal</value>
+    	<value>ping</value>
+    	<value>getconfig time</value>
+    	<value>getconfig time sync</value>
+    	<value>putconfig emetcon timesync</value>
+    	<value>getconfig intervals</value>
+    	<value>getstatus LP</value>
+    	<value>getvalue ied demand</value>
+    	<value>getvalue ied kwht</value>
+    	<value>getconfig ied time</value>
+    	<value>getvalue ied current kwha</value>
+    	<value>getvalue ied frozen kwha</value>
+    	<value>putvalue powerfail reset</value>
+    	<value>putconfig emetcon intervals</value>
+    	<value>getvalue demand</value>
+    	<value>getconfig mult kyz 1</value>
+    </Parameter>
+    <Parameter name="commonName_P MCT-470A3-01 (514146)">    	
+    	<value>Read block of data (six intervals) from start date/time specified</value>
+    	<value>Reset and Write current peak demand - kW and kWh to frozen register</value>
+    	<value>Write MPKH ()</value>
+    </Parameter>
+    <Parameter name="commandName_P MCT-470A3-01 (514146)">    	
+    	<value>getvalue lp channel 1 YESTERDAYMID</value>
+    	<value>putstatus emetcon freeze one</value>
+    	<value>putconfig emetcon multiplier kyz1 1</value>
+    </Parameter>
+    <Parameter name="parameterValues MCT-470A3-01 (514146)">    	
+    	<value>1 YESTERDAYMID</value>
+    	<value>one</value>
+    	<value>1</value>
+    </Parameter>
+</testConfig>

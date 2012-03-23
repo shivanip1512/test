@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Add">
+	<value>Heavy Loam</value>
+	<value>Medium Loam</value>
+	<value>Clay</value></Parameter>
+	
+	<Parameter name="Initial Number of Entries">
+	<value>5</value></Parameter>
+	
+	<Parameter name="Edit">
+	<value>Heavy Loam - New</value>
+	<value>Medium Loam - Old</value>
+	<value>Clay - New</value></Parameter>
+	
+	<Parameter name="Remove">
+	<value>Heavy Loam - New</value>
+	<value>Medium Loam - Old</value>
+	<value>Clay - New</value></Parameter></testConfig>

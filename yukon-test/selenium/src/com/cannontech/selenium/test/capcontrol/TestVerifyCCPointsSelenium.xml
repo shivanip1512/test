@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+
+   <Parameter name="Regulator Name">
+        <value>LTC Regulator - 1</value>
+        <value>Gang Regulator – Parent</value>
+        <value>Single Phase Regulator</value>
+    </Parameter>
+    
+    <Parameter name="Regulator Type">
+        <value>Load Tap Changer</value>
+        <value>Gang Operated Regulator</value>
+        <value>Phase Operated Regulator</value>
+    </Parameter>
+
+    <Parameter name="Load Tap Changer Points">
+        <value>Auto/Remote Control</value>
+        <value>Keep Alive</value>
+        <value>Lower Tap Position</value>
+        <value>Raise Tap Position</value>
+        <value>Tap Position</value>
+        <value>Voltage Y</value>
+    </Parameter>
+
+    <Parameter name="Gang Operated Regulator Points">
+        <value>Auto Block Enable</value>
+        <value>Auto/Remote Control</value>
+        <value>Keep Alive</value>
+        <value>Keep Alive Timer</value>
+        <value>Lower Tap Position</value>
+        <value>Raise Tap Position</value>
+        <value>Tap Position</value>
+        <value>Terminate</value>
+        <value>Voltage X</value>
+        <value>Voltage Y</value>
+    </Parameter>
+   
+    <Parameter name="Phase Operated Regulator Points">
+		<value>Auto Block Enable</value>
+		<value>Auto/Remote Control</value>
+		<value>Keep Alive</value>
+		<value>Keep Alive Timer</value>
+		<value>Lower Tap Position</value>
+		<value>Raise Tap Position</value>
+		<value>Tap Position</value>
+		<value>Terminate</value>
+		<value>Voltage X</value>
+		<value>Voltage Y</value>
+	</Parameter>
+
+    <Parameter name="substationBus">
+    	<value>SubBus-1001</value>
+    </Parameter>
+    
+    <Parameter name="feeder">
+    	<value>Feeder-1001</value>
+    </Parameter>
+    
+    <Parameter name="capBank">
+    	<value>CapBank-1001</value>
+    </Parameter>
+
+    <Parameter name="CBC">
+    	<value>CBC7010-1001</value>
+    </Parameter>
+   
+   <Parameter name="TwoWayCBC">
+   		<value>CBC7020-1001</value>
+   </Parameter>
+   
+   <Parameter name="commChannel">
+   		<value>a_LSP_Dedicated</value>
+   </Parameter>
+   
+   <Parameter name="pointName">
+   		<value>Capacitor Bank State</value>
+   		<value>Re-Close Blocked</value>
+   		<value>Control Mode</value>
+   		<value>Auto Volt Control</value>
+   		<value>Last Control - Local</value>
+   		<value>Last Control - Remote</value>
+   		<value>Last Control - OVUV</value>
+   		<value>Last Control - Neutral Fault</value>
+   		<value>Last Control - Scheduled</value>
+   		<value>Last Control - VAR</value>
+   		<value>Last Control - Analog</value>
+   		<value>Last Control - Temperature</value>
+   		<value>OV Condition</value>
+   		<value>UV Condition</value>
+   		<value>Op Failed - Neutral Current</value>
+   		<value>Neutral Current Fault</value>
+   		<value>VAR Alarm</value>
+   		<value>Bad Relay</value>
+   		<value>Daily Max Ops</value>
+   		<value>Voltage Delta Abnormal</value>
+   		<value>Temp Alarm</value>
+   		<value>DST Active</value>
+   		<value>Neutral Lockout</value>
+   		<value>Power Flow</value>
+   		<value>Control Ignored Indicator</value>
+   		<value>Firmware Version</value>
+   		<value>Average Line Voltage</value>
+   		<value>High Voltage</value>
+   		<value>Low Voltage</value>
+   		<value>Delta Voltage</value>
+   		<value>Analog Input 1</value>
+   		<value>Temperature</value>
+   		<value>RSSI</value>
+   		<value>Control Ignored Reason</value>
+   		<value>CDMA Rx Power</value>
+   		<value>CDMA Ec/Io</value>
+   		<value>True VAR RMS Current</value>
+   		<value>3 Phase kVARs</value>
+   		<value>VAR RMS Voltage</value>
+   		<value>VAR 1 Phase kVA</value>
+   		<value>VAR 1 Phase kWatts</value>
+   		<value>VAR Power Factor</value>
+   		<value>Voltage Control</value>
+   		<value>UV Threshold</value>
+   		<value>OV Threshold</value>
+   		<value>Control OVUV Track Time</value>
+   		<value>Daily Control Limit</value>
+   		<value>Emergency UV Threshold</value>
+   		<value>Emergency OV Threshold</value>
+   		<value>Emergency OVUV Track Time</value>
+   		<value>Neutral Current Sensor</value>
+   		<value>Neutral Current Alarm Threshold</value>
+   		<value>Trip Delay Time</value>
+   		<value>Close Delay Time</value>
+   		<value>Bank Control Time</value>
+   		<value>Re-Close Delay Time</value>
+   		<value>Season One Control</value>
+   		<value>Season Two Control</value>
+   		<value>Comms Loss Time</value>
+   		<value>Var Control</value>
+   		<value>Com Retry Delay Time</value>
+   		<value>Yukon Poll Time</value>
+   		<value>VAR Close Point</value>
+   		<value>VAR Trip Point</value>
+   		<value>IP Address</value>
+   		<value>UDP Port</value>
+   		<value>Total Op Count</value>
+   		<value>UV Op Count</value>
+   		<value>OV Op Count</value>  	
+   </Parameter>
+</testConfig>

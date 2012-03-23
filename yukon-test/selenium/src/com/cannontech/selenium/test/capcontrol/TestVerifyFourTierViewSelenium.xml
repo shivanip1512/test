@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+
+    <Parameter name="area">
+        <value>SubArea-101</value>
+    </Parameter>
+    
+    <Parameter name="specialArea">
+        <value>SpecialArea-101</value>
+    </Parameter>
+    
+    <Parameter name="substation">
+    	<value>Substation-101</value>
+    </Parameter>
+    
+    <Parameter name="substationBus">
+    	<value>SubBus-101</value>
+    </Parameter>
+    
+    <Parameter name="feeder">
+    	<value>Feeder-101</value>
+    </Parameter>
+    
+    <Parameter name="capBank">
+    	<value>CapBank-101</value>
+    </Parameter>
+
+    <Parameter name="CBC">
+    	<value>CBC7010-101</value>
+    </Parameter>
+    
+    <Parameter name="strategy1">
+    	<value>Strategy-101</value>
+    </Parameter>
+    
+      <Parameter name="strategy2">
+    	<value>Strategy-102</value>
+    </Parameter>
+    
+
+</testConfig>

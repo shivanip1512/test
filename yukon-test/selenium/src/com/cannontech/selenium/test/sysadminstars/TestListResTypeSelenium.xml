@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Add">
+	<value>One Story Victorian House</value>
+	<value>One Story House With Finished Basement</value>
+	<value>Two Story Victorian House</value>
+	<value>Bungalow Type 1</value>
+	<value>Bungalow Type 2</value></Parameter>
+	
+	<Parameter name="Initial Number of Entries">
+	<value>8</value></Parameter>
+	
+	<Parameter name="Edit">
+	<value>One Story Victorian House - East Side</value>
+	<value>One Story House With Finished Basement - West Side</value>
+	<value>Two Story Victorian House - East Side</value>
+	<value>Bungalow Type 1 - Facing River Side</value>
+	<value>Bungalow Type 2 - Facing Lake Side</value></Parameter>
+	
+	<Parameter name="Remove">
+	<value>One Story Victorian House - East Side</value>
+	<value>One Story House With Finished Basement - West Side</value>
+	<value>Two Story Victorian House - East Side</value>
+	<value>Bungalow Type 1 - Facing River Side</value>
+	<value>Bungalow Type 2 - Facing Lake Side</value></Parameter></testConfig>

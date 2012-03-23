@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+   
+   <!-- Path to import files -->
+    <Parameter name="InventoryData">
+    	<value>\\10.106.33.16\d$\TestData\Inventory Selection.csv</value> 
+    </Parameter>
+    
+    <Parameter name="InventoryManual">
+    	<value>51000000</value>
+    	<value>51000001</value>
+    	<value>51000002</value>
+    	<value>51000004</value>
+    </Parameter> 
+    
+    <Parameter name="InventoryByFile">
+    	<value>51000000</value>
+    	<value>51000001</value>
+    	<value>51000002</value>
+    </Parameter>
+    
+    	<Parameter name="InventoryByFilter">
+		<value>Appliance Type</value>
+		<value>Customer Type</value>
+		<value>Device Status</value>
+		<value>Device Type</value>
+		<value>Member</value>
+		<value>Service Company</value>
+		</Parameter>
+		
+	<Parameter name="InventoryByFilter Value">
+		<value>AC</value>
+		<value>Residential</value>
+		<value>Available</value>
+		<value>UtilityPRO</value>
+		<value>QA_Test</value>
+		<value>QA_Service</value>
+		</Parameter>
+		
+	<Parameter name="InventoryByFilter Name">
+		<value>Appliance Task</value>
+		<value>Customer Task</value>
+		<value>Device Status Task</value>
+		<value>Device Type Task</value>
+		<value>EC Task</value>
+		<value>Service Company Task</value>
+		</Parameter>
+		
+	<Parameter name="InventoryByFilter locator">
+		<value>filterRules[0].applianceType</value>
+		<value>filterRules[0].modelCustomerType</value>
+		<value>filterRules[0].deviceStatusId</value>
+		<value>filterRules[0].deviceType</value>
+		<value>filterRules[0].memberOfEnergyCompanyId</value>
+		<value>filterRules[0].serviceCompanyId</value>
+		</Parameter>
+		
+	<Parameter name="InventoryByFilterText">
+		<value>Device Status Date Range</value>
+		<value>Program Sign-Up Date</value>
+		<value>Serial Number Range</value>
+		<value>Field Install Date</value>
+		</Parameter>
+				
+	<Parameter name="Following 2">
+		<value>filterRules[0].deviceStateDateFrom</value>
+		<value>filterRules[0].deviceStateDateTo</value>
+		<value>filterRules[1].programSignupDate</value>
+		<value>filterRules[2].serialNumberFrom</value>
+		<value>filterRules[2].serialNumberTo</value>
+		<value>filterRules[3].fieldInstallDate</value>
+		</Parameter>
+		
+	<Parameter name="InventoryByFilterPopup">
+		<value>Program</value>
+		<value>Load Group</value>
+		</Parameter>
+		
+	<Parameter name="InventoryByFilterPopup Name">
+		<value>Program Task</value>
+		<value>Load Group Task</value>
+		</Parameter>
+		
+	<Parameter name="InventoryByFilterPopup Value">
+		<value>LdPgm01-2Gear</value>
+		<value>LdGrp01-Expresscom</value>
+		</Parameter>
+		
+	<Parameter name="InventoryByFilterCalendar">
+		<value>Device Status Date Range</value>
+		<value>Field Install Date</value>
+		<value>Program Sign-Up Date</value>
+		</Parameter>
+		
+	<Parameter name="InventoryByFilterCalendar locator">
+		<value>filterRules[0].deviceStateDateFrom</value>
+		<value>filterRules[0].fieldInstallDate</value>
+		<value>filterRules[0].programSignupDate</value>
+		</Parameter>
+		
+	<Parameter name="InventoryByFilterCalendar Name">
+		<value>Device Status Date Range Task</value>
+		<value>Field Install Date Task</value>
+		<value>Program Sign-Up Date Task</value>
+		</Parameter>   
+</testConfig>  

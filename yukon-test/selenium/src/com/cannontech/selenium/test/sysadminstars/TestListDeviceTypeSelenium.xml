@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Add">
+	<value>LCR-3000 - 2</value>
+	<value>LCR-4000 - 2</value>
+	<value>LCR-5000 (ExpressCom) - 2</value></Parameter>
+	
+	<Parameter name="Option">
+	<value>LCR-3000</value>
+	<value>LCR-4000</value>
+	<value>LCR-5000 (ExpressCom)</value></Parameter>
+	
+	<Parameter name="Edit">
+	<value>LCR-3000 - 2 Napa Valley</value>
+	<value>LCR-4000 - 2 Eagan</value>
+	<value>LCR-5000 (ExpressCom) - 2 East</value></Parameter>
+	
+	<Parameter name="Initial Number of Entries">
+	<value>20</value></Parameter>
+	
+	<Parameter name="Remove">
+	<value>LCR-3000 - 2 Napa Valley</value>
+	<value>LCR-4000 - 2 Eagan</value>
+	<value>LCR-5000 (ExpressCom) - 2 East</value></Parameter></testConfig>

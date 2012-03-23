@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+   
+   <!-- Path to import files -->
+    <Parameter name="ImportInsertAccount">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\Stars_Import_Insert-71x10.csv</value>
+    </Parameter>
+     
+    <Parameter name="ImportUpdateAccount">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\Stars_Import_Update-71x10.csv</value>
+    </Parameter>
+     
+    <Parameter name="ImportUpdEnrollAccount">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\Stars_Import_UpdEnroll-71x10.csv</value>
+    </Parameter>
+</testConfig>    

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Meter Name Values -->
+   
+    <Parameter name="meterName">
+	    <value>MCT-410iL-02 (1471788)</value>
+	    <value>MCT-410CL-01 (130393)</value>
+    	<value>MCT-410FL-04 (100600)</value>
+    </Parameter>
+
+</testConfig>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+   
+   <!-- Path to import files -->
+    <Parameter name="ImportCCDevice">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\CCDeviceBulkImport.csv</value> 
+    </Parameter>
+    
+    <Parameter name="ImportCBCDevice">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\CBCBulkImport.csv</value> 
+    </Parameter>
+    
+    <Parameter name="substation">
+    	<value>Substation N1</value> 
+    	<value>Substation N2</value> 
+    	<value>Substation N3</value>
+    </Parameter>
+      
+    <Parameter name="substationBus">
+    	<value>Subbus N1-BK1</value> 
+    	<value>Subbus N1-BK2</value> 
+    </Parameter>
+    
+    <Parameter name="feeder">
+    	<value>Feeder N1-1-A</value> 
+    	<value>Feeder N1-1-B</value>
+    	<value>Feeder N1-2-A</value> 
+    	<value>Feeder N1-2-B</value>
+    </Parameter>
+    
+    <Parameter name="capbank">
+    	<value>CapBank-01</value> 
+    	<value>CapBank-02</value> 
+    	<value>CapBank-03</value> 
+    	<value>CapBank-04</value> 
+    	<value>CapBank-05</value> 
+    	<value>CapBank-06</value> 
+    	<value>CapBank-07</value> 
+    	<value>CapBank-08</value> 
+    	<value>CapBank-09</value>
+    	<value>CapBank-10</value>
+    	<value>CapBank-11</value> 
+    	<value>CapBank-12</value>   
+    </Parameter>
+    
+    <Parameter name="cbc">
+    	<value>CBC-01</value> 
+    	<value>CBC-02</value> 
+    	<value>CBC-03</value> 
+    	<value>CBC-04</value> 
+    	<value>CBC-05</value> 
+    	<value>CBC-06</value> 
+    	<value>CBC-07</value> 
+    	<value>CBC-08</value> 
+    	<value>CBC-09</value>
+    	<value>CBC-10</value>
+    	<value>CBC-11</value> 
+    	<value>CBC-12</value>   
+    </Parameter>
+    
+    <Parameter name="device">
+    	<value>North Area</value>
+    	<value>Substation N1</value> 
+    	<value>Substation N2</value> 
+    	<value>Substation N3</value>
+    	<value>Subbus N1-BK1</value> 
+    	<value>Subbus N1-BK2</value> 
+    	<value>Feeder N1-1-A</value> 
+    	<value>Feeder N1-1-B</value>
+    	<value>Feeder N1-2-A</value> 
+    	<value>Feeder N1-2-B</value>
+  		<value>CapBank-01</value> 
+    	<value>CapBank-02</value> 
+    	<value>CapBank-03</value> 
+    	<value>CapBank-04</value> 
+    	<value>CapBank-05</value> 
+    	<value>CapBank-06</value> 
+    	<value>CapBank-07</value> 
+    	<value>CapBank-08</value> 
+    	<value>CapBank-09</value>
+    	<value>CapBank-10</value>
+    	<value>CapBank-11</value> 
+    	<value>CapBank-12</value>   
+    	<value>CBC-01</value> 
+    	<value>CBC-02</value> 
+    	<value>CBC-03</value> 
+    	<value>CBC-04</value> 
+    	<value>CBC-05</value> 
+    	<value>CBC-06</value> 
+    	<value>CBC-07</value> 
+    	<value>CBC-08</value> 
+    	<value>CBC-09</value>
+    	<value>CBC-10</value>
+    	<value>CBC-11</value> 
+    	<value>CBC-12</value>   
+    </Parameter>
+</testConfig>    

@@ -1,0 +1,12 @@
+Subversion - verify migration was successful
+
+Create file 
+Commit file 
+Add comment - use QA JIRA number 
+Check Fisheye for commit and comments
+
+Modify Fisheye repository linker setting for JIRA reg exp.
+
+More modifications to Fisheye
+
+Brad

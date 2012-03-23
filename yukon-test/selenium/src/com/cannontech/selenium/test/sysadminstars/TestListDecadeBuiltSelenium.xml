@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+
+	<Parameter name="Add">
+	<value>Early 2000</value>
+	<value>Mid 2005</value>></Parameter>
+	
+	<Parameter name="Initial Number of Entries">
+	<value>12</value></Parameter>
+	
+	<Parameter name="Edit">
+	<value>Early 2000 - built</value>
+	<value>Mid 2005 - Residence ready</value></Parameter>
+	
+	<Parameter name="Remove">
+	<value>Early 2000 - built</value>
+	<value>Mid 2005 - Residence ready</value></Parameter></testConfig>

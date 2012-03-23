@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+   
+    <Parameter name="AcctNum">
+    	<value>11000001</value>
+    	<value>11000002</value>
+    </Parameter>
+    
+    <Parameter name="CustNum">
+    	<value>11000001</value>
+    	<value>11000002</value>
+    </Parameter>
+    
+    <Parameter name="LastName">
+    	<value>Yukon01</value>
+    	<value>Yukon02</value>
+    </Parameter>
+
+    <Parameter name="FirstName">
+    	<value>Res</value>
+    	<value>Res</value>
+    </Parameter>
+   
+    <Parameter name="Addr1">
+   		<value>1 Address 1</value>
+   		<value>1 Address 2</value>
+    </Parameter>
+
+   
+    <Parameter name="City">
+    	<value>Yukon City</value>
+    	<value>Yukon City</value>
+    </Parameter>
+    
+    <Parameter name="State">
+    	<value>QA</value>
+     	<value>QA</value>   	
+    </Parameter>
+
+    <Parameter name="Zip">
+    	<value>99999</value>
+    	<value>99999</value>
+    </Parameter>
+    
+    <Parameter name="UserName">
+    	<value>11000001</value>
+    	<value>11000002</value>
+    </Parameter>
+   
+    <Parameter name="Password">
+   		<value>11000001</value>
+    	<value>11000002</value>
+     </Parameter>
+
+    <Parameter name="ConfPass">
+   		<value>11000001</value>
+    	<value>11000002</value>
+    </Parameter>
+
+</testConfig>

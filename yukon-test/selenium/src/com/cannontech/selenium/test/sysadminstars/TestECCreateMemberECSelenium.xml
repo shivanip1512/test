@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Parent Company Name">
+		<value>QA_Test10</value>
+		<value>QA_Test20</value></Parameter>
+		
+	<Parameter name="Parent Admin Group">
+		<value>QA_Test10 Admin Grp</value>
+		<value>QA_Test20 Admin Grp</value></Parameter>
+		
+	<Parameter name="Parent Primary Login">
+		<value>starsop11</value>
+		<value>starsop21</value></Parameter>
+		
+	<Parameter name="Member Company Name">
+		<value>QA_Test10 Member01</value>
+		<value>QA_Test10 Member02</value>
+		<value>QA_Test20 Member01</value>
+		<value>QA_Test20 Member02</value></Parameter>
+		
+	<Parameter name="Member Primary Login">
+		<value>memberop10-01</value>
+		<value>memberop10-02</value>
+		<value>memberop20-01</value>
+		<value>memberop20-02</value></Parameter>
+		
+	<Parameter name="Member Admin Group">
+		<value>QA_Test10 Member01 Admin Grp</value>
+		<value>QA_Test10 Member02 Admin Grp</value>
+		<value>QA_Test20 Member01 Admin Grp</value>
+		<value>QA_Test20 Member02 Admin Grp</value></Parameter>
+		
+	<Parameter name="Member Admin Group Edit">
+		<value>QA_Test10 Member02 Admin Grp Edit</value>
+		<value>QA_Test20 Member02 Admin Grp Edit</value></Parameter>
+		
+	<Parameter name="EC Login">
+		<value>starsop11</value>
+		<value>superstarsop</value></Parameter></testConfig>

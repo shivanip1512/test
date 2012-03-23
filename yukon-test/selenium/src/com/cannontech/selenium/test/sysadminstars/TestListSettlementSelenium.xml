@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Add">
+	<value>Billing Settlement-1</value></Parameter>
+	
+	<Parameter name="Option">
+	<value>3651</value></Parameter>
+	
+	<Parameter name="Edit">
+	<value>Billing Settlement-1 Edit</value></Parameter>
+	
+	<Parameter name="Remove">
+	<value>Billing Settlement-1 Edit</value></Parameter>
+	</testConfig>

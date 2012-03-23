@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Add">
+	<value>5 - 6 Occupants</value>
+	<value>7 - 10 Occupants</value></Parameter>
+	
+	<Parameter name="Initial Number of Entries">
+	<value>6</value></Parameter>
+	
+	<Parameter name="Edit">
+	<value>5 - 6 Occupants - Medium house</value>
+	<value>7 - 10 Occupants - Big house</value></Parameter>
+	
+	<Parameter name="Remove">
+	<value>5 - 6 Occupants - Medium house</value>
+	<value>7 - 10 Occupants - Big house</value></Parameter></testConfig>

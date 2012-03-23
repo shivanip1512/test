@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+
+	<Parameter name="Regulator Name">
+        <value>LTC Regulator - 1</value>
+        <value>Gang Regulator – Parent</value>
+        <value>Gang Regulator - Child</value>
+        <value>Single Phase Regulator - A</value>
+        <value>Single Phase Regulator - B</value>
+        <value>Single Phase Regulator - C</value>
+        <value>Three Phase Regulator - A</value>
+        <value>Three Phase Regulator -B</value>
+        <value>Three phase Regulator -C</value>
+    </Parameter>
+    
+    <Parameter name="Regulator Type">
+        <value>Load Tap Changer</value>
+        <value>Gang Operated Regulator</value>
+        <value>Gang Operated Regulator</value>
+        <value>Phase Operated Regulator</value>
+        <value>Phase Operated Regulator</value>
+        <value>Phase Operated Regulator</value>
+        <value>Phase Operated Regulator</value>
+        <value>Phase Operated Regulator</value>
+        <value>Phase Operated Regulator</value>
+    </Parameter>
+
+    <Parameter name="area">
+        <value>SubArea-103</value>
+    </Parameter>
+    
+    <Parameter name="specialArea">
+        <value>SpecialArea-103</value>
+    </Parameter>
+    
+    <Parameter name="substation">
+    	<value>Substation-103</value>
+    </Parameter>
+    
+    <Parameter name="substationBus">
+    	<value>SubBus-103</value>
+    </Parameter>
+    
+    <Parameter name="feeder">
+    	<value>Feeder-103</value>
+    </Parameter>
+    
+    <Parameter name="capBank">
+    	<value>CapBank-103</value>
+    </Parameter>
+
+    <Parameter name="CBC">
+    	<value>CBC7010-103</value>
+    </Parameter>
+     
+    <Parameter name="areas">
+        <value>DataDriven0002</value>
+        <value>DataDriven0003</value>
+        <value>DataDriven0004</value>
+    </Parameter>
+
+</testConfig>

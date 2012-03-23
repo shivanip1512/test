@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+     
+    <Parameter name="strategies">
+    	<value>kVarStrategy-1</value>
+        <value>kVarStrategy-2</value>
+        <value>kVarStrategy-3</value>
+        <value>kVarStrategy-4</value>
+        <value>kVarStrategy-5</value>
+        <value>kVarStrategy-6</value>
+        <value>kVarStrategy-7</value>
+        <value>kVarStrategy-8</value>
+        <value>kVarStrategy-9</value>
+        <value>kVarStrategy-10</value>
+    </Parameter>
+</testConfig>

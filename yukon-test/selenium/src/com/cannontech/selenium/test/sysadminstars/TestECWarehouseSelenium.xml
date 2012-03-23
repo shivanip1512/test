@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+
+	<Parameter name="Name">
+		<value>QA_Warehouse01</value>
+		<value>QA_Warehouse02</value>
+		<value>QA_Warehouse02_Edit</value></Parameter>
+		
+	<Parameter name="Street Address 1">
+		<value>123 QA St</value>
+		<value>234 QA Ave.</value>
+		<value>234 QA St. NW</value></Parameter>
+		
+	<Parameter name="Street Address 2">
+		<value>STE 1200</value>
+		<value>STE 1100</value></Parameter>
+		
+	<Parameter name="City">
+		<value>QA City</value>
+		<value>QA City</value></Parameter>
+		
+	<Parameter name="State">
+		<value>MN</value>
+		<value>MN</value></Parameter>
+		
+	<Parameter name="Zip">
+		<value>99123</value>
+		<value>99123</value>
+		<value>99123-9876</value></Parameter>
+		
+	<Parameter name="Notes">
+		<value>Quirky Qust 1</value>
+		<value>Quirky Qust 2</value>
+		<value>Quirky Qust 2 Edit</value>
+	</Parameter>
+</testConfig>

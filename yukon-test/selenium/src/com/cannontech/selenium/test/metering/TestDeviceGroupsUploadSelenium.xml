@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+    
+    <Parameter name="UploadFile">
+    	<value>\\10.106.33.16\d$\TestData\upload_byName.csv</value>
+    </Parameter>    
+
+</testConfig>

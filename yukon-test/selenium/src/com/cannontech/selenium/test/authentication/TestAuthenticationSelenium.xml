@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<testConfig>
+
+    <!-- Selenium Test Parameters -->
+    
+    <Parameter name="ImportInsertAccount">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\starsImpAcctInsert55-tmp.csv</value>
+    </Parameter>
+    
+    <Parameter name="ImportDeleteAccount">
+    	<value>\\10.106.33.16\d$\SeleniumImportData\starsImpAcctDelete55.csv</value>
+    </Parameter>     
+
+    <Parameter name="username">
+        <value>syukon</value>
+    </Parameter>
+
+    <Parameter name="password">
+        <value>syukon</value>
+    </Parameter>
+
+    <Parameter name="invaliduser">
+    	<value>yukonn</value>
+    </Parameter>
+        
+    <Parameter name="users">
+        <value>41000000</value>
+        <value>41000001</value>
+        <value>41000002</value>
+        <value>41000003</value>
+        <value>41000004</value>
+        <value>41000005</value>        
+    </Parameter>
+
+    <Parameter name="passwords">
+        <value>41000000</value>
+        <value>41000001</value>
+        <value>41000002</value>
+        <value>41000003</value>
+        <value>41000004</value>
+        <value>41000005</value>                     
+    </Parameter>
+
+</testConfig>

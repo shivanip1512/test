@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testConfig><!--Path to import files-->
+	<Parameter name="Device Type">
+	<value>Commercial ExpressStat</value>
+	<value>ExpressStat</value>
+	<value>LCR-5000 (VERSACOM)</value>
+	<value>LCR-4000</value>
+	<value>UtilityPRO</value>
+	<value>UtilityPRO G2</value>
+	<value>UtilityPRO ZigBee</value></Parameter>
+	
+	<Parameter name="Programs">
+	<value>LdPgm01-2Gear</value>
+	<value>LdPgm02-2Gear</value>
+	<value>LdPgm03-2Gear</value>
+	<value>LdPgm04-2Gear</value>
+	<value>LdPgm05-2Gear</value>
+	<value>LdPgm06-2Gear</value>
+	<value>LdPgm07-2Gear</value>
+	<value>LdPgm08-2Gear</value></Parameter>
+	
+	<Parameter name="Schedule Name">
+	<value>Commercial ExpressStat</value>
+	<value>ExpressStat</value>
+	<value>UtilityPRO</value>
+	<value>UtilityPRO ZigBee</value>
+	<value>UtilityPRO G2</value></Parameter>
+	
+	<Parameter name="Schedule Type">
+	<value>WEEKDAY_SAT_SUN</value>
+	<value>ALL</value>
+	<value>WEEKDAY_WEEKEND</value>
+	<value>WEEKDAY_WEEKEND</value>
+	<value>WEEKDAY_SAT_SUN</value></Parameter>
+	</testConfig>
