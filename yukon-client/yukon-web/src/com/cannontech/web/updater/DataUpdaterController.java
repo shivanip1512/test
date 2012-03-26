@@ -39,7 +39,10 @@ public class DataUpdaterController extends AbstractController {
         try {
             data = JSONObject.fromString(jsonStr);
         } catch (JSONException e) {
+            String referrer = request.getHeader("referer"); // Yes, with the misspelling.
             log.error("The system has recieved a string that it cannot parse.  ["+jsonStr+"]");
+            log.error("Referring page: " + referrer);
+            
             throw e;
         }
         
