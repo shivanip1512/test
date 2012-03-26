@@ -38,7 +38,7 @@ public class TokenStatusRequestEndpoint {
         TokenStatus status = profileCollectionService.getStatus(token);
         if (status == null) {
             // Unknown token.
-            Element errorElem = new Element("error", ns);
+            Element errorElem = new Element("failure", ns);
             errorElem.addContent("Token " + tokenStr + " is invalid or has expired.");
             responseElem.addContent(errorElem);
         } else if (status.isFinished()) {
