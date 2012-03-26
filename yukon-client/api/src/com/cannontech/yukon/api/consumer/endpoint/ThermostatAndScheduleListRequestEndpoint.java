@@ -45,7 +45,7 @@ public class ThermostatAndScheduleListRequestEndpoint {
         List<Thermostat> thermostats = inventoryDao.getThermostatsByAccountId(customerAccount.getAccountId());
                 
         // init response
-        Element response = new Element("ThermostatAndScheduleListResponse", ns);
+        Element response = new Element("thermostatAndScheduleListResponse", ns);
         response.setAttribute(new Attribute("version", "1.0"));
         try {
             // get all the schedules

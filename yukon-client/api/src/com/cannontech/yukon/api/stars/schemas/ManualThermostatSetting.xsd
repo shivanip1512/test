@@ -14,7 +14,7 @@
             <xsd:element name="fanState" type="yukon:ThermostatFan"/>
             <xsd:element name="heatTemperature" type="yukon:Temperature" minOccurs="0"/>
             <xsd:element name="coolTemperature" type="yukon:Temperature" minOccurs="0"/>
-            <xsd:element name="holdTemperature" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="holdTemperature" type="xsd:boolean" minOccurs="0" default="false"/>
         </xsd:sequence>
     </xsd:complexType>
     
