@@ -5,630 +5,496 @@ It also has tags for subversion checkout and updates and svn*.jar libs are in us
 Author: anuradha.uduwage
 -->
 <project name="Yukon-Selenium-Framework" default="compile" basedir=".">
-	
-	<!-- The directory containing source code -->
-	<property name="src.dir" value="src"/>
-	
-	<!-- Temporary build directories -->
-	<property name="build.dir" value="/YukonSelenium"/>
-	<property name="build.classes" value="${build.dir}/classes"/>
-	<property name="build.jar" value="${build.dir}/jar"/>
-	<property name="testng.output" value="${build.dir}/testng"/>
-	<property name="copy.src" value="/yukonSelenium.src"/>
-	<property name="java.docs" value="${build.dir}/docs"/>
-	<property name="checkout" value="/svncheckout"/>
-	<property name="reportRepo" value="/SeleniumReports"/>
-	
-	<!-- depended jar files -->
-	<property name="src.lib" value="lib"/>
-	
-	<!-- test report location -->
-	<property name="test.reports" value="${build.dir}/reports"/>
-	<property name="test.reports.html" value="${test.reports}/html"/>
-	<!-- <property name="syspropfile" value="C:\DevWorkSpace\Selenium\Yukon-Selenium-Framework"/> -->
+    
+    <!-- The directory containing source code -->
+    <property name="src.dir" value="src"/>
+    
+    <!-- Temporary build directories -->
+    <property name="build.dir" value="/YukonSelenium"/>
+    <property name="build.classes" value="${build.dir}/classes"/>
+    <property name="build.jar" value="${build.dir}/jar"/>
+    <property name="testng.output" value="${build.dir}/testng"/>
+    <property name="copy.src" value="/yukonSelenium.src"/>
+    <property name="java.docs" value="${build.dir}/docs"/>
+    <property name="checkout" value="/svncheckout"/>
+    <property name="reportRepo" value="/SeleniumReports"/>
+    
+    <!-- depended jar files -->
+    <property name="src.lib" value="lib"/>
+    
+    <!-- test report location -->
+    <property name="test.reports" value="${build.dir}/reports"/>
+    <property name="test.reports.html" value="${test.reports}/html"/>
+    <!-- <property name="syspropfile" value="C:\DevWorkSpace\Selenium\Yukon-Selenium-Framework"/> -->
 
-	
-	<path id="classpath">
-		<fileset dir="${src.lib}" includes="**/*.jar"></fileset>
-		<!-- <fileset dir="${build.classes}" includes="**/*.class"></fileset> -->
-	</path>
-	
-	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="classpath"/> 
-	
-	<!-- Target to creat the build directories pripr to the compile target -->
-	<target name="prepare" description="Creating necessary file structure for build process.">
-		<echo message="Creating necessary directory structure" />
-		<mkdir dir="${build.dir}"/>
-		<mkdir dir="${build.classes}"/>
-		<mkdir dir="${build.jar}"/>
-		<mkdir dir="${test.reports}"/>
-		<mkdir dir="${testng.output}" />
-		<mkdir dir="${copy.src}"/>
-		<mkdir dir="${build.dir}/docs" />
-		<mkdir dir="${test.reports.html}" />
-		<mkdir dir="${checkout}"/>
-	</target>
-	
-	<target name="clean" description="Remoes all generated files.">
-		<echo message="Clean up process in action..." />
-		<delete dir="${build.dir}"/>
-		<delete dir="${copy.src}" />
-	</target>
-	
-	<target name="compile" depends="prepare" description="Compiles all source code.">
-		<javac srcdir="${src.dir}" destdir="${build.classes}" classpathref="classpath"/>
-		<copy todir="${build.classes}">
-			<fileset dir="${src.dir}" excludes="**/*.java"/>
-		</copy>
-	</target>
-	
-	<!-- Compile the project and build jar file -->
-	<target name="jar" depends="compile" 
-			description="Generates final jar">
-		<echo message="Generating necessary jar files" />
-		<copy todir="${build.jar}">
-			<fileset dir="lib" excludes="**/*.java"/>
-		</copy>
-		<jar jarfile="${build.jar}/yukonSelenium.jar"
-				basedir="${build.classes}">
-		
-			<manifest>
-				<attribute name="Main-Class" value="com.cannontech.selenium.test.TestMainSel"/>
-				<attribute name="Class-Path" 
-					value="${build.jar}/log4j-1.2.15.jar ${build.jar}/junit-4.6.jar ${build.jar}/selenium-java-client-driver.jar ${build.jar}/dom4j-1.6.1.jar ${build.jar}/testng-5.10-jdk15.jar"/>
-			</manifest>
-		</jar>
-	</target>
-	
-	<target name="build-all" depends="clean, jar" 
-		description="Cleans, Compiles, then builds the JAR file">
-	</target>
-	
-	<target name="run" depends="jar">
-		<java jar="${build.jar}/yukonSelenium.jar" fork="true">
-			<classpath>
-				<path refid="classpath"/>
-				<path id="application" location="${build.jar}/yukonSelenium.jar"/>
-			</classpath>
-		</java>	
-	</target>
-	
-	<!-- Run all the test classes  -->
-	<target name="run-tests" depends="jar" description="target to execute all the selenium tests.">
-		<echo message="Getting ready to run selenium tests" />
-		<junit printsummary="withOutAndErr" fork="yes">
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>
-			<batchtest fork="yes">
-				<fileset dir="${src.dir}" includes="**/Test*Selenium.java"/>
-			</batchtest>
-			<sysproperty key="default.browser" value="${default.browser}"/>
-		</junit>
-	</target>
-	
-	<!-- Run all the test in the root module which is test -->
-	<target name="run-tests-test" depends="jar" description="target to execute all the selenium tests.">
-		<echo message="Getting ready to run selenium tests" />
-		<junit printsummary="withOutAndErr" fork="yes">
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>
-			<batchtest fork="yes">
-				<fileset dir="${src.dir}" includes="/com/cannontech/selenium/test/Test*Selenium.java"/>
-			</batchtest>
-		</junit>
-	</target>	
+    <path id="classpath">
+        <fileset dir="${src.lib}" includes="**/*.jar"></fileset>
+        <!-- <fileset dir="${build.classes}" includes="**/*.class"></fileset> -->
+    </path>
 
-	<!-- Run all the tests in asetup module -->
-	<target name="run-tests-asetup" depends="jar" description="target to execute all the selenium tests.">
-		<echo message="Getting ready to run selenium tests" />
-		<junit printsummary="true" failureproperty="junit.failure" >
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>		
-			<batchtest todir="${test.reports}">
-				<fileset dir="${build.classes}" includes="/com/cannontech/selenium/test/asetup/Test*Selenium.class"/>
-				<formatter type="xml" />
-			</batchtest>
-		</junit>
-		
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${test.reports}">
-			<fileset dir="${test.reports}" />
-			<report todir="${test.reports.html}" />
-		</junitreport>
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-Asetup-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>			
-		<fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>		
+    <!-- Jenkins Properties for Biuld -->
+    <property name="jenkins.selenium.reports" value="report" />
+    <property name="jenkins.code.base" value="codebase"/>
 
-	</target>	
-	
-	<!-- Run all the tests in cap control module -->
-	<target name="run-tests-cc" depends="jar" description="target to execute all the selenium tests under Cap Control module.">
-		
-		<junit printsummary="true" failureproperty="junit.failure" >
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>		
-			<batchtest todir="${test.reports}">
-				<fileset dir="${build.classes}" includes="/com/cannontech/selenium/test/capcontrol/Test*Selenium.class"/>
-				<formatter type="xml" />
-			</batchtest>
-		</junit>
-		
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${test.reports}">
-			<fileset dir="${test.reports}" />
-			<report todir="${test.reports.html}" />
-		</junitreport>
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-CC-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>			
-		<fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>
+    <path id="classpath.base">
+        <path refid="classpath" />
+        <pathelement location="${src.lib}"/>
+        <pathelement location="${jenkins.code.base}"/>
+    </path> 
 
-	</target>	
-	
-	<!-- Run all the tests in demand response module -->
-	<target name="run-tests-dr" depends="build-all" description="target to execute all the selenium tests.">
-		<echo message="Getting ready to run selenium tests" />
-		<junit printsummary="true" failureproperty="junit.failure" >
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>		
-			<batchtest todir="${test.reports}">
-				<fileset dir="${build.classes}" includes="/com/cannontech/selenium/test/demandresponse/Test*Selenium.class"/>
-				<formatter type="xml" />
-			</batchtest>
-		</junit>
-		
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${test.reports}">
-			<fileset dir="${test.reports}" />
-			<report todir="${test.reports.html}" />
-		</junitreport>
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-DR-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>			
-		<fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>
-		
-	</target>
-	
-	<!-- Run all the tests in metering module -->
-	<target name="run-tests-meter" depends="build-all" description="target to execute all the selenium tests.">
-		<echo message="Getting ready to run selenium tests" />
-		<junit printsummary="true" failureproperty="junit.failure" >
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>		
-			<batchtest todir="${test.reports}">
-				<fileset dir="${build.classes}" includes="/com/cannontech/selenium/test/metering/Test*Selenium.java"/>
-				<formatter type="xml" />
-			</batchtest>
-		</junit>
-		
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${test.reports}">
-			<fileset dir="${test.reports}" />
-			<report todir="${test.reports.html}" />
-		</junitreport>
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-Meter-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>			
-		<fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>
-	
-	</target>	
-	
-	<!-- Run all the tests in navigation module -->
-	<target name="run-tests-navigation" depends="jar" description="target to execute all the selenium tests.">
-		<echo message="Getting ready to run selenium tests" />
-		<junit printsummary="true" failureproperty="junit.failure" >
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>		
-			<batchtest todir="${test.reports}">
-				<fileset dir="${build.classes}" includes="/com/cannontech/selenium/test/navigation/Test*Selenium.class"/>
-				<formatter type="xml" />
-			</batchtest>
-		</junit>
-		
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${test.reports}">
-			<fileset dir="${test.reports}" />
-			<report todir="${test.reports.html}" />
-		</junitreport>
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-Nav-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>			
-		<fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>		
-	
-	</target>
+    <typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="classpath"/> 
+    
+    <!-- Target to creat the build directories pripr to the compile target -->
+    <target name="prepare" description="Creating necessary file structure for build process.">
+        <echo message="Creating necessary directory structure" />
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${build.classes}"/>
+        <mkdir dir="${build.jar}"/>
+        <mkdir dir="${test.reports}"/>
+        <mkdir dir="${testng.output}" />
+        <mkdir dir="${copy.src}"/>
+        <mkdir dir="${build.dir}/docs" />
+        <mkdir dir="${test.reports.html}" />
+        <mkdir dir="${checkout}"/>
+    </target>
+    
+    <target name="clean" description="Remoes all generated files.">
+        <echo message="Clean up process in action..." />
+        <delete dir="${build.dir}"/>
+        <delete dir="${copy.src}" />
+    </target>
+    
+    <target name="compile" depends="prepare" description="Compiles all source code.">
+        <javac srcdir="${src.dir}" destdir="${build.classes}" classpathref="classpath"/>
+        <copy todir="${build.classes}">
+            <fileset dir="${src.dir}" excludes="**/*.java"/>
+        </copy>
+    </target>
+    
+    <!-- Compile the project and build jar file -->
+    <target name="jar" depends="compile" 
+            description="Generates final jar">
+        <echo message="Generating necessary jar files" />
+        <copy todir="${build.jar}">
+            <fileset dir="lib" excludes="**/*.java"/>
+        </copy>
+        <jar jarfile="${build.jar}/yukonSelenium.jar"
+                basedir="${build.classes}">
+        
+            <manifest>
+                <attribute name="Main-Class" value="com.cannontech.selenium.test.TestMainSel"/>
+                <attribute name="Class-Path" 
+                    value="${build.jar}/log4j-1.2.15.jar ${build.jar}/junit-4.6.jar ${build.jar}/selenium-java-client-driver.jar ${build.jar}/dom4j-1.6.1.jar ${build.jar}/testng-5.10-jdk15.jar"/>
+            </manifest>
+        </jar>
+    </target>
+    
+    <target name="build-all" depends="clean, jar" 
+        description="Cleans, Compiles, then builds the JAR file">
+    </target>
+    
+    <target name="run" depends="jar">
+        <java jar="${build.jar}/yukonSelenium.jar" fork="true">
+            <classpath>
+                <path refid="classpath"/>
+                <path id="application" location="${build.jar}/yukonSelenium.jar"/>
+            </classpath>
+        </java> 
+    </target>
+    
+    <!-- Run all the test classes  -->
+    <target name="run-tests" depends="jar" description="target to execute all the selenium tests.">
+        <echo message="Getting ready to run selenium tests" />
+        <junit printsummary="withOutAndErr" fork="yes">
+            <classpath>
+                <path refid="classpath"/>
+                <path refid="application"/>
+            </classpath>
+            <batchtest fork="yes">
+                <fileset dir="${src.dir}" includes="**/Test*Selenium.java"/>
+            </batchtest>
+            <sysproperty key="default.browser" value="${default.browser}"/>
+        </junit>
+    </target>
+    
+    <!-- Run all the test in the root module which is test -->
+    <target name="run-tests-test" depends="jar" description="target to execute all the selenium tests.">
+        <echo message="Getting ready to run selenium tests" />
+        <junit printsummary="withOutAndErr" fork="yes">
+            <classpath>
+                <path refid="classpath"/>
+                <path refid="application"/>
+            </classpath>
+            <batchtest fork="yes">
+                <fileset dir="${src.dir}" includes="/com/cannontech/selenium/test/Test*Selenium.java"/>
+            </batchtest>
+        </junit>
+    </target>   
 
-	<!-- Run all the tests in stars module -->
-	<target name="run-tests-stars" depends="jar" description="target to execute all the selenium tests.">
-		<echo message="Getting ready to run selenium tests" />
-		<junit printsummary="true" failureproperty="junit.failure" >
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>		
-			<batchtest todir="${test.reports}">
-				<fileset dir="${build.classes}" includes="/com/cannontech/selenium/test/stars/Test*Selenium.class"/>
-				<formatter type="xml" />
-			</batchtest>
-		</junit>
-		
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${test.reports}">
-			<fileset dir="${test.reports}" />
-			<report todir="${test.reports.html}" />
-		</junitreport>
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-Stars-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>			
-		<fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>		
+    <!-- Create html reports -->
+    <target name="createHtmlReports" description="target to create the html report.">
+        <echo message="running JUnit Report" />
+        <junitreport todir="${test.reports}">
+            <fileset dir="${test.reports}" />
+            <report todir="${test.reports.html}" />
+        </junitreport>
+        <tstamp>
+            <format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
+        </tstamp>
+        <mkdir dir="${reportRepo}/report-${testingPackageName}-${start.timestamp}"/>
+        <copy todir="${reportRepo}/report-${start.timestamp}">
+            <fileset dir="${test.reports}" />
+        </copy>
+        <fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>
+    </target>
 
-	</target>
-	
-	<!-- Run all the tests in authentication module -->
-	<target name="run-tests-authentication" depends="jar" description="target to execute all the selenium tests.">
-		<echo message="Getting ready to run selenium tests" />
-		<junit printsummary="true" failureproperty="junit.failure" >
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>		
-			<batchtest todir="${test.reports}">
-				<fileset dir="${build.classes}" includes="/com/cannontech/selenium/test/authentication/Test*Selenium.class"/>
-				<formatter type="xml" />
-			</batchtest>
-		</junit>
-		
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${test.reports}">
-			<fileset dir="${test.reports}" />
-			<report todir="${test.reports.html}" />
-		</junitreport>
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-Authentication-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>			
-		<fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>		
+    <target name="ensure-test-name" unless="test">
+        <fail message="You must run this target with -Dtest=TestName"/>
+    </target>
+    
+    
+    <!--Run a single Test Class -->
+    <target name="run-test" description="Runs single selenium test with -Dtest=" depends="ensure-test-name, jar">
+        <junit printsummary="withOutAndErr" fork="yes">
+            <!-- <sysproperty key="tests" value="${tests}"/> -->
+            <classpath>
+                <path refid="classpath"/>
+                <path refid="application"/>
+            </classpath>
+            <formatter type="brief" usefile="false"/>
+            <batchtest>
+                <fileset dir="${src.dir}">
+                    <include name="**/${test}Selenium.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+    
+    <!-- JUnit Reporting -->
+    <target name="test-report" depends="jar" description="Generate Test Results as HTML">
+        
+        <junit printsummary="true" failureproperty="junit.failure" >
+            <classpath>
+                <path refid="classpath"/>
+                <path refid="application"/>
+            </classpath>        
+            <batchtest todir="${test.reports}">
+                <fileset dir="${build.classes}" includes="**/Test*Selenium.class"/>
+                <formatter type="xml" />
+            </batchtest>
+            <sysproperty key="default.browser" value="${default.browser}"/>
+        </junit>
+        
+        <!-- Create html reports -->
+        <echo message="running JUnit Report" />
+        <junitreport todir="${test.reports}">
+            <fileset dir="${test.reports}" />
+            <report todir="${test.reports.html}" />
+        </junitreport>
+        <tstamp>
+            <format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
+        </tstamp>
+        <mkdir dir="${reportRepo}/report-${start.timestamp}"/>
+        <copy todir="${reportRepo}/report-${start.timestamp}">
+            <fileset dir="${test.reports}" />
+        </copy>         
+        <fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>
+    
+    </target>
+    
+    <!-- JUnit Reporting -->
+    <target name="test-report-ie" depends="build-all" description="Generate Test Results as HTML">
 
-	</target>	
+        <junit printsummary="true" failureproperty="junit.failure" fork="true">
+            <classpath>
+                <path refid="classpath"/>
+                <path refid="application"/>
+            </classpath>        
+            <batchtest todir="${test.reports}">
+                <sysproperty key="browser.value" value="${browser}"/>
+                <fileset dir="${build.classes}" includes="**/Test*Selenium.class"/>
+                <formatter type="xml" />
+            </batchtest>
+        </junit>
+    
+        <!-- Create html reports -->
+        <echo message="running JUnit Report" />
+        <junitreport todir="${test.reports}">
+            <fileset dir="${test.reports}" />
+            <report todir="${test.reports.html}" />
+        </junitreport>
+        <tstamp>
+            <format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
+        </tstamp>
+        <mkdir dir="${reportRepo}/report-${start.timestamp}"/>
+        <copy todir="${reportRepo}/report-${start.timestamp}">
+            <fileset dir="${test.reports}" />
+        </copy>         
+        <fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>
+    
+    </target>   
 
-	<target name="ensure-test-name" unless="test">
-		<fail message="You must run this target with -Dtest=TestName"/>
-	</target>
-	
-	<!-- Run all the tests in system admin stars module -->
-	<target name="run-tests-sysadminstars" depends="jar" description="target to execute all the selenium tests.">
-		<echo message="Getting ready to run selenium tests" />
-		<junit printsummary="true" failureproperty="junit.failure" >
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>		
-			<batchtest todir="${test.reports}">
-				<fileset dir="${build.classes}" includes="/com/cannontech/selenium/test/sysadminstars/Test*Selenium.class"/>
-				<formatter type="xml" />
-			</batchtest>
-		</junit>
-		
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${test.reports}">
-			<fileset dir="${test.reports}" />
-			<report todir="${test.reports.html}" />
-		</junitreport>
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-SysadminStars-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>			
-		<fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>		
+    <!-- Copy selenium results to dated folder -->
+    <target name="store-junit-report" description="Saves away the generated JUnit test report.">
+        <tstamp>
+            <format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
+        </tstamp>
+        <mkdir dir="${reportRepo}/report-${start.timestamp}"/>
+        <copy todir="${reportRepo}/report-${start.timestamp}">
+            <fileset dir="${test.reports}" />
+        </copy>
+    </target>
+    
+    <!--Generate java docs -->
+    <target name="java-docs" depends="compile" description="Generate JavaDocs">
+        <javadoc destdir="${java.docs}" author="true" version="true" windowtitle="${ant.project.name}">
+            <package name="com.cannontech.selenium.*"/>
+            <sourcepath location="${src.dir}"/>
+            <classpath>
+                <path refid="classpath"/>
+                <path refid="application"/>
+            </classpath>
+            <bottom>
+                <![CDATA[<em>Copyright &#169; 2009, Cooper Power Systems</em> <br>All Rights Reserved]]>
+            </bottom>
+        </javadoc>
+    </target>
+    
+    <target name="copy-src" depends="prepare">
+        <copy todir="${copy.src}">
+            <fileset dir="${basedir}" excludes="*.csv"/>
+        </copy>     
+    </target>
 
-	</target>
-	
-	<!--Run a single Test Class -->
-	<target name="run-test" description="Runs single selenium test with -Dtest=" depends="ensure-test-name, jar">
-		<junit printsummary="withOutAndErr" fork="yes">
-			<!-- <sysproperty key="tests" value="${tests}"/> -->
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>
-			<formatter type="brief" usefile="false"/>
-			<batchtest>
-				<fileset dir="${src.dir}">
-					<include name="**/${test}Selenium.java"/>
-				</fileset>
-			</batchtest>
-		</junit>
-	</target>
-	
-	<!-- JUnit Reporting -->
-	<target name="test-report" depends="jar" description="Generate Test Results as HTML">
-		
-		<junit printsummary="true" failureproperty="junit.failure" >
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>		
-			<batchtest todir="${test.reports}">
-				<fileset dir="${build.classes}" includes="**/Test*Selenium.class"/>
-				<formatter type="xml" />
-			</batchtest>
-			<sysproperty key="default.browser" value="${default.browser}"/>
-		</junit>
-		
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${test.reports}">
-			<fileset dir="${test.reports}" />
-			<report todir="${test.reports.html}" />
-		</junitreport>
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>			
-		<fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>
-	
-	</target>
-	
-	<!-- JUnit Reporting -->
-	<target name="test-report-ie" depends="build-all" description="Generate Test Results as HTML">
+    <!-- Deletes the existing sub version checkout build, docs and dist directory-->
+    <target name="deleteCheckout">
+        <delete dir="${checkout}" />
+    </target>
 
-		<junit printsummary="true" failureproperty="junit.failure" fork="true">
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>		
-			<batchtest todir="${test.reports}">
-				<sysproperty key="browser.value" value="${browser}"/>
-				<fileset dir="${build.classes}" includes="**/Test*Selenium.class"/>
-				<formatter type="xml" />
-			</batchtest>
-		</junit>
-	
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${test.reports}">
-			<fileset dir="${test.reports}" />
-			<report todir="${test.reports.html}" />
-		</junitreport>
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>			
-		<fail if = "junit.failure" message = "Unit test(s) failed. See Reports!"/>
-	
-	</target>	
+    <!-- Creates the  build dir to checkout from subversion -->
+    <target name="createCheckout">
+        <mkdir dir="${checkout}" />
+    </target>
 
-	<!-- Copy selenium results to dated folder -->
-	<target name="store-junit-report" description="Saves away the generated JUnit test report.">
-		<tstamp>
-			<format property="start.timestamp" pattern="yyyyMMdd-HHmmss" />
-		</tstamp>
-		<mkdir dir="${reportRepo}/report-${start.timestamp}"/>
-		<copy todir="${reportRepo}/report-${start.timestamp}">
-			<fileset dir="${test.reports}" />
-		</copy>
-	</target>
-	
-	<!-- JUnit Reporting Hudson -->
-	<target name="execute-hudson" description="Generate Test Results as HTML">
-		
-		<property name="hudson.selenium.reports" value="report" />
-		<property name="hudson.code.base" value="codebase"/>
-		
-		<delete dir="${hudson.selenium.reports}"/>
-		<delete dir="${hudson.code.base}" />
-		<mkdir dir="${hudson.selenium.reports}"/>
-		<mkdir dir="${hudson.code.base}"/>
-		
-		<path id="classpath.base">
-			<path refid="classpath" />
-			<pathelement location="${src.lib}"/>
-			<pathelement location="${hudson.code.base}"/>
-		</path>	
-		
-		<javac srcdir="${src.dir}" destdir="${hudson.code.base}" classpathref="classpath.base"/>
-		<copy todir="${hudson.code.base}">
-			<fileset dir="${src.dir}" excludes="**/*.java"/>
-		</copy>		
-		
-		<!-- <taskdef name="junitreport" classname="org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator"/> -->
-		<junit printsummary="yes" haltonfailure="false" haltonerror="false" fork="yes">
-			<classpath>
-				<path refid="classpath.base"/>
-			</classpath>			
-			<formatter type="xml" />
-			<batchtest fork="yes" todir="${hudson.selenium.reports}" filtertrace="on">
-				<fileset dir="${hudson.code.base}" includes="**/Test*Selenium.class"/>
-			</batchtest>
-		</junit>
-		
-		<!-- Create html reports -->
-		<echo message="running JUnit Report" />
-		<junitreport todir="${hudson.selenium.reports}">
-			<fileset dir="${hudson.selenium.reports}">
-				<include name="Test-*.xml" />
-			</fileset>
-			<report format="frames" todir="${hudson.selenium.reports}" />
-		</junitreport>
-	</target>
-	
-	<!--Generate java docs -->
-	<target name="java-docs" depends="compile" description="Generate JavaDocs">
-		<javadoc destdir="${java.docs}" author="true" version="true" windowtitle="${ant.project.name}">
-			<package name="com.cannontech.selenium.*"/>
-			<sourcepath location="${src.dir}"/>
-			<classpath>
-				<path refid="classpath"/>
-				<path refid="application"/>
-			</classpath>
-			<bottom>
-				<![CDATA[<em>Copyright &#169; 2009, Cooper Power Systems</em> <br>All Rights Reserved]]>
-			</bottom>
-		</javadoc>
-	</target>
-	
-	<target name="copy-src" depends="prepare">
-		<copy todir="${copy.src}">
-			<fileset dir="${basedir}" excludes="*.csv"/>
-		</copy>		
-	</target>
+    <!-- Delete the entire folder -->
+    <target name="delete-old-checkout">
+        <delete dir="${checkout}/Yukon-Selenium-Framework/" />
+        <mkdir dir="${checkout}/Yukon-Selenium-Framework/"/>
+    </target>
+    
+    <!-- Checkout the latest source code of svnant itself-->
+    <target name="svn" depends="delete-old-checkout">
+        <svn svnkit="true" javahl="false" username="pspl-subversion" password="P4ssw0rd">
+            <checkout url="https://svn.cannontech.com/QA/selenium/trunk/Yukon-Selenium-Framework" revision="HEAD" destPath="${checkout}/Yukon-Selenium-Framework" />
+        </svn>
+    </target>
+    
+    <!-- Check current working copy -->
+    <target name="testSVNAnt">
+         <svn svnkit="true" javahl="false">
+             <wcVersion path= "${checkout}" />
+         </svn>
 
-	<!-- Deletes the existing sub version checkout build, docs and dist directory-->
-	<target name="deleteCheckout">
-		<delete dir="${checkout}" />
-	</target>
+         <echo message= "Subversion repository url: ${repository.url}" />
+    </target>   
+    
+    <!-- target to update working copy -->
+    <target name="svn-checkout-head" depends="delete-old-checkout">
+         <svn svnkit="true" javahl="false" username="pspl-subversion" password="P4ssw0rd">
+            <!-- <cleanup dir="${checkout}/Yukon-Selenium-Framework"/> -->
+            <checkout url="https://svn.cannontech.com/QA/selenium/trunk/Yukon-Selenium-Framework" revision="HEAD" destPath="${checkout}/Yukon-Selenium-Framework" />
+         </svn>
+    </target>
+    
+    <target name="svn-checkout-tag" depends="delete-old-checkout" >
+        <!-- prompt for tag name if not given with -Dtag.name -->
+        <svn svnkit="true" javahl="false" username="pspl-subversion" password="P4ssw0rd">
+            <checkout url="https://svn.cannontech.com/QA/selenium/tags/${tag.name}/" destpath="${checkout}/Yukon-Selenium-Framework" />
+        </svn>
+    </target>
+    
+    <target name="svn-checkout-branch" depends="delete-old-checkout" >
+        <!-- prompt for tag name if not given with -Dtag.name -->
+        <svn svnkit="true" javahl="false" username="pspl-subversion" password="P4ssw0rd">
+            <checkout url="https://svn.cannontech.com/QA/selenium/branches/${branch.name}" destpath="${checkout}/Yukon-Selenium-Framework" />
+        </svn>
+    </target>   
+    
+    <!-- Checkout from head, Build, and Run this is the target that get executed from QC -->
+    <target name="run-from-head" depends="build-all, test-report">
+    </target>
+    
+    <!-- Checkout from specific tag and build -->
+    <target name="run-from-tag" depends="build-all, test-report">
+        <echo message="Checkout and build was successful."></echo>
+    </target>
+    
+    <!-- checkout from specific branch -->
+    <target name="run-from-branch" depends="build-all, test-report">
+        <echo message="Checkout and build was successful."></echo>
+    </target>
 
-	<!-- Creates the  build dir to checkout from subversion -->
-	<target name="createCheckout">
-		<mkdir dir="${checkout}" />
-	</target>
+    
+<!-- ________________new_______________ THIS SHOULD BE DELETED BEFORE CHECK IN -->
+    <!-- Run the selenium test -->
+    <target name="runSeleniumJUnitTests" description="target to run selenium tests for a given set of test. 
+                                                      {testPathExpression} - The expression used to get the tests to test.">
+        <junit printsummary="yes" haltonfailure="false" haltonerror="false" fork="yes">
+            <classpath>
+                <path refid="classpath.base"/>
+            </classpath>            
+            <formatter type="xml" />
+            <batchtest fork="yes" todir="${jenkins.selenium.reports}" filtertrace="on">
+                <fileset dir="${jenkins.code.base}" includes="${testPathExpression}"/>
+            </batchtest>
+        </junit>
+    </target>
+    
+    <!-- JUnit Testing and Reporting Target  (This is used by Jenkins) -->
+    <target name="runSeleniumTests" depends="jar" description="Generate Test Results as HTML">
+        
+        <echo message="Cleaning out the reports and code base directories." level="info"/>
+        <delete dir="${jenkins.selenium.reports}"/>
+        <delete dir="${jenkins.code.base}" />
+        <mkdir dir="${jenkins.selenium.reports}"/>
+        <mkdir dir="${jenkins.code.base}"/>
+        
+        <echo message="Compiling java test classes." level="info"/>
+        <javac srcdir="${src.dir}" destdir="${jenkins.code.base}" classpathref="classpath.base"/>
+        <copy todir="${jenkins.code.base}">
+            <fileset dir="${src.dir}" excludes="**/*.java"/>
+        </copy>     
+        
+        <echo message="Running the selenium tests" level="info"/>
+        <antcall target="runSeleniumHierarchically" />
+        
+        <!-- Create html reports -->
+        <echo message="running JUnit Report" level="info"/>
+        <junitreport todir="${jenkins.selenium.reports}">
+            <fileset dir="${jenkins.selenium.reports}">
+                <include name="Test-*.xml" />
+            </fileset>
+            <report format="frames" todir="${jenkins.selenium.reports}" />
+        </junitreport>
+    </target>
+    
+    <!-- Hierarchical Selenium Testing Targets-->
+    <!-- This handles all of the associates between the testing folders. -->
+    <target name="runSeleniumHierarchically" description="Runs all of the tests in a hierarchically format">
+        <antcall target="-runSeleniumSetupHierarchically" inheritAll="true" />
+    </target>
 
-	<!-- Delete the entire folder -->
-	<target name="delete-old-checkout">
-		<delete dir="${checkout}/Yukon-Selenium-Framework/" />
-		<mkdir dir="${checkout}/Yukon-Selenium-Framework/"/>
-	</target>
-	
-	<!-- Checkout the latest source code of svnant itself-->
-	<target name="svn" depends="delete-old-checkout">
-		<svn svnkit="true" javahl="false" username="pspl-subversion" password="P4ssw0rd">
-			<checkout url="https://svn.cannontech.com/QA/selenium/trunk/Yukon-Selenium-Framework" revision="HEAD" destPath="${checkout}/Yukon-Selenium-Framework" />
-		</svn>
-	</target>
-	
-	<!-- Check current working copy -->
-	<target name="testSVNAnt">
-	     <svn svnkit="true" javahl="false">
-	         <wcVersion path= "${checkout}" />
-	     </svn>
+    <target name="-runSeleniumSetupHierarchically" description="Runs all of the tests in a hierarchically format starting with the setup target">
+        <antcall target="runSeleniumSetup" inheritAll="true" />
 
-	     <echo message= "Subversion repository url: ${repository.url}" />
-	</target>	
-	
-	<!-- target to update working copy -->
-	<target name="svn-checkout-head" depends="delete-old-checkout">
-	     <svn svnkit="true" javahl="false" username="pspl-subversion" password="P4ssw0rd">
-	     	<!-- <cleanup dir="${checkout}/Yukon-Selenium-Framework"/> -->
-	     	<checkout url="https://svn.cannontech.com/QA/selenium/trunk/Yukon-Selenium-Framework" revision="HEAD" destPath="${checkout}/Yukon-Selenium-Framework" />
-	     </svn>
-	</target>
-	
-	<target name="svn-checkout-tag" depends="delete-old-checkout" >
-		<!-- prompt for tag name if not given with -Dtag.name -->
-	    <svn svnkit="true" javahl="false" username="pspl-subversion" password="P4ssw0rd">
-	     	<checkout url="https://svn.cannontech.com/QA/selenium/tags/${tag.name}/" destpath="${checkout}/Yukon-Selenium-Framework" />
-	    </svn>
-	</target>
-	
-	<target name="svn-checkout-branch" depends="delete-old-checkout" >
-		<!-- prompt for tag name if not given with -Dtag.name -->
-	    <svn svnkit="true" javahl="false" username="pspl-subversion" password="P4ssw0rd">
-	     	<checkout url="https://svn.cannontech.com/QA/selenium/branches/${branch.name}" destpath="${checkout}/Yukon-Selenium-Framework" />
-	    </svn>
-	</target>	
-	
-	<!-- Checkout from head, Build, and Run this is the target that get executed from QC -->
-	<target name="run-from-head" depends="build-all, test-report">
-	</target>
-	
-	<!-- Checkout from specific tag and build -->
-	<target name="run-from-tag" depends="build-all, test-report">
-		<echo message="Checkout and build was successful."></echo>
-	</target>
-	
-	<!-- checkout from specific branch -->
-	<target name="run-from-branch" depends="build-all, test-report">
-		<echo message="Checkout and build was successful."></echo>
-	</target>
-	
-	<!-- executing tests in package level -->
-	<target name="run-from-head-pkgAsetup" depends="run-tests-asetup">
-		<echo message="Running Asetup Tests"/>
-	</target>	
-	
-	<target name="run-from-head-pkgAuth" depends="run-tests-authentication">
-		<echo message="Running Authentication Tests"/>
-	</target>	
-	
-	<target name="run-from-head-pkgCC" depends="run-tests-cc">
-		<echo message="Running Cap Control Test"/>
-	</target>
+        <parallel>
+            <antcall target="-runSeleniumAuthenticationHierarchically" />
+            <antcall target="-runSeleniumCapControlHierarchically" />
+            <antcall target="-runSeleniumCommonHierarchically" />
+            <antcall target="-runSeleniumDemandResponseHierarchically" />
+            <antcall target="-runSeleniumMeteringHierarchically" />
+            <antcall target="-runSeleniumNavigationHierarchically" />
+            <antcall target="-runSeleniumStarsHierarchically" />
+        </parallel>
+    </target>
 
-	<target name="run-from-head-pkgDR" depends="run-tests-dr">
-		<echo message="Running Demand Response Test"/>
-	</target>
-	
-	<target name="run-from-head-pkgMeter" depends="run-tests-meter">
-		<echo message="Running Meter Test"/>
-	</target>
-	
-	<target name="run-from-head-pkgStars" depends="run-tests-stars">
-		<echo message="Running Stars Test"/>
-	</target>
-	
-	<target name="run-from-head-pkgNav" depends="run-tests-navigation">
-		<echo message="Running Navigation Tests"/>
-	</target>	
-	
-	<target name="run-from-head-pkgSys" depends="run-tests-sysadminstars">
-		<echo message="Running System Admin Stars Tests"/>
-	</target>	
-	
+    <target name="-runSeleniumAuthenticationHierarchically" description="Runs all of the tests in a hierarchically format">
+        <antcall target="runSeleniumAuthentication" inheritAll="true" />
+    </target>
+
+    <target name="-runSeleniumCapControlHierarchically" description="Runs all of the tests in a hierarchically format">
+        <antcall target="runSeleniumCapControl" inheritAll="true" />
+    </target>
+
+    <target name="-runSeleniumCommonHierarchically" description="Runs all of the tests in a hierarchically format">
+        <antcall target="runSeleniumCommon" inheritAll="true" />
+    </target>
+
+    <target name="-runSeleniumDemandResponseHierarchically" description="Runs all of the tests in a hierarchically format">
+        <antcall target="runSeleniumDemandResponse" inheritAll="true" />
+    </target>
+
+    <target name="-runSeleniumMeteringHierarchically" description="Runs all of the tests in a hierarchically format">
+        <antcall target="runSeleniumMetering" inheritAll="true" />
+    </target>
+
+    <target name="-runSeleniumNavigationHierarchically" description="Runs all of the tests in a hierarchically format">
+        <antcall target="runSeleniumNavigation" inheritAll="true" />
+    </target>
+
+    <target name="-runSeleniumStarsHierarchically" description="Runs all of the tests in a hierarchically format">
+        <antcall target="runSeleniumStarsHierarchically" inheritAll="true" />
+        
+        <parallel>
+            <antcall target="-runSeleniumSysAdministratorsHierarchically" />
+        </parallel>
+    </target>
+
+    <target name="-runSeleniumSysAdministratorsHierarchically" description="Runs all of the tests in a hierarchically format">
+        <antcall target="runSeleniumSysAdministrators" inheritAll="true" />
+    </target>
+
+    <!-- Selenium Testing Targets -->
+    <target name="runSeleniumSetup" description="Runs all of the tests in the asetup folder.">
+        <echo message="Running the setup selenium tests" level="info"/>
+        <antcall target="runSeleniumJUnitTests" inheritAll="true">
+            <param name="testPathExpression" value="**/asetup/Test*Selenium.class"/>
+        </antcall>
+    </target>
+
+    <target name="runSeleniumAuthentication" description="Runs all of the tests in the authentication folder.">
+        <echo message="Running the authentication selenium tests" level="info"/>
+        <antcall target="runSeleniumJUnitTests" inheritAll="true">
+            <param name="testPathExpression" value="**/authentication/Test*Selenium.class"/>
+        </antcall>
+    </target>
+    
+    <target name="runSeleniumCapControl" description="Runs all of the tests in the capcontrol folder.">
+        <echo message="Running the cap control selenium tests" level="info"/>
+        <antcall target="runSeleniumJUnitTests" inheritAll="true">
+            <param name="testPathExpression" value="**/capcontrol/Test*Selenium.class"/>
+        </antcall>
+    </target>
+
+    <target name="runSeleniumCommon" description="Runs all of the tests in the common folder.">
+        <echo message="Running the common selenium tests" level="info"/>
+        <antcall target="runSeleniumJUnitTests" inheritAll="true">
+            <param name="testPathExpression" value="**/common/Test*Selenium.class"/>
+        </antcall>
+    </target>
+
+    <target name="runSeleniumDemandResponse" description="Runs all of the tests in the demandresponse folder.">
+        <echo message="Running the demand response selenium tests" level="info"/>
+        <antcall target="runSeleniumJUnitTests" inheritAll="true">
+            <param name="testPathExpression" value="**/demandresponse/Test*Selenium.class"/>
+        </antcall>
+    </target>
+
+    <target name="runSeleniumMetering" description="Runs all of the tests in the metering folder.">
+        <echo message="Running the metering selenium tests" level="info"/>
+        <antcall target="runSeleniumJUnitTests" inheritAll="true">
+            <param name="testPathExpression" value="**/metering/Test*Selenium.class"/>
+        </antcall>
+    </target>
+
+    <target name="runSeleniumNavigation" description="Runs all of the tests in the navigation folder.">
+        <echo message="Running the navigation selenium tests" level="info"/>
+        <antcall target="runSeleniumJUnitTests" inheritAll="true">
+            <param name="testPathExpression" value="**/navigation/Test*Selenium.class"/>
+        </antcall>
+    </target>
+
+    <target name="runSeleniumStars" description="Runs all of the tests in the stars folder.">
+        <echo message="Running the STARS selenium tests" level="info"/>
+        <antcall target="runSeleniumJUnitTests" inheritAll="true">
+            <param name="testPathExpression" value="**/stars/Test*Selenium.class"/>
+        </antcall>
+    </target>
+
+    <target name="runSeleniumSysAdministrators" description="Runs all of the tests in the sysadministrars folder.">
+        <echo message="Running the system administrators selenium tests" level="info"/>
+        <antcall target="runSeleniumJUnitTests" inheritAll="true">
+            <param name="testPathExpression" value="**/sysadministrars/Test*Selenium.class"/>
+        </antcall>
+    </target>
 </project>
