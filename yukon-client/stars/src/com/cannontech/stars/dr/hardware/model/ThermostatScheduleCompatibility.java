@@ -26,7 +26,9 @@ public class ThermostatScheduleCompatibility {
                        SchedulableThermostatType.UTILITY_PRO);
         builder.putAll(HardwareType.UTILITY_PRO_ZIGBEE,
                        SchedulableThermostatType.UTILITY_PRO,
-                       SchedulableThermostatType.UTILITY_PRO_ZIGBEE);
+                       SchedulableThermostatType.UTILITY_PRO_ZIGBEE,
+                       SchedulableThermostatType.UTILITY_PRO_G2,
+                       SchedulableThermostatType.UTILITY_PRO_G3);
         builder.putAll(HardwareType.UTILITY_PRO_G2,
                        SchedulableThermostatType.UTILITY_PRO,
                        SchedulableThermostatType.UTILITY_PRO_ZIGBEE,
