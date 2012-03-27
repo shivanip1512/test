@@ -2,7 +2,6 @@
 #include "logic.h"
 
 #include "cparms.h"
-#include "configparms.h"
 #include "connection.h"
 #include "msg_pdata.h"
 #include "pointtypes.h"
@@ -28,43 +27,29 @@ int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     int dispatch_port = VANGOGHNEXUS;
     string dispatch_host = "127.0.0.1";
 
-    HINSTANCE hLib = LoadLibrary("cparms.dll");
+    bool trouble = false;
 
-    if(hLib) {
-        char temp[80];
-
-        CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-        bool trouble = false;
-    if( (*fpGetAsString)("DISPATCH_MACHINE", temp, 64) ) {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime()  << " - Using " << temp << " as the dispatch host" << endl;
-            dispatch_host = temp;
-        }
-        else {
-            trouble = true;
+    if( gConfigParms.isOpt("DISPATCH_MACHINE") ) {
+        dispatch_host = gConfigParms.getValueAsString("DISPATCH_MACHINE");
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << CtiTime()  << " - Using " << dispatch_host << " as the dispatch host" << endl;
+    }
+    else {
+        trouble = true;
     }
 
-        if( (*fpGetAsString)("DISPATCH_PORT", temp, 64) ) {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime()  << " - Using " << temp << " as the dispatch port" << endl;
-            dispatch_port = atoi(temp);
-        }
-        else {
-            trouble = TRUE;
+    if( gConfigParms.isOpt("DISPATCH_PORT") ) {
+        dispatch_port = gConfigParms.getValueAsInt("DISPATCH_PORT");
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << CtiTime()  << " - Using " << dispatch_port << " as the dispatch port" << endl;
+    }
+    else {
+        trouble = TRUE;
     }
 
     if( trouble ) {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << CtiTime() << " - Unable to find one or more mccmd config values in the configuration file." << endl;
-    }
-
-    FreeLibrary(hLib);
-    }
-    else
-    {
-    CtiLockGuard< CtiLogger > guard(dout);
-    dout << "Unable to load cparms dll " << endl;
     }
 
     gDispatchConnection = new CtiConnection(dispatch_port, dispatch_host.c_str());
