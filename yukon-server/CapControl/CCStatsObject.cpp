@@ -37,45 +37,45 @@ CCStatsObject& CCStatsObject::operator=(const CCStatsObject& right)
 }
 
 
-LONG CCStatsObject::getOpCount()
+long CCStatsObject::getOpCount()
 {
     return _opCount;
 }
-void CCStatsObject::setOpCount(LONG val)
+void CCStatsObject::setOpCount(long val)
 {
     _opCount = val;
 }
 
-LONG CCStatsObject::getFailCount()
+long CCStatsObject::getFailCount()
 {
     return _failCount;
 }
-void CCStatsObject::setFailCount(LONG val)
+void CCStatsObject::setFailCount(long val)
 {
     _failCount = val;
 }
 
-void CCStatsObject::incrementOpCount(LONG val)
+void CCStatsObject::incrementOpCount(long val)
 {
     _opCount += val;
 }
-DOUBLE CCStatsObject::getTotal()
+double CCStatsObject::getTotal()
 {
     return _total;
 }
-void CCStatsObject::setTotal(DOUBLE val)
+void CCStatsObject::setTotal(double val)
 {
     _total = val;
 
 }
-void CCStatsObject::incrementTotal(DOUBLE val)
+void CCStatsObject::incrementTotal(double val)
 {
     _total += val;
 }
 
-DOUBLE CCStatsObject::getAverage()
+double CCStatsObject::getAverage()
 {
-    DOUBLE avg = 100;
+    double avg = 100;
     if( _opCount > 0 )
     {
         avg = _total / _opCount;

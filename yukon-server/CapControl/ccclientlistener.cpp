@@ -14,7 +14,7 @@
 
 using std::endl;
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 using Cti::ThreadStatusKeeper;
 
@@ -31,7 +31,7 @@ CtiCCClientListener* CtiCCClientListener::getInstance()
     {
         string str;
         char var[128];
-        LONG capcontrolclientsport = CAPCONTROLNEXUS;
+        long capcontrolclientsport = CAPCONTROLNEXUS;
 
         strcpy(var, "CAP_CONTROL_PORT");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
@@ -65,7 +65,7 @@ std::vector<CtiCCClientConnection*>& CtiCCClientListener::getClientConnectionLis
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCClientListener::CtiCCClientListener(LONG port) : _port(port), _doquit(FALSE), _socketListener(NULL)
+CtiCCClientListener::CtiCCClientListener(long port) : _port(port), _doquit(false), _socketListener(NULL)
 {
 }
 
@@ -108,7 +108,7 @@ void CtiCCClientListener::stop()
 {
     try
     {
-        _doquit = TRUE;
+        _doquit = true;
         if (_socketListener != NULL)
         {
             //This delete must happen to interupt the thread.

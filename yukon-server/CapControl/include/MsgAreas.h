@@ -11,8 +11,8 @@ class CtiCCGeoAreasMsg : public CapControlMessage
         typedef CapControlMessage Inherited;
 
     public:
-        CtiCCGeoAreasMsg(CtiCCArea_vec& areaList, ULONG bitMask = 1);
-        CtiCCGeoAreasMsg(CtiCCArea_set& areaList, ULONG bitMask = 1);
+        CtiCCGeoAreasMsg(CtiCCArea_vec& areaList, unsigned long bitMask = 1);
+        CtiCCGeoAreasMsg(CtiCCArea_set& areaList, unsigned long bitMask = 1);
         CtiCCGeoAreasMsg(CtiCCArea* ccArea);
         CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreas);
 
@@ -27,14 +27,14 @@ class CtiCCGeoAreasMsg : public CapControlMessage
 
         CtiCCGeoAreasMsg& operator=(const CtiCCGeoAreasMsg& right);
 
-        static ULONG AllAreasSent;
-        static ULONG AreaDeleted;
-        static ULONG AreaAdded;
-        static ULONG AreaModified;
+        static unsigned long AllAreasSent;
+        static unsigned long AreaDeleted;
+        static unsigned long AreaAdded;
+        static unsigned long AreaModified;
 
     private:
         CtiCCGeoAreasMsg() : Inherited(), _ccGeoAreas(NULL), _msgInfoBitMask(1) {};
 
         CtiCCArea_vec* _ccGeoAreas;
-        ULONG _msgInfoBitMask;
+        unsigned long _msgInfoBitMask;
 };

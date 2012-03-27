@@ -22,7 +22,7 @@ public:
     static CtiCCServer* getInstance();
 
 private:
-    CtiCCServer() : _clientListener(0), _running(FALSE), _dostop(FALSE), _currentmessage(NULL) { };
+    CtiCCServer() : _clientListener(0), _running(false), _dostop(false), _currentmessage(NULL) { };
     virtual ~CtiCCServer() { };
 
     CtiCCClientListener* _clientListener;

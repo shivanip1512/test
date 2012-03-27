@@ -9,8 +9,8 @@ using Cti::CapControl::Zone;
 using Cti::CapControl::ZoneLoader;
 using Cti::CapControl::ZoneManager;
 
-extern ULONG _MAX_KVAR;
-extern ULONG _SEND_TRIES;
+extern unsigned long _MAX_KVAR;
+extern unsigned long _SEND_TRIES;
 
 BOOST_AUTO_TEST_SUITE( test_IVVCAlgorithm )
 
@@ -167,17 +167,17 @@ private:
 void initialize_area(Test_CtiCCSubstationBusStore* store, CtiCCArea* area)
 {
     store->insertAreaToPaoMap(area);
-    area->setDisableFlag(FALSE);
+    area->setDisableFlag(false);
 }
 
 
 void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstation* station, CtiCCArea* parentArea)
 {
-    station->setSaEnabledFlag(FALSE);
+    station->setSaEnabledFlag(false);
     station->setParentId(parentArea->getPaoId());
     parentArea->getSubstationIds().push_back(station->getPaoId());
     store->insertSubstationToPaoMap(station);
-    station->setDisableFlag(FALSE);
+    station->setDisableFlag(false);
 }
 
 
@@ -187,13 +187,13 @@ void initialize_bus(Test_CtiCCSubstationBusStore* store, CtiCCSubstationBus* bus
     bus->setEventSequence(22);
     bus->setCurrentVarLoadPointId(1);
     bus->setCurrentVarLoadPointValue(55, CtiTime());
-    bus->setVerificationFlag(FALSE);
+    bus->setVerificationFlag(false);
     parentStation->getCCSubIds().push_back(bus->getPaoId());
     store->insertSubBusToPaoMap(bus);
-    bus->setDisableFlag(FALSE);
-    bus->setVerificationFlag(FALSE);
-    bus->setPerformingVerificationFlag(FALSE);
-    bus->setVerificationDoneFlag(FALSE);
+    bus->setDisableFlag(false);
+    bus->setVerificationFlag(false);
+    bus->setPerformingVerificationFlag(false);
+    bus->setVerificationDoneFlag(false);
 }
 
 
@@ -207,10 +207,10 @@ void initialize_feeder(Test_CtiCCSubstationBusStore* store, CtiCCFeeder* feed, C
     parentBus->getCCFeeders().push_back(feed);
     store->insertItemsIntoMap(CtiCCSubstationBusStore::FeederIdSubBusIdMap, &feederId, &busId);
     store->insertFeederToPaoMap(feed);
-    feed->setDisableFlag(FALSE);
-    feed->setVerificationFlag(FALSE);
-    feed->setPerformingVerificationFlag(FALSE);
-    feed->setVerificationDoneFlag(FALSE);
+    feed->setDisableFlag(false);
+    feed->setVerificationFlag(false);
+    feed->setPerformingVerificationFlag(false);
+    feed->setVerificationDoneFlag(false);
 
     feed->setStrategy( -1 );        // init to NoStrategy
 
@@ -231,10 +231,10 @@ void initialize_capbank(Test_CtiCCSubstationBusStore* store, CtiCCCapBank* cap, 
     parentFeed->getCCCapBanks().push_back(cap);
     store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &bankId, &fdrId);
     cap->setOperationalState(CtiCCCapBank::SwitchedOperationalState);
-    cap->setDisableFlag(FALSE);
-    cap->setVerificationFlag(FALSE);
-    cap->setPerformingVerificationFlag(FALSE);
-    cap->setVerificationDoneFlag(FALSE);
+    cap->setDisableFlag(false);
+    cap->setVerificationFlag(false);
+    cap->setPerformingVerificationFlag(false);
+    cap->setVerificationDoneFlag(false);
     cap->setBankSize(600);
 
     cap->setControlPointId(1);

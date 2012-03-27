@@ -24,12 +24,12 @@
 
 using std::endl;
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiCCClientConnection::CtiCCClientConnection(RWPortal portal) : _valid(TRUE), _portal(new RWPortal(portal) )
+CtiCCClientConnection::CtiCCClientConnection(RWPortal portal) : _valid(true), _portal(new RWPortal(portal) )
 {
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -53,7 +53,7 @@ CtiCCClientConnection::CtiCCClientConnection(RWPortal portal) : _valid(TRUE), _p
         recv_thr.start();
     } catch (RWxmsg& msg)
     {
-        _valid = FALSE;
+        _valid = false;
     }
 }
 
@@ -85,9 +85,9 @@ CtiCCClientConnection::~CtiCCClientConnection()
 /*---------------------------------------------------------------------------
     isValid
 
-    Returns TRUE is the connection is valid, FALSE otherwise
+    Returns true is the connection is valid, false otherwise
 ---------------------------------------------------------------------------*/
-BOOL CtiCCClientConnection::isValid() const
+bool CtiCCClientConnection::isValid() const
 {
     return _valid;
 }
@@ -119,7 +119,7 @@ void CtiCCClientConnection::close()
     if( _portal == NULL )
         return;
 
-    _valid = FALSE;
+    _valid = false;
 
     oStream->vflush();
 
@@ -267,7 +267,7 @@ void CtiCCClientConnection::_sendthr()
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
-    _valid = FALSE;
+    _valid = false;
 
 }
 
@@ -337,6 +337,6 @@ void CtiCCClientConnection::_recvthr()
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
-    _valid = FALSE;
+    _valid = false;
 
 }

@@ -11,14 +11,14 @@ class CtiCCSubstationsMsg : public CapControlMessage
         typedef CapControlMessage Inherited;
     public:
 
-        CtiCCSubstationsMsg(CtiCCSubstation_vec& substationList, ULONG bitMask = 0);
-        CtiCCSubstationsMsg(CtiCCSubstation_set& substationList, ULONG bitMask = 0);
+        CtiCCSubstationsMsg(CtiCCSubstation_vec& substationList, unsigned long bitMask = 0);
+        CtiCCSubstationsMsg(CtiCCSubstation_set& substationList, unsigned long bitMask = 0);
         CtiCCSubstationsMsg(CtiCCSubstation* ccSubstations);
         CtiCCSubstationsMsg(const CtiCCSubstationsMsg& ccSubstations);
 
         virtual ~CtiCCSubstationsMsg();
 
-        ULONG getMsgInfoBitMask() const { return _msgInfoBitMask; };
+        unsigned long getMsgInfoBitMask() const { return _msgInfoBitMask; };
 
         CtiCCSubstation_vec* getCCSubstations() const     { return _ccSubstations; }
 
@@ -30,15 +30,15 @@ class CtiCCSubstationsMsg : public CapControlMessage
         CtiCCSubstationsMsg& operator=(const CtiCCSubstationsMsg& right);
 
         // Possible bit mask settings
-        static ULONG AllSubsSent;
-        static ULONG SubDeleted;
-        static ULONG SubAdded;
-        static ULONG SubModified;
+        static unsigned long AllSubsSent;
+        static unsigned long SubDeleted;
+        static unsigned long SubAdded;
+        static unsigned long SubModified;
 
 
     private:
         CtiCCSubstationsMsg() : Inherited(), _ccSubstations(NULL), _msgInfoBitMask(0){};
 
-        ULONG _msgInfoBitMask;
+        unsigned long _msgInfoBitMask;
         CtiCCSubstation_vec* _ccSubstations;
 };

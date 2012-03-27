@@ -3,13 +3,13 @@
 #include "MsgSubstationBus.h"
 #include "ccid.h"
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 using std::endl;
 
 RWDEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
 
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULONG bitMask) : Inherited(), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, unsigned long bitMask) : Inherited(), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
@@ -54,7 +54,7 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULON
     }
 }
 
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_set& buses, ULONG bitMask) : Inherited(), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_set& buses, unsigned long bitMask) : Inherited(), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
@@ -142,7 +142,7 @@ void CtiCCSubstationBusMsg::saveGuts(RWvostream& strm) const
 }
 
 // Static Members
-ULONG CtiCCSubstationBusMsg::AllSubBusesSent = 0x00000001;
-ULONG CtiCCSubstationBusMsg::SubBusDeleted   = 0x00000002;
-ULONG CtiCCSubstationBusMsg::SubBusAdded     = 0x00000004;
-ULONG CtiCCSubstationBusMsg::SubBusModified  = 0x00000008;
+unsigned long CtiCCSubstationBusMsg::AllSubBusesSent = 0x00000001;
+unsigned long CtiCCSubstationBusMsg::SubBusDeleted   = 0x00000002;
+unsigned long CtiCCSubstationBusMsg::SubBusAdded     = 0x00000004;
+unsigned long CtiCCSubstationBusMsg::SubBusModified  = 0x00000008;

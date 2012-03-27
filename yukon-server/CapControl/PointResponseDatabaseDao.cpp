@@ -6,7 +6,7 @@
 
 #include "ccid.h"
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 extern double _IVVC_DEFAULT_DELTA;
 
 using std::vector;

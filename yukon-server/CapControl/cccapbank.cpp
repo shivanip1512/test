@@ -31,8 +31,8 @@ using namespace std;
 
 using Database::DatabaseDaoFactory;
 
-extern ULONG _CC_DEBUG;
-extern BOOL _USE_FLIP_FLAG;
+extern unsigned long _CC_DEBUG;
+extern bool _USE_FLIP_FLAG;
 
 RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 
@@ -173,17 +173,17 @@ const string& CtiCCCapBank::getIpAddress() const
 {
     return _ipAddress;
 }
-LONG CtiCCCapBank::getUDPPort() const
+long CtiCCCapBank::getUDPPort() const
 {
     return _udpPortNumber;
 }
 
-LONG CtiCCCapBank::getReportedCBCState() const
+long CtiCCCapBank::getReportedCBCState() const
 {
     return _reportedCBCState;
 }
 
-LONG CtiCCCapBank::getReportedCBCLastControlReason() const
+long CtiCCCapBank::getReportedCBCLastControlReason() const
 {
     return _reportedCBCLastControlReason;
 }
@@ -198,13 +198,13 @@ const CtiTime& CtiCCCapBank::getReportedCBCStateTime() const
     return _reportedCBCStateTime;
 }
 
-BOOL CtiCCCapBank::getIgnoreFlag() const
+bool CtiCCCapBank::getIgnoreFlag() const
 {
     return _ignoreFlag;
 }
 
 
-LONG CtiCCCapBank::getIgnoredReason() const
+long CtiCCCapBank::getIgnoredReason() const
 {
     return _ignoreReason;
 }
@@ -238,7 +238,7 @@ const string& CtiCCCapBank::getPercentChangeString() const
 {
     return _sPercentChange;
 }
-LONG CtiCCCapBank::getActionId() const
+long CtiCCCapBank::getActionId() const
 {
     if (_actionId != -1)
         return _actionId;
@@ -251,7 +251,7 @@ LONG CtiCCCapBank::getActionId() const
 
     Returns the parentID (feederID) of the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getParentId() const
+long CtiCCCapBank::getParentId() const
 {
     return _parentId;
 }
@@ -261,7 +261,7 @@ LONG CtiCCCapBank::getParentId() const
 
     Returns the max daily operations of the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getMaxDailyOps() const
+long CtiCCCapBank::getMaxDailyOps() const
 {
     return _maxdailyops;
 }
@@ -270,7 +270,7 @@ LONG CtiCCCapBank::getMaxDailyOps() const
 
     Returns the current daily operations of the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getCurrentDailyOperations() const
+long CtiCCCapBank::getCurrentDailyOperations() const
 {
     return _currentdailyoperations;
 }
@@ -280,7 +280,7 @@ LONG CtiCCCapBank::getCurrentDailyOperations() const
 
     Returns the max operation disable flag for the cap bank
 ---------------------------------------------------------------------------*/
-BOOL CtiCCCapBank::getMaxOpsDisableFlag() const
+bool CtiCCCapBank::getMaxOpsDisableFlag() const
 {
     return _maxopsdisableflag;
 }
@@ -290,7 +290,7 @@ BOOL CtiCCCapBank::getMaxOpsDisableFlag() const
 
     Returns the alarm inhibit of the cap bank
 ---------------------------------------------------------------------------*/
-BOOL CtiCCCapBank::getAlarmInhibitFlag() const
+bool CtiCCCapBank::getAlarmInhibitFlag() const
 {
     return _alarminhibitflag;
 }
@@ -300,7 +300,7 @@ BOOL CtiCCCapBank::getAlarmInhibitFlag() const
 
     Returns the control inhibit of the cap bank
 ---------------------------------------------------------------------------*/
-BOOL CtiCCCapBank::getControlInhibitFlag() const
+bool CtiCCCapBank::getControlInhibitFlag() const
 {
     return _controlinhibitflag;
 }
@@ -330,7 +330,7 @@ const string& CtiCCCapBank::getControllerType() const
 
     Returns the control device id of the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getControlDeviceId() const
+long CtiCCCapBank::getControlDeviceId() const
 {
     return _controldeviceid;
 }
@@ -340,7 +340,7 @@ LONG CtiCCCapBank::getControlDeviceId() const
 
     Returns the control point id of the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getControlPointId() const
+long CtiCCCapBank::getControlPointId() const
 {
     return _controlpointid;
 }
@@ -355,7 +355,7 @@ const string& CtiCCCapBank::getControlDeviceType() const
 
     Returns the bank size of the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getBankSize() const
+long CtiCCCapBank::getBankSize() const
 {
     return _banksize;
 }
@@ -395,7 +395,7 @@ const string& CtiCCCapBank::getMapLocationId() const
 
     Returns the Reclose Delay of the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getRecloseDelay() const
+long CtiCCCapBank::getRecloseDelay() const
 {
     return _reclosedelay;
 }
@@ -435,7 +435,7 @@ FLOAT CtiCCCapBank::getCloseOrder() const
 
     Returns the status point id of the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getStatusPointId() const
+long CtiCCCapBank::getStatusPointId() const
 {
     return _statuspointid;
 }
@@ -445,101 +445,101 @@ LONG CtiCCCapBank::getStatusPointId() const
 
     Returns the verification flag of the cap bank
 ---------------------------------------------------------------------------*/
-BOOL CtiCCCapBank::getVerificationFlag() const
+bool CtiCCCapBank::getVerificationFlag() const
 {
     return _verificationFlag;
 }
 
-BOOL CtiCCCapBank::getPerformingVerificationFlag() const
+bool CtiCCCapBank::getPerformingVerificationFlag() const
 {
     return _performingVerificationFlag;
 }
 
-BOOL CtiCCCapBank::getVerificationDoneFlag() const
+bool CtiCCCapBank::getVerificationDoneFlag() const
 {
     return _verificationDoneFlag;
 }
 
-BOOL CtiCCCapBank::getPorterRetFailFlag() const
+bool CtiCCCapBank::getPorterRetFailFlag() const
 {
     return _porterRetFailFlag;
 }
 
-BOOL CtiCCCapBank::getUnsolicitedPendingFlag() const
+bool CtiCCCapBank::getUnsolicitedPendingFlag() const
 {
     return _unsolicitedPendingFlag;
 }
 
-BOOL CtiCCCapBank::getRetryOpenFailedFlag() const
+bool CtiCCCapBank::getRetryOpenFailedFlag() const
 {
     return _retryOpenFailedFlag;
 }
 
-BOOL CtiCCCapBank::getRetryCloseFailedFlag() const
+bool CtiCCCapBank::getRetryCloseFailedFlag() const
 {
     return _retryCloseFailedFlag;
 }
-BOOL CtiCCCapBank::getOvUvDisabledFlag() const
+bool CtiCCCapBank::getOvUvDisabledFlag() const
 {
     return _ovUvDisabledFlag;
 }
-BOOL CtiCCCapBank::getLocalControlFlag() const
+bool CtiCCCapBank::getLocalControlFlag() const
 {
     return _localControlFlag;
 }
-BOOL CtiCCCapBank::getControlRecentlySentFlag() const
+bool CtiCCCapBank::getControlRecentlySentFlag() const
 {
     return _controlRecentlySentFlag;
 }
 
-BOOL CtiCCCapBank::getMaxDailyOpsHitFlag() const
+bool CtiCCCapBank::getMaxDailyOpsHitFlag() const
 {
     return _maxDailyOpsHitFlag;
 }
-BOOL CtiCCCapBank::getOvUvSituationFlag() const
+bool CtiCCCapBank::getOvUvSituationFlag() const
 {
     return _ovuvSituationFlag;
 }
-BOOL CtiCCCapBank::getControlStatusPartialFlag() const
+bool CtiCCCapBank::getControlStatusPartialFlag() const
 {
     return _controlStatusPartialFlag;
 }
-BOOL CtiCCCapBank::getControlStatusSignificantFlag() const
+bool CtiCCCapBank::getControlStatusSignificantFlag() const
 {
     return _controlStatusSignificantFlag;
 }
-BOOL CtiCCCapBank::getControlStatusAbnQualityFlag() const
+bool CtiCCCapBank::getControlStatusAbnQualityFlag() const
 {
     return _controlStatusAbnQualityFlag;
 }
-BOOL CtiCCCapBank::getControlStatusFailFlag() const
+bool CtiCCCapBank::getControlStatusFailFlag() const
 {
     return _controlStatusFailFlag;
 }
-BOOL CtiCCCapBank::getControlStatusCommFailFlag() const
+bool CtiCCCapBank::getControlStatusCommFailFlag() const
 {
     return _controlStatusCommFailFlag;
 }
-BOOL CtiCCCapBank::getControlStatusNoControlFlag() const
+bool CtiCCCapBank::getControlStatusNoControlFlag() const
 {
     return _controlStatusNoControlFlag;
 }
-BOOL CtiCCCapBank::getControlStatusUnSolicitedFlag() const
+bool CtiCCCapBank::getControlStatusUnSolicitedFlag() const
 {
     return _controlStatusUnSolicitedFlag;
 }
 
 
-LONG CtiCCCapBank::getControlStatusQuality() const
+long CtiCCCapBank::getControlStatusQuality() const
 {
     return _controlStatusQuality;
 }
-BOOL CtiCCCapBank::getReEnableOvUvFlag() const
+bool CtiCCCapBank::getReEnableOvUvFlag() const
 {
     return _reEnableOvUvFlag;
 }
 
-BOOL CtiCCCapBank::getSendAllCommandFlag() const
+bool CtiCCCapBank::getSendAllCommandFlag() const
 {
     return _sendAllCommandFlag;
 }
@@ -562,7 +562,7 @@ int  CtiCCCapBank::getVCtrlIndex() const
 ---------------------------------------------------------------------------*/
 int CtiCCCapBank::getAssumedOrigVerificationState() const
 {
-    LONG controlStatus = getControlStatus();
+    long controlStatus = getControlStatus();
 
     if ( controlStatus == CtiCCCapBank::Open ||
          controlStatus == CtiCCCapBank::OpenQuestionable ||
@@ -589,49 +589,49 @@ int CtiCCCapBank::getAssumedOrigVerificationState() const
 
     Returns the control status of the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getControlStatus() const
+long CtiCCCapBank::getControlStatus() const
 {
    return _controlstatus;
 }
 
-BOOL CtiCCCapBank::isPendingStatus()
+bool CtiCCCapBank::isPendingStatus()
 {
     if (getControlStatus() == CtiCCCapBank::OpenPending ||
         getControlStatus() ==  CtiCCCapBank::ClosePending)
     {
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
-BOOL CtiCCCapBank::isFailedOrQuestionableStatus()
+bool CtiCCCapBank::isFailedOrQuestionableStatus()
 {
     if (isQuestionableStatus() || isFailedStatus())
     {
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 
-BOOL CtiCCCapBank::isQuestionableStatus()
+bool CtiCCCapBank::isQuestionableStatus()
 {
     if ( getControlStatus() ==  CtiCCCapBank::OpenQuestionable ||
          getControlStatus() ==  CtiCCCapBank::CloseQuestionable)
     {
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 
 }
-BOOL CtiCCCapBank::isFailedStatus()
+bool CtiCCCapBank::isFailedStatus()
 {
     if (getControlStatus() == CtiCCCapBank::OpenFail ||
         getControlStatus() ==  CtiCCCapBank::CloseFail )
     {
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 /*---------------------------------------------------------------------------
     getControlStatus
@@ -667,7 +667,7 @@ string CtiCCCapBank::getControlStatusText() const
     Returns the point id of the analog that holds the number of operations
     on the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getOperationAnalogPointId() const
+long CtiCCCapBank::getOperationAnalogPointId() const
 {
     return _operationanalogpointid;
 }
@@ -677,7 +677,7 @@ LONG CtiCCCapBank::getOperationAnalogPointId() const
 
     Returns the number operations performed on the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getTotalOperations() const
+long CtiCCCapBank::getTotalOperations() const
 {
     return _totaloperations;
 }
@@ -697,7 +697,7 @@ const CtiTime& CtiCCCapBank::getLastStatusChangeTime() const
 
     Returns the tags of control status on the cap bank
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getTagsControlStatus() const
+long CtiCCCapBank::getTagsControlStatus() const
 {
     return _tagscontrolstatus;
 }
@@ -707,7 +707,7 @@ LONG CtiCCCapBank::getTagsControlStatus() const
 
     Sets the parentId (feederId) of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setParentId(LONG parentId)
+CtiCCCapBank& CtiCCCapBank::setParentId(long parentId)
 {
     _parentId = parentId;
 
@@ -719,7 +719,7 @@ CtiCCCapBank& CtiCCCapBank::setParentId(LONG parentId)
 
     Sets the alarm inhibit of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setAlarmInhibitFlag(BOOL alarminhibit)
+CtiCCCapBank& CtiCCCapBank::setAlarmInhibitFlag(bool alarminhibit)
 {
     _alarminhibitflag = alarminhibit;
 
@@ -731,7 +731,7 @@ CtiCCCapBank& CtiCCCapBank::setAlarmInhibitFlag(BOOL alarminhibit)
 
     Sets the control inhibit of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlInhibitFlag(BOOL controlinhibit)
+CtiCCCapBank& CtiCCCapBank::setControlInhibitFlag(bool controlinhibit)
 {
     _controlinhibitflag = controlinhibit;
 
@@ -744,7 +744,7 @@ CtiCCCapBank& CtiCCCapBank::setControlInhibitFlag(BOOL controlinhibit)
 
     Sets the max daily operations of the cap bank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setMaxDailyOperation(LONG maxdailyops)
+CtiCCCapBank& CtiCCCapBank::setMaxDailyOperation(long maxdailyops)
 {
     _maxdailyops = maxdailyops;
 
@@ -757,15 +757,15 @@ CtiCCCapBank& CtiCCCapBank::setMaxDailyOperation(LONG maxdailyops)
 
     Sets the current daily operations of the cap bank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(LONG operations)
+CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(long operations)
 {
     if( _currentdailyoperations != operations )
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
-        _dirty = TRUE;
+        _dirty = true;
     }
     _currentdailyoperations = operations;
     return *this;
@@ -776,7 +776,7 @@ CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(LONG operations)
 
     Sets the max operation disable flag for the cap bank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setMaxOpsDisableFlag(BOOL maxopsdisable)
+CtiCCCapBank& CtiCCCapBank::setMaxOpsDisableFlag(bool maxopsdisable)
 {
     _maxopsdisableflag = maxopsdisable;
 
@@ -824,7 +824,7 @@ CtiCCCapBank& CtiCCCapBank::setControllerType(const string& controllertype)
 
     Sets the control device id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlDeviceId(LONG controldevice)
+CtiCCCapBank& CtiCCCapBank::setControlDeviceId(long controldevice)
 {
     _controldeviceid = controldevice;
 
@@ -836,7 +836,7 @@ CtiCCCapBank& CtiCCCapBank::setControlDeviceId(LONG controldevice)
 
     Sets the control point id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlPointId(LONG controlpoint)
+CtiCCCapBank& CtiCCCapBank::setControlPointId(long controlpoint)
 {
     _controlpointid = controlpoint;
 
@@ -857,7 +857,7 @@ CtiCCCapBank& CtiCCCapBank::setControlDeviceType(const string& controlDeviceType
 
     Sets the bank size of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setBankSize(LONG size)
+CtiCCCapBank& CtiCCCapBank::setBankSize(long size)
 {
     _banksize = size;
 
@@ -905,7 +905,7 @@ CtiCCCapBank& CtiCCCapBank::setMapLocationId(const string& maplocation)
 
     Sets the RecloseDelay of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setRecloseDelay(LONG reclose)
+CtiCCCapBank& CtiCCCapBank::setRecloseDelay(long reclose)
 {
     _reclosedelay = reclose;
 
@@ -955,7 +955,7 @@ CtiCCCapBank& CtiCCCapBank::setCloseOrder(FLOAT order)
 
     Sets the status point id of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setStatusPointId(LONG statuspoint)
+CtiCCCapBank& CtiCCCapBank::setStatusPointId(long statuspoint)
 {
     _statuspointid = statuspoint;
 
@@ -971,44 +971,44 @@ CtiCCCapBank& CtiCCCapBank::setVerificationFlag(bool verificationFlag)
 
     if (_verificationFlag != verificationFlag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _verificationFlag = verificationFlag;
 
     return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setPerformingVerificationFlag(BOOL performingVerificationFlag)
+CtiCCCapBank& CtiCCCapBank::setPerformingVerificationFlag(bool performingVerificationFlag)
 {
     if (_performingVerificationFlag != performingVerificationFlag)
-        _dirty = TRUE;
+        _dirty = true;
     _performingVerificationFlag = performingVerificationFlag;
 
     return *this;
 }
-CtiCCCapBank& CtiCCCapBank::setVerificationDoneFlag(BOOL verificationDoneFlag)
+CtiCCCapBank& CtiCCCapBank::setVerificationDoneFlag(bool verificationDoneFlag)
 {
     if(_verificationDoneFlag != verificationDoneFlag)
-        _dirty = TRUE;
+        _dirty = true;
     _verificationDoneFlag = verificationDoneFlag;
 
     return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setPorterRetFailFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setPorterRetFailFlag(bool flag)
 {
     if (_porterRetFailFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _porterRetFailFlag = flag;
     return *this;
 }
-CtiCCCapBank& CtiCCCapBank::setUnsolicitedPendingFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setUnsolicitedPendingFlag(bool flag)
 {
     if (_unsolicitedPendingFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _unsolicitedPendingFlag = flag;
     return *this;
@@ -1019,12 +1019,12 @@ CtiCCCapBank& CtiCCCapBank::setUnsolicitedPendingFlag(BOOL flag)
 
     Sets the retry failed flag, b4 if a capbank has been tried after a failed state..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setRetryOpenFailedFlag(BOOL retryOpenFailedFlag)
+CtiCCCapBank& CtiCCCapBank::setRetryOpenFailedFlag(bool retryOpenFailedFlag)
 {
 
     if (_retryOpenFailedFlag != retryOpenFailedFlag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _retryOpenFailedFlag = retryOpenFailedFlag;
 
@@ -1035,12 +1035,12 @@ CtiCCCapBank& CtiCCCapBank::setRetryOpenFailedFlag(BOOL retryOpenFailedFlag)
 
     Sets the retry failed flag, b4 if a capbank has been tried after a failed state..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(BOOL retryCloseFailedFlag)
+CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(bool retryCloseFailedFlag)
 {
 
     if (_retryCloseFailedFlag != retryCloseFailedFlag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _retryCloseFailedFlag = retryCloseFailedFlag;
 
@@ -1051,12 +1051,12 @@ CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(BOOL retryCloseFailedFlag)
 
     Sets the ovUvDisabledFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(BOOL ovUvDisabledFlag)
+CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(bool ovUvDisabledFlag)
 {
 
     if (_ovUvDisabledFlag != ovUvDisabledFlag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _ovUvDisabledFlag = ovUvDisabledFlag;
 
@@ -1068,12 +1068,12 @@ CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(BOOL ovUvDisabledFlag)
 
     Sets the LocalControlFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setLocalControlFlag(BOOL localControlFlag)
+CtiCCCapBank& CtiCCCapBank::setLocalControlFlag(bool localControlFlag)
 {
 
     if (_localControlFlag != localControlFlag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _localControlFlag = localControlFlag;
 
@@ -1085,12 +1085,12 @@ CtiCCCapBank& CtiCCCapBank::setLocalControlFlag(BOOL localControlFlag)
 
     Sets the ovUvDisabledFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOvUvSituationFlag(BOOL ovUvSituationFlag)
+CtiCCCapBank& CtiCCCapBank::setOvUvSituationFlag(bool ovUvSituationFlag)
 {
 
     if (_ovuvSituationFlag != ovUvSituationFlag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _ovuvSituationFlag = ovUvSituationFlag;
 
@@ -1102,12 +1102,12 @@ CtiCCCapBank& CtiCCCapBank::setOvUvSituationFlag(BOOL ovUvSituationFlag)
 
     Sets the maxDailyOpsHitFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setMaxDailyOpsHitFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setMaxDailyOpsHitFlag(bool flag)
 {
 
     if (_maxDailyOpsHitFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _maxDailyOpsHitFlag = flag;
 
@@ -1118,12 +1118,12 @@ CtiCCCapBank& CtiCCCapBank::setMaxDailyOpsHitFlag(BOOL flag)
 
     Sets the ControlStatusPartialFlag( ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusPartialFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setControlStatusPartialFlag(bool flag)
 {
 
     if (_controlStatusPartialFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _controlStatusPartialFlag = flag;
 
@@ -1134,12 +1134,12 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusPartialFlag(BOOL flag)
 
     Sets the ControlStatusPartialFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusSignificantFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setControlStatusSignificantFlag(bool flag)
 {
 
     if (_controlStatusSignificantFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _controlStatusSignificantFlag = flag;
 
@@ -1151,12 +1151,12 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusSignificantFlag(BOOL flag)
 
     Sets the ControlStatusAbnQualityFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusAbnQualityFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setControlStatusAbnQualityFlag(bool flag)
 {
 
     if (_controlStatusAbnQualityFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _controlStatusAbnQualityFlag = flag;
 
@@ -1167,12 +1167,12 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusAbnQualityFlag(BOOL flag)
 
     Sets the ControlStatusFailFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusFailFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setControlStatusFailFlag(bool flag)
 {
 
     if (_controlStatusFailFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _controlStatusFailFlag = flag;
 
@@ -1183,12 +1183,12 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusFailFlag(BOOL flag)
 
     Sets the ControlStatusCommFailFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusCommFailFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setControlStatusCommFailFlag(bool flag)
 {
 
     if (_controlStatusCommFailFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _controlStatusCommFailFlag = flag;
 
@@ -1199,12 +1199,12 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusCommFailFlag(BOOL flag)
 
     Sets the ControlStatusNoControlFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(bool flag)
 {
 
     if (_controlStatusNoControlFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _controlStatusNoControlFlag = flag;
 
@@ -1216,12 +1216,12 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(BOOL flag)
 
     Sets the ControlStatusNoControlFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(bool flag)
 {
 
     if (_controlStatusUnSolicitedFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _controlStatusUnSolicitedFlag = flag;
 
@@ -1233,12 +1233,12 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(BOOL flag)
 
     Sets the ReEnableOvUvFlag ..
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setReEnableOvUvFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setReEnableOvUvFlag(bool flag)
 {
 
     if (_reEnableOvUvFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _reEnableOvUvFlag = flag;
 
@@ -1260,93 +1260,93 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
     {
         case CC_Partial:
         {
-            setControlStatusPartialFlag(TRUE);
-            setControlStatusSignificantFlag(FALSE);
-            setControlStatusAbnQualityFlag(FALSE);
-            setControlStatusFailFlag(FALSE);
-            setControlStatusCommFailFlag(FALSE);
-            setControlStatusNoControlFlag(FALSE);
-            setControlStatusUnSolicitedFlag(FALSE);
+            setControlStatusPartialFlag(true);
+            setControlStatusSignificantFlag(false);
+            setControlStatusAbnQualityFlag(false);
+            setControlStatusFailFlag(false);
+            setControlStatusCommFailFlag(false);
+            setControlStatusNoControlFlag(false);
+            setControlStatusUnSolicitedFlag(false);
             break;
         }
 
         case CC_Significant:
         {
-            setControlStatusPartialFlag(FALSE);
-            setControlStatusSignificantFlag(TRUE);
-            setControlStatusAbnQualityFlag(FALSE);
-            setControlStatusFailFlag(FALSE);
-            setControlStatusCommFailFlag(FALSE);
-            setControlStatusNoControlFlag(FALSE);
-            setControlStatusUnSolicitedFlag(FALSE);
+            setControlStatusPartialFlag(false);
+            setControlStatusSignificantFlag(true);
+            setControlStatusAbnQualityFlag(false);
+            setControlStatusFailFlag(false);
+            setControlStatusCommFailFlag(false);
+            setControlStatusNoControlFlag(false);
+            setControlStatusUnSolicitedFlag(false);
             break;
 
         }
         case CC_AbnormalQuality:
         {
-            setControlStatusPartialFlag(FALSE);
-            setControlStatusSignificantFlag(FALSE);
-            setControlStatusAbnQualityFlag(TRUE);
-            setControlStatusFailFlag(FALSE);
-            setControlStatusCommFailFlag(FALSE);
-            setControlStatusNoControlFlag(FALSE);
-            setControlStatusUnSolicitedFlag(FALSE);
+            setControlStatusPartialFlag(false);
+            setControlStatusSignificantFlag(false);
+            setControlStatusAbnQualityFlag(true);
+            setControlStatusFailFlag(false);
+            setControlStatusCommFailFlag(false);
+            setControlStatusNoControlFlag(false);
+            setControlStatusUnSolicitedFlag(false);
             break;
         }
         case CC_Fail:
         {
-            setControlStatusPartialFlag(FALSE);
-            setControlStatusSignificantFlag(FALSE);
-            setControlStatusAbnQualityFlag(FALSE);
-            setControlStatusFailFlag(TRUE);
-            setControlStatusCommFailFlag(FALSE);
-            setControlStatusNoControlFlag(FALSE);
-            setControlStatusUnSolicitedFlag(FALSE);
+            setControlStatusPartialFlag(false);
+            setControlStatusSignificantFlag(false);
+            setControlStatusAbnQualityFlag(false);
+            setControlStatusFailFlag(true);
+            setControlStatusCommFailFlag(false);
+            setControlStatusNoControlFlag(false);
+            setControlStatusUnSolicitedFlag(false);
             break;
         }
         case CC_CommFail:
         {
-            setControlStatusPartialFlag(FALSE);
-            setControlStatusSignificantFlag(FALSE);
-            setControlStatusAbnQualityFlag(FALSE);
-            setControlStatusFailFlag(FALSE);
-            setControlStatusCommFailFlag(TRUE);
-            setControlStatusNoControlFlag(FALSE);
-            setControlStatusUnSolicitedFlag(FALSE);
+            setControlStatusPartialFlag(false);
+            setControlStatusSignificantFlag(false);
+            setControlStatusAbnQualityFlag(false);
+            setControlStatusFailFlag(false);
+            setControlStatusCommFailFlag(true);
+            setControlStatusNoControlFlag(false);
+            setControlStatusUnSolicitedFlag(false);
             break;
         }
         case CC_NoControl:
         {
-            setControlStatusPartialFlag(FALSE);
-            setControlStatusSignificantFlag(FALSE);
-            setControlStatusAbnQualityFlag(FALSE);
-            setControlStatusFailFlag(FALSE);
-            setControlStatusCommFailFlag(FALSE);
-            setControlStatusNoControlFlag(TRUE);
-            setControlStatusUnSolicitedFlag(FALSE);
+            setControlStatusPartialFlag(false);
+            setControlStatusSignificantFlag(false);
+            setControlStatusAbnQualityFlag(false);
+            setControlStatusFailFlag(false);
+            setControlStatusCommFailFlag(false);
+            setControlStatusNoControlFlag(true);
+            setControlStatusUnSolicitedFlag(false);
             break;
         }
         case CC_UnSolicited:
         {
-            setControlStatusPartialFlag(FALSE);
-            setControlStatusSignificantFlag(FALSE);
-            setControlStatusAbnQualityFlag(FALSE);
-            setControlStatusFailFlag(FALSE);
-            setControlStatusCommFailFlag(FALSE);
-            setControlStatusNoControlFlag(FALSE);
-            setControlStatusUnSolicitedFlag(TRUE);
+            setControlStatusPartialFlag(false);
+            setControlStatusSignificantFlag(false);
+            setControlStatusAbnQualityFlag(false);
+            setControlStatusFailFlag(false);
+            setControlStatusCommFailFlag(false);
+            setControlStatusNoControlFlag(false);
+            setControlStatusUnSolicitedFlag(true);
             break;
         }
         case CC_Normal:
         default:
         {
-            setControlStatusPartialFlag(FALSE);
-            setControlStatusSignificantFlag(FALSE);
-            setControlStatusAbnQualityFlag(FALSE);
-            setControlStatusFailFlag(FALSE);
-            setControlStatusCommFailFlag(FALSE);
-            setControlStatusNoControlFlag(FALSE);
-            setControlStatusUnSolicitedFlag(FALSE);
+            setControlStatusPartialFlag(false);
+            setControlStatusSignificantFlag(false);
+            setControlStatusAbnQualityFlag(false);
+            setControlStatusFailFlag(false);
+            setControlStatusCommFailFlag(false);
+            setControlStatusNoControlFlag(false);
+            setControlStatusUnSolicitedFlag(false);
             break;
         }
     }
@@ -1440,7 +1440,7 @@ string CtiCCCapBank::getIgnoreReasonText() const
 
 
 
-CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
+CtiCCCapBank& CtiCCCapBank::setIpAddress(unsigned long value)
 {
     _ipAddress = "(none)";
     if (value > 0)
@@ -1462,11 +1462,11 @@ CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
     }
     return *this;
 }
-CtiCCCapBank& CtiCCCapBank::setUDPPort(LONG value)
+CtiCCCapBank& CtiCCCapBank::setUDPPort(long value)
 {
     if (_udpPortNumber != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _udpPortNumber = value;
 
@@ -1474,11 +1474,11 @@ CtiCCCapBank& CtiCCCapBank::setUDPPort(LONG value)
 
 }
 
-CtiCCCapBank& CtiCCCapBank::setReportedCBCLastControlReason(LONG value)
+CtiCCCapBank& CtiCCCapBank::setReportedCBCLastControlReason(long value)
 {
     if (_reportedCBCLastControlReason != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _reportedCBCLastControlReason = value;
 
@@ -1490,18 +1490,18 @@ CtiCCCapBank& CtiCCCapBank::setPartialPhaseInfo(const string& info)
 {
     if (ciStringEqual(_partialPhaseInfo,info))
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _partialPhaseInfo = info;
 
     return *this;
 
 }
-CtiCCCapBank& CtiCCCapBank::setReportedCBCState(LONG value)
+CtiCCCapBank& CtiCCCapBank::setReportedCBCState(long value)
 {
     if (_reportedCBCState != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _reportedCBCState = value;
 
@@ -1513,7 +1513,7 @@ CtiCCCapBank& CtiCCCapBank::setReportedCBCStateTime(const CtiTime& timestamp)
 {
     if (_reportedCBCStateTime != timestamp)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _reportedCBCStateTime = timestamp;
 
@@ -1521,11 +1521,11 @@ CtiCCCapBank& CtiCCCapBank::setReportedCBCStateTime(const CtiTime& timestamp)
 
 }
 
-CtiCCCapBank& CtiCCCapBank::setIgnoreFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setIgnoreFlag(bool flag)
 {
     if (_ignoreFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _ignoreFlag = flag;
 
@@ -1533,11 +1533,11 @@ CtiCCCapBank& CtiCCCapBank::setIgnoreFlag(BOOL flag)
 
 }
 
-CtiCCCapBank& CtiCCCapBank::setIgnoredReason(LONG value)
+CtiCCCapBank& CtiCCCapBank::setIgnoredReason(long value)
 {
     if (_ignoreReason != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _ignoreReason = value;
 
@@ -1564,7 +1564,7 @@ CtiCCCapBank& CtiCCCapBank::setBeforeVarsString(const string& before)
 {
     if (_sBeforeVars != before)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _sBeforeVars = before;
     return *this;
@@ -1574,7 +1574,7 @@ CtiCCCapBank& CtiCCCapBank::setAfterVarsString(const string& after)
 {
     if (_sAfterVars != after)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _sAfterVars = after;
     return *this;
@@ -1584,30 +1584,30 @@ CtiCCCapBank& CtiCCCapBank::setPercentChangeString(const string& percent)
 {
     if (_sPercentChange != percent)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _sPercentChange = percent;
     return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setActionId(LONG actionId)
+CtiCCCapBank& CtiCCCapBank::setActionId(long actionId)
 {
     _actionId = actionId;
     return *this;
 }
 
 
-CtiCCCapBank& CtiCCCapBank::setSendAllCommandFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setSendAllCommandFlag(bool flag)
 {
     _sendAllCommandFlag = flag;
     return *this;
 }
 
-BOOL CtiCCCapBank::updateVerificationState(void)
+bool CtiCCCapBank::updateVerificationState(void)
 {
 
     int ctrlIdx = getVCtrlIndex();
-    _verificationDoneFlag = FALSE;
+    _verificationDoneFlag = false;
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1619,16 +1619,16 @@ BOOL CtiCCCapBank::updateVerificationState(void)
         {
             setPreviousVerificationControlStatus(getControlStatus());
             if ( stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
-                  _USE_FLIP_FLAG == TRUE &&
+                  _USE_FLIP_FLAG == true &&
                   (getControlStatus() == OpenFail || getControlStatus() == CloseFail) )
             {
-                _verificationDoneFlag = TRUE;
+                _verificationDoneFlag = true;
                 ctrlIdx = 5;
             }
             else
             {
-                _verificationDoneFlag = FALSE;
-                _retryFlag = FALSE;
+                _verificationDoneFlag = false;
+                _retryFlag = false;
                 ctrlIdx++;
             }
             break;
@@ -1636,15 +1636,15 @@ BOOL CtiCCCapBank::updateVerificationState(void)
     case 2:
         {
             if (!(stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
-                _USE_FLIP_FLAG == TRUE))
+                _USE_FLIP_FLAG == true))
             {
 
                 if ( (getControlStatus() == Open || getControlStatus() == Close) &&
                       getControlStatus() != _assumedOrigCapBankPos )
                 {
-                    _verificationDoneFlag = TRUE;
+                    _verificationDoneFlag = true;
                     ctrlIdx = 5;
-                    _retryFlag = FALSE;
+                    _retryFlag = false;
                 }
                 else
                 {
@@ -1654,14 +1654,14 @@ BOOL CtiCCCapBank::updateVerificationState(void)
                         if (getControlStatus() == OpenFail ||
                             getControlStatus() == CloseFail )
                         {
-                            _verificationDoneFlag = TRUE;
+                            _verificationDoneFlag = true;
                             ctrlIdx = 5;
-                            _retryFlag = FALSE;
+                            _retryFlag = false;
                         }
                         else
                         {
                             ctrlIdx++;
-                            _retryFlag = FALSE;
+                            _retryFlag = false;
                             setPreviousVerificationControlStatus(getControlStatus());
                         }
                     }
@@ -1672,21 +1672,21 @@ BOOL CtiCCCapBank::updateVerificationState(void)
                         {
                             if (_retryFlag)
                             {
-                                _retryFlag = FALSE;
+                                _retryFlag = false;
                                 ctrlIdx = 5;
-                                _verificationDoneFlag = TRUE;
+                                _verificationDoneFlag = true;
                             }
                             else
                             {
-                                _retryFlag = TRUE;
+                                _retryFlag = true;
 
                             }
                         }
                         else // getControlStatus() == Open or Close (Success)!!   MUST HAVE BEEN A RETRY!
                         {
-                             _retryFlag = FALSE;
+                             _retryFlag = false;
                              ctrlIdx = 5;
-                             _verificationDoneFlag = TRUE;
+                             _verificationDoneFlag = true;
                         }
                     }
                 }
@@ -1696,9 +1696,9 @@ BOOL CtiCCCapBank::updateVerificationState(void)
                 /*if ( (getControlStatus() == Open || getControlStatus() == Close) &&
                       getControlStatus() != _assumedOrigCapBankPos )
                 { */
-                    _verificationDoneFlag = TRUE;
+                    _verificationDoneFlag = true;
                     ctrlIdx = 5;
-                    _retryFlag = FALSE;
+                    _retryFlag = false;
                 /*}
                 else
                 {
@@ -1712,24 +1712,24 @@ BOOL CtiCCCapBank::updateVerificationState(void)
                 getControlStatus() == CloseFail )
             {
                 if ((stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
-                    _USE_FLIP_FLAG == TRUE)||
+                    _USE_FLIP_FLAG == true)||
                     _retryFlag )
                 {
                     ctrlIdx = 5;
-                    _verificationDoneFlag = TRUE;
-                    _retryFlag = FALSE;
+                    _verificationDoneFlag = true;
+                    _retryFlag = false;
                 }
                 else
                 {
-                    _retryFlag = TRUE;
+                    _retryFlag = true;
 
                 }
             }
             else  // getControlStatus() == Open or Close (Success!!!)
             {
-                _retryFlag = FALSE;
+                _retryFlag = false;
                 ctrlIdx = 5;
-                _verificationDoneFlag = TRUE;
+                _verificationDoneFlag = true;
             }
 
             break;
@@ -1740,9 +1740,9 @@ BOOL CtiCCCapBank::updateVerificationState(void)
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " ***WARNING*** Adjusting CapBank Verification Control Index = 5 and setting Verification Done Flag ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            _verificationDoneFlag = TRUE;
+            _verificationDoneFlag = true;
             ctrlIdx = 5;
-            _retryFlag = FALSE;
+            _retryFlag = false;
         }
         break;
     }
@@ -1756,17 +1756,17 @@ CtiCCCapBank& CtiCCCapBank::setVCtrlIndex(int vCtrlIndex)
 {
     if (vCtrlIndex != _vCtrlIndex)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _vCtrlIndex = vCtrlIndex;
     return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setPreviousVerificationControlStatus(LONG status)
+CtiCCCapBank& CtiCCCapBank::setPreviousVerificationControlStatus(long status)
 {
     if (status != _prevVerificationControlStatus)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _prevVerificationControlStatus = status;
     return *this;
@@ -1776,7 +1776,7 @@ CtiCCCapBank& CtiCCCapBank::setAssumedOrigVerificationState(int assumedOrigCapBa
 {
     if (assumedOrigCapBankPos != _assumedOrigCapBankPos)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _assumedOrigCapBankPos = assumedOrigCapBankPos;
     return *this;
@@ -1818,7 +1818,7 @@ bool CtiCCCapBank::isExpresscom()
 
     Sets the control status of the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlStatus(LONG status)
+CtiCCCapBank& CtiCCCapBank::setControlStatus(long status)
 {
 
     if (_verificationFlag)
@@ -1827,9 +1827,9 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(LONG status)
         {
             /*{
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }*/
-            _dirty = TRUE;
+            _dirty = true;
         }
         _verificationControlStatus = status;
         _controlstatus = status;       //temporarily here!!!
@@ -1841,9 +1841,9 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(LONG status)
         {
             /*{
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }*/
-            _dirty = TRUE;
+            _dirty = true;
         }
         _controlstatus = status;
     }
@@ -1851,11 +1851,11 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(LONG status)
     return *this;
 }
 
-CtiCCCapBank& CtiCCCapBank::setControlRecentlySentFlag(BOOL flag)
+CtiCCCapBank& CtiCCCapBank::setControlRecentlySentFlag(bool flag)
 {
     if (_controlRecentlySentFlag != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _controlRecentlySentFlag = flag;
 
@@ -1868,7 +1868,7 @@ CtiCCCapBank& CtiCCCapBank::setControlRecentlySentFlag(BOOL flag)
     Sets the point id for the analog point that hold the number of number of
     operations performed on the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(LONG operationpointid)
+CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(long operationpointid)
 {
     _operationanalogpointid = operationpointid;
 
@@ -1880,15 +1880,15 @@ CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(LONG operationpointid)
 
     Sets the number of operations performed on this capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTotalOperations(LONG operations)
+CtiCCCapBank& CtiCCCapBank::setTotalOperations(long operations)
 {
     if( _totaloperations != operations )
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
-        _dirty = TRUE;
+        _dirty = true;
     }
     _totaloperations = operations;
     return *this;
@@ -1900,7 +1900,7 @@ CtiCCCapBank& CtiCCCapBank::setTotalOperations(LONG operations)
 
     Sets the current daily operations of the feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTotalOperationsAndSendMsg(LONG operations, CtiMultiMsg_vec& pointChanges)
+CtiCCCapBank& CtiCCCapBank::setTotalOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges)
 {
     if( _totaloperations != operations )
     {
@@ -1910,9 +1910,9 @@ CtiCCCapBank& CtiCCCapBank::setTotalOperationsAndSendMsg(LONG operations, CtiMul
         }
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
-        _dirty = TRUE;
+        _dirty = true;
     }
     _totaloperations = operations;
 
@@ -1930,9 +1930,9 @@ CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const CtiTime& laststatuscha
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
-        _dirty = TRUE;
+        _dirty = true;
     }
     _laststatuschangetime = laststatuschangetime;
     return *this;
@@ -1943,15 +1943,15 @@ CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const CtiTime& laststatuscha
 
     Sets the tags of control status on the capbank
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(LONG tags)
+CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(long tags)
 {
     if( _tagscontrolstatus != tags )
     {
         /*{
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
-        _dirty = TRUE;
+        _dirty = true;
     }
     _tagscontrolstatus = tags;
     return *this;
@@ -2031,7 +2031,7 @@ bool CtiCCCapBank::addMonitorPoint(CtiCCMonitorPointPtr monPoint)
 ---------------------------------------------------------------------------*/
 void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
 {
-    LONG tempParentId = _originalParent.getOriginalParentId();
+    long tempParentId = _originalParent.getOriginalParentId();
 
     RWCollectable::saveGuts(ostrm);
     CapControlPao::saveGuts(ostrm);
@@ -2196,7 +2196,7 @@ void CtiCCCapBank::restore(Cti::RowReader& rdr)
     rdr["maxdailyops"] >> _maxdailyops;
     rdr["maxopdisable"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    setMaxOpsDisableFlag(tempBoolString=="y"?TRUE:FALSE);
+    setMaxOpsDisableFlag(tempBoolString=="y"?true:false);
 
 
     setAlarmInhibitFlag(false);
@@ -2213,22 +2213,22 @@ void CtiCCCapBank::restore(Cti::RowReader& rdr)
     setAssumedOrigVerificationState(CtiCCCapBank::Open);
     setPreviousVerificationControlStatus(CtiCCCapBank::Open);
     setVCtrlIndex(-1);
-    setVerificationFlag(FALSE);
-    setRetryOpenFailedFlag(FALSE);
-    setRetryCloseFailedFlag(FALSE);
-    setOvUvDisabledFlag(FALSE);
-    setMaxDailyOpsHitFlag(FALSE);
-    setControlStatusPartialFlag(FALSE);
-    setControlStatusSignificantFlag(FALSE);
-    setControlStatusAbnQualityFlag(FALSE);
+    setVerificationFlag(false);
+    setRetryOpenFailedFlag(false);
+    setRetryCloseFailedFlag(false);
+    setOvUvDisabledFlag(false);
+    setMaxDailyOpsHitFlag(false);
+    setControlStatusPartialFlag(false);
+    setControlStatusSignificantFlag(false);
+    setControlStatusAbnQualityFlag(false);
     setControlStatusQuality(CC_Normal);
-    setReEnableOvUvFlag(FALSE);
-    setLocalControlFlag(FALSE);
-    setControlRecentlySentFlag(FALSE);
-    setPorterRetFailFlag(FALSE);
-    setUnsolicitedPendingFlag(FALSE);
+    setReEnableOvUvFlag(false);
+    setLocalControlFlag(false);
+    setControlRecentlySentFlag(false);
+    setPorterRetFailFlag(false);
+    setUnsolicitedPendingFlag(false);
 
-    setOvUvSituationFlag(FALSE);
+    setOvUvSituationFlag(false);
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
     setCurrentDailyOperations(0);
 
@@ -2238,26 +2238,26 @@ void CtiCCCapBank::restore(Cti::RowReader& rdr)
     setReportedCBCState(-1);
     setReportedCBCStateTime(gInvalidCtiTime);
 
-    setIgnoreFlag(FALSE);
+    setIgnoreFlag(false);
     setIgnoredReason(0);
     setBeforeVarsString("none");
     setAfterVarsString("none");
     setPercentChangeString("none");
     setPartialPhaseInfo("(none)");
 
-    _sendAllCommandFlag = FALSE;
+    _sendAllCommandFlag = false;
     setIgnoreReasonTimeUpdated(gInvalidCtiTime);
     setIgnoreIndicatorTimeUpdated(gInvalidCtiTime);
     setUnsolicitedChangeTimeUpdated(gInvalidCtiTime);
 
     _originalParent.setPAOId(getPaoId());
 
-    _insertDynamicDataFlag = TRUE;
-    _dirty = TRUE;
+    _insertDynamicDataFlag = true;
+    _dirty = true;
 
 }
 
-BOOL CtiCCCapBank::getInsertDynamicDataFlag() const
+bool CtiCCCapBank::getInsertDynamicDataFlag() const
 {
     return _insertDynamicDataFlag;
 }
@@ -2277,26 +2277,26 @@ void CtiCCCapBank::setDynamicData(Cti::RowReader& rdr)
 
     rdr["additionalflags"] >> _additionalFlags;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
-    _verificationFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
-    _performingVerificationFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
-    _verificationDoneFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
-    _retryOpenFailedFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
-    _retryCloseFailedFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
-    _ovUvDisabledFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
-    _maxDailyOpsHitFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
-    _ovuvSituationFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
-    _controlStatusPartialFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);
-    _controlStatusSignificantFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
-    _controlStatusAbnQualityFlag = (_additionalFlags[10]=='y'?TRUE:FALSE);
-    _controlStatusFailFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
-    _controlStatusCommFailFlag = (_additionalFlags[12]=='y'?TRUE:FALSE);
-    _controlStatusNoControlFlag = (_additionalFlags[13]=='y'?TRUE:FALSE);
-    _controlStatusUnSolicitedFlag = (_additionalFlags[14]=='y'?TRUE:FALSE);
-    _reEnableOvUvFlag = (_additionalFlags[15]=='y'?TRUE:FALSE);
-    _localControlFlag = (_additionalFlags[16]=='y'?TRUE:FALSE);
-    _controlRecentlySentFlag = (_additionalFlags[17]=='y'?TRUE:FALSE);
-    _porterRetFailFlag = (_additionalFlags[18]=='y'?TRUE:FALSE);
-    _unsolicitedPendingFlag = (_additionalFlags[19]=='y'?TRUE:FALSE);
+    _verificationFlag = (_additionalFlags[0]=='y'?true:false);
+    _performingVerificationFlag = (_additionalFlags[1]=='y'?true:false);
+    _verificationDoneFlag = (_additionalFlags[2]=='y'?true:false);
+    _retryOpenFailedFlag = (_additionalFlags[3]=='y'?true:false);
+    _retryCloseFailedFlag = (_additionalFlags[4]=='y'?true:false);
+    _ovUvDisabledFlag = (_additionalFlags[5]=='y'?true:false);
+    _maxDailyOpsHitFlag = (_additionalFlags[6]=='y'?true:false);
+    _ovuvSituationFlag = (_additionalFlags[7]=='y'?true:false);
+    _controlStatusPartialFlag = (_additionalFlags[8]=='y'?true:false);
+    _controlStatusSignificantFlag = (_additionalFlags[9]=='y'?true:false);
+    _controlStatusAbnQualityFlag = (_additionalFlags[10]=='y'?true:false);
+    _controlStatusFailFlag = (_additionalFlags[11]=='y'?true:false);
+    _controlStatusCommFailFlag = (_additionalFlags[12]=='y'?true:false);
+    _controlStatusNoControlFlag = (_additionalFlags[13]=='y'?true:false);
+    _controlStatusUnSolicitedFlag = (_additionalFlags[14]=='y'?true:false);
+    _reEnableOvUvFlag = (_additionalFlags[15]=='y'?true:false);
+    _localControlFlag = (_additionalFlags[16]=='y'?true:false);
+    _controlRecentlySentFlag = (_additionalFlags[17]=='y'?true:false);
+    _porterRetFailFlag = (_additionalFlags[18]=='y'?true:false);
+    _unsolicitedPendingFlag = (_additionalFlags[19]=='y'?true:false);
 
     if (_controlStatusPartialFlag)
         _controlStatusQuality = CC_Partial;
@@ -2328,8 +2328,8 @@ void CtiCCCapBank::setDynamicData(Cti::RowReader& rdr)
 
     _actionId = -1;
 
-    _insertDynamicDataFlag = FALSE;
-    _dirty = FALSE;
+    _insertDynamicDataFlag = false;
+    _dirty = false;
 
 }
 
@@ -2359,7 +2359,7 @@ int CtiCCCapBank::compareTo(const RWCollectable* rightObj) const
 
     Returns the dirty flag of the cap bank
 ---------------------------------------------------------------------------*/
-BOOL CtiCCCapBank::isDirty() const
+bool CtiCCCapBank::isDirty() const
 {
     return _dirty;
 }
@@ -2461,11 +2461,11 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
             if(updater.execute())    // No error occured!
             {
-                _dirty = FALSE;
+                _dirty = false;
             }
             else
             {
-                _dirty = TRUE;
+                _dirty = true;
                 {
                     string loggedSQLstring = updater.asString();
                     {
@@ -2521,12 +2521,12 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
             if(dbInserter.execute())    // No error occured!
             {
-                _insertDynamicDataFlag = FALSE;
-                _dirty = FALSE;
+                _insertDynamicDataFlag = false;
+                _dirty = false;
             }
             else
             {
-                _dirty = TRUE;
+                _dirty = true;
                 {
                     string loggedSQLstring = dbInserter.asString();
                     {

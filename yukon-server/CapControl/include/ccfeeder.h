@@ -84,80 +84,80 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     virtual ~CtiCCFeeder();
 
-    LONG getParentId() const;
+    long getParentId() const;
 
-    LONG getCurrentVarLoadPointId() const;
-    DOUBLE getCurrentVarLoadPointValue() const;
-    LONG getCurrentWattLoadPointId() const;
-    DOUBLE getCurrentWattLoadPointValue() const;
-    LONG getCurrentVoltLoadPointId() const;
-    DOUBLE getCurrentVoltLoadPointValue() const;
+    long getCurrentVarLoadPointId() const;
+    double getCurrentVarLoadPointValue() const;
+    long getCurrentWattLoadPointId() const;
+    double getCurrentWattLoadPointValue() const;
+    long getCurrentVoltLoadPointId() const;
+    double getCurrentVoltLoadPointValue() const;
     const string& getMapLocationId() const;
     float getDisplayOrder() const;
-    BOOL getNewPointDataReceivedFlag() const;
+    bool getNewPointDataReceivedFlag() const;
     const CtiTime& getLastCurrentVarPointUpdateTime() const;
-    LONG getEstimatedVarLoadPointId() const;
-    DOUBLE getEstimatedVarLoadPointValue() const;
-    LONG getDailyOperationsAnalogPointId() const;
-    LONG getPowerFactorPointId() const;
-    LONG getEstimatedPowerFactorPointId() const;
-    LONG getCurrentDailyOperations() const;
-    BOOL getRecentlyControlledFlag() const;
+    long getEstimatedVarLoadPointId() const;
+    double getEstimatedVarLoadPointValue() const;
+    long getDailyOperationsAnalogPointId() const;
+    long getPowerFactorPointId() const;
+    long getEstimatedPowerFactorPointId() const;
+    long getCurrentDailyOperations() const;
+    bool getRecentlyControlledFlag() const;
     const CtiTime& getLastOperationTime() const;
-    DOUBLE getVarValueBeforeControl() const;
-    LONG getLastCapBankControlledDeviceId() const;
-    LONG getBusOptimizedVarCategory() const;
-    DOUBLE getBusOptimizedVarOffset() const;
-    DOUBLE getPowerFactorValue() const;
-    DOUBLE getKVARSolution() const;
-    DOUBLE getEstimatedPowerFactorValue() const;
-    LONG getCurrentVarPointQuality() const;
-    LONG getCurrentWattPointQuality() const;
-    LONG getCurrentVoltPointQuality() const;
-    BOOL getWaiveControlFlag() const;
+    double getVarValueBeforeControl() const;
+    long getLastCapBankControlledDeviceId() const;
+    long getBusOptimizedVarCategory() const;
+    double getBusOptimizedVarOffset() const;
+    double getPowerFactorValue() const;
+    double getKVARSolution() const;
+    double getEstimatedPowerFactorValue() const;
+    long getCurrentVarPointQuality() const;
+    long getCurrentWattPointQuality() const;
+    long getCurrentVoltPointQuality() const;
+    bool getWaiveControlFlag() const;
     const string& getParentControlUnits() const;
     const string& getParentName() const;
-    LONG getDecimalPlaces() const;
-    BOOL getPeakTimeFlag() const;
-    BOOL getPorterRetFailFlag() const;
-    LONG getEventSequence() const;
-    BOOL getMultiMonitorFlag() const;
-    BOOL getVerificationFlag() const;
-    BOOL getPerformingVerificationFlag() const;
-    BOOL getVerificationDoneFlag() const;
-    BOOL getPreOperationMonitorPointScanFlag() const;
-    BOOL getOperationSentWaitFlag() const;
-    BOOL getPostOperationMonitorPointScanFlag() const;
-    BOOL getWaitForReCloseDelayFlag() const;
-    BOOL getMaxDailyOpsHitFlag() const;
-    BOOL getOvUvDisabledFlag() const;
-    BOOL getCorrectionNeededNoBankAvailFlag() const;
+    long getDecimalPlaces() const;
+    bool getPeakTimeFlag() const;
+    bool getPorterRetFailFlag() const;
+    long getEventSequence() const;
+    bool getMultiMonitorFlag() const;
+    bool getVerificationFlag() const;
+    bool getPerformingVerificationFlag() const;
+    bool getVerificationDoneFlag() const;
+    bool getPreOperationMonitorPointScanFlag() const;
+    bool getOperationSentWaitFlag() const;
+    bool getPostOperationMonitorPointScanFlag() const;
+    bool getWaitForReCloseDelayFlag() const;
+    bool getMaxDailyOpsHitFlag() const;
+    bool getOvUvDisabledFlag() const;
+    bool getCorrectionNeededNoBankAvailFlag() const;
     bool getLikeDayControlFlag() const;
-    BOOL getLastVerificationMsgSentSuccessfulFlag() const;
-    LONG getCurrentVerificationCapBankId() const;
-    LONG getCurrentVerificationCapBankOrigState() const;
-    DOUBLE getTargetVarValue() const;
+    bool getLastVerificationMsgSentSuccessfulFlag() const;
+    long getCurrentVerificationCapBankId() const;
+    long getCurrentVerificationCapBankOrigState() const;
+    double getTargetVarValue() const;
     const string& getSolution() const;
-    DOUBLE getIVControlTot() const;
-    LONG getIVCount() const;
-    DOUBLE getIWControlTot() const;
-    LONG getIWCount() const;
-    DOUBLE getIVControl() const;
-    DOUBLE getIWControl() const;
-    BOOL getUsePhaseData() const;
-    LONG getPhaseBId() const;
-    LONG getPhaseCId() const;
-    BOOL getTotalizedControlFlag() const;
-    DOUBLE getPhaseAValue() const;
-    DOUBLE getPhaseBValue() const;
-    DOUBLE getPhaseCValue() const;
-    DOUBLE getPhaseAValueBeforeControl() const;
-    DOUBLE getPhaseBValueBeforeControl() const;
-    DOUBLE getPhaseCValueBeforeControl() const;
+    double getIVControlTot() const;
+    long getIVCount() const;
+    double getIWControlTot() const;
+    long getIWCount() const;
+    double getIVControl() const;
+    double getIWControl() const;
+    bool getUsePhaseData() const;
+    long getPhaseBId() const;
+    long getPhaseCId() const;
+    bool getTotalizedControlFlag() const;
+    double getPhaseAValue() const;
+    double getPhaseBValue() const;
+    double getPhaseCValue() const;
+    double getPhaseAValueBeforeControl() const;
+    double getPhaseBValueBeforeControl() const;
+    double getPhaseCValueBeforeControl() const;
     const CtiTime& getLastVarPointTime() const;
     const CtiTime& getLastWattPointTime() const;
     const CtiTime& getLastVoltPointTime() const;
-    LONG getRetryIndex() const;
+    long getRetryIndex() const;
     const CtiRegression& getRegression();
     const CtiRegression& getRegressionA();
     const CtiRegression& getRegressionB();
@@ -169,172 +169,172 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
         std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks();
     void deleteCCCapBank(long capBankId);
 
-    CtiCCFeeder& setParentId(LONG parentId);
-    CtiCCFeeder& setCurrentVarLoadPointId(LONG currentvarid);
-    CtiCCFeeder& setCurrentVarLoadPointValue(DOUBLE currentvarval, CtiTime timestamp);
-    CtiCCFeeder& setCurrentWattLoadPointId(LONG currentwattid);
-    CtiCCFeeder& setCurrentWattLoadPointValue(DOUBLE currentwattval);
-    CtiCCFeeder& setCurrentVoltLoadPointId(LONG currentvoltid);
-    CtiCCFeeder& setCurrentVoltLoadPointValue(DOUBLE currentvoltval);
+    CtiCCFeeder& setParentId(long parentId);
+    CtiCCFeeder& setCurrentVarLoadPointId(long currentvarid);
+    CtiCCFeeder& setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp);
+    CtiCCFeeder& setCurrentWattLoadPointId(long currentwattid);
+    CtiCCFeeder& setCurrentWattLoadPointValue(double currentwattval);
+    CtiCCFeeder& setCurrentVoltLoadPointId(long currentvoltid);
+    CtiCCFeeder& setCurrentVoltLoadPointValue(double currentvoltval);
     CtiCCFeeder& setMapLocationId(const string& maplocation);
     CtiCCFeeder& setDisplayOrder(float order);
-    CtiCCFeeder& setNewPointDataReceivedFlag(BOOL newpointdatareceived);
+    CtiCCFeeder& setNewPointDataReceivedFlag(bool newpointdatareceived);
     CtiCCFeeder& setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate);
-    CtiCCFeeder& setEstimatedVarLoadPointId(LONG estimatedvarid);
-    CtiCCFeeder& setEstimatedVarLoadPointValue(DOUBLE estimatedvarval);
-    CtiCCFeeder& setDailyOperationsAnalogPointId(LONG opspointid);
-    CtiCCFeeder& setPowerFactorPointId(LONG pfpointid);
-    CtiCCFeeder& setEstimatedPowerFactorPointId(LONG epfpointid);
-    CtiCCFeeder& setCurrentDailyOperationsAndSendMsg(LONG operations, CtiMultiMsg_vec& pointChanges);
-    CtiCCFeeder& setCurrentDailyOperations(LONG operations);
-    CtiCCFeeder& setRecentlyControlledFlag(BOOL recentlycontrolled);
+    CtiCCFeeder& setEstimatedVarLoadPointId(long estimatedvarid);
+    CtiCCFeeder& setEstimatedVarLoadPointValue(double estimatedvarval);
+    CtiCCFeeder& setDailyOperationsAnalogPointId(long opspointid);
+    CtiCCFeeder& setPowerFactorPointId(long pfpointid);
+    CtiCCFeeder& setEstimatedPowerFactorPointId(long epfpointid);
+    CtiCCFeeder& setCurrentDailyOperationsAndSendMsg(long operations, CtiMultiMsg_vec& pointChanges);
+    CtiCCFeeder& setCurrentDailyOperations(long operations);
+    CtiCCFeeder& setRecentlyControlledFlag(bool recentlycontrolled);
     CtiCCFeeder& setLastOperationTime(const CtiTime& lastoperation);
-    CtiCCFeeder& setVarValueBeforeControl(DOUBLE oldvarval);
-    CtiCCFeeder& setLastCapBankControlledDeviceId(LONG lastcapbank);
+    CtiCCFeeder& setVarValueBeforeControl(double oldvarval);
+    CtiCCFeeder& setLastCapBankControlledDeviceId(long lastcapbank);
     //don't think we want public setters for these
-    //CtiCCFeeder& setBusOptimizedVarCategory(LONG varcategory);
-    //CtiCCFeeder& setBusOptimizedVarOffset(DOUBLE varoffset);
-    CtiCCFeeder& setPowerFactorValue(DOUBLE pfval);
-    CtiCCFeeder& setKVARSolution(DOUBLE solution);
-    CtiCCFeeder& setEstimatedPowerFactorValue(DOUBLE epfval);
-    CtiCCFeeder& setCurrentVarPointQuality(LONG cvpq);
-    CtiCCFeeder& setCurrentWattPointQuality(LONG cwpq);
-    CtiCCFeeder& setCurrentVoltPointQuality(LONG cvpq);
-    CtiCCFeeder& setWaiveControlFlag(BOOL waive);
+    //CtiCCFeeder& setBusOptimizedVarCategory(long varcategory);
+    //CtiCCFeeder& setBusOptimizedVarOffset(double varoffset);
+    CtiCCFeeder& setPowerFactorValue(double pfval);
+    CtiCCFeeder& setKVARSolution(double solution);
+    CtiCCFeeder& setEstimatedPowerFactorValue(double epfval);
+    CtiCCFeeder& setCurrentVarPointQuality(long cvpq);
+    CtiCCFeeder& setCurrentWattPointQuality(long cwpq);
+    CtiCCFeeder& setCurrentVoltPointQuality(long cvpq);
+    CtiCCFeeder& setWaiveControlFlag(bool waive);
     CtiCCFeeder& setParentControlUnits(const string& parentControlUnits);
     CtiCCFeeder& setParentName(const string& parentName);
-    CtiCCFeeder& setDecimalPlaces(LONG decimalPlaces);
-    CtiCCFeeder& setPeakTimeFlag(BOOL peakTimeFlag);
-    CtiCCFeeder& setPorterRetFailFlag(BOOL flag);
-    CtiCCFeeder& setEventSequence(LONG eventSeq);
-    CtiCCFeeder& setMultiMonitorFlag(BOOL flag);
-    CtiCCFeeder& setVerificationFlag(BOOL verificationFlag);
-    CtiCCFeeder& setPerformingVerificationFlag(BOOL performingVerificationFlag);
-    CtiCCFeeder& setVerificationDoneFlag(BOOL verificationDoneFlag);
-    CtiCCFeeder& setPreOperationMonitorPointScanFlag( BOOL flag);
-    CtiCCFeeder& setOperationSentWaitFlag( BOOL flag);
-    CtiCCFeeder& setPostOperationMonitorPointScanFlag( BOOL flag);
-    CtiCCFeeder& setWaitForReCloseDelayFlag(BOOL flag);
-    CtiCCFeeder& setMaxDailyOpsHitFlag(BOOL flag);
-    CtiCCFeeder& setOvUvDisabledFlag(BOOL flag);
-    CtiCCFeeder& setCorrectionNeededNoBankAvailFlag(BOOL flag);
-    CtiCCFeeder& setLikeDayControlFlag(BOOL flag);
-    CtiCCFeeder& setLastVerificationMsgSentSuccessfulFlag(BOOL flag);
-    CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
-    CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
-    CtiCCFeeder& setTargetVarValue(DOUBLE value);
+    CtiCCFeeder& setDecimalPlaces(long decimalPlaces);
+    CtiCCFeeder& setPeakTimeFlag(bool peakTimeFlag);
+    CtiCCFeeder& setPorterRetFailFlag(bool flag);
+    CtiCCFeeder& setEventSequence(long eventSeq);
+    CtiCCFeeder& setMultiMonitorFlag(bool flag);
+    CtiCCFeeder& setVerificationFlag(bool verificationFlag);
+    CtiCCFeeder& setPerformingVerificationFlag(bool performingVerificationFlag);
+    CtiCCFeeder& setVerificationDoneFlag(bool verificationDoneFlag);
+    CtiCCFeeder& setPreOperationMonitorPointScanFlag( bool flag);
+    CtiCCFeeder& setOperationSentWaitFlag( bool flag);
+    CtiCCFeeder& setPostOperationMonitorPointScanFlag( bool flag);
+    CtiCCFeeder& setWaitForReCloseDelayFlag(bool flag);
+    CtiCCFeeder& setMaxDailyOpsHitFlag(bool flag);
+    CtiCCFeeder& setOvUvDisabledFlag(bool flag);
+    CtiCCFeeder& setCorrectionNeededNoBankAvailFlag(bool flag);
+    CtiCCFeeder& setLikeDayControlFlag(bool flag);
+    CtiCCFeeder& setLastVerificationMsgSentSuccessfulFlag(bool flag);
+    CtiCCFeeder& setCurrentVerificationCapBankId(long capBankId);
+    CtiCCFeeder& setCurrentVerificationCapBankState(long status);
+    CtiCCFeeder& setTargetVarValue(double value);
     CtiCCFeeder& setSolution(const string& text);
-    CtiCCFeeder& setIVControlTot(DOUBLE value);
-    CtiCCFeeder& setIVCount(LONG value);
-    CtiCCFeeder& setIWControlTot(DOUBLE value);
-    CtiCCFeeder& setIWCount(LONG value);
-    CtiCCFeeder& setIVControl(DOUBLE value);
-    CtiCCFeeder& setIWControl(DOUBLE value);
-    CtiCCFeeder& setUsePhaseData(BOOL flag);
-    CtiCCFeeder& setPhaseBId(LONG pointid);
-    CtiCCFeeder& setPhaseCId(LONG pointid);
-    CtiCCFeeder& setPhaseAValue(DOUBLE value, CtiTime timestamp);
-    CtiCCFeeder& setPhaseBValue(DOUBLE value, CtiTime timestamp);
-    CtiCCFeeder& setPhaseCValue(DOUBLE value, CtiTime timestamp);
-    CtiCCFeeder& setTotalizedControlFlag(BOOL flag);
-    CtiCCFeeder& setPhaseAValueBeforeControl(DOUBLE value);
-    CtiCCFeeder& setPhaseBValueBeforeControl(DOUBLE value);
-    CtiCCFeeder& setPhaseCValueBeforeControl(DOUBLE value);
+    CtiCCFeeder& setIVControlTot(double value);
+    CtiCCFeeder& setIVCount(long value);
+    CtiCCFeeder& setIWControlTot(double value);
+    CtiCCFeeder& setIWCount(long value);
+    CtiCCFeeder& setIVControl(double value);
+    CtiCCFeeder& setIWControl(double value);
+    CtiCCFeeder& setUsePhaseData(bool flag);
+    CtiCCFeeder& setPhaseBId(long pointid);
+    CtiCCFeeder& setPhaseCId(long pointid);
+    CtiCCFeeder& setPhaseAValue(double value, CtiTime timestamp);
+    CtiCCFeeder& setPhaseBValue(double value, CtiTime timestamp);
+    CtiCCFeeder& setPhaseCValue(double value, CtiTime timestamp);
+    CtiCCFeeder& setTotalizedControlFlag(bool flag);
+    CtiCCFeeder& setPhaseAValueBeforeControl(double value);
+    CtiCCFeeder& setPhaseBValueBeforeControl(double value);
+    CtiCCFeeder& setPhaseCValueBeforeControl(double value);
     CtiCCFeeder& setLastWattPointTime(const CtiTime& lastpointupdate);
     CtiCCFeeder& setLastVoltPointTime(const CtiTime& lastpointupdate);
-    CtiCCFeeder& setRetryIndex(LONG value);
+    CtiCCFeeder& setRetryIndex(long value);
 
-    void figureAndSetTargetVarValue(const string& controlMethod, const string& controlUnits, BOOL peakTimeFlag);
+    void figureAndSetTargetVarValue(const string& controlMethod, const string& controlUnits, bool peakTimeFlag);
     CtiCCCapBankPtr getLastCapBankControlledDevice();
     CtiCCCapBankPtr findCapBankToChangeVars(double kvarSolution, CtiMultiMsg_vec& pointChanges,
                                           double leadLevel = 0, double lagLevel = 0, double currentVarValue = 0,
-                                          BOOL checkLimits = true);
+                                          bool checkLimits = true);
     bool checkForMaxKvar( long, long );
     bool removeMaxKvar( long bankId );
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
-                                            string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
+                                            string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
-                                            string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
+                                            string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
     CtiRequestMsg* createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action, string typeOfControl);
     void createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string typeOfControl);
-    BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent,
-                                    DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality,
-                                    DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, const CtiRegression& reg);
-    BOOL capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent,
-                                                     LONG failurePercent, //DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue,
-                                                     LONG currentVarPointQuality, DOUBLE varAValueBeforeControl, DOUBLE varBValueBeforeControl,
-                                                     DOUBLE varCValueBeforeControl, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue,
+    bool capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long minConfirmPercent, long failurePercent,
+                                    double varValueBeforeControl, double currentVarLoadPointValue, long currentVarPointQuality,
+                                    double varAValue, double varBValue, double varCValue, const CtiRegression& reg);
+    bool capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long minConfirmPercent,
+                                                     long failurePercent, //double varValueBeforeControl, double currentVarLoadPointValue,
+                                                     long currentVarPointQuality, double varAValueBeforeControl, double varBValueBeforeControl,
+                                                     double varCValueBeforeControl, double varAValue, double varBValue, double varCValue,
                                             const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
-    string createPhaseControlStatusUpdateText(string capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue,
-                                                  DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC);
-    string createControlStatusUpdateText(string capControlStatus, DOUBLE varAValue, DOUBLE ratioA);
-    string createPhaseVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier);
-    string createPhaseRatioText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier);
-    string createVarText(DOUBLE aValue, FLOAT multiplier);
-    BOOL isPeakDay();
-    BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
-    BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
-                                                   BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits,
-                                                   BOOL dailyMaxOpsHitFlag);
-    BOOL checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
+    string createPhaseControlStatusUpdateText(string capControlStatus, double varAValue,double varBValue, double varCValue,
+                                                  double ratioA, double ratioB, double ratioC);
+    string createControlStatusUpdateText(string capControlStatus, double varAValue, double ratioA);
+    string createPhaseVarText(double aValue,double bValue, double cValue, FLOAT multiplier);
+    string createPhaseRatioText(double aValue,double bValue, double cValue, FLOAT multiplier);
+    string createVarText(double aValue, FLOAT multiplier);
+    bool isPeakDay();
+    bool isPastMaxConfirmTime(const CtiTime& currentDateTime, long maxConfirmTime, long feederRetries);
+    bool checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,
+                                                   bool peakTimeFlag, long decimalPlaces, const string& controlUnits,
+                                                   bool dailyMaxOpsHitFlag);
+    bool checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime,
                             CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void orderBanksOnFeeder();
-    DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
-    BOOL isPeakTime(const CtiTime& currentDateTime);
-    BOOL isControlPoint(LONG pointid);
+    double figureCurrentSetPoint(const CtiTime& currentDateTime);
+    bool isPeakTime(const CtiTime& currentDateTime);
+    bool isControlPoint(long pointid);
     void updateIntegrationVPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime);
     void updateIntegrationWPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
-    bool isAlreadyControlled(LONG minConfirmPercent,
-                             LONG currentVarPointQuality, DOUBLE varAValueBeforeControl,
-                             DOUBLE varBValueBeforeControl, DOUBLE varCValueBeforeControl,
-                             DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue,
-                             DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue,
+    bool isAlreadyControlled(long minConfirmPercent,
+                             long currentVarPointQuality, double varAValueBeforeControl,
+                             double varBValueBeforeControl, double varCValueBeforeControl,
+                             double varAValue, double varBValue, double varCValue,
+                             double varValueBeforeControl, double currentVarLoadPointValue,
                              const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB,
-                             const CtiRegression& regC,  BOOL usePhaseData, BOOL useTotalizedControl);
+                             const CtiRegression& regC,  bool usePhaseData, bool useTotalizedControl);
 
-    void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
-    BOOL attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime);
-    BOOL checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime, LONG sendRetries);
-    BOOL checkMaxDailyOpCountExceeded(CtiMultiMsg_vec &pointChanges);
-    BOOL voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec& pilMessages);
+    void fillOutBusOptimizedInfo(bool peakTimeFlag);
+    bool attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime);
+    bool checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, long maxConfirmTime, long sendRetries);
+    bool checkMaxDailyOpCountExceeded(CtiMultiMsg_vec &pointChanges);
+    bool voltControlBankSelectProcess(CtiCCMonitorPointPtr point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec& pilMessages);
     void updatePointResponsePreOpValues(CtiCCCapBank* capBank);
     void updatePointResponseDeltas();
-    BOOL areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
-    BOOL isScanFlagSet();
-    ULONG getMonitorPointScanTime();
-    BOOL scanAllMonitorPoints();
-    void analyzeMultiVoltFeeder(const CtiTime& currentDateTime, LONG minConfirmPercent, LONG failurePercent, LONG maxConfirmTime, LONG sendRetries, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-    BOOL areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr oorPoint);
-    BOOL areOtherMonitorPointResponsesOk(LONG mPointID, CtiCCCapBank* potentialCap, int action);
+    bool areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
+    bool isScanFlagSet();
+    unsigned long getMonitorPointScanTime();
+    bool scanAllMonitorPoints();
+    void analyzeMultiVoltFeeder(const CtiTime& currentDateTime, long minConfirmPercent, long failurePercent, long maxConfirmTime, long sendRetries, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    bool areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr oorPoint);
+    bool areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* potentialCap, int action);
     double computeRegression( CtiTime time );
-    string createTextString(const string& controlMethod, int control, DOUBLE controlValue, DOUBLE monitorValue);
+    string createTextString(const string& controlMethod, int control, double controlValue, double monitorValue);
     void createCannotControlBankText(string text, string commandString, CtiMultiMsg_vec& ccEvents);
     void resetVerificationFlags();
 
     CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
-                                                        string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
+                                                        string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
     CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
-                                                        string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
+                                                        string textInfo, double kvarBefore, double varAValue, double varBValue, double varCValue);
     bool startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
-    BOOL sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    bool sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiRequestMsg*  createCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
                                           CtiMultiMsg_vec& pilMessages, CtiCCCapBank* currentCapBank, int control);
 
-    BOOL isVerificationAlreadyControlled(long minConfirmPercent, long quality, DOUBLE varAValueBeforeControl,
-                             DOUBLE varBValueBeforeControl, DOUBLE varCValueBeforeControl,
-                             DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, double oldVarValue, double newVarValue,
-                             BOOL usePhaseData, BOOL useTotalizedControl);
+    bool isVerificationAlreadyControlled(long minConfirmPercent, long quality, double varAValueBeforeControl,
+                             double varBValueBeforeControl, double varCValueBeforeControl,
+                             double varAValue, double varBValue, double varCValue, double oldVarValue, double newVarValue,
+                             bool usePhaseData, bool useTotalizedControl);
 
 
 
-    BOOL areThereMoreCapBanksToVerify();
+    bool areThereMoreCapBanksToVerify();
     CtiCCFeeder& getNextCapBankToVerify();
 
-    BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent,
-                                         LONG failurePercent, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
-    BOOL capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
-                                                 LONG minConfirmPercent, LONG failPercent);
+    bool capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long minConfirmPercent,
+                                         long failurePercent, double varAValue, double varBValue, double varCValue);
+    bool capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
+                                                 long minConfirmPercent, long failPercent);
     CtiCCFeeder& addAllFeederPointsToMsg(std::set<long>& pointAddMsg);
     CtiCCCapBank* getMonitorPointParentBank(CtiCCMonitorPointPtr point);
 
@@ -344,7 +344,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCConfirmationStats& getConfirmationStats();
     CtiCCOriginalParent& getOriginalParent();
 
-    BOOL isDirty() const;
+    bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     //Members inherited from RWCollectable
@@ -358,120 +358,120 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
-    bool areAllPhasesSuccess(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent);
-    bool areAllPhasesQuestionable(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
-    bool shouldCapBankBeFailed(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE failPercent);
-    bool isAnyPhaseFail(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE failPercent, LONG &numFailedPhases);
-    bool isResponseQuestionable(DOUBLE ratio, DOUBLE confirmPercent, DOUBLE failPercent);
-    bool isResponseFail(DOUBLE ratio, DOUBLE failPercent);
-    bool isResponseSuccess(DOUBLE ratio, DOUBLE confirmPercent);
-    string getPhaseIndicatorString(LONG capState, DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
-    string getQuestionablePhasesString(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
-    string getFailedPhasesString(DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC, DOUBLE confirmPercent, DOUBLE failPercent);
+    bool areAllPhasesSuccess(double ratioA, double ratioB, double ratioC, double confirmPercent);
+    bool areAllPhasesQuestionable(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
+    bool shouldCapBankBeFailed(double ratioA, double ratioB, double ratioC, double failPercent);
+    bool isAnyPhaseFail(double ratioA, double ratioB, double ratioC, double failPercent, long &numFailedPhases);
+    bool isResponseQuestionable(double ratio, double confirmPercent, double failPercent);
+    bool isResponseFail(double ratio, double failPercent);
+    bool isResponseSuccess(double ratio, double confirmPercent);
+    string getPhaseIndicatorString(long capState, double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
+    string getQuestionablePhasesString(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
+    string getFailedPhasesString(double ratioA, double ratioB, double ratioC, double confirmPercent, double failPercent);
 
 private:
 
-    LONG _parentId; //subBusId
-    BOOL _multiMonitorFlag;
+    long _parentId; //subBusId
+    bool _multiMonitorFlag;
 
     string _maplocationid;
-    LONG _currentvarloadpointid;
-    DOUBLE _currentvarloadpointvalue;
-    LONG _currentwattloadpointid;
-    DOUBLE _currentwattloadpointvalue;
-    LONG _currentvoltloadpointid;
-    DOUBLE _currentvoltloadpointvalue;
+    long _currentvarloadpointid;
+    double _currentvarloadpointvalue;
+    long _currentwattloadpointid;
+    double _currentwattloadpointvalue;
+    long _currentvoltloadpointid;
+    double _currentvoltloadpointvalue;
 
     float _displayorder;
 
-    BOOL _newpointdatareceivedflag;
+    bool _newpointdatareceivedflag;
     CtiTime _lastcurrentvarpointupdatetime;
-    LONG _estimatedvarloadpointid;
-    DOUBLE _estimatedvarloadpointvalue;
-    LONG _dailyoperationsanalogpointid;
-    LONG _powerfactorpointid;
-    LONG _estimatedpowerfactorpointid;
-    LONG _currentdailyoperations;
-    BOOL _recentlycontrolledflag;
+    long _estimatedvarloadpointid;
+    double _estimatedvarloadpointvalue;
+    long _dailyoperationsanalogpointid;
+    long _powerfactorpointid;
+    long _estimatedpowerfactorpointid;
+    long _currentdailyoperations;
+    bool _recentlycontrolledflag;
     CtiTime _lastoperationtime;
-    DOUBLE _varvaluebeforecontrol;
-    LONG _lastcapbankcontrolleddeviceid;
-    LONG _busoptimizedvarcategory;
-    DOUBLE _busoptimizedvaroffset;
-    DOUBLE _powerfactorvalue;
-    DOUBLE _kvarsolution;
-    DOUBLE _estimatedpowerfactorvalue;
-    LONG _currentvarpointquality;
-    LONG _currentwattpointquality;
-    LONG _currentvoltpointquality;
-    BOOL _waivecontrolflag;
+    double _varvaluebeforecontrol;
+    long _lastcapbankcontrolleddeviceid;
+    long _busoptimizedvarcategory;
+    double _busoptimizedvaroffset;
+    double _powerfactorvalue;
+    double _kvarsolution;
+    double _estimatedpowerfactorvalue;
+    long _currentvarpointquality;
+    long _currentwattpointquality;
+    long _currentvoltpointquality;
+    bool _waivecontrolflag;
 
     string _parentControlUnits;
     string _parentName;
-    LONG _decimalPlaces;
-    BOOL _peakTimeFlag;
+    long _decimalPlaces;
+    bool _peakTimeFlag;
 
     CtiCCCapBank_SVector _cccapbanks;
 
     //verification info
     string _additionalFlags;
 
-    BOOL _verificationFlag;
-    BOOL _performingVerificationFlag;
-    BOOL _verificationDoneFlag;
-    BOOL _preOperationMonitorPointScanFlag;
-    BOOL _operationSentWaitFlag;
-    BOOL _postOperationMonitorPointScanFlag;
-    BOOL _porterRetFailFlag;
-    BOOL _waitForReCloseDelayFlag;
-    BOOL _maxDailyOpsHitFlag;
-    BOOL _ovUvDisabledFlag;
-    BOOL _correctionNeededNoBankAvailFlag;
-    BOOL _likeDayControlFlag;
-    BOOL _lastVerificationMsgSentSuccessful;
+    bool _verificationFlag;
+    bool _performingVerificationFlag;
+    bool _verificationDoneFlag;
+    bool _preOperationMonitorPointScanFlag;
+    bool _operationSentWaitFlag;
+    bool _postOperationMonitorPointScanFlag;
+    bool _porterRetFailFlag;
+    bool _waitForReCloseDelayFlag;
+    bool _maxDailyOpsHitFlag;
+    bool _ovUvDisabledFlag;
+    bool _correctionNeededNoBankAvailFlag;
+    bool _likeDayControlFlag;
+    bool _lastVerificationMsgSentSuccessful;
 
-    LONG   _eventSeq;
+    long   _eventSeq;
 
-    LONG _currentVerificationCapBankId;
-    LONG _currentCapBankToVerifyAssumedOrigState;
+    long _currentVerificationCapBankId;
+    long _currentCapBankToVerifyAssumedOrigState;
 
-    DOUBLE _targetvarvalue;
+    double _targetvarvalue;
     string _solution;
 
-    DOUBLE _iVControlTot;
-    LONG  _iVCount;
-    DOUBLE _iWControlTot;
-    LONG  _iWCount;
+    double _iVControlTot;
+    long  _iVCount;
+    double _iWControlTot;
+    long  _iWCount;
 
-    DOUBLE _iVControl;
-    DOUBLE _iWControl;
+    double _iVControl;
+    double _iWControl;
 
-    BOOL _usePhaseData;
-    LONG _phaseBid;
-    LONG _phaseCid;
-    BOOL _totalizedControlFlag;
+    bool _usePhaseData;
+    long _phaseBid;
+    long _phaseCid;
+    bool _totalizedControlFlag;
 
-    DOUBLE _phaseAvalue;
-    DOUBLE _phaseBvalue;
-    DOUBLE _phaseCvalue;
-    DOUBLE _phaseAvalueBeforeControl;
-    DOUBLE _phaseBvalueBeforeControl;
-    DOUBLE _phaseCvalueBeforeControl;
+    double _phaseAvalue;
+    double _phaseBvalue;
+    double _phaseCvalue;
+    double _phaseAvalueBeforeControl;
+    double _phaseBvalueBeforeControl;
+    double _phaseCvalueBeforeControl;
 
     CtiTime _lastWattPointTime;
     CtiTime _lastVoltPointTime;
-    LONG _retryIndex;
+    long _retryIndex;
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
     CtiCCOriginalParent _originalParent;
 
     //don't stream
-    BOOL _insertDynamicDataFlag;
-    BOOL _dirty;
+    bool _insertDynamicDataFlag;
+    bool _dirty;
 
     void restore(Cti::RowReader& rdr);
-    string doubleToString(DOUBLE doubleVal, LONG decimalPlaces);
+    string doubleToString(double doubleVal, long decimalPlaces);
 
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 

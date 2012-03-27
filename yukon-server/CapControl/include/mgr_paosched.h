@@ -59,7 +59,7 @@ public:
     void updateDataBaseSchedules(std::list<CtiPAOSchedule*> &schedules);
     void runScheduledEvent(CtiPAOEvent *event);
     int parseEvent(const std::string& command, int &strategy, long &secsSinceLastOperation);
-    std::string longToString(LONG val);
+    std::string longToString(long val);
 
 
 private:

@@ -110,7 +110,7 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void Scan2WayDevice(long bankId);
         void Flip7010Device();
         void SendAllCapBankCommands();
-        void ControlAllCapBanksByFeeder(LONG feederId, int control, CtiMultiMsg_vec& pilMessages,
+        void ControlAllCapBanksByFeeder(long feederId, int control, CtiMultiMsg_vec& pilMessages,
                                        CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
         void SendTimeSync();
 
@@ -118,10 +118,10 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void AutoDisableOvUv();
         void AutoEnableOvUvByArea();
         void AutoDisableOvUvByArea();
-        void AutoControlOvUvBySubstation(BOOL disableFlag);
-        void AutoControlOvUvBySubBus(BOOL disableFlag);
+        void AutoControlOvUvBySubstation(bool disableFlag);
+        void AutoControlOvUvBySubBus(bool disableFlag);
         bool checkForCommandRefusal(CtiCCFeeder* feeder);
-        void ControlAllCapBanks(LONG paoId, int control);
+        void ControlAllCapBanks(long paoId, int control);
         void syncCbcAndCapBankStates(long bankId);
 
         void queueCapBankTimeSyncPilMessages(CtiMultiMsg_vec& pilMessages, CapBankList capBanks);
@@ -137,7 +137,7 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void enableTimeControl(long bankId, std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
         void disableTimeControl(long bankId, std::vector<CtiSignalMsg*>& signals, std::vector<CtiCCEventLogMsg*>& events, std::vector<CtiRequestMsg*>& requests);
 
-        void sendVoltageRegulatorCommands(const LONG command);
+        void sendVoltageRegulatorCommands(const long command);
 
     private:
         //Helper Functions

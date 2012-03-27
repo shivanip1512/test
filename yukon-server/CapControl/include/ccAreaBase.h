@@ -30,11 +30,11 @@ public:
 
     virtual ~CtiCCAreaBase();
 
-    LONG getVoltReductionControlPointId() const;
-    BOOL getVoltReductionControlValue() const;
-    BOOL getOvUvDisabledFlag() const;
-    DOUBLE getPFactor() const;
-    DOUBLE getEstPFactor() const;
+    long getVoltReductionControlPointId() const;
+    bool getVoltReductionControlValue() const;
+    bool getOvUvDisabledFlag() const;
+    double getPFactor() const;
+    double getEstPFactor() const;
     string getAdditionalFlags() const;
 
     Cti::CapControl::PaoIdVector getSubstationIds() const {return _subStationIds;};
@@ -44,11 +44,11 @@ public:
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
 
-    CtiCCAreaBase& setVoltReductionControlPointId(LONG pointId);
-    CtiCCAreaBase& setVoltReductionControlValue(BOOL flag);
-    CtiCCAreaBase& setOvUvDisabledFlag(BOOL flag);
-    CtiCCAreaBase& setPFactor(DOUBLE pfactor);
-    CtiCCAreaBase& setEstPFactor(DOUBLE estPfactor);
+    CtiCCAreaBase& setVoltReductionControlPointId(long pointId);
+    CtiCCAreaBase& setVoltReductionControlValue(bool flag);
+    CtiCCAreaBase& setOvUvDisabledFlag(bool flag);
+    CtiCCAreaBase& setPFactor(double pfactor);
+    CtiCCAreaBase& setEstPFactor(double estPfactor);
 
     void setDirty(bool flag);
     bool isDirty() {return _dirty;};
@@ -65,12 +65,12 @@ public:
 
 private:
 
-    LONG _voltReductionControlPointId;
-    BOOL _voltReductionControlValue;
-    DOUBLE _pfactor;
-    DOUBLE _estPfactor;
+    long _voltReductionControlPointId;
+    bool _voltReductionControlValue;
+    double _pfactor;
+    double _estPfactor;
     string _additionalFlags;
-    BOOL _ovUvDisabledFlag;
+    bool _ovUvDisabledFlag;
     bool _dirty;
 
     Cti::CapControl::PaoIdVector _subStationIds;

@@ -28,10 +28,10 @@ public:
 
     virtual ~CtiCCTwoWayPoints();
 
-    LONG getPAOId() const;
+    long getPAOId() const;
 
     std::string getLastControlText() ;
-    CtiCCTwoWayPoints& setPAOId(LONG paoId);
+    CtiCCTwoWayPoints& setPAOId(long paoId);
 
     LitePoint getPointByAttribute(const PointAttribute & attribute) const;
     int getPointIdByAttribute(const PointAttribute & attribute) const;
@@ -39,13 +39,13 @@ public:
     CtiTime getPointTimeStampByAttribute(PointAttribute attribute);
 
 
-    BOOL setTwoWayPointId(CtiPointType_t pointtype, int offset, LONG pointId);
-    BOOL setTwoWayStatusPointValue(LONG pointID, LONG value, CtiTime timestamp);
-    BOOL setTwoWayAnalogPointValue(LONG pointID, LONG value, CtiTime timestamp);
-    BOOL setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG value, CtiTime timestamp);
+    bool setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId);
+    bool setTwoWayStatusPointValue(long pointID, long value, CtiTime timestamp);
+    bool setTwoWayAnalogPointValue(long pointID, long value, CtiTime timestamp);
+    bool setTwoWayPulseAccumulatorPointValue(long pointID, long value, CtiTime timestamp);
 
     CtiCCTwoWayPoints& addAllCBCPointsToRegMsg(std::set<long>& pointList);
-    BOOL isDirty();
+    bool isDirty();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     void restore(Cti::RowReader& rdr);
@@ -77,9 +77,9 @@ private:
     PointAttribute getAnalogAttribute(int offset);
     PointAttribute getAccumulatorAttribute(int offset);
     PointAttribute getStatusAttribute(int offset);
-    bool isTimestampNew(LONG pointID, CtiTime timestamp);
+    bool isTimestampNew(long pointID, CtiTime timestamp);
 
-    LONG _paoid;
+    long _paoid;
     std::string _paotype;
 
     CtiTime _ovuvCountResetDate;
@@ -87,8 +87,8 @@ private:
     INT _lastControlReason;
 
     //don't stream
-    BOOL _insertDynamicDataFlag;
-    BOOL _dirty;
+    bool _insertDynamicDataFlag;
+    bool _dirty;
 
 };
 

@@ -12,7 +12,7 @@
 class CtiCCClientListener
 {
 public:
-    CtiCCClientListener(LONG port);
+    CtiCCClientListener(long port);
     virtual ~CtiCCClientListener();
 
     virtual void start();
@@ -30,7 +30,7 @@ protected:
 
 private:
 
-    LONG _port;
+    long _port;
     RWThread _listenerthr;
     RWThread _checkthr;
 

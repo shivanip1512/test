@@ -24,14 +24,14 @@ public:
     CtiCCOriginalParent(Cti::RowReader& rdr);
     ~CtiCCOriginalParent();
 
-    LONG getPAOId() const;
-    LONG getOriginalParentId() const;
+    long getPAOId() const;
+    long getOriginalParentId() const;
     float getOriginalSwitchingOrder() const;
     float getOriginalCloseOrder() const;
     float getOriginalTripOrder() const;
 
-    void setPAOId(LONG paoId);
-    void setOriginalParentId(LONG parentId);
+    void setPAOId(long paoId);
+    void setOriginalParentId(long parentId);
     void setOriginalSwitchingOrder(float order);
     void setOriginalCloseOrder(float order);
     void setOriginalTripOrder(float order);
@@ -41,7 +41,7 @@ public:
     int operator==(const CtiCCOriginalParent& right) const;
     int operator!=(const CtiCCOriginalParent& right) const;
 
-    BOOL isDirty();
+    bool isDirty();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
 
@@ -49,13 +49,13 @@ public:
 
 private:
 
-    LONG _paoId;       
-    LONG _originalParentId;  
+    long _paoId;       
+    long _originalParentId;  
     float _originalSwitchingOrder; 
     float _originalCloseOrder; 
     float _originalTripOrder; 
     
     //don't stream
-    BOOL _insertDynamicDataFlag;
-    BOOL _dirty; 
+    bool _insertDynamicDataFlag;
+    bool _dirty; 
 };

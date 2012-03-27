@@ -160,7 +160,7 @@ double CtiCCEventLogMsg::getAVar() const
     return _aVar;
 }
 
-void CtiCCEventLogMsg::setAVar(DOUBLE val)
+void CtiCCEventLogMsg::setAVar(double val)
 {
     _aVar = val;
 }

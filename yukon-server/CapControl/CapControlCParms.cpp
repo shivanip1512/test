@@ -11,46 +11,46 @@ using std::string;
 /*
     CapControl CParms
 */
-ULONG   _CC_DEBUG;
-ULONG   _DB_RELOAD_WAIT;
-BOOL    _IGNORE_NOT_NORMAL_FLAG;
-ULONG   _SEND_TRIES;
-BOOL    _USE_FLIP_FLAG;
-ULONG   _POST_CONTROL_WAIT;
-ULONG   _POINT_AGE;
-ULONG   _SCAN_WAIT_EXPIRE;
-BOOL    _ALLOW_PARALLEL_TRUING;
-BOOL    _RETRY_FAILED_BANKS;
-ULONG   _MAX_KVAR;
-ULONG   _MAX_KVAR_TIMEOUT;
-BOOL    _USE_PHASE_INDICATORS;
-BOOL    _LOG_MAPID_INFO;
-ULONG   _LIKEDAY_OVERRIDE_TIMEOUT;
-BOOL    _RETRY_ADJUST_LAST_OP_TIME;
-ULONG   _REFUSAL_TIMEOUT;
-ULONG   _MSG_PRIORITY;
-BOOL    CC_TERMINATE_THREAD_TEST;
-ULONG   _OP_STATS_USER_DEF_PERIOD;
-ULONG   _OP_STATS_REFRESH_RATE;
-BOOL    _OP_STATS_DYNAMIC_UPDATE;
-ULONG   _LINK_STATUS_TIMEOUT;
+unsigned long   _CC_DEBUG;
+unsigned long   _DB_RELOAD_WAIT;
+bool    _IGNORE_NOT_NORMAL_FLAG;
+unsigned long   _SEND_TRIES;
+bool    _USE_FLIP_FLAG;
+unsigned long   _POST_CONTROL_WAIT;
+unsigned long   _POINT_AGE;
+unsigned long   _SCAN_WAIT_EXPIRE;
+bool    _ALLOW_PARALLEL_TRUING;
+bool    _RETRY_FAILED_BANKS;
+unsigned long   _MAX_KVAR;
+unsigned long   _MAX_KVAR_TIMEOUT;
+bool    _USE_PHASE_INDICATORS;
+bool    _LOG_MAPID_INFO;
+unsigned long   _LIKEDAY_OVERRIDE_TIMEOUT;
+bool    _RETRY_ADJUST_LAST_OP_TIME;
+unsigned long   _REFUSAL_TIMEOUT;
+unsigned long   _MSG_PRIORITY;
+bool    CC_TERMINATE_THREAD_TEST;
+unsigned long   _OP_STATS_USER_DEF_PERIOD;
+unsigned long   _OP_STATS_REFRESH_RATE;
+bool    _OP_STATS_DYNAMIC_UPDATE;
+unsigned long   _LINK_STATUS_TIMEOUT;
 bool    _RATE_OF_CHANGE;
 unsigned long   _RATE_OF_CHANGE_DEPTH;
-LONG    _VOLT_REDUCTION_SYSTEM_POINTID;
-BOOL    _AUTO_VOLT_REDUCTION;
-ULONG   _VOLT_REDUCTION_COMMANDS;
-ULONG   _VOLT_REDUCTION_COMMAND_DELAY;
+long    _VOLT_REDUCTION_SYSTEM_POINTID;
+bool    _AUTO_VOLT_REDUCTION;
+unsigned long   _VOLT_REDUCTION_COMMANDS;
+unsigned long   _VOLT_REDUCTION_COMMAND_DELAY;
 string  _MAXOPS_ALARM_CAT;
-LONG    _MAXOPS_ALARM_CATID;
-BOOL    _ENABLE_IVVC;
-ULONG   _IVVC_MIN_TAP_PERIOD_MINUTES;
-ULONG   _IVVC_COMMS_RETRY_COUNT;
+long    _MAXOPS_ALARM_CATID;
+bool    _ENABLE_IVVC;
+unsigned long   _IVVC_MIN_TAP_PERIOD_MINUTES;
+unsigned long   _IVVC_COMMS_RETRY_COUNT;
 double  _IVVC_NONWINDOW_MULTIPLIER;
 double  _IVVC_BANKS_REPORTING_RATIO;
 double  _IVVC_REGULATOR_REPORTING_RATIO;
 double  _IVVC_VOLTAGEMONITOR_REPORTING_RATIO;
 double  _IVVC_DEFAULT_DELTA;
-BOOL    _LIMIT_ONE_WAY_COMMANDS;
+bool    _LIMIT_ONE_WAY_COMMANDS;
 bool    _IVVC_STATIC_DELTA_VOLTAGES;
 bool    _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
 
@@ -128,13 +128,13 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _IGNORE_NOT_NORMAL_FLAG = FALSE;
+    _IGNORE_NOT_NORMAL_FLAG = false;
 
     strcpy(var, "CAP_CONTROL_IGNORE_NOT_NORMAL");
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _IGNORE_NOT_NORMAL_FLAG = (str == "true" ? TRUE : FALSE);
+        _IGNORE_NOT_NORMAL_FLAG = (str == "true" ? true : false);
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
@@ -167,13 +167,13 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _USE_FLIP_FLAG = FALSE;
+    _USE_FLIP_FLAG = false;
 
     strcpy(var, "CAP_CONTROL_USE_FLIP");
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _USE_FLIP_FLAG = (str == "true" ? TRUE : FALSE);
+        _USE_FLIP_FLAG = (str == "true" ? true : false);
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
@@ -241,13 +241,13 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _ALLOW_PARALLEL_TRUING = FALSE;
+    _ALLOW_PARALLEL_TRUING = false;
 
     strcpy(var, "CAP_CONTROL_ALLOW_PARALLEL_TRUING");
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _ALLOW_PARALLEL_TRUING = (str == "true" ? TRUE : FALSE);
+        _ALLOW_PARALLEL_TRUING = (str == "true" ? true : false);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -260,13 +260,13 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _RETRY_FAILED_BANKS = FALSE;
+    _RETRY_FAILED_BANKS = false;
 
     strcpy(var, "CAP_CONTROL_RETRY_FAILED_BANKS");
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _RETRY_FAILED_BANKS = (str == "true" ? TRUE : FALSE);
+        _RETRY_FAILED_BANKS = (str == "true" ? true : false);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -293,13 +293,13 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - CAP_CONTROL_MAX_KVAR_TIMEOUT: " << _MAX_KVAR_TIMEOUT << endl;
     }
 
-    _USE_PHASE_INDICATORS = FALSE;
+    _USE_PHASE_INDICATORS = false;
 
     strcpy(var, "CAP_CONTROL_USE_PHASE_INDICATORS");
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _USE_PHASE_INDICATORS = (str == "true" ? TRUE : FALSE);
+        _USE_PHASE_INDICATORS = (str == "true" ? true : false);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -312,13 +312,13 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _LOG_MAPID_INFO = FALSE;
+    _LOG_MAPID_INFO = false;
 
     strcpy(var, "CAP_CONTROL_LOG_MAPID_INFO");
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _LOG_MAPID_INFO = (str == "true" ? TRUE : FALSE);
+        _LOG_MAPID_INFO = (str == "true" ? true : false);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -349,13 +349,13 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _RETRY_ADJUST_LAST_OP_TIME = TRUE;
+    _RETRY_ADJUST_LAST_OP_TIME = true;
 
     strcpy(var, "CAP_CONTROL_RETRY_ADJUST_LAST_OP_TIME");
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _RETRY_ADJUST_LAST_OP_TIME = (str == "true" ? TRUE : FALSE);
+        _RETRY_ADJUST_LAST_OP_TIME = (str == "true" ? true : false);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -490,7 +490,7 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _AUTO_VOLT_REDUCTION = (str == "true" ? TRUE : FALSE);
+        _AUTO_VOLT_REDUCTION = (str == "true" ? true : false);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -560,13 +560,13 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _ENABLE_IVVC = FALSE;
+    _ENABLE_IVVC = false;
 
     strcpy(var, "CAP_CONTROL_ENABLE_IVVC");
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _ENABLE_IVVC = (str == "true" ? TRUE : FALSE);
+        _ENABLE_IVVC = (str == "true" ? true : false);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

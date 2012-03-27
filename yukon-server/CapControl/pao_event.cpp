@@ -30,7 +30,7 @@ _disableOvUvFlag(false)
 }
 
 
-CtiPAOEvent::CtiPAOEvent(long eventId, long schedId, long paoId, const string& command, BOOL disableOvUv) :
+CtiPAOEvent::CtiPAOEvent(long eventId, long schedId, long paoId, const string& command, bool disableOvUv) :
 _dirty(false)
 {
     _eventId = eventId;
@@ -51,7 +51,7 @@ CtiPAOEvent::CtiPAOEvent(Cti::RowReader& rdr)
     rdr["command"] >> _eventCommand;
     rdr["disableovuv"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    setDisableOvUvFlag(tempBoolString=="y"?TRUE:FALSE);
+    setDisableOvUvFlag(tempBoolString=="y"?true:false);
 
 
     _dirty = false;
@@ -105,7 +105,7 @@ const string& CtiPAOEvent::getEventCommand() const
     return _eventCommand;
 }
 
-BOOL CtiPAOEvent::getDisableOvUvFlag() const
+bool CtiPAOEvent::getDisableOvUvFlag() const
 {
     return _disableOvUvFlag;
 }
@@ -146,7 +146,7 @@ void CtiPAOEvent::setEventCommand(const string& eventCommand)
     _eventCommand = eventCommand;
     return;
 }
-void CtiPAOEvent::setDisableOvUvFlag(BOOL flag)
+void CtiPAOEvent::setDisableOvUvFlag(bool flag)
 {
     if (_disableOvUvFlag != flag)
     {
@@ -156,11 +156,11 @@ void CtiPAOEvent::setDisableOvUvFlag(BOOL flag)
     return;
 }
 
-BOOL CtiPAOEvent::isDirty()
+bool CtiPAOEvent::isDirty()
 {
     return _dirty;
 }
-void CtiPAOEvent::setDirty(BOOL flag)
+void CtiPAOEvent::setDirty(bool flag)
 {
     _dirty = flag;
 }

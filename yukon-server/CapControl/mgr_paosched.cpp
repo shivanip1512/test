@@ -20,8 +20,8 @@
 
 #include <boost/regex.hpp>
 
-extern ULONG _CC_DEBUG;
-extern BOOL CC_TERMINATE_THREAD_TEST;
+extern unsigned long _CC_DEBUG;
+extern bool CC_TERMINATE_THREAD_TEST;
 using namespace std;
 
 using Cti::ThreadStatusKeeper;
@@ -53,9 +53,9 @@ CtiPAOScheduleManager::CtiPAOScheduleManager()
     _schedules.clear();
     _events.clear();
 
-    _initialCapControlStartUp = TRUE;
+    _initialCapControlStartUp = true;
 
-    _valid = FALSE;
+    _valid = false;
 }
 
 /*---------------------------------------------------------------------------
@@ -146,7 +146,7 @@ void CtiPAOScheduleManager::doResetThr()
 
         ThreadStatusKeeper threadStatus("CapControl mgrPAOSchedule doResetThr");
 
-        while (TRUE)
+        while (true)
         {
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -205,7 +205,7 @@ void CtiPAOScheduleManager::mainLoop()
 
         CtiPAOSchedule *currentSched = NULL;
         CtiPAOEvent *currentEvent = NULL;
-        while(TRUE)
+        while(true)
         {
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -216,7 +216,7 @@ void CtiPAOScheduleManager::mainLoop()
                 {
                     if (checkSchedules(currentTime, mySchedules))
                     {
-                        _initialCapControlStartUp = FALSE;
+                        _initialCapControlStartUp = false;
                         updateSchedules.clear();
 
                         while (!mySchedules.empty())
@@ -334,7 +334,7 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                     {
                         if (_initialCapControlStartUp)
                         {
-                            _initialCapControlStartUp = FALSE;
+                            _initialCapControlStartUp = false;
                             //(*iter)->setLastRunTime((*iter)->getNextRunTime());
                             (*iter)->setLastRunTime(currentTime);
                             CtiTime tempNextTime = CtiTime((*iter)->getNextRunTime().seconds() + (*iter)->getIntervalRate());
@@ -381,7 +381,7 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                 iter++;
             }
         }
-        _initialCapControlStartUp = FALSE;
+        _initialCapControlStartUp = false;
 
     }
     catch(...)
@@ -424,8 +424,8 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
 {
     string command = _command;
     string tempCommand;
-    LONG multiplier = 0;
-    BOOL disableOvUvFlag = false;
+    long multiplier = 0;
+    bool disableOvUvFlag = false;
 
     int retVal = SomethingElse; //0 capbank event...future use could include other devices??  dunno..open to expand on.
 
@@ -869,11 +869,11 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
 
                     if( success )
                     {
-                        currentSchedule->setDirty(FALSE);
+                        currentSchedule->setDirty(false);
                     }
                     else
                     {
-                        currentSchedule->setDirty(TRUE);
+                        currentSchedule->setDirty(true);
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -897,7 +897,7 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
 
 }
 
-string CtiPAOScheduleManager::longToString(LONG val)
+string CtiPAOScheduleManager::longToString(long val)
 {
     char tempchar[20] = "";
     string retString = string("");

@@ -34,7 +34,7 @@
 
 using std::endl;
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
 
@@ -138,7 +138,7 @@ void CtiCCSpecial::restore(Cti::RowReader& rdr)
     CtiCCAreaBase::restore(rdr);
     
     setDirty(true);
-    _insertDynamicDataFlag = TRUE;
+    _insertDynamicDataFlag = true;
 }
 
 /*---------------------------------------------------------------------------
@@ -205,7 +205,7 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
             if(inserter.execute())    // No error occured!
             {
-                _insertDynamicDataFlag = FALSE;
+                _insertDynamicDataFlag = false;
                 setDirty(false);            
             }
             else
@@ -227,7 +227,7 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 void CtiCCSpecial::setDynamicData(Cti::RowReader& rdr)
 {
     CtiCCAreaBase::setDynamicData(rdr);
-    _insertDynamicDataFlag = FALSE;
+    _insertDynamicDataFlag = false;
     setDirty(false);
 
 

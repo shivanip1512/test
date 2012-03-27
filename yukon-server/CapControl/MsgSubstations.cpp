@@ -3,18 +3,18 @@
 #include "MsgSubstations.h"
 #include "ccid.h"
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 using std::endl;
 
-ULONG CtiCCSubstationsMsg::AllSubsSent = 0x00000001;
-ULONG CtiCCSubstationsMsg::SubDeleted  = 0x00000002;
-ULONG CtiCCSubstationsMsg::SubAdded    = 0x00000004;
-ULONG CtiCCSubstationsMsg::SubModified = 0x00000008;
+unsigned long CtiCCSubstationsMsg::AllSubsSent = 0x00000001;
+unsigned long CtiCCSubstationsMsg::SubDeleted  = 0x00000002;
+unsigned long CtiCCSubstationsMsg::SubAdded    = 0x00000004;
+unsigned long CtiCCSubstationsMsg::SubModified = 0x00000008;
 
 RWDEFINE_COLLECTABLE( CtiCCSubstationsMsg, CTICCSUBSTATION_MSG_ID )
 
-CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULONG bitMask) : Inherited(), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
+CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, unsigned long bitMask) : Inherited(), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstations = new CtiCCSubstation_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
@@ -48,7 +48,7 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULO
 
 }
 
-CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_set& ccSubstations, ULONG bitMask) : Inherited(), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
+CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_set& ccSubstations, unsigned long bitMask) : Inherited(), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstations = new CtiCCSubstation_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )

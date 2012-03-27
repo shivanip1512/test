@@ -34,7 +34,7 @@ int main(int argc, char* argv[] )
 {
     RWWinSockInfo sock_init;
 
-    INT RunningInConsole = FALSE;
+    INT RunningInConsole = false;
     LPTSTR szServiceName = "CapControl";
     LPTSTR szDisplayName = "Yukon Cap Control Service";
     HANDLE hExclusion;
@@ -44,7 +44,7 @@ int main(int argc, char* argv[] )
         cout << CtiTime() << " - Cap Controller starting up..." << endl;
     }*/
 
-    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "CapControl")) != NULL )
+    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, false, "CapControl")) != NULL )
     {
        // Oh no, porter is running on this machine already.
        CloseHandle(hExclusion);
@@ -52,7 +52,7 @@ int main(int argc, char* argv[] )
        exit(-1);
     }
 
-    hExclusion = CreateEvent(NULL, TRUE, FALSE, "CapControl");
+    hExclusion = CreateEvent(NULL, true, false, "CapControl");
 
     if( hExclusion == (HANDLE)NULL )
     {
@@ -93,7 +93,7 @@ int main(int argc, char* argv[] )
         {
             CtiCCService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
 
-            RunningInConsole = TRUE;
+            RunningInConsole = true;
             service.RunInConsole(argc, argv );
         }
     }

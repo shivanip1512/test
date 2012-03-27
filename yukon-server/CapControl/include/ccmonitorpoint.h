@@ -28,34 +28,34 @@ public:
 
     virtual ~CtiCCMonitorPoint();
 
-    LONG getPointId() const;
-    LONG getDeviceId() const;
-    DOUBLE getValue() const;
-    LONG getDisplayOrder() const;
-    BOOL isScannable() const;
-    LONG getNInAvg() const;
-    DOUBLE getUpperBandwidth() const;
-    DOUBLE getLowerBandwidth() const;
+    long getPointId() const;
+    long getDeviceId() const;
+    double getValue() const;
+    long getDisplayOrder() const;
+    bool isScannable() const;
+    long getNInAvg() const;
+    double getUpperBandwidth() const;
+    double getLowerBandwidth() const;
 
     CtiTime getTimeStamp() const;
-    BOOL getScanInProgress() const;
+    bool getScanInProgress() const;
 
-    CtiCCMonitorPoint& setPointId(LONG pointId);
-    CtiCCMonitorPoint& setDeviceId(LONG bankId);
-    CtiCCMonitorPoint& setValue(DOUBLE value);
-    CtiCCMonitorPoint& setDisplayOrder(LONG displayOrder);
-    CtiCCMonitorPoint& setScannable(BOOL flag);
-    CtiCCMonitorPoint& setNInAvg(LONG n);
-    CtiCCMonitorPoint& setUpperBandwidth(DOUBLE upperBW);
-    CtiCCMonitorPoint& setLowerBandwidth(DOUBLE lowerBW);
+    CtiCCMonitorPoint& setPointId(long pointId);
+    CtiCCMonitorPoint& setDeviceId(long bankId);
+    CtiCCMonitorPoint& setValue(double value);
+    CtiCCMonitorPoint& setDisplayOrder(long displayOrder);
+    CtiCCMonitorPoint& setScannable(bool flag);
+    CtiCCMonitorPoint& setNInAvg(long n);
+    CtiCCMonitorPoint& setUpperBandwidth(double upperBW);
+    CtiCCMonitorPoint& setLowerBandwidth(double lowerBW);
 
     CtiCCMonitorPoint& setTimeStamp(CtiTime timeStamp);
-    CtiCCMonitorPoint& setScanInProgress(BOOL flag);
+    CtiCCMonitorPoint& setScanInProgress(bool flag);
 
     boost::shared_ptr<CtiCCMonitorPoint> replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
 
-    BOOL isDirty() const;
+    bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     void setDynamicData(Cti::RowReader& rdr);
@@ -76,21 +76,21 @@ private:
 
     Cti::CapControl::Phase  _phase;
 
-    LONG _pointId;
-    LONG _deviceId;
+    long _pointId;
+    long _deviceId;
 
-    LONG _displayOrder;
-    BOOL _scannable;
-    LONG _nInAvg;
-    DOUBLE _upperBW;
-    DOUBLE _lowerBW;
-    DOUBLE _value;
+    long _displayOrder;
+    bool _scannable;
+    long _nInAvg;
+    double _upperBW;
+    double _lowerBW;
+    double _value;
     CtiTime _timeStamp;  //averaged value change.
-    BOOL _scanInProgress;
+    bool _scanInProgress;
 
     //don't stream
-    BOOL _insertDynamicDataFlag;
-    BOOL _dirty;
+    bool _insertDynamicDataFlag;
+    bool _dirty;
 
     void restore(Cti::RowReader& rdr);
 

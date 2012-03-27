@@ -44,34 +44,34 @@ public:
 
     void init();
 
-    LONG getPAOId() const;
-    LONG getUserDefOpCount() const;
-    LONG getUserDefConfFail() const;
-    LONG getDailyOpCount() const;
-    LONG getDailyConfFail() const;
-    LONG getWeeklyOpCount() const;
-    LONG getWeeklyConfFail() const;
-    LONG getMonthlyOpCount() const;
-    LONG getMonthlyConfFail() const;
-    LONG    getUserDefOpSuccessPercentId() const;
-    DOUBLE  getUserDefOpSuccessPercent() const;
-    LONG    getDailyOpSuccessPercentId() const;
-    DOUBLE  getDailyOpSuccessPercent() const;
-    LONG    getWeeklyOpSuccessPercentId() const;
-    DOUBLE  getWeeklyOpSuccessPercent() const;
-    LONG    getMonthlyOpSuccessPercentId() const;
-    DOUBLE  getMonthlyOpSuccessPercent() const;
+    long getPAOId() const;
+    long getUserDefOpCount() const;
+    long getUserDefConfFail() const;
+    long getDailyOpCount() const;
+    long getDailyConfFail() const;
+    long getWeeklyOpCount() const;
+    long getWeeklyConfFail() const;
+    long getMonthlyOpCount() const;
+    long getMonthlyConfFail() const;
+    long    getUserDefOpSuccessPercentId() const;
+    double  getUserDefOpSuccessPercent() const;
+    long    getDailyOpSuccessPercentId() const;
+    double  getDailyOpSuccessPercent() const;
+    long    getWeeklyOpSuccessPercentId() const;
+    double  getWeeklyOpSuccessPercent() const;
+    long    getMonthlyOpSuccessPercentId() const;
+    double  getMonthlyOpSuccessPercent() const;
 
     
-    CtiCCOperationStats& setPAOId(LONG paoId);
-    CtiCCOperationStats& setUserDefOpCount(LONG value);
-    CtiCCOperationStats& setUserDefConfFail(LONG value);
-    CtiCCOperationStats& setDailyOpCount(LONG value);
-    CtiCCOperationStats& setDailyConfFail(LONG value);
-    CtiCCOperationStats& setWeeklyOpCount(LONG value);
-    CtiCCOperationStats& setWeeklyConfFail(LONG value);
-    CtiCCOperationStats& setMonthlyOpCount(LONG value);
-    CtiCCOperationStats& setMonthlyConfFail(LONG value);
+    CtiCCOperationStats& setPAOId(long paoId);
+    CtiCCOperationStats& setUserDefOpCount(long value);
+    CtiCCOperationStats& setUserDefConfFail(long value);
+    CtiCCOperationStats& setDailyOpCount(long value);
+    CtiCCOperationStats& setDailyConfFail(long value);
+    CtiCCOperationStats& setWeeklyOpCount(long value);
+    CtiCCOperationStats& setWeeklyConfFail(long value);
+    CtiCCOperationStats& setMonthlyOpCount(long value);
+    CtiCCOperationStats& setMonthlyConfFail(long value);
     CtiCCOperationStats& incrementAllOpCounts();
     CtiCCOperationStats& incrementAllOpFails();
     CtiCCOperationStats& incrementMonthlyOpCounts();
@@ -80,23 +80,23 @@ public:
     CtiCCOperationStats& incrementWeeklyOpFails();
     CtiCCOperationStats& incrementDailyOpCounts();
     CtiCCOperationStats& incrementDailyOpFails();
-    CtiCCOperationStats& setUserDefOpSuccessPercentId(LONG pointId);
-    CtiCCOperationStats& setUserDefOpSuccessPercent(DOUBLE value);
-    CtiCCOperationStats& setDailyOpSuccessPercentId(LONG pointId);
-    CtiCCOperationStats& setDailyOpSuccessPercent(DOUBLE  value);
-    CtiCCOperationStats& setWeeklyOpSuccessPercentId(LONG pointId);
-    CtiCCOperationStats& setWeeklyOpSuccessPercent(DOUBLE value);
-    CtiCCOperationStats& setMonthlyOpSuccessPercentId(LONG pointId);
-    CtiCCOperationStats& setMonthlyOpSuccessPercent(DOUBLE value); 
+    CtiCCOperationStats& setUserDefOpSuccessPercentId(long pointId);
+    CtiCCOperationStats& setUserDefOpSuccessPercent(double value);
+    CtiCCOperationStats& setDailyOpSuccessPercentId(long pointId);
+    CtiCCOperationStats& setDailyOpSuccessPercent(double  value);
+    CtiCCOperationStats& setWeeklyOpSuccessPercentId(long pointId);
+    CtiCCOperationStats& setWeeklyOpSuccessPercent(double value);
+    CtiCCOperationStats& setMonthlyOpSuccessPercentId(long pointId);
+    CtiCCOperationStats& setMonthlyOpSuccessPercent(double value); 
     
 
 
-    DOUBLE calculateSuccessPercent(capcontrol::ccStatsType type);
-    BOOL setSuccessPercentPointId(LONG tempPointId, LONG tempPointOffset);
+    double calculateSuccessPercent(capcontrol::ccStatsType type);
+    bool setSuccessPercentPointId(long tempPointId, long tempPointOffset);
     CtiCCOperationStats& createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
     void printOpStats();
-    BOOL isDirty();
+    bool isDirty();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
 
@@ -114,28 +114,28 @@ public:
         
 private:
 
-    LONG _paoid;
+    long _paoid;
 
-    LONG _userDefOpCount;
-	LONG _userDefConfFail;
-	LONG _dailyOpCount;
-	LONG _dailyConfFail;
-	LONG _weeklyOpCount;	
-	LONG _weeklyConfFail;
-	LONG _monthlyOpCount;
-	LONG _monthlyConfFail;
+    long _userDefOpCount;
+	long _userDefConfFail;
+	long _dailyOpCount;
+	long _dailyConfFail;
+	long _weeklyOpCount;	
+	long _weeklyConfFail;
+	long _monthlyOpCount;
+	long _monthlyConfFail;
 
-    LONG    _userDefOpSuccessPercentId;
-    DOUBLE  _userDefOpSuccessPercent;
-    LONG    _dailyOpSuccessPercentId;
-    DOUBLE  _dailyOpSuccessPercent;
-    LONG    _weeklyOpSuccessPercentId;
-    DOUBLE  _weeklyOpSuccessPercent;
-    LONG    _monthlyOpSuccessPercentId;
-    DOUBLE  _monthlyOpSuccessPercent;
+    long    _userDefOpSuccessPercentId;
+    double  _userDefOpSuccessPercent;
+    long    _dailyOpSuccessPercentId;
+    double  _dailyOpSuccessPercent;
+    long    _weeklyOpSuccessPercentId;
+    double  _weeklyOpSuccessPercent;
+    long    _monthlyOpSuccessPercentId;
+    double  _monthlyOpSuccessPercent;
     //don't stream
-    BOOL _insertDynamicDataFlag;
-    BOOL _dirty;
+    bool _insertDynamicDataFlag;
+    bool _dirty;
 
 };
 

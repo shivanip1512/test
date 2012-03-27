@@ -11,24 +11,24 @@ public:
     CCStatsObject();
     ~CCStatsObject();
 
-    LONG getOpCount();
-    void setOpCount(LONG val);
-    LONG getFailCount();
-    void setFailCount(LONG val);
-    void incrementOpCount(LONG val);
-    DOUBLE getTotal();
-    void setTotal(DOUBLE val);
-    void incrementTotal(DOUBLE val);
+    long getOpCount();
+    void setOpCount(long val);
+    long getFailCount();
+    void setFailCount(long val);
+    void incrementOpCount(long val);
+    double getTotal();
+    void setTotal(double val);
+    void incrementTotal(double val);
 
-    DOUBLE getAverage();
+    double getAverage();
 
     CCStatsObject& operator=(const CCStatsObject& right);
 
 
 private:
 
-    LONG _opCount;       
-    DOUBLE _total;  
-    LONG _failCount;  
+    long _opCount;       
+    double _total;  
+    long _failCount;  
 };
 

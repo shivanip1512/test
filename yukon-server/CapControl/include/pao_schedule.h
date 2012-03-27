@@ -35,12 +35,12 @@ public:
     int operator==(const CtiPAOSchedule& right) const;
     int operator!=(const CtiPAOSchedule& right) const;
 
-    BOOL isDirty();
-    void setDirty(BOOL flag);
+    bool isDirty();
+    void setDirty(bool flag);
 
 private:
     
-    BOOL _dirty;
+    bool _dirty;
 
     long         _scheduleId;
     std::string  _scheduleName;

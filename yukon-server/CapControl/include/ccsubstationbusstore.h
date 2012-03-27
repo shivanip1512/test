@@ -31,7 +31,7 @@ typedef std::set<RWCollectable*> CtiMultiMsg_set;
 
 struct CC_DBRELOAD_INFO
 {
-   LONG objectId;
+   long objectId;
    unsigned char action:2;
    unsigned char objecttype:4;
    unsigned char filler:2;
@@ -132,31 +132,31 @@ public:
 
     } CtiCapControlMapType;
 
-    CtiCCSubstationBus_vec* getCCSubstationBuses(ULONG secondsFrom1901, bool checkReload = false);
-    CtiCCSubstation_vec* getCCSubstations(ULONG secondsFrom1901, bool checkReload = false);
-    CtiCCState_vec* getCCCapBankStates(ULONG secondsFrom1901);
-    CtiCCArea_vec* getCCGeoAreas(ULONG secondsFrom1901, bool checkReload = false);
-    CtiCCSpArea_vec* getCCSpecialAreas(ULONG secondsFrom1901, bool checkReload = false);
+    CtiCCSubstationBus_vec* getCCSubstationBuses(unsigned long secondsFrom1901, bool checkReload = false);
+    CtiCCSubstation_vec* getCCSubstations(unsigned long secondsFrom1901, bool checkReload = false);
+    CtiCCState_vec* getCCCapBankStates(unsigned long secondsFrom1901);
+    CtiCCArea_vec* getCCGeoAreas(unsigned long secondsFrom1901, bool checkReload = false);
+    CtiCCSpArea_vec* getCCSpecialAreas(unsigned long secondsFrom1901, bool checkReload = false);
 
     static CtiCCSubstationBusStore* getInstance(bool startThreads=true);
     static void deleteInstance();
     static void setInstance(CtiCCSubstationBusStore* substationBusStore);
 
     void dumpAllDynamicData();
-    BOOL isValid();
-    void setValid(BOOL valid);
-    BOOL getReregisterForPoints();
-    void setReregisterForPoints(BOOL reregister);
-    BOOL getReloadFromAMFMSystemFlag();
-    void setReloadFromAMFMSystemFlag(BOOL reload);
-    BOOL getWasSubBusDeletedFlag();
-    void setWasSubBusDeletedFlag(BOOL wasDeleted);
-    BOOL get2wayFlagUpdate();
-    void set2wayFlagUpdate(BOOL flag);
+    bool isValid();
+    void setValid(bool valid);
+    bool getReregisterForPoints();
+    void setReregisterForPoints(bool reregister);
+    bool getReloadFromAMFMSystemFlag();
+    void setReloadFromAMFMSystemFlag(bool reload);
+    bool getWasSubBusDeletedFlag();
+    void setWasSubBusDeletedFlag(bool wasDeleted);
+    bool get2wayFlagUpdate();
+    void set2wayFlagUpdate(bool flag);
 
     void verifySubBusAndFeedersStates();
     void resetDailyOperations();
-    void calculateParentPowerFactor(LONG subBusId);
+    void calculateParentPowerFactor(long subBusId);
 
     bool UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus);
     virtual bool UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag, bool forceFullReload = false);
@@ -372,8 +372,8 @@ public:
     void cascadeAreaStrategySettings(CtiCCAreaBase* object);
     void locateOrphans(Cti::CapControl::PaoIdVector *orphanCaps, Cti::CapControl::PaoIdVector *orphanFeeders, PaoIdToCapBankMap paobject_capbank_map,
                        PaoIdToFeederMap paobject_feeder_map, ChildToParentMap capbank_feeder_map, ChildToParentMap feeder_subbus_map);
-    BOOL isCapBankOrphan(long capBankId);
-    BOOL isFeederOrphan(long feederId);
+    bool isCapBankOrphan(long capBankId);
+    bool isFeederOrphan(long feederId);
     void removeFromOrphanList(long ccId);
 
 
@@ -384,34 +384,34 @@ public:
 
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
-    bool handleAreaDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    bool handleAreaDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                            CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    void handleCapBankDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    void handleCapBankDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    void handleFeederDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    void handleFeederDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    void handleSubBusDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    void handleSubBusDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    void handleSubstationDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    void handleSubstationDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    bool handleSpecialAreaDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    bool handleSpecialAreaDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    void handleStrategyDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    void handleStrategyDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    void handleZoneDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    void handleZoneDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    void handleVoltageRegulatorDBChange(LONG reloadId, BYTE reloadAction, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    void handleVoltageRegulatorDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
-    void updateModifiedStationsAndBusesSets(Cti::CapControl::PaoIdVector stationIdList, ULONG &msgBitMask, ULONG &msgSubsBitMask,
+    void updateModifiedStationsAndBusesSets(Cti::CapControl::PaoIdVector stationIdList, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet);
     void registerForAdditionalPoints(CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet);
-    void initializeAllPeakTimeFlagsAndMonitorPoints(BOOL setTargetVarFlag = FALSE);
-    void createAndSendClientMessages( ULONG &msgBitMask, ULONG &msgSubsBitMask, CtiMultiMsg_set &modifiedSubsSet,
+    void initializeAllPeakTimeFlagsAndMonitorPoints(bool setTargetVarFlag = false);
+    void createAndSendClientMessages( unsigned long &msgBitMask, unsigned long &msgSubsBitMask, CtiMultiMsg_set &modifiedSubsSet,
                                       CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages);
     void addSubstationObjectsToSet(Cti::CapControl::PaoIdVector subBusIds, CtiMultiMsg_set &modifiedSubsSet);
     void addSubBusObjectsToSet(Cti::CapControl::PaoIdVector subBusIds, CtiMultiMsg_set &modifiedSubsSet);
-    void updateSubstationObjectSet(LONG substationId, CtiMultiMsg_set &modifiedStationsSet);
-    void updateAreaObjectSet(LONG areaId, CtiMultiMsg_set &modifiedAreasSet);
+    void updateSubstationObjectSet(long substationId, CtiMultiMsg_set &modifiedStationsSet);
+    void updateAreaObjectSet(long areaId, CtiMultiMsg_set &modifiedAreasSet);
     void clearDBReloadList();
     void insertUnsolicitedCapBankList(CtiCCCapBankPtr x);
     void removeCapbankFromUnsolicitedCapBankList(CtiCCCapBankPtr x);
@@ -426,19 +426,19 @@ public:
     void clearRejectedCapBankList();
     void checkRejectedList();
 
-    void setRegMask(LONG mask);
-    LONG getRegMask(void);
+    void setRegMask(long mask);
+    long getRegMask(void);
 
-    void setLinkStatusPointId(LONG pointId);
-    LONG getLinkStatusPointId(void);
+    void setLinkStatusPointId(long pointId);
+    long getLinkStatusPointId(void);
 
-    void setLinkStatusFlag(BOOL flag);
-    BOOL getLinkStatusFlag(void);
+    void setLinkStatusFlag(bool flag);
+    bool getLinkStatusFlag(void);
 
-    BOOL getVoltReductionSystemDisabled();
-    void setVoltReductionSystemDisabled(BOOL disableFlag);
-    LONG getVoltDisabledCount();
-    void setVoltDisabledCount(LONG value);
+    bool getVoltReductionSystemDisabled();
+    void setVoltReductionSystemDisabled(bool disableFlag);
+    long getVoltDisabledCount();
+    void setVoltDisabledCount(long value);
     void checkAndUpdateVoltReductionFlagsByBus(CtiCCSubstationBusPtr bus);
 
     const CtiTime& getLinkDropOutTime() const;
@@ -454,8 +454,8 @@ public:
     static void sendUserQuit(void *who);
     static void periodicComplain( void *la );
 
-    BOOL getStoreRecentlyReset();
-    void setStoreRecentlyReset(BOOL flag);
+    bool getStoreRecentlyReset();
+    void setStoreRecentlyReset(bool flag);
 
     RWRecursiveLock<RWMutexLock> & getMux() { return _storeMutex; };
 
@@ -468,11 +468,11 @@ public:
                                   CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea);
     void createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
-    void setControlStatusAndIncrementFailCount(CtiMultiMsg_vec& pointChanges, LONG status, CtiCCCapBank* cap);
-    void setControlStatusAndIncrementOpCount(CtiMultiMsg_vec& pointChanges, LONG status, CtiCCCapBank* cap,
-                                             BOOL controlRecentlySentFlag);
-    void getSubBusParentInfo(CtiCCSubstationBus* bus, LONG &spAreaId, LONG &areaId, LONG &stationId);
-    void getFeederParentInfo(CtiCCFeeder* feeder, LONG &spAreaId, LONG &areaId, LONG &stationId);
+    void setControlStatusAndIncrementFailCount(CtiMultiMsg_vec& pointChanges, long status, CtiCCCapBank* cap);
+    void setControlStatusAndIncrementOpCount(CtiMultiMsg_vec& pointChanges, long status, CtiCCCapBank* cap,
+                                             bool controlRecentlySentFlag);
+    void getSubBusParentInfo(CtiCCSubstationBus* bus, long &spAreaId, long &areaId, long &stationId);
+    void getFeederParentInfo(CtiCCFeeder* feeder, long &spAreaId, long &areaId, long &stationId);
 
     //For unit tests only
 protected:
@@ -519,8 +519,8 @@ private:
     void handleAMFMChanges(Cti::RowReader& rdr);
     void shutdown();
 
-    void feederReconfigureM3IAMFM( string& capacitor_id_string, LONG circt_id_normal,
-                                   string& circt_nam_normal, LONG circt_id_current,
+    void feederReconfigureM3IAMFM( string& capacitor_id_string, long circt_id_normal,
+                                   string& circt_nam_normal, long circt_id_current,
                                    string& circt_name_current, CtiTime& switch_datetime,
                                    string& owner, string& capacitor_name, string& kvar_rating,
                                    string& cap_fs, string& cbc_model, string& serial_no,
@@ -528,18 +528,18 @@ private:
                                    string& cap_disable_type, string& inoperable_bad_order_equipnote,
                                    string& open_tag_note, string& cap_change_type );
     void capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeeder, CtiCCCapBank* movedCapBank,
-                                       LONG feederid, LONG capswitchingorder);
+                                       long feederid, long capswitchingorder);
     void capBankDifferentOrderSameFeeder(CtiCCFeeder* currentFeeder, CtiCCCapBank* currentCapBank,
-                                         LONG capswitchingorder);
-    void capOutOfServiceM3IAMFM(LONG feederid, LONG capid, string& enableddisabled, string& fixedswitched);
-    void feederOutOfServiceM3IAMFM(LONG feederid, string& fixedswitched, string& enableddisabled);
+                                         long capswitchingorder);
+    void capOutOfServiceM3IAMFM(long feederid, long capid, string& enableddisabled, string& fixedswitched);
+    void feederOutOfServiceM3IAMFM(long feederid, string& fixedswitched, string& enableddisabled);
 
     bool updateDisableFlag(unsigned int paoid, bool isDisabled);
 
     void doResetThr();
     void doAMFMThr();
     void doOpStatsThr();
-    BOOL deleteCapControlMaps();
+    bool deleteCapControlMaps();
 
     CtiCCSubstationBus_vec  *_ccSubstationBuses;
     CtiCCState_vec  *_ccCapBankStates;
@@ -551,21 +551,21 @@ private:
     RWThread _amfmthr;
     RWThread _opstatsthr;
 
-    BOOL _isvalid;
-    BOOL _storeRecentlyReset;
-    BOOL _reregisterforpoints;
-    LONG _regMask;
-    BOOL _reloadfromamfmsystemflag;
-    BOOL _wassubbusdeletedflag;
+    bool _isvalid;
+    bool _storeRecentlyReset;
+    bool _reregisterforpoints;
+    long _regMask;
+    bool _reloadfromamfmsystemflag;
+    bool _wassubbusdeletedflag;
     CtiTime _lastdbreloadtime;
     CtiTime _lastindividualdbreloadtime;
-    BOOL _2wayFlagUpdate;
+    bool _2wayFlagUpdate;
 
-    LONG _linkStatusPointId;
-    BOOL _linkStatusFlag;
+    long _linkStatusPointId;
+    bool _linkStatusFlag;
     CtiTime _linkDropOutTime;
 
-    BOOL _voltReductionSystemDisabled;
+    bool _voltReductionSystemDisabled;
     int  _voltDisabledCount;
 
     CapControlPointDataHandler _pointDataHandler;

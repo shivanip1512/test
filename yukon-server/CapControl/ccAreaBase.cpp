@@ -22,7 +22,7 @@
 using std::endl;
 using namespace Cti::CapControl;
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiCCAreaBase, CTICCAREABASE_ID )
 
@@ -135,9 +135,9 @@ void CtiCCAreaBase::restore(Cti::RowReader& rdr)
     rdr["voltreductionpointid"] >> _voltReductionControlPointId;
     if (_voltReductionControlPointId <= 0)
     {
-        setVoltReductionControlValue(FALSE);
+        setVoltReductionControlValue(false);
     }
-    setOvUvDisabledFlag(FALSE);
+    setOvUvDisabledFlag(false);
     setPFactor(-1);
     setEstPFactor(-1);
     setDirty(false);
@@ -149,7 +149,7 @@ void CtiCCAreaBase::setDynamicData(Cti::RowReader& rdr)
     rdr["additionalflags"] >> _additionalFlags;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
 
-    _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
+    _ovUvDisabledFlag = (_additionalFlags[0]=='y'?true:false);
 }
 
 void CtiCCAreaBase::setDirty(bool flag)
@@ -167,7 +167,7 @@ string CtiCCAreaBase::getAdditionalFlags() const
 
     Returns the controlPoint Id of the area
 ---------------------------------------------------------------------------*/
-LONG CtiCCAreaBase::getVoltReductionControlPointId() const
+long CtiCCAreaBase::getVoltReductionControlPointId() const
 {
     return _voltReductionControlPointId;
 }
@@ -177,7 +177,7 @@ LONG CtiCCAreaBase::getVoltReductionControlPointId() const
 
     Returns the ControlValue flag of the area
 ---------------------------------------------------------------------------*/
-BOOL CtiCCAreaBase::getVoltReductionControlValue() const
+bool CtiCCAreaBase::getVoltReductionControlValue() const
 {
     return _voltReductionControlValue;
 }
@@ -189,7 +189,7 @@ BOOL CtiCCAreaBase::getVoltReductionControlValue() const
 
     Returns the ovuv disable flag of the area
 ---------------------------------------------------------------------------*/
-BOOL CtiCCAreaBase::getOvUvDisabledFlag() const
+bool CtiCCAreaBase::getOvUvDisabledFlag() const
 {
     return _ovUvDisabledFlag;
 }
@@ -199,7 +199,7 @@ BOOL CtiCCAreaBase::getOvUvDisabledFlag() const
 
     Returns the getPFactor of the area
 ---------------------------------------------------------------------------*/
-DOUBLE CtiCCAreaBase::getPFactor() const
+double CtiCCAreaBase::getPFactor() const
 {
     return _pfactor;
 }
@@ -208,7 +208,7 @@ DOUBLE CtiCCAreaBase::getPFactor() const
 
     Returns the getEstPFactor of the area
 ---------------------------------------------------------------------------*/
-DOUBLE CtiCCAreaBase::getEstPFactor() const
+double CtiCCAreaBase::getEstPFactor() const
 {
     return _estPfactor;
 }
@@ -218,7 +218,7 @@ DOUBLE CtiCCAreaBase::getEstPFactor() const
 
     Sets the ControlPointId of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlPointId(LONG pointId)
+CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlPointId(long pointId)
 {
     _voltReductionControlPointId = pointId;
     return *this;
@@ -228,7 +228,7 @@ CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlPointId(LONG pointId)
 
     Sets the ControlValue flag of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlValue(BOOL flag)
+CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlValue(bool flag)
 {
     if (_voltReductionControlValue != flag)
     {
@@ -244,7 +244,7 @@ CtiCCAreaBase& CtiCCAreaBase::setVoltReductionControlValue(BOOL flag)
 
     Sets the ovuv disable flag of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setOvUvDisabledFlag(BOOL flag)
+CtiCCAreaBase& CtiCCAreaBase::setOvUvDisabledFlag(bool flag)
 {
     if (_ovUvDisabledFlag != flag)
     {
@@ -259,7 +259,7 @@ CtiCCAreaBase& CtiCCAreaBase::setOvUvDisabledFlag(BOOL flag)
 
     Sets the PFactor of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setPFactor(DOUBLE pfactor)
+CtiCCAreaBase& CtiCCAreaBase::setPFactor(double pfactor)
 {
     _pfactor = pfactor;
     return *this;
@@ -269,7 +269,7 @@ CtiCCAreaBase& CtiCCAreaBase::setPFactor(DOUBLE pfactor)
 
     Sets the estPFactor of the area
 ---------------------------------------------------------------------------*/
-CtiCCAreaBase& CtiCCAreaBase::setEstPFactor(DOUBLE estpfactor)
+CtiCCAreaBase& CtiCCAreaBase::setEstPFactor(double estpfactor)
 {
     _estPfactor = estpfactor;
     return *this;

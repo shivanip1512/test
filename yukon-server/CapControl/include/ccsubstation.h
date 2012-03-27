@@ -37,44 +37,44 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
 
     virtual ~CtiCCSubstation();
 
-    BOOL getOvUvDisabledFlag() const;
-    BOOL getVoltReductionFlag() const;
+    bool getOvUvDisabledFlag() const;
+    bool getVoltReductionFlag() const;
     const string& getParentName() const;
-    LONG getParentId() const;
-    LONG getDisplayOrder() const;
-    DOUBLE getPFactor() const;
-    DOUBLE getEstPFactor() const;
-    BOOL getSaEnabledFlag() const;
-    BOOL getRecentlyControlledFlag() const;
-    BOOL getStationUpdatedFlag() const;
-    LONG getSaEnabledId() const;
-    LONG getVoltReductionControlId() const;
-    BOOL getChildVoltReductionFlag() const;
+    long getParentId() const;
+    long getDisplayOrder() const;
+    double getPFactor() const;
+    double getEstPFactor() const;
+    bool getSaEnabledFlag() const;
+    bool getRecentlyControlledFlag() const;
+    bool getStationUpdatedFlag() const;
+    long getSaEnabledId() const;
+    long getVoltReductionControlId() const;
+    bool getChildVoltReductionFlag() const;
 
     Cti::CapControl::PaoIdVector getCCSubIds(){return _subBusIds;};
     void addCCSubId(long busId){_subBusIds.push_back(busId);};
     CtiCCOperationStats& getOperationStats();
     CtiCCConfirmationStats& getConfirmationStats();
 
-    CtiCCSubstation& setOvUvDisabledFlag(BOOL flag);
-    CtiCCSubstation& setVoltReductionFlag(BOOL flag);
+    CtiCCSubstation& setOvUvDisabledFlag(bool flag);
+    CtiCCSubstation& setVoltReductionFlag(bool flag);
     CtiCCSubstation& setParentName(const string& name);
-    CtiCCSubstation& setParentId(LONG parentId);
-    CtiCCSubstation& setDisplayOrder(LONG displayOrder);
-    CtiCCSubstation& setPFactor(DOUBLE pfactor);
-    CtiCCSubstation& setEstPFactor(DOUBLE estpfactor);
-    CtiCCSubstation& setSaEnabledFlag(BOOL flag);
-    CtiCCSubstation& setRecentlyControlledFlag(BOOL flag);
-    CtiCCSubstation& setStationUpdatedFlag(BOOL flag);
-    CtiCCSubstation& setSaEnabledId(LONG saId);
-    CtiCCSubstation& setVoltReductionControlId(LONG pointid);
-    CtiCCSubstation& setChildVoltReductionFlag(BOOL flag);
+    CtiCCSubstation& setParentId(long parentId);
+    CtiCCSubstation& setDisplayOrder(long displayOrder);
+    CtiCCSubstation& setPFactor(double pfactor);
+    CtiCCSubstation& setEstPFactor(double estpfactor);
+    CtiCCSubstation& setSaEnabledFlag(bool flag);
+    CtiCCSubstation& setRecentlyControlledFlag(bool flag);
+    CtiCCSubstation& setStationUpdatedFlag(bool flag);
+    CtiCCSubstation& setSaEnabledId(long saId);
+    CtiCCSubstation& setVoltReductionControlId(long pointid);
+    CtiCCSubstation& setChildVoltReductionFlag(bool flag);
 
-    DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
+    double calculatePowerFactor(double kvar, double kw);
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     CtiCCSubstation& checkAndUpdateRecentlyControlledFlag();
     CtiCCSubstation& checkAndUpdateChildVoltReductionFlags();
-    BOOL isDirty() const;
+    bool isDirty() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(Cti::RowReader& rdr);
 
@@ -88,28 +88,28 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     private:
 
     string _parentName;
-    LONG _parentId;
-    LONG _displayOrder;
+    long _parentId;
+    long _displayOrder;
 
     string _additionalFlags;
-    BOOL _ovUvDisabledFlag;
-    BOOL _voltReductionFlag;
-    BOOL _recentlyControlledFlag;
-    BOOL _stationUpdatedFlag;
-    BOOL _childVoltReductionFlag;
+    bool _ovUvDisabledFlag;
+    bool _voltReductionFlag;
+    bool _recentlyControlledFlag;
+    bool _stationUpdatedFlag;
+    bool _childVoltReductionFlag;
 
-    DOUBLE _pfactor;
-    DOUBLE _estPfactor;
-    BOOL _saEnabledFlag;
-    LONG _saEnabledId;
+    double _pfactor;
+    double _estPfactor;
+    bool _saEnabledFlag;
+    long _saEnabledId;
 
-    LONG _voltReductionControlId;
+    long _voltReductionControlId;
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
 
     //don't stream
-    BOOL _insertDynamicDataFlag;
-    BOOL _dirty;
+    bool _insertDynamicDataFlag;
+    bool _dirty;
 
     Cti::CapControl::PaoIdVector _subBusIds;
 

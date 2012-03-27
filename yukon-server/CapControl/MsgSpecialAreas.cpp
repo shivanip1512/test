@@ -3,7 +3,7 @@
 #include "MsgSpecialAreas.h"
 #include "ccid.h"
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 using std::endl;
 

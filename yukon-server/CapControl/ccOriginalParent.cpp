@@ -21,7 +21,7 @@
 using std::endl;
 using std::string;
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 
 CtiCCOriginalParent::CtiCCOriginalParent()
@@ -71,12 +71,12 @@ int CtiCCOriginalParent::operator!=(const CtiCCOriginalParent& right) const
 
 
 
-LONG CtiCCOriginalParent::getPAOId() const
+long CtiCCOriginalParent::getPAOId() const
 {
     return _paoId;
 }
 
-LONG CtiCCOriginalParent::getOriginalParentId() const
+long CtiCCOriginalParent::getOriginalParentId() const
 {
     return _originalParentId;
 }
@@ -94,20 +94,20 @@ float CtiCCOriginalParent::getOriginalTripOrder() const
     return _originalTripOrder;
 }
 
-void CtiCCOriginalParent::setPAOId(LONG paoId)
+void CtiCCOriginalParent::setPAOId(long paoId)
 {
     if( _paoId != paoId )
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _paoId = paoId;
 }
 
-void CtiCCOriginalParent::setOriginalParentId(LONG parentId)
+void CtiCCOriginalParent::setOriginalParentId(long parentId)
 {
     if( _originalParentId != parentId )
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _originalParentId = parentId;
 }
@@ -117,7 +117,7 @@ void CtiCCOriginalParent::setOriginalSwitchingOrder(float order)
 {
     if( _originalSwitchingOrder != order )
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _originalSwitchingOrder = order;
 }
@@ -126,7 +126,7 @@ void CtiCCOriginalParent::setOriginalCloseOrder(float order)
 {
     if( _originalCloseOrder != order )
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _originalCloseOrder = order;
 }
@@ -135,7 +135,7 @@ void CtiCCOriginalParent::setOriginalTripOrder(float order)
 {
     if( _originalTripOrder != order )
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _originalTripOrder = order;
 }
@@ -154,7 +154,7 @@ void CtiCCOriginalParent::restore(Cti::RowReader& rdr)
 
 }
 
-BOOL CtiCCOriginalParent::isDirty()
+bool CtiCCOriginalParent::isDirty()
 {
     return _dirty;
 }
@@ -180,11 +180,11 @@ void CtiCCOriginalParent::dumpDynamicData(Cti::Database::DatabaseConnection& con
 
             if(updater.execute())    // No error occured!
             {
-                _dirty = FALSE;
+                _dirty = false;
             }
             else
             {
-                _dirty = TRUE;
+                _dirty = true;
                 {
                     string loggedSQLstring = updater.asString();
                     {
@@ -221,12 +221,12 @@ void CtiCCOriginalParent::dumpDynamicData(Cti::Database::DatabaseConnection& con
 
             if(inserter.execute())    // No error occured!
             {
-                _insertDynamicDataFlag = FALSE;
-                _dirty = FALSE;
+                _insertDynamicDataFlag = false;
+                _dirty = false;
             }
             else
             {
-                _dirty = TRUE;
+                _dirty = true;
                 {
                     string loggedSQLstring = inserter.asString();
                     {

@@ -22,20 +22,20 @@ using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::Zone;
 using Cti::CapControl::ZoneManager;
 
-extern ULONG _SCAN_WAIT_EXPIRE;
-extern ULONG _POINT_AGE;
-extern ULONG _POST_CONTROL_WAIT;
-extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
-extern ULONG _CC_DEBUG;
-extern ULONG _IVVC_COMMS_RETRY_COUNT;
+extern unsigned long _SCAN_WAIT_EXPIRE;
+extern unsigned long _POINT_AGE;
+extern unsigned long _POST_CONTROL_WAIT;
+extern unsigned long _IVVC_MIN_TAP_PERIOD_MINUTES;
+extern unsigned long _CC_DEBUG;
+extern unsigned long _IVVC_COMMS_RETRY_COUNT;
 extern double _IVVC_NONWINDOW_MULTIPLIER;
 extern double _IVVC_BANKS_REPORTING_RATIO;
 extern double _IVVC_REGULATOR_REPORTING_RATIO;
 extern double _IVVC_VOLTAGEMONITOR_REPORTING_RATIO;
 extern bool _IVVC_STATIC_DELTA_VOLTAGES;
 extern bool _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
-extern ULONG _REFUSAL_TIMEOUT;
-extern ULONG _MAX_KVAR;
+extern unsigned long _REFUSAL_TIMEOUT;
+extern unsigned long _MAX_KVAR;
 
 
 IVVCAlgorithm::IVVCAlgorithm(const PointDataRequestFactoryPtr& factory)
@@ -302,7 +302,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     dispatchConnection->WriteConnQue(
                         new CtiPointDataMsg( subbus->getCommsStatePointId(), 0.0 ) ); // NormalQuality, StatusPointType
 
-                    LONG stationId, areaId, spAreaId;
+                    long stationId, areaId, spAreaId;
                     store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
 
                     CtiMultiMsg* ccEvents = new CtiMultiMsg();
@@ -1263,11 +1263,11 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
     {
         if (subbus->sendNextCapBankVerificationControl(now, pointChanges, ccEvents, pilMsg))
         {
-            subbus->setWaitForReCloseDelayFlag(FALSE);
+            subbus->setWaitForReCloseDelayFlag(false);
         }
         else
         {
-            subbus->setWaitForReCloseDelayFlag(TRUE);
+            subbus->setWaitForReCloseDelayFlag(true);
         }
     }
     if (pilMsg.size() > 0)
@@ -1298,8 +1298,8 @@ void IVVCAlgorithm::setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBus
     else
     {
         //reset VerificationFlag
-        subbus->setVerificationFlag(FALSE);
-        subbus->setBusUpdatedFlag(TRUE);
+        subbus->setVerificationFlag(false);
+        subbus->setBusUpdatedFlag(true);
         CtiCCExecutorFactory::createExecutor(new VerifyBanks(subbus->getPaoId(),subbus->getVerificationDisableOvUvFlag(), CapControlCommand::STOP_VERIFICATION))->execute();
         CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, subbus->getPaoId()))->execute();
         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
@@ -1446,7 +1446,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             if ( currentBank->getIgnoreFlag() &&
                  CtiTime::now() > CtiTime( currentBank->getLastStatusChangeTime().seconds() + (_REFUSAL_TIMEOUT * 60) ) )
             {
-                currentBank->setIgnoreFlag(FALSE);
+                currentBank->setIgnoreFlag(false);
             }
 
             // if banks operational state isn't switched or if disabled
@@ -2023,7 +2023,7 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
 
     // Write to the event log.
     {
-        LONG stationId, areaId, spAreaId;
+        long stationId, areaId, spAreaId;
         store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
 
         CtiMultiMsg* ccEvents = new CtiMultiMsg();

@@ -26,11 +26,11 @@ using std::endl;
 
 extern void refreshGlobalCParms();
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
-ULONG gInvalidCtiTimeSeconds = gInvalidCtiTime.seconds();
+unsigned long gInvalidCtiTimeSeconds = gInvalidCtiTime.seconds();
 
 
 //Use this to indicate globally when ctrl-c was pressed
@@ -52,9 +52,9 @@ bool CtrlHandler(DWORD fdwCtrlType)
     case CTRL_CLOSE_EVENT:
     case CTRL_BREAK_EVENT:
 
-        capcontrol_do_quit = TRUE;
+        capcontrol_do_quit = true;
         Sleep(30000);
-        return TRUE;
+        return true;
 
         /* CTRL+CLOSE: confirm that the user wants to exit. */
         /* Pass other signals to the next handler. */
@@ -63,7 +63,7 @@ bool CtrlHandler(DWORD fdwCtrlType)
 
 
     default:
-        return FALSE;
+        return false;
 
     }
 
@@ -84,7 +84,7 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
     CService::RunInConsole(argc, argv);
 
     //We need to catch ctrl-c so we can stop
-    if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  TRUE))
+    if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  true))
         std::cerr << "Could not install console control handler" << endl;
 
     Init();

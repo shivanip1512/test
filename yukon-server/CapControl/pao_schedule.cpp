@@ -42,7 +42,7 @@ CtiPAOSchedule::CtiPAOSchedule(Cti::RowReader& rdr)
     rdr["lastruntime"] >> _lastRunTime;
     rdr["intervalrate"] >> _intervalRate;
     rdr["disabled"] >> tempBoolString;
-    _disabledFlag = (((tempBoolString=="y") || (tempBoolString=="Y"))?TRUE:FALSE);
+    _disabledFlag = (((tempBoolString=="y") || (tempBoolString=="Y"))?true:false);
 
     _dirty = false;
 
@@ -160,11 +160,11 @@ void CtiPAOSchedule::setDisabledFlag(bool disabledFlag)
     return;
 }
 
-BOOL CtiPAOSchedule::isDirty()
+bool CtiPAOSchedule::isDirty()
 {
     return _dirty;
 }
-void CtiPAOSchedule::setDirty(BOOL flag)
+void CtiPAOSchedule::setDirty(bool flag)
 {
     _dirty = flag;
 }

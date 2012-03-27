@@ -9,7 +9,7 @@
 #include "PFactorKWKVarStrategy.h"
 
 
-extern BOOL _RETRY_FAILED_BANKS;
+extern bool _RETRY_FAILED_BANKS;
 
 using namespace std;
 
@@ -29,7 +29,7 @@ void initialize_bank(CtiCCCapBank* bank, int closeOrder = 0, int tripOrder = 0)
     bank->setControlInhibitFlag(false);
     bank->setMaxDailyOperation(0);
     bank->setMaxDailyOpsHitFlag(false);
-}
+} 
 
 class StrategyUnitTestLoader : public StrategyLoader
 {
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
     BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank1");
-    BOOST_CHECK_EQUAL(bank->getIgnoreFlag(),FALSE);
+    BOOST_CHECK_EQUAL(bank->getIgnoreFlag(),false);
     capBank1->setIgnoreFlag(false);
 
     //test Ignore Flag && LastStatus > current time.
@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
     BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank2");
-    BOOST_CHECK_EQUAL(capBank1->getIgnoreFlag(),TRUE);
+    BOOST_CHECK_EQUAL(capBank1->getIgnoreFlag(),true);
     capBank1->setIgnoreFlag(false);
     capBank1->setLastStatusChangeTime(CtiTime());
 
@@ -277,7 +277,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
     BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank2");
     //Make sure the fist bank max op stuff was set.
-    BOOST_CHECK_EQUAL(capBank1->getMaxDailyOpsHitFlag(),TRUE);
+    BOOST_CHECK_EQUAL(capBank1->getMaxDailyOpsHitFlag(),true);
     BOOST_CHECK_EQUAL(capBank1->getDisableFlag(),true);
     capBank1->setMaxDailyOperation(0);
     capBank1->setMaxDailyOpsHitFlag(false);
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
     BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
-    BOOST_CHECK_EQUAL(bank->getRetryCloseFailedFlag(),TRUE);
+    BOOST_CHECK_EQUAL(bank->getRetryCloseFailedFlag(),true);
 
     capBank4->setControlStatus(CtiCCCapBank::Open);
     feeder->getStrategy()->setEndDaySettings("Close");//  _END_DAY_ON_TRIP = true;
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
     BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank4");
-    BOOST_CHECK_EQUAL(bank->getIgnoreFlag(),FALSE);
+    BOOST_CHECK_EQUAL(bank->getIgnoreFlag(),false);
     capBank4->setIgnoreFlag(false);
 
     //test Ignore Flag && LastStatus > current time.
@@ -397,7 +397,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     pointChanges.clear();
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
     BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
-    BOOST_CHECK_EQUAL(capBank4->getIgnoreFlag(),TRUE);
+    BOOST_CHECK_EQUAL(capBank4->getIgnoreFlag(),true);
     capBank4->setIgnoreFlag(false);
     capBank4->setLastStatusChangeTime(CtiTime());
 
@@ -415,7 +415,7 @@ BOOST_AUTO_TEST_CASE(test_findCapBankToChangeVars_basic)
     BOOST_REQUIRE_EQUAL((bank == NULL), false);
     BOOST_CHECK_EQUAL(bank->getPaoName(),"Bank3");
     //Make sure the fist bank max op stuff was set.
-    BOOST_CHECK_EQUAL(capBank4->getMaxDailyOpsHitFlag(),TRUE);
+    BOOST_CHECK_EQUAL(capBank4->getMaxDailyOpsHitFlag(),true);
     BOOST_CHECK_EQUAL(capBank4->getDisableFlag(),true);
     capBank4->setMaxDailyOperation(0);
     capBank4->setMaxDailyOpsHitFlag(false);

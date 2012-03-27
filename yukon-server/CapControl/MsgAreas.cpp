@@ -3,18 +3,18 @@
 #include "MsgAreas.h"
 #include "ccid.h"
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 using std::endl;
 
-ULONG CtiCCGeoAreasMsg::AllAreasSent = 0x00000001;
-ULONG CtiCCGeoAreasMsg::AreaDeleted   = 0x00000002;
-ULONG CtiCCGeoAreasMsg::AreaAdded     = 0x00000004;
-ULONG CtiCCGeoAreasMsg::AreaModified  = 0x00000008;
+unsigned long CtiCCGeoAreasMsg::AllAreasSent = 0x00000001;
+unsigned long CtiCCGeoAreasMsg::AreaDeleted   = 0x00000002;
+unsigned long CtiCCGeoAreasMsg::AreaAdded     = 0x00000004;
+unsigned long CtiCCGeoAreasMsg::AreaModified  = 0x00000008;
 
 RWDEFINE_COLLECTABLE( CtiCCGeoAreasMsg, CTICCGEOAREAS_MSG_ID )
 
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, ULONG bitMask) : Inherited(), _ccGeoAreas(NULL), _msgInfoBitMask(bitMask)
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, unsigned long bitMask) : Inherited(), _ccGeoAreas(NULL), _msgInfoBitMask(bitMask)
 {
     _ccGeoAreas = new CtiCCArea_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
@@ -40,7 +40,7 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, ULONG bitMask) : I
 }
 
 
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_set& ccGeoAreas, ULONG bitMask) : Inherited(), _ccGeoAreas(NULL), _msgInfoBitMask(bitMask)
+CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_set& ccGeoAreas, unsigned long bitMask) : Inherited(), _ccGeoAreas(NULL), _msgInfoBitMask(bitMask)
 {
     _ccGeoAreas = new CtiCCArea_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )

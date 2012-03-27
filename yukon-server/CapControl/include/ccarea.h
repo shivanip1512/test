@@ -33,15 +33,15 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 
     virtual ~CtiCCArea();
 
-    BOOL getReEnableAreaFlag() const;
-    BOOL getChildVoltReductionFlag() const;
-    BOOL getAreaUpdatedFlag() const;
+    bool getReEnableAreaFlag() const;
+    bool getChildVoltReductionFlag() const;
+    bool getAreaUpdatedFlag() const;
 
     void deleteCCSubs(long subId);
 
-    CtiCCArea& setReEnableAreaFlag(BOOL flag);
-    CtiCCArea& setChildVoltReductionFlag(BOOL flag);
-    CtiCCArea& setAreaUpdatedFlag(BOOL flag);
+    CtiCCArea& setReEnableAreaFlag(bool flag);
+    CtiCCArea& setChildVoltReductionFlag(bool flag);
+    CtiCCArea& setAreaUpdatedFlag(bool flag);
 
     void checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages);
     CtiCCArea& checkAndUpdateChildVoltReductionFlags();
@@ -58,12 +58,12 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 
 private:
 
-    BOOL _reEnableAreaFlag;
-    BOOL _childVoltReductionFlag;
+    bool _reEnableAreaFlag;
+    bool _childVoltReductionFlag;
 
        //don't stream
-    BOOL _insertDynamicDataFlag;
-    BOOL _areaUpdatedFlag;
+    bool _insertDynamicDataFlag;
+    bool _areaUpdatedFlag;
 
     void restore(Cti::RowReader& rdr);
 };

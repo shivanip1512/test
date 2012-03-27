@@ -18,58 +18,58 @@ public:
 
     void init();
 
-    LONG getPAOId() const;
-    LONG getUserDefCommCount() const;
-    LONG getUserDefCommFail() const;
-    LONG getDailyCommCount() const;
-    LONG getDailyCommFail() const;
-    LONG getWeeklyCommCount() const;
-    LONG getWeeklyCommFail() const;
-    LONG getMonthlyCommCount() const;
-    LONG getMonthlyCommFail() const;
-    LONG    getUserDefCommSuccessPercentId() const;
-    DOUBLE  getUserDefCommSuccessPercent() const;
-    LONG    getDailyCommSuccessPercentId() const;
-    DOUBLE  getDailyCommSuccessPercent() const;
-    LONG    getWeeklyCommSuccessPercentId() const;
-    DOUBLE  getWeeklyCommSuccessPercent() const;
-    LONG    getMonthlyCommSuccessPercentId() const;
-    DOUBLE  getMonthlyCommSuccessPercent() const;
+    long getPAOId() const;
+    long getUserDefCommCount() const;
+    long getUserDefCommFail() const;
+    long getDailyCommCount() const;
+    long getDailyCommFail() const;
+    long getWeeklyCommCount() const;
+    long getWeeklyCommFail() const;
+    long getMonthlyCommCount() const;
+    long getMonthlyCommFail() const;
+    long    getUserDefCommSuccessPercentId() const;
+    double  getUserDefCommSuccessPercent() const;
+    long    getDailyCommSuccessPercentId() const;
+    double  getDailyCommSuccessPercent() const;
+    long    getWeeklyCommSuccessPercentId() const;
+    double  getWeeklyCommSuccessPercent() const;
+    long    getMonthlyCommSuccessPercentId() const;
+    double  getMonthlyCommSuccessPercent() const;
 
     
-    CtiCCConfirmationStats& setPAOId(LONG paoId);
-    CtiCCConfirmationStats& setUserDefCommCount(LONG value);
-    CtiCCConfirmationStats& setUserDefCommFail(LONG value);
-    CtiCCConfirmationStats& setDailyCommCount(LONG value);
-    CtiCCConfirmationStats& setDailyCommFail(LONG value);
-    CtiCCConfirmationStats& setWeeklyCommCount(LONG value);
-    CtiCCConfirmationStats& setWeeklyCommFail(LONG value);
-    CtiCCConfirmationStats& setMonthlyCommCount(LONG value);
-    CtiCCConfirmationStats& setMonthlyCommFail(LONG value);
-    CtiCCConfirmationStats& setUserDefCommSuccessPercentId(LONG pointId);
-    CtiCCConfirmationStats& setUserDefCommSuccessPercent(DOUBLE value);
-    CtiCCConfirmationStats& setDailyCommSuccessPercentId(LONG pointId);
-    CtiCCConfirmationStats& setDailyCommSuccessPercent(DOUBLE  value);
-    CtiCCConfirmationStats& setWeeklyCommSuccessPercentId(LONG pointId);
-    CtiCCConfirmationStats& setWeeklyCommSuccessPercent(DOUBLE value);
-    CtiCCConfirmationStats& setMonthlyCommSuccessPercentId(LONG pointId);
-    CtiCCConfirmationStats& setMonthlyCommSuccessPercent(DOUBLE value); 
+    CtiCCConfirmationStats& setPAOId(long paoId);
+    CtiCCConfirmationStats& setUserDefCommCount(long value);
+    CtiCCConfirmationStats& setUserDefCommFail(long value);
+    CtiCCConfirmationStats& setDailyCommCount(long value);
+    CtiCCConfirmationStats& setDailyCommFail(long value);
+    CtiCCConfirmationStats& setWeeklyCommCount(long value);
+    CtiCCConfirmationStats& setWeeklyCommFail(long value);
+    CtiCCConfirmationStats& setMonthlyCommCount(long value);
+    CtiCCConfirmationStats& setMonthlyCommFail(long value);
+    CtiCCConfirmationStats& setUserDefCommSuccessPercentId(long pointId);
+    CtiCCConfirmationStats& setUserDefCommSuccessPercent(double value);
+    CtiCCConfirmationStats& setDailyCommSuccessPercentId(long pointId);
+    CtiCCConfirmationStats& setDailyCommSuccessPercent(double  value);
+    CtiCCConfirmationStats& setWeeklyCommSuccessPercentId(long pointId);
+    CtiCCConfirmationStats& setWeeklyCommSuccessPercent(double value);
+    CtiCCConfirmationStats& setMonthlyCommSuccessPercentId(long pointId);
+    CtiCCConfirmationStats& setMonthlyCommSuccessPercent(double value); 
 
-    CtiCCConfirmationStats& incrementAllCommCounts(LONG attempts);
-    CtiCCConfirmationStats& incrementAllCommFails(LONG errors);
-    CtiCCConfirmationStats& incrementMonthlyCommCounts(LONG attempts);
-    CtiCCConfirmationStats& incrementMonthlyCommFails(LONG errors);
-    CtiCCConfirmationStats& incrementWeeklyCommCounts(LONG attempts);
-    CtiCCConfirmationStats& incrementWeeklyCommFails(LONG errors);
-    CtiCCConfirmationStats& incrementDailyCommCounts(LONG attempts);
-    CtiCCConfirmationStats& incrementDailyCommFails(LONG errors);
-    CtiCCConfirmationStats& incrementUserDefCommCounts(LONG attempts);
-    CtiCCConfirmationStats& incrementUserDefCommFails(LONG errors);
+    CtiCCConfirmationStats& incrementAllCommCounts(long attempts);
+    CtiCCConfirmationStats& incrementAllCommFails(long errors);
+    CtiCCConfirmationStats& incrementMonthlyCommCounts(long attempts);
+    CtiCCConfirmationStats& incrementMonthlyCommFails(long errors);
+    CtiCCConfirmationStats& incrementWeeklyCommCounts(long attempts);
+    CtiCCConfirmationStats& incrementWeeklyCommFails(long errors);
+    CtiCCConfirmationStats& incrementDailyCommCounts(long attempts);
+    CtiCCConfirmationStats& incrementDailyCommFails(long errors);
+    CtiCCConfirmationStats& incrementUserDefCommCounts(long attempts);
+    CtiCCConfirmationStats& incrementUserDefCommFails(long errors);
     
 
 
-    DOUBLE calculateSuccessPercent(capcontrol::ccStatsType type);
-    BOOL setSuccessPercentPointId(LONG tempPointId, LONG tempPointOffset);
+    double calculateSuccessPercent(capcontrol::ccStatsType type);
+    bool setSuccessPercentPointId(long tempPointId, long tempPointOffset);
     CtiCCConfirmationStats& createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
     void printCommStats();
@@ -86,28 +86,28 @@ public:
         
 private:
 
-    LONG _paoid;
+    long _paoid;
 
-    LONG _userDefCommCount;
-	LONG _userDefCommFail;
-	LONG _dailyCommCount;
-	LONG _dailyCommFail;
-	LONG _weeklyCommCount;	
-	LONG _weeklyCommFail;
-	LONG _monthlyCommCount;
-	LONG _monthlyCommFail;
+    long _userDefCommCount;
+	long _userDefCommFail;
+	long _dailyCommCount;
+	long _dailyCommFail;
+	long _weeklyCommCount;	
+	long _weeklyCommFail;
+	long _monthlyCommCount;
+	long _monthlyCommFail;
 
-    LONG    _userDefCommSuccessPercentId;
-    DOUBLE  _userDefCommSuccessPercent;
-    LONG    _dailyCommSuccessPercentId;
-    DOUBLE  _dailyCommSuccessPercent;
-    LONG    _weeklyCommSuccessPercentId;
-    DOUBLE  _weeklyCommSuccessPercent;
-    LONG    _monthlyCommSuccessPercentId;
-    DOUBLE  _monthlyCommSuccessPercent;
+    long    _userDefCommSuccessPercentId;
+    double  _userDefCommSuccessPercent;
+    long    _dailyCommSuccessPercentId;
+    double  _dailyCommSuccessPercent;
+    long    _weeklyCommSuccessPercentId;
+    double  _weeklyCommSuccessPercent;
+    long    _monthlyCommSuccessPercentId;
+    double  _monthlyCommSuccessPercent;
     //don't stream
-    BOOL _insertDynamicDataFlag;
-    BOOL _dirty;
+    bool _insertDynamicDataFlag;
+    bool _dirty;
 
 };
 

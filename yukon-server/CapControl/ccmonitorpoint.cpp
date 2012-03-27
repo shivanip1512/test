@@ -25,7 +25,7 @@
 #include "database_writer.h"
 
 using namespace std;
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiCCMonitorPoint, CTICCMONITORPOINT_ID )
 
@@ -70,7 +70,7 @@ CtiCCMonitorPoint::~CtiCCMonitorPoint()
 
     Returns the unique id of the monitor point
 ---------------------------------------------------------------------------*/
-LONG CtiCCMonitorPoint::getPointId() const
+long CtiCCMonitorPoint::getPointId() const
 {
     return _pointId;
 }
@@ -79,7 +79,7 @@ LONG CtiCCMonitorPoint::getPointId() const
 
     Returns the bankId of the monitor point
 ---------------------------------------------------------------------------*/
-LONG CtiCCMonitorPoint::getDeviceId() const
+long CtiCCMonitorPoint::getDeviceId() const
 {
     return _deviceId;
 }
@@ -88,7 +88,7 @@ LONG CtiCCMonitorPoint::getDeviceId() const
 
     Returns the value of the monitor point
 ---------------------------------------------------------------------------*/
-DOUBLE CtiCCMonitorPoint::getValue() const
+double CtiCCMonitorPoint::getValue() const
 {
     return _value;
 }
@@ -98,7 +98,7 @@ DOUBLE CtiCCMonitorPoint::getValue() const
 
     Returns the displayOrder of the monitor point
 ---------------------------------------------------------------------------*/
-LONG CtiCCMonitorPoint::getDisplayOrder() const
+long CtiCCMonitorPoint::getDisplayOrder() const
 {
     return _displayOrder;
 }
@@ -108,7 +108,7 @@ LONG CtiCCMonitorPoint::getDisplayOrder() const
 
     Returns the scannability of the monitor point
 ---------------------------------------------------------------------------*/
-BOOL CtiCCMonitorPoint::isScannable() const
+bool CtiCCMonitorPoint::isScannable() const
 {
     return _scannable;
 }
@@ -117,7 +117,7 @@ BOOL CtiCCMonitorPoint::isScannable() const
 
     Returns the number n the value of the monitor point is averaged by
 ---------------------------------------------------------------------------*/
-LONG CtiCCMonitorPoint::getNInAvg() const
+long CtiCCMonitorPoint::getNInAvg() const
 {
     return _nInAvg;
 }
@@ -126,7 +126,7 @@ LONG CtiCCMonitorPoint::getNInAvg() const
 
     Returns the upper bandwidth for the monitor point
 ---------------------------------------------------------------------------*/
-DOUBLE CtiCCMonitorPoint::getUpperBandwidth() const
+double CtiCCMonitorPoint::getUpperBandwidth() const
 {
     return _upperBW;
 }
@@ -135,7 +135,7 @@ DOUBLE CtiCCMonitorPoint::getUpperBandwidth() const
 
     Returns the lower bandwidth for the monitor point
 ---------------------------------------------------------------------------*/
-DOUBLE CtiCCMonitorPoint::getLowerBandwidth() const
+double CtiCCMonitorPoint::getLowerBandwidth() const
 {
     return _lowerBW;
 }
@@ -156,7 +156,7 @@ CtiTime CtiCCMonitorPoint::getTimeStamp() const
 
     Returns the scanInProgress Flag of the monitor point
 ---------------------------------------------------------------------------*/
-BOOL CtiCCMonitorPoint::getScanInProgress() const
+bool CtiCCMonitorPoint::getScanInProgress() const
 {
     return _scanInProgress;
 }
@@ -165,7 +165,7 @@ BOOL CtiCCMonitorPoint::getScanInProgress() const
 
     Sets the pointId of the monitorPoint- use with caution
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::setPointId(LONG pointId)
+CtiCCMonitorPoint& CtiCCMonitorPoint::setPointId(long pointId)
 {
     _pointId = pointId;
     //do not notify observers of this !
@@ -177,7 +177,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setPointId(LONG pointId)
 
     Sets the bankId of the monitorPoint- use with caution
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::setDeviceId(LONG devId)
+CtiCCMonitorPoint& CtiCCMonitorPoint::setDeviceId(long devId)
 {
     _deviceId = devId;
     //do not notify observers of this !
@@ -189,11 +189,11 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setDeviceId(LONG devId)
 
     Sets the value of the monitorPoint-
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::setValue(DOUBLE value)
+CtiCCMonitorPoint& CtiCCMonitorPoint::setValue(double value)
 {
     if (_value != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _value = value;
 
@@ -206,11 +206,11 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setValue(DOUBLE value)
 
     Sets the display order of the monitorPoint-
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::setDisplayOrder(LONG displayOrder)
+CtiCCMonitorPoint& CtiCCMonitorPoint::setDisplayOrder(long displayOrder)
 {
     if (_displayOrder != displayOrder)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _displayOrder = displayOrder;
 
@@ -223,11 +223,11 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setDisplayOrder(LONG displayOrder)
 
     Sets the scannable flag of the monitorPoint-
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::setScannable(BOOL flag)
+CtiCCMonitorPoint& CtiCCMonitorPoint::setScannable(bool flag)
 {
     if (_scannable != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _scannable = flag;
 
@@ -240,11 +240,11 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setScannable(BOOL flag)
 
     Sets the Number N of points to be averaged together in the value of the monitorPoint-
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::setNInAvg(LONG n)
+CtiCCMonitorPoint& CtiCCMonitorPoint::setNInAvg(long n)
 {
     if (_nInAvg != n)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _nInAvg = n;
 
@@ -257,11 +257,11 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setNInAvg(LONG n)
 
     Sets the UpperBandwidth of the monitorPoint-
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::setUpperBandwidth(DOUBLE upperBW)
+CtiCCMonitorPoint& CtiCCMonitorPoint::setUpperBandwidth(double upperBW)
 {
     if (_upperBW != upperBW)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _upperBW = upperBW;
 
@@ -274,11 +274,11 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setUpperBandwidth(DOUBLE upperBW)
 
     Sets the LowerBandwidth of the monitorPoint-
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::setLowerBandwidth(DOUBLE lowerBW)
+CtiCCMonitorPoint& CtiCCMonitorPoint::setLowerBandwidth(double lowerBW)
 {
     if (_lowerBW != lowerBW)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _lowerBW = lowerBW;
 
@@ -295,7 +295,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setTimeStamp(CtiTime timeStamp)
 {
     if (_timeStamp != timeStamp)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _timeStamp = timeStamp;
     //do not notify observers of this !
@@ -307,11 +307,11 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setTimeStamp(CtiTime timeStamp)
 
     Sets the scanInProgress flag of the monitorPoint-
 ---------------------------------------------------------------------------*/
-CtiCCMonitorPoint& CtiCCMonitorPoint::setScanInProgress(BOOL flag)
+CtiCCMonitorPoint& CtiCCMonitorPoint::setScanInProgress(bool flag)
 {
     if (_scanInProgress != flag)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _scanInProgress = flag;
 
@@ -327,7 +327,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setScanInProgress(BOOL flag)
 --------------------------------------------------------------------------*/
 void CtiCCMonitorPoint::restoreGuts(RWvistream& istrm)
 {
-    LONG tempTime1;
+    long tempTime1;
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _pointId
@@ -347,7 +347,7 @@ void CtiCCMonitorPoint::restoreGuts(RWvistream& istrm)
 void CtiCCMonitorPoint::saveGuts(RWvostream& ostrm ) const
 {
     RWCollectable::saveGuts( ostrm );
-    LONG tempTime = _timeStamp.seconds();
+    long tempTime = _timeStamp.seconds();
     ostrm << _pointId
         << _deviceId
         << _value
@@ -428,7 +428,7 @@ void CtiCCMonitorPoint::restore(Cti::RowReader& rdr)
     rdr["displayorder"] >> _displayOrder;
     rdr["scannable"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    setScannable(tempBoolString=="y"?TRUE:FALSE);
+    setScannable(tempBoolString=="y"?true:false);
     rdr["ninavg"] >> _nInAvg;
     rdr["upperbandwidth"] >> _upperBW;
     rdr["lowerbandwidth"] >> _lowerBW;
@@ -436,13 +436,13 @@ void CtiCCMonitorPoint::restore(Cti::RowReader& rdr)
 
     _value = 0;
     _timeStamp = CtiTime();
-    _scanInProgress = FALSE;
-    _insertDynamicDataFlag = TRUE;
+    _scanInProgress = false;
+    _insertDynamicDataFlag = true;
     /*{
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }*/
-    _dirty = TRUE;
+    _dirty = true;
 
 }
 
@@ -454,10 +454,10 @@ void CtiCCMonitorPoint::setDynamicData(Cti::RowReader& rdr)
     rdr["datetime"] >> _timeStamp;
     rdr["scaninprogress"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    setScanInProgress(tempBoolString=="y"?TRUE:FALSE);
+    setScanInProgress(tempBoolString=="y"?true:false);
 
-    _insertDynamicDataFlag = FALSE;
-    _dirty = FALSE;
+    _insertDynamicDataFlag = false;
+    _dirty = false;
 
 }
 
@@ -487,7 +487,7 @@ int CtiCCMonitorPoint::compareTo(const RWCollectable* rght) const
 
     Returns the dirty flag of the cap bank
 ---------------------------------------------------------------------------*/
-BOOL CtiCCMonitorPoint::isDirty() const
+bool CtiCCMonitorPoint::isDirty() const
 {
     return _dirty;
 }
@@ -522,11 +522,11 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
 
             if(updater.execute())    // No error occured!
             {
-                _dirty = FALSE;
+                _dirty = false;
             }
             else
             {
-                _dirty = TRUE;
+                _dirty = true;
                 {
                     string loggedSQLstring = updater.asString();
                     {
@@ -567,12 +567,12 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
 
             if(dbInserter.execute())    // No error occured!
             {
-                _insertDynamicDataFlag = FALSE;
-                _dirty = FALSE;
+                _insertDynamicDataFlag = false;
+                _dirty = false;
             }
             else
             {
-                _dirty = TRUE;
+                _dirty = true;
                 {
                     string loggedSQLstring = dbInserter.asString();
                     {
@@ -598,7 +598,7 @@ CtiCCMonitorPoint &  CtiCCMonitorPoint::setPhase( const Cti::CapControl::Phase &
     if ( _phase != phase )
     {
         _phase = phase;
-        _dirty = TRUE;
+        _dirty = true;
     }
 
     return *this;

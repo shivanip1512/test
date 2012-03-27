@@ -14,12 +14,12 @@ class CtiCCEventLogMsg : public CapControlMessage
 
         virtual ~CtiCCEventLogMsg();
 
-        CtiCCEventLogMsg(LONG logId, LONG pointId, LONG spAreaId, LONG areaId, LONG stationId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value,
-                         std::string text, std::string userName, DOUBLE kvarBefore= 0, DOUBLE kvarAfter = 0, DOUBLE kvarChange = 0,
-                         std::string ipAddress = std::string("(N/A)"), LONG actionId = -1, std::string stateInfo = std::string("(N/A)"),
-                         DOUBLE aVar = 0, DOUBLE bVar = 0, DOUBLE cVar = 0,  int regulatorId = 0);
+        CtiCCEventLogMsg(long logId, long pointId, long spAreaId, long areaId, long stationId, long subId, long feederId, long eventType, long seqId, long value,
+                         std::string text, std::string userName, double kvarBefore= 0, double kvarAfter = 0, double kvarChange = 0,
+                         std::string ipAddress = std::string("(N/A)"), long actionId = -1, std::string stateInfo = std::string("(N/A)"),
+                         double aVar = 0, double bVar = 0, double cVar = 0,  int regulatorId = 0);
 
-        CtiCCEventLogMsg(std::string text, int regulatorId = 0, LONG eventType = -1);
+        CtiCCEventLogMsg(std::string text, int regulatorId = 0, long eventType = -1);
 
         CtiCCEventLogMsg (const CtiCCEventLogMsg& aRef);
 

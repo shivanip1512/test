@@ -18,7 +18,7 @@
 
 using std::string;
 
-extern ULONG _MSG_PRIORITY;
+extern unsigned long _MSG_PRIORITY;
 namespace Cti           {
 namespace CapControl    {
 

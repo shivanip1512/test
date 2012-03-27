@@ -17,7 +17,7 @@
 
 using std::endl;
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 //The singleton instance of the server
 CtiCCServer* CtiCCServer::_instance = NULL;
@@ -66,7 +66,7 @@ void CtiCCServer::start()
 
     if ( !_running && !_dostop )
     {
-        _running = TRUE;
+        _running = true;
 
         RWThreadFunction func = rwMakeThreadFunction( *this, &CtiCCServer::_checkstatus );
         _checkthr = func;
@@ -87,7 +87,7 @@ void CtiCCServer::start()
 ---------------------------------------------------------------------------*/
 void CtiCCServer::stop()
 {
-    // _dostop = TRUE;
+    // _dostop = true;
 
     if ( _checkthr.isValid() )
     {
@@ -164,8 +164,8 @@ void CtiCCServer::_checkstatus()
             }*/
         }
 
-        _running = FALSE;
-        _dostop = FALSE;
+        _running = false;
+        _dostop = false;
     }
     catch(...)
     {

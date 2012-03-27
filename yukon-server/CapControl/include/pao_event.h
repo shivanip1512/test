@@ -12,7 +12,7 @@ class CtiPAOEvent  : public CtiMemDBObject
 public:
 
     CtiPAOEvent();
-    CtiPAOEvent(long eventId, long schedId, long paoId, const std::string& command, BOOL disableOvUv);
+    CtiPAOEvent(long eventId, long schedId, long paoId, const std::string& command, bool disableOvUv);
     CtiPAOEvent(Cti::RowReader& rdr);
     virtual ~CtiPAOEvent();
 
@@ -20,29 +20,29 @@ public:
     long getScheduleId()const;
     long getPAOId()const;
     const std::string& getEventCommand() const;
-    BOOL getDisableOvUvFlag() const;
+    bool getDisableOvUvFlag() const;
 
     void setEventId(long eventId);
     void setScheduleId(long schedId);
     void setPAOId(long paoId);
     void setEventCommand(const std::string& eventCommand);
-    void setDisableOvUvFlag(BOOL flag);
+    void setDisableOvUvFlag(bool flag);
 
     CtiPAOEvent& operator=(const CtiPAOEvent& right);
     int operator==(const CtiPAOEvent& right) const;
     int operator!=(const CtiPAOEvent& right) const;
 
-    BOOL isDirty();
-    void setDirty(BOOL flag);
+    bool isDirty();
+    void setDirty(bool flag);
 
 private:
     
-    BOOL _dirty;
+    bool _dirty;
 
     long         _eventId;
     long         _scheduleId;
     long         _paoId;
     std::string  _eventCommand;
-    BOOL         _disableOvUvFlag;
+    bool         _disableOvUvFlag;
     
 };

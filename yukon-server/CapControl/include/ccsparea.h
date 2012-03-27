@@ -53,7 +53,7 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
 private:
 
    //don't stream
-    BOOL _insertDynamicDataFlag;
+    bool _insertDynamicDataFlag;
 
     void restore(Cti::RowReader& rdr);
 

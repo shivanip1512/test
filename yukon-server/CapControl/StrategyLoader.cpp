@@ -25,7 +25,7 @@
 using std::string;
 using std::endl;
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 
 StrategyManager::StrategyMap StrategyDBLoader::load(const long ID)

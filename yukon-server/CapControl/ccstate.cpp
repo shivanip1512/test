@@ -19,7 +19,7 @@
 
 using std::endl;
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 RWDEFINE_COLLECTABLE( CtiCCState, CTICCSTATE_ID )
 
@@ -65,7 +65,7 @@ const string& CtiCCState::getText() const
 
     Returns the foreground color of the state
 ---------------------------------------------------------------------------*/
-LONG CtiCCState::getForegroundColor() const
+long CtiCCState::getForegroundColor() const
 {
     return _foregroundcolor;
 }
@@ -75,7 +75,7 @@ LONG CtiCCState::getForegroundColor() const
 
     Returns the background color of the state
 ---------------------------------------------------------------------------*/
-LONG CtiCCState::getBackgroundColor() const
+long CtiCCState::getBackgroundColor() const
 {
     return _backgroundcolor;
 }
@@ -97,7 +97,7 @@ CtiCCState& CtiCCState::setText(const string& text)
 
     Sets the foreground color of the state
 ---------------------------------------------------------------------------*/
-CtiCCState& CtiCCState::setForegroundColor(LONG foregroundcolor)
+CtiCCState& CtiCCState::setForegroundColor(long foregroundcolor)
 {
     _foregroundcolor = foregroundcolor;
 
@@ -109,7 +109,7 @@ CtiCCState& CtiCCState::setForegroundColor(LONG foregroundcolor)
 
     Sets the background color of the state
 ---------------------------------------------------------------------------*/
-CtiCCState& CtiCCState::setBackgroundColor(LONG backgroundcolor)
+CtiCCState& CtiCCState::setBackgroundColor(long backgroundcolor)
 {
     _backgroundcolor = backgroundcolor;
 

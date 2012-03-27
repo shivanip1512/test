@@ -19,7 +19,7 @@
 
 using std::endl;
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 using Cti::CapControl::PaoIdVector;
 
@@ -206,7 +206,7 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
 
             if(dbInserter.execute())    // No error occured!
             {
-                _insertDynamicDataFlag = FALSE;
+                _insertDynamicDataFlag = false;
                 setDirty(false);
             }
             else
@@ -227,11 +227,11 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
 void CtiCCArea::setDynamicData(Cti::RowReader& rdr)
 {
     CtiCCAreaBase::setDynamicData(rdr);
-    _reEnableAreaFlag = (getAdditionalFlags()[1]=='y'?TRUE:FALSE);
-    _childVoltReductionFlag = (getAdditionalFlags()[2]=='y'?TRUE:FALSE);
-    _areaUpdatedFlag = (getAdditionalFlags()[3]=='y'?TRUE:FALSE);
+    _reEnableAreaFlag = (getAdditionalFlags()[1]=='y'?true:false);
+    _childVoltReductionFlag = (getAdditionalFlags()[2]=='y'?true:false);
+    _areaUpdatedFlag = (getAdditionalFlags()[3]=='y'?true:false);
 
-    _insertDynamicDataFlag = FALSE;
+    _insertDynamicDataFlag = false;
     setDirty(false);
 
 
@@ -242,7 +242,7 @@ void CtiCCArea::setDynamicData(Cti::RowReader& rdr)
 
     Returns the getAreaUpdatedFlag() of the area
 ---------------------------------------------------------------------------*/
-BOOL CtiCCArea::getAreaUpdatedFlag() const
+bool CtiCCArea::getAreaUpdatedFlag() const
 {
     return _areaUpdatedFlag;
 }
@@ -252,7 +252,7 @@ BOOL CtiCCArea::getAreaUpdatedFlag() const
 
     Returns the ovuv disable flag of the area
 ---------------------------------------------------------------------------*/
-BOOL CtiCCArea::getReEnableAreaFlag() const
+bool CtiCCArea::getReEnableAreaFlag() const
 {
     return _reEnableAreaFlag;
 }
@@ -263,7 +263,7 @@ BOOL CtiCCArea::getReEnableAreaFlag() const
 
     Sets the AreaUpdated flag of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setAreaUpdatedFlag(BOOL flag)
+CtiCCArea& CtiCCArea::setAreaUpdatedFlag(bool flag)
 {
     _areaUpdatedFlag = flag;
     return *this;
@@ -273,11 +273,11 @@ CtiCCArea& CtiCCArea::setAreaUpdatedFlag(BOOL flag)
 
     Sets the ControlValue of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setChildVoltReductionFlag(BOOL flag)
+CtiCCArea& CtiCCArea::setChildVoltReductionFlag(bool flag)
 {
     if(_childVoltReductionFlag != flag)
     {
-        setAreaUpdatedFlag(TRUE);
+        setAreaUpdatedFlag(true);
         setDirty(true);
     }
     _childVoltReductionFlag = flag;
@@ -290,7 +290,7 @@ CtiCCArea& CtiCCArea::setChildVoltReductionFlag(BOOL flag)
 
     Sets the reEnable Area flag of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setReEnableAreaFlag(BOOL flag)
+CtiCCArea& CtiCCArea::setReEnableAreaFlag(bool flag)
 {
     if(_reEnableAreaFlag != flag)
         setDirty(true);
@@ -334,13 +334,13 @@ CtiCCArea& CtiCCArea::checkAndUpdateChildVoltReductionFlags()
 
         if (currentStation->getVoltReductionFlag())
         {
-            setChildVoltReductionFlag(TRUE);
+            setChildVoltReductionFlag(true);
             numberOfStationsVoltReducting += 1;
         }
     }
     if (numberOfStationsVoltReducting == 0)
     {
-        setChildVoltReductionFlag(FALSE);
+        setChildVoltReductionFlag(false);
     }
 
     return *this;

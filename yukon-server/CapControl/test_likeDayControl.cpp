@@ -17,8 +17,8 @@ BOOST_AUTO_TEST_SUITE( test_likeDayControl )
 
 void initialize_feeder(CtiCCFeeder * feeder)
 {
-    feeder->setDisableFlag(FALSE);
-    feeder->setLikeDayControlFlag(FALSE);
+    feeder->setDisableFlag(false);
+    feeder->setLikeDayControlFlag(false);
     feeder->setCurrentVarLoadPointId(1);
     feeder->setCurrentWattLoadPointId(1);
     feeder->setCurrentVoltLoadPointId(1);
@@ -26,9 +26,9 @@ void initialize_feeder(CtiCCFeeder * feeder)
 
 void initialize_subbus(CtiCCSubstationBus * subBus)
 {
-    subBus->setDisableFlag(FALSE);
-    subBus->setBusUpdatedFlag(FALSE);
-    subBus->setLikeDayControlFlag(FALSE);
+    subBus->setDisableFlag(false);
+    subBus->setBusUpdatedFlag(false);
+    subBus->setLikeDayControlFlag(false);
     subBus->setCurrentVarLoadPointId(1);
     subBus->setCurrentWattLoadPointId(1);
     subBus->setCurrentVoltLoadPointId(1);
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
     _LIKEDAY_OVERRIDE_TIMEOUT = 600;
 
     CtiTime timeNow  = CtiTime() - 700;//subtract a time period?
-    feeder1->setLikeDayControlFlag(FALSE);
+    feeder1->setLikeDayControlFlag(false);
     feeder1->setLastVoltPointTime(timeNow);
     feeder1->setLastCurrentVarPointUpdateTime(timeNow);
     feeder1->setLastWattPointTime(timeNow);
@@ -156,29 +156,29 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
-    BOOST_CHECK(FALSE == feeder1->getLikeDayControlFlag());
-    BOOST_CHECK(FALSE == subbus->getBusUpdatedFlag());
+    BOOST_CHECK(false == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(false == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(false == subbus->getBusUpdatedFlag());
 
     feeder1->getStrategy()->setStrategyName("(something)");//Makes the feeder controlunits be used
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK(TRUE == subbus->getLikeDayControlFlag());
-    BOOST_CHECK(TRUE == feeder1->getLikeDayControlFlag());
-    BOOST_CHECK(TRUE == subbus->getBusUpdatedFlag());
+    BOOST_CHECK(true == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(true == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(true == subbus->getBusUpdatedFlag());
 
-    subbus->setLikeDayControlFlag(FALSE);
-    feeder1->setLikeDayControlFlag(FALSE);
-    subbus->setBusUpdatedFlag(FALSE);
+    subbus->setLikeDayControlFlag(false);
+    feeder1->setLikeDayControlFlag(false);
+    subbus->setBusUpdatedFlag(false);
 
     feeder1->setStrategy(200);
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
-    BOOST_CHECK(FALSE == feeder1->getLikeDayControlFlag());
-    BOOST_CHECK(FALSE == subbus->getBusUpdatedFlag());
+    BOOST_CHECK(false == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(false == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(false == subbus->getBusUpdatedFlag());
 
     feeder1->setStrategy(300);
 
@@ -186,9 +186,9 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
-    BOOST_CHECK(FALSE == feeder1->getLikeDayControlFlag());
-    BOOST_CHECK(FALSE == subbus->getBusUpdatedFlag());
+    BOOST_CHECK(false == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(false == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(false == subbus->getBusUpdatedFlag());
 
     feeder1->setStrategy(200);
 
@@ -196,13 +196,13 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK(TRUE == subbus->getLikeDayControlFlag());
-    BOOST_CHECK(TRUE == feeder1->getLikeDayControlFlag());
-    BOOST_CHECK(TRUE == subbus->getBusUpdatedFlag());
+    BOOST_CHECK(true == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(true == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(true == subbus->getBusUpdatedFlag());
 
-    subbus->setBusUpdatedFlag(FALSE);
-    subbus->setLikeDayControlFlag(FALSE);
-    feeder1->setLikeDayControlFlag(FALSE);
+    subbus->setBusUpdatedFlag(false);
+    subbus->setLikeDayControlFlag(false);
+    feeder1->setLikeDayControlFlag(false);
 
     feeder1->setStrategy(300);
 
@@ -210,9 +210,9 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK(TRUE == subbus->getLikeDayControlFlag());
-    BOOST_CHECK(TRUE == feeder1->getLikeDayControlFlag());
-    BOOST_CHECK(TRUE == subbus->getBusUpdatedFlag());
+    BOOST_CHECK(true == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(true == feeder1->getLikeDayControlFlag());
+    BOOST_CHECK(true == subbus->getBusUpdatedFlag());
 
     delete subbus;
     subbus = NULL;

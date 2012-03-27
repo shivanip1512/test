@@ -20,12 +20,12 @@ RWDECLARE_COLLECTABLE( CtiCCState )
     virtual ~CtiCCState();
 
     const std::string& getText() const;
-    LONG getForegroundColor() const;
-    LONG getBackgroundColor() const;
+    long getForegroundColor() const;
+    long getBackgroundColor() const;
 
     CtiCCState& setText(const std::string& text);
-    CtiCCState& setForegroundColor(LONG foregroundcolor);
-    CtiCCState& setBackgroundColor(LONG backgroundcolor);
+    CtiCCState& setForegroundColor(long foregroundcolor);
+    CtiCCState& setBackgroundColor(long backgroundcolor);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -38,8 +38,8 @@ RWDECLARE_COLLECTABLE( CtiCCState )
 private:
 
     std::string _text;
-    LONG        _foregroundcolor;
-    LONG        _backgroundcolor;
+    long        _foregroundcolor;
+    long        _backgroundcolor;
 
     void restore(Cti::RowReader& rdr);
 };

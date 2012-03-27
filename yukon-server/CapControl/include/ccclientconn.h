@@ -18,7 +18,7 @@ public:
     CtiCCClientConnection(RWPortal portal);
     virtual ~CtiCCClientConnection();
 
-    BOOL isValid() const;
+    bool isValid() const;
 
     void close();
 
@@ -34,7 +34,7 @@ protected:
     void _recvthr();
 
 private:    
-    BOOL _valid;
+    bool _valid;
 
     RWPortal* _portal;
     RWPortalStreambuf* sinbuf;

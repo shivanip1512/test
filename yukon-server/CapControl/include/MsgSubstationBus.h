@@ -12,8 +12,8 @@ class CtiCCSubstationBusMsg : public CapControlMessage
         typedef CapControlMessage Inherited;
 
     public:
-        CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULONG bitMask = 0);
-        CtiCCSubstationBusMsg(CtiCCSubstationBus_set& buses, ULONG bitMask = 0);
+        CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, unsigned long bitMask = 0);
+        CtiCCSubstationBusMsg(CtiCCSubstationBus_set& buses, unsigned long bitMask = 0);
         CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& substationBusesMsg);
         CtiCCSubstationBusMsg(CtiCCSubstationBus* substationBus);
 
@@ -29,10 +29,10 @@ class CtiCCSubstationBusMsg : public CapControlMessage
         CtiCCSubstationBusMsg& operator=(const CtiCCSubstationBusMsg& right);
 
         // Possible bit mask settings
-        static ULONG AllSubBusesSent;
-        static ULONG SubBusDeleted;
-        static ULONG SubBusAdded;
-        static ULONG SubBusModified;
+        static unsigned long AllSubBusesSent;
+        static unsigned long SubBusDeleted;
+        static unsigned long SubBusAdded;
+        static unsigned long SubBusModified;
 
     private:
         CtiCCSubstationBusMsg() : CapControlMessage(),

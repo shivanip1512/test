@@ -69,4 +69,4 @@ class CtiTime;
 #define CC_DEBUG_CCEVENTINSERT     0x00800000
 
 extern CtiTime gInvalidCtiTime;
-extern ULONG gInvalidCtiTimeSeconds;
+extern unsigned long gInvalidCtiTimeSeconds;

@@ -27,7 +27,7 @@
 using namespace capcontrol;
 using std::endl;
 
-extern ULONG _CC_DEBUG;
+extern unsigned long _CC_DEBUG;
 
 //RWDEFINE_COLLECTABLE( CtiCCConfirmationStats, CtiCCConfirmationStats_ID )
 
@@ -82,239 +82,239 @@ void CtiCCConfirmationStats::init()
     return;
 }
 
-LONG CtiCCConfirmationStats::getPAOId() const
+long CtiCCConfirmationStats::getPAOId() const
 {
     return _paoid;
 }
-LONG CtiCCConfirmationStats::getUserDefCommCount() const
+long CtiCCConfirmationStats::getUserDefCommCount() const
 {
     return _userDefCommCount;
 }
-LONG CtiCCConfirmationStats::getUserDefCommFail() const
+long CtiCCConfirmationStats::getUserDefCommFail() const
 {
     return _userDefCommFail;
 }
-LONG CtiCCConfirmationStats::getDailyCommCount() const
+long CtiCCConfirmationStats::getDailyCommCount() const
 {
     return _dailyCommCount;
 }
-LONG CtiCCConfirmationStats::getDailyCommFail() const
+long CtiCCConfirmationStats::getDailyCommFail() const
 {
     return _dailyCommFail;
 }
-LONG CtiCCConfirmationStats::getWeeklyCommCount() const
+long CtiCCConfirmationStats::getWeeklyCommCount() const
 {
     return _weeklyCommCount;
 }
-LONG CtiCCConfirmationStats::getWeeklyCommFail() const
+long CtiCCConfirmationStats::getWeeklyCommFail() const
 {
     return _weeklyCommFail;
 }
-LONG CtiCCConfirmationStats::getMonthlyCommCount() const
+long CtiCCConfirmationStats::getMonthlyCommCount() const
 {
     return _monthlyCommCount;
 }
-LONG CtiCCConfirmationStats::getMonthlyCommFail() const
+long CtiCCConfirmationStats::getMonthlyCommFail() const
 {
     return _monthlyCommFail;
 }
 
-LONG CtiCCConfirmationStats::getUserDefCommSuccessPercentId() const
+long CtiCCConfirmationStats::getUserDefCommSuccessPercentId() const
 {
     return _userDefCommSuccessPercentId;
 }
-DOUBLE CtiCCConfirmationStats::getUserDefCommSuccessPercent() const
+double CtiCCConfirmationStats::getUserDefCommSuccessPercent() const
 {
     return _userDefCommSuccessPercent;
 }
-LONG CtiCCConfirmationStats::getDailyCommSuccessPercentId() const
+long CtiCCConfirmationStats::getDailyCommSuccessPercentId() const
 {
     return _dailyCommSuccessPercentId;
 }
-DOUBLE CtiCCConfirmationStats::getDailyCommSuccessPercent() const
+double CtiCCConfirmationStats::getDailyCommSuccessPercent() const
 {
     return _dailyCommSuccessPercent;
 }
-LONG CtiCCConfirmationStats::getWeeklyCommSuccessPercentId() const
+long CtiCCConfirmationStats::getWeeklyCommSuccessPercentId() const
 {
     return _weeklyCommSuccessPercentId;
 }
-DOUBLE CtiCCConfirmationStats::getWeeklyCommSuccessPercent() const
+double CtiCCConfirmationStats::getWeeklyCommSuccessPercent() const
 {
     return _weeklyCommSuccessPercent;
 }
-LONG CtiCCConfirmationStats::getMonthlyCommSuccessPercentId() const
+long CtiCCConfirmationStats::getMonthlyCommSuccessPercentId() const
 {
     return _monthlyCommSuccessPercentId;
 }
 
-DOUBLE CtiCCConfirmationStats::getMonthlyCommSuccessPercent() const
+double CtiCCConfirmationStats::getMonthlyCommSuccessPercent() const
 {
     return _monthlyCommSuccessPercent;
 }
 
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setPAOId(LONG paoId)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setPAOId(long paoId)
 {
     _paoid = paoId;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setUserDefCommCount(LONG value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setUserDefCommCount(long value)
 {
     if (_userDefCommCount != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _userDefCommCount = value;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setUserDefCommFail(LONG value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setUserDefCommFail(long value)
 {
     if (_userDefCommFail != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _userDefCommFail = value;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setDailyCommCount(LONG value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setDailyCommCount(long value)
 {
     if (_dailyCommCount != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _dailyCommCount = value;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setDailyCommFail(LONG value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setDailyCommFail(long value)
 {
     if (_dailyCommFail != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _dailyCommFail = value;
     return *this;
 }
 
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setWeeklyCommCount(LONG value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setWeeklyCommCount(long value)
 {
     if (_weeklyCommCount != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _weeklyCommCount = value;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setWeeklyCommFail(LONG value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setWeeklyCommFail(long value)
 {
     if (_weeklyCommFail != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _weeklyCommFail = value;
     return *this;
 }
 
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setMonthlyCommCount(LONG value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setMonthlyCommCount(long value)
 {
     if (_monthlyCommCount != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _monthlyCommCount = value;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setMonthlyCommFail(LONG value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setMonthlyCommFail(long value)
 {
     if (_monthlyCommFail != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _monthlyCommFail = value;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setUserDefCommSuccessPercentId(LONG pointId)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setUserDefCommSuccessPercentId(long pointId)
 {
     if (_userDefCommSuccessPercentId != pointId)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _userDefCommSuccessPercentId = pointId;
     return *this;
 }
-CtiCCConfirmationStats& CtiCCConfirmationStats::setUserDefCommSuccessPercent(DOUBLE value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setUserDefCommSuccessPercent(double value)
 {
     if (_userDefCommSuccessPercent != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _userDefCommSuccessPercent= value;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setDailyCommSuccessPercentId(LONG pointId)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setDailyCommSuccessPercentId(long pointId)
 {
     if (_dailyCommSuccessPercentId != pointId)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _dailyCommSuccessPercentId = pointId;
     return *this;
 }
-CtiCCConfirmationStats& CtiCCConfirmationStats::setDailyCommSuccessPercent(DOUBLE  value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setDailyCommSuccessPercent(double  value)
 {
     if (_dailyCommSuccessPercent != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _dailyCommSuccessPercent = value;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setWeeklyCommSuccessPercentId(LONG pointId)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setWeeklyCommSuccessPercentId(long pointId)
 {
     if (_weeklyCommSuccessPercentId != pointId)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _weeklyCommSuccessPercentId = pointId;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setWeeklyCommSuccessPercent(DOUBLE value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setWeeklyCommSuccessPercent(double value)
 {
     if (_weeklyCommSuccessPercent != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _weeklyCommSuccessPercent = value;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setMonthlyCommSuccessPercentId(LONG pointId)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setMonthlyCommSuccessPercentId(long pointId)
 {
     if (_monthlyCommSuccessPercentId != pointId)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _monthlyCommSuccessPercentId = pointId;
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::setMonthlyCommSuccessPercent(DOUBLE value)
+CtiCCConfirmationStats& CtiCCConfirmationStats::setMonthlyCommSuccessPercent(double value)
 {
     if (_monthlyCommSuccessPercent != value)
     {
-        _dirty = TRUE;
+        _dirty = true;
     }
     _monthlyCommSuccessPercent = value;
     return *this;
@@ -342,11 +342,11 @@ CtiCCConfirmationStats& CtiCCConfirmationStats::createPointDataMsgs(CtiMultiMsg_
 }
 
 
-DOUBLE CtiCCConfirmationStats::calculateSuccessPercent(ccStatsType type)
+double CtiCCConfirmationStats::calculateSuccessPercent(ccStatsType type)
 {
-    DOUBLE retVal = 0;
-    LONG opCount = 0;
-    LONG failCount = 0;
+    double retVal = 0;
+    long opCount = 0;
+    long failCount = 0;
 
     switch (type)
     {
@@ -381,7 +381,7 @@ DOUBLE CtiCCConfirmationStats::calculateSuccessPercent(ccStatsType type)
     }
     if (opCount > 0 && opCount >= failCount)
     {
-        retVal = ((DOUBLE) (opCount - failCount) /(DOUBLE) opCount) * 100;
+        retVal = ((double) (opCount - failCount) /(double) opCount) * 100;
     }
     else
         retVal = -1;
@@ -389,33 +389,33 @@ DOUBLE CtiCCConfirmationStats::calculateSuccessPercent(ccStatsType type)
     return retVal;
 }
 
-BOOL CtiCCConfirmationStats::setSuccessPercentPointId(LONG tempPointId, LONG tempPointOffset)
+bool CtiCCConfirmationStats::setSuccessPercentPointId(long tempPointId, long tempPointOffset)
 {
-    BOOL retVal = FALSE;
+    bool retVal = false;
     switch (tempPointOffset)
     {
         case 10010:
         {
             setUserDefCommSuccessPercentId(tempPointId);
-            retVal = TRUE;
+            retVal = true;
             break;
         }
         case 10011:
         {
             setDailyCommSuccessPercentId(tempPointId);
-            retVal = TRUE;
+            retVal = true;
             break;
         }
         case 10012:
         {
             setWeeklyCommSuccessPercentId(tempPointId);
-            retVal = TRUE;
+            retVal = true;
             break;
         }
         case 10013:
         {
             setMonthlyCommSuccessPercentId(tempPointId);
-            retVal = TRUE;
+            retVal = true;
             break;
         }
         default:
@@ -475,7 +475,7 @@ int CtiCCConfirmationStats::operator!=(const CtiCCConfirmationStats& right) cons
 }
 
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::incrementUserDefCommCounts(LONG attempts)
+CtiCCConfirmationStats& CtiCCConfirmationStats::incrementUserDefCommCounts(long attempts)
 {
     setUserDefCommCount(_userDefCommCount+attempts);
     _userDefCommSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS);
@@ -483,7 +483,7 @@ CtiCCConfirmationStats& CtiCCConfirmationStats::incrementUserDefCommCounts(LONG 
     return *this;
 }
 
-CtiCCConfirmationStats& CtiCCConfirmationStats::incrementUserDefCommFails(LONG errors)
+CtiCCConfirmationStats& CtiCCConfirmationStats::incrementUserDefCommFails(long errors)
 {
     setUserDefCommFail(_userDefCommFail+errors);
     _userDefCommSuccessPercent = calculateSuccessPercent(USER_DEF_CCSTATS);
