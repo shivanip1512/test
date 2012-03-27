@@ -2,6 +2,7 @@ package com.cannontech.stars.core.login.model;
 
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.UserUtils;
 
 public class PasswordResetInfo{
     private LiteYukonUser user;
@@ -22,7 +23,11 @@ public class PasswordResetInfo{
     }
 
     public boolean isValidUser() {
-        return user != null;
+        if (user == null || user.getUserID() == UserUtils.USER_DEFAULT_ID) {
+            return false;
+        }
+
+        return true;
     }
     
     public boolean isValidContact() {
