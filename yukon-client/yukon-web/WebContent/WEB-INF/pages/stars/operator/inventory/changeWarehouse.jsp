@@ -41,8 +41,8 @@
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="pageActionArea">
-                    <cti:button nameKey="cancel" type="submit" name="cancel"/>
                     <cti:button nameKey="start" type="submit" name="start"/>
+                    <cti:button nameKey="cancel" type="submit" name="cancel"/>
                 </div>
             </form>
         </c:if>

@@ -31,8 +31,8 @@
             <div class="pageActionArea">
                 <form action="delete" method="post">
                     <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
-                    <cti:button nameKey="cancel" type="submit" name="cancel"/>
                     <cti:button nameKey="start" type="submit" name="start"/>
+                    <cti:button nameKey="cancel" type="submit" name="cancel"/>
                 </form>
             </div>
         </c:if>
