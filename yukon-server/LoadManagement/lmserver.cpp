@@ -1,22 +1,21 @@
 #include "lmserver.h"
 #include "ctibase.h"
 #include "logger.h"
-#include "configparms.h"
 
 using std::string;
 using std::endl;
 
 extern ULONG _LM_DEBUG;
 
-//The singleton instance of the server                                       
-CtiLMServer* CtiLMServer::_instance = NULL;                                                                          
+//The singleton instance of the server
+CtiLMServer* CtiLMServer::_instance = NULL;
 
 //The default port where the server will listen for client connections
 int CtiLMServer::_defaultport = 1920;
 
 /*------------------------------------------------------------------------
     getInstance
-    
+
     Returns a pointer to the singleton instance of the server.
 ---------------------------------------------------------------------------*/
 CtiLMServer* CtiLMServer::getInstance()
@@ -29,7 +28,7 @@ CtiLMServer* CtiLMServer::getInstance()
 
 /*---------------------------------------------------------------------------
     start
-    
+
     Starts up the server
 ---------------------------------------------------------------------------*/
 void CtiLMServer::start()
@@ -53,44 +52,6 @@ void CtiLMServer::start()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    /*char temp[80];
-
-    HINSTANCE hLib = LoadLibrary("cparms.dll");
-
-    if (hLib)
-    {
-        CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-        bool trouble = FALSE;
-
-        if ( (*fpGetAsString)("LOAD_MANAGEMENT_PORT", temp, 80) )
-        {
-            if( _LM_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - LOAD_MANAGEMENT_PORT:  " << temp << endl;
-            }
-
-            _defaultport = atoi(temp);
-        }
-        else
-            trouble = TRUE;
-
-        
-        if ( trouble == TRUE )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to find load managemet port config value in the configuration file!" << endl;
-        }
-
-        FreeLibrary(hLib);
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to load cparms.dll" << endl;
-    }*/
-
     if( !_running && !_dostop )
     {
         _running = TRUE;
@@ -109,9 +70,9 @@ void CtiLMServer::start()
 
 /*---------------------------------------------------------------------------
     stop
-    
+
     Stops the server
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 void CtiLMServer::stop()
 {
     // _dostop = TRUE;
@@ -125,9 +86,9 @@ void CtiLMServer::stop()
 
 /*---------------------------------------------------------------------------
     Broadcast
-    
-    Notifies all objects that are observing this that a new message is 
-    available to broadcast.  The mutex lock gives all the observers a 
+
+    Notifies all objects that are observing this that a new message is
+    available to broadcast.  The mutex lock gives all the observers a
     chance to broadcast the current message before the next message
     comes in.  Observers must deal with this notification quickly to avoid
     new messages from piling up here.
@@ -156,7 +117,7 @@ void CtiLMServer::Broadcast(CtiMessage* message)
 
 /*---------------------------------------------------------------------------
     BroadcastMessage
-    
+
     Returns the CtiMessage that is currently being broadcast
 ---------------------------------------------------------------------------*/
 CtiMessage* CtiLMServer::BroadcastMessage()
@@ -168,7 +129,7 @@ CtiMessage* CtiLMServer::BroadcastMessage()
 
 /*---------------------------------------------------------------------------
     _checkstatus
-    
+
     Periodically checks to see whether the load management server should be
     shut down and then does so if necessary.
 ---------------------------------------------------------------------------*/

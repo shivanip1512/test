@@ -14,7 +14,6 @@
 #include "clistener.h"
 #include "lmmessage.h"
 #include "lmcontrolareastore.h"
-#include "configparms.h"
 #include "ctibase.h"
 #include "executor.h"
 #include "logger.h"

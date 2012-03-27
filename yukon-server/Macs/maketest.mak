@@ -115,14 +115,13 @@ deps:
 
 ######################################################################################
 #UPDATE#
-test_scheduletime.obj:	precompiled.h ctitime.h dlldefs.h \
-		mc_scheduler.h mc.h logger.h thread.h mutex.h guard.h \
-		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		CtiPCPtrQueue.h mc_sched.h row_reader.h dbmemobject.h \
-		tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h message.h \
-		ctidbgmem.h collectable.h rwutil.h yukon.h \
-		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
+test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
+		logger.h thread.h mutex.h guard.h utility.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		mc_sched.h row_reader.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
+		tbl_mcsimpsched.h message.h ctidbgmem.h collectable.h \
+		rwutil.h yukon.h database_connection.h dbaccess.h dllbase.h \
+		dsm2.h cticonnect.h netports.h dsm2err.h words.h optional.h \
 		database_reader.h boost_time.h boostutil.h mgr_mcsched.h \
 		rtdb.h hashkey.h hash_functions.h string_utility.h \
 		mgr_holiday.h ctidate.h

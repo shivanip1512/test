@@ -31,7 +31,6 @@
 #include "msg_pcreturn.h"
 #include "msg_dbchg.h"
 #include "pointtypes.h"
-#include "configparms.h"
 #include "loadmanager.h"
 #include "lmcontrolareastore.h"
 #include "lmcontrolareatrigger.h"

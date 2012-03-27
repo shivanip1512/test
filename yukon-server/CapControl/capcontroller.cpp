@@ -15,7 +15,6 @@
 #include "msg_dbchg.h"
 #include "MsgVerifyBanks.h"
 #include "pointtypes.h"
-#include "configparms.h"
 #include "capcontroller.h"
 #include "ccsubstationbusstore.h"
 #include "ccexecutor.h"

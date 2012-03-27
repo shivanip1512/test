@@ -16,7 +16,6 @@ build_dirs = \
         simulator \
         interp \
         mccmd \
-        logic \
         macs \
         fdr \
         calc \

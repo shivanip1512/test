@@ -16,12 +16,12 @@
 #include <iostream>
 using namespace std;
 
-#include "configparms.h"
 #include "dllbase.h"
 #include "dlldefs.h"
 #include "dllvg.h"
 #include "logger.h"
 #include "utility.h"
+#include "cparms.h"
 
 IM_EX_CTIVANGOGH UINT gDispatchDebugLevel = 0x00000000;
 IM_EX_CTIVANGOGH UINT gDispatchReloadRate = 86400;

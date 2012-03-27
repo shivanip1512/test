@@ -29,7 +29,6 @@
 #include "cmdparse.h"
 
 #include "ctitokenizer.h"
-#include "configparms.h"
 #include "netports.h"
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"

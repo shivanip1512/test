@@ -96,13 +96,13 @@
 
 
 #include "guard.h"
-#include "configparms.h"
 #include "logger.h"
 #include "pointdefs.h"
 #include "prot_ansi.h"
 #include "utility.h"
 #include "ctitime.h"
 #include "ctidate.h"
+#include "cparms.h"
 
 using std::endl;
 using std::string;
@@ -682,7 +682,7 @@ void CtiProtocolANSI::prepareApplicationLayer()
         _tables[_index].tableOffset = 0;
         getApplicationLayer().setCurrentTableSize(1024);
     }
-    
+
     getApplicationLayer().initializeTableRequest (_tables[_index].tableID,
                                          _tables[_index].tableOffset,
                                          _tables[_index].bytesExpected,
@@ -1002,7 +1002,7 @@ void CtiProtocolANSI::convertToTable(  )
                            _table12 = NULL;
                        }
                        _table12 = new CtiAnsiTable12( getApplicationLayer().getCurrentTable(),
-                                                             _table11->getNumberUOMEntries(), 
+                                                             _table11->getNumberUOMEntries(),
                                                              _table00->getRawDataOrder() );
                        if( _table12 != NULL &&  getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
                        {

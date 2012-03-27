@@ -15,7 +15,6 @@
 #include "id_capcontrol.h"
 #include "ccservice.h"
 #include "eventlog.h"
-#include "configparms.h"
 #include "rtdb.h"
 #include "ccsubstationbus.h"
 #include "logger.h"

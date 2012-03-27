@@ -103,40 +103,39 @@ decodetextcmdfile.obj:	precompiled.h ctidate.h dlldefs.h logger.h \
 		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
 		decodeTextCmdFile.h rwutil.h yukon.h ctidbgmem.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h
 mccmd.obj:	precompiled.h mccmd.h msg_pcrequest.h dlldefs.h message.h \
 		ctitime.h ctidbgmem.h collectable.h rwutil.h yukon.h types.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
-		sema.h database_reader.h row_reader.h boost_time.h \
-		boostutil.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h logger.h thread.h CtiPCPtrQueue.h \
-		ctdpcptrq.h tbl_meterreadlog.h connection.h exchange.h \
-		string_utility.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h cmdparse.h ctitokenizer.h \
-		parsevalue.h configparms.h msg_requestcancel.h \
-		msg_queuedata.h msg_signal.h msg_dbchg.h msg_notif_email.h \
-		msg_notif_email_attachment.h tbl_devicereadrequestlog.h \
-		ctibase.h ctinexus.h ctistring.h mgr_holiday.h ctidate.h \
-		wpsc.h xcel.h decodetextcmdfile.h
+		database_reader.h row_reader.h boost_time.h boostutil.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h logger.h thread.h CtiPCPtrQueue.h ctdpcptrq.h \
+		tbl_meterreadlog.h connection.h exchange.h string_utility.h \
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h cmdparse.h ctitokenizer.h parsevalue.h \
+		msg_requestcancel.h msg_queuedata.h msg_signal.h msg_dbchg.h \
+		msg_notif_email.h msg_notif_email_attachment.h \
+		tbl_devicereadrequestlog.h ctibase.h ctinexus.h ctistring.h \
+		mgr_holiday.h ctidate.h wpsc.h xcel.h decodetextcmdfile.h
 mcsh.obj:	precompiled.h mcsh.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h mccmd.h msg_pcrequest.h \
 		message.h ctidbgmem.h collectable.h rwutil.h yukon.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
+		cticonnect.h netports.h dsm2err.h words.h optional.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h ctdpcptrq.h tbl_meterreadlog.h
-test_decodetextcmdfile.obj:	precompiled.h decodetextcmdfile.h logger.h \
-		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		CtiPCPtrQueue.h rwutil.h yukon.h ctidbgmem.h \
-		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h dsm2err.h words.h optional.h sema.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h
+test_decodetextcmdfile.obj:	decodetextcmdfile.h logger.h dlldefs.h \
+		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h CtiPCPtrQueue.h \
+		rwutil.h yukon.h ctidbgmem.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h words.h \
+		optional.h database_reader.h row_reader.h boost_time.h \
+		boostutil.h
 wpsc.obj:	precompiled.h wpsc.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h

@@ -26,7 +26,6 @@
 
 #include "guard.h"
 #include "logger.h"
-#include "configparms.h"
 #include "fmu_application.h"
 
 using namespace std;

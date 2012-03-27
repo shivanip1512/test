@@ -30,7 +30,6 @@
 
 #include "c_port_interface.h"
 #include "cparms.h"
-#include "configparms.h"
 #include "connection.h"
 
 #include "utility.h"

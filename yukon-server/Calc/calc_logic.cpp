@@ -10,7 +10,6 @@
 #include "ctibase.h"
 #include "cparms.h"
 #include "dbghelp.h"
-#include "configparms.h"
 
 #include "calclogicsvc.h"
 
@@ -108,38 +107,7 @@ int install( DWORD dwStart )
              << "installing anyway" << endl;
     }
 
-    /*
-    // Attempt to determine any services we are going to be dependent on
-    HINSTANCE hLib = LoadLibrary( "cparms.dll" );
-    if( hLib )
-    {
-        CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-        if( (*fpGetAsString)( "SERVICE_DEPENDENCIES", depend, 1000 ) )
-        {
-            cout << "Service is dependent on the following services:" << endl
-                 << depend << endl;
-        }
-        else
-        {
-            depend[0] = NULL;
-            cout << "Couldn't locate any services that this service is to be dependent upon" << endl
-                 << "installing anyway" << endl;
-        }
-    }*/
-
     cout << CtiTime( )  << " - Installing " << szDisplayName << "..." << endl;
-
-    /*char* tmp = str;
-
-    //replace whitespace with '\0'
-    while( (tmp = strchr( tmp, ' ')) != NULL )
-        *tmp = '\0';
-    //check whether or not we found dependencies
-    if( depend[0] == NULL )
-        tmp = NULL;
-    else
-        tmp = depend;*/
 
     CServiceConfig si(szServiceName, szDisplayName);
 

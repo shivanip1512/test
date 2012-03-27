@@ -1,9 +1,9 @@
 #include "precompiled.h"
 #include "guard.h"
 #include "logger.h"
-#include "configparms.h"
 #include "ansi_application.h"
 #include "prot_ansi.h"
+#include "cparms.h"
 
 using namespace std;
 
@@ -102,7 +102,7 @@ void CtiANSIApplication::terminateSession( void )
     setRetries (MAXRETRIES);
     setTableComplete (false);
     memset( _currentTable, 0, sizeof( *_currentTable ) );
-    
+
     _totalBytesInTable = 0;
 }
 //=========================================================================================================================================
@@ -115,7 +115,7 @@ void CtiANSIApplication::destroyMe( void )
         delete []_currentTable;
         _currentTable = NULL;
     }
-   
+
     if (_parmPtr != NULL)
     {
         delete []_parmPtr;
@@ -557,7 +557,7 @@ bool CtiANSIApplication::analyzePacket()
                      int overHeadByteCount = 0;
                      int headerOffset = 0;
 
-                     
+
                     if (getDatalinkLayer().getPacketFirst())
                     {
                         // move the data into storage
@@ -570,7 +570,7 @@ bool CtiANSIApplication::analyzePacket()
                         {
                              getDatalinkLayer().alternateToggle();
                         }
-                    
+
                     }
                     else if (getDatalinkLayer().getSequence() == 0)
                     {
@@ -585,7 +585,7 @@ bool CtiANSIApplication::analyzePacket()
                     {
                          // move the data into storage
                          if (getDatalinkLayer().getPacketBytesReceived() >= 8)
-                         {   
+                         {
                              overHeadByteCount = 8;//header(6),crc(2)
                              headerOffset = 6;
                          }
@@ -705,7 +705,7 @@ bool CtiANSIApplication::analyzePacket()
 bool CtiANSIApplication::areThereMorePackets()
 {
     bool retVal;
-    
+
     if (getDatalinkLayer().getPacketPart() )
     {
         if(getDatalinkLayer().getSequence() == 0 )

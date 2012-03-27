@@ -26,7 +26,6 @@
 #include "dsm2.h"
 #include "os2_2w32.h"
 #include "cticalls.h"
-#include "configparms.h"
 #include "dbaccess.h"
 #include "ctinexus.h"
 #include "logger.h"

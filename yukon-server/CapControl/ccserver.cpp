@@ -14,7 +14,6 @@
 #include "ccserver.h"
 #include "ctibase.h"
 #include "logger.h"
-#include "configparms.h"
 
 using std::endl;
 

@@ -20,7 +20,6 @@
 #include "dbaccess.h"
 #include "ctibase.h"
 #include "logger.h"
-#include "configparms.h"
 #include "msg_dbchg.h"
 #include "msg_signal.h"
 #include "capcontroller.h"
@@ -3461,7 +3460,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                 {
                     string paObjectColumn = getDbColumnString(objectType);
                     string capControlObjectTable = getDbTableString(objectType);
-                    
+
                     if ( !paObjectColumn.empty() )
                     {
                         const string sql = "SELECT SSA.paobjectid, SSA.seasonscheduleid, SSA.seasonname, "
@@ -3691,9 +3690,9 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                        dbRdr["seasonendmonth"] >> endMon;
                        dbRdr["seasonstartday"] >> startDay;
                        dbRdr["seasonendday"] >> endDay;
-                       
+
                        CtiDate today = CtiDate();
-                       
+
                        if (today  >= CtiDate(startDay, startMon, today.year()) &&
                            today <= CtiDate(endDay, endMon, today.year())  )
                        {
@@ -4984,7 +4983,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                               "SSA.strategyid, DS.seasonstartmonth, DS.seasonendmonth, "
                                               "DS.seasonstartday, DS.seasonendday "
                                             "FROM ccseasonstrategyassignment SSA "
-                                              "left join capcontrolsubstationbus SSB on SSB.SubstationBusID = SSA.paobjectid " 
+                                              "left join capcontrolsubstationbus SSB on SSB.SubstationBusID = SSA.paobjectid "
                                               "left join capcontrolarea CCA on CCA.AreaID = SSA.paobjectid "
                                               "join  dateofseason DS on SSA.seasonscheduleid = DS.seasonscheduleid AND SSA.seasonname = DS.seasonname ";
 
@@ -5002,10 +5001,10 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                  {
                      sqlID += string(" OR SSA.paobjectid = ?");
                      dbRdr.setCommandText(sqlID);
-					 dbRdr << subBusId;
+                     dbRdr << subBusId;
                      dbRdr << currentStation->getParentId();
                  }
-                 
+
              }
              else
              {
@@ -5032,20 +5031,20 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                      if (subBusId > 0)
                          currentCCSubstationBus = findSubBusByPAObjectID(subBusId);
 
-                     if (!dbRdr["substationbusid"].isNull())    
+                     if (!dbRdr["substationbusid"].isNull())
                      {
                          dbRdr["substationbusid"] >> busId;
                          if (subBusId == 0 && paobject_subbus_map->find(busId) != paobject_subbus_map->end())
                              currentCCSubstationBus = paobject_subbus_map->find(busId)->second;
                      }
-                     else if (!dbRdr["areaid"].isNull())            
+                     else if (!dbRdr["areaid"].isNull())
                      {
                          dbRdr["areaid"] >> areaId;
                      }
 
                      dbRdr["strategyid"] >> stratId;
-                      
-                     
+
+
                      if (currentCCSubstationBus != NULL)
                      {
                          assignStrategyAtBus(currentCCSubstationBus, stratId);
@@ -5061,7 +5060,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                  static const string sqlNoID =  "SELECT HSA.paobjectid, SSB.substationbusid, CCA.areaid, HSA.holidayscheduleid, HSA.strategyid, "
                                                   "DH.holidayname, DH.holidaymonth, DH.holidayday, DH.holidayyear "
                                                 "FROM ccholidaystrategyassignment HSA "
-                                                  "left join capcontrolsubstationbus SSB on SSB.substationbusid = HSA.paobjectid " 
+                                                  "left join capcontrolsubstationbus SSB on SSB.substationbusid = HSA.paobjectid "
                                                   "left join capcontrolarea CCA on CCA.AreaID = HSA.paobjectid "
                                                   "join  dateofholiday DH on HSA.holidayscheduleid = DH.holidayscheduleid ";
 
@@ -5125,13 +5124,13 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                          if (subBusId > 0)
                              currentCCSubstationBus = findSubBusByPAObjectID(subBusId);
 
-                         if (!dbRdr["substationbusid"].isNull())    
+                         if (!dbRdr["substationbusid"].isNull())
                          {
                              dbRdr["substationbusid"] >> busId;
                              if (subBusId == 0 && paobject_subbus_map->find(busId) != paobject_subbus_map->end())
                                  currentCCSubstationBus = paobject_subbus_map->find(busId)->second;
                          }
-                         else if (!dbRdr["areaid"].isNull())            
+                         else if (!dbRdr["areaid"].isNull())
                          {
                              dbRdr["areaid"] >> areaId;
                          }
@@ -6572,7 +6571,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         if ( resolvePointType(tempPointType) == StatusPointType &&
                              tempPointOffset == Cti::CapControl::Offset_PaoIsDisabled )
                         {
-                            currentCCCapBank->setDisabledStatePointId(tempPointId, capBankId); 
+                            currentCCCapBank->setDisabledStatePointId(tempPointId, capBankId);
                             pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
                             currentCCCapBank->addPointId(tempPointId);
                         }
@@ -10307,7 +10306,7 @@ void CtiCCSubstationBusStore::cascadeAreaStrategySettings(CtiCCAreaBase* object)
 {
     if (object == NULL || object->getStrategy()->getUnitType() == ControlStrategy::None)
         return;
-    
+
     long strategyID = object->getStrategy()->getStrategyId();
 
     for each (long stationId in object->getSubstationIds())
@@ -10333,7 +10332,7 @@ void CtiCCSubstationBusStore::cascadeAreaStrategySettings(CtiCCAreaBase* object)
                 {
                     CtiCCFeederPtr fdr = currentCCSubstationBus->getCCFeeders()[i];
                     if ( fdr->getStrategy()->getUnitType() == ControlStrategy::None )
-                        fdr->setStrategy( strategyID );                                
+                        fdr->setStrategy( strategyID );
                 }
             }
         }

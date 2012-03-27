@@ -24,7 +24,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_dbchg.h"
 #include "numstr.h"
 #include "pointtypes.h"
-#include "configparms.h"
 #include "logger.h"
 #include "cparms.h"
 #include "utility.h"

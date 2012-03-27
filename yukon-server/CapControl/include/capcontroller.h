@@ -20,7 +20,6 @@
 #include "msg_pdata.h"
 #include "msg_ptreg.h"
 #include "pointtypes.h"
-#include "configparms.h"
 #include "ccsubstationbusstore.h"
 #include "ccexecutor.h"
 #include "ctibase.h"

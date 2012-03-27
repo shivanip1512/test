@@ -35,7 +35,6 @@ FDRINTERFACEOBJS=\
 
 
 CTIFDRLIBS=\
-$(COMPILEBASE)\lib\cparms.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \

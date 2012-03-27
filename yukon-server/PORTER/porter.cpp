@@ -60,7 +60,6 @@
 
 #include "eventlog.h"
 #include "cparms.h"
-#include "configparms.h"
 #include "trx_711.h"
 #include "utility.h"
 #include "dllyukon.h"

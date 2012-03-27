@@ -46,7 +46,6 @@
 #include "database_connection.h"
 #include "ctibase.h"
 #include "logger.h"
-#include "configparms.h"
 #include "msg_dbchg.h"
 #include "loadmanager.h"
 #include "lmfactory.h"
@@ -1025,7 +1024,7 @@ void CtiLMControlAreaStore::reset()
                     rdr["controlmethod"] >> controlmethod;
 
                     // NOTE, due to DBEditor problems, the thermostat table may exist even for non thermostat control methods.
-                    // If it does exist and is not needed, CtiLMProgramThermoStatGear loads it but never uses it. 
+                    // If it does exist and is not needed, CtiLMProgramThermoStatGear loads it but never uses it.
                     // SEPCycleGear never loads it. There are two independent loading concepts here, the SEP way (distinct classes
                     // per gear) and the original way (one class for many gears).
                     if( ciStringEqual(controlmethod,CtiLMProgramDirectGear::SEPCycleMethod) )

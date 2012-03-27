@@ -140,26 +140,26 @@ deps:
 
 ######################################################################################
 #UPDATE#
-test_lmprogram.obj:	precompiled.h lmprogramdirect.h boostutil.h \
-		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
-		types.h numstr.h lmprogrambase.h dbmemobject.h observe.h \
-		msg_multi.h collectable.h msg_pdata.h yukon.h ctidbgmem.h \
-		pointdefs.h pointtypes.h message.h rwutil.h \
-		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h netports.h mutex.h guard.h dsm2err.h words.h \
-		optional.h sema.h database_reader.h row_reader.h boost_time.h \
-		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
-		lmcontrolareatrigger.h ctidate.h logger.h thread.h \
+test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
+		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		lmprogrambase.h dbmemobject.h observe.h msg_multi.h \
+		collectable.h msg_pdata.h yukon.h ctidbgmem.h pointdefs.h \
+		pointtypes.h message.h rwutil.h database_connection.h \
+		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \
+		guard.h dsm2err.h words.h optional.h database_reader.h \
+		row_reader.h boost_time.h lmgroupbase.h msg_pcrequest.h \
+		msg_cmd.h lmcontrolareatrigger.h ctidate.h logger.h thread.h \
 		CtiPCPtrQueue.h lmprogramdirectgear.h lmcontrolarea.h \
 		connection.h exchange.h string_utility.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h \
 		tbl_lmprogramhistory.h lmprogramcontrolwindow.h lmutility.h \
 		lmconstraint.h lmmessage.h clientconn.h ctdpcptrq.h \
 		ConstraintViolation.h executor.h msg_server_req.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h
-test_lm_constraintviolations.obj:	precompiled.h ConstraintViolation.h \
-		ctitime.h dlldefs.h ctidate.h logger.h thread.h mutex.h \
-		guard.h utility.h queues.h cticalls.h os2_2w32.h types.h \
-		numstr.h CtiPCPtrQueue.h
+		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
+		test_reader.h
+test_lm_constraintviolations.obj:	ConstraintViolation.h ctitime.h \
+		dlldefs.h ctidate.h logger.h thread.h mutex.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		CtiPCPtrQueue.h
 #ENDUPDATE#
 

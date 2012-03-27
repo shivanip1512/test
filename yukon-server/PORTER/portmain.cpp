@@ -24,7 +24,6 @@
 #include "ctibase.h"
 #include "portglob.h"
 #include "cparms.h"
-#include "configparms.h"
 
 #include "logger.h"
 #include "guard.h"
@@ -120,65 +119,22 @@ int main(int argc, char* argv[] )
 
 int install(DWORD dwStart)
 {
-    char depend[1000];
-
-    memset(depend, 0, 1000 );
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime()  << " - Installing as a service..." << endl;
     }
 
-
-    // Attempt to determine any services we are going to be dependent on
-    HINSTANCE hLib = LoadLibrary("cparms.dll");
-
-   if (hLib)
-   {
-       CPARM_GETCONFIGSTRING   fpGetAsString = (CPARM_GETCONFIGSTRING)GetProcAddress( hLib, "getConfigValueAsString" );
-
-       if ( (*fpGetAsString)("SERVICE_DEPENDENCIES", depend, 1000) )
-       {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << "Service is dependent on the following services:" << endl
-                << depend << endl;
-       }
-       else
-       {
-           depend[0] = NULL;
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << "Couldn't locate any services that this service is to be dependent upon" << endl
-                << "installing anyways" << endl;
-       }
-
-   }
-
-
-   char* tmp = depend;
-
-   //replace whitespace with '\0'
-   while( (tmp = strchr( tmp, ' ')) != NULL )
-       *tmp = '\0';
-
     CServiceConfig si(szServiceName, szDisplayName, szDesc);
-
-    //check whether or not we found dependencies
-    if( depend[0] == NULL )
-        tmp = NULL;
-    else
-        tmp = depend;
-
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << "Installing porter Service Using LocalSystem Account." << endl;
     }
 
-
     // test using the LocalSystem account
     si.Install(SERVICE_WIN32_OWN_PROCESS,
                        dwStart,
-                       tmp,
+                       NULL,
                        NULL,
                        NULL);
 

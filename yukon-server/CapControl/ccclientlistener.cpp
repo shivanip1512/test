@@ -3,7 +3,6 @@
 #include "ccclientlistener.h"
 #include "ccmessage.h"
 #include "ccsubstationbusstore.h"
-#include "configparms.h"
 #include "ctibase.h"
 #include "ccexecutor.h"
 #include "logger.h"
