@@ -72,7 +72,7 @@
                 <cti:msg2 var="passwordResetTitle"  key=".passwordReset" />
                 <tags:abstractContainer title="${passwordResetTitle}" type="rounded">
                     <cti:flashScopeMessages/>
-                    <form:form action="forgottenPassword" method="POST">
+                    <form:form action="forgottenPassword" commandName="forgottenPassword" method="POST">
                         <i:inline key=".forgottenPasswordMessage"/>
                         
                         <br><br>
@@ -80,7 +80,7 @@
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".forgottenPasswordFields"></tags:nameValue2>
                         </tags:nameValueContainer2>
-                        <input type="text"  autofocus="autofocus" size="50" name="forgottenPasswordField">
+                        <form:input path="forgottenPasswordField" autofocus="autofocus" size="50"/>
                         <br><br>
                         
                         <tags:captcha captchaPublicKey="${captchaPublicKey}" captchaTheme="clean" captchaEnabled="${captchaEnabled}" locale="${locale}"/>
