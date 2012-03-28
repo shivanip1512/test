@@ -26,21 +26,15 @@ BOOST_AUTO_TEST_CASE(decode_from_debug_mode_encoding)
 
     string key("0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e");
 
-    LantronixEncryptionImpl *filter = new LantronixEncryptionImpl();
+    LantronixEncryptionImpl filter;
 
-    filter->setKey(key);
+    filter.setKey(key);
 
     vector<unsigned char> decoded;
 
-    bool ret = filter->decode(encoded, encoded_size, decoded);
+    BOOST_REQUIRE(filter.decode(encoded, encoded_size, decoded));
 
-    BOOST_REQUIRE(ret == true);
-
-    BOOST_REQUIRE_EQUAL(plaintext_size, decoded.size());
-
-    BOOST_REQUIRE(equal(plaintext, plaintext + plaintext_size, decoded.begin()));
-
-    delete filter;
+    BOOST_CHECK_EQUAL_COLLECTIONS(plaintext, plaintext + plaintext_size, decoded.begin(), decoded.end());
 }
 
 BOOST_AUTO_TEST_CASE(decode_from_release_mode_encoding)
@@ -54,6 +48,7 @@ BOOST_AUTO_TEST_CASE(decode_from_release_mode_encoding)
                                        0xee, 0xdc, 0x56, 0x3e, 0x9a, 0xa7, 0x34, 0xeb, 0xab, 0x4f, 0x9b, 0x0d, 0x69, 0xb3, 0xa4, 0xe5,
                                        0x17, 0x1a, 0x57, 0xd7, 0xf6, 0xbe, 0xbf, 0xdb, 0x72, 0xb0, 0x85, 0xd5, 0x40, 0xd0, 0x5d, 0x23,
                                        0xad, 0x4d, 0xf7, 0x13, 0xc2, 0xfc, 0x4f, 0x79, 0x16, 0xc5, 0x87, 0x88, 0x09, 0xd7, 0x69, 0xe8};
+                                       //  note that this last line is different than the above
 
     const unsigned char plaintext[] = {0x05, 0x64, 0x21, 0x44, 0x01, 0x00, 0x62, 0x00,
                                        0xf6, 0xea, 0xc0, 0xf3, 0x82, 0x90, 0x00, 0x02,
@@ -63,21 +58,15 @@ BOOST_AUTO_TEST_CASE(decode_from_release_mode_encoding)
 
     const string key("0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e");
 
-    LantronixEncryptionImpl *filter = new LantronixEncryptionImpl();
+    LantronixEncryptionImpl filter;
 
-    filter->setKey(key);
+    filter.setKey(key);
 
     vector<unsigned char> decoded;
 
-    bool ret = filter->decode(encoded, encoded_size, decoded);
+    BOOST_REQUIRE(filter.decode(encoded, encoded_size, decoded));
 
-    BOOST_REQUIRE(ret == true);
-
-    BOOST_REQUIRE_EQUAL(plaintext_size, decoded.size());
-
-    BOOST_REQUIRE(equal(plaintext, plaintext + plaintext_size, decoded.begin()));
-
-    delete filter;
+    BOOST_CHECK_EQUAL_COLLECTIONS(plaintext, plaintext + plaintext_size, decoded.begin(), decoded.end());
 }
 
 BOOST_AUTO_TEST_CASE(round_trip_encrypt_decrypt)
@@ -96,36 +85,26 @@ BOOST_AUTO_TEST_CASE(round_trip_encrypt_decrypt)
     vector<unsigned char> encoded;
 
     {
-        LantronixEncryptionImpl *filter = new LantronixEncryptionImpl();
+        LantronixEncryptionImpl filter;
 
-        filter->setKey(key);
+        filter.setKey(key);
 
-        bool ret = filter->encode(plaintext, plaintext_size, encoded);
-
-        BOOST_REQUIRE(ret == true);
+        BOOST_REQUIRE(filter.encode(plaintext, plaintext_size, encoded));
 
         BOOST_REQUIRE_EQUAL(encoded.size(), encoded_size);
-
-        delete filter;
     }
 
     //  create a brand new filter for the decode
     {
-        LantronixEncryptionImpl *filter = new LantronixEncryptionImpl();
+        LantronixEncryptionImpl filter;
 
-        filter->setKey(key);
+        filter.setKey(key);
 
         vector<unsigned char> decoded;
 
-        bool ret = filter->decode(&encoded.front(), encoded.size(), decoded);
+        BOOST_REQUIRE(filter.decode(&encoded.front(), encoded.size(), decoded));
 
-        BOOST_REQUIRE(ret == true);
-
-        BOOST_REQUIRE_EQUAL(plaintext_size, decoded.size());
-
-        BOOST_REQUIRE(equal(plaintext, plaintext + plaintext_size, decoded.begin()));
-
-        delete filter;
+        BOOST_CHECK_EQUAL_COLLECTIONS(plaintext, plaintext + plaintext_size, decoded.begin(), decoded.end());
     }
 }
 
@@ -133,17 +112,18 @@ BOOST_AUTO_TEST_CASE(test_setKey)
 {
     const unsigned char *result;
     const string sKey("0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e");
+    const int expected[] = {
+        14, 14, 14, 14,
+        14, 14, 14, 14,
+        14, 14, 14, 14,
+        14, 14, 14, 14,
+    };
 
-    LantronixEncryptionImpl* filter = new LantronixEncryptionImpl();
-    filter->setKey(sKey);
+    LantronixEncryptionImpl filter;
+    filter.setKey(sKey);
 
-    result = filter->getKey();
-    for (int i = 0; i < 16; ++i)
-    {
-        BOOST_CHECK_EQUAL((int)result[i],14);
-    }
-
-    delete filter;
+    result = filter.getKey();
+    BOOST_CHECK_EQUAL_COLLECTIONS(result, result + 16, expected, expected + 16);
 }
 
 BOOST_AUTO_TEST_CASE(test_setIV)
@@ -151,16 +131,11 @@ BOOST_AUTO_TEST_CASE(test_setIV)
     const unsigned char origIV[] = {0xed, 0x3d, 0x13, 0xc9, 0x39, 0x54, 0x5f, 0xdf, 0x30, 0x08, 0x56, 0x93, 0x7c, 0x1e, 0xa2, 0xa9};
     const unsigned char *result;
 
-    LantronixEncryptionImpl* filter = new LantronixEncryptionImpl();
-    filter->setIV(origIV);
+    LantronixEncryptionImpl filter;
+    filter.setIV(origIV);
 
-    result = filter->getIV();
-    for (int i = 0; i < 16; ++i)
-    {
-        BOOST_CHECK_EQUAL(result[i],origIV[i]);
-    }
-
-    delete filter;
+    result = filter.getIV();
+    BOOST_CHECK_EQUAL_COLLECTIONS(result, result + 16, origIV, origIV + 16);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
