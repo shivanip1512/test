@@ -108,7 +108,11 @@ public class PaoUtils {
     public static <T extends YukonPao> ImmutableMap<PaoIdentifier, T> indexYukonPaos(Iterable<T> paos) {
         return Maps.uniqueIndex(paos, yukonPaoToPaoIdentifierFunction);
     }
-    
+
+    public static <T extends YukonPao> ImmutableMap<Integer, T> indexYukonPaosByPaoId(Iterable<T> paos) {
+        return Maps.uniqueIndex(paos, yukonPaoToPaoIdFunction);
+    }
+
     public static void validateDeviceType(YukonPao pao) {
         PaoType paoType = pao.getPaoIdentifier().getPaoType();
         validateDeviceType(paoType);

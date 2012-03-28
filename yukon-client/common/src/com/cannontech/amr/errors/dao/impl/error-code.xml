@@ -1028,6 +1028,32 @@
             </ul>
         </troubleshooting>
     </error>
+
+    <error code="1024">
+        <category>Network Manager</category>
+        <porter>No matching node was found in network manager.</porter>
+        <description>TODO: No matching node was found in network manager.</description>
+        <troubleshooting>TODO: No matching node was found in network manager.</troubleshooting>
+    </error>
+    <error code="1025">
+        <category>Network Manager</category>
+        <porter>No gateway to the given was found.</porter>
+        <description>TODO: No gateway to the given was found.</description>
+        <troubleshooting>TODO: No gateway to the given was found.</troubleshooting>
+    </error>
+    <error code="1026">
+        <category>Network Manager</category>
+        <porter>Failure</porter>
+        <description>TODO: Failure</description>
+        <troubleshooting>TODO: Failure</troubleshooting>
+    </error>
+    <error code="1027">
+        <category>Network Manager</category>
+        <porter>Timeout</porter>
+        <description>TODO: Timeout</description>
+        <troubleshooting>TODO: Timeout</troubleshooting>
+    </error>
+
     <error code="0">
         <category>N/A</category>
         <description>Successful Read</description>

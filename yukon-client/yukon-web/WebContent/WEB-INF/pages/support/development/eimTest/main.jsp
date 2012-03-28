@@ -81,6 +81,7 @@ jQuery(function() {
             } else {
                 dest.text(responseXml)
             }
+            jQuery('#xmlRequest').focus();
         }
     });
 

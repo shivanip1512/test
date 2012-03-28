@@ -31,7 +31,7 @@ public class RfnMeterDisconnectService {
 
     private static final Logger log = YukonLogManager.getLogger(RfnMeterDisconnectService.class);
 
-    private RequestReplyReplyTemplate rrrTemplate;
+    private RequestReplyReplyTemplate<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> rrrTemplate;
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
@@ -157,7 +157,7 @@ public class RfnMeterDisconnectService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate();
+        rrrTemplate = new RequestReplyReplyTemplate<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply>();
         rrrTemplate.setConfigurationName("RFN_METER_DISCONNECT");
         rrrTemplate.setConfigurationSource(configurationSource);
         rrrTemplate.setConnectionFactory(connectionFactory);

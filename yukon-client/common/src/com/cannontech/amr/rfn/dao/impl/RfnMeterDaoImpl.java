@@ -1,16 +1,22 @@
 package com.cannontech.amr.rfn.dao.impl;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -18,10 +24,12 @@ import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 
 public class RfnMeterDaoImpl implements RfnMeterDao {
-    private YukonJdbcTemplate jdbcTemplate;
-    private PaoDao paoDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private PaoDao paoDao;
 
     @Override
     public RfnMeter getMeterForExactIdentifier(RfnMeterIdentifier meterIdentifier) throws NotFoundException {
@@ -73,6 +81,44 @@ public class RfnMeterDaoImpl implements RfnMeterDao {
     }
 
     @Override
+    public <T extends YukonPao> Map<T, RfnMeterIdentifier> getMeterIdentifiersByPao(Iterable<T> paos) {
+        ChunkingMappedSqlTemplate template =
+                new ChunkingMappedSqlTemplate(jdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT SerialNumber, Manufacturer, Model, DeviceId");
+                sql.append("FROM RfnAddress WHERE DeviceId").in(subList);
+                return sql;
+            }
+        };
+
+        Function<T, Integer> typeMapper = new Function<T, Integer>() {
+            @Override
+            public Integer apply(T pao) {
+                return pao.getPaoIdentifier().getPaoId();
+            }
+        };
+
+        YukonRowMapper<Map.Entry<Integer, RfnMeterIdentifier>> rowMapper =
+                new YukonRowMapper<Entry<Integer, RfnMeterIdentifier>>() {
+            @Override
+            public Entry<Integer, RfnMeterIdentifier> mapRow(YukonResultSet rs) throws SQLException {
+                RfnMeterIdentifier rfnMeterIdentifier =
+                        new RfnMeterIdentifier(rs.getStringSafe("SerialNumber"), 
+                                               rs.getStringSafe("Manufacturer"), 
+                                               rs.getStringSafe("Model"));
+                int deviceId = rs.getInt("DeviceId");
+                return Maps.immutableEntry(deviceId, rfnMeterIdentifier);
+            }
+        };
+
+        Map<T, RfnMeterIdentifier> retVal = template.mappedQuery(sqlGenerator, paos, rowMapper, typeMapper);
+        return retVal;
+    }
+
+    @Override
     public void updateMeter(RfnMeter meter) {
         if(meter.getMeterIdentifier().isBlank()) {
             /* When someone has blanked out the three fields of the rfn meter address, delete that row from RfnAddress. */
@@ -116,15 +162,4 @@ public class RfnMeterDaoImpl implements RfnMeterDao {
     public String getFormattedDeviceName(RfnMeter device) throws IllegalArgumentException{
         return device.getName();
     }
-    
-    @Autowired
-    public void setJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
 }

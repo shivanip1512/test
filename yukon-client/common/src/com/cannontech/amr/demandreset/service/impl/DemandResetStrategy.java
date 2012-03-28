@@ -1,10 +1,11 @@
 package com.cannontech.amr.demandreset.service.impl;
 
+import java.util.Set;
+
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.base.Predicate;
 
 public interface DemandResetStrategy {
     /**
@@ -14,13 +15,13 @@ public interface DemandResetStrategy {
     StrategyType getType();
 
     /**
-     * Return a predicate for use in filtering out invalid devices.  
+     * Filter the given devices for devices which can be sent a demand reset using RF.
      */
-    Predicate<YukonPao> getValidDeviceFunction();
+    <T extends YukonPao> Set<T> filterDevices(Set<T> devices);
 
     /**
      * Send a demand reset to the given devices.
      */
-    void sendDemandReset(Iterable<? extends YukonPao> devices, DemandResetCallback callback,
+    void sendDemandReset(Set<? extends YukonPao> devices, DemandResetCallback callback,
                          LiteYukonUser user);
 }

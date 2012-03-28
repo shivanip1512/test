@@ -5,9 +5,9 @@ import java.util.Set;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public interface DemandResetService {
+public interface RfnDemandResetService {
     /**
-     * Filter the given devices for devices which can be sent a demand reset.
+     * Filter the given devices for devices which can be sent a demand reset using RF.
      */
     <T extends YukonPao> Set<T> filterDevices(Set<T> devices);
 
@@ -16,6 +16,5 @@ public interface DemandResetService {
      * list with {@link #validDevices(Iterable)} first.  Any devices which cannot be reset will be
      * ignored.
      */
-    void sendDemandReset(Set<? extends YukonPao> devices, DemandResetCallback callback,
-                         LiteYukonUser user);
+    void sendDemandReset(Set<? extends YukonPao> devices, DemandResetCallback callback, LiteYukonUser user);
 }

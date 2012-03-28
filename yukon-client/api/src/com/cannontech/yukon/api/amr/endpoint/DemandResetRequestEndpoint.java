@@ -1,5 +1,6 @@
 package com.cannontech.yukon.api.amr.endpoint;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +35,7 @@ import com.google.common.collect.Sets;
 @Endpoint
 public class DemandResetRequestEndpoint {
     private static class MyDemandResetCallback implements DemandResetCallback {
-        List<Element> errorElems;
+        List<Element> errorElems = Collections.emptyList();
 
         @Override
         public void completed(Results results) {
@@ -70,11 +71,13 @@ public class DemandResetRequestEndpoint {
 
             Set<PaoIdentifier> devices = paoData.getPaoDataById().keySet();
             final Set<PaoIdentifier> validDevices =
-                    Sets.newHashSet(demandResetService.validDevices(devices));
+                    Sets.newHashSet(demandResetService.filterDevices(devices));
             Set<PaoIdentifier> invalidDevices = Sets.difference(devices, validDevices);
 
             MyDemandResetCallback callback = new MyDemandResetCallback();
-            demandResetService.sendDemandReset(validDevices, callback, user);
+            if (!validDevices.isEmpty()) {
+                demandResetService.sendDemandReset(validDevices, callback, user);
+            }
 
             int numErrors = callback.errorElems.size();
             resetsRequestedElem.setAttribute("initiated",

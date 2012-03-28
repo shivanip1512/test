@@ -50,7 +50,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     }
 
     @Override
-    public void sendDemandReset(Iterable<? extends YukonPao> paos,
+    public void sendDemandReset(Set<? extends YukonPao> paos,
                                 final DemandResetCallback callback, LiteYukonUser user) {
         final List<SimpleDevice> devices = Lists.newArrayList(
             Iterables.transform(paos, new Function<YukonPao, SimpleDevice>() {

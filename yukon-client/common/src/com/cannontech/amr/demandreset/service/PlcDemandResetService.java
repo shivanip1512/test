@@ -1,5 +1,7 @@
 package com.cannontech.amr.demandreset.service;
 
+import java.util.Set;
+
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.base.Predicate;
@@ -12,6 +14,6 @@ public interface PlcDemandResetService {
      * list with {@link #validDevices(Iterable)} first.  Any devices which cannot be reset will be
      * ignored.
      */
-    public void sendDemandReset(Iterable<? extends YukonPao> devices,
-                                DemandResetCallback callback, LiteYukonUser user);
+    public void sendDemandReset(Set<? extends YukonPao> devices, DemandResetCallback callback,
+                                LiteYukonUser user);
 }

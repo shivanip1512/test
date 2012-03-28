@@ -37,7 +37,7 @@ public class RfnMeterReadService {
     
     private ConfigurationSource configurationSource;
     private ConnectionFactory connectionFactory;
-    private RequestReplyReplyTemplate rrrTemplate;
+    private RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply> rrrTemplate;
     private UnitOfMeasureToPointMapper unitOfMeasureToPointMapper;
     private PointDao pointDao;
     
@@ -211,7 +211,7 @@ public class RfnMeterReadService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate();
+        rrrTemplate = new RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply>();
         rrrTemplate.setConfigurationName("RFN_METER_READ");
         rrrTemplate.setConfigurationSource(configurationSource);
         rrrTemplate.setConnectionFactory(connectionFactory);
