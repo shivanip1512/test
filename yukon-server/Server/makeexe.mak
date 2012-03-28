@@ -7,7 +7,7 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(RTDB)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 
 

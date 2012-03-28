@@ -120,7 +120,11 @@ int SimulatorMainFunction(int argc, char **argv)
     // Load up the MCT behaviors here as well.
     Mct410Sim::initBehaviors(logger);
 
-    filesystem::path mctFilePath( DeviceMemoryManager::memoryMapDirectory );
+    const wstring wideMemoryMapDirectory(
+        DeviceMemoryManager::memoryMapDirectory.begin(),
+        DeviceMemoryManager::memoryMapDirectory.end());
+
+    filesystem::path mctFilePath( wideMemoryMapDirectory );
 
     // Create the directory if necessary.
     if( filesystem::create_directory( mctFilePath ) )

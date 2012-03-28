@@ -13,7 +13,7 @@ INCLPATHS+= \
 -I$(RTDB)\include \
 -I$(TCL)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 
 

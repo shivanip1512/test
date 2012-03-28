@@ -13,7 +13,7 @@ INCLPATHS+= \
 -I$(RTDB)\include \
 -I$(CPARMS)\include \
 -I$(MSG)\include \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
 -I$(ACTIVEMQ) \
@@ -34,7 +34,7 @@ INCLPATHS+= \
 ;$(PROT)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
-;$(BOOST) \
+;$(BOOST_INCLUDE) \
 ;$(RW) \
 ;$(ACTIVEMQ) \
 ;$(ACTIVEMQ)\cms \

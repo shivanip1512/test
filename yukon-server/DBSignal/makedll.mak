@@ -5,7 +5,7 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(COMMON)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 
 

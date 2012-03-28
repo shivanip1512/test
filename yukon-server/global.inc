@@ -55,7 +55,8 @@ TCL             = $(CPP_LIBRARIES)\tcl\8.1.1
 TCL_LIBS = \
 $(TCL)\lib\tcl81.lib
 
-BOOST           = $(CPP_LIBRARIES)\boost\1.37.0
+BOOST           = $(CPP_LIBRARIES)\boost\1.49.0
+BOOST_INCLUDE   = $(CPP_LIBRARIES)\boost\1.49.0\include\boost-1_49
 
 SQLAPI          = $(CPP_LIBRARIES)\sqlapi\2011.10.14
 ACTIVEMQ        = $(CPP_LIBRARIES)\activemq-cpp\3.2.4
@@ -76,10 +77,10 @@ $(OPENSSL)\lib\ssleay32.lib
 BOOST_ALL_DYN_LINK = 1
 
 !IFDEF DEBUG
-BOOST_VERSION = vc90-mt-gd-1_37
+BOOST_VERSION = vc90-mt-gd-1_49
 MICROSOFTDLL = d
 !ELSE
-BOOST_VERSION = vc90-mt-1_37
+BOOST_VERSION = vc90-mt-1_49
 !ENDIF
 
 BOOST_LIBS = \

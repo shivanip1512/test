@@ -11,7 +11,7 @@ INCLPATHS+= \
 -I$(PROT)\include \
 -I$(CPARMS)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(XERCES)\include \
 -I$(SQLAPI)\include \
 -I$(ACTIVEMQ) \
@@ -35,7 +35,7 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(XERCES)\include \
-;$(BOOST) \
+;$(BOOST_INCLUDE) \
 ;$(RW) \
 ;$(OPENSSL)\include \
 

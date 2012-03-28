@@ -15,7 +15,7 @@ INCLPATHS+= \
 -I$(SIGNAL)\include \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
 
@@ -36,7 +36,7 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
-;$(BOOST) \
+;$(BOOST_INCLUDE) \
 ;$(RW)
 
 

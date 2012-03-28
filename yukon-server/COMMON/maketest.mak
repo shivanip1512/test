@@ -6,7 +6,7 @@
 INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
 -I$(ACTIVEMQ)
@@ -15,7 +15,7 @@ INCLPATHS+= \
 .\include \
 ;$(COMMON)\include \
 ;$(CPARMS)\include \
-;$(BOOST) \
+;$(BOOST_INCLUDE) \
 ;$(RW) \
 ;$(ACTIVEMQ)
 

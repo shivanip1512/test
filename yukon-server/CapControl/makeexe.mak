@@ -13,7 +13,7 @@ INCLPATHS+= \
 -I$(CPARMS)\include \
 -I$(SERVER)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(ACTIVEMQ) \
 -I$(DEVICECONFIGURATION)\include \

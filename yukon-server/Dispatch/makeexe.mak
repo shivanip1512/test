@@ -12,7 +12,7 @@ INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(MSG)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(DBGHELP)\include \
 -I$(ACTIVEMQ) \
@@ -34,7 +34,7 @@ INCLPATHS+= \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
 ;$(RW) \
-;$(BOOST) \
+;$(BOOST_INCLUDE) \
 ;$(DBGHELP)\include \
 ;$(ACTIVEMQ) \
 ;$(ACTIVEMQ)\cms \

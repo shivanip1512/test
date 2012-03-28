@@ -13,7 +13,7 @@ INCLPATHS+= \
 -I$(DISPATCH)\include \
 -I$(MSG)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 
 .PATH.cpp = .;$(R_SERVER)

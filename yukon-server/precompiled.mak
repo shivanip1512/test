@@ -3,7 +3,7 @@
 
 INCLPATHS+= \
 -I$(COMMON)\include \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(RW)
 
 ALL:	precompiled.pch

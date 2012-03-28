@@ -10,7 +10,7 @@ INCLPATHS+= \
 -I$(CPARMS)\include \
 -I$(MESSAGE)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 
 INTERPOBJS=\

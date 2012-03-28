@@ -12,7 +12,7 @@ INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(CPARMS)\include \
 -I$(SERVER)\include \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(RW) \
 -I$(SQLAPI)\include \
 -I$(ACTIVEMQ) \
@@ -28,7 +28,7 @@ INCLPATHS+= \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(MSG)\include \
-;$(BOOST) \
+;$(BOOST_INCLUDE) \
 ;$(RW) \
 ;$(ACTIVEMQ) \
 ;$(ACTIVEMQ)\cms \

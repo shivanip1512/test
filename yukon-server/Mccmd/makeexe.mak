@@ -12,7 +12,7 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(RTDB)\include \
 -I$(TCL)\include \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(RW) \
 
 .PATH.H = \

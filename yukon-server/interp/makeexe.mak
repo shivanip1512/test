@@ -8,7 +8,7 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(TCL)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 
 OBJS=\
 ctish.obj

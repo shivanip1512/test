@@ -6,7 +6,7 @@ INCLPATHS+= \
 -I$(PORTER)\include \
 -I$(COMMON)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RTDB)\include \
 

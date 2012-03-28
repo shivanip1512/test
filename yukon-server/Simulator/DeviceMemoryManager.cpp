@@ -95,8 +95,10 @@ void DeviceMemoryManager::initializeMemoryMapFromFile()
     //filesystem::path dir_path( directoryName + "/" + CtiNumStr(_address) + ".bin" );
     string dir_path( memoryMapDirectory + "/" + CtiNumStr(_address) + ".bin" );
 
-    if( filesystem::exists(dir_path) )
-    {    
+    wstring wide_dir_path(dir_path.begin(), dir_path.end());
+
+    if( filesystem::exists(wide_dir_path) )
+    {
         _memory_map.clear();
 
         ifstream mapFile( dir_path.c_str(), ios::in | ios::binary );

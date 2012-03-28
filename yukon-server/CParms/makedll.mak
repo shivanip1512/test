@@ -4,7 +4,7 @@
 INCLPATHS+= \
 -I$(CPARMS)\include \
 -I$(COMMON)\include \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
 

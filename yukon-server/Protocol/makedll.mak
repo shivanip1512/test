@@ -2,7 +2,7 @@ include $(COMPILEBASE)\global.inc
 include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(PROT)\include \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
@@ -19,7 +19,7 @@ INCLPATHS+= \
 
 .PATH.H = \
 .\include \
-;$(BOOST) \
+;$(BOOST_INCLUDE) \
 ;$(COMMON)\include \
 ;$(DATABASE)\include \
 ;$(RTDB)\include \

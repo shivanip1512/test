@@ -13,7 +13,7 @@ INCLPATHS+= \
 -I$(PROT)\include \
 -I$(CPARMS)\include \
 -I$(RW) \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(FDR)\Telegyr\inc \
 -I$(FDR)\OSIPI\inc \

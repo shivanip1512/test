@@ -11,7 +11,7 @@ INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(DEVICECONFIGURATION)\include \
 -I$(MSG)\include \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
 

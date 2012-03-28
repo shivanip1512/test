@@ -9,7 +9,7 @@ DLLBUILDNAME = -DCTIBASE
 INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(CPARMS)\include \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
 -I$(DBGHELP)\include
@@ -18,7 +18,7 @@ INCLPATHS+= \
 .\include \
 ;$(COMMON)\include \
 ;$(CPARMS)\include \
-;$(BOOST) \
+;$(BOOST_INCLUDE) \
 ;$(RW) \
 ;$(SQLAPI)\include \
 
@@ -97,7 +97,6 @@ COMMON_FULLBUILD = $[Filename,$(OBJ),CommonFullBuild,target]
 
 
 ALL:            $(CTIPROGS)
-                -@if exist $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.dll copy $(BOOST)\stage\lib\boost_thread-vc6-mt-gd-1_31.dll $(YUKONOUTPUT)
 
 $(COMMON_FULLBUILD):
         @touch $@

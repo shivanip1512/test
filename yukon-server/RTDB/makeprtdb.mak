@@ -9,7 +9,7 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(CPARMS)\include \
 -I$(PROT)\include \
--I$(BOOST) \
+-I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(RW) \
 
