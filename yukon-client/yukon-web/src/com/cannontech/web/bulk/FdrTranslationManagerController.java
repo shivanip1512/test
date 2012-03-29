@@ -7,7 +7,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,10 @@ import net.sf.json.JSONObject;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,26 +40,29 @@ import com.cannontech.common.bulk.service.FdrTranslationManagerService;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.exceptions.EmptyImportFileException;
 import com.cannontech.web.exceptions.NoImportFileException;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.FDR_TRANSLATION_MANAGER)
 @RequestMapping("fdrTranslationManager/*")
 public class FdrTranslationManagerController {
-    private FdrTranslationManagerService fdrTranslationManagerService;
-    private FdrTranslationManagerCsvHelper fdrTranslationManagerCsvHelper;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private FdrTranslationManagerService fdrTranslationManagerService;
+    @Autowired private FdrTranslationManagerCsvHelper fdrTranslationManagerCsvHelper;
     private RecentResultsCache<TranslationImportCallbackResult> recentResultsCache;
     
     @RequestMapping
@@ -104,14 +113,14 @@ public class FdrTranslationManagerController {
     }
     
     @RequestMapping
-    public String submitImport(ModelMap model, HttpServletRequest request, FlashScope flashScope, YukonUserContext userContext, 
-                               boolean ignoreInvalidColumns) throws IOException {
+    public ResponseEntity<Map<String, ? extends Object>> submitImport(HttpServletRequest request,  
+                                                                      YukonUserContext userContext, 
+                                                                      boolean ignoreInvalidColumns) throws IOException {
         
         //Procure the import file
         if(!ServletFileUpload.isMultipartContent(request)) {
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.noImportFile");
-            flashScope.setError(errorMsg);
-            return "redirect:home";
+            return prepareErrorReturn(userContext, errorMsg);
         }
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         MultipartFile dataFile = multipartRequest.getFile("importFile");
@@ -122,12 +131,10 @@ public class FdrTranslationManagerController {
             csvReader = WebFileUtils.getTempBackedCsvReaderFromMultipartFile(dataFile);
         } catch(NoImportFileException e) {
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.noImportFile");
-            flashScope.setError(errorMsg);
-            return "redirect:home";
+            return prepareErrorReturn(userContext, errorMsg);
         } catch(EmptyImportFileException e) {
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.emptyImportFile");
-            flashScope.setError(errorMsg);
-            return "redirect:home";
+            return prepareErrorReturn(userContext, errorMsg);
         }
         
         //Get column headers, strip whitespace, check for duplicates
@@ -137,8 +144,7 @@ public class FdrTranslationManagerController {
             headers = fdrTranslationManagerCsvHelper.cleanAndValidateHeaders(headersArray);
         } catch(ImportFileFormatException e) {
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.duplicateColumn", e.getHeaderName());
-            flashScope.setError(errorMsg);
-            return "redirect:home";
+            return prepareErrorReturn(userContext, errorMsg);
         }
         
         //Check for all default headers
@@ -146,8 +152,7 @@ public class FdrTranslationManagerController {
         if(missingHeaders != null) {
             //Error - missing default header
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.defaultHeaderMissing", missingHeaders);
-            flashScope.setError(errorMsg);
-            return "redirect:home";
+            return prepareErrorReturn(userContext, errorMsg);
         }
         
         //Get list of all interfaces represented in the file and check to make 
@@ -157,18 +162,16 @@ public class FdrTranslationManagerController {
             interfaceInfo = fdrTranslationManagerService.getInterfaceInfo(headers, ignoreInvalidColumns);
         } catch(ImportFileFormatException e) {
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.badColumn", e.getHeaderName());
-            flashScope.setError(errorMsg);
-            return "redirect:home";
+            return prepareErrorReturn(userContext, errorMsg);
         }
         
         try {
             fdrTranslationManagerCsvHelper.validateInterfaceHeadersPresent(interfaceInfo, headers);
         } catch(ImportFileFormatException e) {
             MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable("yukon.web.modules.amr.fdrTranslationManagement.error.missingColumn", e.getHeaderName(), e.getInterfaceName());
-            flashScope.setError(errorMsg);
-            return "redirect:home";
+            return prepareErrorReturn(userContext, errorMsg);
         }
-
+        
         //Read all file lines
         List<String[]> fileLines = Lists.newArrayList();
         String[] line;
@@ -179,11 +182,16 @@ public class FdrTranslationManagerController {
         //start import
         String resultId = fdrTranslationManagerService.startImport(headers, interfaceInfo.getColumnsToIgnore(), fileLines, userContext);
         
-        model.addAttribute("resultId", resultId);
-        model.addAttribute("ignoreInvalidColumns", ignoreInvalidColumns);
-        model.addAttribute("fileName", dataFile.getOriginalFilename());
+        //return parameter map so ajax success function can redirect to results
+        Map<String,Object> responseMap = Maps.newHashMapWithExpectedSize(3);
+        responseMap.put("resultId", resultId);
+        responseMap.put("ignoreInvalidColumns", ignoreInvalidColumns);
+        responseMap.put("fileName", dataFile.getOriginalFilename());
         
-        return "redirect:importResults";
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_HTML);
+        
+        return new ResponseEntity<Map<String, ? extends Object>>(responseMap, responseHeaders, HttpStatus.CREATED);
     }
     
     @RequestMapping
@@ -273,18 +281,19 @@ public class FdrTranslationManagerController {
         return null;
     }
     
+    private ResponseEntity<Map<String, ? extends Object>> prepareErrorReturn(YukonUserContext userContext, MessageSourceResolvable resolvable) {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String errorMessage = messageSourceAccessor.getMessage(resolvable);
+        Map<String, String> responseMap = Collections.singletonMap("error", errorMessage);
+        
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.TEXT_HTML);
+        
+        return new ResponseEntity<Map<String, ? extends Object>>(responseMap, responseHeaders, HttpStatus.CREATED);
+    }
+    
     @Resource(name="recentResultsCache")
     public void setResultsCache(RecentResultsCache<TranslationImportCallbackResult> resultsCache) {
         this.recentResultsCache = resultsCache;
-    }
-    
-    @Autowired
-    public void setFdrTranslationManagerCsvHelper(FdrTranslationManagerCsvHelper fdrTranslationManagerCsvHelper) {
-        this.fdrTranslationManagerCsvHelper = fdrTranslationManagerCsvHelper;
-    }
-    
-    @Autowired
-    public void setFdrTranslationManagerService(FdrTranslationManagerService fdrTranslationManagerService) {
-        this.fdrTranslationManagerService = fdrTranslationManagerService;
     }
 }

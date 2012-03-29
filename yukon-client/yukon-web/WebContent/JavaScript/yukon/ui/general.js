@@ -162,6 +162,10 @@ Yukon.ui = {
         jQuery("#Content").addMessage({message: markup, messageClass: "userMessage CONFIRM"});
     },
     
+    flashError: function(markup) {
+        jQuery("#Content").addMessage({message: markup, messageClass: "userMessage ERROR"});
+    },
+    
     formatPhone: function(input){
         // strip the input down to just numbers, then format
         var stripped = input.value.replace(/[^\d]/g, "");

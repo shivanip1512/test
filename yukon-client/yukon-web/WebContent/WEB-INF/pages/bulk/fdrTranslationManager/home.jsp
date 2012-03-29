@@ -20,6 +20,24 @@
         jQuery("#interfaceColumnSelector").change(function(){
             updateInterfaceSelection();
         });
+        
+        jQuery('#importForm').submit(function() {
+            jQuery(this).ajaxSubmit({
+                dataType:   'json',
+                success:    function(data) {
+                    if(data.error) {
+                        Yukon.ui.flashError(data.error);
+                    } else {
+                        var url = '/spring/bulk/fdrTranslationManager/importResults?';
+                        url += 'resultId=' + data.resultId;
+                        url += '&fileName=' + data.fileName;
+                        url += '&ignoreInvalidColumns=' + data.ignoreInvalidColumns;
+                        window.location = url;
+                    }
+                }
+            });
+            return false;
+        });
     });
     
     function updateInterfaceSelection() {
@@ -42,6 +60,7 @@
                     <i:inline key="yukon.web.modules.amr.fdrTranslationManagement.addRemoveText"/>
                 </div>
                 <div class="bottomPadded">
+                    <%-- This form submitted through ajax --%>
                     <form id="importForm" method="post" action="/spring/bulk/fdrTranslationManager/submitImport" enctype="multipart/form-data">
                         <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
                         <img src="${folderImg}">&nbsp;<input type="file" name="importFile"><br>

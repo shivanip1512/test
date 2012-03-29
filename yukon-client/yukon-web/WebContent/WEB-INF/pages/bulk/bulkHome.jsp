@@ -34,62 +34,33 @@
 
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.bulkHome.header"/>
     <tags:boxContainer title="${headerTitle}" id="bulkHomeContainer" hideEnabled="false">
-    
-        
-        <table cellspacing="10">
-            
-            <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
-            
+        <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
             <cti:checkProperty property="operator.DeviceActionsRole.BULK_IMPORT_OPERATION">
-            <tr>
-                <td>
-                    <form id="bulkImportForm" method="get" action="/spring/bulk/import/upload">
-                        <input type="button" id="massChangeTypeButton" value="Bulk Import" onclick="$('bulkImportForm').submit();" style="width:170px;"/>
-                    </form>
-                </td>
-                <td>Import a file to create meters.</td>
-            </tr>
+                <div class="marginBottomSmall">
+                    <button type="button" data-href="/spring/bulk/import/upload" class="wideButton">Bulk Import</button>
+                    Import a file to create meters.
+                </div>
             </cti:checkProperty>
-            
             
             <cti:checkProperty property="operator.DeviceActionsRole.BULK_UPDATE_OPERATION">
-            <tr>
-                <td>
-                    <form id="bulkUpdateForm" method="get" action="/spring/bulk/update/upload">
-                        <input type="button" id="massChangeTypeButton" value="Bulk Update" onclick="$('bulkUpdateForm').submit();" style="width:170px;"/>
-                    </form>
-                </td>
-                <td>Import a file to update existing meters.</td>
-            </tr>
+                <div class="marginBottomSmall">
+                    <button type="button" data-href="/spring/bulk/update/upload" class="wideButton">Bulk Update</button>
+                    Import a file to update existing meters.
+                </div>
             </cti:checkProperty>
+        </cti:checkRole>
             
-            </cti:checkRole>
-            
-            <tr>
-                <td>
-                    <form id="createCollectionForm" method="get" action="/spring/bulk/deviceSelection">
-                        <input type="button" id="massChangeTypeButton" value="Create Collection" onclick="$('createCollectionForm').submit();" style="width:170px;"/>
-                    </form>
-                </td>
-                <td>Create a collection of devices to perform actions upon.</td>
-            </tr>
+        <div class="marginBottomSmall">
+            <button type="button" data-href="/spring/bulk/deviceSelection" class="wideButton">Create Collection</button>
+            Create a collection of devices to perform actions upon.
+        </div>
 
-            <cti:checkProperty property="operator.DeviceActionsRole.FDR_TRANSLATION_MANAGER">
-            <tr>
-                <td>
-                    <form id="manageFdrTranslationsForm" method="post"
-                        action="/spring/bulk/fdrTranslationManager/home">
-                        <input type="button" id="massChangeTypeButton"
-                            value="Manage FDR Translations"
-                            onclick="$('manageFdrTranslationsForm').submit();"
-                            style="width: 170px;" />
-                    </form>
-                </td>
-                <td>Import, export or delete FDR translations.</td>
-            </tr>
-            </cti:checkProperty>
-        </table>
-        
+        <cti:checkProperty property="operator.DeviceActionsRole.FDR_TRANSLATION_MANAGER">
+            <div class="marginBottomSmall">
+                <button type="button" data-href="/spring/bulk/fdrTranslationManager/home" class="wideButton">Manage FDR Translations</button>
+                Import, export or delete FDR translations.
+            </div>
+        </cti:checkProperty>   
     </tags:boxContainer>
     
     

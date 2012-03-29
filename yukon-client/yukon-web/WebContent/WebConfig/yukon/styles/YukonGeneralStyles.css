@@ -1769,6 +1769,11 @@ tr.ui-priority-secondary {
     margin-bottom: 20px;
 }
 
+.marginBottomSmall {
+    margin: 5px;
+    margin-bottom: 10px;
+}
+
 /* 
     typically the code class is meant to be used to wrap a <pre> tag.  E.g.
     <div class="code">
@@ -1784,4 +1789,8 @@ tr.ui-priority-secondary {
     padding: 4px 8px;
     overflow-x: auto;
     margin: 10px;
+}
+
+button.wideButton {
+    width: 185px;
 }
