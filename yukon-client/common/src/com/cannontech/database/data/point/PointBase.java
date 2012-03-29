@@ -72,23 +72,23 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
      * delete method comment.
      */
     public void delete() throws SQLException {
+        Integer pointID = getPoint().getPointID();
         PointPropertyValueDao dao = YukonSpringHook.getBean("pointPropertyValueDao",PointPropertyValueDao.class);
-        dao.removeByPointId(getPoint().getPointID());
+        dao.removeByPointId(pointID);
         
-        //ADD TABLES THAT HAVE A REFERENCE TO THE POINT TABLE AND THAT
+        // ADD TABLES THAT HAVE A REFERENCE TO THE POINT TABLE AND THAT
         // NEED TO BE DELETED WHEN A POINT ROW IS DELETED (CASCADE DELETE)
-        delete(FDRTranslation.TABLE_NAME, "PointID", getPoint().getPointID());
-        delete(DynamicPointDispatch.TABLE_NAME, "PointID", getPoint().getPointID());
-        delete(DynamicAccumulator.TABLE_NAME, "PointID", getPoint().getPointID());
-        delete(GraphDataSeries.tableName, "PointID", getPoint().getPointID());
-        delete("DynamicPointAlarming", "PointID", getPoint().getPointID());
-        delete(CalcComponent.TABLENAME, "ComponentPointID", getPoint().getPointID());
-        delete("TagLog", "PointID", getPoint().getPointID());
-        delete("DynamicTags", "PointID", getPoint().getPointID());
-        //delete(PointControl.TABLE_NAME, "PointID", getPoint().getPointID());
-    
-        //A TDC Table that does not have a DBPersistant
-        delete("Display2WayData", "PointID", getPoint().getPointID());
+        delete(FDRTranslation.TABLE_NAME, "PointID", pointID);
+        delete(DynamicPointDispatch.TABLE_NAME, "PointID", pointID);
+        delete(DynamicAccumulator.TABLE_NAME, "PointID", pointID);
+        delete(GraphDataSeries.tableName, "PointID", pointID);
+        delete("DynamicPointAlarming", "PointID", pointID);
+        delete(CalcComponent.TABLENAME, "ComponentPointID", pointID);
+        delete("TagLog", "PointID", pointID);
+        delete("DynamicTags", "PointID", pointID);
+        delete("Display2WayData", "PointID", pointID);
+        delete("CCEventLog", "PointID", pointID);
+
         if (!isPartialDelete) {
             getPointAlarming().delete();
             getPoint().delete();
