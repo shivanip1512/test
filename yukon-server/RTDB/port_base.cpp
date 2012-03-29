@@ -1284,7 +1284,9 @@ INT CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Pri
              */
             // We are sharing the port and the share toggle is set to select a shared queue entry.
             setShareToggle(false);    // Indicates that the next queue read should look for an UN-flagged (MSGFLG_PORT_SHARING) OM (One from Yukon that is)
-            status = ReadQueue(_portShareQueue, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
+            
+            // Always read the _first_ element of the port share queue!
+            status = ReadQueue(_portShareQueue, DataSize, Data, 0, WaitFlag, Priority, pElementCount);
 
             if(!status) readPortQueue = false; // We pulled one from the share queue.
         }
