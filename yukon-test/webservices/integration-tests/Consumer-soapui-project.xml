@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="Consumer" resourceRoot="${projectDir}" soapui-version="4.5.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="consumerPortSoap11" type="wsdl" bindingName="{http://yukon.cannontech.com/service}consumerPortSoap11" soapVersion="1_1" anonymous="optional" definition="http://localhost:8081/api/soap/consumer.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8081/api/soap/consumer.wsdl"><con:part><con:url>http://localhost:8081/api/soap/consumer.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://yukon.cannontech.com/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://yukon.cannontech.com/api" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://yukon.cannontech.com/service">
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://yukon.cannontech.com/api" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api">
+      <xsd:simpleType name="AccountNumber">
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="SerialNumber">
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="UnboundedLimit">
+        <xsd:union memberTypes="xsd:positiveInteger yukon:UnboundedLimitWord"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="UnboundedLimitWord">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="unbounded"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="emptyElement">
+        <xsd:complexContent>
+          <xsd:restriction base="xsd:anyType"/>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="Token">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:simpleType name="ThermostatMode">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Auto"/>
+          <xsd:enumeration value="Cool"/>
+          <xsd:enumeration value="Heat"/>
+          <xsd:enumeration value="Off"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="ThermostatFan">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Auto"/>
+          <xsd:enumeration value="Circulate"/>
+          <xsd:enumeration value="On"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="TemperatureUnit">
+        <xsd:restriction base="xsd:string">
+          <xsd:pattern value="F|C"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="Temperature">
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:double">
+            <xsd:attribute name="unit" type="yukon:TemperatureUnit"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:simpleType name="OptOutType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="ENABLED"/>
+          <xsd:enumeration value="DISABLED_WITH_COMM"/>
+          <xsd:enumeration value="DISABLED_WITHOUT_COMM"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HardwareClass">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="SWITCH"/>
+          <xsd:enumeration value="THERMOSTAT"/>
+          <xsd:enumeration value="METER"/>
+          <xsd:enumeration value="GATEWAY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="nonNegativeInt">
+        <xsd:annotation>
+          <xsd:documentation>A 32 bit non-negative integer.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:int">
+          <xsd:minInclusive value="0"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="YukonMessage">
+        <xsd:attribute name="version" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:element name="yukonUser">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="extra">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any processContents="skip"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="Success"/>
+      <xsd:complexType name="Failure">
+        <xsd:sequence>
+          <xsd:element name="errorCode" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="errorReference" type="xsd:string"/>
+          <xsd:element name="errorDescription" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="SimpleSuccessOrFailure">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success" type="yukon:Success"/>
+              <xsd:element name="error" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CustomerAccount">
+        <xsd:sequence>
+          <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+          <xsd:element minOccurs="0" name="mainAddress" type="yukon:USAddress"/>
+          <xsd:element minOccurs="0" name="billingAddress" type="yukon:USAddress"/>
+          <xsd:element minOccurs="0" name="lastName" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="firstName" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="homePhone" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="workPhone" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="email" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="isCommercial" type="xsd:boolean"/>
+          <xsd:element minOccurs="0" name="companyName" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="siteInformation" type="yukon:SiteInformationData"/>
+          <xsd:element minOccurs="0" name="alternateTrackingNumber" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="mapNumber" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="accountUser" type="yukon:YukonUser">
+            <xsd:annotation>
+              <xsd:documentation>If the accountUser is left blank the ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT 
+                        role property can be set to auto-create a login</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="voiceRecognition" type="yukon:VoiceRecognitionData"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="USAddress">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="street" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="street2" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="city" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="state" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="postalCode" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="county" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="YukonUser">
+        <xsd:sequence>
+          <xsd:element name="username" type="xsd:string"/>
+          <xsd:element name="password" type="xsd:string"/>
+          <xsd:element name="loginGroupName" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="SiteInformationData">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="substationName" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="feeder" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="pole" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="transformerSize" type="xsd:positiveInteger"/>
+          <xsd:element minOccurs="0" name="siteVoltage" type="xsd:positiveInteger"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="VoiceRecognitionData">
+        <xsd:sequence>
+          <xsd:element name="username" type="xsd:string"/>
+          <xsd:element name="pin" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="CustomerAccountResult">
+        <xsd:sequence>
+          <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+          <xsd:choice>
+            <xsd:element name="success"/>
+            <xsd:element name="failure" type="yukon:Failure"/>
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="HardwareSummaryListRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element maxOccurs="unbounded" minOccurs="0" name="hardwareClass" type="yukon:HardwareClass"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="hardwareSummaryListRequest" type="yukon:HardwareSummaryListRequest"/>
+      <xsd:complexType name="HardwareSummaryListResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="hardwareSummaryList">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" name="hardwareSummary" type="yukon:HardwareSummary"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="hardwareSummaryListResponse" type="yukon:HardwareSummaryListResponse"/>
+      <xsd:complexType name="HardwareSummary">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="serialNumber" type="yukon:SerialNumber"/>
+          <xsd:element name="deviceLabel" type="xsd:string"/>
+          <xsd:element name="inventoryIdentifier" type="yukon:InventoryIdentifier"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="InventoryIdentifier">
+        <xsd:sequence>
+          <xsd:element name="inventoryId" type="xsd:int"/>
+          <xsd:element name="hardwareType" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="UserLoginRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="username" type="xsd:string"/>
+              <xsd:element name="password" type="xsd:string"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="userLoginRequest" type="yukon:UserLoginRequest"/>
+      <xsd:complexType name="UserLoginResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:choice>
+                <xsd:element name="success"/>
+                <xsd:element name="failure" type="yukon:Failure"/>
+              </xsd:choice>
+              <xsd:element name="sessionTimeoutLength" type="xsd:integer"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="userLoginResponse" type="yukon:UserLoginResponse"/>
+      <xsd:complexType name="ForgotPasswordRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="username" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="email" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="firstName" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="lastName" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="accountNumber" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="energyProvider" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="notes" type="xsd:string"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="forgotPasswordRequest" type="yukon:ForgotPasswordRequest"/>
+      <xsd:element name="forgotPasswordResponse" type="yukon:SimpleSuccessOrFailure"/>
+      <xsd:complexType name="ThermostatAndScheduleListRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage"/>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="thermostatAndScheduleListRequest" type="yukon:ThermostatAndScheduleListRequest"/>
+      <xsd:complexType name="ThermostatAndScheduleListResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:sequence>
+                <xsd:element name="thermostatAndScheduleList" type="yukon:ThermostatAndScheduleList"/>
+              </xsd:sequence>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="ThermostatAndScheduleList">
+        <xsd:sequence>
+          <xsd:element name="account" type="yukon:Account"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Schedule">
+        <xsd:sequence>
+          <xsd:element name="scheduleId" type="yukon:nonNegativeInt"/>
+          <xsd:element name="scheduleName" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Thermostat">
+        <xsd:sequence>
+          <xsd:element name="inventoryId" type="yukon:nonNegativeInt"/>
+          <xsd:element name="serialNumber" type="xsd:string"/>
+          <xsd:element name="deviceLabel" type="xsd:string"/>
+          <xsd:element name="thermostatType" type="xsd:string"/>
+          <xsd:element maxOccurs="unbounded" name="schedule" type="yukon:Schedule"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Account">
+        <xsd:sequence>
+          <xsd:element name="accountId" type="yukon:nonNegativeInt"/>
+          <xsd:element maxOccurs="unbounded" name="thermostat" type="yukon:Thermostat"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="thermostatAndScheduleListResponse" type="yukon:ThermostatAndScheduleListResponse"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="hardwareSummaryListResponse">
+    <wsdl:part element="sch:hardwareSummaryListResponse" name="hardwareSummaryListResponse"/>
+  </wsdl:message>
+  <wsdl:message name="thermostatAndScheduleListResponse">
+    <wsdl:part element="sch:thermostatAndScheduleListResponse" name="thermostatAndScheduleListResponse"/>
+  </wsdl:message>
+  <wsdl:message name="forgotPasswordResponse">
+    <wsdl:part element="sch:forgotPasswordResponse" name="forgotPasswordResponse"/>
+  </wsdl:message>
+  <wsdl:message name="userLoginRequest">
+    <wsdl:part element="sch:userLoginRequest" name="userLoginRequest"/>
+  </wsdl:message>
+  <wsdl:message name="userLoginResponse">
+    <wsdl:part element="sch:userLoginResponse" name="userLoginResponse"/>
+  </wsdl:message>
+  <wsdl:message name="hardwareSummaryListRequest">
+    <wsdl:part element="sch:hardwareSummaryListRequest" name="hardwareSummaryListRequest"/>
+  </wsdl:message>
+  <wsdl:message name="forgotPasswordRequest">
+    <wsdl:part element="sch:forgotPasswordRequest" name="forgotPasswordRequest"/>
+  </wsdl:message>
+  <wsdl:message name="extraHeader">
+    <wsdl:part element="sch:extra" name="extra"/>
+  </wsdl:message>
+  <wsdl:message name="thermostatAndScheduleListRequest">
+    <wsdl:part element="sch:thermostatAndScheduleListRequest" name="thermostatAndScheduleListRequest"/>
+  </wsdl:message>
+  <wsdl:message name="yukonUserHeader">
+    <wsdl:part element="sch:yukonUser" name="yukonUser"/>
+  </wsdl:message>
+  <wsdl:portType name="consumerPort">
+    <wsdl:operation name="hardwareSummaryList">
+      <wsdl:input message="tns:hardwareSummaryListRequest" name="hardwareSummaryListRequest"/>
+      <wsdl:output message="tns:hardwareSummaryListResponse" name="hardwareSummaryListResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="thermostatAndScheduleList">
+      <wsdl:input message="tns:thermostatAndScheduleListRequest" name="thermostatAndScheduleListRequest"/>
+      <wsdl:output message="tns:thermostatAndScheduleListResponse" name="thermostatAndScheduleListResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="forgotPassword">
+      <wsdl:input message="tns:forgotPasswordRequest" name="forgotPasswordRequest"/>
+      <wsdl:output message="tns:forgotPasswordResponse" name="forgotPasswordResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="userLogin">
+      <wsdl:input message="tns:userLoginRequest" name="userLoginRequest"/>
+      <wsdl:output message="tns:userLoginResponse" name="userLoginResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="consumerPortSoap11" type="tns:consumerPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="hardwareSummaryList">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="hardwareSummaryListRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="hardwareSummaryListResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="thermostatAndScheduleList">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="thermostatAndScheduleListRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="thermostatAndScheduleListResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="forgotPassword">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="forgotPasswordRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="forgotPasswordResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="userLogin">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="userLoginRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="userLoginResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="consumerService">
+    <wsdl:port binding="tns:consumerPortSoap11" name="consumerPortSoap11">
+      <soap:address location="http://localhost:8081/api/soap"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8081/api/soap</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="forgotPassword" bindingOperationName="forgotPassword" type="Request-Response" outputName="forgotPasswordResponse" inputName="forgotPasswordRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:forgotPasswordRequest version="?">
+         <!--Optional:-->
+         <api:username>?</api:username>
+         <!--Optional:-->
+         <api:email>?</api:email>
+         <!--Optional:-->
+         <api:firstName>?</api:firstName>
+         <!--Optional:-->
+         <api:lastName>?</api:lastName>
+         <!--Optional:-->
+         <api:accountNumber>?</api:accountNumber>
+         <!--Optional:-->
+         <api:energyProvider>?</api:energyProvider>
+         <!--Optional:-->
+         <api:notes>?</api:notes>
+      </api:forgotPasswordRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/forgotPasswordRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="hardwareSummaryList" bindingOperationName="hardwareSummaryList" type="Request-Response" outputName="hardwareSummaryListResponse" inputName="hardwareSummaryListRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:hardwareSummaryListRequest version="?">
+         <!--Zero or more repetitions:-->
+         <api:hardwareClass>?</api:hardwareClass>
+      </api:hardwareSummaryListRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/hardwareSummaryListRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="thermostatAndScheduleList" bindingOperationName="thermostatAndScheduleList" type="Request-Response" outputName="thermostatAndScheduleListResponse" inputName="thermostatAndScheduleListRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatAndScheduleListRequest version="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/thermostatAndScheduleListRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="userLogin" bindingOperationName="userLogin" type="Request-Response" outputName="userLoginResponse" inputName="userLoginRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:userLoginRequest version="?">
+         <api:username>?</api:username>
+         <api:password>?</api:password>
+      </api:userLoginRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/consumerPort/userLoginRequest"/></con:call></con:operation></con:interface><con:testSuite name="Consumer TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="forgotPassword TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="forgotPassword"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>forgotPassword</con:operation><con:request name="forgotPassword"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:forgotPasswordRequest version="1.0">
+         <api:notes>Hellow World</api:notes>
+      </api:forgotPasswordRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/consumerPort/forgotPasswordRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="hardwareSummaryList TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="hardwareSummaryList"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>hardwareSummaryList</con:operation><con:request name="hardwareSummaryList"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:hardwareSummaryListRequest version="1.0">
+         <!--Zero or more repetitions:-->
+         <api:hardwareClass>1</api:hardwareClass>
+      </api:hardwareSummaryListRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" disabled="true"/><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/consumerPort/hardwareSummaryListRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="thermostatAndScheduleList TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="thermostatAndScheduleList"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>thermostatAndScheduleList</con:operation><con:request name="thermostatAndScheduleList"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:thermostatAndScheduleListRequest version="1.0"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" disabled="true"/><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/consumerPort/thermostatAndScheduleListRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="userLogin TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="userLogin"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>consumerPortSoap11</con:interface><con:operation>userLogin</con:operation><con:request name="userLogin"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:userLoginRequest version="1.0">
+         <api:username>yukon</api:username>
+         <api:password>yukon</api:password>
+      </api:userLoginRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/consumerPort/userLoginRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:properties/><con:wssContainer/></con:soapui-project>
