@@ -1391,7 +1391,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
             /* This is a no no so throw em away (for now) */
             for(i = 0; i < Count; i++)
             {
-                if(ReadQueue (pInfo->QueueHandle, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
+                if(ReadFrontElement(pInfo->QueueHandle, &Length, (PVOID *) &MyOutMessage, DCWW_WAIT, &Priority))
                 {
                     _snprintf(tempstr, 99,"Error Reading Queue\n");
                     {
@@ -1439,7 +1439,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
         for(i = 1; i <= Count && !pInfo->getStatus(INLGRPQ); i++)       /* limit to one Lgrpq per ccu on queue at a time */
         {
             /* get the client submitted entry from the queue */
-            if(ReadQueue (pInfo->QueueHandle, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
+            if(ReadFrontElement(pInfo->QueueHandle, &Length, (PVOID *) &MyOutMessage, DCWW_WAIT, &Priority))
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1703,7 +1703,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
     while(Count)
     {
         /* get the entry from the queue */
-        if(ReadQueue (pInfo->ActinQueueHandle, &Length, (PVOID *) &MyOutMessage, 0, DCWW_WAIT, &Priority))
+        if(ReadFrontElement(pInfo->ActinQueueHandle, &Length, (PVOID *) &MyOutMessage, DCWW_WAIT, &Priority))
         {
             _snprintf(tempstr, 99,"Error Reading Actin Queue\n");
             {

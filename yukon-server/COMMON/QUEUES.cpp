@@ -412,7 +412,7 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
 
 
 /* Routine to read an entry from the queue */
-INT ReadQueue (HCTIQUEUE QueueHandle, PULONG DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG* pElementCount /*=NULL*/)
+IM_EX_CTIBASE INT ReadElementByIndex(HCTIQUEUE QueueHandle, PULONG DataSize, PPVOID Data, ULONG Element, BOOL32 WaitFlag, PBYTE Priority, ULONG* pElementCount /*=NULL*/)
 {
     PQUEUEENT Entry;
     PQUEUEENT Previous = NULL;
@@ -539,6 +539,10 @@ INT ReadQueue (HCTIQUEUE QueueHandle, PULONG DataSize, PPVOID Data, ULONG Elemen
     return(NO_ERROR);
 }
 
+IM_EX_CTIBASE INT ReadFrontElement(HCTIQUEUE QueueHandle, PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Priority, ULONG* pElementCount)
+{
+    return ReadElementByIndex(QueueHandle, DataSize, Data, 0, WaitFlag, Priority, pElementCount);
+}
 
 /* Routine to perform the binary equivelant of an enima */
 IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)

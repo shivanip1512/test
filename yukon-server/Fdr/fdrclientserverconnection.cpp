@@ -247,12 +247,9 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
             UCHAR priority;
             CHAR *buffer = NULL;
             ULONG bytesRead = 0;
-            int queueReturn = ReadQueue (_outboundQueue,
-                           &bytesRead,
-                           (PVOID *) &buffer,
-                           0,
-                           DCWW_WAIT,
-                           &priority);
+
+            int queueReturn = ReadFrontElement(_outboundQueue, &bytesRead, (PVOID *) &buffer, DCWW_WAIT, &priority);
+
             // see if we got here because someone requested cancellation
             pSelf.serviceCancellation( );
 

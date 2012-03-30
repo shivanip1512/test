@@ -176,12 +176,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
 
                     bytesRead = 0;
 
-                    queueReturn = ReadQueue (iQueueHandle,
-                                   &bytesRead,
-                                   (PVOID *) &buffer,
-                                   0,
-                                   DCWW_NOWAIT,
-                                   &priority);
+                    queueReturn = ReadFrontElement(iQueueHandle, &bytesRead, (PVOID *) &buffer, DCWW_NOWAIT, &priority);
 
                     // only try to send if the connection is available
                     if (getConnectionStatus() ==  CtiFDRSocketConnection::Ok)

@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(test_read_queue)
 
     int return_code;
 
-    return_code = ReadQueue(QueueHandle, &item_length, &item, 0, false, &priority, &elementCount);
+    return_code = ReadFrontElement(QueueHandle, &item_length, &item, false, &priority, &elementCount);
 
     BOOST_CHECK_EQUAL(return_code, 0);
     BOOST_CHECK_EQUAL(priority, outmessages[4].Priority);
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_read_queue)
     BOOST_CHECK_EQUAL(item_length, sizeof(CtiOutMessage));
 
     //  read without elementCount
-    return_code = ReadQueue(QueueHandle, &item_length, &item, 0, false, &priority);
+    return_code = ReadFrontElement(QueueHandle, &item_length, &item, false, &priority);
 
     BOOST_CHECK_EQUAL(return_code, 0);
     BOOST_CHECK_EQUAL(priority, outmessages[0].Priority);
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(test_read_queue)
     //BOOST_CHECK_EQUAL(elementCount, 5);
     BOOST_CHECK_EQUAL(item_length, sizeof(CtiOutMessage));
 
-    return_code = ReadQueue(QueueHandle, &item_length, &item, 0, false, &priority, &elementCount);
+    return_code = ReadFrontElement(QueueHandle, &item_length, &item, false, &priority, &elementCount);
 
     BOOST_CHECK_EQUAL(return_code, 0);
     BOOST_CHECK_EQUAL(priority, outmessages[1].Priority);
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(test_read_queue)
     BOOST_CHECK_EQUAL(elementCount, 4);
     BOOST_CHECK_EQUAL(item_length, sizeof(CtiOutMessage));
 
-    return_code = ReadQueue(QueueHandle, &item_length, &item, 0, false, &priority, &elementCount);
+    return_code = ReadFrontElement(QueueHandle, &item_length, &item, false, &priority, &elementCount);
 
     BOOST_CHECK_EQUAL(return_code, 0);
     BOOST_CHECK_EQUAL(priority, outmessages[5].Priority);
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(test_read_queue)
     BOOST_CHECK_EQUAL(elementCount, 3);
     BOOST_CHECK_EQUAL(item_length, sizeof(CtiOutMessage));
 
-    return_code = ReadQueue(QueueHandle, &item_length, &item, 0, false, &priority, &elementCount);
+    return_code = ReadFrontElement(QueueHandle, &item_length, &item, false, &priority, &elementCount);
 
     BOOST_CHECK_EQUAL(return_code, 0);
     BOOST_CHECK_EQUAL(priority, outmessages[6].Priority);
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(test_read_queue)
     BOOST_CHECK_EQUAL(elementCount, 2);
     BOOST_CHECK_EQUAL(item_length, sizeof(CtiOutMessage));
 
-    return_code = ReadQueue(QueueHandle, &item_length, &item, 0, false, &priority, &elementCount);
+    return_code = ReadFrontElement(QueueHandle, &item_length, &item, false, &priority, &elementCount);
 
     BOOST_CHECK_EQUAL(return_code, 0);
     BOOST_CHECK_EQUAL(priority, outmessages[3].Priority);
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(test_read_queue)
     BOOST_CHECK_EQUAL(elementCount, 1);
     BOOST_CHECK_EQUAL(item_length, sizeof(CtiOutMessage));
 
-    return_code = ReadQueue(QueueHandle, &item_length, &item, 0, false, &priority, &elementCount);
+    return_code = ReadFrontElement(QueueHandle, &item_length, &item, false, &priority, &elementCount);
 
     BOOST_CHECK_EQUAL(return_code, 0);
     BOOST_CHECK_EQUAL(priority, outmessages[2].Priority);

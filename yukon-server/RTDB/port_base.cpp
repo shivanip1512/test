@@ -1286,7 +1286,7 @@ INT CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Pri
             setShareToggle(false);    // Indicates that the next queue read should look for an UN-flagged (MSGFLG_PORT_SHARING) OM (One from Yukon that is)
             
             // Always read the _first_ element of the port share queue!
-            status = ReadQueue(_portShareQueue, DataSize, Data, 0, WaitFlag, Priority, pElementCount);
+            status = ReadFrontElement(_portShareQueue, DataSize, Data, WaitFlag, Priority, pElementCount);
 
             if(!status) readPortQueue = false; // We pulled one from the share queue.
         }
@@ -1300,7 +1300,7 @@ INT CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Pri
     if(readPortQueue && _portQueue)
     {
         setShareToggle(true);    // Indicates that the next queue read should look for a flagged (MSGFLG_PORT_SHARING) OM (One NOT from Yukon that is)
-        status = ReadQueue(_portQueue, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
+        status = ReadElementByIndex(_portQueue, DataSize, Data, Element, WaitFlag, Priority, pElementCount);
 
         if(pElementCount && *pElementCount > 5000 && CtiTime() > lastQueueReportTime)  // Ok, we may have an issue here....
         {

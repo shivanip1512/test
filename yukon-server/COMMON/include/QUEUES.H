@@ -67,13 +67,20 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
                              BOOL32 WaitFlag,
                              PBYTE Priority);
 
-IM_EX_CTIBASE INT ReadQueue (HCTIQUEUE QueueHandle,
-                             PULONG DataSize,
-                             PPVOID Data,
-                             ULONG Element,
-                             BOOL32 WaitFlag,
-                             PBYTE Priority,
-                             ULONG* pElementCount=NULL);
+IM_EX_CTIBASE INT ReadElementByIndex (HCTIQUEUE QueueHandle,
+                                      PULONG DataSize,
+                                      PPVOID Data,
+                                      ULONG Element,
+                                      BOOL32 WaitFlag,
+                                      PBYTE Priority,
+                                      ULONG* pElementCount=NULL);
+
+IM_EX_CTIBASE INT ReadFrontElement (HCTIQUEUE QueueHandle,
+                                    PULONG DataSize,
+                                    PPVOID Data,
+                                    BOOL32 WaitFlag,
+                                    PBYTE Priority,
+                                    ULONG* pElementCount=NULL);
 
 IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle);
 
