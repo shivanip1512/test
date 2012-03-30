@@ -36,7 +36,7 @@ public interface CcMonitorBankListDao {
      * and phase, and inheriting limits from subbus strategy settings.
      * @return 
      */
-    public int addAdditionalMonitorPoint(int pointId, int zoneId, Phase phase);
+    public int addAdditionalMonitorPoint(int pointId, int substationBusId, Phase phase);
     
     /**
      * Inserts new entry for voltage Y point on the specified regulator.
@@ -48,7 +48,7 @@ public interface CcMonitorBankListDao {
      * Inserts a new point on the specified regulator.
      * @return 
      */
-    public int addRegulatorPoint(int regulatorId, Phase phase, int zoneId);
+    public int addRegulatorPoint(int regulatorId, Phase phase, int substationBusId);
     
     /**
      * Updates the entry for voltage Y point on the specified regulator.

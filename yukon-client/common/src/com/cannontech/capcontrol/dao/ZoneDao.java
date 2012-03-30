@@ -7,6 +7,7 @@ import org.joda.time.ReadableInstant;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
+import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
@@ -39,12 +40,12 @@ public interface ZoneDao {
     public void updateCapBankToZoneMapping(int zoneId, List<CapBankToZoneMapping> banksToZone);
     
     /**
-     * This function will assign the passed in list of point ids to the zoneId.
+     * This function will assign the passed in list of point ids to the zone.
      * It will remove any existing assigned points.
      * @param zoneId
      * @param pointids
      */
-    public void updatePointToZoneMapping(int zoneId, List<PointToZoneMapping> pointsToZone);
+    public void updatePointToZoneMapping(AbstractZone abstractZone, List<PointToZoneMapping> pointsToZone);
     
     
     /**

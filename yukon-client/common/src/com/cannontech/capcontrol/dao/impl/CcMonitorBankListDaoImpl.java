@@ -14,6 +14,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -149,7 +150,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Override
     public int addRegulatorPoint(int regulatorId) {
         ZonePointPhaseHolder zonePointPhase = getZonePointPhaseByRegulatorId(regulatorId);
-        LimitsHolder limits = getLimitsFromStrategy(zonePointPhase.zoneId);
+        LimitsHolder limits = getLimitsFromStrategyByZoneId(zonePointPhase.zoneId);
         
         //paoType here may not be technically correct, but it will never actually be used. Only the id is necessary.
         PaoIdentifier paoId = new PaoIdentifier(regulatorId, PaoType.PHASE_OPERATED);
@@ -158,7 +159,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     }
     
     @Override
-    public int addRegulatorPoint(int regulatorId, Phase phase, int zoneId) {
+    public int addRegulatorPoint(int regulatorId, Phase phase, int substationBusId) {
         SqlStatementBuilder getPointIdSql = new SqlStatementBuilder();
         getPointIdSql.append("SELECT PointId");
         getPointIdSql.append("FROM ExtraPaoPointAssignment");
@@ -166,7 +167,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getPointIdSql.append("AND Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y);
         int pointId = yukonJdbcTemplate.queryForInt(getPointIdSql);
         
-        LimitsHolder limits = getLimitsFromStrategy(zoneId);
+        LimitsHolder limits = getLimitsFromStrategyBySubbusId(substationBusId);
         
         //paoType here may not be technically correct, but it will never actually be used. Only the id is necessary.
         PaoIdentifier paoId = new PaoIdentifier(regulatorId, PaoType.PHASE_OPERATED);
@@ -175,8 +176,8 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     }
     
     @Override
-    public int addAdditionalMonitorPoint(int pointId, int zoneId, Phase phase) {
-        LimitsHolder limits = getLimitsFromStrategy(zoneId);
+    public int addAdditionalMonitorPoint(int pointId, int substationBusId, Phase phase) {
+        LimitsHolder limits = getLimitsFromStrategyBySubbusId(substationBusId);
         PaoIdentifier paoId = pointDao.getPaoPointIdentifier(pointId).getPaoIdentifier();
         
         VoltageLimitedDeviceInfo info = buildNewInfoObject(paoId, pointId, limits, phase);
@@ -268,7 +269,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         return yukonJdbcTemplate.queryForObject(getZoneInfoSql, regulatorPointRowMapper);
     }
     
-    private LimitsHolder getLimitsFromStrategy(int zoneId) {
+    private LimitsHolder getLimitsFromStrategyByZoneId(int zoneId) {
         SqlStatementBuilder getStrategyIdSql = new SqlStatementBuilder();
         getStrategyIdSql.append("SELECT StrategyId");
         getStrategyIdSql.append("FROM Zone");
@@ -277,6 +278,33 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         int strategyId = yukonJdbcTemplate.queryForInt(getStrategyIdSql);
         
         //get the upper and lower limits from the strategy
+        return getStrategyLimits(strategyId);
+    }
+    
+    private LimitsHolder getLimitsFromStrategyBySubbusId(int substationBusId) {
+        SqlStatementBuilder getStrategyIdSql = new SqlStatementBuilder();
+        getStrategyIdSql.append("SELECT StrategyId");
+        getStrategyIdSql.append("FROM CcSeasonStrategyAssignment");
+        getStrategyIdSql.append("WHERE PAObjectId").eq(substationBusId);
+        List<Integer> strategyIds = yukonJdbcTemplate.query(getStrategyIdSql, new IntegerRowMapper());
+        
+        if(strategyIds.size() == 1) {
+            //subbus strategy found
+            return getStrategyLimits(strategyIds.get(0));
+        } else {
+            //no subbus strategy, get area strategy
+            getStrategyIdSql = new SqlStatementBuilder();
+            getStrategyIdSql.append("SELECT StrategyId");
+            getStrategyIdSql.append("FROM CcSeasonStrategyAssignment CSSA");
+            getStrategyIdSql.append("JOIN CcSubAreaAssignment CSAA ON CSAA.AreaID = CSSA.PAObjectId");
+            getStrategyIdSql.append("JOIN CcSubstationSubbusList CSSL ON CSSL.SubStationID = CSAA.SubstationBusID");
+            getStrategyIdSql.append("WHERE cssl.SubStationBusID").eq(substationBusId);
+            int strategyId = yukonJdbcTemplate.queryForInt(getStrategyIdSql);
+            return getStrategyLimits(strategyId);
+        }
+    }
+    
+    private LimitsHolder getStrategyLimits(int strategyId) {
         CapControlStrategy strategy = strategyDao.getForId(strategyId);
         List<PeakTargetSetting> settings = strategy.getTargetSettings();
         double upperVoltLimit = 0.0;

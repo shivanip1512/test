@@ -142,7 +142,7 @@ public class BusViewController {
     }
     
     private void setupZoneVoltagePoints(List<ZoneVoltagePointsHolder> zoneVoltagePointsHolders, ZoneHierarchy hierarchy) {
-        
+        if(hierarchy == null) return; //no zones exist for this sub bus
         AbstractZone zone = hierarchy.getZone();
         List<VoltageLimitedDeviceInfo> voltageInfos = ccMonitorBankListDao.getDeviceInfoByZoneId(zone.getZoneId());
         ZoneVoltagePointsHolder pointsHolder = new ZoneVoltagePointsHolder(zone.getZoneId(), voltageInfos);

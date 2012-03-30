@@ -70,14 +70,14 @@ public class ZoneServiceImpl implements ZoneService {
         List<PointToZoneMapping> pointsToZone = getPointToZoneMappingByDto(abstractZone);
         
         zoneDao.updateCapBankToZoneMapping(abstractZone.getZoneId(), banksToZone);
-        zoneDao.updatePointToZoneMapping(abstractZone.getZoneId(), pointsToZone);
+        zoneDao.updatePointToZoneMapping(abstractZone, pointsToZone);
         for(RegulatorToZoneMapping regToZone : zone.getRegulators()) {
             Integer regId = regToZone.getRegulatorId();
             if(oldRegulatorIds.contains(regId)) {
                 ccMonitorBankListDao.updateRegulatorPoint(regId);
                 oldRegulatorIds.remove(regId);
             } else {
-                ccMonitorBankListDao.addRegulatorPoint(regId, regToZone.getPhase(), zone.getId());
+                ccMonitorBankListDao.addRegulatorPoint(regId, regToZone.getPhase(), abstractZone.getSubstationBusId());
             }
         }
         //remove regulator points for regulators no longer attached

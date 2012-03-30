@@ -15,6 +15,7 @@ import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
 import com.cannontech.capcontrol.exception.OrphanedRegulatorException;
+import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.CcEventType;
@@ -352,23 +353,23 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     }
 
     @Override
-    public void updatePointToZoneMapping(int zoneId, List<PointToZoneMapping> pointsToZone) {
+    public void updatePointToZoneMapping(AbstractZone abstractZone, List<PointToZoneMapping> pointsToZone) {
         //capture the points that were previously assigned to the zone...
         SqlStatementBuilder sqlBuilderGetPoints = new SqlStatementBuilder();
         sqlBuilderGetPoints.append("SELECT PointId");
         sqlBuilderGetPoints.append("FROM PointToZoneMapping");
-        sqlBuilderGetPoints.append("WHERE ZoneId").eq(zoneId);
+        sqlBuilderGetPoints.append("WHERE ZoneId").eq(abstractZone.getZoneId());
         List<Integer> oldPointIds = yukonJdbcTemplate.query(sqlBuilderGetPoints, new IntegerRowMapper());
         //...then delete them all
         SqlStatementBuilder sqlBuilderDelete = new SqlStatementBuilder();
 		sqlBuilderDelete.append("DELETE FROM PointToZoneMapping");
-        sqlBuilderDelete.append("Where ZoneId").eq(zoneId);
+        sqlBuilderDelete.append("Where ZoneId").eq(abstractZone.getZoneId());
         yukonJdbcTemplate.update(sqlBuilderDelete);
         
         for (PointToZoneMapping pointToZone : pointsToZone) {
         	SqlStatementBuilder sqlBuilderInsert = new SqlStatementBuilder();
         	sqlBuilderInsert.append("INSERT INTO PointToZoneMapping (PointId, ZoneId, GraphPositionOffset, Distance, Phase)");
-        	sqlBuilderInsert.values(pointToZone.getPointId(), zoneId, pointToZone.getGraphPositionOffset(), pointToZone.getDistance(), pointToZone.getPhase());
+        	sqlBuilderInsert.values(pointToZone.getPointId(), abstractZone.getZoneId(), pointToZone.getGraphPositionOffset(), pointToZone.getDistance(), pointToZone.getPhase());
             
             yukonJdbcTemplate.update(sqlBuilderInsert);
             
@@ -382,7 +383,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
             } else {
                 //if point is not in list of points from pointToZoneMapping, we
                 //insert new, with strategy settings
-                ccMonitorBankListDao.addAdditionalMonitorPoint(currentPointId, zoneId, currentPhase);
+                ccMonitorBankListDao.addAdditionalMonitorPoint(currentPointId, abstractZone.getSubstationBusId(), currentPhase);
             }
         }
         
