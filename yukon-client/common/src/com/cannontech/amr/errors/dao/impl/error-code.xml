@@ -1031,27 +1031,43 @@
 
     <error code="1024">
         <category>Network Manager</category>
-        <porter>No matching node was found in network manager.</porter>
-        <description>TODO: No matching node was found in network manager.</description>
-        <troubleshooting>TODO: No matching node was found in network manager.</troubleshooting>
+        <porter>No node in Network Manager.</porter>
+        <description>
+            There isn't a node in Network Manager which is currently associated with this
+            device in Yukon.
+        </description>
+        <troubleshooting>
+            Check with Network Manager database to see if this meter exists and is known to be
+            paired with any RF nodes.
+        </troubleshooting>
     </error>
     <error code="1025">
         <category>Network Manager</category>
-        <porter>No gateway to the given was found.</porter>
-        <description>TODO: No gateway to the given was found.</description>
-        <troubleshooting>TODO: No gateway to the given was found.</troubleshooting>
+        <porter>There is no RF gateway associated with the RF node.</porter>
+        <description>
+            Network Manager communicates to RF nodes via RF gateways. Hence Network Manager needs
+            to know which gateway to forward a request to in order to reach a specific node.
+        </description>
+        <troubleshooting>
+            Check with Network Manager database to see which RF gateway is associated
+            with the RF node in question, if any.
+        </troubleshooting>
     </error>
     <error code="1026">
         <category>Network Manager</category>
-        <porter>Failure</porter>
-        <description>TODO: Failure</description>
-        <troubleshooting>TODO: Failure</troubleshooting>
+        <porter>There was an error while processing the request.</porter>
+        <description>
+            An unexpected Network Manager error has occurred.
+        </description>
+        <troubleshooting>
+            Check with Network Manager server logs to identify the root cause of the failure.
+        </troubleshooting>
     </error>
     <error code="1027">
         <category>Network Manager</category>
         <porter>Timeout</porter>
-        <description>TODO: Timeout</description>
-        <troubleshooting>TODO: Timeout</troubleshooting>
+        <description>Request timed out</description>
+        <troubleshooting>Check Yukon Logs for errors</troubleshooting>
     </error>
 
     <error code="0">
