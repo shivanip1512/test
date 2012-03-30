@@ -113,7 +113,21 @@
     <target name="build" depends="init,clean,svn-info-build,buildTarget,build-dist" />
     <target name="build-release" depends="init,clean,svn-info-build,buildTarget,symstore,build-dist" />
 
-    <target name="buildTarget" depends="build-client,build-server,build-install" />
+    <target name="buildTarget" depends="build-dbSnapshots,build-client,build-server,build-install" />
+    
+    <target name="build-dbSnapshots" depends="init">
+        <echo message="Creating database snapshot" />
+
+    	<ant dir="${basedir}/yukon-client/build" >
+            <target name="createDatabaseSnapshots"/>
+    		<!--            <property name="yukon.major" value="${yukon.major}"/> -->
+    		<!--            <property name="yukon.minor" value="${yukon.minor}"/> -->
+    		<!--            <property name="yukon.revision" value="${yukon.revision}"/> -->
+    		            <property name="yukon.major" value="5"/> 
+    		            <property name="yukon.minor" value="5"/> 
+    		            <property name="yukon.revision" value="0"/> 
+        </ant>
+    </target>
     
     <target name="build-client" depends="init,clean,svn-info-build">
         <echo message="building module yukon-client" />

@@ -13,14 +13,12 @@
 
     </target>
 
-    <target name="version_db_files" depends="init" >
+    <target name="version_db_files" depends="init">
         
         <!-- set up some local variables -->
-        <property name="sql.insert" 
-            value="insert into CTIDatabase values('${yukon.major}.${yukon.minor}', 'Matt K', '${today}', 'Latest Update', ${yukon.revision} );"/>
+        <property name="sql.insert" value="insert into CTIDatabase values('${yukon.major}.${yukon.minor}', 'Matt K', '${today}', 'Latest Update', ${yukon.revision} );"/>
 
-        <property name="sql.filename" 
-            value="${yukon.major}.${yukon.minor}_${yukon.revision}.sql"/>
+        <property name="sql.filename" value="${yukon.major}.${yukon.minor}_${yukon.revision}.sql"/>
 
         <!-- Add the yukon version to the DBUpdate and Creation script files -->
         <replace file="DBUpdates/sqlserver/${sql.filename}" token="/* __YUKON_VERSION__ */" value="${sql.insert}"/>
@@ -33,107 +31,135 @@
     <target name="sqlServerCreationScriptXMLFile" depends="version_db_files">
         <property name="databaseName" value="TempDBCreation_${yukon.major}_${yukon.minor}_${yukon.revision}" />
         
-        <replace file="Custom Scripts/SQL Server/CreateDatabase.sql" token="tempDatabase" value="${databaseName}"/>
-        <replace file="Custom Scripts/SQL Server/DropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
-        <echo message="tempDatabase"/>
+    	<copy file="Custom Scripts/SQL Server/CreateDatabase.sql" tofile="tempCreateDatabase.sql" overwrite="true" />
+        <replace file="tempCreateDatabase.sql" token="tempDatabase" value="${databaseName}"/>
+
+    	<copy file="Custom Scripts/SQL Server/DropDatabase.sql" tofile="tempDropDatabase.sql" overwrite="true" />
+        <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
+        <echo message="${databaseName}"/>
         
         <!-- Create sql server databse and user-->
         <sql
             driver="net.sourceforge.jtds.jdbc.Driver"
-            url="jdbc:jtds:sqlserver://SWDBServer1:1433"
+            url="jdbc:jtds:sqlserver://${dbServer}:${dbSqlServerPort}"
             userid="sa"
             password="cannontech123">
-            <transaction src="Custom Scripts/SQL Server/CreateDatabase.sql" /> 
+            <transaction src="tempCreateDatabase.sql" />
+            <classpath>
+                <pathelement location="../yukon-client/third-party/jtds.jar"/>
+            </classpath>
         </sql>
         
         <sql
              driver="net.sourceforge.jtds.jdbc.Driver"
-             url="jdbc:jtds:sqlserver://SWDBServer1:1433"
+             url="jdbc:jtds:sqlserver://${dbServer}:${dbSqlServerPort}"
              userid="sa"
              password="cannontech123">
-            sp_addsrvrolemember '${databaseName}' , 'sysadmin';
+            <classpath>
+                <pathelement location="../yukon-client/third-party/jtds.jar"/>
+            </classpath>
+        	sp_addsrvrolemember '${databaseName}' , 'sysadmin';
         </sql>
         
         <!-- Run the sql server creation scripts -->
+        <echo message="Importing Creation Scripts" />
         <sql
             driver="net.sourceforge.jtds.jdbc.Driver"
-            url="jdbc:jtds:sqlserver://SWDBServer1:1433"
+            url="jdbc:jtds:sqlserver://${dbServer}:${dbSqlServerPort}"
             userid="${databaseName}"
             password="${databaseName}"
             delimiter='go'>
+            <classpath>
+                <pathelement location="../yukon-client/third-party/jtds.jar"/>
+            </classpath>
             <transaction src="CreationScripts/SqlServerTableCreation.sql" />
         </sql>
 
         <!-- Build xml file -->
-        <java jar="../lib/SchemaDumpToXML.jar"
-        	fork="true">
+        <echo message="Building Database Snapshot" />
+        <java jar="../yukon-client/third-party/SchemaDumpToXML.jar" fork="true">
             <arg value="--dbDriver=net.sourceforge.jtds.jdbc.Driver"/>
-            <arg value="--dbUrl=jdbc:jtds:sqlserver://SWDBServer1:1433"/>
-        	<arg value="--user=${databaseName}"/>
+            <arg value="--dbUrl=jdbc:jtds:sqlserver://${dbServer}:${dbSqlServerPort}"/>
+            <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=dbo"/>
-            <arg value="--outputXmlFile=${export}/sqlServer${databaseName}.xml"/>
+            <arg value="--outputXmlFile=${dbSnapshot}/mssql.xml"/>
+            <classpath>
+               <pathelement location="../yukon-client/third-party/jtds.jar"/>
+            </classpath>
         </java>
-    	
+        
         <!-- Drop sql server databse and user -->
+        <echo message="Deleting database" />
         <sql
             driver="net.sourceforge.jtds.jdbc.Driver"
-            url="jdbc:jtds:sqlserver://SWDBServer1:1433"
+            url="jdbc:jtds:sqlserver://${dbServer}:${dbSqlServerPort}"
             userid="sa"
             password="cannontech123">
-            <transaction src="Custom Scripts/SQL Server/DropDatabase.sql" />
+            <classpath>
+                <pathelement location="../yukon-client/third-party/jtds.jar"/>
+            </classpath>
+            <transaction src="tempDropDatabase.sql" />
         </sql>
-    	
-    	<replace file="Custom Scripts/SQL Server/CreateDatabase.sql" token="${databaseName}" value="tempDatabase"/>
-    	<replace file="Custom Scripts/SQL Server/DropDatabase.sql" token="${databaseName}" value="tempDatabase"/>
-    	        
+        
     </target>
     
     <target name="oracleCreationScriptXMLFile" depends="version_db_files">
         <property name="databaseName" value="tempDBCreation_${yukon.major}_${yukon.minor}_${yukon.revision}" />
-        
-        <replace file="Custom Scripts/Oracle/CreateDatabase.sql" token="tempDatabase" value="${databaseName}"/>
-        <replace file="Custom Scripts/Oracle/DropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
-        <echo message="tempDatabase"/>
+
+        <copy file="Custom Scripts/Oracle/CreateDatabase.sql" tofile="tempCreateDatabase.sql" overwrite="true" />
+        <replace file="tempCreateDatabase.sql" token="tempDatabase" value="${databaseName}"/>
+
+        <copy file="Custom Scripts/Oracle/DropDatabase.sql" tofile="tempDropDatabase.sql" overwrite="true" />
+        <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
+        <echo message="${databaseName}"/>
         
         <!-- Create oracle databse and user-->
         <sql
             driver="oracle.jdbc.OracleDriver"
-            url="jdbc:oracle:thin:@SWDBServer1:1521:swdb1"
+            url="jdbc:oracle:thin:@${dbServer}:${dbOracleServerPort}:${dbOracleServerAlias}"
             userid="sys as sysdba"
             password="cannontech123">
-            <transaction src="Custom Scripts/Oracle/CreateDatabase.sql" /> 
+            <classpath>
+                <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
+            </classpath>
+            <transaction src="tempCreateDatabase.sql" /> 
         </sql>
 
         <!-- Run the oracle creation scripts -->
+        <echo message="Importing Creation Scripts" />
         <exec executable="sqlplus" output="db-init-lookup-identity.log">
-            <arg value="${databaseName}/${databaseName}@swdb1"/>
+            <arg value="${databaseName}/${databaseName}@${dbServer}/${dbOracleServerAlias}"/>
             <arg value="@CreationScripts/OracleTableCreation.sql"/>
         </exec>
 
-    	<!-- Build xml file -->
-    	<java jar="../lib/SchemaDumpToXML.jar"
-    	      fork="true">
-    	    <arg value="--dbDriver=oracle.jdbc.OracleDriver"/>
-    	    <arg value="--dbUrl=jdbc:oracle:thin:@SWDBServer1:1521:swdb1"/>
-    	    <arg value="--user=${databaseName}"/>
-    	    <arg value="--password=${databaseName}"/>
-    	    <arg value="--schema=${databaseName}"/>
-    	    <arg value="--outputXmlFile=${export}/oracle${databaseName}.xml"/>
-    	</java>
+        <!-- Build xml file -->
+        <echo message="Building Database Snapshot" />
+        <java jar="../yukon-client/third-party/SchemaDumpToXML.jar" fork="true">
+            <arg value="--dbDriver=oracle.jdbc.OracleDriver"/>
+            <arg value="--dbUrl=jdbc:oracle:thin:@${dbServer}:${dbOracleServerPort}:${dbOracleServerAlias}"/>
+            <arg value="--user=${databaseName}"/>
+            <arg value="--password=${databaseName}"/>
+            <arg value="--schema=${databaseName}"/>
+            <arg value="--outputXmlFile=${dbSnapshot}/oracle.xml"/>
+            <classpath>
+                <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
+            </classpath>
+        </java>
         
         <!-- Drop oracle databse and user -->
+        <echo message="Deleting database" />
         <sql
             driver="oracle.jdbc.OracleDriver"
-            url="jdbc:oracle:thin:@SWDBServer1:1521:swdb1"
+            url="jdbc:oracle:thin:@${dbServer}:${dbOracleServerPort}:${dbOracleServerAlias}"
             userid="sys as sysdba"
             password="cannontech123">
-            <transaction src="Custom Scripts/Oracle/DropDatabase.sql" />
+            <classpath>
+                <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
+            </classpath>
+            <transaction src="tempDropDatabase.sql" />
         </sql>
-    	
-        <replace file="Custom Scripts/Oracle/CreateDatabase.sql" token="${databaseName}" value="tempDatabase"/>
-        <replace file="Custom Scripts/Oracle/DropDatabase.sql" token="${databaseName}" value="tempDatabase"/>
-
+        
     </target>
 
 </project>

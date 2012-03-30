@@ -21,8 +21,23 @@
             <param name="dotarget" value="build" />
         </antcall>
     </target>
+	
+	<target name="buildWithSnapshot" depends="createDatabaseSnapshots, build"/>
 
-    <target name="help" depends="init,help.present,help.skip" />
+    <target name="createDatabaseSnapshots" depends="init">
+        <ant dir="${yukon-database}" target="sqlServerCreationScriptXMLFile">
+            <property name="yukon.major" value="${yukon.major}"/> 
+            <property name="yukon.minor" value="${yukon.minor}"/> 
+            <property name="yukon.revision" value="${yukon.revision}"/> 
+        </ant>
+        <ant dir="${yukon-database}" target="oracleCreationScriptXMLFile">
+            <property name="yukon.major" value="${yukon.major}"/> 
+            <property name="yukon.minor" value="${yukon.minor}"/> 
+            <property name="yukon.revision" value="${yukon.revision}"/> 
+        </ant>
+    </target>
+
+    <target name="help" depends="init,help.present,help.skip"/>
 
     <target name="help.present" if="yukonHelpAvailable">
         <echo message="including yukon-help" />
