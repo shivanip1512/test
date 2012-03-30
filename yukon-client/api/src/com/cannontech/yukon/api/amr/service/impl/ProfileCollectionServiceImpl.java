@@ -100,7 +100,25 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
             return tokenStatus;
         }
 
+        void cancel(YukonUserContext userContext) {
+            boolean allCanceled = true;
+            synchronized (workLeft) {
+                for (Map.Entry<PaoIdentifier, Callback> entry : workLeft.entrySet()) {
+                    PaoIdentifier paoIdentifier = entry.getKey();
+                    Callback callback = entry.getValue();
+                    allCanceled &=
+                            loadProfileService.removePendingLoadProfileRequest(paoIdentifier,
+                                                                               callback.requestId,
+                                                                               userContext);
+                }
+            }
+            if (!allCanceled) {
+                throw new RuntimeException("could not cancel all requests");
+            }
+        }
+
         class Callback implements CompletionCallback {
+            long requestId;
             PaoIdentifier paoIdentifier;
 
             Callback(PaoIdentifier paoIdentifier) {
@@ -140,9 +158,9 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
 
         void initiateLoadProfile(LiteYukonPAObject litePao, YukonUserContext userContext) {
             Callback callback = new Callback(litePao.getPaoIdentifier());
-            loadProfileService.initiateLoadProfile(litePao, channelNum,
-                                                   start.toDate(), stop.toDate(),
-                                                   callback, userContext);
+            callback.requestId = loadProfileService.initiateLoadProfile(litePao, channelNum,
+                                                                        start.toDate(), stop.toDate(),
+                                                                        callback, userContext);
         }
     }
 
@@ -164,6 +182,15 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
             pastProfileJob.initiateLoadProfile(litePao, userContext);
         }
         return token;
+    }
+
+    @Override
+    public void cancelJob(Token token, YukonUserContext userContext) {
+        Job pastProfileJob = jobs.get(token);
+        if (pastProfileJob == null) {
+            throw new IllegalArgumentException("no job");
+        }
+        pastProfileJob.cancel(userContext);
     }
 
     @Override

@@ -47,12 +47,24 @@
         <xsd:attribute name="stop" type="xsd:dateTime"/>
     </xsd:complexType>
 
+    <xsd:complexType name="CancelCollection">
+        <xsd:annotation>
+            <xsd:documentation>
+                Cancel a previously started past profile collection.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="token" type="yukon:Token"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
     <xsd:complexType name="ProfileCollectionRequest">
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:choice>
                     <xsd:element name="startCollection" type="yukon:StartCollection"/>
                     <xsd:element name="stopCollection" type="yukon:StopCollection"/>
+                    <xsd:element name="cancelCollection" type="yukon:CancelCollection"/>
                 </xsd:choice>
             </xsd:extension>
         </xsd:complexContent>

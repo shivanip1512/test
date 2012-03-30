@@ -18,4 +18,9 @@ public interface ProfileCollectionService extends TokenHandler {
      */
     Token createJob(Set<PaoIdentifier> devices, int channelNum, ReadableInstant start,
                     ReadableInstant stop, YukonUserContext userContext);
+
+    /**
+     * Cancel the job specified by the given token if it exists and is still running.
+     */
+    void cancelJob(Token token, YukonUserContext userContext);
 }

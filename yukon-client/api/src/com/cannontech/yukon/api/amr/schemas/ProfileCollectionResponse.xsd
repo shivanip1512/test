@@ -37,6 +37,22 @@
                         </xsd:element>
                         <xsd:element name="invalidChannel" type="yukon:InvalidChannelError" minOccurs="0"/>
                     </xsd:sequence>
+                    <xsd:element name="canceled" type="yukon:emptyElement">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                This is returned for cancelCollection requests if the request was
+                                successfully canceled.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
+                    <xsd:element name="unknownToken" type="yukon:emptyElement">
+                        <xsd:annotation>
+                            <xsd:documentation>
+                                This is returned for cancelCollection requests if the specified
+                                token is invalid or has expired.
+                            </xsd:documentation>
+                        </xsd:annotation>
+                    </xsd:element>
                 </xsd:choice>
             </xsd:extension>
         </xsd:complexContent>

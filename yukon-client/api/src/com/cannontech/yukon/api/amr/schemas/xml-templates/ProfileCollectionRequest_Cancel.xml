@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<profileCollectionRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../ProfileCollectionRequest.xsd" 
+           version="1.0">
+    <cancelCollection>
+        <token value="PC:1330976791-0"/>
+    </cancelCollection>
+</profileCollectionRequest>

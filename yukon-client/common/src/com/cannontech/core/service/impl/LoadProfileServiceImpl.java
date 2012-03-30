@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.InitiateLoadProfileRequestException;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.MapQueue;
@@ -84,7 +85,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         });
     }
     
-    public synchronized void initiateLoadProfile(LiteYukonPAObject device, int channel,
+    public synchronized long initiateLoadProfile(LiteYukonPAObject device, int channel,
             Date start, Date stop, CompletionCallback callback, YukonUserContext userContext) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
@@ -107,7 +108,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         formatString.append(cmdFormatter.format(stop));
 
         
-        // setup reuqest
+        // setup request
         req.setCommandString(formatString.toString());
         req.setDeviceID(device.getLiteID());
         long requestId = RandomUtils.nextInt();
@@ -159,6 +160,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         handleOutgoingMessage(info);
         // if write fails, we don't want this to happen
         currentRequestIds.put(requestId, callback);
+        return requestId;
     }
 
     private synchronized void handleOutgoingMessage(ProfileRequestInfo info) {
@@ -359,13 +361,13 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             log.debug("received unwanted return for request id " + requestId);
         }
     }
-    
 
-    
-    public synchronized boolean removePendingLoadProfileRequest(LiteYukonPAObject device, long requestId, YukonUserContext userContext) {
-        
+    @Override
+    public synchronized boolean removePendingLoadProfileRequest(YukonPao device,
+                                                                long requestId,
+                                                                YukonUserContext userContext) {
         boolean removed = false;
-        int deviceId = device.getLiteID();
+        int deviceId = device.getPaoIdentifier().getPaoId();
         final LiteYukonUser cancelUser = userContext.getYukonUser();
         
         // first place to to look is the correct device request, if it is there we will have to send kill command to porter and clean up
@@ -466,11 +468,9 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         return queuedRequest;
     }
 
-    
-    
-    
-    public synchronized List<ProfileRequestInfo> getPendingLoadProfileRequests(LiteYukonPAObject device) {
-        int deviceId = device.getLiteID();
+    @Override
+    public synchronized List<ProfileRequestInfo> getPendingLoadProfileRequests(YukonPao device) {
+        int deviceId = device.getPaoIdentifier().getPaoId();
         ProfileRequestInfo info = currentDeviceRequests.get(deviceId);
         List<ProfileRequestInfo> result = new ArrayList<ProfileRequestInfo>();
         

@@ -60,6 +60,12 @@ public class ProfileCollectionRequestEndpoint {
             return responseElem;
         }
 
+        Node cancelNode = requestTemplate.evaluateAsNode("/y:profileCollectionRequest/y:cancelCollection");
+        if (cancelNode != null) {
+            handleCancelCollection(responseElem, cancelNode, userContext);
+            return responseElem;
+        }
+
         responseElem.addContent(XMLFailureGenerator.makeSimple("InvalidXml",
             "One of startCollection or stopCollection is required."));
         return responseElem;
@@ -222,6 +228,19 @@ public class ProfileCollectionRequestEndpoint {
 
         if (hasInvalidChannelErrors) {
             responseElem.addContent(invalidChannelElem);
+        }
+    }
+
+    private void handleCancelCollection(Element responseElem, Node cancelNode,
+                                        YukonUserContext userContext) {
+        SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(cancelNode);
+        String tokenStr = template.evaluateAsString("y:token/@value");
+        Token token = new Token(tokenStr);
+        try {
+            profileCollectionService.cancelJob(token, userContext);
+            responseElem.addContent(new Element("canceled", ns));
+        } catch (IllegalArgumentException iae) {
+            responseElem.addContent(new Element("unknownToken", ns));
         }
     }
 

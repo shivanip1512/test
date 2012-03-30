@@ -5,22 +5,32 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.user.YukonUserContext;
 
 public interface LoadProfileService {
-    public void initiateLoadProfile(LiteYukonPAObject device, 
-                                        int channel, 
-                                        Date start, 
-                                        Date stop, 
-                                        CompletionCallback callback,
-                                        YukonUserContext userContext);
-    public Collection<ProfileRequestInfo> getPendingLoadProfileRequests(LiteYukonPAObject device);
-    
-    public boolean removePendingLoadProfileRequest(LiteYukonPAObject device, long requestId, YukonUserContext userContext);
-    
+    /**
+     * Initiate a profile collection request.  This service will return a "request id" which can be
+     * used to cancel the request later if needed.
+     */
+    public long initiateLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, 
+                                    CompletionCallback callback, YukonUserContext userContext);
+
+    /**
+     * Get a list of load profile requests in process.
+     */
+    public Collection<ProfileRequestInfo> getPendingLoadProfileRequests(YukonPao device);
+
+    /**
+     * Cancel the given load profile request.  The requestId is the value returned from
+     * {@link #initiateLoadProfile(LiteYukonPAObject, int, Date, Date, CompletionCallback, YukonUserContext)}.
+     */
+    public boolean removePendingLoadProfileRequest(YukonPao device, long requestId,
+                                                   YukonUserContext userContext);
+
     public void printSizeOfCollections(int deviceId);
     
     public Double calculatePercentDone(Long requestId); 
