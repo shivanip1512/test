@@ -2303,8 +2303,10 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                 // set previous date only if newDate doesn't exists
                 if (getOldTime() != 0)
                 {
-                    // we have a new date, figure out how long the change is
-                    setCurrentLPDate (getPreviousLPDate());
+                    if (getPreviousLPDate() != 0)// we have a new date, figure out how long the change is
+                    {
+                        setCurrentLPDate (getPreviousLPDate());
+                    }
                 }
                 else
                 {
