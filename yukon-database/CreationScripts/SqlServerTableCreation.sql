@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/29/2012 4:09:16 PM                         */
+/* Created on:     3/30/2012 10:55:12 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -8116,8 +8116,8 @@ create table ThermostatEventHistory (
    ManualHold           char(1)              null,
    ScheduleId           numeric              null,
    ScheduleMode         varchar(64)          null,
-   ManualHeatTemp       float                null,
    ManualCoolTemp       float                null,
+   ManualHeatTemp       float                null,
    constraint PK_ThermEventHist primary key (EventId)
 )
 go

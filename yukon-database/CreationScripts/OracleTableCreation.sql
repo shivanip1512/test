@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/29/2012 4:52:29 PM                         */
+/* Created on:     3/30/2012 10:53:10 AM                        */
 /*==============================================================*/
 
 
@@ -7638,8 +7638,8 @@ create table ThermostatEventHistory  (
    ManualHold           CHAR(1),
    ScheduleId           NUMBER,
    ScheduleMode         VARCHAR2(64),
-   ManualHeatTemp       FLOAT,
    ManualCoolTemp       FLOAT,
+   ManualHeatTemp       FLOAT,
    constraint PK_ThermEventHist primary key (EventId)
 );
 
