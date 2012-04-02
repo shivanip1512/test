@@ -83,7 +83,7 @@
 
         var args = {
             children: data,
-            minExpandLevel: 2,
+            minExpandLevel: 1,	//allow the top level elements (visually - dynatree usually has 1 hidden root) to expand/collapse
             onPostInit: function(isReloading, isError){
                 if(initially_select){
                     this.selectKey(initially_select);
