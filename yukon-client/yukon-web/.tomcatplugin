@@ -58,7 +58,7 @@
         <webClassPathEntry>/third-party/ecs-1.4.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ejbonly.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ezmorph-1.0.6.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/guava-r09.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/guava-11.0.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/itext.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jackson-all-1.9.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jaxm-api.jar</webClassPathEntry>

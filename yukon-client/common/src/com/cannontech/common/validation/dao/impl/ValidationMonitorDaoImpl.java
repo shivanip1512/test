@@ -73,7 +73,7 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     public Set<ValidationMonitor> getValidationMonitors() {
         List<ValidationMonitor> monitors = getAll();
         
-        return ImmutableSet.of(monitors.toArray(new ValidationMonitor[monitors.size()]));
+        return ImmutableSet.copyOf(monitors.toArray(new ValidationMonitor[monitors.size()]));
     }
     
     @Override

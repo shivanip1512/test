@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,9 +42,10 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.MapMaker;
 
 @Controller
 @RequestMapping("/*")
@@ -55,8 +56,7 @@ public class CapControlImportController {
 	private CapControlImportService capControlImportService;
 	private CapControlImporterFileDao capControlFileImporterDao;
 	
-	private ConcurrentMap<String, List<CapControlImportResolvable>> resultsLookup = 
-	                                    new MapMaker().expireAfterWrite(12, TimeUnit.HOURS).makeMap();
+	private Cache<String, List<CapControlImportResolvable>> resultsLookup = CacheBuilder.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
 	
 	private static Function<CapControlImporterCbcField, String> colNameOfField =
 	        new Function<CapControlImporterCbcField, String>() {
@@ -85,16 +85,16 @@ public class CapControlImportController {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public String importer(String hierarchyKey, String cbcKey, LiteYukonUser user, ModelMap model) {
+	public String importer(String hierarchyKey, String cbcKey, LiteYukonUser user, ModelMap model) throws ExecutionException {
 		List<CapControlImportResolvable> results = Lists.newArrayList();
 		
 		List<CapControlImportResolvable> hierarchyResults = null;
 		if (hierarchyKey != null) {
-		    hierarchyResults = resultsLookup.get(hierarchyKey);
+		    hierarchyResults = resultsLookup.getIfPresent(hierarchyKey);
 		}
 		List<CapControlImportResolvable> cbcResults = null;
 		if (cbcKey != null) {
-		    cbcResults = resultsLookup.get(cbcKey);
+		    cbcResults = resultsLookup.getIfPresent(cbcKey);
 		}
 		
 		if (hierarchyResults != null) {

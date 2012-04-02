@@ -253,11 +253,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
     
     @Override
-    public boolean checkAllProperties(LiteYukonUser user,
-            YukonRoleProperty firstProperty,
-            YukonRoleProperty... otherProperties) {
-        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty),
-                                                                  ImmutableList.of(otherProperties));
+    public boolean checkAllProperties(LiteYukonUser user, YukonRoleProperty firstProperty, YukonRoleProperty... otherProperties) {
+        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty), ImmutableList.copyOf(otherProperties));
         return checkAllProperties(user, properties);
     }
 
@@ -275,10 +272,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
 
     @Override
-    public boolean checkAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty,
-                                      YukonRoleProperty... otherProperties) {
-        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty),
-                                                                  ImmutableList.of(otherProperties));
+    public boolean checkAnyProperties(LiteYukonUser user, YukonRoleProperty firstProperty, YukonRoleProperty... otherProperties) {
+        Iterable<YukonRoleProperty> properties = Iterables.concat(ImmutableList.of(firstProperty), ImmutableList.copyOf(otherProperties));
         return checkAnyProperties(user, properties);
     }
 

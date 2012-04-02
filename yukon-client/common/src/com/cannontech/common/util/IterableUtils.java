@@ -132,7 +132,7 @@ public class IterableUtils {
      * Returns an unmodifiable list version of the array or an empty list if the parameter is null.
      */
     public static <T> List<T> safeList(T[] nullableArray) {
-        return nullableArray == null ? Collections.<T>emptyList() : ImmutableList.of(nullableArray);
+        return nullableArray == null ? Collections.<T>emptyList() : ImmutableList.copyOf(nullableArray);
     }
     
     /**

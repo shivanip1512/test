@@ -60,7 +60,7 @@ public enum ControlMethod implements DisplayableEnum {
 		this.displayName = displayName;
 		this.display = display;
 		this.defaultAlgorithm = defaultAlgorithm;
-		this.supportedAlgorithms = ImmutableSet.of(supportedAlgorithms);
+		this.supportedAlgorithms = ImmutableSet.copyOf(supportedAlgorithms);
 	}
 	
 	public static ControlMethod getForDisplayName(String displayName) {

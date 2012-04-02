@@ -7,7 +7,7 @@ import com.cannontech.common.util.StringUtils;
 import com.google.common.collect.ImmutableList;
 
 public abstract class AttributeGroupProviderBase extends CompleteBinningDeviceGroupProviderBase<BuiltInAttribute> {
-    private ImmutableList<BuiltInAttribute> allBins = ImmutableList.of(BuiltInAttribute.values());
+    private ImmutableList<BuiltInAttribute> allBins = ImmutableList.copyOf(BuiltInAttribute.values());
     
     @Override
     protected List<BuiltInAttribute> getAllBins() {

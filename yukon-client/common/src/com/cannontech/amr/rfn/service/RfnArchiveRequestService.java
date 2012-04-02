@@ -1,6 +1,5 @@
 package com.cannontech.amr.rfn.service;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -30,9 +29,10 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.MapMaker;
 
 public class RfnArchiveRequestService {
     private static final Logger log = YukonLogManager.getLogger(RfnArchiveRequestService.class);
@@ -47,7 +47,7 @@ public class RfnArchiveRequestService {
     private AsyncDynamicDataSource asyncDynamicDataSource;
 
     private String meterTemplatePrefix;
-    private Map<String, Boolean> recentlyUncreatableTemplates;
+    private Cache<String, Boolean> recentlyUncreatableTemplates;
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
     private ConcurrentHashMultiset<RfnMeterIdentifier> uncreatableDevices = ConcurrentHashMultiset.create();
     private Set<String> templatesToIgnore;
@@ -67,17 +67,14 @@ public class RfnArchiveRequestService {
         }
         templatesToIgnore = ignoredTemplateBuilder.build();
         
-        recentlyUncreatableTemplates = new MapMaker()
-            .concurrencyLevel(10)
-            .expireAfterWrite(5, TimeUnit.SECONDS)
-            .makeMap();
+        recentlyUncreatableTemplates = CacheBuilder.newBuilder().concurrencyLevel(10).expireAfterWrite(5, TimeUnit.SECONDS).build();
     
         asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
             @Override
             public void dbChangeReceived(DBChangeMsg dbChange) {
                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
                     // no reason to be too delicate here
-                    recentlyUncreatableTemplates.clear();
+                    recentlyUncreatableTemplates.invalidateAll();
                 }
             }
         });
@@ -97,7 +94,8 @@ public class RfnArchiveRequestService {
                 if (templatesToIgnore.contains(templateName)) {
                     throw new IgnoredTemplateException();
                 }
-                if (recentlyUncreatableTemplates.containsKey(templateName)) {
+                
+                if (recentlyUncreatableTemplates.asMap().containsKey(templateName)) {
                     // we already tried to create this template within the last few seconds and failed
                     unknownTemplatesEncountered.add(templateName, 1);
                     uncreatableDevices.add(meterIdentifier);

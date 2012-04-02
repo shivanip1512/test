@@ -18,7 +18,7 @@ public enum DetectedPhase {
     private Set<Phase> phaseSet;
     
     private DetectedPhase(Phase... phases){
-        this.phaseSet = ImmutableSet.of(phases);
+        this.phaseSet = ImmutableSet.copyOf(phases);
     }
     
     public Set<Phase> getPhaseSet() {

@@ -24,7 +24,7 @@ public enum ThermostatSchedulePeriodStyle {
     private ImmutableList<ThermostatSchedulePeriod> realPeriods;
     
     private ThermostatSchedulePeriodStyle(ThermostatSchedulePeriod... periods){
-        this.allPeriods = ImmutableList.of(periods);
+        this.allPeriods = ImmutableList.copyOf(periods);
         Builder<ThermostatSchedulePeriod> realPeriodsBuilder = ImmutableList.builder();
         for (ThermostatSchedulePeriod thermostatSchedulePeriod : allPeriods) {
             if (!thermostatSchedulePeriod.isPsuedo()) {

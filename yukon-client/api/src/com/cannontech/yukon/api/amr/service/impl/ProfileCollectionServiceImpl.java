@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -28,8 +27,9 @@ import com.cannontech.yukon.api.common.service.Token;
 import com.cannontech.yukon.api.common.service.TokenService;
 import com.cannontech.yukon.api.common.service.TokenStatus;
 import com.cannontech.yukon.api.common.service.TokenType;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
-import com.google.common.collect.MapMaker;
 import com.google.common.collect.Maps;
 
 public class ProfileCollectionServiceImpl implements ProfileCollectionService {
@@ -164,8 +164,7 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
         }
     }
 
-    private final ConcurrentMap<Token, Job> jobs =
-            new MapMaker().expireAfterWrite(60, TimeUnit.DAYS).makeMap();
+    private final Cache<Token, Job> jobs = CacheBuilder.newBuilder().expireAfterWrite(60, TimeUnit.DAYS).build();
 
     @Override
     public Token createJob(Set<PaoIdentifier> devices, int channelNum, ReadableInstant start,
@@ -173,7 +172,7 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
         Token token = null;
         Job pastProfileJob = null;
         synchronized (jobs) {
-            token = tokenService.makeToken(TokenType.PROFILE_COLLECTION, jobs.keySet());
+            token = tokenService.makeToken(TokenType.PROFILE_COLLECTION, jobs.asMap().keySet());
             pastProfileJob = new Job(token, channelNum, start, stop);
             jobs.put(token, pastProfileJob);
         }
@@ -186,7 +185,7 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
 
     @Override
     public void cancelJob(Token token, YukonUserContext userContext) {
-        Job pastProfileJob = jobs.get(token);
+        Job pastProfileJob = jobs.getIfPresent(token);
         if (pastProfileJob == null) {
             throw new IllegalArgumentException("no job");
         }
@@ -200,7 +199,7 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
 
     @Override
     public TokenStatus getStatus(Token token) {
-        Job pastProfileJob = jobs.get(token);
+        Job pastProfileJob = jobs.getIfPresent(token);
         return pastProfileJob == null ? null : pastProfileJob.getStatus();
     }
 }

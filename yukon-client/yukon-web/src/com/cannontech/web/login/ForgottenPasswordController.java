@@ -1,7 +1,6 @@
 package com.cannontech.web.login;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -39,7 +38,8 @@ import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.util.YukonUserContextResolver;
-import com.google.common.collect.MapMaker;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 @Controller
 public class ForgottenPasswordController {
@@ -53,7 +53,7 @@ public class ForgottenPasswordController {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserContextResolver yukonUserContextResolver;
 
-    private Map<UUID, LiteYukonUser> keyToUserMap = new MapMaker().concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).makeMap();
+    private Cache<UUID, LiteYukonUser> keyToUserMap = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).build();
     
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.GET)
     public String newForgottenPassword(ModelMap model, HttpServletRequest request) throws Exception {
@@ -115,10 +115,9 @@ public class ForgottenPasswordController {
     }
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
-    public String changePassword(ModelMap model, FlashScope flashScope, String k)
-    throws Exception {
+    public String changePassword(ModelMap model, FlashScope flashScope, String k) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null);
-        LiteYukonUser passwordResetUser = keyToUserMap.get(UUID.fromString(k));
+        LiteYukonUser passwordResetUser = keyToUserMap.getIfPresent(UUID.fromString(k));
         if (passwordResetUser == null) {
             return "redirect:/login.jsp";
         }
@@ -135,13 +134,12 @@ public class ForgottenPasswordController {
     }
 
     @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-    public String submitChangePassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult, FlashScope flashScope, String k, ModelMap model)
-    throws Exception {
+    public String submitChangePassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult, FlashScope flashScope, String k, ModelMap model) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null);
         
         // Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
         LiteYukonUser suppliedPasswordResetUser = yukonUserDao.getLiteYukonUser(loginBackingBean.getUserId());
-        LiteYukonUser passwordResetUser  = keyToUserMap.get(UUID.fromString(k));
+        LiteYukonUser passwordResetUser  = keyToUserMap.getIfPresent(UUID.fromString(k));
         if(passwordResetUser == null || !passwordResetUser.equals(suppliedPasswordResetUser)) {
             return "redirect:/login.jsp";
         }

@@ -3,7 +3,6 @@ package com.cannontech.amr.rfn.service.pointmapping;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -31,12 +30,13 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.util.MatchStyle;
-import com.google.common.base.Function;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.MapMaker;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -192,7 +192,7 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
     private PaoDefinitionDao paoDefinitionDao;
     private static final Logger log = YukonLogManager.getLogger(UnitOfMeasureToPointMappingParser.class);
     private ImmutableMultimap<PaoType, PointMapper> pointMapperMap;
-    private ConcurrentMap<CachedPointKey, CachedPointValue> computingCache;
+    private LoadingCache<CachedPointKey, CachedPointValue> computingCache;
     private final NullCachedPointValue nullCachedPointValue = new NullCachedPointValue();
     private ConfigurationSource configurationSource;
     private ResourceLoader resourceLoader;
@@ -205,14 +205,10 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
         Resource xmlFile = resourceLoader.getResource(pointMappingUrl);
         pointMapperMap = parse(xmlFile);
         
-        computingCache = new MapMaker()
-            .concurrencyLevel(6)
-            .expireAfterWrite(5, TimeUnit.MINUTES)
-            .makeComputingMap(new Function<CachedPointKey, CachedPointValue>() {
-
+        computingCache = CacheBuilder.newBuilder().concurrencyLevel(6).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<CachedPointKey, CachedPointValue>() {
                 @Override
-                public CachedPointValue apply(CachedPointKey from) {
-                    return locatePointValueHandler(from);
+                public CachedPointValue load(CachedPointKey key) throws Exception {
+                    return locatePointValueHandler(key);
                 }
         });
     }
@@ -237,7 +233,7 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
                                                 baseUnitOfMeasure, 
                                                 baseUnitOfMeasureModifiers);
 
-        CachedPointValue value = computingCache.get(key);
+        CachedPointValue value = computingCache.getIfPresent(key);
 
         if (value == nullCachedPointValue) {
             return null;
@@ -476,11 +472,11 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
     
     @ManagedOperation
     public void flushCache() {
-        computingCache.clear();
+        computingCache.invalidateAll();
     }
     
     @ManagedAttribute
-    public int getCacheSize() {
+    public long getCacheSize() {
         return computingCache.size();
     }
 
