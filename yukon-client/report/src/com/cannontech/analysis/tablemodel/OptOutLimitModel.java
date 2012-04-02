@@ -284,7 +284,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         DateTime reportStopDate = new DateTime(stopDate, energyCompany.getDefaultDateTimeZone());
         DateTime reportStartDate = reportStopDate.withMonthOfYear(residentialGroupOptOutLimit.getStartMonth()).withDayOfMonth(1).toDateMidnight().toDateTime(energyCompany.getDefaultDateTimeZone());
 
-        // Adjust the stop date to the year before if needed.
+        // Adjust the start date to the year before if needed.
         if (residentialGroupOptOutLimit.getStartMonth() > residentialGroupOptOutLimit.getStopMonth()) {
             return reportStartDate.minusYears(1);
         }
