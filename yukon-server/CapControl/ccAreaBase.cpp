@@ -149,7 +149,7 @@ void CtiCCAreaBase::setDynamicData(Cti::RowReader& rdr)
     rdr["additionalflags"] >> _additionalFlags;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
 
-    _ovUvDisabledFlag = (_additionalFlags[0]=='y'?true:false);
+    _ovUvDisabledFlag = (_additionalFlags[0]=='y');
 }
 
 void CtiCCAreaBase::setDirty(bool flag)

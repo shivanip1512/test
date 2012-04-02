@@ -4066,7 +4066,7 @@ bool CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                            CtiLockGuard<CtiLogger> logger_guard(dout);
                                            dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                                        }
-                                       if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true &&
+                                       if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                                            currentCapBank->getVCtrlIndex() == 1)
                                        {
                                            currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
@@ -4200,7 +4200,7 @@ bool CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                            CtiLockGuard<CtiLogger> logger_guard(dout);
                                            dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                                        }
-                                       if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true &&
+                                       if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                                            currentCapBank->getVCtrlIndex() == 1)
                                        {
                                            currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Close);
@@ -4571,7 +4571,7 @@ bool CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                        CtiLockGuard<CtiLogger> logger_guard(dout);
                                        dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                                    }
-                                   if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true &&
+                                   if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                                        currentCapBank->getVCtrlIndex() == 1)
                                    {
                                        currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
@@ -4749,7 +4749,7 @@ bool CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                        CtiLockGuard<CtiLogger> logger_guard(dout);
                                        dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                                    }
-                                   if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true &&
+                                   if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                                        currentCapBank->getVCtrlIndex() == 1)
                                    {
                                        currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Close);
@@ -5855,7 +5855,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                         if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Open)
                         {
                             int control =  CtiCCCapBank::Open;
-                            if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&_USE_FLIP_FLAG == true )
+                            if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&_USE_FLIP_FLAG )
                             {
                                 control = 4; //flip
                             }
@@ -5885,7 +5885,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                             {
 
                                 int control =  CtiCCCapBank::Close;
-                                if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true )
+                                if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
                                 {
                                     control = 4; //flip
                                 }
@@ -5919,7 +5919,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                             else
                             {
                                 int control =  CtiCCCapBank::Close;
-                                if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true )
+                                if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
                                 {
                                     control = 4; //flip
                                 }
@@ -5933,7 +5933,7 @@ bool CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                         else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
                         {
                             int control =  CtiCCCapBank::Open;
-                            if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true )
+                            if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
                             {
                                 control = 4; //flip
                             }
@@ -6040,7 +6040,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
 
                         //add capbank reclose delay check here...
                         int control =  CtiCCCapBank::Close;
-                        if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true )
+                        if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
                         {
                             control = 4; //flip
                         }
@@ -6052,7 +6052,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                     else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
                     {
                         int control =  CtiCCCapBank::Open;
-                        if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true )
+                        if (findStringIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
                         {
                             control = 4; //flip
                         }
@@ -9735,18 +9735,18 @@ void CtiCCSubstationBus::restore(Cti::RowReader& rdr)
     rdr["SwitchPointID"] >> _switchOverPointId;
     rdr["DualBusEnabled"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _dualBusEnable = (tempBoolString=="y"?true:false);
+    _dualBusEnable = (tempBoolString=="y");
     rdr["multiMonitorControl"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _multiMonitorFlag = (tempBoolString=="y"?true:false);
+    _multiMonitorFlag = (tempBoolString=="y");
     rdr["usephasedata"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _usePhaseData = (tempBoolString=="y"?true:false);
+    _usePhaseData = (tempBoolString=="y");
     rdr["phaseb"] >> _phaseBid;
     rdr["phasec"] >> _phaseCid;
     rdr["controlflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _totalizedControlFlag = (tempBoolString=="y"?true:false);
+    _totalizedControlFlag = (tempBoolString=="y");
 
     rdr["voltreductionpointid"] >> _voltReductionControlId;
     rdr["disablebuspointid"] >> _disableBusPointId;
@@ -9878,19 +9878,19 @@ void CtiCCSubstationBus::setDynamicData(Cti::RowReader& rdr)
     rdr["nextchecktime"] >> _nextchecktime;
     rdr["newpointdatareceivedflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _newpointdatareceivedflag = (tempBoolString=="y"?true:false);
+    _newpointdatareceivedflag = (tempBoolString=="y");
     rdr["busupdatedflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _busupdatedflag = (tempBoolString=="y"?true:false);
+    _busupdatedflag = (tempBoolString=="y");
     rdr["lastcurrentvarupdatetime"] >> _lastcurrentvarpointupdatetime;
     rdr["estimatedvarpointvalue"] >> _estimatedvarloadpointvalue;
     rdr["currentdailyoperations"] >> _currentdailyoperations;
     rdr["peaktimeflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _peaktimeflag = (tempBoolString=="y"?true:false);
+    _peaktimeflag = (tempBoolString=="y");
     rdr["recentlycontrolledflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _recentlycontrolledflag = (tempBoolString=="y"?true:false);
+    _recentlycontrolledflag = (tempBoolString=="y");
     rdr["lastoperationtime"] >> _lastoperationtime;
     rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
     rdr["lastfeederpaoid"] >> _lastfeedercontrolledpaoid;
@@ -9902,28 +9902,28 @@ void CtiCCSubstationBus::setDynamicData(Cti::RowReader& rdr)
     rdr["currentvarpointquality"] >> _currentvarpointquality;
     rdr["waivecontrolflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _waivecontrolflag = (tempBoolString=="y"?true:false);
+    _waivecontrolflag = (tempBoolString=="y");
 
     rdr["additionalflags"] >> _additionalFlags;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
-    _verificationFlag = (_additionalFlags[0]=='y'?true:false);
-    _performingVerificationFlag = (_additionalFlags[1]=='y'?true:false);
-    _verificationDoneFlag = (_additionalFlags[2]=='y'?true:false);
-    _overlappingSchedulesVerificationFlag = (_additionalFlags[3]=='y'?true:false);
-    _preOperationMonitorPointScanFlag = (_additionalFlags[4]=='y'?true:false);
-    _operationSentWaitFlag = (_additionalFlags[5]=='y'?true:false);
-    _postOperationMonitorPointScanFlag = (_additionalFlags[6]=='y'?true:false);
-    _reEnableBusFlag = (_additionalFlags[7]=='y'?true:false);
-    _waitForReCloseDelayFlag = (_additionalFlags[8]=='y'?true:false);
-    _waitToFinishRegularControlFlag = (_additionalFlags[9]=='y'?true:false);
-    _maxDailyOpsHitFlag = (_additionalFlags[10]=='y'?true:false);
-    _ovUvDisabledFlag = (_additionalFlags[11]=='y'?true:false);
-    _correctionNeededNoBankAvailFlag = (_additionalFlags[12]=='y'?true:false);
-    _likeDayControlFlag = (_additionalFlags[13]=='y'?true:false);
-    _voltReductionFlag = (_additionalFlags[14]=='y'?true:false);
-    _sendMoreTimeControlledCommandsFlag  = (_additionalFlags[15]=='y'?true:false);
-    _disableOvUvVerificationFlag = (_additionalFlags[16]=='y'?true:false);
-    _primaryBusFlag = (_additionalFlags[17]=='y'?true:false);
+    _verificationFlag = (_additionalFlags[0]=='y');
+    _performingVerificationFlag = (_additionalFlags[1]=='y');
+    _verificationDoneFlag = (_additionalFlags[2]=='y');
+    _overlappingSchedulesVerificationFlag = (_additionalFlags[3]=='y');
+    _preOperationMonitorPointScanFlag = (_additionalFlags[4]=='y');
+    _operationSentWaitFlag = (_additionalFlags[5]=='y');
+    _postOperationMonitorPointScanFlag = (_additionalFlags[6]=='y');
+    _reEnableBusFlag = (_additionalFlags[7]=='y');
+    _waitForReCloseDelayFlag = (_additionalFlags[8]=='y');
+    _waitToFinishRegularControlFlag = (_additionalFlags[9]=='y');
+    _maxDailyOpsHitFlag = (_additionalFlags[10]=='y');
+    _ovUvDisabledFlag = (_additionalFlags[11]=='y');
+    _correctionNeededNoBankAvailFlag = (_additionalFlags[12]=='y');
+    _likeDayControlFlag = (_additionalFlags[13]=='y');
+    _voltReductionFlag = (_additionalFlags[14]=='y');
+    _sendMoreTimeControlledCommandsFlag  = (_additionalFlags[15]=='y');
+    _disableOvUvVerificationFlag = (_additionalFlags[16]=='y');
+    _primaryBusFlag = (_additionalFlags[17]=='y');
 
     if (getStrategy()->getMaxConfirmTime() == 0)
     {
@@ -9946,7 +9946,7 @@ void CtiCCSubstationBus::setDynamicData(Cti::RowReader& rdr)
 
     rdr["switchPointStatus"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _switchOverStatus = (tempBoolString=="y"?true:false);
+    _switchOverStatus = (tempBoolString=="y");
     rdr["altSubControlValue"] >> _altSubControlValue;
     rdr["eventSeq"] >> _eventSeq;
     rdr["currentwattpointquality"] >> _currentwattpointquality;

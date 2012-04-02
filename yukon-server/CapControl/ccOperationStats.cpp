@@ -538,8 +538,8 @@ void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& con
 double CtiCCOperationStats::calculateSuccessPercent(ccStatsType type)
 {
     double retVal = 100;
-    long opCount = 0;
-    long failCount = 0;
+    double opCount = 0;
+    double failCount = 0;
 
     switch (type)
     {
@@ -575,7 +575,7 @@ double CtiCCOperationStats::calculateSuccessPercent(ccStatsType type)
 
     if (opCount > 0 && opCount >= failCount)
     {
-        retVal = ((double) (opCount - failCount) /(double) opCount) * 100;
+        retVal = ((opCount - failCount) / opCount) * 100;
     }
 
     return retVal;

@@ -227,9 +227,9 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
 void CtiCCArea::setDynamicData(Cti::RowReader& rdr)
 {
     CtiCCAreaBase::setDynamicData(rdr);
-    _reEnableAreaFlag = (getAdditionalFlags()[1]=='y'?true:false);
-    _childVoltReductionFlag = (getAdditionalFlags()[2]=='y'?true:false);
-    _areaUpdatedFlag = (getAdditionalFlags()[3]=='y'?true:false);
+    _reEnableAreaFlag = (getAdditionalFlags()[1]=='y');
+    _childVoltReductionFlag = (getAdditionalFlags()[2]=='y');
+    _areaUpdatedFlag = (getAdditionalFlags()[3]=='y');
 
     _insertDynamicDataFlag = false;
     setDirty(false);

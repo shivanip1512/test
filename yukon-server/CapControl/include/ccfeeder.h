@@ -268,9 +268,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     string createPhaseControlStatusUpdateText(string capControlStatus, double varAValue,double varBValue, double varCValue,
                                                   double ratioA, double ratioB, double ratioC);
     string createControlStatusUpdateText(string capControlStatus, double varAValue, double ratioA);
-    string createPhaseVarText(double aValue,double bValue, double cValue, FLOAT multiplier);
-    string createPhaseRatioText(double aValue,double bValue, double cValue, FLOAT multiplier);
-    string createVarText(double aValue, FLOAT multiplier);
+    string createPhaseVarText(double aValue,double bValue, double cValue, float multiplier);
+    string createPhaseRatioText(double aValue,double bValue, double cValue, float multiplier);
+    string createVarText(double aValue, float multiplier);
     bool isPeakDay();
     bool isPastMaxConfirmTime(const CtiTime& currentDateTime, long maxConfirmTime, long feederRetries);
     bool checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,

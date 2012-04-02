@@ -30,10 +30,10 @@ class CtiCCSubstationsMsg : public CapControlMessage
         CtiCCSubstationsMsg& operator=(const CtiCCSubstationsMsg& right);
 
         // Possible bit mask settings
-        static unsigned long AllSubsSent;
-        static unsigned long SubDeleted;
-        static unsigned long SubAdded;
-        static unsigned long SubModified;
+        static const unsigned long AllSubsSent;
+        static const unsigned long SubDeleted;
+        static const unsigned long SubAdded;
+        static const unsigned long SubModified;
 
 
     private:

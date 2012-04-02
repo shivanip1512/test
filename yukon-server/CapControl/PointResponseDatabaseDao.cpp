@@ -225,7 +225,7 @@ void PointResponseDatabaseDao::buildPointResponseFromReader(DatabaseReader& read
         reader["StaticDelta"] >> tempString;
         reader["SubstationBusId"] >> subBusId;
 
-        staticDelta = (tempString=="Y"?true:false);
+        staticDelta = (tempString=="y");
 
         PointResponse pointResponse(pointId,deviceId,preOpValue,delta,staticDelta, subBusId);
 

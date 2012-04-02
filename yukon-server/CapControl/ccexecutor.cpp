@@ -26,7 +26,6 @@ using std::endl;
 extern unsigned long _CC_DEBUG;
 extern bool _IGNORE_NOT_NORMAL_FLAG;
 extern unsigned long _SEND_TRIES;
-extern bool _USE_FLIP_FLAG;
 extern bool _LOG_MAPID_INFO;
 extern bool _LIMIT_ONE_WAY_COMMANDS;
 
@@ -515,7 +514,6 @@ void CtiCCCommandExecutor::EnableCapBank()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
     long capBankID = _itemId;
-    bool found = false;
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     for(long i=0;i<ccSubstationBuses.size();i++)
@@ -573,15 +571,10 @@ void CtiCCCommandExecutor::EnableCapBank()
                                          <<".  Cannot perform ENABLE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
                     }
 
-                    found = true;
-                    break;
+                    return;
                 }
             }
-            if( found )
-                break;
         }
-        if( found )
-            break;
     }
 }
 
@@ -650,15 +643,10 @@ void CtiCCCommandExecutor::DisableCapBank()
                                          <<".  Cannot perform DISABLE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
 
                     }
-                    found = true;
-                    break;
+                    return;
                 }
             }
-            if( found )
-                break;
         }
-        if( found )
-            break;
     }
 }
 
@@ -1516,7 +1504,6 @@ void CtiCCCommandExecutor::SendTimeSync()
 
     long paoId = _itemId;
     long controlID = 0;
-    bool found = false;
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
     CtiMultiMsg* eventMulti = new CtiMultiMsg();

@@ -99,9 +99,9 @@ public:
     const std::string& getSwitchManufacture() const;
     const std::string& getMapLocationId() const;
     long getRecloseDelay() const;
-    FLOAT getControlOrder() const;
-    FLOAT getTripOrder() const;
-    FLOAT getCloseOrder() const;
+    float getControlOrder() const;
+    float getTripOrder() const;
+    float getCloseOrder() const;
     long getStatusPointId() const;
     long getControlStatus() const;
     long getOperationAnalogPointId() const;
@@ -172,9 +172,9 @@ public:
     CtiCCCapBank& setSwitchManufacture(const std::string& manufacture);
     CtiCCCapBank& setMapLocationId(const std::string& maplocation);
     CtiCCCapBank& setRecloseDelay(long reclose);
-    CtiCCCapBank& setControlOrder(FLOAT order);
-    CtiCCCapBank& setTripOrder(FLOAT order);
-    CtiCCCapBank& setCloseOrder(FLOAT order);
+    CtiCCCapBank& setControlOrder(float order);
+    CtiCCCapBank& setTripOrder(float order);
+    CtiCCCapBank& setCloseOrder(float order);
     CtiCCCapBank& setStatusPointId(long statuspoint);
     CtiCCCapBank& setControlStatus(long status);
     CtiCCCapBank& setOperationAnalogPointId(long operationpoint);
@@ -330,9 +330,9 @@ private:
     std::string _switchmanufacture;
     std::string _maplocationid;
     long _reclosedelay;
-    FLOAT _controlorder;
-    FLOAT _triporder;
-    FLOAT _closeorder;
+    float _controlorder;
+    float _triporder;
+    float _closeorder;
     long _statuspointid;
     long _controlstatus;
     long _operationanalogpointid;

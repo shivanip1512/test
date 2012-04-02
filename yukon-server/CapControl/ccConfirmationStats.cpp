@@ -345,8 +345,8 @@ CtiCCConfirmationStats& CtiCCConfirmationStats::createPointDataMsgs(CtiMultiMsg_
 double CtiCCConfirmationStats::calculateSuccessPercent(ccStatsType type)
 {
     double retVal = 0;
-    long opCount = 0;
-    long failCount = 0;
+    double opCount = 0;
+    double failCount = 0;
 
     switch (type)
     {
@@ -381,7 +381,7 @@ double CtiCCConfirmationStats::calculateSuccessPercent(ccStatsType type)
     }
     if (opCount > 0 && opCount >= failCount)
     {
-        retVal = ((double) (opCount - failCount) /(double) opCount) * 100;
+        retVal = ((opCount - failCount) / opCount) * 100;
     }
     else
         retVal = -1;
@@ -391,37 +391,31 @@ double CtiCCConfirmationStats::calculateSuccessPercent(ccStatsType type)
 
 bool CtiCCConfirmationStats::setSuccessPercentPointId(long tempPointId, long tempPointOffset)
 {
-    bool retVal = false;
     switch (tempPointOffset)
     {
         case 10010:
         {
             setUserDefCommSuccessPercentId(tempPointId);
-            retVal = true;
-            break;
+            return true;
         }
         case 10011:
         {
             setDailyCommSuccessPercentId(tempPointId);
-            retVal = true;
-            break;
+            return true;
         }
         case 10012:
         {
             setWeeklyCommSuccessPercentId(tempPointId);
-            retVal = true;
-            break;
+            return true;
         }
         case 10013:
         {
             setMonthlyCommSuccessPercentId(tempPointId);
-            retVal = true;
-            break;
+            return true;
         }
         default:
-            break;
+            return false;
     }
-    return retVal;
 
 }
 /*---------------------------------------------------------------------------

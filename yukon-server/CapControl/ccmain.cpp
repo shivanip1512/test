@@ -44,7 +44,7 @@ int main(int argc, char* argv[] )
         cout << CtiTime() << " - Cap Controller starting up..." << endl;
     }*/
 
-    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, false, "CapControl")) != NULL )
+    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, "CapControl")) != NULL )
     {
        // Oh no, porter is running on this machine already.
        CloseHandle(hExclusion);
@@ -52,7 +52,7 @@ int main(int argc, char* argv[] )
        exit(-1);
     }
 
-    hExclusion = CreateEvent(NULL, true, false, "CapControl");
+    hExclusion = CreateEvent(NULL, TRUE, FALSE, "CapControl");
 
     if( hExclusion == (HANDLE)NULL )
     {

@@ -134,7 +134,7 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _IGNORE_NOT_NORMAL_FLAG = (str == "true" ? true : false);
+        _IGNORE_NOT_NORMAL_FLAG = (str == "true" );
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
@@ -173,7 +173,7 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _USE_FLIP_FLAG = (str == "true" ? true : false);
+        _USE_FLIP_FLAG = (str == "true" );
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
@@ -247,7 +247,7 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _ALLOW_PARALLEL_TRUING = (str == "true" ? true : false);
+        _ALLOW_PARALLEL_TRUING = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -266,7 +266,7 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _RETRY_FAILED_BANKS = (str == "true" ? true : false);
+        _RETRY_FAILED_BANKS = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -299,7 +299,7 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _USE_PHASE_INDICATORS = (str == "true" ? true : false);
+        _USE_PHASE_INDICATORS = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -318,7 +318,7 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _LOG_MAPID_INFO = (str == "true" ? true : false);
+        _LOG_MAPID_INFO = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -355,7 +355,7 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _RETRY_ADJUST_LAST_OP_TIME = (str == "true" ? true : false);
+        _RETRY_ADJUST_LAST_OP_TIME = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -490,7 +490,7 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _AUTO_VOLT_REDUCTION = (str == "true" ? true : false);
+        _AUTO_VOLT_REDUCTION = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -566,7 +566,7 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         CtiToLower(str);
-        _ENABLE_IVVC = (str == "true" ? true : false);
+        _ENABLE_IVVC = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

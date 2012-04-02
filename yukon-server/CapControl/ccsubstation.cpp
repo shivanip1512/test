@@ -240,17 +240,10 @@ void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, C
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
-                _dirty = true;
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << updaterSql << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << updaterSql << endl;
                 }
             }
         }
@@ -282,18 +275,12 @@ void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, C
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
-                _dirty = true;
+
+                string loggedSQLstring = inserter.asString();
                 {
-                    string loggedSQLstring = inserter.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << loggedSQLstring << endl;
                 }
             }
         }
@@ -305,12 +292,12 @@ void CtiCCSubstation::setDynamicData(Cti::RowReader& rdr)
 {
     rdr["additionalflags"] >> _additionalFlags;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
-    _ovUvDisabledFlag = (_additionalFlags[0]=='y'?true:false);
-    _saEnabledFlag = (_additionalFlags[1]=='y'?true:false);
-    _voltReductionFlag = (_additionalFlags[2]=='y'?true:false);
-    _recentlyControlledFlag = (_additionalFlags[3]=='y'?true:false);
-    _stationUpdatedFlag = (_additionalFlags[4]=='y'?true:false);
-    _childVoltReductionFlag = (_additionalFlags[5]=='y'?true:false);
+    _ovUvDisabledFlag = (_additionalFlags[0]=='y');
+    _saEnabledFlag = (_additionalFlags[1]=='y');
+    _voltReductionFlag = (_additionalFlags[2]=='y');
+    _recentlyControlledFlag = (_additionalFlags[3]=='y');
+    _stationUpdatedFlag = (_additionalFlags[4]=='y');
+    _childVoltReductionFlag = (_additionalFlags[5]=='y');
 
     if (_voltReductionControlId <= 0)
     {

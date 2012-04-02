@@ -7,10 +7,10 @@ extern unsigned long _CC_DEBUG;
 
 using std::endl;
 
-unsigned long CtiCCSubstationsMsg::AllSubsSent = 0x00000001;
-unsigned long CtiCCSubstationsMsg::SubDeleted  = 0x00000002;
-unsigned long CtiCCSubstationsMsg::SubAdded    = 0x00000004;
-unsigned long CtiCCSubstationsMsg::SubModified = 0x00000008;
+const unsigned long CtiCCSubstationsMsg::AllSubsSent = 0x00000001;
+const unsigned long CtiCCSubstationsMsg::SubDeleted  = 0x00000002;
+const unsigned long CtiCCSubstationsMsg::SubAdded    = 0x00000004;
+const unsigned long CtiCCSubstationsMsg::SubModified = 0x00000008;
 
 RWDEFINE_COLLECTABLE( CtiCCSubstationsMsg, CTICCSUBSTATION_MSG_ID )
 

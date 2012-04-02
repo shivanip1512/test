@@ -405,7 +405,7 @@ long CtiCCCapBank::getRecloseDelay() const
 
     Returns the control order of the cap bank in the list of a feeder
 ---------------------------------------------------------------------------*/
-FLOAT CtiCCCapBank::getControlOrder() const
+float CtiCCCapBank::getControlOrder() const
 {
     return _controlorder;
 }
@@ -415,7 +415,7 @@ FLOAT CtiCCCapBank::getControlOrder() const
 
     Returns the trip order of the cap bank in the list of a feeder
 ---------------------------------------------------------------------------*/
-FLOAT CtiCCCapBank::getTripOrder() const
+float CtiCCCapBank::getTripOrder() const
 {
     return _triporder;
 }
@@ -425,7 +425,7 @@ FLOAT CtiCCCapBank::getTripOrder() const
 
     Returns the close order of the cap bank in the list of a feeder
 ---------------------------------------------------------------------------*/
-FLOAT CtiCCCapBank::getCloseOrder() const
+float CtiCCCapBank::getCloseOrder() const
 {
     return _closeorder;
 }
@@ -596,42 +596,27 @@ long CtiCCCapBank::getControlStatus() const
 
 bool CtiCCCapBank::isPendingStatus()
 {
-    if (getControlStatus() == CtiCCCapBank::OpenPending ||
-        getControlStatus() ==  CtiCCCapBank::ClosePending)
-    {
-        return true;
-    }
-    return false;
+    return (getControlStatus() == CtiCCCapBank::OpenPending ||
+            getControlStatus() == CtiCCCapBank::ClosePending);
 }
 
 bool CtiCCCapBank::isFailedOrQuestionableStatus()
 {
-    if (isQuestionableStatus() || isFailedStatus())
-    {
-        return true;
-    }
-    return false;
+    return (isQuestionableStatus() || isFailedStatus());
 }
 
 
 bool CtiCCCapBank::isQuestionableStatus()
 {
-    if ( getControlStatus() ==  CtiCCCapBank::OpenQuestionable ||
-         getControlStatus() ==  CtiCCCapBank::CloseQuestionable)
-    {
-        return true;
-    }
-    return false;
+    return ( getControlStatus() ==  CtiCCCapBank::OpenQuestionable ||
+             getControlStatus() ==  CtiCCCapBank::CloseQuestionable);
 
 }
 bool CtiCCCapBank::isFailedStatus()
 {
-    if (getControlStatus() == CtiCCCapBank::OpenFail ||
-        getControlStatus() ==  CtiCCCapBank::CloseFail )
-    {
-        return true;
-    }
-    return false;
+    return (getControlStatus() == CtiCCCapBank::OpenFail ||
+            getControlStatus() ==  CtiCCCapBank::CloseFail );
+
 }
 /*---------------------------------------------------------------------------
     getControlStatus
@@ -917,7 +902,7 @@ CtiCCCapBank& CtiCCCapBank::setRecloseDelay(long reclose)
 
     Sets the control order of the capbank in the list of the parent feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlOrder(FLOAT order)
+CtiCCCapBank& CtiCCCapBank::setControlOrder(float order)
 {
     _controlorder = order;
 
@@ -929,7 +914,7 @@ CtiCCCapBank& CtiCCCapBank::setControlOrder(FLOAT order)
 
     Sets the trip order of the capbank in the list of the parent feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTripOrder(FLOAT order)
+CtiCCCapBank& CtiCCCapBank::setTripOrder(float order)
 {
     _triporder = order;
 
@@ -941,7 +926,7 @@ CtiCCCapBank& CtiCCCapBank::setTripOrder(FLOAT order)
 
     Sets the close order of the capbank in the list of the parent feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setCloseOrder(FLOAT order)
+CtiCCCapBank& CtiCCCapBank::setCloseOrder(float order)
 {
     _closeorder = order;
 
@@ -1618,8 +1603,7 @@ bool CtiCCCapBank::updateVerificationState(void)
     case 1:
         {
             setPreviousVerificationControlStatus(getControlStatus());
-            if ( stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
-                  _USE_FLIP_FLAG == true &&
+            if ( stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                   (getControlStatus() == OpenFail || getControlStatus() == CloseFail) )
             {
                 _verificationDoneFlag = true;
@@ -1635,10 +1619,8 @@ bool CtiCCCapBank::updateVerificationState(void)
         }
     case 2:
         {
-            if (!(stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
-                _USE_FLIP_FLAG == true))
+            if ( !( stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG ))
             {
-
                 if ( (getControlStatus() == Open || getControlStatus() == Close) &&
                       getControlStatus() != _assumedOrigCapBankPos )
                 {
@@ -1711,9 +1693,7 @@ bool CtiCCCapBank::updateVerificationState(void)
             if (getControlStatus() == OpenFail ||
                 getControlStatus() == CloseFail )
             {
-                if ((stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") &&
-                    _USE_FLIP_FLAG == true)||
-                    _retryFlag )
+                if ( (stringContainsIgnoreCase(getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG ) || _retryFlag )
                 {
                     ctrlIdx = 5;
                     _verificationDoneFlag = true;
@@ -2196,7 +2176,7 @@ void CtiCCCapBank::restore(Cti::RowReader& rdr)
     rdr["maxdailyops"] >> _maxdailyops;
     rdr["maxopdisable"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    setMaxOpsDisableFlag(tempBoolString=="y"?true:false);
+    setMaxOpsDisableFlag(tempBoolString=="y");
 
 
     setAlarmInhibitFlag(false);
@@ -2277,26 +2257,26 @@ void CtiCCCapBank::setDynamicData(Cti::RowReader& rdr)
 
     rdr["additionalflags"] >> _additionalFlags;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
-    _verificationFlag = (_additionalFlags[0]=='y'?true:false);
-    _performingVerificationFlag = (_additionalFlags[1]=='y'?true:false);
-    _verificationDoneFlag = (_additionalFlags[2]=='y'?true:false);
-    _retryOpenFailedFlag = (_additionalFlags[3]=='y'?true:false);
-    _retryCloseFailedFlag = (_additionalFlags[4]=='y'?true:false);
-    _ovUvDisabledFlag = (_additionalFlags[5]=='y'?true:false);
-    _maxDailyOpsHitFlag = (_additionalFlags[6]=='y'?true:false);
-    _ovuvSituationFlag = (_additionalFlags[7]=='y'?true:false);
-    _controlStatusPartialFlag = (_additionalFlags[8]=='y'?true:false);
-    _controlStatusSignificantFlag = (_additionalFlags[9]=='y'?true:false);
-    _controlStatusAbnQualityFlag = (_additionalFlags[10]=='y'?true:false);
-    _controlStatusFailFlag = (_additionalFlags[11]=='y'?true:false);
-    _controlStatusCommFailFlag = (_additionalFlags[12]=='y'?true:false);
-    _controlStatusNoControlFlag = (_additionalFlags[13]=='y'?true:false);
-    _controlStatusUnSolicitedFlag = (_additionalFlags[14]=='y'?true:false);
-    _reEnableOvUvFlag = (_additionalFlags[15]=='y'?true:false);
-    _localControlFlag = (_additionalFlags[16]=='y'?true:false);
-    _controlRecentlySentFlag = (_additionalFlags[17]=='y'?true:false);
-    _porterRetFailFlag = (_additionalFlags[18]=='y'?true:false);
-    _unsolicitedPendingFlag = (_additionalFlags[19]=='y'?true:false);
+    _verificationFlag = (_additionalFlags[0]=='y');
+    _performingVerificationFlag = (_additionalFlags[1]=='y');
+    _verificationDoneFlag = (_additionalFlags[2]=='y');
+    _retryOpenFailedFlag = (_additionalFlags[3]=='y');
+    _retryCloseFailedFlag = (_additionalFlags[4]=='y');
+    _ovUvDisabledFlag = (_additionalFlags[5]=='y');
+    _maxDailyOpsHitFlag = (_additionalFlags[6]=='y');
+    _ovuvSituationFlag = (_additionalFlags[7]=='y');
+    _controlStatusPartialFlag = (_additionalFlags[8]=='y');
+    _controlStatusSignificantFlag = (_additionalFlags[9]=='y');
+    _controlStatusAbnQualityFlag = (_additionalFlags[10]=='y');
+    _controlStatusFailFlag = (_additionalFlags[11]=='y');
+    _controlStatusCommFailFlag = (_additionalFlags[12]=='y');
+    _controlStatusNoControlFlag = (_additionalFlags[13]=='y');
+    _controlStatusUnSolicitedFlag = (_additionalFlags[14]=='y');
+    _reEnableOvUvFlag = (_additionalFlags[15]=='y');
+    _localControlFlag = (_additionalFlags[16]=='y');
+    _controlRecentlySentFlag = (_additionalFlags[17]=='y');
+    _porterRetFailFlag = (_additionalFlags[18]=='y');
+    _unsolicitedPendingFlag = (_additionalFlags[19]=='y');
 
     if (_controlStatusPartialFlag)
         _controlStatusQuality = CC_Partial;

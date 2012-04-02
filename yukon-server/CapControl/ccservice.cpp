@@ -84,7 +84,7 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
     CService::RunInConsole(argc, argv);
 
     //We need to catch ctrl-c so we can stop
-    if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  true))
+    if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  TRUE))
         std::cerr << "Could not install console control handler" << endl;
 
     Init();

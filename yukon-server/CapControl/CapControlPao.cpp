@@ -37,7 +37,7 @@ void CapControlPao::restore(Cti::RowReader& rdr)
     rdr["disableflag"] >> tempString;
 
     std::transform(tempString.begin(), tempString.end(), tempString.begin(), tolower);
-    _disableFlag = (tempString=="y"?true:false);
+    _disableFlag = (tempString=="y");
 
     _disabledStatePointId = 0;
 }

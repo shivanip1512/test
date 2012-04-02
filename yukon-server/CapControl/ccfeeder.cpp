@@ -1879,11 +1879,14 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
-    if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") &&
-         _USE_FLIP_FLAG == true)
+    if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
+    {
         reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control flip");
+    }
     else
+    {
         reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control open");
+    }
     reqMsg->setSOE(4);
 
     return reqMsg;
@@ -1970,11 +1973,14 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, getParentId(), getPaoId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
     }
 
-    if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") &&
-         _USE_FLIP_FLAG == true)
+    if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG )
+    {
         reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control flip");
+    }
     else
+    {
         reqMsg = createPorterRequestMsg(capBank->getControlDeviceId(),"control close");
+    }
     reqMsg->setSOE(4);
 
     return reqMsg;
@@ -2800,7 +2806,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                 CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit));
                 if( capBank != NULL )
                 {
-                    double adjustedBankKVARIncrease = -(leadLevel/100.0)*((double)capBank->getBankSize());
+                    double adjustedBankKVARIncrease = -(leadLevel/100.0) * capBank->getBankSize();
                     if( adjustedBankKVARIncrease <= getKVARSolution() )
                     {
                         string text = createTextString(ControlStrategy::IndividualFeederControlMethod, CtiCCCapBank::Open, getIVControl(), getCurrentVarLoadPointValue());
@@ -3531,7 +3537,7 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                                CtiLockGuard<CtiLogger> logger_guard(dout);
                                dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
-                            if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true &&
+                            if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                                currentCapBank->getVCtrlIndex() == 1)
                             {
                                currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
@@ -3650,7 +3656,7 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                                CtiLockGuard<CtiLogger> logger_guard(dout);
                                dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
-                            if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true &&
+                            if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                                currentCapBank->getVCtrlIndex() == 1)
                             {
                                currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Close);
@@ -3882,7 +3888,7 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                            CtiLockGuard<CtiLogger> logger_guard(dout);
                            dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
-                        if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true &&
+                        if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                            currentCapBank->getVCtrlIndex() == 1)
                         {
                            currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
@@ -4017,7 +4023,7 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                            CtiLockGuard<CtiLogger> logger_guard(dout);
                            dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                         }
-                        if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG == true &&
+                        if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                            currentCapBank->getVCtrlIndex() == 1)
                         {
                            currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Close);
@@ -4275,13 +4281,8 @@ CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& cur
         //check capbank reclose delay here...
         double controlValue = (ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
         string text = createTextString(getStrategy()->getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
-        bool flipFlag = false;
-        if  (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") &&
-                _USE_FLIP_FLAG == true )
-        {
-            flipFlag = true; //flip
-        }
-
+        bool flipFlag = _USE_FLIP_FLAG && stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701");
+        
         if( control == CtiCCCapBank::Open)
         {
             control = (flipFlag ? 4 : CtiCCCapBank::Open);
@@ -4703,7 +4704,7 @@ bool CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
 
 
             // Check all other banks on this feeder for a pending state...
-            if (found == false)
+            if (!found)
             {
                 for(long i=0;i<_cccapbanks.size();i++)
                 {
@@ -5974,11 +5975,7 @@ unsigned long CtiCCFeeder::getMonitorPointScanTime()
 
 bool CtiCCFeeder::isScanFlagSet()
 {
-    if (_preOperationMonitorPointScanFlag || _postOperationMonitorPointScanFlag)
-    {
-        return true;
-    }
-    return false;
+    return (_preOperationMonitorPointScanFlag || _postOperationMonitorPointScanFlag);
 }
 
 bool CtiCCFeeder::scanAllMonitorPoints()
@@ -6515,15 +6512,15 @@ void CtiCCFeeder::restore(Cti::RowReader& rdr)
     rdr["currentvoltloadpointid"] >> _currentvoltloadpointid;
     rdr["multiMonitorControl"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _multiMonitorFlag = (tempBoolString=="y"?true:false);
+    _multiMonitorFlag = (tempBoolString=="y");
     rdr["usephasedata"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _usePhaseData = (tempBoolString=="y"?true:false);
+    _usePhaseData = (tempBoolString=="y");
     rdr["phaseb"] >> _phaseBid;
     rdr["phasec"] >> _phaseCid;
     rdr["controlflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _totalizedControlFlag = (tempBoolString=="y"?true:false);
+    _totalizedControlFlag = (tempBoolString=="y");
 
     setDecimalPlaces(0);
 
@@ -6620,13 +6617,13 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
     rdr["newpointdatareceivedflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _newpointdatareceivedflag = (tempBoolString=="y"?true:false);
+    _newpointdatareceivedflag = (tempBoolString=="y");
     rdr["lastcurrentvarupdatetime"] >> _lastcurrentvarpointupdatetime;
     rdr["estimatedvarpointvalue"] >> _estimatedvarloadpointvalue;
     rdr["currentdailyoperations"] >> _currentdailyoperations;
     rdr["recentlycontrolledflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _recentlycontrolledflag = (tempBoolString=="y"?true:false);
+    _recentlycontrolledflag = (tempBoolString=="y");
     rdr["lastoperationtime"] >> _lastoperationtime;
     rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
     rdr["lastcapbankdeviceid"] >> _lastcapbankcontrolleddeviceid;
@@ -6639,23 +6636,23 @@ void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
     rdr["currentvarpointquality"] >> _currentvarpointquality;
     rdr["waivecontrolflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _waivecontrolflag = (tempBoolString=="y"?true:false);
+    _waivecontrolflag = (tempBoolString=="y");
     rdr["additionalflags"] >> _additionalFlags;
     rdr["currentvoltpointvalue"] >> _currentvoltloadpointvalue;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
-    _verificationFlag = (_additionalFlags[0]=='y'?true:false);
-    _performingVerificationFlag = (_additionalFlags[1]=='y'?true:false);
-    _verificationDoneFlag = (_additionalFlags[2]=='y'?true:false);
-    _preOperationMonitorPointScanFlag = (_additionalFlags[3]=='y'?true:false);
-    _operationSentWaitFlag = (_additionalFlags[4]=='y'?true:false);
-    _postOperationMonitorPointScanFlag = (_additionalFlags[5]=='y'?true:false);
-    _waitForReCloseDelayFlag = (_additionalFlags[6]=='y'?true:false);
-    _peakTimeFlag = (_additionalFlags[7]=='y'?true:false);
-    _maxDailyOpsHitFlag = (_additionalFlags[8]=='y'?true:false);
-    _ovUvDisabledFlag = (_additionalFlags[9]=='y'?true:false);
-    _correctionNeededNoBankAvailFlag = (_additionalFlags[10]=='y'?true:false);
-    _likeDayControlFlag = (_additionalFlags[11]=='y'?true:false);
-    _lastVerificationMsgSentSuccessful = (_additionalFlags[12]=='y'?true:false);
+    _verificationFlag = (_additionalFlags[0]=='y');
+    _performingVerificationFlag = (_additionalFlags[1]=='y');
+    _verificationDoneFlag = (_additionalFlags[2]=='y');
+    _preOperationMonitorPointScanFlag = (_additionalFlags[3]=='y');
+    _operationSentWaitFlag = (_additionalFlags[4]=='y');
+    _postOperationMonitorPointScanFlag = (_additionalFlags[5]=='y');
+    _waitForReCloseDelayFlag = (_additionalFlags[6]=='y');
+    _peakTimeFlag = (_additionalFlags[7]=='y');
+    _maxDailyOpsHitFlag = (_additionalFlags[8]=='y');
+    _ovUvDisabledFlag = (_additionalFlags[9]=='y');
+    _correctionNeededNoBankAvailFlag = (_additionalFlags[10]=='y');
+    _likeDayControlFlag = (_additionalFlags[11]=='y');
+    _lastVerificationMsgSentSuccessful = (_additionalFlags[12]=='y');
     rdr["eventSeq"] >> _eventSeq;
     rdr["currverifycbid"] >> _currentVerificationCapBankId;
     rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
@@ -6792,7 +6789,7 @@ bool CtiCCFeeder::checkMaxDailyOpCountExceeded(CtiMultiMsg_vec& pointChanges)
     return retVal;
 }
 
-string CtiCCFeeder::createPhaseVarText(double aValue,double bValue, double cValue, FLOAT multiplier)
+string CtiCCFeeder::createPhaseVarText(double aValue,double bValue, double cValue, float multiplier)
 {
     string text = ("");
     text += CtiNumStr(aValue*multiplier, 2).toString();
@@ -6804,7 +6801,7 @@ string CtiCCFeeder::createPhaseVarText(double aValue,double bValue, double cValu
     text += CtiNumStr((aValue+bValue+cValue)*multiplier, 2).toString();
     return text;
 }
-string CtiCCFeeder::createPhaseRatioText(double aValue,double bValue, double cValue, FLOAT multiplier)
+string CtiCCFeeder::createPhaseRatioText(double aValue,double bValue, double cValue, float multiplier)
 {
     string text = ("");
     text += CtiNumStr(aValue*multiplier, 2).toString();
@@ -6818,7 +6815,7 @@ string CtiCCFeeder::createPhaseRatioText(double aValue,double bValue, double cVa
     return text;
 }
 
-string CtiCCFeeder::createVarText(double aValue,FLOAT multiplier)
+string CtiCCFeeder::createVarText(double aValue,float multiplier)
 {
     string text = ("");
     text += CtiNumStr(aValue*multiplier, 2).toString();

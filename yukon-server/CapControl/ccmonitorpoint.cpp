@@ -428,7 +428,7 @@ void CtiCCMonitorPoint::restore(Cti::RowReader& rdr)
     rdr["displayorder"] >> _displayOrder;
     rdr["scannable"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    setScannable(tempBoolString=="y"?true:false);
+    setScannable(tempBoolString=="y");
     rdr["ninavg"] >> _nInAvg;
     rdr["upperbandwidth"] >> _upperBW;
     rdr["lowerbandwidth"] >> _lowerBW;
@@ -454,7 +454,7 @@ void CtiCCMonitorPoint::setDynamicData(Cti::RowReader& rdr)
     rdr["datetime"] >> _timeStamp;
     rdr["scaninprogress"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    setScanInProgress(tempBoolString=="y"?true:false);
+    setScanInProgress(tempBoolString=="y");
 
     _insertDynamicDataFlag = false;
     _dirty = false;
@@ -526,14 +526,11 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
             }
             else
             {
-                _dirty = true;
+                string loggedSQLstring = updater.asString();
                 {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << loggedSQLstring << endl;
                 }
             }
         }
@@ -572,14 +569,11 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
             }
             else
             {
-                _dirty = true;
+                string loggedSQLstring = dbInserter.asString();
                 {
-                    string loggedSQLstring = dbInserter.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << loggedSQLstring << endl;
                 }
             }
         }

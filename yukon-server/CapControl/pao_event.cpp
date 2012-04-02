@@ -51,7 +51,7 @@ CtiPAOEvent::CtiPAOEvent(Cti::RowReader& rdr)
     rdr["command"] >> _eventCommand;
     rdr["disableovuv"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    setDisableOvUvFlag(tempBoolString=="y"?true:false);
+    setDisableOvUvFlag(tempBoolString=="y");
 
 
     _dirty = false;

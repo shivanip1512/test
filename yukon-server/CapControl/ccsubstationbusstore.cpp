@@ -6343,12 +6343,12 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 rdr["alarminhibit"] >> tempBoolString;
                 std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
 
-                currentCCCapBank->setAlarmInhibitFlag(tempBoolString=="y"?true:false);
+                currentCCCapBank->setAlarmInhibitFlag(tempBoolString=="y");
 
                 rdr["controlinhibit"] >> tempBoolString;
                 std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
 
-                currentCCCapBank->setControlInhibitFlag(tempBoolString=="y"?true:false);
+                currentCCCapBank->setControlInhibitFlag(tempBoolString=="y");
             }
         }
 
@@ -6442,9 +6442,9 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
             {
                 long deviceid;
                 long feederid;
-                FLOAT controlOrder;
-                FLOAT tripOrder;
-                FLOAT closeOrder;
+                float controlOrder;
+                float tripOrder;
+                float closeOrder;
 
                 rdr["deviceid"] >> deviceid;
                 rdr["feederid"] >> feederid;
@@ -7447,9 +7447,7 @@ void CtiCCSubstationBusStore::locateOrphans(PaoIdVector *orphanCaps, PaoIdVector
 
 bool CtiCCSubstationBusStore::isFeederOrphan(long feederId)
 {
-    bool retVal = false;
-
-    try
+   try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
         {
@@ -7465,12 +7463,10 @@ bool CtiCCSubstationBusStore::isFeederOrphan(long feederId)
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    return retVal;
+    return false;
 }
 bool CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
 {
-    bool retVal = false;
-
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
@@ -7494,7 +7490,7 @@ bool CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    return retVal;
+    return false;
 }
 void CtiCCSubstationBusStore::removeFromOrphanList(long ccId)
 {
