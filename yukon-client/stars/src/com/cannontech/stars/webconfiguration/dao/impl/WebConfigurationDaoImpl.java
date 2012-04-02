@@ -1,6 +1,5 @@
 package com.cannontech.stars.webconfiguration.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 import com.google.common.collect.Maps;
@@ -34,7 +34,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
         }
 
         @Override
-        public WebConfiguration mapRow(ResultSet rs, int rowNum)
+        public WebConfiguration mapRow(YukonResultSet rs)
                 throws SQLException {
             int configurationId = rs.getInt("configurationId");
             String logoLocation = SqlUtils.convertDbValueToString(rs.getString("logoLocation"));

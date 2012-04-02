@@ -1,14 +1,12 @@
 package com.cannontech.stars.dr.hardware.dao;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 
 public class DisplayableLmHardwareRowMapper extends
@@ -38,7 +36,7 @@ public class DisplayableLmHardwareRowMapper extends
     }
 
     @Override
-    public DisplayableLmHardware mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public DisplayableLmHardware mapRow(YukonResultSet rs) throws SQLException {
         int inventoryId = rs.getInt("inventoryId");
         String serialNumber = rs.getString("serialNumber");
         String deviceType = rs.getString("deviceType");

@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.database.CollectionRowCallbackHandler;
+import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowCallbackHandlerAdapter;
 import com.cannontech.database.YukonRowMapper;
@@ -17,12 +19,17 @@ import com.google.common.collect.Lists;
 
 public class ChunkingSqlTemplate {
     public static final int DEFAULT_SIZE = 1000;
-    private SimpleJdbcOperations simpleJdbcTemplate;
+    private YukonJdbcOperations yukonJdbcTemplate;
     private int chunkSize;
     
     public ChunkingSqlTemplate(final SimpleJdbcOperations simpleJdbcTemplate) {
         this.chunkSize = DEFAULT_SIZE;
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+        this.yukonJdbcTemplate = new YukonJdbcTemplate(simpleJdbcTemplate.getJdbcOperations());
+    }
+
+    public ChunkingSqlTemplate(final YukonJdbcOperations yukonJdbcTemplate) {
+        this.chunkSize = DEFAULT_SIZE;
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     public <I, R> List<R> query(final SqlGenerator<I> sqlGenerator, final Iterable<I> input, 
@@ -43,7 +50,7 @@ public class ChunkingSqlTemplate {
         }
 
         for (final String sql : queryList) {
-            List<R> list = simpleJdbcTemplate.query(sql, rowMapper, args);
+            List<R> list = yukonJdbcTemplate.query(sql, rowMapper, args);
             resultList.addAll(list);
         }
         
@@ -94,7 +101,7 @@ public class ChunkingSqlTemplate {
         }
         
         for (final SqlFragmentSource sql : queryList) {
-            simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rch);
+            yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rch);
         }
         
     }
@@ -115,7 +122,7 @@ public class ChunkingSqlTemplate {
         }
 
         for (final String sql : queryList) {
-            simpleJdbcTemplate.update(sql, args);
+            yukonJdbcTemplate.update(sql, args);
         }
     }
 
@@ -136,7 +143,7 @@ public class ChunkingSqlTemplate {
     	}
     	
     	for (final SqlFragmentSource sql : sqlFragmentList) {
-    		simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
+    		yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
     	}
     }
     

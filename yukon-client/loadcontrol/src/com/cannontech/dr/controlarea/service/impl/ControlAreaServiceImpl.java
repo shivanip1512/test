@@ -1,6 +1,5 @@
 package com.cannontech.dr.controlarea.service.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -25,6 +24,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.filter.ForProgramFilter;
 import com.cannontech.dr.controlarea.model.ControlArea;
@@ -70,7 +70,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
 
         @Override
-        public ControlAreaTrigger mapRow(ResultSet rs, int rowNum)
+        public ControlAreaTrigger mapRow(YukonResultSet rs)
                 throws SQLException {
             int controlAreaId = rs.getInt("deviceId");
             ControlAreaTrigger retVal = new ControlAreaTrigger(controlAreaId,
@@ -104,7 +104,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
 
         @Override
-        public ControlArea mapRow(ResultSet rs, int rowNum)
+        public ControlArea mapRow(YukonResultSet rs)
                 throws SQLException {
             int controlAreaId = rs.getInt("paObjectId");
             PaoIdentifier paoId = new PaoIdentifier(controlAreaId,

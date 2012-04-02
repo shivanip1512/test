@@ -11,6 +11,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.program.model.Program;
 
 /**
@@ -44,7 +45,7 @@ public class ProgramRowMapper extends AbstractRowMapperWithBaseQuery<Program> {
     }
 
     @Override
-    public Program mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Program mapRow(YukonResultSet rs) throws SQLException {
         final Program program = new Program();
         program.setProgramId(rs.getInt("ProgramID"));
         
@@ -55,11 +56,11 @@ public class ProgramRowMapper extends AbstractRowMapperWithBaseQuery<Program> {
         program.setDescription(rs.getString("Description"));
         program.setProgramOrder(rs.getInt("ProgramOrder"));
         
-        String programName = getProgramName(rs);
+        String programName = getProgramName(rs.getResultSet());
         program.setProgramName(programName);
         program.setProgramPaoName(rs.getString("PAOName"));
 
-        String applianceCategoryLogo = getApplianceCategoryLogo(rs);
+        String applianceCategoryLogo = getApplianceCategoryLogo(rs.getResultSet());
         program.setApplianceCategoryLogo(applianceCategoryLogo);
 
         String descriptionIcons = rs.getString("LogoLocation");

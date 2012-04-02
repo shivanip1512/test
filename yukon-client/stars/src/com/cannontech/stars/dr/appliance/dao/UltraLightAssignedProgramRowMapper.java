@@ -3,12 +3,12 @@
  */
 package com.cannontech.stars.dr.appliance.dao;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.appliance.model.AssignedProgramName;
 import com.cannontech.stars.dr.appliance.model.UltraLightAssignedProgram;
 
@@ -42,7 +42,7 @@ public class UltraLightAssignedProgramRowMapper extends
     }
 
     @Override
-    public UltraLightAssignedProgram mapRow(ResultSet rs, int rowNum)
+    public UltraLightAssignedProgram mapRow(YukonResultSet rs)
             throws SQLException {
         int assignedProgramId = rs.getInt("assignedProgramId");
         int programId = rs.getInt("programId");

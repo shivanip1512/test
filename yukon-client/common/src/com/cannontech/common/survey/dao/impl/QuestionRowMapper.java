@@ -1,6 +1,5 @@
 package com.cannontech.common.survey.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
@@ -8,6 +7,7 @@ import com.cannontech.common.survey.model.Question;
 import com.cannontech.common.survey.model.QuestionType;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 
 public class QuestionRowMapper extends
         AbstractRowMapperWithBaseQuery<Question> {
@@ -22,7 +22,7 @@ public class QuestionRowMapper extends
     }
 
     @Override
-    public Question mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Question mapRow(YukonResultSet rs) throws SQLException {
         Question retVal = new Question();
 
         retVal.setSurveyQuestionId(rs.getInt("surveyQuestionId"));

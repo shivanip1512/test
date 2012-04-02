@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.appliance.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +21,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -65,7 +65,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         }
 
         @Override
-        public ApplianceCategory mapRow(ResultSet rs, int rowNum)
+        public ApplianceCategory mapRow(YukonResultSet rs)
                 throws SQLException {
             int applianceCategoryId = rs.getInt("applianceCategoryId");
             String name = rs.getString("description");

@@ -3,13 +3,13 @@
  */
 package com.cannontech.stars.dr.appliance.dao;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 
@@ -78,7 +78,7 @@ public class AssignedProgramRowMapper extends
     }
 
     @Override
-    public AssignedProgram mapRow(ResultSet rs, int rowNum)
+    public AssignedProgram mapRow(YukonResultSet rs)
             throws SQLException {
         int applianceCategoryId = rs.getInt("applianceCategoryId");
         int assignedProgramId = rs.getInt("programId");

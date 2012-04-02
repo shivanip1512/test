@@ -1,12 +1,12 @@
 package com.cannontech.stars.dr.hardware.dao;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 
 public class LMHardwareBaseWithECIdRowMapper extends AbstractRowMapperWithBaseQuery<LMHardwareBase> {
@@ -36,10 +36,10 @@ public class LMHardwareBaseWithECIdRowMapper extends AbstractRowMapperWithBaseQu
     }
 
     @Override
-    public LMHardwareBase mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public LMHardwareBase mapRow(YukonResultSet rs) throws SQLException {
         final LMHardwareBase lmHardwareBase = new LMHardwareBase();
         lmHardwareBase.setInventoryId(rs.getInt("InventoryId"));
-        lmHardwareBase.setManufacturerSerialNumber(SqlUtils.convertDbValueToString(rs, "ManufacturerSerialNumber"));
+        lmHardwareBase.setManufacturerSerialNumber(SqlUtils.convertDbValueToString(rs.getResultSet(), "ManufacturerSerialNumber"));
         lmHardwareBase.setLMHarewareTypeId(rs.getInt("LMHardwareTypeId"));
         lmHardwareBase.setRouteId(rs.getInt("RouteId"));
         lmHardwareBase.setConfigurationId(rs.getInt("ConfigurationId"));

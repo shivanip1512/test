@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.displayable.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -13,6 +12,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.appliance.model.AssignedProgramName;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
@@ -51,7 +51,7 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
         }
 
         @Override
-        public DisplayableInventoryEnrollment mapRow(ResultSet rs, int rowNum)
+        public DisplayableInventoryEnrollment mapRow(YukonResultSet rs)
                 throws SQLException {
             int assignedProgramId = rs.getInt("assignedProgramId");
             int programId = rs.getInt("programId");

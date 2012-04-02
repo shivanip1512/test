@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
@@ -20,10 +19,11 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class FilterServiceImpl implements FilterService {
 	
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private Logger log = YukonLogManager.getLogger(FilterServiceImpl.class);
 
     @Override
@@ -59,7 +59,7 @@ public class FilterServiceImpl implements FilterService {
 
         SearchResult<T> retVal = new SearchResult<T>();
 
-        List<T> objectsFromDb = simpleJdbcTemplate.query(sql.getSql(),
+        List<T> objectsFromDb = yukonJdbcTemplate.query(sql.getSql(),
                                                          rowMapper,
                                                          sql.getArguments());
         
@@ -103,7 +103,7 @@ public class FilterServiceImpl implements FilterService {
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }

@@ -1,6 +1,5 @@
 package com.cannontech.dr.loadgroup.service.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
@@ -21,6 +20,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dr.loadgroup.filter.MacroLoadGroupForLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
@@ -139,7 +139,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             }
 
             @Override
-            public DisplayablePao mapRow(ResultSet rs, int rowNum)
+            public DisplayablePao mapRow(YukonResultSet rs)
                     throws SQLException {
                 String paoTypeStr = rs.getString("type");
                 int deviceTypeId = PAOGroups.getPAOType("DEVICE", paoTypeStr);

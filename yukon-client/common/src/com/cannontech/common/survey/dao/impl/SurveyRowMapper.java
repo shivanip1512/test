@@ -1,12 +1,12 @@
 package com.cannontech.common.survey.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 
 public class SurveyRowMapper extends AbstractRowMapperWithBaseQuery<Survey> {
     final static SqlFragmentSource baseQuery;
@@ -23,7 +23,7 @@ public class SurveyRowMapper extends AbstractRowMapperWithBaseQuery<Survey> {
     }
 
     @Override
-    public Survey mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Survey mapRow(YukonResultSet rs) throws SQLException {
         Survey retVal = new Survey();
         retVal.setSurveyId(rs.getInt("surveyId"));
         retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));

@@ -1,5 +1,6 @@
 package com.cannontech.common.favorites.service.impl;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.impl.PaoNameDisplayablePaoRowMapper;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
 
@@ -79,6 +81,11 @@ public class FavoritesServiceImpl implements FavoritesService {
         public boolean needsWhere() {
             return false;
         }
+
+        @Override
+        public DisplayablePao mapRow(YukonResultSet rs) throws SQLException {
+            return null;
+        }
     }
 
     private static class FavoriteRowMapper extends PaoNameDisplayablePaoRowMapper
@@ -99,6 +106,11 @@ public class FavoritesServiceImpl implements FavoritesService {
         @Override
         public boolean needsWhere() {
             return true;
+        }
+
+        @Override
+        public DisplayablePao mapRow(YukonResultSet rs) throws SQLException {
+            return null;
         }
     }
 

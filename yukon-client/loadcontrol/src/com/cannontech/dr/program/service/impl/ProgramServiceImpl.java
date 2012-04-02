@@ -1,6 +1,5 @@
 package com.cannontech.dr.program.service.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -36,6 +35,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
 import com.cannontech.dr.program.model.GearAdjustment;
@@ -84,7 +84,7 @@ public class ProgramServiceImpl implements ProgramService {
             }
 
             @Override
-            public DisplayablePao mapRow(ResultSet rs, int rowNum)
+            public DisplayablePao mapRow(YukonResultSet rs)
                     throws SQLException {
             	int paobjectId = rs.getInt("paObjectId");
             	String paoTypeStr = rs.getString("type");

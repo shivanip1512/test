@@ -21,6 +21,7 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
@@ -66,7 +67,7 @@ public class ProgramDaoImpl implements ProgramDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Program getByProgramId(final int programId) {
         final String sql = selectSql + " AND pwp.ProgramID = ?";
-        Program program = yukonJdbcTemplate.queryForObject(sql, new ProgramRowMapper(yukonJdbcTemplate), programId);
+        Program program = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapperAdapter<Program>(new ProgramRowMapper(yukonJdbcTemplate)), programId);
         return program;
     }
     
@@ -115,7 +116,7 @@ public class ProgramDaoImpl implements ProgramDao {
                 String sql = sqlBuilder.toString();
                 return sql;
             }
-        }, idList, new ProgramRowMapper(yukonJdbcTemplate));
+        }, idList, new YukonRowMapperAdapter<Program>(new ProgramRowMapper(yukonJdbcTemplate)));
         
         final Map<ApplianceCategory, List<Program>> resultMap =
             new HashMap<ApplianceCategory, List<Program>>(applianceCategories.size());

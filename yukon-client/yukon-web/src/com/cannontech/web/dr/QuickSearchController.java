@@ -1,6 +1,5 @@
 package com.cannontech.web.dr;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -34,6 +33,7 @@ import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NotPaoTypeFilter;
@@ -85,7 +85,7 @@ public class QuickSearchController {
         }
 
         @Override
-        public DisplayablePao mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public DisplayablePao mapRow(YukonResultSet rs) throws SQLException {
             int paoId = rs.getInt("paObjectId");
             String paoType = rs.getString("type");
             PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.getForDbString(paoType));

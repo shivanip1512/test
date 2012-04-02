@@ -1,11 +1,11 @@
 package com.cannontech.web.capcontrol.filter;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 
 public class ScheduleAssignmentRowMapper extends
@@ -23,7 +23,7 @@ public class ScheduleAssignmentRowMapper extends
     }
 
     @Override
-    public PaoScheduleAssignment mapRow(ResultSet rs, int rowNum)
+    public PaoScheduleAssignment mapRow(YukonResultSet rs)
             throws SQLException {
         final PaoScheduleAssignment assignment = new PaoScheduleAssignment();
         String commandName = rs.getString("Command");
@@ -34,8 +34,8 @@ public class ScheduleAssignmentRowMapper extends
         assignment.setDisableOvUv(disableOvUv);
         int eventId = rs.getInt("EventID");
         assignment.setEventId(eventId);
-        assignment.setLastRunTime(rs.getTimestamp("LastRunTime"));
-        assignment.setNextRunTime(rs.getTimestamp("NextRunTime"));
+        assignment.setLastRunTime(rs.getResultSet().getTimestamp("LastRunTime"));
+        assignment.setNextRunTime(rs.getResultSet().getTimestamp("NextRunTime"));
         int paoId = rs.getInt("PaoID");
         assignment.setPaoId(paoId);
         int scheduleId = rs.getInt("ScheduleID");

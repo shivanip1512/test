@@ -22,6 +22,12 @@ public class PagingResultSetExtractor<T> implements ResultSetExtractor<T> {
         this.rowMapper = rowMapper;
     }
     
+    public PagingResultSetExtractor(int start, int pageCount, YukonRowMapper<T> rowMapper) {
+        this.start = start;
+        this.pageCount = pageCount;
+        this.rowMapper = new YukonRowMapperAdapter<T>(rowMapper);
+    }
+
     public T extractData(ResultSet rs) throws SQLException, DataAccessException {
         
         // Move the cursor to the correct spot in the result set so we only

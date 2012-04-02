@@ -1,6 +1,5 @@
 package com.cannontech.dr.scenario.service.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
@@ -18,6 +17,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.service.ScenarioService;
@@ -39,7 +39,7 @@ public class ScenarioServiceImpl implements ScenarioService {
         }
 
         @Override
-        public DisplayablePao mapRow(ResultSet rs, int rowNum)
+        public DisplayablePao mapRow(YukonResultSet rs)
                 throws SQLException {
             PaoIdentifier paoId = 
             	new PaoIdentifier(rs.getInt("paObjectId"), PaoType.LM_SCENARIO);

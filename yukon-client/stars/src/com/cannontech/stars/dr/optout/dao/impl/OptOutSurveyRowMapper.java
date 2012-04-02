@@ -1,11 +1,11 @@
 package com.cannontech.stars.dr.optout.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.optout.model.OptOutSurvey;
 
 public class OptOutSurveyRowMapper extends
@@ -26,13 +26,13 @@ public class OptOutSurveyRowMapper extends
     }
 
     @Override
-    public OptOutSurvey mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public OptOutSurvey mapRow(YukonResultSet rs) throws SQLException {
         OptOutSurvey retVal = new OptOutSurvey();
         retVal.setOptOutSurveyId(rs.getInt("optOutSurveyId"));
         retVal.setSurveyId(rs.getInt("surveyId"));
         retVal.setSurveyName(rs.getString("surveyName"));
-        retVal.setStartDate(rs.getTimestamp("startDate"));
-        retVal.setStopDate(rs.getTimestamp("stopDate"));
+        retVal.setStartDate(rs.getResultSet().getTimestamp("startDate"));
+        retVal.setStopDate(rs.getResultSet().getTimestamp("stopDate"));
         retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
 
         return retVal;
