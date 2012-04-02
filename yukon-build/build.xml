@@ -115,17 +115,14 @@
 
     <target name="buildTarget" depends="build-dbSnapshots,build-client,build-server,build-install" />
     
-    <target name="build-dbSnapshots" depends="init">
+    <target name="build-dbSnapshots" depends="init, updatedbscripts">
         <echo message="Creating database snapshot" />
 
     	<ant dir="${basedir}/yukon-client/build" >
             <target name="createDatabaseSnapshots"/>
-    		<!--            <property name="yukon.major" value="${yukon.major}"/> -->
-    		<!--            <property name="yukon.minor" value="${yukon.minor}"/> -->
-    		<!--            <property name="yukon.revision" value="${yukon.revision}"/> -->
-    		            <property name="yukon.major" value="5"/> 
-    		            <property name="yukon.minor" value="5"/> 
-    		            <property name="yukon.revision" value="0"/> 
+    		    <property name="yukon.major" value="${yukon.major}"/>
+    		    <property name="yukon.minor" value="${yukon.minor}"/>
+    		    <property name="yukon.revision" value="${yukon.revision}"/>
         </ant>
     </target>
     
