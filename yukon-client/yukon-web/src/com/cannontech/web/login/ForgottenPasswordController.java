@@ -67,7 +67,7 @@ public class ForgottenPasswordController {
 
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.POST)
     public String forgottenPasswordRequest(ModelMap model, FlashScope flashScope, HttpServletRequest request, 
-                                           @ModelAttribute ForgottenPassword forgottenPassword, BindingResult bindingResult, 
+                                           @ModelAttribute ForgottenPassword forgottenPassword, 
                                            String recaptcha_challenge_field, String recaptcha_response_field)
     throws Exception {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null);
@@ -78,7 +78,7 @@ public class ForgottenPasswordController {
 
         // The Captcha failed.  return the user the forgotten password page
         if (captchaResponse.isError()) {
-            forgottenPasswordFieldError(forgottenPassword, bindingResult, flashScope, model, request, captchaResponse.getError().getFormatKey()); 
+            forgottenPasswordFieldError(forgottenPassword, flashScope, model, request, captchaResponse.getError().getFormatKey()); 
             return "forgottenPassword.jsp";
         }
 
@@ -87,7 +87,7 @@ public class ForgottenPasswordController {
 
         // Validate the request.
         if (!passwordResetInfo.isPasswordResetInfoValid()) {
-            forgottenPasswordFieldError(forgottenPassword, bindingResult, flashScope, model, request, "yukon.web.modules.login.forgottenPassword.invalidProvidedInformation");
+            forgottenPasswordFieldError(forgottenPassword, flashScope, model, request, "yukon.web.modules.login.forgottenPassword.invalidProvidedInformation");
             return "forgottenPassword.jsp";
         }
         
@@ -106,7 +106,7 @@ public class ForgottenPasswordController {
         try {
             forgottenPasswordService.sendPasswordResetEmail(forgottenPasswordResetUrl, passwordResetInfo.getContact(), passwordResetUserContext);
         } catch (NotFoundException e) {
-            forgottenPasswordFieldError(forgottenPassword, bindingResult, flashScope, model, request, "yukon.web.modules.login.forgottenPassword.emailNotFound"); 
+            forgottenPasswordFieldError(forgottenPassword, flashScope, model, request, "yukon.web.modules.login.forgottenPassword.emailNotFound"); 
             return "forgottenPassword.jsp";
         }
 
@@ -163,10 +163,9 @@ public class ForgottenPasswordController {
     /**
      * This method sets the forgottenPasswordField with the errorCode supplied and rebuilds the model for rejecting the request.
      */
-    private void forgottenPasswordFieldError(ForgottenPassword forgottenPassword, BindingResult bindingResult, FlashScope flashScope,
-                                             ModelMap model, HttpServletRequest request, String errorCode) {
+    private void forgottenPasswordFieldError(ForgottenPassword forgottenPassword, FlashScope flashScope, ModelMap model, 
+                                             HttpServletRequest request, String errorCode) {
 
-        bindingResult.rejectValue("forgottenPasswordField", errorCode);
         flashScope.setError(new YukonMessageSourceResolvable(errorCode));
         setupModelMap(model, request);
         model.addAttribute("forgottenPassword", forgottenPassword);
