@@ -116,7 +116,6 @@ BOOST_AUTO_TEST_CASE(test_read_queue_front)
     BOOST_CHECK_EQUAL(item, &outmessages[4]);
     BOOST_CHECK_EQUAL(item_length, sizeof(CtiOutMessage));
 
-    //  read without elementCount
     return_code = ReadFrontElement(QueueHandle, &item_length, &item, false, &priority);
 
     BOOST_CHECK_EQUAL(return_code, 0);
@@ -160,7 +159,7 @@ BOOST_AUTO_TEST_CASE(test_read_queue_front)
     BOOST_CHECK_EQUAL(item_length, sizeof(CtiOutMessage));
 }
 
-BOOST_AUTO_TEST_CASE(test_read_queue_indexed)
+BOOST_AUTO_TEST_CASE(test_read_queue_by_id)
 {
     HCTIQUEUE QueueHandle;
 

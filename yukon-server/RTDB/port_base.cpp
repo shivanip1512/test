@@ -1288,7 +1288,18 @@ INT CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Pri
             // Always read the _first_ element of the port share queue!
             status = ReadFrontElement(_portShareQueue, DataSize, Data, WaitFlag, Priority);
 
-            if(!status) readPortQueue = false; // We pulled one from the share queue.
+            if(!status) 
+            {
+                readPortQueue = false; // We pulled one from the share queue.
+            }
+            else if(status != ERROR_QUE_EMPTY)
+            {
+                if(gConfigParms.getValueAsULong("DEBUG_PORT_SHARE") & 0x10)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << getName() << " was unable to read from the port share queue. Error: " << status << endl;
+                }
+            }
         }
         else
         {
@@ -1712,6 +1723,12 @@ INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Pri
     {
         setSharingStatus(true);   // Indicates a sharing condition.
         status = WriteQueue( _portShareQueue, Request, DataSize, Data, Priority, &QueEntries);
+
+        if(gConfigParms.getValueAsULong("PORT_SHARE_QUEUE") & 0x00000010)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << getName() << " has " << QueEntries << " elements on the port share queue " << endl;
+        }
     }
 
     return status;
