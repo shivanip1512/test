@@ -72,7 +72,7 @@ public class SendManualThermostatSettingEndpoint {
         }
         
         // init response
-        Element resp = new Element("sendManualThermostatProgramResponse", ns);
+        Element resp = new Element("sendManualThermostatSettingResponse", ns);
         Attribute versionAttribute = new Attribute("version", "1.0");
         resp.setAttribute(versionAttribute);
         
