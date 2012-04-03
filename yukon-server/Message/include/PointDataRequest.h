@@ -57,9 +57,6 @@ class IM_EX_MSG PointDataRequest
         virtual void reportStatusToLog()=0;
         virtual std::set<long> getMissingPoints()=0;
         virtual PointValueMap getRejectedPointValues()=0;
-        virtual void updateRejectedValues()=0;
-        virtual bool isPointDataNew(long pointId, PointValue pv)=0;
-
         virtual void removePointValue(long pointId)=0;
 };
 

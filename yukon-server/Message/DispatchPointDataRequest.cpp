@@ -36,73 +36,56 @@ void DispatchPointDataRequest::setDispatchConnection(DispatchConnectionPtr conne
     _connection->addMessageListener(this);
 }
 
+/*
+    This whole class needs a rethink.  I believe it should just be a container for all the point data messages
+    that match the requested point IDs.  All of the special processing for accepted/rejected points etc. should
+    be done somewhere else (for example an IVVCPointDataRequest).
+*/
 void DispatchPointDataRequest::processNewMessage(CtiMessage* message)
 {
-    bool processMessage = false;
-
     //Run though this even if complete.. that way we will have the most current value whenever the data is collected.
-    if (_pointsSet == true)
+    if ( _pointsSet && ( message->isA() == MSG_POINTDATA ) )
     {
-        //Quality is not in both signal and pdata...
-        if (message->isA() == MSG_POINTDATA)
+        CtiPointDataMsg * pData = static_cast<CtiPointDataMsg*>(message);
+        long pointId = pData->getId();
+
+        if ( _points.find(pointId) != _points.end() )   // are we watching this point?
         {
-            CtiPointDataMsg* pData = (CtiPointDataMsg*)message;
-            long pointId = pData->getId();
+            PointValue pv;
+            pv.timestamp = pData->getTime();
+            pv.quality = pData->getQuality();
+            pv.value = pData->getValue();
 
-            if (_points.find(pointId) != _points.end())
+            bool newPointId = ( _values.find( pointId ) == _values.end() );
+
+            if ( pv.quality == NormalQuality || pv.quality == ManualQuality )
             {
-                PointValue pv;
-                pv.timestamp = pData->getTime();
-                pv.quality = pData->getQuality();
-                pv.value = pData->getValue();
-
-                if (isPointDataNew(pointId, pv))
+                if ( newPointId || pv.timestamp >= _values[ pointId ].timestamp )
                 {
-                    _values[pointId] = pv;
-                }
+                    _values[ pointId ] = pv;
 
-                //Check if we are done. and set flag
-                if (_values.size() == _points.size())
-                {
-                    updateRejectedValues();
-                    _complete = true;
+                    if ( newPointId )
+                    {
+                        _rejectedValues.erase( pointId );
+                    }
                 }
-            }//else: a point we don't care about.
+            }
+            else
+            {
+                if ( newPointId )
+                {
+                    if ( _rejectedValues.find( pointId ) == _rejectedValues.end() || pv.timestamp >= _rejectedValues[ pointId ].timestamp )
+                    {
+                        _rejectedValues[pointId] = pv;
+                    }
+                }
+            }
+
+            _complete = ( _values.size() == _points.size() );
         }
     }
 
     delete message;
-}
-bool DispatchPointDataRequest::isPointDataNew(long pointId, PointValue pv)
-{
-    if (_values.find(pointId) == _values.end() || pv.timestamp >=_values[pointId].timestamp)
-        return true;
-    else
-        return false;
-}
-void DispatchPointDataRequest::updateRejectedValues()
-{
-    PointValueMap::iterator itr = _values.begin();
-    // Iterate through the _values map.
-    // Move non-normal qualities to the rejected Values map
-    // Prune Rejected Values map of pointId's that have Normal Point Value
-    while (itr != _values.end())
-    {
-        if (itr->second.quality != ManualQuality && itr->second.quality != NormalQuality)
-        {
-            //
-            _rejectedValues[itr->first] = itr->second;
-            itr = _values.erase(itr);
-        }
-        else
-        {
-            //Added this bookkeeping, to clean up rejected values if we get an updated normal quality value
-            if (_rejectedValues.find(itr->first) != _rejectedValues.end())
-                _rejectedValues.erase(itr->first);
-            itr++;
-        }
-    }
-
 }
 
 bool DispatchPointDataRequest::watchPoints(const std::set<PointRequest>& pointRequests)
@@ -230,7 +213,7 @@ void DispatchPointDataRequest::removePointValue(long pointId)
     for each(const PointRequestTypeToPointIdMap::value_type& mapPair in _requestTypeToPointId)
     {
         std::set<long> pointIds = mapPair.second;
-        pointIds.erase(pointId);
+        pointIds.erase(pointId);        // <---  Broken! Erasing from a copy, not _requestTypeToPointId, but I'm not sure this is even necessary...
     }
 }
 
