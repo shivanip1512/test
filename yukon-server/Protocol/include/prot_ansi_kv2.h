@@ -22,7 +22,7 @@ class IM_EX_PROT CtiProtocolANSI_kv2 : public Cti::Protocols::Ansi::CtiProtocolA
 
         virtual void setAnsiDeviceType();
         virtual bool snapshotData();
-        virtual bool retreiveMfgPresentValue( int offset, double *value );
+        virtual bool retrieveMfgPresentValue( int offset, double *value );
 
 
 

@@ -366,13 +366,13 @@ void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
             // this returns true if already connected
             if (connectToAnalogService())
             {
-                retreiveAnalogPoints();
+                retrieveAnalogPoints();
             }
 
             // this returns true if already connected
             if (connectToStatusService())
             {
-                retreiveStatusPoints();
+                retrieveStatusPoints();
             }
         }
     }
@@ -608,14 +608,14 @@ bool CtiFDRCygnet::connectToStatusService()
 
 
 /************************************************************************
-* Function Name: CtiFDRCygnet::retreiveAnalogPoints()
+* Function Name: CtiFDRCygnet::retrieveAnalogPoints()
 *
 * Description: Retrieve all Analog Points from the Cygnet Service
 *              using their API and Send to Dispatch.
 *
 *************************************************************************
 */
-bool CtiFDRCygnet::retreiveAnalogPoints()
+bool CtiFDRCygnet::retrieveAnalogPoints()
 {
     int     returnValue;
     bool    successful(FALSE);
@@ -899,14 +899,14 @@ bool CtiFDRCygnet::retreiveAnalogPoints()
 }
 
 /************************************************************************
-* Function Name: CtiFDRCygnet::retreiveStatusPoints()
+* Function Name: CtiFDRCygnet::retrieveStatusPoints()
 *
 * Description: Retrieve all Status Points from the Cygnet Service
 *              using their API and Send to Dispatch.
 *
 *************************************************************************
 */
-bool CtiFDRCygnet::retreiveStatusPoints()
+bool CtiFDRCygnet::retrieveStatusPoints()
 {
     int     returnValue;
     bool    successful(FALSE);

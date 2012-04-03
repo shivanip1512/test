@@ -44,7 +44,7 @@ class IM_EX_PROT CtiProtocolTransdata
       bool getAction( void );
       void processLPData( BYTE *data );
       void processBillingData( BYTE *data );
-      int retreiveData( BYTE *data );
+      int retrieveData( BYTE *data );
       void setError( int err );
       int getError( void );
       bool getDidProcess( void );

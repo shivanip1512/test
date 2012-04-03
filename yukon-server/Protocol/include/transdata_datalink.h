@@ -19,7 +19,7 @@ class IM_EX_PROT CtiTransdataDatalink
       bool readMsg( CtiXfer &xfer, int status );
       bool isTransactionComplete( void );
 
-      void retreiveData( BYTE *data, int *bytes );
+      void retrieveData( BYTE *data, int *bytes );
 
       int getError( void );
       void setError( void );

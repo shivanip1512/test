@@ -91,7 +91,7 @@ bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
          {
             if( _storage )
             {
-               _numBytes = _tracker.retreiveData( _storage );
+               _numBytes = _tracker.retrieveData( _storage );
                _finished = true;
             }
          }
@@ -193,7 +193,7 @@ void CtiTransdataApplication::reinitalize( void )
 //passes the data recieved up to the next level
 //=====================================================================================================================
 
-int CtiTransdataApplication::retreiveData( BYTE *data )
+int CtiTransdataApplication::retrieveData( BYTE *data )
 {
    int temp = _numBytes;
 

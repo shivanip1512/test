@@ -832,7 +832,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     case OFFSET_RATE_D_KVAH:
                     case OFFSET_RATE_E_KVAH:
                     {
-                        gotValue = getKV2Protocol().retreiveSummation( x, &value, &timestamp, archiveFlag & CMD_FLAG_FROZEN );
+                        gotValue = getKV2Protocol().retrieveSummation( x, &value, &timestamp, archiveFlag & CMD_FLAG_FROZEN );
                         break;
                     }
                     case OFFSET_PEAK_KW_OR_RATE_A_KW:
@@ -856,7 +856,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     case OFFSET_RATE_E_KVA:
                     case OFFSET_LAST_INTERVAL_OR_INSTANTANEOUS_KVA:
                     {
-                        gotValue = getKV2Protocol().retreiveDemand( x, &value, &timestamp, archiveFlag & CMD_FLAG_FROZEN );
+                        gotValue = getKV2Protocol().retrieveDemand( x, &value, &timestamp, archiveFlag & CMD_FLAG_FROZEN );
                         break;
                     }
                     case OFFSET_LOADPROFILE_KW:
@@ -872,7 +872,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     case OFFSET_LOADPROFILE_QUADRANT4_KVA:
                     {
 
-                        gotLPValues = getKV2Protocol().retreiveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
+                        gotLPValues = getKV2Protocol().retrieveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
                         break;
                     }
                     case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
@@ -891,13 +891,13 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:
                     case OFFSET_POWER_FACTOR:
                     {
-                        gotValue = getKV2Protocol().retreivePresentValue(x, &value);
+                        gotValue = getKV2Protocol().retrievePresentValue(x, &value);
                         break;
                     }
                     case OFFSET_BATTERY_LIFE:
                     case OFFSET_DAYS_ON_BATTERY:
                     {
-                        gotValue = getKV2Protocol().retreiveBatteryLife(x, &value);
+                        gotValue = getKV2Protocol().retrieveBatteryLife(x, &value);
                         if( getKV2Protocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1047,7 +1047,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
                     foundSomething = true;
                     if (x == OFFSET_METER_TIME_STATUS)
                     {
-                        gotValue = getKV2Protocol().retreiveMeterTimeDiffStatus(x, &value);
+                        gotValue = getKV2Protocol().retrieveMeterTimeDiffStatus(x, &value);
                         if (gotValue)
                         {
                             pData = CTIDBG_new CtiPointDataMsg();

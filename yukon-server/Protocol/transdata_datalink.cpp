@@ -133,7 +133,7 @@ bool CtiTransdataDatalink::isTransactionComplete( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiTransdataDatalink::retreiveData( BYTE *data, int *bytes )
+void CtiTransdataDatalink::retrieveData( BYTE *data, int *bytes )
 {
    if( _storage != NULL )
    {

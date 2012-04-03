@@ -2273,7 +2273,7 @@ static void GetDeviceName(long deviceID, string& name)
     }
     catch( RWExternalErr err )
     {
-        WriteOutput("Error retreive device name __LINE__ __FILE__");
+        WriteOutput("Error retrieve device name __LINE__ __FILE__");
     }
 }
 

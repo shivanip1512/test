@@ -2033,7 +2033,7 @@ void CtiProtocolANSI::receiveCommResult( INMESS *InMessage )
 ////////////////////////////////////////////////////////////////////////////////////
 // Demand - KW, KVAR, KVA, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timestamp, bool frozen )
+bool CtiProtocolANSI::retrieveDemand( int offset, double *value, double *timestamp, bool frozen )
 {
     try
     {
@@ -2117,7 +2117,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
 ////////////////////////////////////////////////////////////////////////////////////
 // Summations = Energy - KWH, KVARH, KVAH, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveSummation( int offset, double *value,  double *timestamp, bool frozen )
+bool CtiProtocolANSI::retrieveSummation( int offset, double *value,  double *timestamp, bool frozen )
 {
     try
     {
@@ -2213,7 +2213,7 @@ bool CtiProtocolANSI::retreiveSummation( int offset, double *value,  double *tim
 ////////////////////////////////////////////////////////////////////////////////////
 // Present Values - volts, current, pf, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
+bool CtiProtocolANSI::retrievePresentValue( int offset, double *value )
 {
     bool success = false;
     if( _ansiAbortOperation )
@@ -2224,7 +2224,7 @@ bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
     int ansiOffset;
     int ansiDeviceType = (int) getApplicationLayer().getAnsiDeviceType();
 
-    if (success = retreiveMfgPresentValue(offset, value)) //if 1, kv2 gets info from mfg tbl 110
+    if (success = retrieveMfgPresentValue(offset, value)) //if 1, kv2 gets info from mfg tbl 110
     {
         if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
         {
@@ -2296,7 +2296,7 @@ bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
 ////////////////////////////////////////////////////////////////////////////////////
 // Present Values - volts, current, pf, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreivePresentDemand( int offset, double *value )
+bool CtiProtocolANSI::retrievePresentDemand( int offset, double *value )
 {
     bool success = false;
     if( _ansiAbortOperation )
@@ -2389,7 +2389,7 @@ bool CtiProtocolANSI::retreivePresentDemand( int offset, double *value )
 ////////////////////////////////////////////////////////////////////////////////////
 // Battery Life - volts, current, pf, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveBatteryLife( int offset, double *value )
+bool CtiProtocolANSI::retrieveBatteryLife( int offset, double *value )
 {
     bool success = false;
     unsigned char* BatteryLifeSelect;
@@ -2436,7 +2436,7 @@ bool CtiProtocolANSI::retreiveBatteryLife( int offset, double *value )
 
     return success;
 }
-bool CtiProtocolANSI::retreiveMeterTimeDiffStatus( int offset, double *status )
+bool CtiProtocolANSI::retrieveMeterTimeDiffStatus( int offset, double *status )
 {
     bool success = false;
     if( _ansiAbortOperation )
@@ -2485,7 +2485,7 @@ bool CtiProtocolANSI::retreiveMeterTimeDiffStatus( int offset, double *status )
 ////////////////////////////////////////////////////////////////////////////////////
 // LP Demands - KW, KVAR, KVA, etc...
 ////////////////////////////////////////////////////////////////////////////////////
-bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
+bool CtiProtocolANSI::retrieveLPDemand( int offset, int dataSet )
 {
     bool success = false;
     if( _ansiAbortOperation )
@@ -3547,7 +3547,7 @@ int CtiProtocolANSI::getDaysOnBatteryReading()
 {
    return 0;
 }
-bool CtiProtocolANSI::retreiveMfgPresentValue( int offset, double *value )
+bool CtiProtocolANSI::retrieveMfgPresentValue( int offset, double *value )
 {
     return false;
 }

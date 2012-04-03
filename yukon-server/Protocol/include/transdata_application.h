@@ -27,7 +27,7 @@ class IM_EX_PROT CtiTransdataApplication
       void setNextState( void );
       void destroy( void );
       void reinitalize( void );
-      int retreiveData( BYTE *data );
+      int retrieveData( BYTE *data );
       void setCommand( int cmd, bool lp );
       int getCommand( void );
       void setLastLPTime( ULONG lpTime );

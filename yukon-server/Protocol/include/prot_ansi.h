@@ -321,15 +321,15 @@ class IM_EX_PROT CtiProtocolANSI
     virtual int getGoodBatteryReading();
     virtual int getCurrentBatteryReading();
     virtual int getDaysOnBatteryReading();
-    virtual bool retreiveMfgPresentValue( int offset, double *value );
+    virtual bool retrieveMfgPresentValue( int offset, double *value );
 
-    bool retreiveSummation( int offset, double *value, double *time, bool frozen = false );
-    bool retreiveDemand( int offset, double *value, double *time, bool frozen = false );
-    bool retreivePresentValue( int offset, double *value );
-    bool retreivePresentDemand( int offset, double *value );
-    bool retreiveLPDemand( int offset, int dataSet );
-    bool retreiveBatteryLife(int x, double *value);
-    bool retreiveMeterTimeDiffStatus( int offset, double *status );
+    bool retrieveSummation( int offset, double *value, double *time, bool frozen = false );
+    bool retrieveDemand( int offset, double *value, double *time, bool frozen = false );
+    bool retrievePresentValue( int offset, double *value );
+    bool retrievePresentDemand( int offset, double *value );
+    bool retrieveLPDemand( int offset, int dataSet );
+    bool retrieveBatteryLife(int x, double *value);
+    bool retrieveMeterTimeDiffStatus( int offset, double *status );
     double getLPValue( int index );
     ULONG getLPTime( int index );
     UINT8 getLPQuality( int index );

@@ -810,7 +810,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
    if( _transdataProtocol.getDidProcess() )
    {
       storage = CTIDBG_new BYTE[50000];
-      _transdataProtocol.retreiveData( storage );
+      _transdataProtocol.retrieveData( storage );
 
       //move this down a layer
       lp = ( CtiTransdataTracker::mark_v_lp *)storage;

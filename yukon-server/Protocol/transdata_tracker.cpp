@@ -212,7 +212,7 @@ bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
 
       if( _goodCRC )
       {
-         _ymodem.retreiveData( data, &bytes );
+         _ymodem.retrieveData( data, &bytes );
 
          if( bytes < 2000 )
          {
@@ -250,7 +250,7 @@ bool CtiTransdataTracker::decodeLink( CtiXfer &xfer, int status )
    {
       memset( _storage, 0, Storage_size );
 
-      _datalink.retreiveData( _storage, &_bytesReceived );
+      _datalink.retrieveData( _storage, &_bytesReceived );
       processComms( _storage, _bytesReceived );
    }
    else
@@ -863,7 +863,7 @@ void CtiTransdataTracker::setNextState( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-int CtiTransdataTracker::retreiveData( BYTE *data )
+int CtiTransdataTracker::retrieveData( BYTE *data )
 {
    int temp = _meterBytes;
 

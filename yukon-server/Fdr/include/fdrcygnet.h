@@ -66,8 +66,8 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
         bool    connectToAnalogService(void);
         bool    connectToStatusService(void);
 
-        bool    retreiveAnalogPoints(void);
-        bool    retreiveStatusPoints(void);
+        bool    retrieveAnalogPoints(void);
+        bool    retrieveStatusPoints(void);
 
         bool    loadTranslationLists(void);
         virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);

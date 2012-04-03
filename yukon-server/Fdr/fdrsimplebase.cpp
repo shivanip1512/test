@@ -179,7 +179,7 @@ void CtiFDRSimple::threadFunctionGetData()
 }
 
 /**
- * Retreives updated list of points from database.
+ * retrieves updated list of points from database.
  */
 bool CtiFDRSimple::loadTranslationLists()
 {

@@ -54,7 +54,7 @@ bool CtiProtocolTransdata::decode( CtiXfer &xfer, int status )
       }
       else
       {
-         _numBytes = _application.retreiveData( _storage );
+         _numBytes = _application.retrieveData( _storage );
 
          if(( _lpDone ) && ( _billingDone ))
          {
@@ -357,7 +357,7 @@ bool CtiProtocolTransdata::getAction( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-int CtiProtocolTransdata::retreiveData( BYTE *data )
+int CtiProtocolTransdata::retrieveData( BYTE *data )
 {
    int temp = _numBytes;
 

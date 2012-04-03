@@ -54,7 +54,7 @@ class IM_EX_PROT CtiTransdataTracker
       void setNextState( void );
       void reset( void );
       void setLastLPTime( ULONG lpTime );
-      int retreiveData( BYTE *data );
+      int retrieveData( BYTE *data );
       int getError( void );
       void setError( void );
       bool haveData( void );

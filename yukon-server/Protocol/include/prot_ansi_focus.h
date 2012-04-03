@@ -17,10 +17,10 @@ class IM_EX_PROT  CtiProtocolANSI_focus: public Cti::Protocols::Ansi::CtiProtoco
         virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime);
         virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID );
         virtual void updateMfgBytesExpected();
-        virtual bool retreiveMfgPresentValue( int offset, double *value );
+        virtual bool retrieveMfgPresentValue( int offset, double *value );
 
-        bool retreiveFocusKwPresentValue( int offset, double *value );
-        bool retreiveFocusAXPresentValue( int offset, double *value );
+        bool retrieveFocusKwPresentValue( int offset, double *value );
+        bool retrieveFocusAXPresentValue( int offset, double *value );
 
    private:
 

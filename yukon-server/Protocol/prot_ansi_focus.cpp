@@ -168,22 +168,22 @@ void CtiProtocolANSI_focus::updateMfgBytesExpected()
     }
 } 
 
-bool CtiProtocolANSI_focus::retreiveMfgPresentValue( int offset, double *value )
+bool CtiProtocolANSI_focus::retrieveMfgPresentValue( int offset, double *value )
 {
     bool retVal = false;
     if( _table04 != NULL )
     {
-        retVal = retreiveFocusKwPresentValue(offset,value );
+        retVal = retrieveFocusKwPresentValue(offset,value );
     }
     if( _table13 != NULL )
     {
-        retVal = retreiveFocusAXPresentValue(offset, value );
+        retVal = retrieveFocusAXPresentValue(offset, value );
     }
     return retVal;
 }
 
 
-bool CtiProtocolANSI_focus::retreiveFocusKwPresentValue( int offset, double *value )
+bool CtiProtocolANSI_focus::retrieveFocusKwPresentValue( int offset, double *value )
 {
 
     switch(offset)
@@ -201,7 +201,7 @@ bool CtiProtocolANSI_focus::retreiveFocusKwPresentValue( int offset, double *val
 }
 
 
-bool CtiProtocolANSI_focus::retreiveFocusAXPresentValue( int offset, double *value )
+bool CtiProtocolANSI_focus::retrieveFocusAXPresentValue( int offset, double *value )
 {
     switch(offset)
     {

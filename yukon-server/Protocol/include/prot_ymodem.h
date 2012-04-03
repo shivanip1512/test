@@ -15,7 +15,7 @@ class IM_EX_PROT CtiProtocolYmodem
 
       bool isTransactionComplete( void ) const;
 
-      void retreiveData( BYTE *data, int *bytes );
+      void retrieveData( BYTE *data, int *bytes );
       bool isCrcValid( void );
       void destroy( void );
       void reinitalize( void );

@@ -121,7 +121,7 @@ bool CtiProtocolANSI_kv2::snapshotData()
 
 }
 
-bool CtiProtocolANSI_kv2::retreiveMfgPresentValue( int offset, double *value )
+bool CtiProtocolANSI_kv2::retrieveMfgPresentValue( int offset, double *value )
 {
     bool retVal = false;
     switch(offset)

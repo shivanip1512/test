@@ -204,7 +204,7 @@ bool CtiProtocolYmodem::isTransactionComplete( void ) const
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
+void CtiProtocolYmodem::retrieveData( BYTE *data, int *bytes )
 {
    if( _storage != NULL )
    {
