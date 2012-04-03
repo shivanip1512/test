@@ -64,7 +64,7 @@ public class OptOutLimit {
      * @param currentMonth
      * @return true, if currentMonth under OptOutLimit
      */
-    public boolean isMonthUnderLimit(int currentMonth) {
+    public boolean isReleventMonth(int currentMonth) {
         boolean monthUnderLimit = false;
         if (startMonth > stopMonth) {
             if ((currentMonth >= startMonth && currentMonth <= 12) || (currentMonth >= 1 && currentMonth <= stopMonth)) {
@@ -99,7 +99,7 @@ public class OptOutLimit {
         DateTime dateTime = new DateTime(energyCompanyTimeZone);
         int currentMonth = dateTime.getMonthOfYear();
         
-        if (!isMonthUnderLimit(currentMonth)) {
+        if (!isReleventMonth(currentMonth)) {
             throw new IllegalArgumentException("currentMonth=[" + currentMonth + "], is not under this OptOutLimit [" + toString() + "]");
         }
 

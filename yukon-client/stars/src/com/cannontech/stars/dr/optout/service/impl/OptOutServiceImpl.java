@@ -1020,7 +1020,7 @@ public class OptOutServiceImpl implements OptOutService {
 			
 			List<OptOutLimit> optOutLimits = this.parseOptOutLimitString(optOutLimitString);
 			for (OptOutLimit limit : optOutLimits) {
-	            if (limit.isMonthUnderLimit(currentMonth)) {
+	            if (limit.isReleventMonth(currentMonth)) {
 	                return limit;
 	            }
 	        }

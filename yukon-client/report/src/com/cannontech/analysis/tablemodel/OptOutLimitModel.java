@@ -269,7 +269,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
 
         for (OptOutLimit optOutLimit : residentialGroupOptOutLimits) {
             int stopDateMonth = optOutStopDate.get(DateTimeFieldType.monthOfYear());
-            if  (optOutLimit.isMonthUnderLimit(stopDateMonth)){
+            if  (optOutLimit.isReleventMonth(stopDateMonth)){
                 return optOutLimit;
             }
         }

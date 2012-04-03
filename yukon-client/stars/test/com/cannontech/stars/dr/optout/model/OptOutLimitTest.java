@@ -55,7 +55,7 @@ public class OptOutLimitTest {
     private OptOutLimit getOptOutLimit(int currentMonth) {
         OptOutLimit result = null;
         for (OptOutLimit limit : optOutLimits) {
-            if (limit.isMonthUnderLimit(currentMonth)) {
+            if (limit.isReleventMonth(currentMonth)) {
                 result = limit;
                 break;
             }
