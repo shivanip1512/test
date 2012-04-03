@@ -206,7 +206,7 @@ ULONG CtiAnsiTable52::getMeterServerTimeDifference()
 
 bool CtiAnsiTable52::adjustTimeForDST()
 {
-    if ((bool)clock_table.time_date_qual.dst_applied_flag && (bool)clock_table.time_date_qual.dst_flag)
+    if ((bool)!clock_table.time_date_qual.dst_applied_flag && (bool)clock_table.time_date_qual.dst_flag)
         return true;
     else
         return false;
