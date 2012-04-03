@@ -74,26 +74,24 @@ void CtiAnsiFocusMfgTable13::printResult(  )
         dout << endl << "=======================  Focus MFG Table 13  ========================" << endl;
     }
 
-
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << " Phase A Voltage: " << _gyrboxPhaseInfo.phaseVoltage[A].asValue(_xyFormat)  << endl;
-        dout << endl << " Phase B Voltage: " << _gyrboxPhaseInfo.phaseVoltage[B].asValue(_xyFormat)  << endl;
-        dout << endl << " Phase C Voltage: " << _gyrboxPhaseInfo.phaseVoltage[C].asValue(_xyFormat)  << endl;
-        dout << endl << " Phase A Voltage Angle: " << _gyrboxPhaseInfo.phaseVoltageAngle[A].asValue(_xyFormat)  << endl;
-        dout << endl << " Phase B Voltage Angle: " << _gyrboxPhaseInfo.phaseVoltageAngle[B].asValue(_xyFormat)  << endl;
-        dout << endl << " Phase C Voltage Angle: " << _gyrboxPhaseInfo.phaseVoltageAngle[C].asValue(_xyFormat)  << endl;
-        dout << endl << " Phase A Current: " << _gyrboxPhaseInfo.phaseCurrent[A].asValue(_xyFormat)  << endl;
-        dout << endl << " Phase B Current: " << _gyrboxPhaseInfo.phaseCurrent[B].asValue(_xyFormat)  << endl;
-        dout << endl << " Phase C Current: " << _gyrboxPhaseInfo.phaseCurrent[C].asValue(_xyFormat)  << endl;
-        dout << endl << " Instant Power: "   << _instantMeasure.instantPower << endl;
-        dout << endl << " Neutral Current: "   << _instantMeasure.neutralCurrent.asValue(_xyFormat) << endl;
-        dout << endl << " Temperature: "   << _temperature << endl;
-        dout << endl << " Line Frequency: "   << _lineFrequency.asValue(_xyFormat) << endl;
-        dout << endl << " Reverse Rotation Pulse Count: "   << _reverseRotationPulseCnt << endl;
-        dout << endl << " Load Side Phase A Voltage: "   << _loadSidePhaseAVoltage.asValue(_xyFormat) << endl;
-        dout << endl << " Load Side Phase C Voltage: "   << _loadSidePhaseCVoltage.asValue(_xyFormat) << endl;
-
+        dout << " Phase A Voltage: " << _gyrboxPhaseInfo.phaseVoltage[A].asValue(_xyFormat)  << endl;
+        dout << " Phase B Voltage: " << _gyrboxPhaseInfo.phaseVoltage[B].asValue(_xyFormat)  << endl;
+        dout << " Phase C Voltage: " << _gyrboxPhaseInfo.phaseVoltage[C].asValue(_xyFormat)  << endl;
+        dout << " Phase A Voltage Angle: " << _gyrboxPhaseInfo.phaseVoltageAngle[A].asValue(_xyFormat)  << endl;
+        dout << " Phase B Voltage Angle: " << _gyrboxPhaseInfo.phaseVoltageAngle[B].asValue(_xyFormat)  << endl;
+        dout << " Phase C Voltage Angle: " << _gyrboxPhaseInfo.phaseVoltageAngle[C].asValue(_xyFormat)  << endl;
+        dout << " Phase A Current: " << _gyrboxPhaseInfo.phaseCurrent[A].asValue(_xyFormat)  << endl;
+        dout << " Phase B Current: " << _gyrboxPhaseInfo.phaseCurrent[B].asValue(_xyFormat)  << endl;
+        dout << " Phase C Current: " << _gyrboxPhaseInfo.phaseCurrent[C].asValue(_xyFormat)  << endl;
+        dout << " Instant Power: "   << _instantMeasure.instantPower << endl;
+        dout << " Neutral Current: "   << _instantMeasure.neutralCurrent.asValue(_xyFormat) << endl;
+        dout << " Temperature: "   << (int) _temperature << endl;
+        dout << " Line Frequency: "   << _lineFrequency.asValue(_xyFormat) << endl;
+        dout << " Reverse Rotation Pulse Count: "   << (int) _reverseRotationPulseCnt << endl;
+        dout << " Load Side Phase A Voltage: "   << _loadSidePhaseAVoltage.asValue(_xyFormat) << endl;
+        dout << " Load Side Phase C Voltage: "   << _loadSidePhaseCVoltage.asValue(_xyFormat) << endl;
     }
 }
 

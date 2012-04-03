@@ -327,7 +327,7 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< 
 
     inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
 
-    if (getANSIProtocol().getScanOperation() == 2) //demand Reset
+    if (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset) //demand Reset
     {
         //if (InMessage->EventCode == NORMAL)
         if (findStringIgnoreCase(inMsgResultString, "successful"))
@@ -451,7 +451,7 @@ INT CtiDeviceSentinel::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< 
 }
 INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 {
-    if (getANSIProtocol().getScanOperation() == 2) //demand Reset
+    if (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset) //demand Reset
     {
         if (InMessage->EventCode == NORMAL)
         {
@@ -477,7 +477,7 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 
         if (InMessage->EventCode == NORMAL)
         {
-            if (getANSIProtocol().getlastLoadProfileTime() != 0 || getANSIProtocol().getScanOperation() == 0) //scanner
+            if (getANSIProtocol().getlastLoadProfileTime() != 0 || getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset) //scanner
             {
                 ULONG lptime = getANSIProtocol().getlastLoadProfileTime();
                 memcpy( InMessage->Buffer.InMessage, (void *)&lptime, sizeof (unsigned long) );
@@ -642,7 +642,7 @@ int CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 int CtiDeviceSentinel::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 {
     WANTS_HEADER   header;
-    //ANSI_SCAN_OPERATION scanOperation = generalScan;
+    //AnsiScanOperation scanOperation = generalScan;
 
     //here is the password for the sentinel (should be changed to a cparm, I think)
     BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };

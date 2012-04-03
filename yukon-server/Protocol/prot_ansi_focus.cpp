@@ -31,6 +31,7 @@ CtiProtocolANSI_focus::CtiProtocolANSI_focus( void )
 {
    _table04 = NULL;
    _table13 = NULL;
+   _table24 = NULL;
 }
 
 CtiProtocolANSI_focus::~CtiProtocolANSI_focus( void )
@@ -45,6 +46,11 @@ CtiProtocolANSI_focus::~CtiProtocolANSI_focus( void )
         delete _table13;
         _table13 = NULL;
     }
+    if( _table24 != NULL )
+    {
+        delete _table24;
+        _table24 = NULL;
+    }
 }
 
 void CtiProtocolANSI_focus::setAnsiDeviceType()
@@ -58,30 +64,19 @@ int CtiProtocolANSI_focus::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 {
     BYTEUSHORT readBlockOffset;
     readBlockOffset.sh = 0; //0  We will always go to 0.  Which will be the most current lp data.
-    BYTEUSHORT nbrReadBlocks;
-    nbrReadBlocks.sh = 0; // zero to (nbrValidBlocks - 1)
-
+    
     //dataBlockDecreasingOrder
     int nbrIntervals =  (int)(abs((long)(CtiTime().seconds() - getlastLoadProfileTime()))/60) / getMaxIntervalTime();
-    if( nbrIntervals <=  getNbrValidIntvls() )
+    if( nbrIntervals >  getNbrValidBlks() * getNbrIntervalsPerBlock())
     {
-        nbrReadBlocks.sh = 0;
-    }
-    else if( nbrIntervals > getNbrValidIntvls() &&
-             nbrIntervals < getNbrIntervalsPerBlock() * getNbrValidBlks() )
-    {
-        nbrReadBlocks.sh = ((nbrIntervals - getNbrValidIntvls() ) / getNbrIntervalsPerBlock()) + 1;
-    }
-    else
-    {
-        nbrReadBlocks.sh = getNbrValidBlks() - 1;
+        nbrIntervals = getNbrValidBlks() * getNbrIntervalsPerBlock();
     }
     setLoadProfileFullBlocks(nbrIntervals / getNbrIntervalsPerBlock() );
     if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
         dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Last Load Profile Time  " <<CtiTime(getlastLoadProfileTime()) << endl;
-        dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Nbr of Requested Intervals  " <<nbrIntervals << endl;
+        dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Nbr of Requested Intervals  " << nbrIntervals << endl;
     }
     setCurrentAnsiWantsTableValues(Focus_SetLpReadControl,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
     getApplicationLayer().initializeTableRequest (Focus_SetLpReadControl, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
@@ -103,8 +98,8 @@ int CtiProtocolANSI_focus::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     //Focux AX C12.19 Implementation Guide
     lpSetupRecord[0] = readBlockOffset.ch[1];
     lpSetupRecord[1] = readBlockOffset.ch[0];
-    lpSetupRecord[2] = 0; //nbrReadBlocks.ch[1];
-    lpSetupRecord[3] = 0; //nbrReadBlocks.ch[0];
+    lpSetupRecord[2] = 0; 
+    lpSetupRecord[3] = 0; 
 
     getApplicationLayer().populateParmPtr(lpSetupRecord, 4) ;
 
@@ -121,7 +116,7 @@ void CtiProtocolANSI_focus::convertToManufacturerTable( BYTE *data, BYTE numByte
 {
     switch( aTableID )
     {
-         case Focus_InstantaneouMeasurements:
+         case Focus_InstantaneousMeasurements:
         {
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -132,14 +127,24 @@ void CtiProtocolANSI_focus::convertToManufacturerTable( BYTE *data, BYTE numByte
             break;
         }
             
-        case FocusAX_InstantaneouMeasurements:
+        case FocusAX_InstantaneousMeasurements:
         {
             {
                CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " Creating Focus Mfg Table 13" << endl;
+               dout << CtiTime() << " Creating Focus AX Mfg Table 13" << endl;
             }
             _table13 = new CtiAnsiFocusMfgTable13( data, getFirmwareVersion(), getFirmwareRevision(), getDataOrder()  );
             _table13->printResult();
+            break;
+        }
+        case FocusAX_ConstantsMeasurements:
+        {
+            {
+               CtiLockGuard<CtiLogger> doubt_guard(dout);
+               dout << CtiTime() << " Creating Focus AX Mfg Table 24" << endl;
+            }
+            _table24 = new CtiAnsiFocusMfgTable24( data, getDataOrder()  );
+            _table24->printResult();
             break;
         }
 
@@ -153,14 +158,19 @@ void CtiProtocolANSI_focus::updateMfgBytesExpected()
 {
     switch( (getCurrentTableId()) )
     {
-        case Focus_InstantaneouMeasurements:
+        case Focus_InstantaneousMeasurements:
         {
-            setCurrentAnsiWantsTableValues(Focus_InstantaneouMeasurements,0,8,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            setCurrentAnsiWantsTableValues(Focus_InstantaneousMeasurements,0,8,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
             break;
         }
-        case FocusAX_InstantaneouMeasurements:
+        case FocusAX_InstantaneousMeasurements:
         {
-            setCurrentAnsiWantsTableValues(FocusAX_InstantaneouMeasurements,0,53,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            setCurrentAnsiWantsTableValues(FocusAX_InstantaneousMeasurements,0,53,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
+            break;
+        }
+        case FocusAX_ConstantsMeasurements:
+        {
+            setCurrentAnsiWantsTableValues(FocusAX_ConstantsMeasurements,0,15,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_READ);
             break;
         }
         default:
@@ -243,6 +253,42 @@ bool CtiProtocolANSI_focus::retrieveFocusAXPresentValue( int offset, double *val
         default:
         {
             return false;
+        }
+    }
+}
+
+float CtiProtocolANSI_focus::getMfgConstants(  )
+{
+    if( _table24 != NULL )
+    {
+        return (1000 / _table24->getVhIhFhConstantsRcd() );
+    }
+    return 1.0;
+}
+
+
+bool CtiProtocolANSI_focus::compareSegmentation(int index, AnsiSegmentation segmentation)
+{
+    switch(index)
+    {
+        case VhPhaseA:
+        case IhPhaseA:
+        {
+            return segmentation == PhaseA;
+        }
+        case VhPhaseB:
+        case IhPhaseB:
+        {
+            return segmentation == PhaseB;
+        }
+        case VhPhaseC:
+        case IhPhaseC:
+        {
+            return segmentation == PhaseC;
+        }
+        default:
+        {
+            return true;
         }
     }
 }

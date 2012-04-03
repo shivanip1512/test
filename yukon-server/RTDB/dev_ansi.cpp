@@ -330,9 +330,9 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
     inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
 
-    if (getANSIProtocol().getScanOperation() >= 2 ) //2= demand Reset, 3=loopback
+    if (getANSIProtocol().getScanOperation() >= CtiProtocolANSI::demandReset ) //2= demand Reset, 3=loopback
     {
-        string returnString = getName() + " / " + (getANSIProtocol().getScanOperation() == 2 ? "demand reset " : "loopback ");
+        string returnString = getName() + " / " + (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset ? "demand reset " : "loopback ");
         if (findStringIgnoreCase(inMsgResultString, "successful"))
         {
             returnString += " successful";
@@ -387,8 +387,7 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         }
         else if (useScanFlags())
         {
-           unsigned long *lastLpTime;
-           lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
+           unsigned long *lastLpTime =  (unsigned long *)InMessage->Buffer.InMessage;
 
            try
            {
@@ -436,14 +435,13 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         dout << CtiTime::now() << " ==============================================" << endl;
     }
 
-
     return( 0 ); //just a val
 }
 INT CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
 {
-    if (getANSIProtocol().getScanOperation() >= 2 ) //2= demand Reset, 3=loopback
+    if (getANSIProtocol().getScanOperation() >= CtiProtocolANSI::demandReset ) //2= demand Reset, 3=loopback
     {
-        string returnString = (getANSIProtocol().getScanOperation() == 2 ? "demand reset " : "loopback ");
+        string returnString = (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset ? "demand reset " : "loopback ");
         if (InMessage->EventCode == NORMAL)
         {
             returnString += "successful";
@@ -466,7 +464,7 @@ INT CtiDeviceAnsi::sendCommResult( INMESS *InMessage)
 
         if (InMessage->EventCode == NORMAL)
         {
-            if (getANSIProtocol().getlastLoadProfileTime() != 0 || getANSIProtocol().getScanOperation() == 0) //scanner
+            if (getANSIProtocol().getlastLoadProfileTime() != 0 || getANSIProtocol().getScanOperation() == CtiProtocolANSI::generalScan) //scanner
             {
                 ULONG lptime = getANSIProtocol().getlastLoadProfileTime();
                 memcpy( InMessage->Buffer.InMessage, (void *)&lptime, sizeof (unsigned long) );
@@ -519,7 +517,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
 
     _result_string = "";
 
-    if (getANSIProtocol().getScanOperation() >= 2)
+    if (getANSIProtocol().getScanOperation() >= CtiProtocolANSI::demandReset)
     {
         return;
     }
@@ -599,25 +597,25 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                     case OFFSET_LOADPROFILE_QUADRANT2_KVA:
                     case OFFSET_LOADPROFILE_QUADRANT3_KVA:
                     case OFFSET_LOADPROFILE_QUADRANT4_KVA:
+                    case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:
+                    case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:
+                    case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:
+                    case OFFSET_LOADPROFILE_PHASE_A_CURRENT:
+                    case OFFSET_LOADPROFILE_PHASE_B_CURRENT:
+                    case OFFSET_LOADPROFILE_PHASE_C_CURRENT:
+                    case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:
                     {
 
                         gotLPValues = getANSIProtocol().retrieveLPDemand( x, 1);  // 1=table64 - kv2 only uses that lp table.
                         break;
                     }
                     case OFFSET_INSTANTANEOUS_PHASE_A_VOLTAGE:
-                    case OFFSET_LOADPROFILE_PHASE_A_VOLTAGE:
                     case OFFSET_INSTANTANEOUS_PHASE_B_VOLTAGE:
-                    case OFFSET_LOADPROFILE_PHASE_B_VOLTAGE:
                     case OFFSET_INSTANTANEOUS_PHASE_C_VOLTAGE:
-                    case OFFSET_LOADPROFILE_PHASE_C_VOLTAGE:
                     case OFFSET_INSTANTANEOUS_PHASE_A_CURRENT:
-                    case OFFSET_LOADPROFILE_PHASE_A_CURRENT:
                     case OFFSET_INSTANTANEOUS_PHASE_B_CURRENT:
-                    case OFFSET_LOADPROFILE_PHASE_B_CURRENT:
                     case OFFSET_INSTANTANEOUS_PHASE_C_CURRENT:
-                    case OFFSET_LOADPROFILE_PHASE_C_CURRENT:
                     case OFFSET_INSTANTANEOUS_NEUTRAL_CURRENT:
-                    case OFFSET_LOADPROFILE_NEUTRAL_CURRENT:
                     case OFFSET_POWER_FACTOR:
                     {
                         gotValue = getANSIProtocol().retrievePresentValue(x, &value);
@@ -760,11 +758,7 @@ void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, dou
 
     msgPtr->insert(pData);
     retList.push_back(msgPtr);
-   /* if (pData != NULL)
-    {
-        delete pData;
-        pData = NULL;
-    }*/
+
 }
 void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< CtiReturnMsg* > &retList)
 {

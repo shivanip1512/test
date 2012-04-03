@@ -256,13 +256,48 @@ typedef enum
     Sentinel_BatteryLifeRequest           = 2049,
     Sentinel_BatteryLifeResponse          = 2050,
     Focus_SetLpReadControl                = 2082,
-    Focus_InstantaneouMeasurements        = 2052,
-    FocusAX_InstantaneouMeasurements      = 2061,
+    Focus_InstantaneousMeasurements       = 2052,
+    FocusAX_InstantaneousMeasurements     = 2061,
+    FocusAX_ConstantsMeasurements         = 2072,
     KV2_MfgInfo                           = 2048,
     KV2_DisplayConfiguration              = 2118,
     KV2_PresentRegisterData               = 2158,
 } MfgTables;
 
+typedef enum
+{
+    KW = 0,
+    KVar = 1,
+    KVA = 2,
+    Voltage = 8,
+    Current = 12,
+    PowerFactor = 24,
+    UndefinedUnit = 300
+} AnsiUnit;
+
+typedef enum
+{
+    NotPhaseRelated =0,
+    PhaseAtoB = 1,
+    PhaseBtoC = 2,
+    PhaseCtoA = 3,
+    Neutral = 4,
+    PhaseA = 5,
+    PhaseB = 6,
+    PhaseC = 7
+} AnsiSegmentation;
+
+
+typedef enum
+{
+    Total = 0,
+    Tier1,
+    Tier2,
+    Tier3,
+    Tier4,
+    Tier5,
+    UndefinedRate = 300
+} AnsiTOURate;
 
 #pragma pack( pop )
 
@@ -278,7 +313,7 @@ class IM_EX_PROT CtiProtocolANSI
           generalPilScan,
           demandReset,
           loopBack
-      } ANSI_SCAN_OPERATION;
+      } AnsiScanOperation;
 
       void reinitialize( void );
       void destroyMe( void );
@@ -295,10 +330,6 @@ class IM_EX_PROT CtiProtocolANSI
       int recvOutbound( OUTMESS  *OutMessage );
 
       void convertToTable();
-
-
-      int sendCommResult( INMESS *InMessage );
-      void receiveCommResult( INMESS *InMessage );
       void buildWantedTableList( BYTE *aPtr);
 
 
@@ -322,6 +353,7 @@ class IM_EX_PROT CtiProtocolANSI
     virtual int getCurrentBatteryReading();
     virtual int getDaysOnBatteryReading();
     virtual bool retrieveMfgPresentValue( int offset, double *value );
+    virtual float getMfgConstants( );
 
     bool retrieveSummation( int offset, double *value, double *time, bool frozen = false );
     bool retrieveDemand( int offset, double *value, double *time, bool frozen = false );
@@ -334,10 +366,10 @@ class IM_EX_PROT CtiProtocolANSI
     ULONG getLPTime( int index );
     UINT8 getLPQuality( int index );
 
-    int getUnitsOffsetMapping(int offset);
+    AnsiUnit getUnitsOffsetMapping(int offset);
     int getQuadrantOffsetMapping(int offset);
-    int getRateOffsetMapping(int offset);
-    int getSegmentationOffsetMapping(int offset);
+    AnsiTOURate getRateOffsetMapping(int offset);
+    AnsiSegmentation getSegmentationOffsetMapping(int offset);
     int translateAnsiQualityToYukon(int ansiQuality );
 
 
@@ -361,7 +393,7 @@ class IM_EX_PROT CtiProtocolANSI
     int getWriteSequenceNbr( void );
 
     unsigned long getlastLoadProfileTime(void);
-    int getScanOperation(void);
+    AnsiScanOperation getScanOperation(void);
     UINT getParseFlags(void);
 
     bool forceProcessDispatchMsg();
@@ -383,7 +415,6 @@ class IM_EX_PROT CtiProtocolANSI
       int getFirmwareRevision();
       DataOrder getDataOrder();
 
-
    private:
        void prepareApplicationLayer();
        void setTablesAvailable(unsigned char * stdTblsUsed, int dimStdTblsUsed,
@@ -392,8 +423,15 @@ class IM_EX_PROT CtiProtocolANSI
        std::list < short > getMfgTblsAvailable(void);
        bool isStdTableAvailableInMeter(short tableNbr);
        bool isMfgTableAvailableInMeter(short tableNbr);
+       double getElecMultiplier(int index);
+       double scaleMultiplier(double multiplier, int index);
+       void printDebugValue(double value, bool frozen=false);
+       void resetLoadProfilePointers( int totalIntvls );
+       bool compareIdCode(int index, AnsiUnit ansiOffset);
+       virtual bool compareSegmentation(int index, AnsiSegmentation  segmentation);
 
-      int                              _index;
+
+       int                              _index;
 
       CtiANSIApplication               _appLayer;
 
@@ -469,10 +507,9 @@ class IM_EX_PROT CtiProtocolANSI
 
      bool _currentTableNotAvailableFlag;
      bool _requestingBatteryLifeFlag;
-     bool _invalidLastLoadProfileTime;
      bool _forceProcessDispatchMsg;
 
-     ANSI_SCAN_OPERATION _scanOperation;  //General Scan, Demand Reset,
+     AnsiScanOperation _scanOperation;  //General Scan, Demand Reset,
      UINT _parseFlags;
 };
 }}}

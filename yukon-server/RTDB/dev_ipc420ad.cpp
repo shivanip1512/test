@@ -41,15 +41,13 @@ int Ipc420ADDevice::getScannerTables(ANSI_TABLE_WANTS* table )
         { 23,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 27,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 28,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 31,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 32,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
-        { 33,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 52,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 61,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 62,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 63,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 64,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 2061,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
+        { 2072,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
         { -1,       0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
     };
 
@@ -84,6 +82,7 @@ int Ipc420ADDevice::getCommanderTables(ANSI_TABLE_WANTS* table )
         { 33,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 52,       0,      0,      ANSI_TABLE_TYPE_STANDARD,          ANSI_OPERATION_READ},
         { 2061,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
+        { 2072,     0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ},
         { -1,       0,      0,      ANSI_TABLE_TYPE_MANUFACTURER,      ANSI_OPERATION_READ}
     };
 

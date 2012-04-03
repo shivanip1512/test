@@ -383,7 +383,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
     //inMsgResultString = string("successfully");
     inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
 
-    if (getKV2Protocol().getScanOperation() == 2) //demand Reset
+    if (getKV2Protocol().getScanOperation() == CtiProtocolANSI::demandReset) //demand Reset
     {
         //if (InMessage->EventCode == NORMAL)
         if (findStringIgnoreCase(inMsgResultString,"successful"))
@@ -491,7 +491,7 @@ INT CtiDeviceKV2::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
 }
 INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 {
-    if (getKV2Protocol().getScanOperation() == 2) //demand Reset
+    if (getKV2Protocol().getScanOperation() == CtiProtocolANSI::demandReset) //demand Reset
     {
         if (InMessage->EventCode == NORMAL)
         {
@@ -517,7 +517,7 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 
         if (InMessage->EventCode == NORMAL)
         {
-            if (getKV2Protocol().getlastLoadProfileTime() != 0 || getKV2Protocol().getScanOperation() == 0) //scanner
+            if (getKV2Protocol().getlastLoadProfileTime() != 0 || getKV2Protocol().getScanOperation() == CtiProtocolANSI::generalScan) //scanner
             {
                 ULONG lptime = getKV2Protocol().getlastLoadProfileTime();
                 memcpy( InMessage->Buffer.InMessage, (void *)&lptime, sizeof (unsigned long) );
@@ -666,7 +666,7 @@ int CtiDeviceKV2::buildScannerTableRequest (BYTE *aMsg, UINT flags)
 int CtiDeviceKV2::buildCommanderTableRequest (BYTE *aMsg, UINT flags)
 {
     WANTS_HEADER   header;
-    //ANSI_SCAN_OPERATION scanOperation = generalScan;
+    //AnsiScanOperation scanOperation = generalScan;
 
     //here is the password for the KV2 (should be changed to a cparm, I think)
     BYTE        password[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
@@ -784,7 +784,7 @@ void CtiDeviceKV2::processDispatchReturnMessage( list< CtiReturnMsg* > &retList,
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << CtiTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
     }
-    if (getKV2Protocol().getScanOperation() == 2)
+    if (getKV2Protocol().getScanOperation() == CtiProtocolANSI::demandReset)
     {
 
         return;
