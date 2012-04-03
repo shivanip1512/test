@@ -66,8 +66,10 @@ public class ProgramDaoImpl implements ProgramDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Program getByProgramId(final int programId) {
-        final String sql = selectSql + " AND pwp.ProgramID = ?";
-        Program program = yukonJdbcTemplate.queryForObject(sql, new YukonRowMapperAdapter<Program>(new ProgramRowMapper(yukonJdbcTemplate)), programId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectSql);
+        sql.append("AND pwp.ProgramID").eq(programId);
+        Program program = yukonJdbcTemplate.queryForObject(sql, new ProgramRowMapper(yukonJdbcTemplate));
         return program;
     }
     
@@ -148,14 +150,13 @@ public class ProgramDaoImpl implements ProgramDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Program> getByAssignedProgramIds(final List<Integer> assignedProgramIdList) {
-        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append(selectSql);
-        sqlBuilder.append(" AND pwp.ProgramID IN (");
-        sqlBuilder.append(assignedProgramIdList);
-        sqlBuilder.append(")");
-        sqlBuilder.append(" ORDER BY ProgramOrder");
-        
-        String sql = sqlBuilder.toString();
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectSql);
+        sql.append(" AND pwp.ProgramID IN (");
+        sql.append(assignedProgramIdList);
+        sql.append(")");
+        sql.append(" ORDER BY ProgramOrder");
+
         List<Program> programList = yukonJdbcTemplate.query(sql, new ProgramRowMapper(yukonJdbcTemplate));
         return programList;
     }

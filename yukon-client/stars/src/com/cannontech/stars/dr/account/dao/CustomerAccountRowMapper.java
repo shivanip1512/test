@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 
@@ -38,8 +37,8 @@ public class CustomerAccountRowMapper extends AbstractRowMapperWithBaseQuery<Cus
     public CustomerAccount mapRow(YukonResultSet rs) throws SQLException {
         final CustomerAccount account = new CustomerAccount();
         account.setAccountId(rs.getInt("AccountId"));
-        account.setAccountNotes(SqlUtils.convertDbValueToString(rs.getResultSet(), "AccountNotes"));
-        account.setAccountNumber(SqlUtils.convertDbValueToString(rs.getResultSet(), "AccountNumber"));
+        account.setAccountNotes(rs.getStringSafe("AccountNotes"));
+        account.setAccountNumber(rs.getStringSafe("AccountNumber"));
         account.setAccountSiteId(rs.getInt("AccountSiteId"));
         account.setBillingAddressId(rs.getInt("BillingAddressId"));
         account.setCustomerId(rs.getInt("CustomerId"));

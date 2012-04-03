@@ -15,11 +15,13 @@ import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.service.FavoritesService;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.impl.PaoNameDisplayablePaoRowMapper;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
@@ -57,8 +59,7 @@ public class FavoritesServiceImpl implements FavoritesService {
         this.filterService = filterService;
     }
 
-    private static class RecentlyViewedRowMapper extends
-            PaoNameDisplayablePaoRowMapper implements
+    private static class RecentlyViewedRowMapper implements
             RowMapperWithBaseQuery<DisplayablePao> {
 
         @Override
@@ -84,12 +85,17 @@ public class FavoritesServiceImpl implements FavoritesService {
 
         @Override
         public DisplayablePao mapRow(YukonResultSet rs) throws SQLException {
-            return null;
+            String paoName = rs.getString("paoName");
+            int paoID = rs.getInt("paobjectId");
+            String paoTypeStr = rs.getString("type");
+            PaoType paoType = PaoType.getForDbString(paoTypeStr);
+            
+            PaoIdentifier paoIdentifier = new PaoIdentifier(paoID, paoType);
+            return new DisplayablePaoBase(paoIdentifier, paoName);
         }
     }
 
-    private static class FavoriteRowMapper extends PaoNameDisplayablePaoRowMapper
-            implements RowMapperWithBaseQuery<DisplayablePao> {
+    private static class FavoriteRowMapper implements RowMapperWithBaseQuery<DisplayablePao> {
 
         @Override
         public SqlFragmentSource getBaseQuery() {
@@ -110,7 +116,13 @@ public class FavoritesServiceImpl implements FavoritesService {
 
         @Override
         public DisplayablePao mapRow(YukonResultSet rs) throws SQLException {
-            return null;
+            String paoName = rs.getString("paoName");
+            int paoID = rs.getInt("paobjectId");
+            String paoTypeStr = rs.getString("type");
+            PaoType paoType = PaoType.getForDbString(paoTypeStr);
+            
+            PaoIdentifier paoIdentifier = new PaoIdentifier(paoID, paoType);
+            return new DisplayablePaoBase(paoIdentifier, paoName);
         }
     }
 

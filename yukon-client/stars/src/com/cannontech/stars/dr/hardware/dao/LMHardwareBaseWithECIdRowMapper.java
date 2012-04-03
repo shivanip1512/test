@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 
@@ -39,7 +38,7 @@ public class LMHardwareBaseWithECIdRowMapper extends AbstractRowMapperWithBaseQu
     public LMHardwareBase mapRow(YukonResultSet rs) throws SQLException {
         final LMHardwareBase lmHardwareBase = new LMHardwareBase();
         lmHardwareBase.setInventoryId(rs.getInt("InventoryId"));
-        lmHardwareBase.setManufacturerSerialNumber(SqlUtils.convertDbValueToString(rs.getResultSet(), "ManufacturerSerialNumber"));
+        lmHardwareBase.setManufacturerSerialNumber(rs.getStringSafe("ManufacturerSerialNumber"));
         lmHardwareBase.setLMHarewareTypeId(rs.getInt("LMHardwareTypeId"));
         lmHardwareBase.setRouteId(rs.getInt("RouteId"));
         lmHardwareBase.setConfigurationId(rs.getInt("ConfigurationId"));

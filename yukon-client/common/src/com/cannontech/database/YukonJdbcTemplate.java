@@ -90,14 +90,6 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
     	return queryForLong(sql.getSql(), sql.getArguments());
     }
     
-    public <T> List<T> query(String string, YukonRowMapper<T> mapper) {
-        return query(string, new YukonRowMapperAdapter<T>(mapper));
-    }
-
-    public <T> List<T> query(String string, YukonRowMapper<T> mapper, Object[] objects) {
-        return query(string, new YukonRowMapperAdapter<T>(mapper),objects);
-    }
-
     @Override
     public <T> T queryForObject(SqlFragmentSource sql,
             ParameterizedRowMapper<T> rm) throws DataAccessException {

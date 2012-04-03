@@ -1,5 +1,6 @@
 package com.cannontech.common.events.dao.impl;
 
+import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.Iterator;
@@ -99,21 +100,22 @@ public class EventLogDaoImpl implements EventLogDao {
             return new SimpleSqlFragment("ORDER BY EventTime DESC");
         }
         
-        public EventLog mapRow(YukonResultSet rs) throws java.sql.SQLException {
+        public EventLog mapRow(YukonResultSet yrs) throws java.sql.SQLException {
+            ResultSet rs = yrs.getResultSet();
             EventLog eventLog = new EventLog();
-            eventLog.setEventLogId(rs.getResultSet().getInt(1));
-            eventLog.setEventType(rs.getResultSet().getString(2));
-            eventLog.setDateTime(rs.getResultSet().getTimestamp(3));
+            eventLog.setEventLogId(rs.getInt(1));
+            eventLog.setEventType(rs.getString(2));
+            eventLog.setDateTime(rs.getTimestamp(3));
             
             Object[] arguments = new Object[argumentColumns.size()];
             for (int i = 0; i < argumentColumns.size(); ++i) {
             	Object arg;
             	int columnIndex = i + countOfNonVariableColumns + 1;	//columns are 1-based
             	if (argumentColumns.get(i).getSqlType() == Types.VARCHAR) {
-            		String rawString = rs.getResultSet().getString(columnIndex);
+            		String rawString = rs.getString(columnIndex);
             		arg = SqlUtils.convertDbValueToString(rawString);
             	} else {
-            		arg = JdbcUtils.getResultSetValue(rs.getResultSet(), columnIndex);
+            		arg = JdbcUtils.getResultSetValue(rs, columnIndex);
             	}
             	arguments[i] = arg;
             }

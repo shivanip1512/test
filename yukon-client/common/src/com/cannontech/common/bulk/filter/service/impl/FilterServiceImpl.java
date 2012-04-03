@@ -59,9 +59,7 @@ public class FilterServiceImpl implements FilterService {
 
         SearchResult<T> retVal = new SearchResult<T>();
 
-        List<T> objectsFromDb = yukonJdbcTemplate.query(sql.getSql(),
-                                                         rowMapper,
-                                                         sql.getArguments());
+        List<T> objectsFromDb = yukonJdbcTemplate.query(sql, rowMapper);
         
         log.debug("Retrieved " + objectsFromDb.size() + " objects from database.");
         

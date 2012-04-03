@@ -31,8 +31,8 @@ public class OptOutSurveyRowMapper extends
         retVal.setOptOutSurveyId(rs.getInt("optOutSurveyId"));
         retVal.setSurveyId(rs.getInt("surveyId"));
         retVal.setSurveyName(rs.getString("surveyName"));
-        retVal.setStartDate(rs.getResultSet().getTimestamp("startDate"));
-        retVal.setStopDate(rs.getResultSet().getTimestamp("stopDate"));
+        retVal.setStartDate(rs.getDate("startDate"));
+        retVal.setStopDate(rs.getDate("stopDate"));
         retVal.setEnergyCompanyId(rs.getInt("energyCompanyId"));
 
         return retVal;
