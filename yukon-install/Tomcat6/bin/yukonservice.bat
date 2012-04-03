@@ -71,7 +71,7 @@ rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_STDOUTPUT=auto
 set PR_STDERROR=auto
-"%EXECUTABLE%"//US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp;-XX:MaxPermSize=105m" --JvmMs 256 --JvmMx 384
+"%EXECUTABLE%"//US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp;-XX:MaxPermSize=128m" --JvmMs 256 --JvmMx 384
 echo The service 'Yukon Web Application Service' has been installed.
 
 :end
