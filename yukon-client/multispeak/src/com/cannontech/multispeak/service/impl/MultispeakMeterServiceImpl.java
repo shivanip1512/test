@@ -869,18 +869,18 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     
     /**
      * Returns meterNumber from ConnectDisconnectEvent object.
-     * Tries to load from CDEvent's objectId, then meterId (SEDC specific), then meterNo.
+     * Tries to load from CDEvent's meterNo, then meterId (SEDC specific), then objectId.
      * @param cdEvent
      * @return
      */
     private String getMeterNumberFromCDEvent(ConnectDisconnectEvent cdEvent) {
-        String meterNumber = cdEvent.getObjectID();
+        String meterNumber = cdEvent.getMeterNo();
         
         //Try to load MeterNumber from another element
         if( StringUtils.isBlank(meterNumber)) {
             meterNumber = cdEvent.getMeterID(); //SEDC
-            if( StringUtils.isBlank(meterNumber)) {
-                meterNumber = cdEvent.getMeterNo();
+            if( StringUtils.isBlank(meterNumber)) { // this is only necessary for old integrations; moving forward, objectId will be a unique identifier of the cdevent. 
+                meterNumber = cdEvent.getObjectID();
             }
         }
         if (meterNumber != null) {
@@ -899,7 +899,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private void sendCDEventNotification(YukonMeter yukonMeter, LoadActionCode loadActionCode, MultispeakVendor vendor, String transactionId) {
 
         String endpointURL = vendor.getEndpointURL(MultispeakDefines.CB_CD_STR);
-        log.info("Sending CDStateChangedNotification ("+ endpointURL+ "): Meter Number " + yukonMeter.getMeterNumber());
+        log.info("Sending CDStateChangedNotification ("+ endpointURL+ "): Meter Number " + yukonMeter.getMeterNumber() + " Code:" + loadActionCode);
 
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(vendor);
