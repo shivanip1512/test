@@ -323,7 +323,7 @@ public class DigiResponseHandler {
                 xbeeCoreResponses.put(endPoint.getPaoIdentifier(), response);
             } catch (EmptyResultDataAccessException e) {
                 //This is either not a end point or not tracked by yukon.
-                log.debug("Unknown EndPoint during XbeeCore refresh: " + core.getMacAddress().getMacAddress());
+                log.warn("Unknown EndPoint during XbeeCore refresh: " + core.getMacAddress().getMacAddress());
             }
         }
         
