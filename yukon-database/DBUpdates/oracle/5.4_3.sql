@@ -5,10 +5,10 @@
 /* Start YUK-10752 */
 /* @error ignore-begin */
 ALTER TABLE DynamicCCSubstation
-    DROP CONSTRAINT FK_DynCCSub_CCSub;
+    DROP CONSTRAINT FK_DynCCSubst_CCSubst;
 ALTER TABLE DynamicCCSubstation
-   ADD CONSTRAINT FK_DynCCSubst_CCSubst FOREIGN KEY (SubStationId)
-      REFERENCES CAPCONTROLSUBSTATION (SubstationId)
+   ADD CONSTRAINT FK_DynCCSub_CCSub FOREIGN KEY (SubStationId)
+      REFERENCES CapControlSubstation (SubstationId)
       ON DELETE CASCADE;
 ALTER TABLE DynamicDeviceScanData
     DROP CONSTRAINT FK_DynDeviceScanData;

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/30/2012 10:53:10 AM                        */
+/* Created on:     4/4/2012 1:07:30 PM                          */
 /*==============================================================*/
 
 
@@ -10875,7 +10875,7 @@ alter table DYNAMICCCSPECIALAREA
       on delete cascade;
 
 alter table DYNAMICCCSUBSTATION
-   add constraint FK_DynCCSubst_CCSubst foreign key (SubStationID)
+   add constraint FK_DynCCSub_CCSub foreign key (SubStationID)
       references CAPCONTROLSUBSTATION (SubstationID)
       on delete cascade;
 
