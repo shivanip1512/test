@@ -44,6 +44,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
@@ -836,7 +837,7 @@ public class OperatorAccountController {
         modelMap.addAttribute("substations", substations);
 
         modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
-        modelMap.addAttribute("supportsPasswordSet", authenticationService.getCurrentAuthType());
+        modelMap.addAttribute("supportsPasswordSet", authenticationService.getDefaultAuthType(user));
         modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
         modelMap.addAttribute("showLoginSection", showLoginSection);
         modelMap.addAttribute("ecResidentialGroups", ecResidentialGroups);
@@ -859,8 +860,9 @@ public class OperatorAccountController {
         
         modelMap.addAttribute("showLoginSection", hasEditLoginPrivileges(userContext.getYukonUser()));
 
+        AuthType currentAuthType = authenticationService.getDefaultAuthType(residentialUser);
         modelMap.addAttribute("supportsPasswordSet",
-                              authenticationService.supportsPasswordSet(authenticationService.getCurrentAuthType()));
+                              authenticationService.supportsPasswordSet(currentAuthType));
 
         modelMap.addAttribute("ecResidentialGroups", ecResidentialGroups);
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {

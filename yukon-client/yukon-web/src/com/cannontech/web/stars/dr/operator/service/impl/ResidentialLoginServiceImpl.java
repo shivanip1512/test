@@ -123,7 +123,8 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                     
                     // Security checks for password change.
                     rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD, userContext.getYukonUser());
-                    boolean passwordSetSupported = authenticationService.supportsPasswordSet(residentialUser.getAuthType());
+                    AuthType currentAuthType = authenticationService.getDefaultAuthType(residentialUser);
+                    boolean passwordSetSupported = authenticationService.supportsPasswordSet(currentAuthType);
                     if (!passwordSetSupported) {
                         throw new IllegalArgumentException("You cannot set the password on this style of account.");
                     }

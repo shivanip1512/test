@@ -31,10 +31,9 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     @Autowired private AuthenticationThrottleHelper authenticationThrottleHelper;
 
     @Override
-    public AuthType getCurrentAuthType() {
-        // Update to the current authentication type when password is changed.
+    public AuthType getDefaultAuthType(LiteYukonUser user) {
         AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE,
-                                                                 AuthType.class, null);
+                                                                 AuthType.class, user);
         return authType;
     }
 
@@ -83,7 +82,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     @Override
     public void setPassword(LiteYukonUser yukonUser, String newPassword) {
         // Update to the current authentication type when password is changed.
-        AuthType authType = getCurrentAuthType();
+        AuthType authType = getDefaultAuthType(yukonUser);
         boolean supportsSetPassword = supportsPasswordSet(authType);
         if (!supportsSetPassword) {
             throw new UnsupportedOperationException("setPassword not supported for type: " + authType);

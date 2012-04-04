@@ -12,9 +12,11 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public interface AuthenticationService {
     /**
-     * Get the authorization type currently in use.
+     * Get the default authorization type.  This may differ from the type in use by the login for
+     * the user if the utility has updated the role property.  Password changes should use this so
+     * the user is updated to the current authorization type when changing their password.
      */
-    public AuthType getCurrentAuthType();
+    public AuthType getDefaultAuthType(LiteYukonUser user);
 
     /**
      * Attempt to login to Yukon. How the username/password is authenticated
