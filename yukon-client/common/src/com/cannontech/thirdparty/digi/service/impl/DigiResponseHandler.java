@@ -253,7 +253,13 @@ public class DigiResponseHandler {
         
         Map<PaoIdentifier,ZigbeePingResponse> pingResponses = Maps.newHashMap();
         for (DeviceCore core : cores) {
-            ZigbeeDevice digiGateway =  gatewayDeviceDao.getDigiGateway(core.getDevMac());
+            ZigbeeDevice digiGateway;
+            try {
+                digiGateway =  gatewayDeviceDao.getDigiGateway(core.getDevMac());
+            } catch ( EmptyResultDataAccessException e) {
+                log.warn("Unknown Gateway during DeviceCore refres: MAC: " + core.getDevMac() + " DevId: " + core.getDevId());
+                continue;
+            }
             
             gatewayDeviceDao.updateDigiId(digiGateway.getPaoIdentifier(), core.getDevId());
             gatewayDeviceDao.updateFirmwareVersion(digiGateway.getPaoIdentifier(), core.getDevFirmware());
@@ -317,7 +323,7 @@ public class DigiResponseHandler {
                 xbeeCoreResponses.put(endPoint.getPaoIdentifier(), response);
             } catch (EmptyResultDataAccessException e) {
                 //This is either not a end point or not tracked by yukon.
-                log.debug("Unknown EndPoint during XbeeCore refresh: " + core.getMacAddress());
+                log.debug("Unknown EndPoint during XbeeCore refresh: " + core.getMacAddress().getMacAddress());
             }
         }
         
@@ -465,67 +471,6 @@ public class DigiResponseHandler {
             }
         }
     }
-
-    /**
-     * Processes back the LoadGroupAddressing Read.
-     * 
-     * @param source
-     */
-    /* Commented Because this used to be used to "refresh" a device, but this code will be used in 5.4 for its intended purpose to read attributes.
-     * 
-    public ZigbeePingResponse handleLoadGroupAddressingRead(String source, ZigbeeDevice endPoint, ZigbeeDevice gateway) {
-        Commissioned endPointState;
-        boolean success;
-        String key;
-        
-        SimpleXPathTemplate template = new SimpleXPathTemplate();
-        template.setContext(source);
-        
-        String readResponse = template.evaluateAsString("//read_attributes_response");
-        
-        if (readResponse != null) {
-            //Success case
-            endPointState = Commissioned.CONNECTED;
-            success = true;
-            key = "yukon.web.modules.operator.hardware.refreshSuccessful";
-        } else {
-            //Error Case
-            success = false;
-            String error = template.evaluateAsString("//desc");
-            
-            if( error == null) {
-                error = template.evaluateAsString("//description");
-                log.error("Error Communicating with ZigBee EndPoint: " + error);
-                if (error.contains("Key not authorized")) {
-                    //This error means the encryption key has gotten out of sync. Need a recommission to fix.
-                    endPointState = Commissioned.DECOMMISSIONED;
-                    key = "yukon.web.modules.operator.hardware.commandFailed.notAuthorized";
-                } else {
-                    key = "yukon.web.modules.operator.hardware.commandFailed.timeout.endPoint";
-                    endPointState = Commissioned.DISCONNECTED;
-                }
-            } else {
-                log.error("Error Communicating with Gateway: " + error);
-                endPointState = Commissioned.DISCONNECTED;
-                key = "yukon.web.modules.operator.hardware.commandFailed.timeout.gateway";
-                
-                //Disconnect gateway (This will also disconnect the end points attached)
-                disconnectGateway(gateway);
-            }
-        }
-        
-        zigbeeServiceHelper.sendPointStatusUpdate(endPoint, 
-                                                  BuiltInAttribute.ZIGBEE_LINK_STATUS, 
-                                                  endPointState);
-        
-        MessageSourceResolvable resolvable = YukonMessageSourceResolvable.createSingleCode(key);
-        ZigbeePingResponse response = new ZigbeePingResponse(success,
-                                                                                      endPointState,
-                                                                                      resolvable);
-        
-        return response;
-    }
-    */
     
     /**
      * Determines the success of the add device call.
