@@ -113,6 +113,7 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
                 }
             }
             if (!allCanceled) {
+                // Shouldn't happen unless something is broken.
                 throw new RuntimeException("could not cancel all requests");
             }
         }
