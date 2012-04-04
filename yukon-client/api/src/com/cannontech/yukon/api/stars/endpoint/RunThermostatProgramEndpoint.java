@@ -80,6 +80,9 @@ public class RunThermostatProgramEndpoint {
             if (result.isFailed()) {
                 throw new FailedThermostatCommandException("Run Program Command Failed:"+result);
             }
+            // build response
+            resp.addContent(new Element("success", ns));
+            
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(runThermostatProgram, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
             resp.addContent(fe);
@@ -93,10 +96,6 @@ public class RunThermostatProgramEndpoint {
             resp.addContent(fe);
             log.error(e.getMessage(), e);
         }
-        
-        // build response
-        resp.addContent(new Element("success", ns));
-        
         return resp;
     }
 }
