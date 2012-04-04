@@ -119,8 +119,8 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </div>
-                <cti:button nameKey="cancel" type="submit" name="cancel"/>
                 <cti:button nameKey="save" type="submit" name="save"/>
+                <cti:button nameKey="cancel" type="submit" name="cancel"/>
             </form:form>
         </c:if>
         <c:if test="${not empty task}">
