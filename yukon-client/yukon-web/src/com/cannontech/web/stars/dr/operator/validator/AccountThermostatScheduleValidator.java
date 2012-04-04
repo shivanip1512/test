@@ -67,12 +67,48 @@ public class AccountThermostatScheduleValidator extends SimpleValidator<AccountT
                                null);
         }
         
+        //make sure we have the correct number of days in the week given the schedule mode
+        if(entriesByTimeOfWeekMultimap.keySet().size() != target.getThermostatScheduleMode().getAssociatedTimeOfWeeks().size()){
+        	errors.rejectValue("scheduleEntries", "yukon.web.components.thermostat.schedule.error.invalidTimeOfWeekCount");
+        }
+        
         //invalid number of periods for a given day
         String invalidPeriodCounts = "";
         for(TimeOfWeek timeOfWeek : entriesByTimeOfWeekMultimap.keySet()){
             if(entriesByTimeOfWeekMultimap.get(timeOfWeek).size() != target.getThermostatType().getPeriodStyle().getAllPeriods().size()){
                 invalidPeriodCounts += messageSourceAccessor.getMessage("yukon.web.components.thermostat.schedule." + timeOfWeek) + " ";
             }
+
+            //check that each day has valid period temperatures
+            int considered_entries = 0;
+            for(int i=0; i<entriesByTimeOfWeekMultimap.get(timeOfWeek).size(); i++){
+            	AccountThermostatScheduleEntry entry = entriesByTimeOfWeekMultimap.get(timeOfWeek).get(i);
+            	if((entry.getCoolTemp().toFahrenheit().toIntValue() != -1) ||
+        			(entry.getHeatTemp().toFahrenheit().toIntValue() != -1)){
+            		considered_entries++;
+            		//lower cool limit
+            		if(entry.getCoolTemp().compareTo(target.getThermostatType().getLowerLimitCool()) < 0){
+            			errors.rejectValue("scheduleEntries", "yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.cool.tooCold", entry.getCoolTemp().toString());
+            		}
+            		//upper cool limit
+            		if(entry.getCoolTemp().compareTo(target.getThermostatType().getUpperLimitCool()) > 0){
+            			errors.rejectValue("scheduleEntries", "yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.cool.tooWarm", entry.getCoolTemp().toString());
+            		}
+            		//lower heat limit
+            		if(entry.getHeatTemp().compareTo(target.getThermostatType().getLowerLimitHeat()) < 0){
+            			errors.rejectValue("scheduleEntries", "yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.heat.tooCold", entry.getHeatTemp().toString());
+            		}
+            		//upper heat limit
+            		if(entry.getHeatTemp().compareTo(target.getThermostatType().getUpperLimitHeat()) > 0){
+            			errors.rejectValue("scheduleEntries", "yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.heat.tooWarm", entry.getHeatTemp().toString());
+            		}
+            	}
+            }
+            
+            if(considered_entries != target.getThermostatType().getPeriodStyle().getRealPeriods().size()){
+            	invalidPeriodCounts += messageSourceAccessor.getMessage("yukon.web.components.thermostat.schedule." + timeOfWeek);
+            }
+            
         }
         
         if(invalidPeriodCounts.length() > 0){
@@ -81,27 +117,6 @@ public class AccountThermostatScheduleValidator extends SimpleValidator<AccountT
                                null);
         }
         
-        for(AccountThermostatScheduleEntry entry : target.getScheduleEntries()){
-            //only validate non-'psuedo' entries Look at ThermostatPeriodStyle for more information
-            if(entry.getCoolTemp().toFahrenheit().toIntValue() != -1){
-                //lower cool limit
-                if(entry.getCoolTemp().compareTo(target.getThermostatType().getLowerLimitCool()) < 0){
-                    errors.rejectValue("scheduleEntries", "yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.cool.tooCold", entry.getCoolTemp().toString());
-                }
-                //upper cool limit
-                if(entry.getCoolTemp().compareTo(target.getThermostatType().getUpperLimitCool()) > 0){
-                    errors.rejectValue("scheduleEntries", "yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.cool.tooWarm", entry.getCoolTemp().toString());
-                }
-                //lower heat limit
-                if(entry.getHeatTemp().compareTo(target.getThermostatType().getLowerLimitHeat()) < 0){
-                    errors.rejectValue("scheduleEntries", "yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.heat.tooCold", entry.getHeatTemp().toString());
-                }
-                //upper heat limit
-                if(entry.getHeatTemp().compareTo(target.getThermostatType().getUpperLimitHeat()) > 0){
-                    errors.rejectValue("scheduleEntries", "yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.heat.tooWarm", entry.getHeatTemp().toString());
-                }
-            }
-        }
     }
 
 }

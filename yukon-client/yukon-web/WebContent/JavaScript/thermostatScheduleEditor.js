@@ -169,7 +169,12 @@ Yukon.ThermostatScheduleEditor = {
                         Yukon.ThermostatScheduleEditor.clearErrors(form);
                         var errors = data.responseJSON.errors;
                         for(error in errors){
-                            form.down("input[name="+ error +"]").addClassName('error').insert({after:"<div class='errorMessage box'><small>" + errors[error] + "</small></div>"});
+                        	var input = form.down("input[name="+ error +"]");
+                        	if(input){
+                        		form.down("input[name="+ error +"]").addClassName('error').insert({after:"<div class='errorMessage box'><small>" + errors[error] + "</small></div>"});
+                        	}else{
+                        		form.down(".days").insert({top:"<div class='errorMessage box'><small>" + errors[error] + "</small></div>"});
+                        	}
                         }
                     }else{
                         //reload the page in case of other server error
@@ -479,7 +484,7 @@ Yukon.ThermostatScheduleEditor = {
         var startSeconds = 0;
         var endSeconds = 24*60*60;
         
-        var previous = parent.previous('.period');
+        var previous = parent.previous('.period:not(.dn)');
         if(previous) {
             var prevInput = previous.down('.time input[name=secondsFromMidnight]');
             if(prevInput){
@@ -487,7 +492,7 @@ Yukon.ThermostatScheduleEditor = {
             }
         }
         
-        var next = parent.next('.period');
+        var next = parent.next('.period:not(.dn)');
         if(next){
             var nextInput = next.down('.time input[name=secondsFromMidnight]');
             if(nextInput){

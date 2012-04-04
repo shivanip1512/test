@@ -389,14 +389,7 @@
     <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.heat.tooCold">The heating temperature {0} is too low.</entry>
     <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.heat.tooWarm">The heating temperature {0} is too high.</entry>
     <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryCount">There are an invalid number of periods for {0}.</entry>
-
-    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntry">This schedule contains errors. To correct this, please edit the schedule, choose a different mode and save.  You may then edit the schedule again to restore the original mode.</entry>
-    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTimeOfWeek">This schedule contains incompatible days of the week: {0}.</entry>
-    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.cool.tooCold">The cooling temperature {0} is too low.</entry>
-    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.cool.tooWarm">The cooling temperature {0} is too high.</entry>
-    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.heat.tooCold">The heating temperature {0} is too low.</entry>
-    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryTemperature.heat.tooWarm">The heating temperature {0} is too high.</entry>
-    <entry key="yukon.web.components.thermostat.schedule.error.invalidScheduleEntryCount">There are an invalid number of periods for {0}.</entry>
+    <entry key="yukon.web.components.thermostat.schedule.error.invalidTimeOfWeekCount">There are an invalid number of days for this schedule type.</entry>
 
     <!-- Time of week -->
     <entry key="yukon.web.components.thermostat.schedule.EVERYDAY">Everyday</entry>

@@ -25,8 +25,13 @@ public class DefaultAccountThermostatScheduleHelper {
         List<AccountThermostatScheduleEntry> atsEntries = Lists.newArrayList();
         for (TimeOfWeek timeOfWeek : type.getDefaultThermostatScheduleMode().getAssociatedTimeOfWeeks()) {
             for (ThermostatSchedulePeriod period : type.getPeriodStyle().getAllPeriods()) {
-                AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry(period.getDefaultStartTime(), timeOfWeek, Temperature.fromFahrenheit(72), Temperature.fromFahrenheit(72));
-                atsEntries.add(entry);
+            	if(period.isPsuedo()){
+            		AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry(period.getDefaultStartTime(), timeOfWeek, Temperature.fromFahrenheit(-1), Temperature.fromFahrenheit(-1));
+            		atsEntries.add(entry);
+            	}else{
+	                AccountThermostatScheduleEntry entry = new AccountThermostatScheduleEntry(period.getDefaultStartTime(), timeOfWeek, Temperature.fromFahrenheit(72), Temperature.fromFahrenheit(72));
+	                atsEntries.add(entry);
+            	}
             }
         }
         ats.setScheduleEntries(atsEntries);
