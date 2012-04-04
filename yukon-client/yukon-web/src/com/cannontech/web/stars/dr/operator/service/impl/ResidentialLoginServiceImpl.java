@@ -63,17 +63,23 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                 } else {
                     newUser.setLoginStatus(LoginStatusEnum.DISABLED);
                 }
-                
+
                 // Get the default authType
-                AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, user);
-                newUser.setAuthType(authType);
-                
+                AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE,
+                                                                         AuthType.class, user);
                 String password = loginBackingBean.getPassword1();
-                if (StringUtils.isBlank(password)) {
-                    newUser.setAuthType(AuthType.NONE);
+                // This is problematic.  It should be fixed with YUK-10019.
+                if (password == null) {
+                    authType = AuthType.NONE;
                 }
+                newUser.setAuthType(authType);
                 yukonUserDao.addLiteYukonUserWithPassword(newUser, password, groups);
-                
+
+                // We need to use the AuthenticationService so the password gets encoded properly.
+                if (authenticationService.supportsPasswordSet(authType)) {
+                    authenticationService.setPassword(newUser, loginBackingBean.getPassword1());
+                }
+
                 // Update primaryContact to new loginId
                 LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
                 int newUserId = yukonUserDao.findUserByUsername(newUser.getUsername()).getUserID();

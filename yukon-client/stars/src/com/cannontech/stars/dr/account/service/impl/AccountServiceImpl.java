@@ -408,9 +408,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void deleteAccount(CustomerAccount account, LiteYukonUser user) {
-
-        YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByAccountId(account.getAccountId());
-
         LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getByAccountId(account.getAccountId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());

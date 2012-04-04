@@ -90,9 +90,9 @@ public class ForgottenPasswordController {
             forgottenPasswordFieldError(forgottenPassword, flashScope, model, request, "yukon.web.modules.login.forgottenPassword.invalidProvidedInformation");
             return "forgottenPassword.jsp";
         }
-        
+
         // Are we allowed to set this password.
-        if (!authenticationService.supportsPasswordChange(passwordResetInfo.getUser().getAuthType())) {
+        if (!authenticationService.supportsPasswordSet(passwordResetInfo.getUser().getAuthType())) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.login.passwordChange.passwordChangeNotSupported"));
             return "redirect:login.jsp";
         }

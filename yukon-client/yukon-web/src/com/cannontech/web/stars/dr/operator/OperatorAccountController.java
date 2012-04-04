@@ -684,8 +684,8 @@ public class OperatorAccountController {
                         /* see IMPORTANT NOTE comment in createAccount method, same rules apply here */
         				accountService.updateAccount(updatableAccount, accountId, userContext.getYukonUser());
         				operatorAccountService.updateAccount(accountId, accountGeneral.getOperatorGeneralUiExtras());
-        				if(!ignoreLogin) {
-                            if (LoginModeEnum.CREATE.equals(LoginModeEnum.valueOf(loginMode))) {
+        				if (!ignoreLogin) {
+                            if (LoginModeEnum.valueOf(loginMode) == LoginModeEnum.CREATE) {
             
                                 residentialLoginService.createResidentialLogin(accountGeneral.getLoginBackingBean(), 
                                                        userContext.getYukonUser(), 
@@ -693,8 +693,8 @@ public class OperatorAccountController {
                                                        accountInfoFragment.getEnergyCompanyId());
                             } else {
                                 residentialLoginService.updateResidentialLogin(accountGeneral.getLoginBackingBean(), 
-                                                                               userContext, 
-                                                                               residentialUser, 
+                                                                               userContext,
+                                                                               residentialUser,
                                                                                accountInfoFragment.getEnergyCompanyId());
                             }
                             /* Added Event Log Message */
@@ -836,7 +836,7 @@ public class OperatorAccountController {
         modelMap.addAttribute("substations", substations);
 
         modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
-        modelMap.addAttribute("supportsPasswordSet", true);
+        modelMap.addAttribute("supportsPasswordSet", authenticationService.getCurrentAuthType());
         modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
         modelMap.addAttribute("showLoginSection", showLoginSection);
         modelMap.addAttribute("ecResidentialGroups", ecResidentialGroups);
@@ -859,8 +859,9 @@ public class OperatorAccountController {
         
         modelMap.addAttribute("showLoginSection", hasEditLoginPrivileges(userContext.getYukonUser()));
 
-        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(residentialUser.getAuthType()));
-        
+        modelMap.addAttribute("supportsPasswordSet",
+                              authenticationService.supportsPasswordSet(authenticationService.getCurrentAuthType()));
+
         modelMap.addAttribute("ecResidentialGroups", ecResidentialGroups);
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
             modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);

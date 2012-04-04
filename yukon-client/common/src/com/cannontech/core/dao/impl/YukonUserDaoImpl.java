@@ -141,6 +141,10 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    int userId = nextValueHelper.getNextValue("YukonUser");
 	    user.setUserID(userId);
 	    SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+	    // Some authentication types don't use the password field.
+	    if (password == null) {
+	        password = "";
+	    }
 	    sql.append("INSERT INTO YukonUser VALUES (?,?,?,?,?)");
 	    yukonJdbcTemplate.update(sql.toString(), user.getUserID(), user.getUsername(), SqlUtils.convertStringToDbValue(password), user.getLoginStatus().getDatabaseRepresentation(), user.getAuthType().name());
 	    

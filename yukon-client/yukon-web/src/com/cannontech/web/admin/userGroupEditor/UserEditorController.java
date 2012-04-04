@@ -242,9 +242,9 @@ public class UserEditorController {
         model.addAttribute("editingUsername", yukonUserDao.getLiteYukonUser(user.getUserID()).getUsername());
         model.addAttribute("authTypes", AuthType.values());
         model.addAttribute("loginStatusTypes", LoginStatusEnum.values());
-        model.addAttribute("showChangePassword", authenticationService.supportsPasswordChange(user.getAuthType()));
+        model.addAttribute("showChangePassword", authenticationService.supportsPasswordSet(user.getAuthType()));
         model.addAttribute("pwChangeFormMode", PageEditMode.EDIT);
-        
+
         Map<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndGroupsForUser(user.getUserID());
         ImmutableMultimap<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
         model.addAttribute("roles", sortedRoles.asMap());

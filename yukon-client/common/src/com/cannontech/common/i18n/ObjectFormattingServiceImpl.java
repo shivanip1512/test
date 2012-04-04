@@ -61,6 +61,13 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
      */
     private <T> List<T> sortDisplayableValues(List<T> retVal, final T first, final T last,
                                              final YukonUserContext context) {
+        if (first != null && !retVal.contains(first)) {
+            retVal.add(first);
+        }
+        if (last != null && !retVal.contains(last)) {
+            retVal.add(last);
+        }
+
         Collections.sort(retVal, new Comparator<T>() {
             @Override
             public int compare(T t1, T t2) {

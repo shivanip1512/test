@@ -41,8 +41,8 @@ public class ChangeLoginController {
         YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser user = yukonUserContext.getYukonUser();
         map.addAttribute("user", user);
-        
-        boolean disablePasswordChange = !authenticationService.supportsPasswordChange(user.getAuthType());
+
+        boolean disablePasswordChange = !authenticationService.supportsPasswordSet(user.getAuthType());
         map.addAttribute("disablePasswordChange", disablePasswordChange);
         
         map.addAttribute("redirectUrl", redirectUrl);
@@ -70,11 +70,10 @@ public class ChangeLoginController {
         } catch (AuthenticationThrottleException e){
             retrySeconds = e.getThrottleSeconds();
         }
-        boolean supportsPasswordChange = authenticationService.supportsPasswordChange(type);
+        boolean supportsPasswordChange = authenticationService.supportsPasswordSet(type);
         boolean hasRequiredFields = hasRequiredFields(oldPassword, newPassword, confirm);
 
         ChangeLoginMessage loginMsg;
-        
         if (!isValidPassword) {
             loginMsg = ChangeLoginMessage.INVALID_CREDENTIALS_PASSWORD_CHANGE;
         }
@@ -88,7 +87,7 @@ public class ChangeLoginController {
             loginMsg = ChangeLoginMessage.NO_PASSWORDMATCH;
         }
         else {
-            authenticationService.changePassword(user, oldPassword, newPassword);
+            authenticationService.setPassword(user, newPassword);
             loginMsg = ChangeLoginMessage.LOGIN_PASSWORD_CHANGED;
             success = true;
         }

@@ -10,7 +10,7 @@
 
     <bean id="authenticationThrottleHelper" class="com.cannontech.core.authentication.service.impl.AuthenticationThrottleHelperImpl"
             scope="prototype" />
-            
+
     <bean id="authenticationService" class="com.cannontech.core.authentication.service.impl.AuthenticationServiceImpl">
       <property name="providerMap">
         <map>
@@ -22,20 +22,15 @@
           <entry key="LDAP" value-ref="ldapAuthentication"/>
         </map>
       </property>
-      <property name="yukonUserDao" ref="yukonUserDao"/>
-      <property name="authenticationThrottleHelper" ref="authenticationThrottleHelper"/>
     </bean>
-    
-    <bean id="yukonUserPasswordDao" class="com.cannontech.core.authentication.dao.impl.YukonUserPasswordDaoImpl">
-      <property name="template" ref="simpleJdbcTemplate"/>
-    </bean>
-    
+
+    <bean id="yukonUserPasswordDao" class="com.cannontech.core.authentication.dao.impl.YukonUserPasswordDaoImpl"/>
+
     <bean id="localPlainAuthentication" class="com.cannontech.core.authentication.service.impl.LocalPlainAuthenticationService">
       <property name="yukonUserPasswordDao" ref="yukonUserPasswordDao"/>
     </bean>
     
     <bean id="localShaAuthentication" class="com.cannontech.core.authentication.service.impl.LocalHashAuthenticationService">
-      <property name="yukonUserPasswordDao" ref="yukonUserPasswordDao"/>
       <property name="passwordHasher">
         <bean class="com.cannontech.core.authentication.service.impl.YukonPasswordHasher">
           <constructor-arg value="SHA"/>

@@ -372,7 +372,10 @@
                                         <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
                                             <button type="button" class="f_generatePassword"><i:inline key=".generatePassword"/></button>
                                             <br>
-                                            <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()" /> <i:inline key=".showPassword"/>
+                                            <label>
+                                                <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/>
+                                                <i:inline key=".showPassword"/>
+                                            </label>
                                         </tags:nameValue2>
                                     </c:if>
                                 </cti:checkRolesAndProperties>
@@ -453,9 +456,9 @@
                                     <i:inline key=".generatePassword" />
                                 </button>
                                 <br>
-                                <input id="showPasswordCheckbox" type="checkbox"
-                                    onclick="showPassword()" />
-                                <i:inline key=".showPassword" />
+                                <label><input id="showPasswordCheckbox" type="checkbox"
+                                    onclick="showPassword()"/>
+                                <i:inline key=".showPassword"/></label>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </form:form>

@@ -276,7 +276,28 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         addString(") ");
         return this;
     }
-    
+
+    public SqlStatementBuilder set(String columnName, Object value, Object... remaining) {
+        if (remaining.length % 2 != 0) {
+            throw new IllegalArgumentException("Must specify column names and values in pairs.");
+        }
+        append("set");
+        append(columnName);
+        append("=");
+        appendArgument(value);
+        for (int index = 0; index < remaining.length; index += 2) {
+            if (remaining[index] instanceof String) {
+                append(", ");
+                append(remaining[index]);
+                append("=");
+                appendArgument(remaining[index+1]);
+            } else {
+                throw new IllegalArgumentException("column names must be string values");
+            }
+        }
+        return this;
+    }
+
     public SqlStatementBuilder values(Object first, Object... remaining) {
         addString("values (");
         List<Object> list = Lists.newArrayListWithCapacity(1 + remaining.length);

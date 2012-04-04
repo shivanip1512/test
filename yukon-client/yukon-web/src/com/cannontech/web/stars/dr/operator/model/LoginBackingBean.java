@@ -10,8 +10,8 @@ public class LoginBackingBean {
     private String loginGroupName;
     private boolean loginEnabled;
     private String username;
-    private String password1;
-    private String password2;
+    private String password1 = "";
+    private String password2 = "";
     private AuthType authType;
     
     public String getLoginGroupName() {

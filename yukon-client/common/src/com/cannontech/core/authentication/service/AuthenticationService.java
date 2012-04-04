@@ -11,6 +11,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * supports it.
  */
 public interface AuthenticationService {
+    /**
+     * Get the authorization type currently in use.
+     */
+    public AuthType getCurrentAuthType();
 
     /**
      * Attempt to login to Yukon. How the username/password is authenticated
@@ -23,8 +27,7 @@ public interface AuthenticationService {
      * @return LiteYukonUser after user has been authenticated
      * @throws BadAuthenticationException
      */
-    public abstract LiteYukonUser login(String username, String password)
-            throws BadAuthenticationException;
+    public LiteYukonUser login(String username, String password) throws BadAuthenticationException;
 
     /**
      * Indicates if the underlying authentication method for the user
@@ -42,39 +45,7 @@ public interface AuthenticationService {
      * @param newPassword
      */
     public void setPassword(LiteYukonUser user, String newPassword);
-    
-    /**
-     * Indicates if the underlying authentication method for the user
-     * supports changing the password to a new value.
-     * @param type
-     * @return true if supported
-     */
-    public boolean supportsPasswordChange(AuthType type);
-    
-    /**
-     * Changes the user's password if the oldPassword matches their current password.
-     * @param user
-     * @param oldPassword
-     * @param newPassword
-     * @throws BadAuthenticationException if the oldPassword doesn't match
-     */
-    public void changePassword(LiteYukonUser user, String oldPassword, String newPassword) throws BadAuthenticationException;
-    
-    /**
-     * Indicates if the underlying authentication method for the user
-     * supports recovering the plain text password.
-     * @param type
-     * @return the plain text password
-     */
-    public boolean supportsPasswordRecovery(AuthType type);
-    
-    /**
-     * Recovers the user's password.
-     * @param user
-     * @return the user's password.
-     */
-    public String recoverPassword(LiteYukonUser user);
-    
+
     /**
      * Get AuthenticationThrottleDto data for the username.
      * @param username

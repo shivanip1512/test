@@ -1,21 +1,28 @@
 package com.cannontech.core.authentication.service.impl;
 
-import com.cannontech.core.authentication.service.PasswordRecoveryProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
+import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.service.AuthenticationProvider;
+import com.cannontech.core.authentication.service.PasswordSetProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public class LocalPlainAuthenticationService extends LocalHashAuthenticationService implements PasswordRecoveryProvider {
-    
-    public LocalPlainAuthenticationService() {
-        // set a "null" hash on the base class
-        setPasswordHasher(new PasswordHasher() {
-            public String hashPassword(String password) {
-                return password;
-            }
-        });
+public class LocalPlainAuthenticationService implements AuthenticationProvider, PasswordSetProvider {
+    @Autowired
+    protected YukonUserPasswordDao yukonUserPasswordDao;
+
+    @Override
+    public boolean login(LiteYukonUser user, String password) {
+        return yukonUserPasswordDao.checkPassword(user, password);
     }
-    
-    public String getPassword(LiteYukonUser user) {
-        String password = getYukonUserPasswordDao().recoverPassword(user);
-        return password;
+
+    @Override
+    public void setPassword(LiteYukonUser user, String newPassword) {
+        yukonUserPasswordDao.setPassword(user, AuthType.PLAIN, newPassword);
+    }
+
+    public void setYukonUserPasswordDao(YukonUserPasswordDao yukonUserPasswordDao) {
+        this.yukonUserPasswordDao = yukonUserPasswordDao;
     }
 }

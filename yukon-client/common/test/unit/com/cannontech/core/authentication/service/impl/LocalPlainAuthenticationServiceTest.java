@@ -1,11 +1,11 @@
 package com.cannontech.core.authentication.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -13,25 +13,14 @@ public class LocalPlainAuthenticationServiceTest {
     static final String INITIAL_PASSWORD = "test$$";
     private LocalPlainAuthenticationService service;
     private LiteYukonUser someUser;
-    private SingleUserPasswordDao singleUserPasswordDao;
+    private MockYukonUserPasswordDao singleUserPasswordDao;
 
     @Before
     public void setUp() throws Exception {
         service = new LocalPlainAuthenticationService();
-        singleUserPasswordDao = new SingleUserPasswordDao(INITIAL_PASSWORD);
+        singleUserPasswordDao = new MockYukonUserPasswordDao(INITIAL_PASSWORD);
         service.setYukonUserPasswordDao(singleUserPasswordDao);
         someUser = new LiteYukonUser(100, "testuser", LoginStatusEnum.ENABLED);
-    }
-
-    @Test
-    public void testGetPassword() {
-        String password = service.getPassword(someUser);
-        assertEquals("Retrieved password doesn't match", INITIAL_PASSWORD, password);
-        
-        // change password
-        service.setPassword(someUser, "new pass");
-        password = service.getPassword(someUser);
-        assertEquals("Retrieved password doesn't match", "new pass", password);
     }
 
     @Test
@@ -52,33 +41,11 @@ public class LocalPlainAuthenticationServiceTest {
     }
 
     @Test
-    public void testChangePassword() {
-        // attempt change with incorrect current
-        try {
-            service.changePassword(someUser, "whatever", "blah");
-            fail("Change password should have thrown exception");
-        } catch (BadAuthenticationException e) {
-        }
-        
-        // attempt change with correct password
-        try {
-            service.changePassword(someUser, INITIAL_PASSWORD, "qwerty");
-        } catch (BadAuthenticationException e) {
-            fail("Change password should not have thrown exception");
-        }
-        
-        // check that password actually changed (this works because this is "PLAIN"
-        String currentPassword = singleUserPasswordDao.getCurrentPassword();
-        assertEquals("Password didn't actually change", "qwerty", currentPassword);
-    }
-
-    @Test
     public void testSetPassword() {
         service.setPassword(someUser, "bobbob");
-        
-        // check that password actually changed (this works because this is "PLAIN"
-        String currentPassword = singleUserPasswordDao.getCurrentPassword();
-        assertEquals("Password didn't actually change", "bobbob", currentPassword);
-    }
 
+        // check that password actually changed.
+        assertTrue("Password didn't actually change",
+                   singleUserPasswordDao.checkPassword(someUser, "bobbob"));
+    }
 }

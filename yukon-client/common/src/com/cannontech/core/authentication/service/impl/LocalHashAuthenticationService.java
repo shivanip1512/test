@@ -1,53 +1,35 @@
 package com.cannontech.core.authentication.service.impl;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
+import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
-import com.cannontech.core.authentication.service.PasswordChangeProvider;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public class LocalHashAuthenticationService implements AuthenticationProvider, PasswordChangeProvider, PasswordSetProvider {
-    private YukonUserPasswordDao yukonUserPasswordDao;
+public class LocalHashAuthenticationService implements AuthenticationProvider, PasswordSetProvider {
+    @Autowired protected YukonUserPasswordDao yukonUserPasswordDao;
     private PasswordHasher passwordHasher;
-    
-    public LocalHashAuthenticationService() {
-    }
-    
+
+    @Override
     public boolean login(LiteYukonUser user, String password) {
         String hashedPassword = passwordHasher.hashPassword(password);
         boolean matches = yukonUserPasswordDao.checkPassword(user, hashedPassword);
         return matches;
     }
-    
 
-    public void changePassword(LiteYukonUser user, String oldPassword, String newPassword) throws BadAuthenticationException {
-        String oldHash = passwordHasher.hashPassword(oldPassword);
-        String newHash = passwordHasher.hashPassword(newPassword);
-        boolean success = yukonUserPasswordDao.changePassword(user, oldHash, newHash);
-        if (!success) {
-            throw new BadAuthenticationException();
-        }
-    }
-
+    @Override
     public void setPassword(LiteYukonUser user, String newPassword) {
         String newHash = passwordHasher.hashPassword(newPassword);
-        yukonUserPasswordDao.changePassword(user, newHash);
-    }
-
-    @Required
-    public void setYukonUserPasswordDao(YukonUserPasswordDao yukonUserPasswordDao) {
-        this.yukonUserPasswordDao = yukonUserPasswordDao;
+        yukonUserPasswordDao.setPassword(user, AuthType.HASH_SHA, newHash);
     }
 
     public void setPasswordHasher(PasswordHasher passwordHasher) {
         this.passwordHasher = passwordHasher;
     }
 
-    public YukonUserPasswordDao getYukonUserPasswordDao() {
-        return yukonUserPasswordDao;
+    public void setYukonUserPasswordDao(YukonUserPasswordDao yukonUserPasswordDao) {
+        this.yukonUserPasswordDao = yukonUserPasswordDao;
     }
-
 }
