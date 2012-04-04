@@ -1045,8 +1045,7 @@
         <category>Network Manager</category>
         <porter>There is no RF gateway associated with the RF node.</porter>
         <description>
-            Network Manager communicates to RF nodes via RF gateways. Hence Network Manager needs
-            to know which gateway to forward a request to in order to reach a specific node.
+            There isn't a gateway in Network Manager which is currently associated with this node.
         </description>
         <troubleshooting>
             Check with Network Manager database to see which RF gateway is associated
