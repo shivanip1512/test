@@ -28,9 +28,12 @@ public class AttributeResolverTag extends YukonTagSupport {
     public void doTag() throws JspException, IOException {
         Validate.notNull(attribute, "attribute or attributeName must be set");
         Validate.notNull(device, "device or deviceId must be set");
-        LitePoint pointForAttribute = attributeService.getPointForAttribute(device, attribute);
-        
-        int pointId = pointForAttribute.getPointID();
+        int pointId = 0;
+        boolean pointExists = attributeService.pointExistsForAttribute(device, attribute);
+        if(pointExists) {
+            LitePoint pointForAttribute = attributeService.getPointForAttribute(device, attribute);
+            pointId = pointForAttribute.getPointID();
+        }
         
         getJspContext().setAttribute(var, pointId);
     }
