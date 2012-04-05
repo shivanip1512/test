@@ -46,8 +46,8 @@ private static final Logger log = YukonLogManager.getLogger(DefinitionsConfigRet
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException("Unable to encode username and password while retrieving deviceDefinition.xml for java webstart client." , e);
             } catch (IOException e) {
-                /* resource.contentLength() can throw IOException so, return null I guess. */
-                return null;
+                /* resource.contentLength() can throw IOException*/
+                throw new RuntimeException(e);
             }
         } else {
             return loader.getResource(customFilePath);
