@@ -46,19 +46,18 @@ public class UserLoginRequestEndpoint {
             LiteYukonUser user = authenticationService.login(username, password);
             //let the callee know how long a session should last
             response.addContent(XmlUtils.createIntegerElement("sessionTimeoutLength", ns, rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.SESSION_TIMEOUT, user)));
-            
+
+            //success!
+            response.addContent(new Element("success", ns));
         } catch (BadAuthenticationException e) {
             Element fe = XMLFailureGenerator.generateFailure(userLoginRequest, e, "UserNotAuthenticated", e.getMessage());
             response.addContent(fe);
-            return response;
         }  catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(userLoginRequest, e, "OtherException", e.getMessage());
             response.addContent(fe);
             log.error(e.getMessage(), e);
         }
-        
-        //success!
-        response.addContent(XmlUtils.createStringElement("success", ns, ""));
+
         return response;
     }
 }
