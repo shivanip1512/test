@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="Account" resourceRoot="${projectDir}" soapui-version="4.5.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="accountPortSoap11" type="wsdl" bindingName="{http://yukon.cannontech.com/service}accountPortSoap11" soapVersion="1_1" anonymous="optional" definition="http://localhost:8081/api/soap/account.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8081/api/soap/account.wsdl"><con:part><con:url>http://localhost:8081/api/soap/account.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://yukon.cannontech.com/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://yukon.cannontech.com/api" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://yukon.cannontech.com/service">
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://yukon.cannontech.com/api" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api">
+      <xsd:simpleType name="AccountNumber">
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="SerialNumber">
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="UnboundedLimit">
+        <xsd:union memberTypes="xsd:positiveInteger yukon:UnboundedLimitWord"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="UnboundedLimitWord">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="unbounded"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="emptyElement">
+        <xsd:complexContent>
+          <xsd:restriction base="xsd:anyType"/>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="Token">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:simpleType name="ThermostatMode">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Auto"/>
+          <xsd:enumeration value="Cool"/>
+          <xsd:enumeration value="Heat"/>
+          <xsd:enumeration value="Off"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="ThermostatFan">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Auto"/>
+          <xsd:enumeration value="Circulate"/>
+          <xsd:enumeration value="On"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="TemperatureUnit">
+        <xsd:restriction base="xsd:string">
+          <xsd:pattern value="F|C"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="Temperature">
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:double">
+            <xsd:attribute name="unit" type="yukon:TemperatureUnit"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:simpleType name="OptOutType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="ENABLED"/>
+          <xsd:enumeration value="DISABLED_WITH_COMM"/>
+          <xsd:enumeration value="DISABLED_WITHOUT_COMM"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HardwareClass">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="SWITCH"/>
+          <xsd:enumeration value="THERMOSTAT"/>
+          <xsd:enumeration value="METER"/>
+          <xsd:enumeration value="GATEWAY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="nonNegativeInt">
+        <xsd:annotation>
+          <xsd:documentation>A 32 bit non-negative integer.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:int">
+          <xsd:minInclusive value="0"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="YukonMessage">
+        <xsd:attribute name="version" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:element name="yukonUser">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="extra">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any processContents="skip"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="Success"/>
+      <xsd:complexType name="Failure">
+        <xsd:sequence>
+          <xsd:element name="errorCode" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="errorReference" type="xsd:string"/>
+          <xsd:element name="errorDescription" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="SimpleSuccessOrFailure">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success" type="yukon:Success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CustomerAccount">
+        <xsd:sequence>
+          <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+          <xsd:element minOccurs="0" name="mainAddress" type="yukon:USAddress"/>
+          <xsd:element minOccurs="0" name="billingAddress" type="yukon:USAddress"/>
+          <xsd:element minOccurs="0" name="lastName" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="firstName" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="homePhone" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="workPhone" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="email" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="isCommercial" type="xsd:boolean"/>
+          <xsd:element minOccurs="0" name="companyName" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="siteInformation" type="yukon:SiteInformationData"/>
+          <xsd:element minOccurs="0" name="alternateTrackingNumber" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="mapNumber" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="accountUser" type="yukon:YukonUser">
+            <xsd:annotation>
+              <xsd:documentation>If the accountUser is left blank the ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT 
+                        role property can be set to auto-create a login</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element minOccurs="0" name="voiceRecognition" type="yukon:VoiceRecognitionData"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="USAddress">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="street" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="street2" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="city" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="state" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="postalCode" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="county" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="YukonUser">
+        <xsd:sequence>
+          <xsd:element name="username" type="xsd:string"/>
+          <xsd:element name="password" type="xsd:string"/>
+          <xsd:element name="loginGroupName" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="SiteInformationData">
+        <xsd:sequence>
+          <xsd:element minOccurs="0" name="substationName" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="feeder" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="pole" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="transformerSize" type="xsd:positiveInteger"/>
+          <xsd:element minOccurs="0" name="siteVoltage" type="xsd:positiveInteger"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="VoiceRecognitionData">
+        <xsd:sequence>
+          <xsd:element name="username" type="xsd:string"/>
+          <xsd:element name="pin" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="CustomerAccountResult">
+        <xsd:sequence>
+          <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+          <xsd:choice>
+            <xsd:element name="success"/>
+            <xsd:element name="failure" type="yukon:Failure"/>
+          </xsd:choice>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="NewAccountsRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountsList">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" name="customerAccount" type="yukon:CustomerAccount"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="newAccountsRequest" type="yukon:NewAccountsRequest"/>
+      <xsd:complexType name="NewAccountsResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountResultList">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" name="accountResult" type="yukon:CustomerAccountResult"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="newAccountsResponse" type="yukon:NewAccountsResponse"/>
+      <xsd:complexType name="RemoveAccountsRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountsList">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" name="accountNumber" type="xsd:string"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="removeAccountsRequest" type="yukon:RemoveAccountsRequest"/>
+      <xsd:complexType name="RemoveAccountsResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountResultList">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" name="accountResult" type="yukon:CustomerAccountResult"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="removeAccountsResponse" type="yukon:RemoveAccountsResponse"/>
+      <xsd:complexType name="UpdateAccountsRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountsList">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" name="customerAccount" type="yukon:CustomerAccount"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="addOnFail" type="xsd:string" use="optional"/>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="updateAccountsRequest" type="yukon:UpdateAccountsRequest"/>
+      <xsd:complexType name="UpdateAccountsResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountResultList">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" name="accountResult" type="yukon:CustomerAccountResult"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="updateAccountsResponse" type="yukon:UpdateAccountsResponse"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="removeAccountsResponse">
+    <wsdl:part element="sch:removeAccountsResponse" name="removeAccountsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="removeAccountsRequest">
+    <wsdl:part element="sch:removeAccountsRequest" name="removeAccountsRequest"/>
+  </wsdl:message>
+  <wsdl:message name="newAccountsRequest">
+    <wsdl:part element="sch:newAccountsRequest" name="newAccountsRequest"/>
+  </wsdl:message>
+  <wsdl:message name="updateAccountsRequest">
+    <wsdl:part element="sch:updateAccountsRequest" name="updateAccountsRequest"/>
+  </wsdl:message>
+  <wsdl:message name="newAccountsResponse">
+    <wsdl:part element="sch:newAccountsResponse" name="newAccountsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="extraHeader">
+    <wsdl:part element="sch:extra" name="extra"/>
+  </wsdl:message>
+  <wsdl:message name="updateAccountsResponse">
+    <wsdl:part element="sch:updateAccountsResponse" name="updateAccountsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="yukonUserHeader">
+    <wsdl:part element="sch:yukonUser" name="yukonUser"/>
+  </wsdl:message>
+  <wsdl:portType name="accountPort">
+    <wsdl:operation name="newAccounts">
+      <wsdl:input message="tns:newAccountsRequest" name="newAccountsRequest"/>
+      <wsdl:output message="tns:newAccountsResponse" name="newAccountsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="removeAccounts">
+      <wsdl:input message="tns:removeAccountsRequest" name="removeAccountsRequest"/>
+      <wsdl:output message="tns:removeAccountsResponse" name="removeAccountsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="updateAccounts">
+      <wsdl:input message="tns:updateAccountsRequest" name="updateAccountsRequest"/>
+      <wsdl:output message="tns:updateAccountsResponse" name="updateAccountsResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="accountPortSoap11" type="tns:accountPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="newAccounts">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="newAccountsRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="newAccountsResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="removeAccounts">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="removeAccountsRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="removeAccountsResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="updateAccounts">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="updateAccountsRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="updateAccountsResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="accountService">
+    <wsdl:port binding="tns:accountPortSoap11" name="accountPortSoap11">
+      <soap:address location="http://localhost:8081/api/soap"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8081/api/soap</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="newAccounts" bindingOperationName="newAccounts" type="Request-Response" outputName="newAccountsResponse" inputName="newAccountsRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:newAccountsRequest version="?">
+         <api:accountsList>
+            <!--1 or more repetitions:-->
+            <api:customerAccount>
+               <api:accountNumber>?</api:accountNumber>
+               <!--Optional:-->
+               <api:mainAddress>
+                  <!--Optional:-->
+                  <api:street>?</api:street>
+                  <!--Optional:-->
+                  <api:street2>?</api:street2>
+                  <!--Optional:-->
+                  <api:city>?</api:city>
+                  <!--Optional:-->
+                  <api:state>?</api:state>
+                  <!--Optional:-->
+                  <api:postalCode>?</api:postalCode>
+                  <!--Optional:-->
+                  <api:county>?</api:county>
+               </api:mainAddress>
+               <!--Optional:-->
+               <api:billingAddress>
+                  <!--Optional:-->
+                  <api:street>?</api:street>
+                  <!--Optional:-->
+                  <api:street2>?</api:street2>
+                  <!--Optional:-->
+                  <api:city>?</api:city>
+                  <!--Optional:-->
+                  <api:state>?</api:state>
+                  <!--Optional:-->
+                  <api:postalCode>?</api:postalCode>
+                  <!--Optional:-->
+                  <api:county>?</api:county>
+               </api:billingAddress>
+               <!--Optional:-->
+               <api:lastName>?</api:lastName>
+               <!--Optional:-->
+               <api:firstName>?</api:firstName>
+               <!--Optional:-->
+               <api:homePhone>?</api:homePhone>
+               <!--Optional:-->
+               <api:workPhone>?</api:workPhone>
+               <!--Optional:-->
+               <api:email>?</api:email>
+               <!--Optional:-->
+               <api:isCommercial>?</api:isCommercial>
+               <!--Optional:-->
+               <api:companyName>?</api:companyName>
+               <!--Optional:-->
+               <api:siteInformation>
+                  <!--Optional:-->
+                  <api:substationName>?</api:substationName>
+                  <!--Optional:-->
+                  <api:feeder>?</api:feeder>
+                  <!--Optional:-->
+                  <api:pole>?</api:pole>
+                  <!--Optional:-->
+                  <api:transformerSize>?</api:transformerSize>
+                  <!--Optional:-->
+                  <api:siteVoltage>?</api:siteVoltage>
+               </api:siteInformation>
+               <!--Optional:-->
+               <api:alternateTrackingNumber>?</api:alternateTrackingNumber>
+               <!--Optional:-->
+               <api:mapNumber>?</api:mapNumber>
+               <!--Optional:-->
+               <api:accountUser>
+                  <api:username>?</api:username>
+                  <api:password>?</api:password>
+                  <api:loginGroupName>?</api:loginGroupName>
+               </api:accountUser>
+               <!--Optional:-->
+               <api:voiceRecognition>
+                  <api:username>?</api:username>
+                  <api:pin>?</api:pin>
+               </api:voiceRecognition>
+            </api:customerAccount>
+         </api:accountsList>
+      </api:newAccountsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/accountPort/newAccountsRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="removeAccounts" bindingOperationName="removeAccounts" type="Request-Response" outputName="removeAccountsResponse" inputName="removeAccountsRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:removeAccountsRequest version="?">
+         <api:accountsList>
+            <!--1 or more repetitions:-->
+            <api:accountNumber>?</api:accountNumber>
+         </api:accountsList>
+      </api:removeAccountsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/accountPort/removeAccountsRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="updateAccounts" bindingOperationName="updateAccounts" type="Request-Response" outputName="updateAccountsResponse" inputName="updateAccountsRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:updateAccountsRequest version="?" addOnFail="?">
+         <api:accountsList>
+            <!--1 or more repetitions:-->
+            <api:customerAccount>
+               <api:accountNumber>?</api:accountNumber>
+               <!--Optional:-->
+               <api:mainAddress>
+                  <!--Optional:-->
+                  <api:street>?</api:street>
+                  <!--Optional:-->
+                  <api:street2>?</api:street2>
+                  <!--Optional:-->
+                  <api:city>?</api:city>
+                  <!--Optional:-->
+                  <api:state>?</api:state>
+                  <!--Optional:-->
+                  <api:postalCode>?</api:postalCode>
+                  <!--Optional:-->
+                  <api:county>?</api:county>
+               </api:mainAddress>
+               <!--Optional:-->
+               <api:billingAddress>
+                  <!--Optional:-->
+                  <api:street>?</api:street>
+                  <!--Optional:-->
+                  <api:street2>?</api:street2>
+                  <!--Optional:-->
+                  <api:city>?</api:city>
+                  <!--Optional:-->
+                  <api:state>?</api:state>
+                  <!--Optional:-->
+                  <api:postalCode>?</api:postalCode>
+                  <!--Optional:-->
+                  <api:county>?</api:county>
+               </api:billingAddress>
+               <!--Optional:-->
+               <api:lastName>?</api:lastName>
+               <!--Optional:-->
+               <api:firstName>?</api:firstName>
+               <!--Optional:-->
+               <api:homePhone>?</api:homePhone>
+               <!--Optional:-->
+               <api:workPhone>?</api:workPhone>
+               <!--Optional:-->
+               <api:email>?</api:email>
+               <!--Optional:-->
+               <api:isCommercial>?</api:isCommercial>
+               <!--Optional:-->
+               <api:companyName>?</api:companyName>
+               <!--Optional:-->
+               <api:siteInformation>
+                  <!--Optional:-->
+                  <api:substationName>?</api:substationName>
+                  <!--Optional:-->
+                  <api:feeder>?</api:feeder>
+                  <!--Optional:-->
+                  <api:pole>?</api:pole>
+                  <!--Optional:-->
+                  <api:transformerSize>?</api:transformerSize>
+                  <!--Optional:-->
+                  <api:siteVoltage>?</api:siteVoltage>
+               </api:siteInformation>
+               <!--Optional:-->
+               <api:alternateTrackingNumber>?</api:alternateTrackingNumber>
+               <!--Optional:-->
+               <api:mapNumber>?</api:mapNumber>
+               <!--Optional:-->
+               <api:accountUser>
+                  <api:username>?</api:username>
+                  <api:password>?</api:password>
+                  <api:loginGroupName>?</api:loginGroupName>
+               </api:accountUser>
+               <!--Optional:-->
+               <api:voiceRecognition>
+                  <api:username>?</api:username>
+                  <api:pin>?</api:pin>
+               </api:voiceRecognition>
+            </api:customerAccount>
+         </api:accountsList>
+      </api:updateAccountsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/accountPort/updateAccountsRequest"/></con:call></con:operation></con:interface><con:testSuite name="Account TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="newAccounts TestCase" searchProperties="true" id="a0d01262-8555-4921-85bd-da94b91508ff"><con:settings/><con:testStep type="request" name="Create New Account"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>accountPortSoap11</con:interface><con:operation>newAccounts</con:operation><con:request name="Create New Account"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:newAccountsRequest version="1.0">
+         <api:accountsList>
+            <!--1 or more repetitions:-->
+            <api:customerAccount>
+               <api:accountNumber>1234</api:accountNumber>
+               <!--Optional:-->
+               <api:mainAddress>
+                  <!--Optional:-->
+                  <api:street>123 Sesame Street</api:street>
+                  <!--Optional:-->
+                  <api:city>Seattle</api:city>
+                  <!--Optional:-->
+                  <api:state>OR</api:state>
+                  <!--Optional:-->
+                  <api:postalCode>123456</api:postalCode>
+                  <!--Optional:-->
+                  <api:county>USA</api:county>
+               </api:mainAddress>
+            </api:customerAccount>
+         </api:accountsList>
+      </api:newAccountsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="XPath Match" name="Check for existance of [y:newAccountsResponse]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:newAccountsResponse)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:newAccountsResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check for existance of [y:accountResult]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:newAccountsResponse/y:accountResultList/y:accountResult)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [y:accountNumber]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:newAccountsResponse[1]/y:accountResultList[1]/y:accountResult[1]/y:accountNumber[1]/text()</path><content>1234</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/accountPort/newAccountsRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="Create Existing Account"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>accountPortSoap11</con:interface><con:operation>newAccounts</con:operation><con:request name="Create Existing Account"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:newAccountsRequest version="1.0">
+         <api:accountsList>
+            <!--1 or more repetitions:-->
+            <api:customerAccount>
+               <api:accountNumber>1234</api:accountNumber>
+               <!--Optional:-->
+               <api:mainAddress>
+                  <!--Optional:-->
+                  <api:street>123 Sesame Street</api:street>
+                  <!--Optional:-->
+                  <api:city>Seattle</api:city>
+                  <!--Optional:-->
+                  <api:state>OR</api:state>
+                  <!--Optional:-->
+                  <api:postalCode>123456</api:postalCode>
+                  <!--Optional:-->
+                  <api:county>USA</api:county>
+               </api:mainAddress>
+            </api:customerAccount>
+         </api:accountsList>
+      </api:newAccountsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="XPath Match" name="Match content of [y:accountNumber]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:newAccountsResponse[1]/y:accountResultList[1]/y:accountResult[1]/y:accountNumber[1]/text()</path><content>1234</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check for existance of [y:failure]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:newAccountsResponse/y:accountResultList/y:accountResult/y:failure)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [y:errorCode]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:newAccountsResponse[1]/y:accountResultList[1]/y:accountResult[1]/y:failure[1]/y:errorCode[1]/text()</path><content>AccountNumberUnavailable</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/accountPort/newAccountsRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="updateAccounts TestCase" searchProperties="true" id="2e4f3b17-5222-412e-b394-c8b2f9dfa75b"><con:settings/><con:testStep type="request" name="Update Existing Account"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>accountPortSoap11</con:interface><con:operation>updateAccounts</con:operation><con:request name="Update Existing Account"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:updateAccountsRequest version="1.0" addOnFail="false">
+         <api:accountsList>
+            <!--1 or more repetitions:-->
+            <api:customerAccount>
+               <api:accountNumber>1234</api:accountNumber>
+               <!--Optional:-->
+               <api:mainAddress>
+                  <!--Optional:-->
+                  <api:county>BRAZIL</api:county>
+               </api:mainAddress>
+            </api:customerAccount>
+         </api:accountsList>
+      </api:updateAccountsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [y:accountNumber]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:updateAccountsResponse[1]/y:accountResultList[1]/y:accountResult[1]/y:accountNumber[1]/text()</path><content>1234</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check for existance of [y:success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:updateAccountsResponse/y:accountResultList/y:accountResult/y:success)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:updateAccountsResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/accountPort/updateAccountsRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="Update Non-Existing Account"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>accountPortSoap11</con:interface><con:operation>updateAccounts</con:operation><con:request name="Update Non-Existing Account"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:updateAccountsRequest version="1.0" addOnFail="false">
+         <api:accountsList>
+            <!--1 or more repetitions:-->
+            <api:customerAccount>
+               <api:accountNumber>1235</api:accountNumber>
+               <!--Optional:-->
+               <api:mainAddress>
+                  <!--Optional:-->
+                  <api:county>BRAZIL</api:county>
+               </api:mainAddress>
+            </api:customerAccount>
+         </api:accountsList>
+      </api:updateAccountsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="XPath Match" name="Match content of [@version]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:updateAccountsResponse[1]/@version</path><content>1.0</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [y:accountNumber]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:updateAccountsResponse[1]/y:accountResultList[1]/y:accountResult[1]/y:accountNumber[1]/text()</path><content>1235</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [y:errorCode]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:updateAccountsResponse[1]/y:accountResultList[1]/y:accountResult[1]/y:failure[1]/y:errorCode[1]/text()</path><content>InvalidAccountNumber</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check for existance of [y:failure]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:updateAccountsResponse/y:accountResultList/y:accountResult/y:failure)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/accountPort/updateAccountsRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="removeAccounts TestCase" searchProperties="true" id="55b1306e-8ef1-450c-b101-21f9450fd9f9"><con:settings/><con:testStep type="request" name="Remove Existing Account"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>accountPortSoap11</con:interface><con:operation>removeAccounts</con:operation><con:request name="Remove Existing Account"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:removeAccountsRequest version="1.0">
+         <api:accountsList>
+            <!--1 or more repetitions:-->
+            <api:accountNumber>1234</api:accountNumber>
+         </api:accountsList>
+      </api:removeAccountsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="XPath Match" name="Check for existance of [y:removeAccountsResponse]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:removeAccountsResponse)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check for existance of [y:accountResult]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:removeAccountsResponse/y:accountResultList/y:accountResult)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [y:accountNumber]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:removeAccountsResponse[1]/y:accountResultList[1]/y:accountResult[1]/y:accountNumber[1]/text()</path><content>1234</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/><con:assertion type="XPath Match" name="Check for existance of [y:success]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:removeAccountsResponse/y:accountResultList/y:accountResult/y:success)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/accountPort/removeAccountsRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="Remove Non-Existing Account 1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>accountPortSoap11</con:interface><con:operation>removeAccounts</con:operation><con:request name="Remove Non-Existing Account 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:removeAccountsRequest version="1.0">
+         <api:accountsList>
+            <!--1 or more repetitions:-->
+            <api:accountNumber>1234</api:accountNumber>
+         </api:accountsList>
+      </api:removeAccountsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="XPath Match" name="Check for existance of [y:removeAccountsResponse]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:removeAccountsResponse)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Check for existance of [y:accountResult]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:removeAccountsResponse/y:accountResultList/y:accountResult)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [y:accountNumber]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:removeAccountsResponse[1]/y:accountResultList[1]/y:accountResult[1]/y:accountNumber[1]/text()</path><content>1234</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/><con:assertion type="XPath Match" name="Check for existance of [y:failure]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+exists( //y:removeAccountsResponse/y:accountResultList/y:accountResult/y:failure)</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:assertion type="XPath Match" name="Match content of [y:errorCode]"><con:configuration><path>declare namespace y='http://yukon.cannontech.com/api';
+//y:removeAccountsResponse[1]/y:accountResultList[1]/y:accountResult[1]/y:failure[1]/y:errorCode[1]/text()</path><content>InvalidAccountNumber</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/accountPort/removeAccountsRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:requirements/><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting></con:soapui-project>

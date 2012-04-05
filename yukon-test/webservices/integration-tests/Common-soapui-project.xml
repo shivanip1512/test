@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="Common" resourceRoot="${projectDir}" soapui-version="4.5.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="commonPortSoap11" type="wsdl" bindingName="{http://yukon.cannontech.com/service}commonPortSoap11" soapVersion="1_1" anonymous="optional" definition="http://localhost:8081/api/soap/common.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8081/api/soap/common.wsdl"><con:part><con:url>http://localhost:8081/api/soap/common.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://yukon.cannontech.com/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://yukon.cannontech.com/api" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://yukon.cannontech.com/service">
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://yukon.cannontech.com/api" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api">
+      <xsd:complexType name="DeviceGroup">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="PaoName">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="MeterNumber">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="CarrierAddress">
+        <xsd:attribute name="value" type="yukon:nonNegativeInt" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="PaoId">
+        <xsd:attribute name="value" type="yukon:nonNegativeInt" use="required"/>
+      </xsd:complexType>
+      <xsd:complexType name="PaoCollection">
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element maxOccurs="unbounded" name="deviceGroup" type="yukon:DeviceGroup"/>
+          <xsd:element maxOccurs="unbounded" name="paoName" type="yukon:PaoName"/>
+          <xsd:element maxOccurs="unbounded" name="meterNumber" type="yukon:MeterNumber"/>
+          <xsd:element maxOccurs="unbounded" name="carrierAddress" type="yukon:CarrierAddress"/>
+          <xsd:element maxOccurs="unbounded" name="paoId" type="yukon:PaoId"/>
+        </xsd:choice>
+      </xsd:complexType>
+      <xsd:complexType name="PaoIdCollection">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="paoId" type="yukon:PaoId"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="Pao">
+        <xsd:choice>
+          <xsd:element name="paoName" type="yukon:PaoName"/>
+          <xsd:element name="meterNumber" type="yukon:MeterNumber"/>
+          <xsd:element name="carrierAddress" type="yukon:CarrierAddress"/>
+          <xsd:element name="paoId" type="yukon:PaoId"/>
+        </xsd:choice>
+      </xsd:complexType>
+      <xsd:complexType name="PaoError">
+        <xsd:sequence>
+          <xsd:element name="paoId" type="yukon:PaoId"/>
+          <xsd:element name="description" type="xsd:string"/>
+          <xsd:element name="troubleshooting" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="resultString" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="code" type="xsd:int" use="required"/>
+        <xsd:attribute name="category" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:simpleType name="AccountNumber">
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="SerialNumber">
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="UnboundedLimit">
+        <xsd:union memberTypes="xsd:positiveInteger yukon:UnboundedLimitWord"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="UnboundedLimitWord">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="unbounded"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="emptyElement">
+        <xsd:complexContent>
+          <xsd:restriction base="xsd:anyType"/>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="Token">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:simpleType name="ThermostatMode">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Auto"/>
+          <xsd:enumeration value="Cool"/>
+          <xsd:enumeration value="Heat"/>
+          <xsd:enumeration value="Off"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="ThermostatFan">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Auto"/>
+          <xsd:enumeration value="Circulate"/>
+          <xsd:enumeration value="On"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="TemperatureUnit">
+        <xsd:restriction base="xsd:string">
+          <xsd:pattern value="F|C"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="Temperature">
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:double">
+            <xsd:attribute name="unit" type="yukon:TemperatureUnit"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:simpleType name="OptOutType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="ENABLED"/>
+          <xsd:enumeration value="DISABLED_WITH_COMM"/>
+          <xsd:enumeration value="DISABLED_WITHOUT_COMM"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HardwareClass">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="SWITCH"/>
+          <xsd:enumeration value="THERMOSTAT"/>
+          <xsd:enumeration value="METER"/>
+          <xsd:enumeration value="GATEWAY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="nonNegativeInt">
+        <xsd:annotation>
+          <xsd:documentation>A 32 bit non-negative integer.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:int">
+          <xsd:minInclusive value="0"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="YukonMessage">
+        <xsd:attribute name="version" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:element name="yukonUser">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="extra">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any processContents="skip"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="Success"/>
+      <xsd:complexType name="Failure">
+        <xsd:sequence>
+          <xsd:element name="errorCode" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="errorReference" type="xsd:string"/>
+          <xsd:element name="errorDescription" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="SimpleSuccessOrFailure">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success" type="yukon:Success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="TokenStatusRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="token" type="yukon:Token"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="tokenStatusRequest" type="yukon:TokenStatusRequest"/>
+      <xsd:complexType name="CanceledItems">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="paoId" type="yukon:PaoId"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="CompleteElement">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="error" type="yukon:PaoError"/>
+          <xsd:element minOccurs="0" name="canceled" type="yukon:CanceledItems"/>
+        </xsd:sequence>
+        <xsd:attribute name="numSuccesses" type="yukon:nonNegativeInt"/>
+        <xsd:attribute name="numErrors" type="yukon:nonNegativeInt"/>
+        <xsd:attribute name="numCanceled" type="yukon:nonNegativeInt"/>
+      </xsd:complexType>
+      <xsd:complexType name="TokenStatusResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="failure" type="yukon:Failure"/>
+              <xsd:element name="started" type="yukon:emptyElement"/>
+              <xsd:element name="complete" type="yukon:CompleteElement"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="tokenStatusResponse" type="yukon:TokenStatusResponse"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="tokenStatusRequest">
+    <wsdl:part element="sch:tokenStatusRequest" name="tokenStatusRequest"/>
+  </wsdl:message>
+  <wsdl:message name="tokenStatusResponse">
+    <wsdl:part element="sch:tokenStatusResponse" name="tokenStatusResponse"/>
+  </wsdl:message>
+  <wsdl:message name="extraHeader">
+    <wsdl:part element="sch:extra" name="extra"/>
+  </wsdl:message>
+  <wsdl:message name="yukonUserHeader">
+    <wsdl:part element="sch:yukonUser" name="yukonUser"/>
+  </wsdl:message>
+  <wsdl:portType name="commonPort">
+    <wsdl:operation name="tokenStatus">
+      <wsdl:input message="tns:tokenStatusRequest" name="tokenStatusRequest"/>
+      <wsdl:output message="tns:tokenStatusResponse" name="tokenStatusResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="commonPortSoap11" type="tns:commonPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="tokenStatus">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="tokenStatusRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="tokenStatusResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="commonService">
+    <wsdl:port binding="tns:commonPortSoap11" name="commonPortSoap11">
+      <soap:address location="http://localhost:8081/api/soap"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8081/api/soap</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="tokenStatus" bindingOperationName="tokenStatus" type="Request-Response" outputName="tokenStatusResponse" inputName="tokenStatusRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:tokenStatusRequest version="?">
+         <api:token value="?"/>
+      </api:tokenStatusRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/commonPort/tokenStatusRequest"/></con:call></con:operation></con:interface><con:testSuite name="Common TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="tokenStatus TestCase" searchProperties="true"><con:settings/><con:testStep type="request" name="tokenStatus"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>commonPortSoap11</con:interface><con:operation>tokenStatus</con:operation><con:request name="tokenStatus"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:tokenStatusRequest version="1.0">
+         <api:token value="1"/>
+      </api:tokenStatusRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" disabled="true"/><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/commonPort/tokenStatusRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:properties/><con:wssContainer/><con:databaseConnectionContainer/></con:soapui-project>
