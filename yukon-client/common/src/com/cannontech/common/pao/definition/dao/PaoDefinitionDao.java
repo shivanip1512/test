@@ -3,6 +3,7 @@ package com.cannontech.common.pao.definition.dao;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.common.config.ConfigResourceLoader;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -156,4 +157,7 @@ public interface PaoDefinitionDao {
 
     public PointIdentifier getPointIdentifierByDefaultName(PaoType key, String defaultPointName);
     
+    // UNIT TESTING SETTERS
+    //===========================================
+    public void setconfigResourceLoader(ConfigResourceLoader loader);
 }

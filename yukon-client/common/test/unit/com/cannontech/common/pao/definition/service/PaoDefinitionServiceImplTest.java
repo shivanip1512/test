@@ -11,7 +11,10 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.Resource;
 
+import com.cannontech.common.config.ConfigResourceLoader;
+import com.cannontech.common.config.retrieve.ConfigFile;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -53,7 +56,11 @@ public class PaoDefinitionServiceImplTest {
     public void setUp() throws Exception {
 
         service = new PaoDefinitionServiceImpl();
-        paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
+        paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new ConfigResourceLoader() {
+            public Resource getResource(ConfigFile config) {
+                return null;
+            }
+        });
         service.setPaoDefinitionDao(paoDefinitionDao);
 
         pointDao = new MockPointDao();

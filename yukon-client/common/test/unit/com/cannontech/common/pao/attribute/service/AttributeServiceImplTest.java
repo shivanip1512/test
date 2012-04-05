@@ -5,6 +5,10 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.springframework.core.io.Resource;
+
+import com.cannontech.common.config.ConfigResourceLoader;
+import com.cannontech.common.config.retrieve.ConfigFile;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -25,7 +29,11 @@ public class AttributeServiceImplTest extends TestCase {
 
         service = new AttributeServiceImpl();
 
-        paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
+        paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new ConfigResourceLoader() {
+            public Resource getResource(ConfigFile config) {
+                return null;
+            }
+        });
         service.setPaoDefinitionDao(paoDefinitionDao);
 
         PointServiceImpl pointService = new PointServiceImpl();

@@ -15,8 +15,11 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
+import com.cannontech.common.config.ConfigResourceLoader;
+import com.cannontech.common.config.retrieve.ConfigFile;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -48,9 +51,10 @@ public class PaoDefinitionDaoImplTest {
     private PaoDefinitionDao dao = null;
     private SimpleDevice device = null;
 
-    public static PaoDefinitionDao getTestPaoDefinitionDao() throws Exception {
+    public static PaoDefinitionDao getTestPaoDefinitionDao(ConfigResourceLoader loader) throws Exception {
 
         PaoDefinitionDaoImpl dao = new PaoDefinitionDaoImpl();
+        dao.setconfigResourceLoader(loader);
 
         // Use testPaoDefinition.xml for testing
         ClassLoader classLoader = dao.getClass().getClassLoader();
@@ -72,7 +76,11 @@ public class PaoDefinitionDaoImplTest {
     @Before
     public void setUp() throws Exception {
 
-        dao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
+        dao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new ConfigResourceLoader() {
+            public Resource getResource(ConfigFile config) {
+                return null;
+            }
+        });
 
         device = new SimpleDevice(10, 1019); // 1019 = MCT 310
         device.setType(1019);
