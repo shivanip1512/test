@@ -11,11 +11,11 @@
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:sequence>
+                    <xsd:element name="sessionTimeoutLength" type="xsd:integer"/>
                     <xsd:choice>
                         <xsd:element name="success" />
                         <xsd:element name="failure" type="yukon:Failure" />
                     </xsd:choice>
-                    <xsd:element name="sessionTimeoutLength" type="xsd:integer"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
