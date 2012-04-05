@@ -206,7 +206,7 @@ public class PointUtil {
         return pointBase;
 	}
 	
-	public static PointTemplate createPointTemplate(PointBase pointBase) throws IllegalArgumentException {
+	private static PointTemplate createPointTemplate(PointBase pointBase) throws IllegalArgumentException {
 		
 		int pointType = PointTypes.getType(pointBase.getPoint().getPointType());
 		int pointOffset = pointBase.getPoint().getPointOffset();
@@ -306,19 +306,14 @@ public class PointUtil {
         	accumulatorPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
 			
         } else if (pointBase instanceof CalculatedPoint) {
-            addCalcPointTemplateAttributesToPointBase(pointTemplate, pointBase);
+            addCalcPointTemplateAttributesToPointBase(pointTemplate, (CalculatedPoint)pointBase);
         } else {
         	throw new IllegalArgumentException("Unsupported PointBase type: " + pointBase);
         }
 	}
 
 	// TODO: Change the very similar PointFactory.createCalculatedPoint code to use this method
-    private static void addCalcPointTemplateAttributesToPointBase(PointTemplate pointTemplate, PointBase pointBase) {
-        if (!(pointBase instanceof CalculatedPoint)) {
-            return;
-        }
-
-        CalculatedPoint calcPoint = (CalculatedPoint)pointBase;
+    private static void addCalcPointTemplateAttributesToPointBase(PointTemplate pointTemplate, CalculatedPoint calcPoint) {
         calcPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
         calcPoint.getPointUnit().setUomID(pointTemplate.getUnitOfMeasure());
         calcPoint.getPointUnit().setDecimalPlaces(pointTemplate.getDecimalPlaces());
@@ -328,7 +323,8 @@ public class PointUtil {
         CalcBase calcBase = new CalcBase();
         calcBase.setUpdateType(pointTemplate.getCalcPointInfo().getUpdateType());
         calcBase.setPeriodicRate(pointTemplate.getCalcPointInfo().getPeriodicRate());
-        calcBase.setCalculateQuality(pointTemplate.getCalcPointInfo().isForceQualityNormal() ? "Y" : "N");
+        calcBase.setCalculateQuality(pointTemplate.getCalcPointInfo().isForceQualityNormal() ? CtiUtilities.trueChar : CtiUtilities.falseChar);
+        calcPoint.setCalcBase(calcBase);
         
         int order = 1;
         List<CalcComponent> calcComponents = Lists.newArrayListWithExpectedSize(pointTemplate.getCalcPointInfo().getComponents().size());
@@ -343,7 +339,7 @@ public class PointUtil {
             String componentType = calcPointComponent.getCalcComponentType();
             String operation = calcPointComponent.getOperation();
             
-            calcComponents.add(new CalcComponent( calcPoint.getPointUnit().getPointID(), order++, componentType, componentPointId, operation, 0.0, "(none)" ) );                
+            calcComponents.add(new CalcComponent( calcPoint.getPointUnit().getPointID(), order++, componentType, componentPointId, operation, 0.0, CtiUtilities.STRING_NONE ) );                
         }
         calcPoint.setCalcComponents(calcComponents);
     }

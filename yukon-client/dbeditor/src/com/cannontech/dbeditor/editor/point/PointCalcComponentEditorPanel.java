@@ -1310,32 +1310,6 @@ public void setValue(Object val)
 	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	synchronized( cache )
 	{
-//		java.util.List devices = cache.getAllDevices();
-//		Collections.sort( devices, LiteComparators.liteStringComparator );
-
-		//points = new java.util.Vector();
-/*
-		List cachePoints = cache.getAllPoints();
-		LitePoint point = null;
-
-
-		Collections.sort( cachePoints, LiteComparators.litePointDeviceIDComparator);
-*/
-//		for (int i = 0; i < devices.size(); i++)
-//		{
-//			LiteYukonPAObject pao = (LiteYukonPAObject)devices.get(i);
-//
-//			getDeviceComboBox().addItem( pao );
-//
-//			if( i == 0 )
-//			{
-//				LitePoint[] paoPoints =
-//						DaoFactory.getPaoDao().getLitePointsForPAObject( pao.getYukonID() );
-//				
-//				for( int j = 0; j < paoPoints.length; j++ )
-//					getPointComboBox().addItem( paoPoints[j] ); 
-//			}
-//		}
 
 		//fill in the calc components of this point
 		List<CalcComponent> calcComponents;

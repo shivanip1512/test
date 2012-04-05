@@ -1,7 +1,5 @@
 package com.cannontech.web.bulk;
 
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -36,6 +34,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
@@ -69,7 +68,7 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         }
 
         // Only add device types that are valid for the collection 
-        Map<String, Integer> deviceTypes = new LinkedHashMap<String, Integer>();
+        Map<String, Integer> deviceTypes = Maps.newLinkedHashMap();
         for (PaoType paoType : paoTypes) {
             Set<PaoDefinition> changeablePaos = paoDefinitionService.getChangeablePaos(paoType);
             for (PaoDefinition paoDefinition : changeablePaos) {

@@ -1,6 +1,11 @@
 package com.cannontech.database.data.point;
 
+import java.util.Map;
+
 import org.joda.time.Period;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public enum PointArchiveInterval {
 
@@ -26,19 +31,26 @@ public enum PointArchiveInterval {
 	WEEKLY(Period.weeks(1)),
 	MONTHLY(Period.days(30));
 	
-	private int seconds;
-	
-	PointArchiveInterval(Period period) {
+	private final int seconds;
+	private final static Map<Integer, PointArchiveInterval> intervalBySecondsMap;
+
+    static {
+        Builder<Integer, PointArchiveInterval> intervalBySecondsBuilder = ImmutableMap.builder();
+        for (PointArchiveInterval interval : values()) {
+            intervalBySecondsBuilder.put(interval.getSeconds(), interval);
+        }
+        intervalBySecondsMap = intervalBySecondsBuilder.build();
+    }
+
+	private PointArchiveInterval(Period period) {
 		this.seconds = (int)period.toStandardDuration().getStandardSeconds();
 	}
-	
+
     public static PointArchiveInterval getIntervalBySeconds(int seconds) {
-        for (PointArchiveInterval value : PointArchiveInterval.values()) {
-            if (value.getSeconds() == seconds) {
-                return value;
-            }
-        }
-        return ZERO;
+        PointArchiveInterval interval = intervalBySecondsMap.get(seconds);
+        if (interval == null) return ZERO;
+
+        return interval; 
     }
 
 	public int getSeconds() {

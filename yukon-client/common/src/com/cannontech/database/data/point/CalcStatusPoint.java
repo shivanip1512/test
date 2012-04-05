@@ -3,6 +3,7 @@ package com.cannontech.database.data.point;
 /**
  * This type was created in VisualAge.
  */
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import com.cannontech.database.db.point.DynamicCalcHistorical;
@@ -34,13 +35,12 @@ public void add() throws java.sql.SQLException
 	//add a DynamicClacHistorical row for this new calc point
 	DynamicCalcHistorical d = new DynamicCalcHistorical();
 	d.setPointID( getPoint().getPointID() );
-   	
-   java.util.GregorianCalendar gc = new java.util.GregorianCalendar();
-   gc.setTime( new java.util.Date() );
-   gc.set( gc.DAY_OF_YEAR, (gc.get(gc.DAY_OF_YEAR) - 30) );
-   d.setLastUpdate(gc);
-   
-   
+
+    GregorianCalendar gc = new GregorianCalendar();
+    gc.setTime(new java.util.Date());
+    gc.set(GregorianCalendar.DAY_OF_YEAR, (gc.get(GregorianCalendar.DAY_OF_YEAR) - 30));
+    d.setLastUpdate(gc);
+
 	d.setDbConnection( getDbConnection() );
 	d.add();
 
