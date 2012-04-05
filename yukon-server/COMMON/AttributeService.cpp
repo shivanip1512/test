@@ -100,7 +100,10 @@ std::list<LitePoint> AttributeService::getLitePointsById(const std::list<int>& p
 {
     std::list<LitePoint> points;
 
-    string sql("SELECT PointId,PointType,PointName,PAOBjectId,PointOffset FROM Point WHERE pointid in (");
+    std::string sql( "SELECT P.PointId, PointType, PointName, PAOBjectId, PointOffset, StateOneControl"
+                     " FROM Point P LEFT OUTER JOIN POINTSTATUS PS ON P.PointId = PS.PointId"
+                     " WHERE P.PointId in (" );
+
     for each(int pointId in pointIds)
     {
         sql += CtiNumStr(pointId);
@@ -134,6 +137,12 @@ std::list<LitePoint> AttributeService::getLitePointsById(const std::list<int>& p
 
             rdr["PointOffset"] >> temp;
             point.setPointOffset(temp);
+
+            if ( ! rdr["StateOneControl"].isNull() )
+            {
+                rdr["StateOneControl"] >> tempStr;
+                point.setStateOneControl(tempStr);
+            }
 
             points.push_back(point);
         }

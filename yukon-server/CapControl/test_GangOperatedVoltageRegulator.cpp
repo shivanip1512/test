@@ -67,27 +67,27 @@ struct TestAttributeService : public AttributeService
         {
             case PointAttribute::VoltageYAttribute:
             {
-                return LitePoint( 2203,  AnalogPointType, "VoltageY", 1001, 2 );
+                return LitePoint( 2203,  AnalogPointType, "VoltageY", 1001, 2, "" );
             }
             case PointAttribute::TapUpAttribute:
             {
-                return LitePoint( 3100,  StatusPointType, "TapUp", 1003, 4 );
+                return LitePoint( 3100,  StatusPointType, "TapUp", 1003, 4, "control close" );
             }
             case PointAttribute::TapDownAttribute:
             {
-                return LitePoint( 3101,  StatusPointType, "TapDown", 1004, 5 );
+                return LitePoint( 3101,  StatusPointType, "TapDown", 1004, 5, "control close" );
             }
             case PointAttribute::KeepAliveAttribute:
             {
-                return LitePoint( 4200,  AnalogPointType, "KeepAlive", 1007, 1 );
+                return LitePoint( 4200,  AnalogPointType, "KeepAlive", 1007, 1, "" );
             }
             case PointAttribute::AutoRemoteControlAttribute:
             {
-                return LitePoint( 5600,  StatusPointType, "AutoRemoteControl", 1009, 6 );
+                return LitePoint( 5600,  StatusPointType, "AutoRemoteControl", 1009, 6, "" );
             }
             case PointAttribute::TapPositionAttribute:
             {
-                return LitePoint( 3500,  AnalogPointType, "TapPosition", 1013, 3 );
+                return LitePoint( 3500,  AnalogPointType, "TapPosition", 1013, 3, "" );
             }
             case PointAttribute::UnknownAttribute:
             default:

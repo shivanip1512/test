@@ -12,7 +12,8 @@ class IM_EX_CTIBASE LitePoint
         LitePoint(const LitePoint& point);
         ~LitePoint();
 
-        LitePoint( const int Id, const CtiPointType_t Type, const std::string & Name, const int PaoId, const int Offset);
+        LitePoint( const int Id, const CtiPointType_t Type, const std::string & Name,
+                   const int PaoId, const int Offset, const std::string & stateOneControl );
 
         void setPointId(int pointId);
         int getPointId() const;
@@ -29,6 +30,9 @@ class IM_EX_CTIBASE LitePoint
         void setPointOffset(int pointOffset);
         int getPointOffset() const;
 
+        void setStateOneControl(const std::string & stateOneControl);
+        std::string getStateOneControl() const;
+
         LitePoint& operator=(const LitePoint& right);
 
     private:
@@ -38,5 +42,8 @@ class IM_EX_CTIBASE LitePoint
         std::string _pointName;
         int _paoId;
         int _pointOffset;
+
+        std::string _stateOneControl;
+   
 
 };

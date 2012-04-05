@@ -261,7 +261,7 @@ void VoltageRegulator::executeDigitalOutputHelper( const LitePoint & point,
         CtiCapController::getInstance()->sendEventLogMessage( new CtiCCEventLogMsg( textDescription, getPaoId(), recordEventType ) );
     }
 
-    std::string commandString = "control close select pointid " + CtiNumStr( point.getPointId() );
+    std::string commandString = point.getStateOneControl() + " select pointid " + CtiNumStr( point.getPointId() );
 
     CtiRequestMsg * request = createPorterRequestMsg( point.getPaoId(), commandString );
     request->setSOE(5);
