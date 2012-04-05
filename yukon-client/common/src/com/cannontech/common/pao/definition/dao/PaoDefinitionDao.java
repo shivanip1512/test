@@ -159,5 +159,5 @@ public interface PaoDefinitionDao {
     
     // UNIT TESTING SETTERS
     //===========================================
-    public void setconfigResourceLoader(ConfigResourceLoader loader);
+    public abstract void setConfigResourceLoader(ConfigResourceLoader loader);
 }

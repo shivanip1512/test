@@ -54,7 +54,7 @@ public class PaoDefinitionDaoImplTest {
     public static PaoDefinitionDao getTestPaoDefinitionDao(ConfigResourceLoader loader) throws Exception {
 
         PaoDefinitionDaoImpl dao = new PaoDefinitionDaoImpl();
-        dao.setconfigResourceLoader(loader);
+        dao.setConfigResourceLoader(loader);
 
         // Use testPaoDefinition.xml for testing
         ClassLoader classLoader = dao.getClass().getClassLoader();

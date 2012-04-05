@@ -168,7 +168,7 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     }
 
     @Override
-    public void setconfigResourceLoader(ConfigResourceLoader loader) {
+    public void setConfigResourceLoader(ConfigResourceLoader loader) {
         throw new UnsupportedOperationException("not implemented");
     }
 }
