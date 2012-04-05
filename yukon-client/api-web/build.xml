@@ -51,7 +51,7 @@
         <include name="jcpagelayout450K.jar"/>
         <include name="jdom.jar"/>
         <include name="jfreechart.jar"/>
-        <include name="joda-time-2.0.jar"/>
+        <include name="joda-time-2.1.jar"/>
         <include name="jopcbridge.jar"/>
         <include name="jradius-client.jar"/>
         <include name="json-lib-2.4-jdk15.jar"/>

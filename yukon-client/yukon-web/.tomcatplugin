@@ -71,7 +71,7 @@
         <webClassPathEntry>/third-party/jfreechart.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jfreereport.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jloox30.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/joda-time-2.0.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/joda-time-2.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jopcbridge.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jradius-client.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jruntags.jar</webClassPathEntry>

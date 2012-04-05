@@ -362,7 +362,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/joda-time-2.0.jar" sourcepath="/third-party/linked-sources/joda-time-2.0-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/joda-time-2.1.jar" sourcepath="/third-party/linked-sources/joda-time-2.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
