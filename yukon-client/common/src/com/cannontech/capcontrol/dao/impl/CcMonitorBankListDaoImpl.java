@@ -24,6 +24,7 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
+import com.google.common.collect.Iterables;
 
 public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -290,7 +291,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         
         if(strategyIds.size() == 1) {
             //subbus strategy found
-            return getStrategyLimits(strategyIds.get(0));
+            return getStrategyLimits(Iterables.getOnlyElement(strategyIds));
         } else {
             //no subbus strategy, get area strategy
             getStrategyIdSql = new SqlStatementBuilder();
