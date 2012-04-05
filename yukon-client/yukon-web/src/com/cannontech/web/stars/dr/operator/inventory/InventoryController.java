@@ -173,6 +173,22 @@ public class InventoryController {
                                                                           startIndex, 
                                                                           itemsPerPage,
                                                                           starsMeters);
+        
+        // Redirect to inventory page if only one result is found
+        if (results.getHitCount() == 1) {
+            InventorySearchResult inventory = results.getResultList().get(0);
+            
+            if (inventory.getAccountId() > 0) {
+                model.addAttribute("inventoryId", inventory.getInventoryIdentifier().getInventoryId());
+                model.addAttribute("accountId", inventory.getAccountId());
+                return "redirect:/spring/stars/operator/hardware/view";
+            }
+            else {
+                model.addAttribute("inventoryId", inventory.getInventoryIdentifier().getInventoryId());
+                return "redirect:/spring/stars/operator/inventory/view";
+            }
+        }
+        
         model.addAttribute("results", results);
         
         model.addAttribute("showAccountNumber", StringUtils.isNotBlank(inventorySearch.getAccountNumber()));
