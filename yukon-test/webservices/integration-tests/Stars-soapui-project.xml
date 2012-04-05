@@ -102,7 +102,7 @@
           <xsd:extension base="yukon:YukonMessage">
             <xsd:choice>
               <xsd:element name="success" type="yukon:Success"/>
-              <xsd:element name="error" type="yukon:Failure"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
             </xsd:choice>
           </xsd:extension>
         </xsd:complexContent>
