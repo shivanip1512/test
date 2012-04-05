@@ -33,7 +33,6 @@ import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.Unmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.xml.sax.ErrorHandler;
@@ -44,6 +43,8 @@ import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigResourceLoader;
+import com.cannontech.common.config.retrieve.ConfigFile;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -77,7 +78,6 @@ import com.cannontech.common.pao.definition.model.castor.TypeFilter;
 import com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType;
 import com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType;
 import com.cannontech.common.search.FilterType;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SetUtils;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -120,10 +120,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
     private Resource inputFile = null;
     private Resource schemaFile = null;
-    private Resource customInputFile = new FileSystemResource(CtiUtilities.getYukonBase() + "\\Server\\Config\\deviceDefinition.xml");
+    private Resource customInputFile = null;
     private Resource pointLegendFile = null;
-    private UnitMeasureDao unitMeasureDao = null;
-    private StateDao stateDao = null;
     private Logger log = YukonLogManager.getLogger(PaoDefinitionDaoImpl.class);
 
     // Maps containing all of the data in the paoDefinition.xml file
@@ -139,8 +137,32 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Map<PaoTag, BiMap<PaoType, PaoDefinition>> typesBySupportedTag;
     private Set<PaoDefinition> creatablePaoDefinitions = null;
     private List<String> fileIdOrder = null;
+    
+    private UnitMeasureDao unitMeasureDao;
+    private StateDao stateDao;
     private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     private PointDao pointDao;
+    @Autowired private ConfigResourceLoader configResourceLoader;
+    
+    @Autowired
+    public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
+        this.unitMeasureDao = unitMeasureDao;
+    }
+    
+    @Autowired
+    public void setStateDao(StateDao stateDao) {
+        this.stateDao = stateDao;
+    }
+    
+    @Autowired
+    public void setExtraPaoPointAssignmentDao(ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
+        this.extraPaoPointAssignmentDao = extraPaoPointAssignmentDao;
+    }
+    
+    @Autowired
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
     
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
@@ -150,20 +172,24 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         this.schemaFile = schemaFile;
     }
     
+    /**
+     * Setter for unit test to set this file instead of loading it with resource loader.
+     * DO NOT USE THIS UNLESS YOU ARE WRITING A UNIT TEST!!
+     * @param customInputResource
+     */
     public void setCustomInputFile(Resource customInputResource) {
         this.customInputFile = customInputResource;
     }
+    
+    /**
+     * DON NOT USE, only for unit testing to bypass loading a custom config file.
+     * @param loader
+     */
+    @Override
+    public void setConfigResourceLoader(ConfigResourceLoader loader) {
+        this.configResourceLoader = loader;
+    }
 
-    @Autowired
-    public void setStateDao(StateDao stateDao) {
-        this.stateDao = stateDao;
-    }
-    
-    @Autowired
-    public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
-        this.unitMeasureDao = unitMeasureDao;
-    }
-    
     public void setPointLegendFile(Resource pointLegendFile) {
         this.pointLegendFile = pointLegendFile;
     }
@@ -463,6 +489,9 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
     // INITALIZATION
     //============================================
+    /**
+     * For unit tests, the setCustomInputFile method must be called BEFORE you call this initialize method.
+     */
     public void initialize() throws Exception {
 
         paoTypeMap = EnumHashBiMap.create(PaoType.class);
@@ -486,9 +515,10 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         
         // definition resources (in order from lowest level overrides to highest)
+        Resource deviceDefinitionXmlFile = getCustomInputFile(); // Use getter to allow for unit testing
         List<Resource> definitionResources = new ArrayList<Resource>();
-        if (customInputFile != null && customInputFile.exists()) {
-        	definitionResources.add(customInputFile);
+        if (deviceDefinitionXmlFile != null && deviceDefinitionXmlFile.exists() && deviceDefinitionXmlFile.isReadable()) {
+            definitionResources.add(deviceDefinitionXmlFile);
         }
         definitionResources.add(inputFile);
         
@@ -532,6 +562,17 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             builder.putAll(entry.getKey(), entry.getValue().keySet());
         }
         paoTypeAttributesMultiMap = builder.build();
+    }
+    
+    /**
+     * Method to retrieve custom deviceDefinition.xml file only if it's null, need to allow unit tests to set this file instead of
+     * the usual loading from resource loader.
+     */
+    private Resource getCustomInputFile() {
+        if (customInputFile == null) {
+            customInputFile = configResourceLoader.getResource(ConfigFile.PAO_DEFINITIONS);
+        }
+        return customInputFile;
     }
     
     private void mergeInheritedPaoStoresOntoPaoStore(PaoStore paoStore, Map<String, PaoStore> paoStores) {
@@ -773,7 +814,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             BasicLookup lookup = (BasicLookup) choiceLookup;
             PointTemplate pointTemplate = pointNameTemplateMap.get(lookup.getPoint());
             if (pointTemplate == null) {
-                throw new IllegalArgumentException("Can't resolve point name '" + lookup.getPoint() + ":");
+                throw new IllegalArgumentException("Can't resolve point name '" + lookup.getPoint() + "'");
             }
             
             attributeDefinition = new BasicAttributeDefinition(attribute, pointTemplate, pointDao);
@@ -1002,13 +1043,4 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         return pointTemplate;
     }
     
-    @Autowired
-    public void setExtraPaoPointAssignmentDao(ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
-        this.extraPaoPointAssignmentDao = extraPaoPointAssignmentDao;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
 }
