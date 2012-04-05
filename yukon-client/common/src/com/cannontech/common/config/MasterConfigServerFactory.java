@@ -10,13 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 
-public class MasterConfigServerFactory implements FactoryBean {
+public class MasterConfigServerFactory implements FactoryBean<ConfigurationSource> {
+    
     private String remoteFileName = "remoteMaster.cfg";
     private ConfigurationSource localConfigurationSource;
     private Logger log = YukonLogManager.getLogger(MasterConfigServerFactory.class);
 
     @Override
-    public Object getObject() throws Exception {
+    public ConfigurationSource getObject() throws Exception {
         try {
             File remoteFile = new File(CtiUtilities.getYukonBase(), "Server/Config/" + remoteFileName);
             boolean isRemoteVersionAvailable = remoteFile.canRead();
@@ -45,10 +46,8 @@ public class MasterConfigServerFactory implements FactoryBean {
     }
     
     @Autowired
-    public void setLocalConfigurationSource(
-            ConfigurationSource localConfigurationSource) {
+    public void setLocalConfigurationSource(ConfigurationSource localConfigurationSource) {
         this.localConfigurationSource = localConfigurationSource;
     }
-
 
 }

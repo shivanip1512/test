@@ -229,6 +229,7 @@ public class ClientSession {
                 URL url = new URL(lp.getYukonHost());
                 
                 MasterConfigHelper.setRemoteHostAndPort(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
+                System.setProperty("yukon.jws.pass", lp.getPassword());
                 
                 ConfigurationSource configuration = MasterConfigHelper.getConfiguration();
                 // test the config by getting something that should always exist

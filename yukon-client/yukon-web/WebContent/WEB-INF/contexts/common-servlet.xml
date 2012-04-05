@@ -25,6 +25,8 @@
     
     <bean class="com.cannontech.web.common.events.EventLogViewerController"/>
     
+    <bean class="com.cannontech.web.common.config.ConfigFileController"/>
+        
     <bean id="alertController" class="com.cannontech.web.common.alert.AlertController">
         <property name="alertService" ref="alertService"/>
     </bean>

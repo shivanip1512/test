@@ -275,6 +275,11 @@
 
     <bean id="configurationSource" class="com.cannontech.common.config.MasterConfigHelper" factory-method="getConfiguration"/>
     
+    <bean id="rfnConfigRetriever" class="com.cannontech.common.config.retrieve.RfnConfigRetriever"/>
+    <bean id="definitionsConfigRetriever" class="com.cannontech.common.config.retrieve.DefinitionsConfigRetriever"/>
+    <bean id="configResourceLoader" class="com.cannontech.common.config.ConfigResourceLoader"/>
+    
+    
     <bean id="yukonUserContextService" class="com.cannontech.i18n.service.impl.YukonUserContextServiceImpl" />
     
     <bean id="transactionExecutor" class="com.cannontech.common.util.TransactionExecutorImpl" />

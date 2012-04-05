@@ -13,7 +13,6 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -22,7 +21,8 @@ import com.cannontech.amr.rfn.message.read.ChannelData;
 import com.cannontech.amr.rfn.message.read.DatedChannelData;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.ConfigResourceLoader;
+import com.cannontech.common.config.retrieve.ConfigFile;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -189,20 +189,17 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
 
     }
 
-    private PaoDefinitionDao paoDefinitionDao;
     private static final Logger log = YukonLogManager.getLogger(UnitOfMeasureToPointMappingParser.class);
     private ImmutableMultimap<PaoType, PointMapper> pointMapperMap;
     private LoadingCache<CachedPointKey, CachedPointValue> computingCache;
     private final NullCachedPointValue nullCachedPointValue = new NullCachedPointValue();
-    private ConfigurationSource configurationSource;
-    private ResourceLoader resourceLoader;
+    
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private ConfigResourceLoader configResourceLoader;
     
     @PostConstruct
     public void initialize() throws Exception {
-        String pointMappingUrl = 
-            configurationSource.getString("RFN_METER_POINT_MAPPING",
-                                          "classpath:com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml");
-        Resource xmlFile = resourceLoader.getResource(pointMappingUrl);
+        Resource xmlFile = configResourceLoader.getResource(ConfigFile.RFN_POINT_MAPPING);
         pointMapperMap = parse(xmlFile);
         
         computingCache = CacheBuilder.newBuilder().concurrencyLevel(6).expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<CachedPointKey, CachedPointValue>() {
@@ -453,21 +450,6 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
 
     public static Iterable<Element> getElementChildren(Element element, String name) {
         return Iterables.filter(element.getChildren(name), Element.class);
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-
-    @Autowired
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
     }
     
     @ManagedOperation

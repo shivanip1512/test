@@ -59,7 +59,8 @@ public class PaoDefinitionDaoImplTest {
 
         URL schemaResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/paoDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
-
+        
+        // setCustomInputFile MUST be called BEFORE initialize
         dao.setCustomInputFile(null);
         dao.setStateDao(new PaoDefinitionDaoImplTest().new MockStateDao());
         dao.setUnitMeasureDao(new PaoDefinitionDaoImplTest().new MockUnitMeasureDao());
@@ -457,6 +458,7 @@ public class PaoDefinitionDaoImplTest {
         URL schemaResource = classLoader.getResource("com/cannontech/common/pao/definition/dao/paoDefinition.xsd");
         dao.setSchemaFile(new UrlResource(schemaResource));
 
+        // setCustomInputFile MUST be called BEFORE initialize
         dao.setCustomInputFile(new UrlResource(customFileUrl));
         dao.setStateDao(new PaoDefinitionDaoImplTest().new MockStateDao());
         dao.setUnitMeasureDao(new PaoDefinitionDaoImplTest().new MockUnitMeasureDao());
