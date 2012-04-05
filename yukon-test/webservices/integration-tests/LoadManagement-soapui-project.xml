@@ -1,2 +1,1897 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project activeEnvironment="Default" name="LoadManagement" resourceRoot="" soapui-version="4.5.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:properties/><con:wssContainer/><con:databaseConnectionContainer/></con:soapui-project>
+<con:soapui-project activeEnvironment="Default" name="LoadManagement" resourceRoot="${projectDir}" soapui-version="4.5.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="loadManagementPortSoap11" type="wsdl" bindingName="{http://yukon.cannontech.com/service}loadManagementPortSoap11" soapVersion="1_1" anonymous="optional" definition="http://10.106.33.143:8081/api/soap/loadManagement.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://10.106.33.143:8081/api/soap/loadManagement.wsdl"><con:part><con:url>http://10.106.33.143:8081/api/soap/loadManagement.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://yukon.cannontech.com/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:sch="http://yukon.cannontech.com/api" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://yukon.cannontech.com/service">
+  <wsdl:types>
+    <xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://yukon.cannontech.com/api" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:yukon="http://yukon.cannontech.com/api">
+      <xsd:simpleType name="AccountNumber">
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="SerialNumber">
+        <xsd:restriction base="xsd:string"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="UnboundedLimit">
+        <xsd:union memberTypes="xsd:positiveInteger yukon:UnboundedLimitWord"/>
+      </xsd:simpleType>
+      <xsd:simpleType name="UnboundedLimitWord">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="unbounded"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="emptyElement">
+        <xsd:complexContent>
+          <xsd:restriction base="xsd:anyType"/>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="Token">
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:simpleType name="ThermostatMode">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Auto"/>
+          <xsd:enumeration value="Cool"/>
+          <xsd:enumeration value="Heat"/>
+          <xsd:enumeration value="Off"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="ThermostatFan">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Auto"/>
+          <xsd:enumeration value="Circulate"/>
+          <xsd:enumeration value="On"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="TemperatureUnit">
+        <xsd:restriction base="xsd:string">
+          <xsd:pattern value="F|C"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="Temperature">
+        <xsd:simpleContent>
+          <xsd:extension base="xsd:double">
+            <xsd:attribute name="unit" type="yukon:TemperatureUnit"/>
+          </xsd:extension>
+        </xsd:simpleContent>
+      </xsd:complexType>
+      <xsd:simpleType name="OptOutType">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="ENABLED"/>
+          <xsd:enumeration value="DISABLED_WITH_COMM"/>
+          <xsd:enumeration value="DISABLED_WITHOUT_COMM"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="HardwareClass">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="SWITCH"/>
+          <xsd:enumeration value="THERMOSTAT"/>
+          <xsd:enumeration value="METER"/>
+          <xsd:enumeration value="GATEWAY"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:simpleType name="nonNegativeInt">
+        <xsd:annotation>
+          <xsd:documentation>A 32 bit non-negative integer.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:int">
+          <xsd:minInclusive value="0"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="YukonMessage">
+        <xsd:attribute name="version" type="xsd:string" use="required"/>
+      </xsd:complexType>
+      <xsd:element name="yukonUser">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string"/>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="extra">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any processContents="skip"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:complexType name="Success"/>
+      <xsd:complexType name="Failure">
+        <xsd:sequence>
+          <xsd:element name="errorCode" type="xsd:string"/>
+          <xsd:element minOccurs="0" name="errorReference" type="xsd:string"/>
+          <xsd:element name="errorDescription" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="SimpleSuccessOrFailure">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success" type="yukon:Success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="CancelAllCurrentOverridesRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="programName" type="xsd:string">
+                <xsd:annotation>
+                  <xsd:documentation>Program name is not required.  If not provided, behavior should be applied across overrides, regardless of enrolled program.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="cancelAllCurrentOverridesRequest" type="yukon:CancelAllCurrentOverridesRequest"/>
+      <xsd:complexType name="CancelAllCurrentOverridesResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="cancelAllCurrentOverridesResponse" type="yukon:CancelAllCurrentOverridesResponse"/>
+      <xsd:complexType name="CountOverridesTowardsLimitRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="programName" type="xsd:string">
+                <xsd:annotation>
+                  <xsd:documentation>Program name is not required.  If not provided, behavior should be applied across overrides, regardless of enrolled program.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="countOverridesTowardsLimitRequest" type="yukon:CountOverridesTowardsLimitRequest"/>
+      <xsd:complexType name="CountOverridesTowardsLimitResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="countOverridesTowardsLimitResponse" type="yukon:CountOverridesTowardsLimitResponse"/>
+      <xsd:complexType name="CurrentlyActiveProgramsRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage"/>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="currentlyActiveProgramsRequest" type="yukon:CurrentlyActiveProgramsRequest"/>
+      <xsd:complexType name="CurrentlyActiveProgramsResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:sequence>
+                <xsd:element name="programStatuses">
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element maxOccurs="unbounded" minOccurs="0" name="programStatus" type="yukon:ProgramStatus"/>
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="currentlyActiveProgramsResponse" type="yukon:CurrentlyActiveProgramsResponse"/>
+      <xsd:complexType name="ProgramStatus">
+        <xsd:sequence>
+          <xsd:element name="programName" type="xsd:string"/>
+          <xsd:element name="currentStatus" type="yukon:CurrentProgramStatus"/>
+          <xsd:element name="startDateTime" type="xsd:dateTime"/>
+          <xsd:element minOccurs="0" name="stopDateTime" type="xsd:dateTime"/>
+          <xsd:element name="gearName" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:simpleType name="CurrentProgramStatus">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Active"/>
+          <xsd:enumeration value="Inactive"/>
+          <xsd:enumeration value="Scheduled"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="DecrementDeviceOverrideLimitRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+              <xsd:element name="serialNumber" type="yukon:SerialNumber"/>
+              <xsd:element minOccurs="0" name="loadProgramName" type="xsd:string">
+                <xsd:annotation>
+                  <xsd:documentation>If loadProgramName is not supplied, all override limit counters
+                                for the device will be decremented.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="decrementDeviceOverrideLimitRequest" type="yukon:DecrementDeviceOverrideLimitRequest"/>
+      <xsd:complexType name="DecrementDeviceOverrideLimitResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:choice>
+                <xsd:element name="success"/>
+                <xsd:element name="failure" type="yukon:Failure"/>
+              </xsd:choice>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="decrementDeviceOverrideLimitResponse" type="yukon:DecrementDeviceOverrideLimitResponse"/>
+      <xsd:complexType name="ListScenarioProgramsRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="scenarioName" type="xsd:string"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="listScenarioProgramsRequest" type="yukon:ListScenarioProgramsRequest"/>
+      <xsd:complexType name="ListScenarioProgramsResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:sequence>
+                <xsd:element name="scenarioName" type="xsd:string"/>
+                <xsd:element name="scenarioProgramsList" type="yukon:ScenarioProgramsList"/>
+              </xsd:sequence>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="listScenarioProgramsResponse" type="yukon:ListScenarioProgramsResponse"/>
+      <xsd:complexType name="ScenarioProgramsList">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" minOccurs="0" name="scenarioProgram" type="yukon:ScenarioProgram"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ScenarioProgram">
+        <xsd:sequence>
+          <xsd:element name="programName" type="xsd:string"/>
+          <xsd:element name="startGearName" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ListAllScenarioProgramsRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="scenarioName" type="xsd:string">
+                <xsd:annotation>
+                  <xsd:documentation>scenarioName is optional. If omitted, all scenarios and their programs will be returned.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="listAllScenarioProgramsRequest" type="yukon:ListAllScenarioProgramsRequest"/>
+      <xsd:complexType name="ListAllScenarioProgramsResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:sequence>
+                <xsd:element name="scenarioList">
+                  <xsd:complexType>
+                    <xsd:sequence>
+                      <xsd:element maxOccurs="unbounded" minOccurs="0" name="scenario">
+                        <xsd:complexType>
+                          <xsd:sequence>
+                            <xsd:element name="scenarioName" type="xsd:string"/>
+                            <xsd:element name="scenarioProgramsList" type="yukon:ScenarioProgramsList"/>
+                          </xsd:sequence>
+                        </xsd:complexType>
+                      </xsd:element>
+                    </xsd:sequence>
+                  </xsd:complexType>
+                </xsd:element>
+              </xsd:sequence>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="listAllScenarioProgramsResponse" type="yukon:ListAllScenarioProgramsResponse"/>
+      <xsd:complexType name="OverrideHistoryByAccountNumberRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+              <xsd:element name="startDateTime" type="xsd:dateTime"/>
+              <xsd:element name="stopDateTime" type="xsd:dateTime"/>
+              <xsd:element minOccurs="0" name="programName" type="xsd:string"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="overrideHistoryByAccountNumberRequest" type="yukon:OverrideHistoryByAccountNumberRequest"/>
+      <xsd:element name="overrideHistoryByAccountNumberResponse" type="yukon:OverrideHistoryByAccountNumberResponse"/>
+      <xsd:complexType name="ProgramListOverrideHistory">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">This types is returned from the OverrideHistoryByProgramNameRequest within each overrideHistory element.
+	      		Depending on the version of the request, either a single programName element will be included, or
+	      		a list of programNames within a enrolledProgramList element.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="serialNumber" type="yukon:SerialNumber"/>
+          <xsd:choice>
+            <xsd:element name="programName" type="xsd:string">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">Version 1.0 OverrideHistoryByProgramNameRequests will always return a single programName per overrideHistory element.
+				      		NOTE: Although the ProgramListOverrideHistory type is defined to contain programName and/or enrolledProgramList elements, only 
+				      		one kind or the other will be used in any given response. (programName - v1.0, enrolledProgramList - v1.1).</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="enrolledProgramList" type="yukon:EnrolledProgramList">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">Version 1.1 OverrideHistoryByProgramNameRequests will always return a single 
+				      		enrolledProgramList element per overrideHistory element, each of which containing one or more programName elements.
+				      		NOTE: Although the ProgramListOverrideHistory type is defined to contain programName and/or enrolledProgramList elements, only 
+				      		one kind or the other will be used in any given response. (programName - v1.0, enrolledProgramList - v1.1).</xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:choice>
+          <xsd:element name="accountNumber" type="xsd:string"/>
+          <xsd:element name="status" type="yukon:CurrentOverrideHistory"/>
+          <xsd:element name="scheduledDateTime" type="xsd:dateTime"/>
+          <xsd:element name="startDateTime" type="xsd:dateTime"/>
+          <xsd:element name="stopDateTime" type="xsd:dateTime"/>
+          <xsd:element name="userName" type="xsd:string"/>
+          <xsd:element name="overrideNumber" type="xsd:long"/>
+          <xsd:element name="countedAgainstLimit" type="xsd:boolean"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ProgramNameOverrideHistory">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">This types is returned from the OverrideHistoryByAccountNumberRequest within each overrideHistory element..</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+          <xsd:element name="serialNumber" type="yukon:SerialNumber"/>
+          <xsd:element name="programName" type="xsd:string"/>
+          <xsd:element name="accountNumber" type="xsd:string"/>
+          <xsd:element name="status" type="yukon:CurrentOverrideHistory"/>
+          <xsd:element name="scheduledDateTime" type="xsd:dateTime"/>
+          <xsd:element name="startDateTime" type="xsd:dateTime"/>
+          <xsd:element name="stopDateTime" type="xsd:dateTime"/>
+          <xsd:element name="userName" type="xsd:string"/>
+          <xsd:element name="overrideNumber" type="xsd:long"/>
+          <xsd:element name="countedAgainstLimit" type="xsd:boolean"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="EnrolledProgramList">
+        <xsd:sequence>
+          <xsd:element maxOccurs="unbounded" name="programName" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:simpleType name="CurrentOverrideHistory">
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Active"/>
+          <xsd:enumeration value="Cancelled"/>
+          <xsd:enumeration value="Scheduled"/>
+        </xsd:restriction>
+      </xsd:simpleType>
+      <xsd:complexType name="OverrideHistoryByProgramNameResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="overrideHistoryEntries">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" minOccurs="0" name="overrideHistory" type="yukon:ProgramListOverrideHistory"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="OverrideHistoryByAccountNumberResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="overrideHistoryEntries">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" minOccurs="0" name="overrideHistory" type="yukon:ProgramNameOverrideHistory"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="OverrideHistoryByProgramNameRequest">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">The OverrideHistoryByProgramNameRequest can be made using a version attribute of either "1.0" or "1.1".
+	            In the case of "1.0", the response will contain ProgramListOverrideHistory elements that use a programName element.
+	            In the case of "1.1", the response will contain ProgramListOverrideHistory elements that use the enrolledProgramList element (which each contain one or more programName elements).
+	        	See documentation in the ProgramListOverrideHistory type.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="programName" type="xsd:string"/>
+              <xsd:element name="startDateTime" type="xsd:dateTime"/>
+              <xsd:element name="stopDateTime" type="xsd:dateTime"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="overrideHistoryByProgramNameRequest" type="yukon:OverrideHistoryByProgramNameRequest"/>
+      <xsd:element name="overrideHistoryByProgramNameResponse" type="yukon:OverrideHistoryByProgramNameResponse"/>
+      <xsd:complexType name="ProgramControlHistory">
+        <xsd:sequence>
+          <xsd:element name="programName" type="xsd:string"/>
+          <xsd:element name="startDateTime" type="xsd:dateTime"/>
+          <xsd:element minOccurs="0" name="stopDateTime" type="xsd:dateTime">
+            <xsd:annotation>
+              <xsd:documentation>stopDateTime may not appear in the response, this means the control has no stop time scheduled.</xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+          <xsd:element name="gearName" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:complexType name="ProgramControlHistoryRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="programName" type="xsd:string">
+                <xsd:annotation>
+                  <xsd:documentation>programName is optional. If omitted all control history through the request time will be included in the response, regardless of what program is involved.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element name="startDateTime" type="xsd:dateTime"/>
+              <xsd:element minOccurs="0" name="stopDateTime" type="xsd:dateTime">
+                <xsd:annotation>
+                  <xsd:documentation>stopDateTime is optional. If omitted all control history through the request time will be included in the response.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="programControlHistoryRequest" type="yukon:ProgramControlHistoryRequest"/>
+      <xsd:complexType name="ProgramControlHistoryResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="controlHistoryEntries">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element maxOccurs="unbounded" minOccurs="0" name="programControlHistory" type="yukon:ProgramControlHistory"/>
+                  </xsd:sequence>
+                </xsd:complexType>
+              </xsd:element>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="programControlHistoryResponse" type="yukon:ProgramControlHistoryResponse"/>
+      <xsd:complexType name="ProgramStartRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="programName" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="startDateTime" type="xsd:dateTime">
+                <xsd:annotation>
+                  <xsd:documentation>startDateTime is optional. If omitted, control will start "now" (constraints will be observed)</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element minOccurs="0" name="stopDateTime" type="xsd:dateTime">
+                <xsd:annotation>
+                  <xsd:documentation>stopDateTime is optional. If omitted, control will not be schedule to stop</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element minOccurs="0" name="gearName" type="xsd:string"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="programStartRequest" type="yukon:ProgramStartRequest"/>
+      <xsd:complexType name="ProgramStartResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="programStartResponse" type="yukon:ProgramStartResponse"/>
+      <xsd:complexType name="ProgramStatusRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="programName" type="xsd:string"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="programStatusRequest" type="yukon:ProgramStatusRequest"/>
+      <xsd:complexType name="ProgramStatusResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="programStatus" type="yukon:ProgramStatus"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="programStatusResponse" type="yukon:ProgramStatusResponse"/>
+      <xsd:complexType name="ProgramStopRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="programName" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="stopDateTime" type="xsd:dateTime">
+                <xsd:annotation>
+                  <xsd:documentation>stopDateTime is optional. If omitted, control will be stopped immediately</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="programStopRequest" type="yukon:ProgramStopRequest"/>
+      <xsd:complexType name="ProgramStopResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="programStopResponse" type="yukon:ProgramStopResponse"/>
+      <xsd:complexType name="ProhibitConsumerOverridesRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element minOccurs="0" name="programName" type="xsd:string">
+                <xsd:annotation>
+                  <xsd:documentation>Program name is not required.  If not provided, behavior should be applied across overrides, regardless of enrolled program.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element minOccurs="0" name="action" type="xsd:string">
+                <xsd:annotation>
+                  <xsd:documentation>Action is not required.  If not provided, only Opt Outs will be prohibited (this preserves backwards compatibility).</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="prohibitConsumerOverridesRequest" type="yukon:ProhibitConsumerOverridesRequest"/>
+      <xsd:complexType name="ProhibitConsumerOverridesResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="prohibitConsumerOverridesResponse" type="yukon:ProhibitConsumerOverridesResponse"/>
+      <xsd:complexType name="ScenarioStartRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="scenarioName" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="startDateTime" type="xsd:dateTime">
+                <xsd:annotation>
+                  <xsd:documentation>startDateTime is optional. If omitted, control will start "now" for each program (constraints will be observed)</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element minOccurs="0" name="stopDateTime" type="xsd:dateTime">
+                <xsd:annotation>
+                  <xsd:documentation>stopDateTime is optional. If omitted, control will not be scheduled to stop for each program</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element minOccurs="0" name="waitForResponse" type="xsd:boolean">
+                <xsd:annotation>
+                  <xsd:documentation>waitForResponse is optional. It will default to "false" meaning that the request will respond immediately while the scenario's programs are scheduled to start as a background process.
+                            If the node is included and "true" is used as its value, the request will not respond until all of the scenario's programs have been scheduled to start.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="scenarioStartRequest" type="yukon:ScenarioStartRequest"/>
+      <xsd:complexType name="ScenarioStartResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="scenarioStartResponse" type="yukon:ScenarioStartResponse"/>
+      <xsd:complexType name="ScenarioStopRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="scenarioName" type="xsd:string"/>
+              <xsd:element minOccurs="0" name="stopDateTime" type="xsd:dateTime">
+                <xsd:annotation>
+                  <xsd:documentation>stopDateTime is optional. If omitted, control for each program will be stopped immediately</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+              <xsd:element minOccurs="0" name="waitForResponse" type="xsd:boolean">
+                <xsd:annotation>
+                  <xsd:documentation>waitForResponse is optional. It will default to "false" meaning that the request will respond immediately while the scenario's programs are scheduled to stop as a background process.
+                            If the node is included and "true" is used as its value, the request will not respond until all of the scenario's programs have been scheduled to stop.</xsd:documentation>
+                </xsd:annotation>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="scenarioStopRequest" type="yukon:ScenarioStopRequest"/>
+      <xsd:complexType name="ScenarioStopResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="scenarioStopResponse" type="yukon:ScenarioStopResponse"/>
+      <xsd:complexType name="TotalOverriddenDevicesByAccountNumberRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+              <xsd:element name="startDateTime" type="xsd:dateTime"/>
+              <xsd:element name="stopDateTime" type="xsd:dateTime"/>
+              <xsd:element minOccurs="0" name="programName" type="xsd:string"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="totalOverriddenDevicesByAccountNumberRequest" type="yukon:TotalOverriddenDevicesByAccountNumberRequest"/>
+      <xsd:element name="totalOverriddenDevicesByAccountNumberResponse" type="yukon:TotalOverriddenDevicesResponse"/>
+      <xsd:complexType name="TotalOverriddenDevicesResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="totalDevices" type="xsd:long"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:complexType name="TotalOverriddenDevicesByProgramNameRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="programName" type="xsd:string"/>
+              <xsd:element name="startDateTime" type="xsd:dateTime"/>
+              <xsd:element name="stopDateTime" type="xsd:dateTime"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="totalOverriddenDevicesByProgramNameRequest" type="yukon:TotalOverriddenDevicesByProgramNameRequest"/>
+      <xsd:element name="totalOverriddenDevicesByProgramNameResponse" type="yukon:TotalOverriddenDevicesResponse"/>
+      <xsd:complexType name="ResetOverrideCountBySerialNumberRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+              <xsd:element name="serialNumber" type="yukon:SerialNumber"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="resetOverrideCountBySerialNumberRequest" type="yukon:ResetOverrideCountBySerialNumberRequest"/>
+      <xsd:complexType name="ResetOverrideCountBySerialNumberResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:choice>
+                <xsd:element name="success"/>
+                <xsd:element name="failure" type="yukon:Failure"/>
+              </xsd:choice>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="resetOverrideCountBySerialNumberResponse" type="yukon:ResetOverrideCountBySerialNumberResponse"/>
+      <xsd:complexType name="OverrideRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+              <xsd:element name="serialNumber" type="yukon:SerialNumber"/>
+              <xsd:element minOccurs="0" name="startDate" type="xsd:dateTime"/>
+              <xsd:element name="durationInHours" type="xsd:positiveInteger"/>
+              <xsd:element minOccurs="0" name="counts" type="xsd:boolean"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="overrideRequest" type="yukon:OverrideRequest"/>
+      <xsd:complexType name="OverrideResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="overrideResponse" type="yukon:OverrideResponse"/>
+      <xsd:complexType name="CancelActiveOverrideRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+              <xsd:element name="serialNumber" type="yukon:SerialNumber"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="cancelActiveOverrideRequest" type="yukon:CancelActiveOverrideRequest"/>
+      <xsd:complexType name="CancelActiveOverrideResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="cancelActiveOverrideResponse" type="yukon:CancelActiveOverrideResponse"/>
+      <xsd:complexType name="CancelScheduledOverrideRequest">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:sequence>
+              <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
+              <xsd:element name="serialNumber" type="yukon:SerialNumber"/>
+            </xsd:sequence>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="cancelScheduledOverrideRequest" type="yukon:CancelScheduledOverrideRequest"/>
+      <xsd:complexType name="CancelScheduledOverrideResponse">
+        <xsd:complexContent>
+          <xsd:extension base="yukon:YukonMessage">
+            <xsd:choice>
+              <xsd:element name="success"/>
+              <xsd:element name="failure" type="yukon:Failure"/>
+            </xsd:choice>
+          </xsd:extension>
+        </xsd:complexContent>
+      </xsd:complexType>
+      <xsd:element name="cancelScheduledOverrideResponse" type="yukon:CancelScheduledOverrideResponse"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="scenarioStartRequest">
+    <wsdl:part element="sch:scenarioStartRequest" name="scenarioStartRequest"/>
+  </wsdl:message>
+  <wsdl:message name="cancelScheduledOverrideRequest">
+    <wsdl:part element="sch:cancelScheduledOverrideRequest" name="cancelScheduledOverrideRequest"/>
+  </wsdl:message>
+  <wsdl:message name="cancelActiveOverrideRequest">
+    <wsdl:part element="sch:cancelActiveOverrideRequest" name="cancelActiveOverrideRequest"/>
+  </wsdl:message>
+  <wsdl:message name="totalOverriddenDevicesByProgramNameRequest">
+    <wsdl:part element="sch:totalOverriddenDevicesByProgramNameRequest" name="totalOverriddenDevicesByProgramNameRequest"/>
+  </wsdl:message>
+  <wsdl:message name="listScenarioProgramsRequest">
+    <wsdl:part element="sch:listScenarioProgramsRequest" name="listScenarioProgramsRequest"/>
+  </wsdl:message>
+  <wsdl:message name="programStartRequest">
+    <wsdl:part element="sch:programStartRequest" name="programStartRequest"/>
+  </wsdl:message>
+  <wsdl:message name="prohibitConsumerOverridesRequest">
+    <wsdl:part element="sch:prohibitConsumerOverridesRequest" name="prohibitConsumerOverridesRequest"/>
+  </wsdl:message>
+  <wsdl:message name="programStartResponse">
+    <wsdl:part element="sch:programStartResponse" name="programStartResponse"/>
+  </wsdl:message>
+  <wsdl:message name="cancelAllCurrentOverridesRequest">
+    <wsdl:part element="sch:cancelAllCurrentOverridesRequest" name="cancelAllCurrentOverridesRequest"/>
+  </wsdl:message>
+  <wsdl:message name="overrideResponse">
+    <wsdl:part element="sch:overrideResponse" name="overrideResponse"/>
+  </wsdl:message>
+  <wsdl:message name="overrideHistoryByAccountNumberResponse">
+    <wsdl:part element="sch:overrideHistoryByAccountNumberResponse" name="overrideHistoryByAccountNumberResponse"/>
+  </wsdl:message>
+  <wsdl:message name="programStatusRequest">
+    <wsdl:part element="sch:programStatusRequest" name="programStatusRequest"/>
+  </wsdl:message>
+  <wsdl:message name="resetOverrideCountBySerialNumberRequest">
+    <wsdl:part element="sch:resetOverrideCountBySerialNumberRequest" name="resetOverrideCountBySerialNumberRequest"/>
+  </wsdl:message>
+  <wsdl:message name="countOverridesTowardsLimitResponse">
+    <wsdl:part element="sch:countOverridesTowardsLimitResponse" name="countOverridesTowardsLimitResponse"/>
+  </wsdl:message>
+  <wsdl:message name="overrideHistoryByProgramNameResponse">
+    <wsdl:part element="sch:overrideHistoryByProgramNameResponse" name="overrideHistoryByProgramNameResponse"/>
+  </wsdl:message>
+  <wsdl:message name="overrideRequest">
+    <wsdl:part element="sch:overrideRequest" name="overrideRequest"/>
+  </wsdl:message>
+  <wsdl:message name="countOverridesTowardsLimitRequest">
+    <wsdl:part element="sch:countOverridesTowardsLimitRequest" name="countOverridesTowardsLimitRequest"/>
+  </wsdl:message>
+  <wsdl:message name="listAllScenarioProgramsResponse">
+    <wsdl:part element="sch:listAllScenarioProgramsResponse" name="listAllScenarioProgramsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="decrementDeviceOverrideLimitResponse">
+    <wsdl:part element="sch:decrementDeviceOverrideLimitResponse" name="decrementDeviceOverrideLimitResponse"/>
+  </wsdl:message>
+  <wsdl:message name="cancelAllCurrentOverridesResponse">
+    <wsdl:part element="sch:cancelAllCurrentOverridesResponse" name="cancelAllCurrentOverridesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="totalOverriddenDevicesByProgramNameResponse">
+    <wsdl:part element="sch:totalOverriddenDevicesByProgramNameResponse" name="totalOverriddenDevicesByProgramNameResponse"/>
+  </wsdl:message>
+  <wsdl:message name="programControlHistoryResponse">
+    <wsdl:part element="sch:programControlHistoryResponse" name="programControlHistoryResponse"/>
+  </wsdl:message>
+  <wsdl:message name="programStatusResponse">
+    <wsdl:part element="sch:programStatusResponse" name="programStatusResponse"/>
+  </wsdl:message>
+  <wsdl:message name="prohibitConsumerOverridesResponse">
+    <wsdl:part element="sch:prohibitConsumerOverridesResponse" name="prohibitConsumerOverridesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="currentlyActiveProgramsRequest">
+    <wsdl:part element="sch:currentlyActiveProgramsRequest" name="currentlyActiveProgramsRequest"/>
+  </wsdl:message>
+  <wsdl:message name="overrideHistoryByAccountNumberRequest">
+    <wsdl:part element="sch:overrideHistoryByAccountNumberRequest" name="overrideHistoryByAccountNumberRequest"/>
+  </wsdl:message>
+  <wsdl:message name="resetOverrideCountBySerialNumberResponse">
+    <wsdl:part element="sch:resetOverrideCountBySerialNumberResponse" name="resetOverrideCountBySerialNumberResponse"/>
+  </wsdl:message>
+  <wsdl:message name="totalOverriddenDevicesByAccountNumberRequest">
+    <wsdl:part element="sch:totalOverriddenDevicesByAccountNumberRequest" name="totalOverriddenDevicesByAccountNumberRequest"/>
+  </wsdl:message>
+  <wsdl:message name="programControlHistoryRequest">
+    <wsdl:part element="sch:programControlHistoryRequest" name="programControlHistoryRequest"/>
+  </wsdl:message>
+  <wsdl:message name="scenarioStopRequest">
+    <wsdl:part element="sch:scenarioStopRequest" name="scenarioStopRequest"/>
+  </wsdl:message>
+  <wsdl:message name="scenarioStopResponse">
+    <wsdl:part element="sch:scenarioStopResponse" name="scenarioStopResponse"/>
+  </wsdl:message>
+  <wsdl:message name="scenarioStartResponse">
+    <wsdl:part element="sch:scenarioStartResponse" name="scenarioStartResponse"/>
+  </wsdl:message>
+  <wsdl:message name="programStopResponse">
+    <wsdl:part element="sch:programStopResponse" name="programStopResponse"/>
+  </wsdl:message>
+  <wsdl:message name="listAllScenarioProgramsRequest">
+    <wsdl:part element="sch:listAllScenarioProgramsRequest" name="listAllScenarioProgramsRequest"/>
+  </wsdl:message>
+  <wsdl:message name="extraHeader">
+    <wsdl:part element="sch:extra" name="extra"/>
+  </wsdl:message>
+  <wsdl:message name="programStopRequest">
+    <wsdl:part element="sch:programStopRequest" name="programStopRequest"/>
+  </wsdl:message>
+  <wsdl:message name="cancelScheduledOverrideResponse">
+    <wsdl:part element="sch:cancelScheduledOverrideResponse" name="cancelScheduledOverrideResponse"/>
+  </wsdl:message>
+  <wsdl:message name="overrideHistoryByProgramNameRequest">
+    <wsdl:part element="sch:overrideHistoryByProgramNameRequest" name="overrideHistoryByProgramNameRequest"/>
+  </wsdl:message>
+  <wsdl:message name="totalOverriddenDevicesByAccountNumberResponse">
+    <wsdl:part element="sch:totalOverriddenDevicesByAccountNumberResponse" name="totalOverriddenDevicesByAccountNumberResponse"/>
+  </wsdl:message>
+  <wsdl:message name="listScenarioProgramsResponse">
+    <wsdl:part element="sch:listScenarioProgramsResponse" name="listScenarioProgramsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="currentlyActiveProgramsResponse">
+    <wsdl:part element="sch:currentlyActiveProgramsResponse" name="currentlyActiveProgramsResponse"/>
+  </wsdl:message>
+  <wsdl:message name="cancelActiveOverrideResponse">
+    <wsdl:part element="sch:cancelActiveOverrideResponse" name="cancelActiveOverrideResponse"/>
+  </wsdl:message>
+  <wsdl:message name="decrementDeviceOverrideLimitRequest">
+    <wsdl:part element="sch:decrementDeviceOverrideLimitRequest" name="decrementDeviceOverrideLimitRequest"/>
+  </wsdl:message>
+  <wsdl:message name="yukonUserHeader">
+    <wsdl:part element="sch:yukonUser" name="yukonUser"/>
+  </wsdl:message>
+  <wsdl:portType name="loadManagementPort">
+    <wsdl:operation name="cancelScheduledOverride">
+      <wsdl:input message="tns:cancelScheduledOverrideRequest" name="cancelScheduledOverrideRequest"/>
+      <wsdl:output message="tns:cancelScheduledOverrideResponse" name="cancelScheduledOverrideResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="programStop">
+      <wsdl:input message="tns:programStopRequest" name="programStopRequest"/>
+      <wsdl:output message="tns:programStopResponse" name="programStopResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="currentlyActivePrograms">
+      <wsdl:input message="tns:currentlyActiveProgramsRequest" name="currentlyActiveProgramsRequest"/>
+      <wsdl:output message="tns:currentlyActiveProgramsResponse" name="currentlyActiveProgramsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="cancelActiveOverride">
+      <wsdl:input message="tns:cancelActiveOverrideRequest" name="cancelActiveOverrideRequest"/>
+      <wsdl:output message="tns:cancelActiveOverrideResponse" name="cancelActiveOverrideResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="totalOverriddenDevicesByAccountNumber">
+      <wsdl:input message="tns:totalOverriddenDevicesByAccountNumberRequest" name="totalOverriddenDevicesByAccountNumberRequest"/>
+      <wsdl:output message="tns:totalOverriddenDevicesByAccountNumberResponse" name="totalOverriddenDevicesByAccountNumberResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="overrideHistoryByAccountNumber">
+      <wsdl:input message="tns:overrideHistoryByAccountNumberRequest" name="overrideHistoryByAccountNumberRequest"/>
+      <wsdl:output message="tns:overrideHistoryByAccountNumberResponse" name="overrideHistoryByAccountNumberResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="totalOverriddenDevicesByProgramName">
+      <wsdl:input message="tns:totalOverriddenDevicesByProgramNameRequest" name="totalOverriddenDevicesByProgramNameRequest"/>
+      <wsdl:output message="tns:totalOverriddenDevicesByProgramNameResponse" name="totalOverriddenDevicesByProgramNameResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="listAllScenarioPrograms">
+      <wsdl:input message="tns:listAllScenarioProgramsRequest" name="listAllScenarioProgramsRequest"/>
+      <wsdl:output message="tns:listAllScenarioProgramsResponse" name="listAllScenarioProgramsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="programStatus">
+      <wsdl:input message="tns:programStatusRequest" name="programStatusRequest"/>
+      <wsdl:output message="tns:programStatusResponse" name="programStatusResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="programStart">
+      <wsdl:input message="tns:programStartRequest" name="programStartRequest"/>
+      <wsdl:output message="tns:programStartResponse" name="programStartResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="listScenarioPrograms">
+      <wsdl:input message="tns:listScenarioProgramsRequest" name="listScenarioProgramsRequest"/>
+      <wsdl:output message="tns:listScenarioProgramsResponse" name="listScenarioProgramsResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="prohibitConsumerOverrides">
+      <wsdl:input message="tns:prohibitConsumerOverridesRequest" name="prohibitConsumerOverridesRequest"/>
+      <wsdl:output message="tns:prohibitConsumerOverridesResponse" name="prohibitConsumerOverridesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="overrideHistoryByProgramName">
+      <wsdl:input message="tns:overrideHistoryByProgramNameRequest" name="overrideHistoryByProgramNameRequest"/>
+      <wsdl:output message="tns:overrideHistoryByProgramNameResponse" name="overrideHistoryByProgramNameResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="override">
+      <wsdl:input message="tns:overrideRequest" name="overrideRequest"/>
+      <wsdl:output message="tns:overrideResponse" name="overrideResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="cancelAllCurrentOverrides">
+      <wsdl:input message="tns:cancelAllCurrentOverridesRequest" name="cancelAllCurrentOverridesRequest"/>
+      <wsdl:output message="tns:cancelAllCurrentOverridesResponse" name="cancelAllCurrentOverridesResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="resetOverrideCountBySerialNumber">
+      <wsdl:input message="tns:resetOverrideCountBySerialNumberRequest" name="resetOverrideCountBySerialNumberRequest"/>
+      <wsdl:output message="tns:resetOverrideCountBySerialNumberResponse" name="resetOverrideCountBySerialNumberResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="scenarioStart">
+      <wsdl:input message="tns:scenarioStartRequest" name="scenarioStartRequest"/>
+      <wsdl:output message="tns:scenarioStartResponse" name="scenarioStartResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="scenarioStop">
+      <wsdl:input message="tns:scenarioStopRequest" name="scenarioStopRequest"/>
+      <wsdl:output message="tns:scenarioStopResponse" name="scenarioStopResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="programControlHistory">
+      <wsdl:input message="tns:programControlHistoryRequest" name="programControlHistoryRequest"/>
+      <wsdl:output message="tns:programControlHistoryResponse" name="programControlHistoryResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="countOverridesTowardsLimit">
+      <wsdl:input message="tns:countOverridesTowardsLimitRequest" name="countOverridesTowardsLimitRequest"/>
+      <wsdl:output message="tns:countOverridesTowardsLimitResponse" name="countOverridesTowardsLimitResponse"/>
+    </wsdl:operation>
+    <wsdl:operation name="decrementDeviceOverrideLimit">
+      <wsdl:input message="tns:decrementDeviceOverrideLimitRequest" name="decrementDeviceOverrideLimitRequest"/>
+      <wsdl:output message="tns:decrementDeviceOverrideLimitResponse" name="decrementDeviceOverrideLimitResponse"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="loadManagementPortSoap11" type="tns:loadManagementPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="cancelScheduledOverride">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="cancelScheduledOverrideRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="cancelScheduledOverrideResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="programStop">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="programStopRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="programStopResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="currentlyActivePrograms">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="currentlyActiveProgramsRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="currentlyActiveProgramsResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelActiveOverride">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="cancelActiveOverrideRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="cancelActiveOverrideResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="totalOverriddenDevicesByAccountNumber">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="totalOverriddenDevicesByAccountNumberRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="totalOverriddenDevicesByAccountNumberResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="overrideHistoryByAccountNumber">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="overrideHistoryByAccountNumberRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="overrideHistoryByAccountNumberResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="totalOverriddenDevicesByProgramName">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="totalOverriddenDevicesByProgramNameRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="totalOverriddenDevicesByProgramNameResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listAllScenarioPrograms">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="listAllScenarioProgramsRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="listAllScenarioProgramsResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="programStatus">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="programStatusRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="programStatusResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="programStart">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="programStartRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="programStartResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="listScenarioPrograms">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="listScenarioProgramsRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="listScenarioProgramsResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="prohibitConsumerOverrides">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="prohibitConsumerOverridesRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="prohibitConsumerOverridesResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="overrideHistoryByProgramName">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="overrideHistoryByProgramNameRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="overrideHistoryByProgramNameResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="override">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="overrideRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="overrideResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="cancelAllCurrentOverrides">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="cancelAllCurrentOverridesRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="cancelAllCurrentOverridesResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="resetOverrideCountBySerialNumber">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="resetOverrideCountBySerialNumberRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="resetOverrideCountBySerialNumberResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="scenarioStart">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="scenarioStartRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="scenarioStartResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="scenarioStop">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="scenarioStopRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="scenarioStopResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="programControlHistory">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="programControlHistoryRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="programControlHistoryResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="countOverridesTowardsLimit">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="countOverridesTowardsLimitRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="countOverridesTowardsLimitResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="decrementDeviceOverrideLimit">
+      <soap:operation soapAction=""/>
+      <wsdl:input name="decrementDeviceOverrideLimitRequest">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:input>
+      <wsdl:output name="decrementDeviceOverrideLimitResponse">
+        <soap:body use="literal"/>
+        <soap:header message="tns:extraHeader" part="extra" use="literal"></soap:header>
+        <soap:header message="tns:yukonUserHeader" part="yukonUser" use="literal"></soap:header>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="loadManagementService">
+    <wsdl:port binding="tns:loadManagementPortSoap11" name="loadManagementPortSoap11">
+      <soap:address location="http://10.106.33.143:8081/api/soap"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="cancelActiveOverride" bindingOperationName="cancelActiveOverride" type="Request-Response" outputName="cancelActiveOverrideResponse" inputName="cancelActiveOverrideRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:cancelActiveOverrideRequest version="?">
+         <api:accountNumber>?</api:accountNumber>
+         <api:serialNumber>?</api:serialNumber>
+      </api:cancelActiveOverrideRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/cancelActiveOverrideRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="cancelAllCurrentOverrides" bindingOperationName="cancelAllCurrentOverrides" type="Request-Response" outputName="cancelAllCurrentOverridesResponse" inputName="cancelAllCurrentOverridesRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:cancelAllCurrentOverridesRequest version="?">
+         <!--Optional:-->
+         <api:programName>?</api:programName>
+      </api:cancelAllCurrentOverridesRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/cancelAllCurrentOverridesRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="cancelScheduledOverride" bindingOperationName="cancelScheduledOverride" type="Request-Response" outputName="cancelScheduledOverrideResponse" inputName="cancelScheduledOverrideRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:cancelScheduledOverrideRequest version="?">
+         <api:accountNumber>?</api:accountNumber>
+         <api:serialNumber>?</api:serialNumber>
+      </api:cancelScheduledOverrideRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/cancelScheduledOverrideRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="countOverridesTowardsLimit" bindingOperationName="countOverridesTowardsLimit" type="Request-Response" outputName="countOverridesTowardsLimitResponse" inputName="countOverridesTowardsLimitRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:countOverridesTowardsLimitRequest version="?">
+         <!--Optional:-->
+         <api:programName>?</api:programName>
+      </api:countOverridesTowardsLimitRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/countOverridesTowardsLimitRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="currentlyActivePrograms" bindingOperationName="currentlyActivePrograms" type="Request-Response" outputName="currentlyActiveProgramsResponse" inputName="currentlyActiveProgramsRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:currentlyActiveProgramsRequest version="?"/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/currentlyActiveProgramsRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="decrementDeviceOverrideLimit" bindingOperationName="decrementDeviceOverrideLimit" type="Request-Response" outputName="decrementDeviceOverrideLimitResponse" inputName="decrementDeviceOverrideLimitRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:decrementDeviceOverrideLimitRequest version="?">
+         <api:accountNumber>?</api:accountNumber>
+         <api:serialNumber>?</api:serialNumber>
+         <!--Optional:-->
+         <api:loadProgramName>?</api:loadProgramName>
+      </api:decrementDeviceOverrideLimitRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/decrementDeviceOverrideLimitRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="listAllScenarioPrograms" bindingOperationName="listAllScenarioPrograms" type="Request-Response" outputName="listAllScenarioProgramsResponse" inputName="listAllScenarioProgramsRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:listAllScenarioProgramsRequest version="?">
+         <!--Optional:-->
+         <api:scenarioName>?</api:scenarioName>
+      </api:listAllScenarioProgramsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/listAllScenarioProgramsRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="listScenarioPrograms" bindingOperationName="listScenarioPrograms" type="Request-Response" outputName="listScenarioProgramsResponse" inputName="listScenarioProgramsRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:listScenarioProgramsRequest version="?">
+         <api:scenarioName>?</api:scenarioName>
+      </api:listScenarioProgramsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/listScenarioProgramsRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="override" bindingOperationName="override" type="Request-Response" outputName="overrideResponse" inputName="overrideRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:overrideRequest version="?">
+         <api:accountNumber>?</api:accountNumber>
+         <api:serialNumber>?</api:serialNumber>
+         <!--Optional:-->
+         <api:startDate>?</api:startDate>
+         <api:durationInHours>?</api:durationInHours>
+         <!--Optional:-->
+         <api:counts>?</api:counts>
+      </api:overrideRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/overrideRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="overrideHistoryByAccountNumber" bindingOperationName="overrideHistoryByAccountNumber" type="Request-Response" outputName="overrideHistoryByAccountNumberResponse" inputName="overrideHistoryByAccountNumberRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:overrideHistoryByAccountNumberRequest version="?">
+         <api:accountNumber>?</api:accountNumber>
+         <api:startDateTime>?</api:startDateTime>
+         <api:stopDateTime>?</api:stopDateTime>
+         <!--Optional:-->
+         <api:programName>?</api:programName>
+      </api:overrideHistoryByAccountNumberRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/overrideHistoryByAccountNumberRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="overrideHistoryByProgramName" bindingOperationName="overrideHistoryByProgramName" type="Request-Response" outputName="overrideHistoryByProgramNameResponse" inputName="overrideHistoryByProgramNameRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:overrideHistoryByProgramNameRequest version="?">
+         <api:programName>?</api:programName>
+         <api:startDateTime>?</api:startDateTime>
+         <api:stopDateTime>?</api:stopDateTime>
+      </api:overrideHistoryByProgramNameRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/overrideHistoryByProgramNameRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="programControlHistory" bindingOperationName="programControlHistory" type="Request-Response" outputName="programControlHistoryResponse" inputName="programControlHistoryRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:programControlHistoryRequest version="?">
+         <!--Optional:-->
+         <api:programName>?</api:programName>
+         <api:startDateTime>?</api:startDateTime>
+         <!--Optional:-->
+         <api:stopDateTime>?</api:stopDateTime>
+      </api:programControlHistoryRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/programControlHistoryRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="programStart" bindingOperationName="programStart" type="Request-Response" outputName="programStartResponse" inputName="programStartRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:programStartRequest version="?">
+         <api:programName>?</api:programName>
+         <!--Optional:-->
+         <api:startDateTime>?</api:startDateTime>
+         <!--Optional:-->
+         <api:stopDateTime>?</api:stopDateTime>
+         <!--Optional:-->
+         <api:gearName>?</api:gearName>
+      </api:programStartRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/programStartRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="programStatus" bindingOperationName="programStatus" type="Request-Response" outputName="programStatusResponse" inputName="programStatusRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:programStatusRequest version="?">
+         <api:programName>?</api:programName>
+      </api:programStatusRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/programStatusRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="programStop" bindingOperationName="programStop" type="Request-Response" outputName="programStopResponse" inputName="programStopRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:programStopRequest version="?">
+         <api:programName>?</api:programName>
+         <!--Optional:-->
+         <api:stopDateTime>?</api:stopDateTime>
+      </api:programStopRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/programStopRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="prohibitConsumerOverrides" bindingOperationName="prohibitConsumerOverrides" type="Request-Response" outputName="prohibitConsumerOverridesResponse" inputName="prohibitConsumerOverridesRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:prohibitConsumerOverridesRequest version="?">
+         <!--Optional:-->
+         <api:programName>?</api:programName>
+         <!--Optional:-->
+         <api:action>?</api:action>
+      </api:prohibitConsumerOverridesRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/prohibitConsumerOverridesRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="resetOverrideCountBySerialNumber" bindingOperationName="resetOverrideCountBySerialNumber" type="Request-Response" outputName="resetOverrideCountBySerialNumberResponse" inputName="resetOverrideCountBySerialNumberRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:resetOverrideCountBySerialNumberRequest version="?">
+         <api:accountNumber>?</api:accountNumber>
+         <api:serialNumber>?</api:serialNumber>
+      </api:resetOverrideCountBySerialNumberRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/resetOverrideCountBySerialNumberRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="scenarioStart" bindingOperationName="scenarioStart" type="Request-Response" outputName="scenarioStartResponse" inputName="scenarioStartRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:scenarioStartRequest version="?">
+         <api:scenarioName>?</api:scenarioName>
+         <!--Optional:-->
+         <api:startDateTime>?</api:startDateTime>
+         <!--Optional:-->
+         <api:stopDateTime>?</api:stopDateTime>
+         <!--Optional:-->
+         <api:waitForResponse>?</api:waitForResponse>
+      </api:scenarioStartRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/scenarioStartRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="scenarioStop" bindingOperationName="scenarioStop" type="Request-Response" outputName="scenarioStopResponse" inputName="scenarioStopRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:scenarioStopRequest version="?">
+         <api:scenarioName>?</api:scenarioName>
+         <!--Optional:-->
+         <api:stopDateTime>?</api:stopDateTime>
+         <!--Optional:-->
+         <api:waitForResponse>?</api:waitForResponse>
+      </api:scenarioStopRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/scenarioStopRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="totalOverriddenDevicesByAccountNumber" bindingOperationName="totalOverriddenDevicesByAccountNumber" type="Request-Response" outputName="totalOverriddenDevicesByAccountNumberResponse" inputName="totalOverriddenDevicesByAccountNumberRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:totalOverriddenDevicesByAccountNumberRequest version="?">
+         <api:accountNumber>?</api:accountNumber>
+         <api:startDateTime>?</api:startDateTime>
+         <api:stopDateTime>?</api:stopDateTime>
+         <!--Optional:-->
+         <api:programName>?</api:programName>
+      </api:totalOverriddenDevicesByAccountNumberRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/totalOverriddenDevicesByAccountNumberRequest"/></con:call></con:operation><con:operation isOneWay="false" action="" name="totalOverriddenDevicesByProgramName" bindingOperationName="totalOverriddenDevicesByProgramName" type="Request-Response" outputName="totalOverriddenDevicesByProgramNameResponse" inputName="totalOverriddenDevicesByProgramNameRequest" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>?</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:totalOverriddenDevicesByProgramNameRequest version="?">
+         <api:programName>?</api:programName>
+         <api:startDateTime>?</api:startDateTime>
+         <api:stopDateTime>?</api:stopDateTime>
+      </api:totalOverriddenDevicesByProgramNameRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://yukon.cannontech.com/service/loadManagementPort/totalOverriddenDevicesByProgramNameRequest"/></con:call></con:operation></con:interface><con:testSuite name="LoadManagement TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="cancelActiveOverride TestCase" searchProperties="true" id="27ce3f9f-fef4-4eb9-982a-52d8a26b29f3"><con:settings/><con:testStep type="request" name="cancelActiveOverride"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>cancelActiveOverride</con:operation><con:request name="cancelActiveOverride"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:cancelActiveOverrideRequest version="1.0">
+         <api:accountNumber>1</api:accountNumber>
+         <api:serialNumber>1</api:serialNumber>
+      </api:cancelActiveOverrideRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/cancelActiveOverrideRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="cancelAllCurrentOverrides TestCase" searchProperties="true" id="5a10cda7-50b1-42c9-a6ea-4c9f2c5ada00"><con:settings/><con:testStep type="request" name="cancelAllCurrentOverrides"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>cancelAllCurrentOverrides</con:operation><con:request name="cancelAllCurrentOverrides"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:cancelAllCurrentOverridesRequest version="1.0">
+         <!--Optional:-->
+         
+      <api:programName>1</api:programName></api:cancelAllCurrentOverridesRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/cancelAllCurrentOverridesRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="cancelScheduledOverride TestCase" searchProperties="true" id="bc0e6840-60b1-43d3-a38a-19b704a65c70"><con:settings/><con:testStep type="request" name="cancelScheduledOverride"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>cancelScheduledOverride</con:operation><con:request name="cancelScheduledOverride"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:cancelScheduledOverrideRequest version="1.0">
+         <api:accountNumber>1</api:accountNumber>
+         <api:serialNumber>1</api:serialNumber>
+      </api:cancelScheduledOverrideRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/cancelScheduledOverrideRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="countOverridesTowardsLimit TestCase" searchProperties="true" id="555795a8-db67-4f05-9fd5-f908f361538d"><con:settings/><con:testStep type="request" name="countOverridesTowardsLimit"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>countOverridesTowardsLimit</con:operation><con:request name="countOverridesTowardsLimit"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:countOverridesTowardsLimitRequest version="1.0">
+         <!--Optional:-->
+         
+      <api:programName>1</api:programName></api:countOverridesTowardsLimitRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/countOverridesTowardsLimitRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="currentlyActivePrograms TestCase" searchProperties="true" id="eb4d7235-a9b6-4812-88d0-3d0089674af1"><con:settings/><con:testStep type="request" name="currentlyActivePrograms"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>currentlyActivePrograms</con:operation><con:request name="currentlyActivePrograms"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:currentlyActiveProgramsRequest version="1.0">1</api:currentlyActiveProgramsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/currentlyActiveProgramsRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="decrementDeviceOverrideLimit TestCase" searchProperties="true" id="823de4ba-1e2b-424c-ab6d-0d3ad26081d1"><con:settings/><con:testStep type="request" name="decrementDeviceOverrideLimit"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>decrementDeviceOverrideLimit</con:operation><con:request name="decrementDeviceOverrideLimit"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:decrementDeviceOverrideLimitRequest version="1.0">
+         <api:accountNumber>1</api:accountNumber>
+         <api:serialNumber>1</api:serialNumber><api:loadProgramName>1</api:loadProgramName>
+         <!--Optional:-->
+         
+      </api:decrementDeviceOverrideLimitRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/decrementDeviceOverrideLimitRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="listAllScenarioPrograms TestCase" searchProperties="true" id="5b5ec763-ea0b-4956-809f-4a8916fb36db"><con:settings/><con:testStep type="request" name="listAllScenarioPrograms"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>listAllScenarioPrograms</con:operation><con:request name="listAllScenarioPrograms"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:listAllScenarioProgramsRequest version="1.0">
+         <!--Optional:-->
+         
+      <api:scenarioName>1</api:scenarioName></api:listAllScenarioProgramsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/listAllScenarioProgramsRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="listScenarioPrograms TestCase" searchProperties="true" id="0937b304-bf12-410f-8270-21a810fcc543"><con:settings/><con:testStep type="request" name="listScenarioPrograms"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>listScenarioPrograms</con:operation><con:request name="listScenarioPrograms"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:listScenarioProgramsRequest version="1.0">
+         <api:scenarioName>1</api:scenarioName>
+      </api:listScenarioProgramsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/listScenarioProgramsRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="override TestCase" searchProperties="true" id="e284e8b6-cda1-4044-b961-03b7f455a4fc"><con:settings/><con:testStep type="request" name="override"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>override</con:operation><con:request name="override"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:overrideRequest version="1.0">
+         <api:accountNumber>1</api:accountNumber>
+         <api:serialNumber>1</api:serialNumber>
+         <!--Optional:-->
+         <api:startDate>2012-04-02T00:00:00.000</api:startDate>
+         <api:durationInHours>1</api:durationInHours>
+         <!--Optional:-->
+         <api:counts>true</api:counts>
+      </api:overrideRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/overrideRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="overrideHistoryByAccountNumber TestCase" searchProperties="true" id="dd7808a4-f1b8-46eb-a322-322ab8f01124"><con:settings/><con:testStep type="request" name="overrideHistoryByAccountNumber"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>overrideHistoryByAccountNumber</con:operation><con:request name="overrideHistoryByAccountNumber"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:overrideHistoryByAccountNumberRequest version="1.0">
+         <api:accountNumber>1</api:accountNumber>
+         <api:startDateTime>2012-04-05T00:00:00.000-05:00</api:startDateTime>
+         <api:stopDateTime>2012-04-06T00:00:00.000-05:00</api:stopDateTime><api:programName>1</api:programName>
+         <!--Optional:-->
+         
+      </api:overrideHistoryByAccountNumberRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/overrideHistoryByAccountNumberRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="overrideHistoryByProgramName TestCase" searchProperties="true" id="d6ef0087-c993-48d1-b489-2db45e3b1c81"><con:settings/><con:testStep type="request" name="overrideHistoryByProgramName"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>overrideHistoryByProgramName</con:operation><con:request name="overrideHistoryByProgramName"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:overrideHistoryByProgramNameRequest version="1.0">
+         <api:programName>1</api:programName>
+         <api:startDateTime>2012-04-05T00:00:00.000-05:00</api:startDateTime>
+         <api:stopDateTime>2012-04-06T00:00:00.000-05:00</api:stopDateTime>
+      </api:overrideHistoryByProgramNameRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/overrideHistoryByProgramNameRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="programControlHistory TestCase" searchProperties="true" id="a49510f8-6fee-46f7-8560-bbb5bcf876bc"><con:settings/><con:testStep type="request" name="programControlHistory"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>programControlHistory</con:operation><con:request name="programControlHistory"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:programControlHistoryRequest version="1.0">
+         <!--Optional:-->
+         
+         <api:startDateTime>2012-04-05T00:00:00.000-05:00</api:startDateTime>
+         <!--Optional:-->
+         <api:programName>1</api:programName><api:stopDateTime>2012-04-06T00:00:00.000-05:00</api:stopDateTime>
+      </api:programControlHistoryRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/programControlHistoryRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="programStart TestCase" searchProperties="true" id="8cc354ad-a29c-4aee-a180-c511d4ab6993"><con:settings/><con:testStep type="request" name="programStart"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>programStart</con:operation><con:request name="programStart"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:programStartRequest version="1.0">
+         <api:programName>1</api:programName>
+         <!--Optional:-->
+         <api:startDateTime>2012-04-05T00:00:00.000-05:00</api:startDateTime>
+         <!--Optional:-->
+         <api:stopDateTime>2012-04-06T00:00:00.000-05:00</api:stopDateTime><api:gearName>1</api:gearName>
+         <!--Optional:-->
+         
+      </api:programStartRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/programStartRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="programStatus TestCase" searchProperties="true" id="4fc82732-539a-4c97-9a54-e5b501d16090"><con:settings/><con:testStep type="request" name="programStatus"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>programStatus</con:operation><con:request name="programStatus"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:programStatusRequest version="1.0">
+         <api:programName>1</api:programName>
+      </api:programStatusRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/programStatusRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="programStop TestCase" searchProperties="true" id="e9a52a65-2776-443d-9a9b-d8678d86963c"><con:settings/><con:testStep type="request" name="programStop"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>programStop</con:operation><con:request name="programStop"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:programStopRequest version="1.0">
+         <api:programName>1</api:programName>
+         <!--Optional:-->
+         <api:stopDateTime>2012-04-05T00:00:00.000-05:00</api:stopDateTime>
+      </api:programStopRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/programStopRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="prohibitConsumerOverrides TestCase" searchProperties="true" id="6ad55868-f468-4f17-b1e5-103d8b6eaf85"><con:settings/><con:testStep type="request" name="prohibitConsumerOverrides"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>prohibitConsumerOverrides</con:operation><con:request name="prohibitConsumerOverrides"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:prohibitConsumerOverridesRequest version="1.0">
+         <!--Optional:-->
+         
+         <!--Optional:-->
+         
+      <api:action>ENABLED</api:action><api:programName>1</api:programName></api:prohibitConsumerOverridesRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" disabled="true"/><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/prohibitConsumerOverridesRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="resetOverrideCountBySerialNumber TestCase" searchProperties="true" id="cfd2230b-249a-4fc6-9142-e3b027049f6a"><con:settings/><con:testStep type="request" name="resetOverrideCountBySerialNumber"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>resetOverrideCountBySerialNumber</con:operation><con:request name="resetOverrideCountBySerialNumber"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:resetOverrideCountBySerialNumberRequest version="1.0">
+         <api:accountNumber>1</api:accountNumber>
+         <api:serialNumber>1</api:serialNumber>
+      </api:resetOverrideCountBySerialNumberRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/resetOverrideCountBySerialNumberRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="scenarioStart TestCase" searchProperties="true" id="d862d6bc-1273-4ddf-ac65-dd4bc4a192c0"><con:settings/><con:testStep type="request" name="scenarioStart"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>scenarioStart</con:operation><con:request name="scenarioStart"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:scenarioStartRequest version="1.0">
+         <api:scenarioName>1</api:scenarioName>
+         <!--Optional:-->
+         <api:startDateTime>2012-04-05T00:00:00.000-05:00</api:startDateTime>
+         <!--Optional:-->
+         <api:stopDateTime>2012-04-05T00:00:00.000-05:00</api:stopDateTime>
+         <!--Optional:-->
+         <api:waitForResponse>true</api:waitForResponse>
+      </api:scenarioStartRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/scenarioStartRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="scenarioStop TestCase" searchProperties="true" id="b1c3cf65-efc2-412b-b073-b7981b7b989a"><con:settings/><con:testStep type="request" name="scenarioStop"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>scenarioStop</con:operation><con:request name="scenarioStop"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:scenarioStopRequest version="1.0">
+         <api:scenarioName>1</api:scenarioName>
+         <!--Optional:-->
+         <api:stopDateTime>2012-04-05T00:00:00.000-05:00</api:stopDateTime>
+         <!--Optional:-->
+         <api:waitForResponse>false</api:waitForResponse>
+      </api:scenarioStopRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/scenarioStopRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="totalOverriddenDevicesByAccountNumber TestCase" searchProperties="true" id="7aa2dc26-70d4-4d3f-ab66-49580f282743"><con:settings/><con:testStep type="request" name="totalOverriddenDevicesByAccountNumber"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>totalOverriddenDevicesByAccountNumber</con:operation><con:request name="totalOverriddenDevicesByAccountNumber"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:totalOverriddenDevicesByAccountNumberRequest version="1.0">
+         <api:accountNumber>1</api:accountNumber>
+         <api:startDateTime>2012-04-05T00:00:00.000-05:00</api:startDateTime>
+         <api:stopDateTime>2012-04-05T00:00:00.000-05:00</api:stopDateTime><api:programName>1</api:programName>
+         <!--Optional:-->
+         
+      </api:totalOverriddenDevicesByAccountNumberRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/totalOverriddenDevicesByAccountNumberRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="totalOverriddenDevicesByProgramName TestCase" searchProperties="true" id="bdd9bfef-b56f-474b-9fac-a233169f6a34"><con:settings/><con:testStep type="request" name="totalOverriddenDevicesByProgramName"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>loadManagementPortSoap11</con:interface><con:operation>totalOverriddenDevicesByProgramName</con:operation><con:request name="totalOverriddenDevicesByProgramName"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.106.33.143:8081/api/soap</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:api="http://yukon.cannontech.com/api">
+   <soapenv:Header>
+      <api:yukonUser>yukon</api:yukonUser>
+      <api:extra>
+         <!--You may enter ANY elements at this point-->
+      </api:extra>
+   </soapenv:Header>
+   <soapenv:Body>
+      <api:totalOverriddenDevicesByProgramNameRequest version="1.0">
+         <api:programName>1</api:programName>
+         <api:startDateTime>2012-04-05T00:00:00.000-05:00</api:startDateTime>
+         <api:stopDateTime>2012-04-05T00:00:00.000-05:00</api:stopDateTime>
+      </api:totalOverriddenDevicesByProgramNameRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:assertion type="Schema Compliance" name="Schema Compliance"><con:configuration><definition/></con:configuration></con:assertion><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://yukon.cannontech.com/service/loadManagementPort/totalOverriddenDevicesByProgramNameRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:requirements/><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:reporting><con:reportTemplates/><con:xmlTemplates/><con:parameters/></con:reporting></con:soapui-project>
