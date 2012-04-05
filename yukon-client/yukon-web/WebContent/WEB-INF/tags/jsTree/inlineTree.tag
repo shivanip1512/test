@@ -83,13 +83,19 @@
 
         var args = {
             children: data,
-            minExpandLevel: 1,	//allow the top level elements (visually - dynatree usually has 1 hidden root) to expand/collapse
+            minExpandLevel: 2,	//prevent the top level elements (visually - dynatree has 1 hidden root by default) from expanding/collapsing
             onPostInit: function(isReloading, isError){
+            	//show the initially selected item
                 if(initially_select){
                     this.selectKey(initially_select);
                     this.getNodeByKey(initially_select).makeVisible();
+                //or open all of the first level children
+                }else{
+                	var root = this.getRoot();
+                	for(i=0; i<root.childList.length; i++){
+                		root.childList[i].expand(true);
+               		}
                 }
-
             },
 
             <c:choose>
@@ -121,7 +127,6 @@
             args[key] = callbacks[key];
         }
         </c:if>
-
         jQuery(document.getElementById("${id}")).dynatree(args);
     });
 </script>

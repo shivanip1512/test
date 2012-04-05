@@ -13,8 +13,12 @@
 <script>
     //reload the tree on ajax refresh
     jQuery(function(){
-        jQuery("#deviceGroupWidgetPopupTree").dynatree({children: ${groupDataJson}});
-        jQuery("#deviceGroupWidgetPopupTree").dynatree('getTree').reload();
+    	//if you can come up with a better way to determine if the tree has been intialzed, fix this!
+    	var root = jQuery("#deviceGroupWidgetPopupTree").dynatree('getRoot');
+    	if(typeof(root.getChildren) != 'undefined'){
+	        jQuery("#deviceGroupWidgetPopupTree").dynatree({children: ${groupDataJson}});
+	        jQuery("#deviceGroupWidgetPopupTree").dynatree('getTree').reload();
+    	}
     });
 </script>
     
