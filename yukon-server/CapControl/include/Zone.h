@@ -18,8 +18,9 @@ public:
 
     static const std::string GangOperated;
 
-    typedef std::set<long>          IdSet;
-    typedef std::map<Phase, long>   PhaseIdMap;
+    typedef std::set<long>              IdSet;
+    typedef std::map<Phase, long>       PhaseIdMap;
+    typedef std::multimap<Phase, long>  PhaseToVoltagePointIds;
 
     Zone( const long Id,
           const long parentId,
@@ -49,7 +50,7 @@ public:
     IdSet getBankIds() const;
 
     void addPointId( const Phase phase, const long Id );
-    PhaseIdMap getPointIds() const;
+    PhaseToVoltagePointIds getPointIds() const;
 
     void addRegulatorId( const Phase phase, const long Id );
     PhaseIdMap getRegulatorIds() const;
@@ -66,7 +67,7 @@ private:
     IdSet _bankPaos;
 
     PhaseIdMap _regulatorIds;
-    PhaseIdMap _voltagePoints;
+    PhaseToVoltagePointIds _voltagePoints;
 };
 
 }

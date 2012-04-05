@@ -116,7 +116,7 @@ void Zone::addPointId( const Phase phase, const long Id )
 }
 
 
-Zone::PhaseIdMap Zone::getPointIds() const
+Zone::PhaseToVoltagePointIds Zone::getPointIds() const
 {
     return _voltagePoints;
 }

@@ -952,7 +952,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
             // Additional voltage points
 
-            for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getPointIds() )
+            for each ( const Zone::PhaseToVoltagePointIds::value_type & mapping in zone->getPointIds() )
             {
                 pointRequests.insert( PointRequest(mapping.second, OtherRequestType) );
             }
@@ -1699,7 +1699,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
                 // Other voltage points in this zone
 
-                for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getPointIds() )
+                for each ( const Zone::PhaseToVoltagePointIds::value_type & mapping in zone->getPointIds() )
                 {
                     //  if our zone is gang operated we grab all points despite their phase
                     //  if phase operated zone we grab only the points on the same phase as our regulator
