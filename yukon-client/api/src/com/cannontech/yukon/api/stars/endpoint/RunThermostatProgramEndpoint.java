@@ -86,11 +86,9 @@ public class RunThermostatProgramEndpoint {
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(runThermostatProgram, e, "UserNotAuthorized", "The user is not authorized to send text messages.");
             resp.addContent(fe);
-            return resp;
         } catch (FailedThermostatCommandException e) {
             Element fe = XMLFailureGenerator.generateFailure(runThermostatProgram, e, "RunProgramFailed", "The run program failed to send out.");
             resp.addContent(fe);
-            return resp;
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(runThermostatProgram, e, "OtherException", "An exception has been caught.");
             resp.addContent(fe);
