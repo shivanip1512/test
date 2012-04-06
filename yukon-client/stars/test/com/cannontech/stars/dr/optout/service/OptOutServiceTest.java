@@ -47,6 +47,7 @@ public class OptOutServiceTest extends EasyMockSupport {
     private static final DateTime date_One = dateTimeFormmater.parseDateTime("01/12/2012");
     private static final DateTime date_Two = dateTimeFormmater.parseDateTime("05/16/2012");
     private static final DateTime date_Three = dateTimeFormmater.parseDateTime("11/2/2012");
+    private static final DateTime date_Four = dateTimeFormmater.parseDateTime("01/12/2010");
 
     private static final RolePropertyDao rolePropertyDaoMock = new RolePropertyDaoImpl() {
         @Override
@@ -112,6 +113,18 @@ public class OptOutServiceTest extends EasyMockSupport {
         Assert.assertEquals(dateTimeFormmater.parseDateTime("04/1/2012").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
     }
 
+    /**
+     * Opt Out Limits   (--3----[3/4]------2--------[10/11]------)
+     * Intersection Date  |
+     */
+    @Test
+    public void testFindOptOutLimitInterval_StopMonthBeforeStartMonth_Four() {
+        OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_Four, centralTimeZone, residentialGroup_One);
+        
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("11/1/2009").toInstant(), findOptOutLimitInterval.getStart().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("04/1/2010").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
+    }
+    
     
     /**
      * Opt Out Limits   (        [4]------2--------[10]      ) 
