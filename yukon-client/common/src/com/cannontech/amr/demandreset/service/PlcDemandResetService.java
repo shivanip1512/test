@@ -4,10 +4,9 @@ import java.util.Set;
 
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.base.Predicate;
 
 public interface PlcDemandResetService {
-    public Predicate<YukonPao> validDeviceFunction();
+    <T extends YukonPao> Set<T> filterDevices(Set<T> devices);
 
     /**
      * Send a demand reset to the specified list of devices.  The caller should have filtered this

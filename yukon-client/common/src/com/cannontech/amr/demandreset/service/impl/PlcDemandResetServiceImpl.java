@@ -16,37 +16,24 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     private final static String COMMAND = "putvalue ied reset";
-    private final static Set<PaoType> validTypes =
-        ImmutableSet.of(PaoType.MCT430A,
-                        PaoType.MCT430A3,
-                        PaoType.MCT430S4,
-                        PaoType.MCT430SL,
-                        PaoType.MCT470);
-
-    private final static Predicate<YukonPao> isValidDevice = new Predicate<YukonPao>() {
-        @Override
-        public boolean apply(YukonPao pao) {
-            return validTypes.contains(pao.getPaoIdentifier().getPaoType());
-        }
-    };
 
     @Autowired private GroupCommandExecutor groupCommandExecutor;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     @Override
-    public Predicate<YukonPao> validDeviceFunction() {
-        return isValidDevice;
+    public <T extends YukonPao> Set<T> filterDevices(Set<T> devices) {
+        return paoDefinitionDao.filterPaosForTag(devices, PaoTag.PLC_DEMAND_RESET);
     }
 
     @Override

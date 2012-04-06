@@ -9,7 +9,6 @@ import com.cannontech.amr.demandreset.service.PlcDemandResetService;
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.collect.Sets;
 
 public class DemandResetPlcStrategy implements DemandResetStrategy {
     @Autowired private PlcDemandResetService plcDemandResetService;
@@ -21,7 +20,7 @@ public class DemandResetPlcStrategy implements DemandResetStrategy {
 
     @Override
     public <T extends YukonPao> Set<T> filterDevices(Set<T> devices) {
-        return Sets.filter(devices, plcDemandResetService.validDeviceFunction());
+        return plcDemandResetService.filterDevices(devices);
     }
 
     @Override

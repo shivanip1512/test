@@ -141,11 +141,14 @@ public interface PaoDefinitionDao {
     /**
      * Takes an iterable of type T and returns a new Iterable of items that support
      * the provided PaoTag.
-     * @param paos
-     * @param feature
-     * @return <T extends YukonPao> Iterable<T>
      */
     public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, PaoTag feature);
+
+    /**
+     * Takes an Set of type T and returns a new Set of items that support
+     * the provided PaoTag.
+     */
+    public <T extends YukonPao> Set<T> filterPaosForTag(Set<T> paos, PaoTag feature);
 
     /**
      * Method to return set of paoDefinitions that are creatable.

@@ -24,9 +24,6 @@
         <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/commander/commander">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/activemq-all-5.4.1.jar">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="java-output-path"/>
         <property name="context-root" value="api"/>
     </wb-module>

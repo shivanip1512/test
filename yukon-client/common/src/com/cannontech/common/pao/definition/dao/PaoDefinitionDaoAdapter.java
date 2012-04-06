@@ -143,6 +143,11 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     }
 
     @Override
+    public <T extends YukonPao> Set<T> filterPaosForTag(Set<T> paos, PaoTag feature) {
+        return null;
+    }
+
+    @Override
     public Set<PaoDefinition> getCreatablePaoDefinitions() {
         throw new UnsupportedOperationException("not implemented");
     }

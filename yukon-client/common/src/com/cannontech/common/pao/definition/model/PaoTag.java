@@ -52,6 +52,8 @@ public enum PaoTag {
 	ONE_WAY_DEVICE("Supports One-Way Communication"),
 	TWO_WAY_DEVICE("Supports Two-Way Communication"),
 	IPC_METER("IPC Meter"),
+	RFN_DEMAND_RESET("RFN Device Supporting Demand Reset"),
+	PLC_DEMAND_RESET("PLC Device Supporting Demand Reset"),
 	;
 
 	private final String description;

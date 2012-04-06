@@ -351,7 +351,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         return Collections.unmodifiableSet(paoTypes);
     }
-    
+
     @Override
     public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, final PaoTag tag) {
         Predicate<YukonPao> supportsTagPredicate = new Predicate<YukonPao>() {
@@ -363,7 +363,19 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         
         return Iterables.filter(paos, supportsTagPredicate);    
     }
-    
+
+    @Override
+    public <T extends YukonPao> Set<T> filterPaosForTag(Set<T> paos, final PaoTag tag) {
+        Predicate<YukonPao> supportsTagPredicate = new Predicate<YukonPao>() {
+            @Override
+            public boolean apply(YukonPao input) {
+                return isTagSupported(input.getPaoIdentifier().getPaoType(), tag);
+            }
+        };
+
+        return Sets.filter(paos, supportsTagPredicate);    
+    }
+
     @Override
     public long getValueForTagLong(PaoType paoType, PaoTag tag) {
         Number valueForTag = getConvertedValueForTag(paoType, tag, Number.class);

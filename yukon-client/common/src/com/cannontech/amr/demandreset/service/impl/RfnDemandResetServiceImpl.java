@@ -24,38 +24,26 @@ import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class RfnDemandResetServiceImpl implements RfnDemandResetService {
     private static final Logger log = YukonLogManager.getLogger(RfnDemandResetServiceImpl.class);
 
-    private final static Set<PaoType> validTypes =
-        ImmutableSet.of(PaoType.RFN420FD,
-                        PaoType.RFN420FX,
-                        PaoType.RFN430A3,
-                        PaoType.RFN420CL,
-                        PaoType.RFN420CD);
     private final static String queueName = "yukon.rr.obj.amr.rfn.MeterDemandResetRequest";
-
-    Predicate<YukonPao> isValidDeviceType = new Predicate<YukonPao>() {
-        @Override
-        public boolean apply(YukonPao pao) {
-            return validTypes.contains(pao.getPaoIdentifier().getPaoType());
-        }
-    };
 
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private RfnMeterDao rfnMeterDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     private RequestReplyTemplate<RfnMeterDemandResetReply> rrTemplate;
 
     @PostConstruct
@@ -69,7 +57,8 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService {
 
     @Override
     public <T extends YukonPao> Set<T> filterDevices(Set<T> devices) {
-        Set<T> devicesOfCorrectType = Sets.filter(devices, isValidDeviceType);
+        Set<T> devicesOfCorrectType =
+                paoDefinitionDao.filterPaosForTag(devices, PaoTag.RFN_DEMAND_RESET);
         final Map<? extends YukonPao, RfnMeterIdentifier> meterIdentifiersByPao =
                 rfnMeterDao.getMeterIdentifiersByPao(devicesOfCorrectType);
 

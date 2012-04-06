@@ -65,7 +65,17 @@
             <tag name="LOCATE_ROUTE"/>
         </tags>
     </pao>
-    
+    <pao id="SUPPORTS_RFN_DEMAND_RESET_TAG" abstract="true">
+        <tags>
+            <tag name="RFN_DEMAND_RESET"/>
+        </tags>
+    </pao>
+    <pao id="SUPPORTS_PLC_DEMAND_RESET_TAG" abstract="true">
+        <tags>
+            <tag name="PLC_DEMAND_RESET"/>
+        </tags>
+    </pao>
+
     <pao id="ROUTE_ENCRYPTION"  abstract="true">
         <tags>
             <tag name="ROUTE_ENCRYPTION"/>
@@ -223,7 +233,7 @@
 	</pao>
     
     <!-- MCT 470 -->
-    <pao id="MCT470" inherits="MCT_BASE, MCT_4XX_POLYPHASE_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG">
+    <pao id="MCT470" inherits="MCT_BASE, MCT_4XX_POLYPHASE_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PLC_DEMAND_RESET_TAG">
         <displayName>MCT-470</displayName>
         <points>
             <point type="PulseAccumulator" offset="1">
@@ -958,7 +968,7 @@
    </pao>
    
     <!-- MCT 430 BASE -->
-    <pao id="MCT_430_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG">
+    <pao id="MCT_430_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PLC_DEMAND_RESET_TAG">
 		<points>
             <point type="Analog" offset="1">
             	<init>true</init>
@@ -5701,7 +5711,7 @@
     <pao id="RFN420FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE, RFN_NET_METERING">
         <displayName>RFN-420fL</displayName>
     </pao>
-    <pao id="RFN420FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING">
+    <pao id="RFN420FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING, SUPPORTS_RFN_DEMAND_RESET_TAG">
         <displayName>RFN-420fX</displayName>
     </pao>
     <pao id="RFN420FD" inherits="RFN420FX, RFN_DISCONNECT">
@@ -5709,7 +5719,7 @@
     </pao>
     
     <!-- ITRON RFN METERS -->
-    <pao id="RFN420CL" inherits="RFN_EXTENDED, RFN_BASIC_VOLTAGE, RFN_TOU">
+    <pao id="RFN420CL" inherits="RFN_EXTENDED, RFN_BASIC_VOLTAGE, RFN_TOU, SUPPORTS_RFN_DEMAND_RESET_TAG">
         <displayName>RFN-420cL</displayName>
     </pao>
     <pao id="RFN420CD" inherits="RFN420CL, RFN_DISCONNECT">
@@ -5717,7 +5727,7 @@
     </pao>
 	
     <!-- ELSTER RFN METERS -->
-    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES, RFN_TOU, RFN_NET_METERING">
+    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES, RFN_TOU, RFN_NET_METERING, SUPPORTS_RFN_DEMAND_RESET_TAG">
         <displayName>RFN-430A3</displayName>
     </pao>
     
