@@ -1037,8 +1037,8 @@
             device in Yukon.
         </description>
         <troubleshooting>
-            Check with Network Manager database to see if this meter exists and is known to be
-            paired with any RF nodes.
+            Use Network Manager to see if this meter exists and is known to be paired with any RF
+            nodes.
         </troubleshooting>
     </error>
     <error code="1025">
@@ -1048,8 +1048,8 @@
             There isn't a gateway in Network Manager which is currently associated with this node.
         </description>
         <troubleshooting>
-            Check with Network Manager database to see which RF gateway is associated
-            with the RF node in question, if any.
+            Use Network Manager to see which RF gateway is associated with the RF node in
+            question, if any.
         </troubleshooting>
     </error>
     <error code="1026">
@@ -1059,7 +1059,7 @@
             An unexpected Network Manager error has occurred.
         </description>
         <troubleshooting>
-            Check with Network Manager server logs to identify the root cause of the failure.
+            Check Network Manager server logs to identify the root cause of the failure.
         </troubleshooting>
     </error>
     <error code="1027">
