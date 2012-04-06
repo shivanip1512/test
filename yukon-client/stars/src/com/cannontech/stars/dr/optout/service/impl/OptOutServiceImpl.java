@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -39,6 +40,7 @@ import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Result;
+import com.cannontech.common.util.OpenInterval;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.AccountNotFoundException;
@@ -666,6 +668,31 @@ public class OptOutServiceImpl implements OptOutService {
         List<OptOutLimit> optOutLimits = this.parseOptOutLimitString(optOutLimitString);
         
         return optOutLimits;
+    }
+   
+    @Override
+    public OpenInterval findOptOutLimitInterval(ReadableInstant intersectingInstant, DateTimeZone dateTimeZone, LiteYukonGroup residentialGroup) {
+        Validate.noNullElements(new Object[] {intersectingInstant, dateTimeZone, residentialGroup});
+        
+        List<OptOutLimit> optOutLimits = findCurrentOptOutLimit(residentialGroup);
+
+        for (OptOutLimit optOutLimit : optOutLimits) {
+            int stopDateMonth = intersectingInstant.get(DateTimeFieldType.monthOfYear());
+            if  (optOutLimit.isReleventMonth(stopDateMonth)){
+                DateTime optOutLimitStopDate = new DateTime(dateTimeZone).withMonthOfYear(optOutLimit.getStopMonth()).plusMonths(1).withDayOfMonth(1).toDateMidnight().toDateTime(dateTimeZone);
+                DateTime optOutLimitStartDate = new DateTime(dateTimeZone).withMonthOfYear(optOutLimit.getStartMonth()).withDayOfMonth(1).toDateMidnight().toDateTime(dateTimeZone);
+
+                // Adjust the start date to the year before if needed.
+                if (optOutLimit.getStartMonth() > optOutLimit.getStopMonth() && optOutLimitStopDate.isBefore(optOutLimitStartDate)) {
+                    optOutLimitStartDate = optOutLimitStartDate.minusYears(1);
+                }
+                        
+                OpenInterval optOutLimitInterval = OpenInterval.createClosed(optOutLimitStartDate, optOutLimitStopDate);
+                return optOutLimitInterval;
+            }
+        }
+        
+        return null;
     }
 
 	@Override

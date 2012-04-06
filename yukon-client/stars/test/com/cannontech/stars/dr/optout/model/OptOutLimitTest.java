@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.optout.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -8,14 +7,14 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
+
 public class OptOutLimitTest {
 
-    List<OptOutLimit> optOutLimits = null;
+    private static final List<OptOutLimit> optOutLimits = Lists.newArrayList();
 
     @Before
     public void setup() {
-        optOutLimits = new ArrayList<OptOutLimit>();
-
         OptOutLimit limit = new OptOutLimit();
         limit.setLimit(2);
         limit.setStartMonth(6);

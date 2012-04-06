@@ -3,9 +3,12 @@ package com.cannontech.stars.dr.optout.service;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
+import org.joda.time.ReadableInstant;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.util.OpenInterval;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
@@ -272,4 +275,15 @@ public interface OptOutService {
      * This method returns a list of all of the month spans and limits for a given login group.
      */
     public List<OptOutLimit> findCurrentOptOutLimit(LiteYukonGroup residentialGroup);
-}
+    
+    /**
+     * This method retrieves the opt out limit for the supplied intersecting date and login group.  This is important because opt out limits are
+     * based off of login groups not devices nor accounts.
+     * 
+     * @param intersectingDate - The date that will be used to create the bounds of the opt out.
+     * @param dateTimeZone - This is used to calculate the bounds correctly 
+     * @param residentialGroup - The residential group we'll get the opt out limits from.
+     * @return - This method returns null if it doesn't not exist
+     */
+    public OpenInterval findOptOutLimitInterval(ReadableInstant intersectingInstant, DateTimeZone dateTimeZone, LiteYukonGroup residentialGroup);   
+}   
