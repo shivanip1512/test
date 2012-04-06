@@ -19,7 +19,6 @@ import com.cannontech.yukon.IDatabaseCache;
 	private javax.swing.JComboBox ivjDeviceComboBox = null;
 	private javax.swing.JLabel ivjDeviceLabel = null;
 	private javax.swing.JPanel ivjPointCopyNameDevicePanel = null;
-	private boolean copiedToSameDevice = false;
 	public int originalDeviceID;
 /**
  * Constructor
@@ -361,12 +360,8 @@ public void setValue(Object val)
 	originalDeviceID = point.getPoint().getPaoID().intValue();
 
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/1/00 4:17:27 PM)
- * @param val java.lang.Object
- */
-public void setValueCore(Object val, int flagDB )
+
+public void setValueCore(Object val, DatabaseTypes flagDB )
 {
 	//Load the device list
 	getDeviceComboBox().removeAllItems();
@@ -379,22 +374,22 @@ public void setValueCore(Object val, int flagDB )
         if( flagDB == DatabaseTypes.LM_DB )
         {
             //Adding All LM objects to the DeviceBox.  Control Aeras and Scenarios may not belong here
-            java.util.List lmprograms =  new ArrayList<LiteYukonPAObject>( cache.getAllLMPrograms() );
+            java.util.List<LiteYukonPAObject> lmprograms =  new ArrayList<LiteYukonPAObject>( cache.getAllLMPrograms() );
             lmprograms.addAll( cache.getAllLMControlAreas() );
             lmprograms.addAll( cache.getAllLMScenarios() );
             lmprograms.addAll( cache.getAllLMGroups() );
             java.util.Collections.sort( lmprograms, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );            
             for (int i = 0; i < lmprograms.size(); i++)
-                getDeviceComboBox().addItem(((com.cannontech.database.data.lite.LiteYukonPAObject) lmprograms.get(i)));            
+                getDeviceComboBox().addItem(lmprograms.get(i));            
         }else{
         //if Other we are in Core, or some other view mode. In System there is no Copying so unless we add more modes, Core is the only other viable option.
         //only show devices, LM Groups show up as devices, so using removeAll  to get them out of the list
         
-    		java.util.List devices = new ArrayList<LiteYukonPAObject>( cache.getAllDevices() ); 
+    		java.util.List<LiteYukonPAObject> devices = new ArrayList<LiteYukonPAObject>( cache.getAllDevices() ); 
     		devices.removeAll( cache.getAllLMGroups() );
     		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
             for (int i = 0; i < devices.size(); i++)
-                getDeviceComboBox().addItem(((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(i)));
+                getDeviceComboBox().addItem(devices.get(i));
             
 
         }

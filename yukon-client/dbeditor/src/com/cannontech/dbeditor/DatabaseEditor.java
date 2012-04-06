@@ -177,7 +177,7 @@ public class DatabaseEditor
 	private JTreeEditorFrame[] editorFrames = null;
 	private static final int INITIAL_EDITOR_COUNT = 4;
 
-	private int currentDatabase = DatabaseTypes.CORE_DB;
+	private DatabaseTypes currentDatabase = DatabaseTypes.CORE_DB;
 	//Map of database types and treemodels to use
 	//Keep and add to these in alphabetical order	
 	
@@ -258,7 +258,7 @@ public class DatabaseEditor
 		};	
 	
 
-	private Vector messageListeners = new Vector();
+	private Vector<MessageEventListener> messageListeners = new Vector<MessageEventListener>();
 
 	//During an item state change we need to remember previous selection
 	//in order query the user whether we should save or not
@@ -430,43 +430,7 @@ public void addMessageListener(MessageEventListener listener) {
 	if( !messageListeners.contains(listener) )
 		messageListeners.addElement(listener);
 }
-/**
- * Insert the method's description here.
- * Creation date: (5/31/2001 2:36:20 PM)
- * @return java.lang.String
- * @param pointID int
- */
-private boolean createDeleteString(int pointID, String nodeName, StringBuffer message ) throws java.sql.SQLException
-{
-	Integer ptID = new Integer( pointID );
 
-	if( com.cannontech.database.data.point.PointBase.hasRawPointHistorys( ptID ) || com.cannontech.database.data.point.PointBase.hasSystemLogEntry( ptID ) )
-		message.append("\nThis Point has historical data.");
-
-	if( com.cannontech.database.data.point.PointBase.hasCapControlSubstationBus( ptID ) )
-	{
-		message.delete( 0, message.length() );
-		message.append("\nbecause it is used by a CapControl Substation Bus.");
-		return false;
-	}
-
-	if( com.cannontech.database.data.point.PointBase.hasCapBank( ptID ) )
-	{
-		message.delete( 0, message.length() );
-		message.append("\nbecause it is used by a CapBank Device.");
-		return false;
-	}
-
-	if( com.cannontech.database.data.point.PointBase.hasLMTrigger( ptID ) )
-	{
-		message.delete( 0, message.length() );
-		message.append("\nbecause it is used by a LoadManagement Trigger.");
-		return false;
-	}
-
-	//this point is deleteable
-	return true;
-}
 /**
  * Insert the method's description here.
  * Creation date: (3/13/2001 3:51:22 PM)
@@ -968,14 +932,14 @@ private void executeCopyButton_ActionPerformed(ActionEvent event)
             showCopyWizardPanel (yukonPAObject);
 		}
         else if(toCopy instanceof com.cannontech.database.data.device.lm.LMProgramDirect)
-            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel((com.cannontech.database.data.device.lm.LMProgramBase)toCopy), toCopy );
+            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMProgramCopyWizardPanel(toCopy), toCopy );
         else if(toCopy instanceof com.cannontech.database.data.device.lm.LMGroup)
-            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMGroupCopyWizardPanel((com.cannontech.database.data.device.lm.LMGroup)toCopy), toCopy );
+            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMGroupCopyWizardPanel(toCopy), toCopy );
         else if(toCopy instanceof LMScenario)
-            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMScenarioCopyWizardPanel((LMScenario)toCopy), toCopy );
+            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.lm.LMScenarioCopyWizardPanel(toCopy), toCopy );
         else if( toCopy instanceof com.cannontech.database.data.point.PointBase )
         {
-            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel((com.cannontech.database.data.point.PointBase)toCopy, currentDatabase ), toCopy );
+            showCopyWizardPanel( new com.cannontech.dbeditor.wizard.copy.point.PointCopyWizardPanel(toCopy, currentDatabase ), toCopy );
         }
         else
 			JOptionPane.showMessageDialog(
@@ -998,7 +962,7 @@ public DefaultMutableTreeNode getDefaultTreeNode() {
 }
 
 public void showCopyWizardPanel(DBPersistent toCopy) {
-	DeviceCopyWizardPanel devicePanel = new DeviceCopyWizardPanel((DeviceBase)toCopy);
+	DeviceCopyWizardPanel devicePanel = new DeviceCopyWizardPanel(toCopy);
 	devicePanel.setDeviceType( toCopy );
 	showCopyWizardPanel( devicePanel, toCopy );
 }
@@ -1338,7 +1302,7 @@ public void fireMessage(MessageEvent event) {
 
 	for( int i = messageListeners.size()-1; i >= 0; i-- )
 	{
-		((MessageEventListener) messageListeners.elementAt(i)).messageEvent(event);
+		messageListeners.elementAt(i).messageEvent(event);
 	}
 }
 
@@ -1431,8 +1395,8 @@ public JTreeEditorFrame getAvailableEditorFrame()
 		int i = 0;
 		for( i = 0; i < getInternalEditorFrames().length; i++ )
 		{
-			if( !((JTreeEditorFrame)getInternalEditorFrames()[i]).isVisible() )
-				return (JTreeEditorFrame)getInternalEditorFrames()[i];
+			if( !(getInternalEditorFrames()[i]).isVisible() )
+				return getInternalEditorFrames()[i];
 		}
 
 		// didnt find an available one, lets create a new one
@@ -1591,7 +1555,7 @@ private JTreeEditorFrame[] getInternalEditorFrames()
  * This method was created in VisualAge.
  * @return javax.swing.JMenuBar
  */
-private JMenuBar getMenuBar(int whichDatabase) {
+private JMenuBar getMenuBar(DatabaseTypes whichDatabase) {
 
 	if( this.menuBar == null )
 	{
@@ -2268,11 +2232,11 @@ private void removeUnneededEditorFrames()
 		{
 			if( getInternalEditorFrames().length > INITIAL_EDITOR_COUNT )
 			{
-				if( ((JTreeEditorFrame)getInternalEditorFrames()[i]).isVisible() )
+				if( (getInternalEditorFrames()[i]).isVisible() )
 					continue;
 				else
 				{
-					java.util.ArrayList list = new java.util.ArrayList(getInternalEditorFrames().length);
+					java.util.ArrayList<JTreeEditorFrame> list = new java.util.ArrayList<JTreeEditorFrame>(getInternalEditorFrames().length);
 					for( int j = 0; j < getInternalEditorFrames().length; j++ )
 						list.add( getInternalEditorFrames()[j] );
 
@@ -2282,7 +2246,7 @@ private void removeUnneededEditorFrames()
 					// remove the excess frame
 					JTreeEditorFrame[] frames = new JTreeEditorFrame[getInternalEditorFrames().length - 1];
 
-					editorFrames = (JTreeEditorFrame[])list.toArray(frames);
+					editorFrames = list.toArray(frames);
 				}
 			}
 			else
@@ -2575,7 +2539,7 @@ public void selectionPerformed(WizardPanelEvent event)
  * This method was created in VisualAge.
  * @param whichDatabase int
  */
-public void setDatabase(int whichDatabase) 
+public void setDatabase(DatabaseTypes whichDatabase) 
 {
 	//First check if there might be changes to update
 	//then remove any current editors that are opened
@@ -2590,12 +2554,12 @@ public void setDatabase(int whichDatabase)
 	
 	switch( whichDatabase )
 	{
-		case DatabaseTypes.CORE_DB:
+		case CORE_DB:
 				this.menuBar = getMenuBar(whichDatabase);
 				viewMenu.coreRadioButtonMenuItem.setSelected(true);
 				models = CORE_MODELS;
 				break;
-		case DatabaseTypes.LM_DB:
+		case LM_DB:
 				this.menuBar = getMenuBar(whichDatabase);
 				viewMenu.lmRadioButtonMenuItem.setSelected(true);
 				//hex value representing some privileges of the user on this machine
@@ -2607,7 +2571,7 @@ public void setDatabase(int whichDatabase)
 				else
 					models = LM_MODELS;
 				break;
-		case DatabaseTypes.SYSTEM_DB:
+		case SYSTEM_DB:
 				this.menuBar = getMenuBar(whichDatabase);
 				viewMenu.systemRadioButtonMenuItem.setSelected(true);
 				
@@ -2620,16 +2584,9 @@ public void setDatabase(int whichDatabase)
 				
 				models = SYSTEM_MODELS;
 				break;
-
 	}	
-	
-	if( models == null )
-	{
-		System.err.println("com.cannontech.dbeditor.DatabaseEditor:  Unable to switch to database " + whichDatabase );
-	}
 
-    int length = (models == LM_MODELS || models == LM_MODELS_WITH_SA || models == CORE_MODELS || models == SYSTEM_MODELS)
-                ? models.length : models.length - 1;
+	int length = models.length;
 
 	LiteBaseTreeModel[] newModels = new DBTreeModel[length];
 	for( int i = 0; i < models.length; i++ )
@@ -2648,6 +2605,8 @@ public void setDatabase(int whichDatabase)
 		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.LMGROUPS));
 	if( models == SYSTEM_MODELS )
 		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.LOGIN_GROUPS));
+    if( models == NONLOGIN_SYSTEM_MODELS )
+        getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.NOTIFICATION_GROUP));
 	
 	rPane.setJMenuBar( this.menuBar );
 	rPane.revalidate();

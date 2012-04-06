@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.wizard.copy.point;
  */
 
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
@@ -20,7 +21,7 @@ public class PointCopyWizardPanel extends com.cannontech.common.wizard.WizardPan
 /**
  * DeviceWizardPanel constructor comment.
  */
-public PointCopyWizardPanel(com.cannontech.database.db.DBPersistent objectToCopy, int flag)
+public PointCopyWizardPanel(com.cannontech.database.db.DBPersistent objectToCopy, DatabaseTypes flag)
 {
     super(flag);
 	setCopyObject(objectToCopy);

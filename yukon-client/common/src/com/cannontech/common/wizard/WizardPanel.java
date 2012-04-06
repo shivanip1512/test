@@ -5,6 +5,7 @@ import java.util.Vector;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.db.DBPersistent;
 
 public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.cannontech.common.gui.util.DataInputPanelListener, java.awt.event.ActionListener {
@@ -13,7 +14,7 @@ public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInp
 	public int currentPanel = -1;
 	private WizardButtonPanel buttonPanel;
 	private javax.swing.JLabel headerLabel;
-    protected int currentDatabase=0;
+    protected DatabaseTypes currentDatabase = DatabaseTypes.CORE_DB;
 	private Vector<WizardPanelListener> listeners = new Vector<WizardPanelListener>();
 
 	public WizardPanel() {
@@ -21,7 +22,7 @@ public abstract class WizardPanel extends com.cannontech.common.gui.util.DataInp
     	initialize();
     }
     
-    public WizardPanel(int flagDB) {
+    public WizardPanel(DatabaseTypes flagDB) {
         super();
         currentDatabase = flagDB;
         initialize();
