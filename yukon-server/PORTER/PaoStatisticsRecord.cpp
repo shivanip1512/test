@@ -187,6 +187,11 @@ bool PaoStatisticsRecord::writeRecord(Database::DatabaseWriter &writer)
         else
         {
             _dirty = ! Insert(writer);
+
+            if( _dirty )
+            {
+                _dirty = ! UpdateSum(writer);
+            }
         }
     }
 
@@ -281,7 +286,55 @@ bool PaoStatisticsRecord::Update(Database::DatabaseWriter &writer)
 
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Statistics Insert Error " << endl << error_sql << endl;
+            dout << "Statistics Update Error " << endl << error_sql << endl;
+        }
+
+        return false;
+    }
+
+    return true;
+}
+
+bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
+{
+    static const std::string sql =
+        "update DynamicPaoStatistics "
+        "set "
+            "requests = requests + ?, "
+            "attempts = attempts + ?, "
+            "completions = completions + ?, "
+            "commerrors = commerrors + ?, "
+            "protocolerrors = protocolerrors + ?, "
+            "systemerrors = systemerrors + ? "
+        "where "
+            "PAObjectId = ? and "
+            "StatisticType = ? and ";
+            "StartDateTime = ?";
+
+    writer.setCommandText(sql);
+
+    // set
+    writer
+        << _requests
+        << _attempts
+        << _completions
+        << _comm_errors
+        << _protocol_errors
+        << _system_errors;
+
+    // where
+    writer
+        << _pao_id
+        << getStatisticTypeString(_type)
+        << _interval_start;
+
+    if( ! executeUpdater(writer) )
+    {
+        std::string error_sql = writer.asString();
+
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "Statistics Update Sum Error " << endl << error_sql << endl;
         }
 
         return false;

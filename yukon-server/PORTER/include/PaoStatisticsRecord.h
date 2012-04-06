@@ -63,6 +63,7 @@ private:
 
     bool Insert(Database::DatabaseWriter &writer);
     bool Update(Database::DatabaseWriter &writer);
+    bool UpdateSum(Database::DatabaseWriter &writer);
 
     long _row_id;
 
