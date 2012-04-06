@@ -190,6 +190,7 @@ bool PaoStatisticsRecord::writeRecord(Database::DatabaseWriter &writer)
 
             if( _dirty )
             {
+                //  The insert failed, but we don't have an ID - the load may have failed, so try to update an existing row
                 _dirty = ! UpdateSum(writer);
             }
         }
