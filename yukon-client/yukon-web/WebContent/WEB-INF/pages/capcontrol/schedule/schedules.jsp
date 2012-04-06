@@ -7,13 +7,25 @@
 <cti:standardPage module="capcontrol"  page="schedules">
 
 <script type="text/javascript">
-function removeSchedule(scheduleId, event) {
-    var confirmDeleteMsg = event.findElement().next('span.confirmDelete').innerHTML;
-    if (confirm(confirmDeleteMsg)) {
-        var url = "/spring/capcontrol/schedule/deleteSchedule?scheduleId=" + scheduleId;
-        window.location = url;
-    }
-}
+
+jQuery(document).ready(function () {
+    jQuery('.removeSchedule').click(function () {
+
+        var confirmDeleteMsg = jQuery(this).next('span.confirmDelete').html();
+        if (confirm(confirmDeleteMsg)) {
+            var obj = jQuery(this).next('scheduleIdHolder');
+            var scheduleId = jQuery(this).next().next().val();
+            var url = "/spring/capcontrol/schedule/deleteSchedule?scheduleId=" + scheduleId;
+            
+            new Ajax.Request(url, { 
+                'method': 'POST', 
+                onSuccess: function() {window.location = window.location;}
+                });
+        }
+    });
+} );
+
+
 </script>
 
     <tags:pagedBox2 nameKey="scheduleContainer" 
@@ -55,8 +67,9 @@ function removeSchedule(scheduleId, event) {
                                     <c:choose>
                                         <c:when test="${hasEditingRole}">
                                             <cti:button nameKey="edit" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}"/>
-                                            <cti:button nameKey="remove" renderMode="image" onclick="removeSchedule(${item.scheduleID}, event)"/>
+                                            <cti:button styleClass="removeSchedule" nameKey="remove" renderMode="image"/>
                                             <span class="dn confirmDelete"><i:inline key=".confirmDelete" arguments="${item.scheduleName}"/></span>
+                                            <input type="hidden" value="${item.scheduleID}">
                                         </c:when>
                                         <c:otherwise>
                                             <cti:button nameKey="info" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}"/>
