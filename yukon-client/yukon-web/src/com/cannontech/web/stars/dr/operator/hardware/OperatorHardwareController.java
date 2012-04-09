@@ -347,11 +347,7 @@ public class OperatorHardwareController {
     
     /* HARDWARE EDIT PAGE*/
     @RequestMapping
-    public String edit(HttpServletRequest request, 
-                       ModelMap model, 
-                       YukonUserContext context, 
-                       AccountInfoFragment fragment, 
-                       int inventoryId) {
+    public String edit(HttpServletRequest request, ModelMap model, YukonUserContext context, AccountInfoFragment fragment, int inventoryId) {
         
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
