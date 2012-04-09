@@ -26,7 +26,7 @@ public class YukonXPathTemplateTest {
         testElement.addContent(booleanElement);
 
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
-        Temperature temperatureValue = yukonTemplate.evaluateAsTemperature("//testElement/temperatureElement");
+        Temperature temperatureValue = yukonTemplate.evaluateAsTemperature("/testElement/temperatureElement");
         
         Assert.assertNotNull(temperatureValue);
         Assert.assertEquals(TemperatureUnit.FAHRENHEIT, temperatureValue.toFahrenheit().getUnit());
