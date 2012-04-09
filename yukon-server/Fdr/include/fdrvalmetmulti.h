@@ -111,7 +111,7 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         std::vector<RWThreadFunction> _listenerThreads;
 
         typedef std::map<std::string,int> NameToPointIdMap;
-        NameToPointIdMap _nameToPointId;
+        NameToPointIdMap _receiveNameToPointId;
         std::string _scanDevicePointName;
         std::string _sendAllPointsPointName;
         int _listenerThreadStartupDelay;

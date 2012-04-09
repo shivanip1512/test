@@ -193,13 +193,13 @@ int CtiFDR_ValmetMulti::readConfig()
 void CtiFDR_ValmetMulti::signalReloadList()
 {
     //The list is being reloaded. Clear our tracking map to be re-filled.
-    _nameToPointId.clear();
+    _receiveNameToPointId.clear();
 }
 
 void CtiFDR_ValmetMulti::signalPointRemoved(string &pointName)
 {
     //This point is being removed, so lets remove it from our lists.
-    _nameToPointId.erase(pointName);
+    _receiveNameToPointId.erase(pointName);
 }
 
 bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
@@ -229,27 +229,26 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
             _listeningPortNumbers.insert(valmetPortId.PortNumber);
         }
 
-        int pointId = translationPoint->getPointID();
-        string upperPointName = pointName;
-        std::transform(upperPointName.begin(), upperPointName.end(), upperPointName.begin(), toupper);
-        NameToPointIdMap::iterator itr = _nameToPointId.find(upperPointName);
-        if(itr == _nameToPointId.end())
-        {
-            if(getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
-            {
-                // We don't have this point in our translation list yet, add it!
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                logNow() << " Point [" << upperPointName << "," << pointId << "] added to translation map." << endl;
-            }
-            _nameToPointId.insert(std::make_pair(upperPointName, pointId));
-        }
-
         if (sendList)
         {
             _helper->addSendMapping(valmetPortId, pointDestination);
         }
         else
         {
+            int pointId = translationPoint->getPointID();
+            string upperPointName = pointName;
+            std::transform(upperPointName.begin(), upperPointName.end(), upperPointName.begin(), toupper);
+            NameToPointIdMap::iterator itr = _receiveNameToPointId.find(upperPointName);
+            if(itr == _receiveNameToPointId.end())
+            {
+                if(getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+                {
+                    // We don't have this point in our translation list yet, add it!
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    logNow() << " Point [" << upperPointName << "," << pointId << "] added to translation map." << endl;
+                }
+                _receiveNameToPointId.insert(std::make_pair(upperPointName, pointId));
+            }
             _helper->addReceiveMapping(valmetPortId, pointDestination);
         }
     }
@@ -655,8 +654,8 @@ CtiFDRPointSPtr CtiFDR_ValmetMulti::findFdrPointInPointList(const std::string &t
 
     string pointName = translationName;
     std::transform(pointName.begin(), pointName.end(), pointName.begin(), toupper);
-    NameToPointIdMap::iterator iter = _nameToPointId.find(pointName);
-    if( iter != _nameToPointId.end() ) {
+    NameToPointIdMap::iterator iter = _receiveNameToPointId.find(pointName);
+    if( iter != _receiveNameToPointId.end() ) {
         point = getReceiveFromList().getPointList()->findFDRPointID(iter->second);
     }
 
