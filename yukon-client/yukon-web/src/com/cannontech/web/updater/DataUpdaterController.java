@@ -56,24 +56,28 @@ public class DataUpdaterController extends AbstractController {
             String id = dataArray.getString(i);
             surSet.add(id);
         }
-        
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        UpdateResponse updates = dataUpdaterService.getUpdates(surSet, fromDate, userContext);
-        
-        // I could use the JsonView here, but this feels more symmetric
-        JSONObject jsonUpdates = new JSONObject();
-        jsonUpdates.put("toDate", updates.asOfTime);
-        JSONObject jsonValueHash = new JSONObject();
-        for (UpdateValue value : updates.values) {
-            jsonValueHash.put(value.getFullIdentifier(), value.getValue().trim());
-        }
-        jsonUpdates.put("data", jsonValueHash);
-        
-        response.setContentType("application/json");
-        PrintWriter writer = response.getWriter();
-        
-        String responseJsonStr = jsonUpdates.toString();
-        writer.write(responseJsonStr);
+                
+//        try{
+            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+            UpdateResponse updates = dataUpdaterService.getUpdates(surSet, fromDate, userContext);
+
+            // I could use the JsonView here, but this feels more symmetric
+            JSONObject jsonUpdates = new JSONObject();
+            jsonUpdates.put("toDate", updates.asOfTime);
+            JSONObject jsonValueHash = new JSONObject();
+            for (UpdateValue value : updates.values) {
+                jsonValueHash.put(value.getFullIdentifier(), value.getValue().trim());
+            }
+            jsonUpdates.put("data", jsonValueHash);
+            
+            response.setContentType("application/json");
+            PrintWriter writer = response.getWriter();
+            
+            String responseJsonStr = jsonUpdates.toString();
+            writer.write(responseJsonStr);
+//        } catch( RuntimeException e) {
+//            response.set
+//        }
         
         return null;
     }
