@@ -26,7 +26,10 @@ public class YukonListEntryListTag extends YukonTagSupport {
     	
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
     	YukonSelectionListEnum yukonSelectionListEnum = YukonSelectionListEnum.valueOf(listName);
-    	List<YukonListEntry> yukonListEntries = energyCompany.getYukonSelectionList(yukonSelectionListEnum.getListName()).getYukonListEntries();
+    	List<YukonListEntry> yukonListEntries = null;
+    	if (energyCompany != null) {
+    	    yukonListEntries = energyCompany.getYukonSelectionList(yukonSelectionListEnum.getListName()).getYukonListEntries();
+    	}
     	
     	this.getJspContext().setAttribute(var, yukonListEntries);
     }
