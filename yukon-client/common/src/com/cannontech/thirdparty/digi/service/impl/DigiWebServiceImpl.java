@@ -23,6 +23,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.database.db.point.stategroup.Commissioned;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.spring.CheckConfigParam;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
@@ -54,6 +55,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
 
     @Autowired private RestOperations restTemplate;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
+    @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ZigbeeDeviceDao zigbeeDeviceDao;
     @Autowired private DigiXMLBuilder digiXMLBuilder;
     @Autowired private DigiResponseHandler digiResponseHandler;
@@ -403,6 +405,7 @@ public class DigiWebServiceImpl implements ZigbeeWebService, ZigbeeStateUpdaterS
         List<ZigbeeDevice> gateways = gatewayDeviceDao.getZigbeeGatewaysForInventoryIds(inventoryIds); 
         
         //Hijacking the text message for smuggling. This will change to Private Extensions in future revisions.
+        message.setMessageId(nextValueHelper.getNextValue("ExternalToYukonMessageIdMapping"));
         sendTextMessage(gateways,message);
     }
     
