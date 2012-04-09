@@ -2,7 +2,6 @@ package com.cannontech.capcontrol.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -13,6 +12,8 @@ import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PointDao;
@@ -26,7 +27,6 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -34,11 +34,8 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private StrategyDao strategyDao;
     @Autowired private PointDao pointDao;
-    
-    private final Set<PaoType> regulatorTypes = ImmutableSet.of(PaoType.LOAD_TAP_CHANGER,
-                                                                PaoType.GANG_OPERATED,
-                                                                PaoType.PHASE_OPERATED);
-    
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+
     private final YukonRowMapper<ZonePointPhaseHolder> regulatorPointRowMapper = new YukonRowMapper<ZonePointPhaseHolder>() {
         @Override
         public ZonePointPhaseHolder mapRow(YukonResultSet rs) throws SQLException {
@@ -71,7 +68,8 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             deviceInfo.setUpperLimit(upperLimit);
             deviceInfo.setOverrideStrategy(overrideStrategy);
             
-            if (regulatorTypes.contains(deviceInfo.getParentPaoIdentifier().getPaoType())) {
+            PaoType paoType = deviceInfo.getParentPaoIdentifier().getPaoType();
+            if (paoDefinitionDao.isTagSupported(paoType, PaoTag.VOLTAGE_REGULATOR)) {
                 deviceInfo.setRegulator(true);
             }
             

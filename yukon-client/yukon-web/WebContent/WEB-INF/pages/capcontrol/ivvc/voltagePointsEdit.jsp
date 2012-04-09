@@ -42,9 +42,6 @@
 					<th><i:inline key=".table.header.upperLimit"/></th>
 					<th>
 						<span class="fl"><i:inline key=".table.header.overrideStrategy"/>&nbsp;</span>
-						<cti:url var="strategyEditUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
-					    	<cti:param name="zoneId" value="${zoneId}"/>
-					    </cti:url>
 					    <cti:msg2 var="titleText" key=".editStrategy"/>
 					    <span class="sub">(<a href="/editor/cbcBase.jsf?type=5&amp;itemid=${strategy.strategyID}" title="${titleText}">${strategy.strategyName}</a>)</span>
 					</th>
