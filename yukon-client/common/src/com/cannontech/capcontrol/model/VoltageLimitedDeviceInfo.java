@@ -12,6 +12,7 @@ public class VoltageLimitedDeviceInfo {
     private double lowerLimit;
     private double upperLimit;
     private boolean overrideStrategy;
+    private boolean isRegulator;
 
     public PaoIdentifier getParentPaoIdentifier() {
         return parentPaoIdentifier;
@@ -75,6 +76,14 @@ public class VoltageLimitedDeviceInfo {
 
     public void setOverrideStrategy(boolean overrideStrategy) {
         this.overrideStrategy = overrideStrategy;
+    }
+
+    public boolean isRegulator() {
+        return isRegulator;
+    }
+
+    public void setRegulator(boolean isRegulator) {
+        this.isRegulator = isRegulator;
     }
 
 }

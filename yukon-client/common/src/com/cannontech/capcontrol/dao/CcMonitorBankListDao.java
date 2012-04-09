@@ -26,6 +26,15 @@ public interface CcMonitorBankListDao {
     public void updateDeviceInfo(List<VoltageLimitedDeviceInfo> deviceInfoList);
     
     /**
+     * Updates the Phase, Lower Limit, Upper Limit, and Override Strategy
+     * values for all entries that are NOT overriding the strategy (using the passed in strategyId).
+     * This method is called from CapControlStrategy.update method so this table is kept up to date.
+     * This is not a great solution and all this code should be replaced with a simple foreign key
+     * ASAP.
+     */
+    public void updateDeviceInfosFromStrategyId(int strategyId);
+    
+    /**
      * Updates the phase on the specified point.
      * @return 
      */
@@ -63,10 +72,23 @@ public interface CcMonitorBankListDao {
     public boolean deleteNonMatchingRegulatorPoint(int regulatorId, int pointIdToMatch);
     
     /**
+     * Removes all specified device entries from the table.
+     * @return 
+     */
+    public int removeDevices(List<Integer> deviceIds);
+    
+    /**
      * Removes all specified point entries from the table.
      * @return 
      */
     public int removePoints(List<Integer> pointIds);
+    
+    /**
+     * Removes all monitor points associated with the specified device id. The optional pointId parameter will only be used
+     * if it is passed in.
+     * @return 
+     */
+    public void removeByDeviceId(int deviceId, Integer pointId);
     
     /**
      * Removes all regulator and additional monitor points associated with the

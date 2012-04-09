@@ -123,6 +123,11 @@ public class CapBankEditorForm extends DBEditorForm {
             
             updateDBObject(getDbPersistent(), facesMessage);
             capBank = (CapBank) getDbPersistent();
+
+            // Reset our unassigned points
+            unassignedPoints = null;
+            getUnassignedPoints();
+
             handleMonitorPointsForController(capBank.getCapBank()
                                                     .getControlDeviceID()
                                                     .intValue());

@@ -201,6 +201,13 @@ public class ZoneDetailController {
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT,
                                                                context.getYukonUser());
         model.addAttribute("hasEditingRole", hasEditingRole);
+
+        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(context.getYukonUser());
+        Zone zone = zoneDao.getZoneById(zoneId);
+        int subBusId = zone.getSubstationBusId();
+        int strategyId = cache.getSubBus(subBusId).getStrategyId();
+        CapControlStrategy strategy = strategyDao.getForId(strategyId);
+        model.addAttribute("strategy", strategy);
     }
 
     @RequestMapping

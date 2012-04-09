@@ -40,7 +40,14 @@
 					<th><i:inline key=".table.header.lowerLimit"/></th>
 					<th><i:inline key=".table.header.currentVoltage"/></th>
 					<th><i:inline key=".table.header.upperLimit"/></th>
-					<th><i:inline key=".table.header.overrideStrategy"/></th>
+					<th>
+						<span class="fl"><i:inline key=".table.header.overrideStrategy"/>&nbsp;</span>
+						<cti:url var="strategyEditUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
+					    	<cti:param name="zoneId" value="${zoneId}"/>
+					    </cti:url>
+					    <cti:msg2 var="titleText" key=".editStrategy"/>
+					    <span class="sub">(<a href="/editor/cbcBase.jsf?type=5&amp;itemid=${strategy.strategyID}" title="${titleText}">${strategy.strategyName}</a>)</span>
+					</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -65,12 +72,18 @@
 						</td>
 						<td><spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody></td>
 						<td>
-							<form:select path="points[${status.index}].phase">
-								<form:option value=""><cti:msg2 key="yukon.common.phase.phase"/></form:option>
-								<form:option value="A"><cti:msg2 key="yukon.common.phase.phaseA"/></form:option>
-								<form:option value="B"><cti:msg2 key="yukon.common.phase.phaseB"/></form:option>
-								<form:option value="C"><cti:msg2 key="yukon.common.phase.phaseC"/></form:option>
-							</form:select>
+							<c:choose>
+								<c:when test="${!voltagePoint.regulator}">
+									<form:select path="points[${status.index}].phase">
+										<form:option value="A"><cti:msg2 key="yukon.common.phase.phaseA"/></form:option>
+										<form:option value="B"><cti:msg2 key="yukon.common.phase.phaseB"/></form:option>
+										<form:option value="C"><cti:msg2 key="yukon.common.phase.phaseC"/></form:option>
+									</form:select>
+								</c:when>
+								<c:otherwise>
+									<i:inline key="yukon.common.phase.phase${voltagePoint.phase}"/>
+								</c:otherwise>
+							</c:choose>
 						</td>
 						<td>
 							<tags:input path="points[${status.index}].lowerLimit" size="4"

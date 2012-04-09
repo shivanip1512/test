@@ -2,6 +2,7 @@ package com.cannontech.capcontrol.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -12,6 +13,7 @@ import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.IntegerRowMapper;
@@ -24,12 +26,18 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private StrategyDao strategyDao;
     @Autowired private PointDao pointDao;
+    
+    private final Set<PaoType> regulatorTypes = ImmutableSet.of(PaoType.LOAD_TAP_CHANGER,
+                                                                PaoType.GANG_OPERATED,
+                                                                PaoType.PHASE_OPERATED);
     
     private final YukonRowMapper<ZonePointPhaseHolder> regulatorPointRowMapper = new YukonRowMapper<ZonePointPhaseHolder>() {
         @Override
@@ -62,6 +70,10 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             deviceInfo.setLowerLimit(lowerLimit);
             deviceInfo.setUpperLimit(upperLimit);
             deviceInfo.setOverrideStrategy(overrideStrategy);
+            
+            if (regulatorTypes.contains(deviceInfo.getParentPaoIdentifier().getPaoType())) {
+                deviceInfo.setRegulator(true);
+            }
             
             return deviceInfo;
         }
@@ -113,7 +125,126 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             updateDeviceInfo(deviceInfo);
         }
     }
+
+    @Override
+    public void updateDeviceInfosFromStrategyId(int strategyId) {
+        List<VoltageLimitedDeviceInfo> capBankDeviceInfos = getCapBankDeviceInfosFromStrategyId(strategyId);
+        List<VoltageLimitedDeviceInfo> regulatorDeviceInfos = getRegulatorDeviceInfosFromStrategyId(strategyId);
+        List<VoltageLimitedDeviceInfo> additionalPointDeviceInfos = getAdditionalPointDeviceInfosFromStrategyId(strategyId);
+
+        List<VoltageLimitedDeviceInfo> allDeviceInfos = Lists.newArrayListWithCapacity(capBankDeviceInfos.size() + regulatorDeviceInfos.size()
+                                                                                       + additionalPointDeviceInfos.size());
+        allDeviceInfos.addAll(capBankDeviceInfos);
+        allDeviceInfos.addAll(regulatorDeviceInfos);
+        allDeviceInfos.addAll(additionalPointDeviceInfos);
+        
+        LimitsHolder strategyLimits = getStrategyLimits(strategyId);
+        for (VoltageLimitedDeviceInfo deviceInfo : allDeviceInfos) {
+            deviceInfo.setLowerLimit(strategyLimits.lowerLimit);
+            deviceInfo.setUpperLimit(strategyLimits.upperLimit);
+        }
+        
+        updateDeviceInfo(allDeviceInfos);
+    }
     
+    private List<VoltageLimitedDeviceInfo> getCapBankDeviceInfosFromStrategyId(int strategyId) {
+        SqlStatementBuilder innerSql = new SqlStatementBuilder();
+        innerSql.append("  CASE ");
+        innerSql.append("    WHEN (strat3u.StrategyId IS not NULL) THEN strat3u.StrategyId");
+        innerSql.append("    WHEN (strat2u.StrategyId IS not NULL) THEN strat2u.StrategyId");
+        innerSql.append("    WHEN (strat1u.StrategyId IS not NULL) THEN strat1u.StrategyId");
+        innerSql.append("    ELSE -1");
+        innerSql.append("  END StrategyId");
+        innerSql.append("  FROM CcMonitorBankList ccmb");
+        innerSql.append("  JOIN YukonPaObject ypo ON ccmb.deviceid = ypo.paObjectId");
+        innerSql.append("  JOIN Point p ON ccmb.PointId = p.PointId");
+        innerSql.append("  JOIN CCFeederBankList fb ON fb.DeviceID = ccmb.deviceid");
+        innerSql.append("  JOIN CCFeederSubAssignment fsa ON fsa.FeederID = fb.FeederID");
+        innerSql.append("  JOIN CCSubstationSubBusList ssb ON ssb.SubStationBusID = fsa.SubStationBusID");
+        innerSql.append("  JOIN CCSubAreaAssignment sa ON sa.SubstationBusID = ssb.SubStationID");
+        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat1 ON sa.AreaID = seasStrat1.PAObjectId");
+        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat2 ON ssb.SubStationBusID = seasStrat2.PAObjectId");
+        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat3 ON fsa.FeederID = seasStrat3.PAObjectId");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1u ON strat1u.StrategyId = seasStrat1.StrategyId AND strat1u.SettingName = 'Upper Volt Limit' AND strat1u.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1l ON strat1l.StrategyId = seasStrat1.StrategyId AND strat1l.SettingName = 'Lower Volt Limit' AND strat1l.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2u ON strat2u.StrategyId = seasStrat2.StrategyId AND strat2u.SettingName = 'Upper Volt Limit' AND strat2u.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2l ON strat2l.StrategyId = seasStrat2.StrategyId AND strat2l.SettingName = 'Lower Volt Limit' AND strat2l.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat3u ON strat3u.StrategyId = seasStrat3.StrategyId AND strat3u.SettingName = 'Upper Volt Limit' AND strat3u.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat3l ON strat3l.StrategyId = seasStrat3.StrategyId AND strat3l.SettingName = 'Lower Volt Limit' AND strat3l.SettingType = 'PEAK'");
+
+        return getDeviceInfosFromStrategyId(innerSql, strategyId);
+    }
+    
+    private List<VoltageLimitedDeviceInfo> getRegulatorDeviceInfosFromStrategyId(int strategyId) {
+        SqlStatementBuilder innerSql = new SqlStatementBuilder();
+        innerSql.append("  CASE ");
+        innerSql.append("    WHEN (strat2u.StrategyId IS not NULL) THEN strat2u.StrategyId");
+        innerSql.append("    WHEN (strat1u.StrategyId IS not NULL) THEN strat1u.StrategyId");
+        innerSql.append("    ELSE -1");
+        innerSql.append("  END StrategyId");
+        innerSql.append("  FROM ccmonitorbanklist ccmb");
+        innerSql.append("  JOIN YukonPaObject ypo ON ccmb.deviceid = ypo.paObjectId");
+        innerSql.append("  JOIN Point p ON ccmb.PointId = p.PointId");
+        innerSql.append("  JOIN regulatortozonemapping rtz on rtz.RegulatorId = ccmb.deviceid");
+        innerSql.append("  join Zone z on z.ZoneId = rtz.ZoneId");
+        innerSql.append("  JOIN CCSubstationSubBusList ssb ON ssb.SubStationBusID = z.SubStationBusID");
+        innerSql.append("  JOIN CCSubAreaAssignment sa ON sa.SubstationBusID = ssb.SubStationID");
+        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat1 ON sa.AreaID = seasStrat1.PAObjectId");
+        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat2 ON ssb.SubStationBusID = seasStrat2.PAObjectId");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1u ON strat1u.StrategyId = seasStrat1.StrategyId AND strat1u.SettingName = 'Upper Volt Limit' AND strat1u.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1l ON strat1l.StrategyId = seasStrat1.StrategyId AND strat1l.SettingName = 'Lower Volt Limit' AND strat1l.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2u ON strat2u.StrategyId = seasStrat2.StrategyId AND strat2u.SettingName = 'Upper Volt Limit' AND strat2u.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2l ON strat2l.StrategyId = seasStrat2.StrategyId AND strat2l.SettingName = 'Lower Volt Limit' AND strat2l.SettingType = 'PEAK'");
+
+        return getDeviceInfosFromStrategyId(innerSql, strategyId);
+    }
+    
+    private List<VoltageLimitedDeviceInfo> getAdditionalPointDeviceInfosFromStrategyId(int strategyId) {
+        SqlStatementBuilder innerSql = new SqlStatementBuilder();
+        innerSql.append("  CASE ");
+        innerSql.append("    WHEN (strat2u.StrategyId IS not NULL) THEN strat2u.StrategyId");
+        innerSql.append("    WHEN (strat1u.StrategyId IS not NULL) THEN strat1u.StrategyId");
+        innerSql.append("    ELSE -1");
+        innerSql.append("  END StrategyId");
+        innerSql.append("  FROM ccmonitorbanklist ccmb");
+        innerSql.append("  JOIN YukonPaObject ypo ON ccmb.deviceid = ypo.paObjectId");
+        innerSql.append("  join POINT p on p.PAObjectID = ccmb.deviceid");
+        innerSql.append("  JOIN PointToZoneMapping ptz on ptz.PointId = p.pointid");
+        innerSql.append("  join Zone z on z.ZoneId = ptz.ZoneId");
+        innerSql.append("  JOIN CCSubstationSubBusList ssb ON ssb.SubStationBusID = z.SubStationBusID");
+        innerSql.append("  JOIN CCSubAreaAssignment sa ON sa.SubstationBusID = ssb.SubStationID");
+        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat1 ON sa.AreaID = seasStrat1.PAObjectId");
+        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat2 ON ssb.SubStationBusID = seasStrat2.PAObjectId");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1u ON strat1u.StrategyId = seasStrat1.StrategyId AND strat1u.SettingName = 'Upper Volt Limit' AND strat1u.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1l ON strat1l.StrategyId = seasStrat1.StrategyId AND strat1l.SettingName = 'Lower Volt Limit' AND strat1l.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2u ON strat2u.StrategyId = seasStrat2.StrategyId AND strat2u.SettingName = 'Upper Volt Limit' AND strat2u.SettingType = 'PEAK'");
+        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2l ON strat2l.StrategyId = seasStrat2.StrategyId AND strat2l.SettingName = 'Lower Volt Limit' AND strat2l.SettingType = 'PEAK'");
+        
+        return getDeviceInfosFromStrategyId(innerSql, strategyId);
+    }
+
+    private List<VoltageLimitedDeviceInfo> getDeviceInfosFromStrategyId(SqlStatementBuilder inner, int strategyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT innerValues.deviceid as PaObjectId, innerValues.PaoName, innerValues.Type, innerValues.PointId, innerValues.PointName, innerValues.Phase, innerValues.LowerBandwidth, innerValues.UpperBandwidth, innerValues.OverrideStrategy");
+        sql.append("FROM");
+        sql.append(" (select");
+        sql.append("  ccmb.DeviceId,");
+        sql.append("  ypo.PaoName,");
+        sql.append("  ypo.Type,");
+        sql.append("  p.PointId,");
+        sql.append("  p.PointName,");
+        sql.append("  ccmb.Phase,");
+        sql.append("  ccmb.LowerBandwidth,");
+        sql.append("  ccmb.UpperBandwidth,");
+        sql.append("  ccmb.OverrideStrategy,");
+        sql.appendFragment(inner);
+        sql.append("  ) innerValues");
+        sql.append("where innerValues.strategyid").eq(strategyId);
+        sql.append("AND innerValues.OverrideStrategy").eq_k(String.valueOf(CtiUtilities.falseChar));
+
+        return yukonJdbcTemplate.query(sql, deviceInfoRowMapper);
+    }
+
     @Override
     public int addDeviceInfo(VoltageLimitedDeviceInfo info) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -137,6 +268,14 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         sql.append("UPDATE CcMonitorBankList");
         sql.append("SET Phase").eq(phase);
         sql.append("WHERE PointId").eq(pointId);
+        return yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public int removeDevices(List<Integer> deviceIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CcMonitorBankList");
+        sql.append("WHERE DeviceId").in(deviceIds);
         return yukonJdbcTemplate.update(sql);
     }
     
@@ -201,11 +340,11 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Override
     public boolean deleteNonMatchingRegulatorPoint(int regulatorId, int pointIdToMatch) {
         SqlStatementBuilder getRegulatorPointSql = new SqlStatementBuilder();
-        getRegulatorPointSql.append("SELECT PointId");
-        getRegulatorPointSql.append("FROM RegulatorToZoneMapping");
-        getRegulatorPointSql.append("JOIN ExtraPaoPointAssignment eppa ON RegulatorId = eppa.PAObjectId");
-        getRegulatorPointSql.append("WHERE RegulatorId").eq(regulatorId);
-        getRegulatorPointSql.append("AND Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y);
+        getRegulatorPointSql.append("SELECT cc.PointId");
+        getRegulatorPointSql.append("FROM CcMonitorBankList cc");
+        getRegulatorPointSql.append("JOIN ExtraPaoPointAssignment eppa ON cc.DeviceId = eppa.PAObjectId");
+        getRegulatorPointSql.append("WHERE cc.DeviceId").eq(regulatorId);
+        getRegulatorPointSql.append("AND eppa.Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y);
         
         try {
             //if there is no voltage_y point assigned, this will throw an exception
@@ -214,18 +353,26 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             //check to see if it matches the specified pointId. Only delete if it
             //DOESN'T match.
             if(pointId != pointIdToMatch) {
-                SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-                deleteSql.append("DELETE FROM CcMonitorBankList");
-                deleteSql.append("WHERE DeviceId").eq(regulatorId);
-                deleteSql.append("AND PointId").eq(pointId);
-                yukonJdbcTemplate.update(deleteSql);
+                removeByDeviceId(regulatorId, pointId);
             } else {
                 return false;
             }
         } catch(EmptyResultDataAccessException e) {
-            return false;
+            // An entry doesn't exist, that's fine. We are treating this
+            // like we just deleted something, so we return true (below)
         }
         return true;
+    }
+    
+    @Override
+    public void removeByDeviceId(int deviceId, Integer pointId) {
+        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+        deleteSql.append("DELETE FROM CcMonitorBankList");
+        deleteSql.append("WHERE DeviceId").eq(deviceId);
+        if (pointId != null) {
+            deleteSql.append("AND PointId").eq(pointId);
+        }
+        yukonJdbcTemplate.update(deleteSql);
     }
     
     @Override

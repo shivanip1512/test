@@ -53,7 +53,7 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
             CapBankPointDelta capBankPointDelta = new CapBankPointDelta();
             
             capBankPointDelta.setPointId(rs.getInt("PointId"));
-            capBankPointDelta.setBankId(rs.getInt("BankId"));
+            capBankPointDelta.setBankId(rs.getInt("DeviceId"));
             capBankPointDelta.setBankName(rs.getString("BankName"));
             capBankPointDelta.setCbcName(rs.getString("CbcName"));
             capBankPointDelta.setAffectedDeviceName(rs.getString("AffectedDeviceName"));
@@ -532,18 +532,18 @@ public class ZoneDaoImpl implements ZoneDao, InitializingBean {
     public List<CapBankPointDelta> getAllPointDeltasForBankIds(List<Integer> bankIds) {
         SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         
-        sqlBuilder.append("SELECT DMPR.BankId, DMPR.PointId, PAO.PAOName AS BankName,");
+        sqlBuilder.append("SELECT DMPR.DeviceId, DMPR.PointId, PAO.PAOName AS BankName,");
         sqlBuilder.append("  PAOC.PAOName AS CbcName, PAO2.PAOName AS AffectedDeviceName,");
         sqlBuilder.append("  P.PointName AS AffectedPointName, DMPR.PreOpValue, DMPR.Delta, DMPR.StaticDelta");
         sqlBuilder.append("FROM DynamicCCMonitorPointResponse DMPR");
         sqlBuilder.append("JOIN Point P ON P.PointId = DMPR.PointId");
-        sqlBuilder.append("JOIN YukonPAObject PAO ON DMPR.BankId = PAO.PAObjectId");
+        sqlBuilder.append("JOIN YukonPAObject PAO ON DMPR.DeviceId = PAO.PAObjectId");
         sqlBuilder.append("JOIN YukonPAObject PAO2 ON P.PAObjectId = PAO2.PAObjectId");
-        sqlBuilder.append("JOIN CapBank CB ON CB.DeviceId = DMPR.BankId");
+        sqlBuilder.append("JOIN CapBank CB ON CB.DeviceId = DMPR.DeviceId");
         sqlBuilder.append("JOIN YukonPAObject PAOC ON PAOC.PAObjectId = CB.ControlDeviceId");
         sqlBuilder.append("JOIN CCFeederBankList FBL ON FBL.DeviceId = CB.DeviceId");
         sqlBuilder.append("JOIN CCFeederSubAssignment FSA ON FSA.FeederId = FBL.FeederId");
-        sqlBuilder.append("WHERE DMPR.BankId");
+        sqlBuilder.append("WHERE DMPR.DeviceId");
         sqlBuilder.in(bankIds);
         sqlBuilder.append("ORDER BY PAOC.PAOName, PAO2.PAOName");
         

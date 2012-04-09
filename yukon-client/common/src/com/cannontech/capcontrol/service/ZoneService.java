@@ -136,5 +136,5 @@ public interface ZoneService {
      * @param to - gets events less than or equal to (<=) this
      * @return
      */
-    List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to);
+    public List<CcEvent> getLatestEvents(int zoneId, int subBusId, int rowLimit, ReadableInstant from, ReadableInstant to);
 }

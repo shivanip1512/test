@@ -345,6 +345,15 @@ table.compactResultsTable th a {
     color: #000000;
 }
 
+table.compactResultsTable th .sub {
+	font-size: .8em;
+	font-weight: normal;
+}
+table.compactResultsTable th .sub a {
+	color: blue;
+	text-decoration: underline;
+}
+
 table.compactResultsTable td td {
     padding: 0px 0px;
 }
@@ -1478,6 +1487,19 @@ a.icon {
 
 .icon_remove_disabled {
     background: transparent url(../Icons/delete_disabled_gray.gif) top left no-repeat;
+    cursor: not-allowed;
+}
+
+.icon_pencil {
+    background: transparent url(../Icons/pencil.png) top left no-repeat;
+}
+
+.icon_pencil:hover {
+    background: transparent url(../Icons/pencil_over.png) top left no-repeat;
+}
+
+.icon_pencil_disabled {
+    background: transparent url(../Icons/pencil_disabled_gray.gif) top left no-repeat;
     cursor: not-allowed;
 }
 

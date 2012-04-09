@@ -80,9 +80,9 @@ public class ZoneServiceImpl implements ZoneService {
                 ccMonitorBankListDao.addRegulatorPoint(regId, regToZone.getPhase(), abstractZone.getSubstationBusId());
             }
         }
-        //remove regulator points for regulators no longer attached
+        //remove regulators no longer attached
         if(!oldRegulatorIds.isEmpty()) {
-            ccMonitorBankListDao.removePoints(oldRegulatorIds);
+            ccMonitorBankListDao.removeDevices(oldRegulatorIds);
         }
         
         sendZoneChangeDbMessage(zone.getId(),dbChangeType);

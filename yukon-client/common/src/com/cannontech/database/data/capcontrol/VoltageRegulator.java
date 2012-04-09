@@ -87,7 +87,6 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         paoPersistenceService.updatePao(regulator);
         
         //Point Mappings
-        ExtraPaoPointAssignmentDao eppad = YukonSpringHook.getBean("extraPaoPointAssignmentDao", ExtraPaoPointAssignmentDao.class);
         List<ExtraPaoPointMapping> eppMappings = Lists.newArrayList();
         int voltageYPointId = 0;
         for(VoltageRegulatorPointMapping mapping : pointMappings) {
@@ -103,10 +102,13 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         CcMonitorBankListDao ccMonitorBankListDao = YukonSpringHook.getBean(CcMonitorBankListDao.class);
         if(voltageYPointId > 0) {
             isNewVoltageYPoint = ccMonitorBankListDao.deleteNonMatchingRegulatorPoint(getPAObjectID(), voltageYPointId);
+        } else {
+            ccMonitorBankListDao.removeByDeviceId(getPAObjectID(), null);
         }
         
         PaoType paoType = PaoType.getForDbString(getPAOType());
-        eppad.saveAssignments(new PaoIdentifier(getCapControlPAOID(), paoType) , eppMappings);
+        ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao = YukonSpringHook.getBean("extraPaoPointAssignmentDao", ExtraPaoPointAssignmentDao.class);
+        extraPaoPointAssignmentDao.saveAssignments(new PaoIdentifier(getPAObjectID(), paoType) , eppMappings);
         pointMappings = null;
         
         //add voltage_y CcMonitorBankList entry, if a point is assigned
