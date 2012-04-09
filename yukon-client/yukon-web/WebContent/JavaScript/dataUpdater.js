@@ -107,6 +107,11 @@ function initiateCannonDataUpdate(url, delayMs) {
         }
         _updaterTimeout = setTimeout(doUpdate, delayMs * 5);
     };
+    
+    var refreshPage = function() {
+        location.reload(true);
+    };
+    
     var doUpdate = function() {
         // if none exist on this page, get out
         // build up JS object to be used for request
@@ -147,9 +152,13 @@ function initiateCannonDataUpdate(url, delayMs) {
             postBody: Object.toJSON(requestData),
             contentType: 'application/json',
             on200: processResponseCallback, // this odd combination seems to be the only
-            onSuccess: failureCallback,     // way to detect that the server is shutdown
-            onFailure: failureCallback,     // note: the onSuccess will not be called when 
-            onException: failureCallback    // the on200 is called
+                                            // way to detect that the server is shutdown
+                                            // note: the onSuccess will not be called when
+                                            // the on200 is called
+            on409: refreshPage, // Bad data on webpage, trigger a reload
+            onSuccess: failureCallback,     
+            onFailure: failureCallback,      
+            onException: failureCallback    
         });
         
         requestData = null;

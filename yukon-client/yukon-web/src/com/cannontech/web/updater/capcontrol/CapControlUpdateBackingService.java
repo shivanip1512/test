@@ -12,6 +12,7 @@ import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.capcontrol.CapControlFormattingService.Format;
+import com.cannontech.web.updater.capcontrol.exception.CacheManagementException;
 
 public class CapControlUpdateBackingService implements UpdateBackingService {
     private static final Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
@@ -48,9 +49,8 @@ public class CapControlUpdateBackingService implements UpdateBackingService {
                 // This can happen if we delete an object and return
                 // to a page that that used to have that object before
                 // the server was able to update the cache.
-                // By returning null the service won't try to update
-                // that object.
-                return null;
+                // We are throwing an exception alerting the updater that the page is invalid
+                throw new CacheManagementException();
             }
         }
         return null;    

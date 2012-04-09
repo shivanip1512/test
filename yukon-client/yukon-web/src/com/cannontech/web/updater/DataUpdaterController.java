@@ -13,6 +13,7 @@ import net.sf.jsonOLD.JSONArray;
 import net.sf.jsonOLD.JSONObject;
 
 import org.apache.log4j.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.updater.capcontrol.exception.CacheManagementException;
 
 public class DataUpdaterController extends AbstractController {
 
@@ -56,8 +58,8 @@ public class DataUpdaterController extends AbstractController {
             String id = dataArray.getString(i);
             surSet.add(id);
         }
-                
-//        try{
+
+        try{
             YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
             UpdateResponse updates = dataUpdaterService.getUpdates(surSet, fromDate, userContext);
 
@@ -75,9 +77,11 @@ public class DataUpdaterController extends AbstractController {
             
             String responseJsonStr = jsonUpdates.toString();
             writer.write(responseJsonStr);
-//        } catch( RuntimeException e) {
-//            response.set
-//        }
+        } catch (CacheManagementException e) {
+            //In this case we want to return a 409 instead of a 500 error.
+            response.setContentType("application/json");
+            response.setStatus(HttpStatus.CONFLICT.value());
+        }
         
         return null;
     }
