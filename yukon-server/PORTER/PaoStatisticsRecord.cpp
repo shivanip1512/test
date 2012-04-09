@@ -184,15 +184,13 @@ bool PaoStatisticsRecord::writeRecord(Database::DatabaseWriter &writer)
         {
             _dirty = ! Update(writer);
         }
+        else if( _type == Lifetime )
+        {
+            _dirty = ! (UpdateSum(writer) || Insert(writer));
+        }
         else
         {
-            _dirty = ! Insert(writer);
-
-            if( _dirty )
-            {
-                //  The insert failed, but we don't have an ID - the load may have failed, so try to update an existing row
-                _dirty = ! UpdateSum(writer);
-            }
+            _dirty = ! (Insert(writer) || UpdateSum(writer));
         }
     }
 
@@ -298,7 +296,7 @@ bool PaoStatisticsRecord::Update(Database::DatabaseWriter &writer)
 
 bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
 {
-    static const std::string sql =
+    std::string sql =
         "update DynamicPaoStatistics "
         "set "
             "requests = requests + ?, "
@@ -309,8 +307,12 @@ bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
             "systemerrors = systemerrors + ? "
         "where "
             "PAObjectId = ? and "
-            "StatisticType = ? and ";
-            "StartDateTime = ?";
+            "StatisticType = ?";
+
+    if( _type != Lifetime )
+    {
+        sql += " and StartDateTime = ?";
+    }
 
     writer.setCommandText(sql);
 
@@ -326,8 +328,12 @@ bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
     // where
     writer
         << _pao_id
-        << getStatisticTypeString(_type)
-        << _interval_start;
+        << getStatisticTypeString(_type);
+
+    if( _type != Lifetime )
+    {
+        writer << _interval_start;
+    }
 
     if( ! executeUpdater(writer) )
     {
