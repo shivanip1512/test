@@ -16,7 +16,7 @@ public class SimpleXPathTemplateTest {
         Element testElement = new Element("testElement");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
-        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("\testElement\booleanElement");
+        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
         Assert.assertNull(booleanValue);
     }
@@ -32,7 +32,7 @@ public class SimpleXPathTemplateTest {
         testElement.addContent(new Element("booleanElement"));
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
-        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("//testElement/booleanElement");
+        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
         Assert.assertNotNull(booleanValue);
         Assert.assertEquals(true, booleanValue.booleanValue());
@@ -52,7 +52,7 @@ public class SimpleXPathTemplateTest {
         testElement.addContent(booleanElement);
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
-        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("//testElement/booleanElement");
+        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
         Assert.assertNotNull(booleanValue);
         Assert.assertEquals(true, booleanValue.booleanValue());
@@ -72,7 +72,7 @@ public class SimpleXPathTemplateTest {
         testElement.addContent(booleanElement);
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
-        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("//testElement/booleanElement");
+        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
         Assert.assertNotNull(booleanValue);
         Assert.assertEquals(true, booleanValue.booleanValue());
@@ -92,7 +92,7 @@ public class SimpleXPathTemplateTest {
         testElement.addContent(booleanElement);
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
-        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("//testElement/booleanElement");
+        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
         Assert.assertNotNull(booleanValue);
         Assert.assertEquals(true, booleanValue.booleanValue());
@@ -112,7 +112,7 @@ public class SimpleXPathTemplateTest {
         testElement.addContent(booleanElement);
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
-        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("//testElement/booleanElement");
+        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
         Assert.assertNotNull(booleanValue);
         Assert.assertEquals(false, booleanValue.booleanValue());
@@ -132,7 +132,7 @@ public class SimpleXPathTemplateTest {
         testElement.addContent(booleanElement);
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
-        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("//testElement/booleanElement");
+        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
         Assert.assertNotNull(booleanValue);
         Assert.assertEquals(false, booleanValue.booleanValue());
@@ -152,7 +152,7 @@ public class SimpleXPathTemplateTest {
         testElement.addContent(booleanElement);
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
-        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("//testElement/booleanElement");
+        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
         Assert.assertNotNull(booleanValue);
         Assert.assertEquals(false, booleanValue.booleanValue());
@@ -172,7 +172,7 @@ public class SimpleXPathTemplateTest {
         testElement.addContent(booleanElement);
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement );
-        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("//testElement/booleanElement");
+        Boolean booleanValue = simpleXPathTemplate.evaluateAsBoolean("/testElement/booleanElement");
         
         Assert.assertNotNull(booleanValue);
         Assert.assertEquals(false, booleanValue.booleanValue());
