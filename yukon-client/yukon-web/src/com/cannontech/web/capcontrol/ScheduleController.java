@@ -344,7 +344,7 @@ public class ScheduleController {
     }
 	
 	@RequestMapping(method=RequestMethod.POST)
-    public String deleteSchedule(Integer scheduleId, ModelMap map, FlashScope flash) {
+    public String deleteSchedule(int scheduleId, ModelMap map, FlashScope flash) {
 	    boolean success = paoScheduleDao.delete(scheduleId); 
 	    
         if (success) {

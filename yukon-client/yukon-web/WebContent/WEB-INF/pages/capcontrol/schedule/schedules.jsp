@@ -6,7 +6,26 @@
 
 <cti:standardPage module="capcontrol"  page="schedules">
 
-    <cti:url var="action" value="/spring/capcontrol/schedule/deleteSchedule"/>
+<script type="text/javascript">
+
+jQuery(document).ready(function () {
+    jQuery('.removeSchedule').click(function () {
+
+        var confirmDeleteMsg = jQuery(this).next('span.confirmDelete').html();
+        if (confirm(confirmDeleteMsg)) {
+            var obj = jQuery(this).next('scheduleIdHolder');
+            var scheduleId = jQuery(this).next().next().val();
+            var url = "/spring/capcontrol/schedule/deleteSchedule?scheduleId=" + scheduleId;
+            
+            $("scheduleForm_" + scheduleId).submit();
+        }
+    });
+} );
+
+
+</script>
+
+<cti:url var="action" value="/spring/capcontrol/schedule/deleteSchedule"/>
 
     <tags:pagedBox2 nameKey="scheduleContainer" 
             searchResult="${searchResult}"
@@ -38,62 +57,62 @@
                     <tbody id="tableBody">
                         <c:forEach var="item" items="${scheduleList}">
                             <tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.scheduleID}">
-                                <form id="scheduleForm" action="${action}" method="POST">
-                                    <td nowrap="nowrap">
-                                        <spring:escapeBody htmlEscape="true">${item.scheduleName}</spring:escapeBody>
-                                    </td>
-                                    
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${hasEditingRole}">
+                                <td nowrap="nowrap">
+                                    <spring:escapeBody htmlEscape="true">${item.scheduleName}</spring:escapeBody>
+                                </td>
+                                
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${hasEditingRole}">
+                                            <form id="scheduleForm_${item.scheduleID}" action="${action}" method="POST">
                                                 <cti:button nameKey="edit" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}"/>
-                                                <cti:button nameKey="remove" renderMode="image" type="SUBMIT"/>
+                                                <cti:button styleClass="removeSchedule" nameKey="remove" renderMode="image" />
                                                 <span class="dn confirmDelete"><i:inline key=".confirmDelete" arguments="${item.scheduleName}"/></span>
                                                 <input id="scheduleId_${item.scheduleID}" name="scheduleId" type="hidden" value="${item.scheduleID}">
-                                            </c:when>
-                                            <c:otherwise>
-                                                <cti:button nameKey="info" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}"/>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${item.lastRunTime.time <= startOfTime}">
-                                                <i:inline key="yukon.web.defaults.dashes"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <cti:formatDate value="${item.lastRunTime}" type="DATEHM" />
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${item.nextRunTime.time <= startOfTime}">
-                                                <i:inline key="yukon.web.defaults.dashes"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <cti:formatDate value="${item.nextRunTime}" type="DATEHM" />
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    
-                                    <td>
-                                        <spring:escapeBody htmlEscape="true">${item.intervalRateString}</spring:escapeBody>
-                                    </td>
-                                    
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${item.disabled}">
-                                                <i:inline key="yukon.web.defaults.yes"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                 <i:inline key="yukon.web.defaults.no"/>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                </form>
+                                            </form>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:button nameKey="info" renderMode="image" href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${item.lastRunTime.time <= startOfTime}">
+                                            <i:inline key="yukon.web.defaults.dashes"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:formatDate value="${item.lastRunTime}" type="DATEHM" />
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${item.nextRunTime.time <= startOfTime}">
+                                            <i:inline key="yukon.web.defaults.dashes"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:formatDate value="${item.nextRunTime}" type="DATEHM" />
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                
+                                <td>
+                                    <spring:escapeBody htmlEscape="true">${item.intervalRateString}</spring:escapeBody>
+                                </td>
+                                
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${item.disabled}">
+                                            <i:inline key="yukon.web.defaults.yes"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                             <i:inline key="yukon.web.defaults.no"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
                             </tr>
                             
                         </c:forEach>
