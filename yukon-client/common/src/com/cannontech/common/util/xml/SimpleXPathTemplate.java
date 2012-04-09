@@ -35,6 +35,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.transform.JDOMSource;
@@ -142,16 +144,30 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
     }
     
     public Boolean evaluateAsBoolean(String expression, Boolean defaultValue) {
+        Validate.notNull(expression);
+        
         Node result = evaluateAsNode(expression);
         if (result == null) {
             return defaultValue;
         }
         
-        if (result.getNodeValue() == null) {
+        String textContent = StringUtils.trim(result.getTextContent());
+        if (StringUtils.isBlank(textContent)) {
             return true;
         }
         
-        return Boolean.valueOf(result.getTextContent());
+        if (textContent.equals("0")) {
+            return false;
+        }
+        if (textContent.equals("1")) {
+            return true;
+        }
+        
+        if (textContent.equalsIgnoreCase("true") || textContent.equalsIgnoreCase("false")) {
+            return Boolean.valueOf(textContent);
+        }
+            
+        throw new IllegalArgumentException("A supplied boolean element does not have a valid boolean value.");
     }
 
     public Node evaluateAsNode(String expression) throws XPathException {
