@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.login.model.PasswordResetInfo;
 import com.cannontech.stars.core.login.service.ForgottenPasswordService;
+import com.cannontech.tools.email.EmailException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.captcha.model.Captcha;
 import com.cannontech.web.common.captcha.model.CaptchaResponse;
@@ -107,6 +108,9 @@ public class ForgottenPasswordController {
             forgottenPasswordService.sendPasswordResetEmail(forgottenPasswordResetUrl, passwordResetInfo.getContact(), passwordResetUserContext);
         } catch (NotFoundException e) {
             forgottenPasswordFieldError(forgottenPassword, flashScope, model, request, "yukon.web.modules.login.forgottenPassword.emailNotFound"); 
+            return "forgottenPassword.jsp";
+        } catch (EmailException e) {
+            forgottenPasswordFieldError(forgottenPassword, flashScope, model, request, "yukon.web.modules.login.forgottenPassword.emailConnectionIssues"); 
             return "forgottenPassword.jsp";
         }
 
