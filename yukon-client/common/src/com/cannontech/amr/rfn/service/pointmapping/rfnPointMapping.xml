@@ -211,18 +211,21 @@
         </point>
         <point name="Volt Degrees Phase A">
             <uom>V degree</uom>
+			<multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
         <point name="Volt Degrees Phase B">
             <uom>V degree</uom>
+			<multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
             <modifiers match="equal">
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
         <point name="Volt Degrees Phase C">
             <uom>V degree</uom>
+            <multiplier value="0.1"/>	<!-- V degree - Volt angle (tenths of degree) -->
             <modifiers match="equal">
                 <modifier>Phase C</modifier>
             </modifiers>
