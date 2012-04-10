@@ -109,7 +109,7 @@ function initiateCannonDataUpdate(url, delayMs) {
     };
     
     var refreshPage = function() {
-        location.reload(true);
+        window.location.href = window.location.href;
     };
     
     var doUpdate = function() {
