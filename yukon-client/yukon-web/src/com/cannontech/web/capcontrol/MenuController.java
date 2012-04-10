@@ -200,6 +200,8 @@ public class MenuController {
         if (allowFlip && is701xDevice) {
             commands.add(CommandType.FLIP_7010_CAPBANK);
         }
+        commands.add(CommandType.VERIFY_SELECTED_BANK);
+       
         model.addAttribute("commands", commands);
     }
 

@@ -44,6 +44,7 @@ import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.model.ItemCommand;
 import com.cannontech.message.capcontrol.model.VerifyBanks;
 import com.cannontech.message.capcontrol.model.VerifyInactiveBanks;
+import com.cannontech.message.capcontrol.model.VerifySelectedBank;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
@@ -153,6 +154,10 @@ public class CommandController {
             CapControlCommand command;
             if (commandType.isVerifyCommand()) {
                 command = CommandHelper.buildVerifyBanks(user, commandType, itemId, false);
+            } else if (commandId == CommandType.VERIFY_SELECTED_BANK.getCommandId()  ) {
+                int bankId = itemId;
+                int busId = cache.getParentSubBusID(bankId);
+                command = CommandHelper.buildVerifySelectedBank(user, commandType, busId, bankId, false);
             } else {
                 command = CommandHelper.buildItemCommand(commandId, itemId, user);
             }
@@ -503,6 +508,22 @@ public class CommandController {
         StreamableCapObject streamable = cache.getObject(itemId);
         CommandType type = CommandType.VERIFY_INACTIVE_BANKS;
         VerifyInactiveBanks command = CommandHelper.buildVerifyInactiveBanks(context.getYukonUser(), type, itemId, disableOvUv, inactivityTime);
+        boolean success = true;
+        
+        try {
+            executor.execute(command);
+        } catch (CommandExecutionException e) {
+            success = false;
+        }
+        return sendStatusResponse(response, accessor, type, streamable.getCcName(), model, success); 
+    }
+    
+    @RequestMapping
+    public String verifySelectedBank(HttpServletResponse response, ModelMap model, YukonUserContext context, int itemId, boolean disableOvUv, int bankId) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        StreamableCapObject streamable = cache.getObject(itemId);
+        CommandType type = CommandType.VERIFY_SELECTED_BANK;
+        VerifySelectedBank command = CommandHelper.buildVerifySelectedBank(context.getYukonUser(), type, itemId, bankId, disableOvUv);
         boolean success = true;
         
         try {

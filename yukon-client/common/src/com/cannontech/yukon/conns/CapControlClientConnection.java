@@ -32,6 +32,7 @@ import com.cannontech.message.capcontrol.defineCollectable.DefineCollectableSyst
 import com.cannontech.message.capcontrol.defineCollectable.DefineCollectableTempMoveCapBank;
 import com.cannontech.message.capcontrol.defineCollectable.DefineCollectableVerifyBanks;
 import com.cannontech.message.capcontrol.defineCollectable.DefineCollectableVerifyInactiveBanks;
+import com.cannontech.message.capcontrol.defineCollectable.DefineCollectableVerifySelectedBank;
 import com.cannontech.message.capcontrol.defineCollectable.DefineCollectableVoltageRegulator;
 import com.cannontech.message.capcontrol.defineCollectable.DefineCollectableVoltageRegulatorMessage;
 import com.cannontech.message.capcontrol.model.CapControlCommand;
@@ -75,7 +76,8 @@ public class CapControlClientConnection extends ClientConnection {
 		new DefineCollectablePointData(),
 		new DefineCollectableTempMoveCapBank(),
 		new DefineCollectableVerifyBanks(),
-		new DefineCollectableVerifyInactiveBanks(),
+        new DefineCollectableVerifyInactiveBanks(),
+        new DefineCollectableVerifySelectedBank(),
 		new DefineCollectableSubStation(),
 		new DefineCollectableSubStations(),
 		new DefineCollectableCapControlServerResponse(),

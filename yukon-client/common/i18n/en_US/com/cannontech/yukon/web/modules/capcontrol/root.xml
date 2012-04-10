@@ -200,6 +200,7 @@
     <entry key="yukon.web.modules.capcontrol.command.VERIFY_INACTIVE_BANKS">Verify Banks Not Operated In</entry>
     <entry key="yukon.web.modules.capcontrol.command.VERIFY_SA_BANKS">Verify Standalone Banks</entry>
     <entry key="yukon.web.modules.capcontrol.command.VERIFY_DISABLED_BANKS">Verify Disabled Banks</entry>
+    <entry key="yukon.web.modules.capcontrol.command.VERIFY_SELECTED_BANK">Verify Bank</entry>
     <entry key="yukon.web.modules.capcontrol.command.STOP_VERIFICATION">Stop Verification</entry>
     <entry key="yukon.web.modules.capcontrol.command.CONFIRM_SUBSTATION">Confirm Substation</entry>
     <entry key="yukon.web.modules.capcontrol.command.EMERGENCY_VERIFICATION_STOP">Emergency Verification Stop</entry>

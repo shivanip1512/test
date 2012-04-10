@@ -14,6 +14,7 @@ import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.model.ItemCommand;
 import com.cannontech.message.capcontrol.model.VerifyBanks;
 import com.cannontech.message.capcontrol.model.VerifyInactiveBanks;
+import com.cannontech.message.capcontrol.model.VerifySelectedBank;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class CommandHelper {
@@ -83,6 +84,22 @@ public class CommandHelper {
         command.setCommandId(type.getCommandId());
         command.setDisableOvUv(disableOvUv);
         command.setCbInactivityTime(inactiveTime);
+        
+        return command;
+    }
+    
+    public static VerifySelectedBank buildVerifySelectedBank(LiteYukonUser user, 
+                                                               CommandType type, 
+                                                               int itemId, 
+                                                               int bankId,
+                                                               boolean disableOvUv) {
+        
+        VerifySelectedBank command = new VerifySelectedBank();
+        command.setUserName(user.getUsername());
+        command.setCommandId(type.getCommandId());
+        command.setDisableOvUv(disableOvUv);
+        command.setBankId(bankId);
+        command.setItemId(itemId);
         
         return command;
     }

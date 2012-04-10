@@ -63,6 +63,8 @@ public enum CommandType implements DisplayableEnum {
     VERIFY_SA_BANKS(61),
     STOP_VERIFICATION(62),
     EMERGENCY_VERIFICATION_STOP(63),
+    VERIFY_SELECTED_BANK(64),
+
 
     /* Regulator Commands */
     VOLTAGE_REGULATOR_INTEGRITY_SCAN(70),
