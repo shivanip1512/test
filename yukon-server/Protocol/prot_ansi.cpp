@@ -680,7 +680,7 @@ void CtiProtocolANSI::prepareApplicationLayer()
         _tables[_index].tableOffset = 0;
         getApplicationLayer().setCurrentTableSize(1024);
     }
-
+    
     getApplicationLayer().initializeTableRequest (_tables[_index].tableID,
                                          _tables[_index].tableOffset,
                                          _tables[_index].bytesExpected,
@@ -1000,7 +1000,7 @@ void CtiProtocolANSI::convertToTable(  )
                            _table12 = NULL;
                        }
                        _table12 = new CtiAnsiTable12( getApplicationLayer().getCurrentTable(),
-                                                             _table11->getNumberUOMEntries(),
+                                                             _table11->getNumberUOMEntries(), 
                                                              _table00->getRawDataOrder() );
                        if( _table12 != NULL &&  getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )//DEBUGLEVEL_LUDICROUS )
                        {
@@ -2367,7 +2367,6 @@ bool CtiProtocolANSI::retrieveLPDemand( int offset, int dataSet )
 
                                     resetLoadProfilePointers(totalIntvls); //reallocate memory for _lpValues, _lpTimes, _lpQaulity
 
-                                    _lpQuality = new UINT8[totalIntvls +1];
                                     int intvlIndex = isDataBlockOrderDecreasing() ? intvlsPerBlk - _lpNbrIntvlsLastBlock : 0;
                                     for (int y = 0; y < totalIntvls; y++)
                                     {
@@ -3427,7 +3426,10 @@ double CtiProtocolANSI::scaleMultiplier(double multiplier, int index)
     BYTE ansiDeviceType = getApplicationLayer().getAnsiDeviceType();
     if(ansiDeviceType == CtiANSIApplication::sentinel || ansiDeviceType == CtiANSIApplication::focus)
     {
-         multiplier *= (_table12->getResolvedMultiplier(index)/1000);
+        if( _table12 != NULL )
+        {
+             multiplier *= (_table12->getResolvedMultiplier(index)/1000);
+        }
     }
     else
     {
@@ -3465,6 +3467,7 @@ void CtiProtocolANSI::resetLoadProfilePointers( int totalIntvls )
         delete []_lpQuality;
         _lpQuality = NULL;
     }
+    _lpQuality = new UINT8[totalIntvls +1];
     return;
 }
 

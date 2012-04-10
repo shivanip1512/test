@@ -477,7 +477,7 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 
         if (InMessage->EventCode == NORMAL)
         {
-            if (getANSIProtocol().getlastLoadProfileTime() != 0 || getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset) //scanner
+            if (getANSIProtocol().getlastLoadProfileTime() != 0 || getANSIProtocol().getScanOperation() == CtiProtocolANSI::generalScan) //scanner
             {
                 ULONG lptime = getANSIProtocol().getlastLoadProfileTime();
                 memcpy( InMessage->Buffer.InMessage, (void *)&lptime, sizeof (unsigned long) );
