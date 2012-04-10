@@ -2187,7 +2187,14 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                             ULONG dateChangeMissingIntervals =
                             dateTimeDifference / (localLP->configuration.intervalLength * 60);
 
-                            // ????? need a check for intervals to make sure it isn't outrageous??????
+                            //check for intervals to make sure it isn't outrageous - 1 year
+                            //365 days of 15 min intervals ==> 35040 intervals
+                            ULONG maxMissingIntervals = localLP->configuration.intervalLength * 365;
+                            if (dateChangeMissingIntervals > maxMissingIntervals)
+                            {
+                                dateChangeMissingIntervals = maxMissingIntervals;
+                            }
+
                             for (int x=0; x < dateChangeMissingIntervals; x++)
                             {
                                 // fill message with plug data to next interval
