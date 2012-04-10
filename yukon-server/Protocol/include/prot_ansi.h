@@ -427,8 +427,8 @@ class IM_EX_PROT CtiProtocolANSI
        double scaleMultiplier(double multiplier, int index);
        void printDebugValue(double value, bool frozen=false);
        void resetLoadProfilePointers( int totalIntvls );
-       bool compareIdCode(int index, AnsiUnit ansiOffset);
-       virtual bool compareSegmentation(int index, AnsiSegmentation  segmentation);
+       bool doesIdCodeMatch(int index, AnsiUnit ansiOffset);
+       virtual bool doesSegmentationMatch(int index, AnsiSegmentation  segmentation);
 
 
        int                              _index;

@@ -59,7 +59,7 @@ class IM_EX_PROT  CtiProtocolANSI_focus: public Cti::Protocols::Ansi::CtiProtoco
         virtual void updateMfgBytesExpected();
         virtual bool retrieveMfgPresentValue( int offset, double *value );
         virtual float getMfgConstants( );
-        virtual bool compareSegmentation(int index, Cti::Protocols::Ansi::AnsiSegmentation segmentation);
+        virtual bool doesSegmentationMatch(int index, Cti::Protocols::Ansi::AnsiSegmentation segmentation);
 
         bool retrieveFocusKwPresentValue( int offset, double *value );
         bool retrieveFocusAXPresentValue( int offset, double *value );

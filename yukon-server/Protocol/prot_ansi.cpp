@@ -2233,46 +2233,39 @@ bool CtiProtocolANSI::retrievePresentDemand( int offset, double *value )
 ////////////////////////////////////////////////////////////////////////////////////
 bool CtiProtocolANSI::retrieveBatteryLife( int offset, double *value )
 {
-    bool success = false;
-
     if ( getApplicationLayer().getAnsiDeviceType() != CtiANSIApplication::sentinel) //if 0,1, kv,kv2 not supported
     {
-        return success;
+        return false;
     }
-    else if( _ansiAbortOperation )
+    if( _ansiAbortOperation )
     {
-        return success;
+        return false;
     }
-    else
+    
+    try
     {
-        try
+        switch (offset)
         {
-            switch (offset)
+            case 180:
             {
-                case 180:
-                {
-                    *value = abs((UINT16)getGoodBatteryReading() - (UINT16)getCurrentBatteryReading());
-                    success = true;
-                    break;
-                }
-                case 181:
-                {
-                    *value = getDaysOnBatteryReading();
-                    success = true;
-                    break;
-                }
-                default:
-                    break;
+                *value = abs((UINT16)getGoodBatteryReading() - (UINT16)getCurrentBatteryReading());
+                return true;
             }
-        }
-        catch(...)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            case 181:
+            {
+                *value = getDaysOnBatteryReading();
+                return true;
+            }
+            default:
+                break;
         }
     }
-
-    return success;
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return false;
 }
 bool CtiProtocolANSI::retrieveMeterTimeDiffStatus( int offset, double *status )
 {
@@ -2348,8 +2341,8 @@ bool CtiProtocolANSI::retrieveLPDemand( int offset, int dataSet )
 
                 if ((_table12->getRawTimeBase(lpDemandSelect[x]) == CtiAnsiTable12::timebase_relative_dial_reading ||
                      _table12->getRawTimeBase(lpDemandSelect[x]) == CtiAnsiTable12::timebase_dial_reading) &&
-                     compareIdCode(lpDemandSelect[x], ansiOffset) &&
-                     compareSegmentation(lpDemandSelect[x], segmentation) )
+                     doesIdCodeMatch(lpDemandSelect[x], ansiOffset) &&
+                     doesSegmentationMatch(lpDemandSelect[x], segmentation) )
                 {
 
                     if (_lpNbrFullBlocks > 0 || _lpNbrIntvlsLastBlock > 0)
@@ -3471,19 +3464,11 @@ void CtiProtocolANSI::resetLoadProfilePointers( int totalIntvls )
     return;
 }
 
-bool CtiProtocolANSI::compareIdCode(int index, AnsiUnit ansiOffset)
+bool CtiProtocolANSI::doesIdCodeMatch(int index, AnsiUnit ansiOffset)
 {
-    if( _table12 != NULL )
-    {
-        return _table12->getRawIDCode(index) == ansiOffset;
-    }
-    return false;
+    return _table12 && (_table12->getRawIDCode(index) == ansiOffset);
 }
-bool CtiProtocolANSI::compareSegmentation(int index, AnsiSegmentation  segmentation) 
+bool CtiProtocolANSI::doesSegmentationMatch(int index, AnsiSegmentation  segmentation) 
 {
-    if( _table12 != NULL )
-    {
-        return _table12->getSegmentation(index) == segmentation;
-    }
-    return false;
+    return _table12 && (_table12->getSegmentation(index) == segmentation);
 }

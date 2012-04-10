@@ -92,18 +92,15 @@ int CtiProtocolANSI_focus::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     reqData.seq_nbr = getWriteSequenceNbr();
     getApplicationLayer().setWriteSeqNbr( reqData.seq_nbr );
 
-    BYTE lpSetupRecord[4];
-
-    //READ #3.1.2.8.34 MFG Table 34 - SEt Load Profile Read Control in
-    //Focux AX C12.19 Implementation Guide
-    lpSetupRecord[0] = readBlockOffset.ch[1];
-    lpSetupRecord[1] = readBlockOffset.ch[0];
-    lpSetupRecord[2] = 0; 
-    lpSetupRecord[3] = 0; 
+    BYTE lpSetupRecord[4] = {
+        //READ #3.1.2.8.34 MFG Table 34 - Set Load Profile Read Control in
+        //Focux AX C12.19 Implementation Guide
+        readBlockOffset.ch[1],
+        readBlockOffset.ch[0],
+        0,
+        0 };
 
     getApplicationLayer().populateParmPtr(lpSetupRecord, 4) ;
-
-
     getApplicationLayer().setProcDataSize( 4 );
 
     return -1;
@@ -267,7 +264,7 @@ float CtiProtocolANSI_focus::getMfgConstants(  )
 }
 
 
-bool CtiProtocolANSI_focus::compareSegmentation(int index, AnsiSegmentation segmentation)
+bool CtiProtocolANSI_focus::doesSegmentationMatch(int index, AnsiSegmentation segmentation)
 {
     switch(index)
     {

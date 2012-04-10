@@ -330,7 +330,7 @@ INT CtiDeviceAnsi::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
     inMsgResultString = string((const char*)InMessage->Buffer.InMessage, InMessage->InLength);
 
-    if (getANSIProtocol().getScanOperation() >= CtiProtocolANSI::demandReset ) //2= demand Reset, 3=loopback
+    if (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset || getANSIProtocol().getScanOperation() == CtiProtocolANSI::loopBack) 
     {
         string returnString = getName() + " / " + (getANSIProtocol().getScanOperation() == CtiProtocolANSI::demandReset ? "demand reset " : "loopback ");
         if (findStringIgnoreCase(inMsgResultString, "successful"))
