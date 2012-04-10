@@ -2188,8 +2188,8 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (INMESS *InMessage,
                             dateTimeDifference / (localLP->configuration.intervalLength * 60);
 
                             //check for intervals to make sure it isn't outrageous - 1 year
-                            //365 days of 15 min intervals ==> 35040 intervals
-                            ULONG maxMissingIntervals = localLP->configuration.intervalLength * 365;
+                            //Example (1440 mins in a day / 15 min intervals) * 365 days ==> 35040 intervals
+                            ULONG maxMissingIntervals = (1440 / localLP->configuration.intervalLength) * 365;
                             if (dateChangeMissingIntervals > maxMissingIntervals)
                             {
                                 dateChangeMissingIntervals = maxMissingIntervals;
