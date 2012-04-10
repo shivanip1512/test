@@ -62,8 +62,10 @@ private:
     static const std::string &getStatisticTypeString(const StatisticTypes type);
 
     bool Insert(Database::DatabaseWriter &writer);
+    bool TryInsert(Database::DatabaseWriter &writer);
     bool Update(Database::DatabaseWriter &writer);
     bool UpdateSum(Database::DatabaseWriter &writer);
+    bool TryUpdateSum(Database::DatabaseWriter &writer);
 
     long _row_id;
 

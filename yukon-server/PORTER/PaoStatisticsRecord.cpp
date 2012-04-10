@@ -186,11 +186,11 @@ bool PaoStatisticsRecord::writeRecord(Database::DatabaseWriter &writer)
         }
         else if( _type == Lifetime )
         {
-            _dirty = ! (UpdateSum(writer) || Insert(writer));
+            _dirty = ! (TryUpdateSum(writer) || Insert(writer));
         }
         else
         {
-            _dirty = ! (Insert(writer) || UpdateSum(writer));
+            _dirty = ! (TryInsert(writer) || UpdateSum(writer));
         }
     }
 
@@ -198,7 +198,7 @@ bool PaoStatisticsRecord::writeRecord(Database::DatabaseWriter &writer)
 }
 
 
-bool PaoStatisticsRecord::Insert(Database::DatabaseWriter &writer)
+bool PaoStatisticsRecord::TryInsert(Database::DatabaseWriter &writer)
 {
     static const std::string sql =
         "insert into DynamicPaoStatistics "
@@ -234,19 +234,29 @@ bool PaoStatisticsRecord::Insert(Database::DatabaseWriter &writer)
 
     if( ! writer.execute() )
     {
-        std::string error_sql = writer.asString();
-
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Statistics Insert Error " << endl << error_sql << endl;
-        }
-
         return false;
     }
 
     _row_id = tmp_row_id;
 
     return true;
+}
+
+bool PaoStatisticsRecord::Insert(Database::DatabaseWriter &writer)
+{
+    const bool success = TryInsert(writer);
+
+    if( ! success )
+    {
+        std::string error_sql = writer.asString();
+
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "Statistics Insert Error " << endl << error_sql << endl;
+        }
+    }
+
+    return success;
 }
 
 
@@ -294,7 +304,7 @@ bool PaoStatisticsRecord::Update(Database::DatabaseWriter &writer)
     return true;
 }
 
-bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
+bool PaoStatisticsRecord::TryUpdateSum(Database::DatabaseWriter &writer)
 {
     std::string sql =
         "update DynamicPaoStatistics "
@@ -335,7 +345,14 @@ bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
         writer << _interval_start;
     }
 
-    if( ! executeUpdater(writer) )
+    return executeUpdater(writer);
+}
+
+bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
+{
+    const bool success = TryUpdateSum(writer);
+
+    if( ! success )
     {
         std::string error_sql = writer.asString();
 
@@ -343,12 +360,11 @@ bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << "Statistics Update Sum Error " << endl << error_sql << endl;
         }
-
-        return false;
     }
 
-    return true;
+    return success;
 }
+
 
 const std::string &PaoStatisticsRecord::getStatisticTypeString(const StatisticTypes type)
 {
