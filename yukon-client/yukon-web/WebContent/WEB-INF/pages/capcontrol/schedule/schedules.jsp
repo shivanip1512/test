@@ -10,13 +10,9 @@
 
 jQuery(document).ready(function () {
     jQuery('.removeSchedule').click(function () {
-
         var confirmDeleteMsg = jQuery(this).next('span.confirmDelete').html();
         if (confirm(confirmDeleteMsg)) {
-            var obj = jQuery(this).next('scheduleIdHolder');
-            var scheduleId = jQuery(this).next().next().val();
-            var url = "/spring/capcontrol/schedule/deleteSchedule?scheduleId=" + scheduleId;
-            
+            var scheduleId = jQuery(this).siblings('[id^=scheduleId_]').val();            
             $("scheduleForm_" + scheduleId).submit();
         }
     });
