@@ -460,6 +460,8 @@ public class InventoryController {
         
         /* Warehouses */
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(hardware.getEnergyCompanyId());
+        model.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
+        
         List<Warehouse> warehouses = energyCompany.getWarehouses();
         model.addAttribute("warehouses", warehouses);
 
