@@ -57,4 +57,4 @@ END;
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
-
+INSERT INTO CTIDatabase VALUES ('5.4', 'Garrett D', '09-APR-2012', 'Latest Update', 3 );
