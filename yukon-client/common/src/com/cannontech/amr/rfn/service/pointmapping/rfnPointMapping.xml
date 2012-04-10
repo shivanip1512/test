@@ -230,6 +230,27 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
+        <point name="Power Factor Degrees Phase A">
+            <uom>PF degree</uom>
+			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Power Factor Degrees Phase B">
+            <uom>PF degree</uom>
+			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Power Factor Degrees Phase C">
+            <uom>PF degree</uom>
+			<multiplier value="0.1"/>	<!-- PF degree - Power Factor angle (tenths of degree) -->
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
     </pointGroup>
     
     <pointGroup><!-- NET KWH MAPPINGS -->

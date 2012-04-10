@@ -5540,6 +5540,27 @@
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="1"/>
             </point>
+            <point type="Analog" offset="80">
+                <init>true</init>
+                <name>Power Factor Degrees Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="81">
+                <init>true</init>
+                <name>Power Factor Degrees Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="82">
+                <init>true</init>
+                <name>Power Factor Degrees Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+                <decimalplaces value="1"/>
+            </point>
         </points>
         <attributes>
             <attribute name="VOLTAGE_PHASE_A">
