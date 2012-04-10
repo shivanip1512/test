@@ -683,7 +683,8 @@ public class OptOutServiceImpl implements OptOutService {
                 DateTime optOutLimitStartDate = new DateTime(intersectingInstant).withMonthOfYear(optOutLimit.getStartMonth()).withDayOfMonth(1).toDateMidnight().toDateTime(dateTimeZone);
 
                 // Adjust the start date to the year before if needed.
-                if (optOutLimit.getStartMonth() > optOutLimit.getStopMonth() && optOutLimitStopDate.isBefore(optOutLimitStartDate)) {
+                if (optOutLimit.getStartMonth() > optOutLimit.getStopMonth() && 
+                    (optOutLimitStopDate.isBefore(optOutLimitStartDate) || optOutLimitStopDate.isEqual(optOutLimitStartDate))) {
                     optOutLimitStartDate = optOutLimitStartDate.minusYears(1);
                 }
                         

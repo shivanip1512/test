@@ -26,6 +26,7 @@ public class OptOutServiceTest extends EasyMockSupport {
     private static final LiteYukonGroup residentialGroup_One = new LiteYukonGroup();
     private static final LiteYukonGroup residentialGroup_Two = new LiteYukonGroup();
     private static final LiteYukonGroup residentialGroup_Three = new LiteYukonGroup();
+    private static final LiteYukonGroup residentialGroup_Four = new LiteYukonGroup();
     {
         residentialGroup_One.setGroupID(1);
         residentialGroup_One.setGroupDescription("Test residential login group");
@@ -34,13 +35,18 @@ public class OptOutServiceTest extends EasyMockSupport {
         residentialGroup_Two.setGroupID(2);
         residentialGroup_Two.setGroupDescription("Test residential login group");
         residentialGroup_Two.setGroupName("Test Group Two");
-
+        
         residentialGroup_Three.setGroupID(3);
         residentialGroup_Three.setGroupDescription("Test residential login group");
         residentialGroup_Three.setGroupName("Test Group Three");
+
+        residentialGroup_Four.setGroupID(4);
+        residentialGroup_Four.setGroupDescription("Test residential login group");
+        residentialGroup_Four.setGroupName("Test Group Four");
     }
     
     private static final String optOutLimitRolePropertyValue_residentialGroup_One = "[{start:4;stop:10;limit:2},{start:11;stop:3;limit:3}]";
+    private static final String optOutLimitRolePropertyValue_residentialGroup_Two = "[{start:10;stop:9;limit:1}]";
     private static final String optOutLimitRolePropertyValue_residentialGroup_ParctialLimit = "[{start:4;stop:10;limit:2}]";
     private static final String optOutLimitRolePropertyValue_residentialGroup_NoLimit = "";
     
@@ -61,6 +67,8 @@ public class OptOutServiceTest extends EasyMockSupport {
                             return optOutLimitRolePropertyValue_residentialGroup_ParctialLimit;
                         case 3:
                             return optOutLimitRolePropertyValue_residentialGroup_NoLimit;
+                        case 4:
+                            return optOutLimitRolePropertyValue_residentialGroup_Two;
                         default:
                             throw new EmptyResultDataAccessException(1);
                     }
@@ -111,6 +119,18 @@ public class OptOutServiceTest extends EasyMockSupport {
         
         Assert.assertEquals(dateTimeFormmater.parseDateTime("11/1/2011").toInstant(), findOptOutLimitInterval.getStart().toInstant());
         Assert.assertEquals(dateTimeFormmater.parseDateTime("04/1/2012").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
+    }
+
+    /**
+     * Opt Out Limits   (------------------[9/10]------)
+     * Intersection Date  |
+     */
+    @Test
+    public void testFindOptOutLimitInterval_StopMonthBeforeStartMonth_Five() {
+        OpenInterval findOptOutLimitInterval = optOutService.findOptOutLimitInterval(date_Four, centralTimeZone, residentialGroup_Four);
+        
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("10/1/2009").toInstant(), findOptOutLimitInterval.getStart().toInstant());
+        Assert.assertEquals(dateTimeFormmater.parseDateTime("10/1/2010").toInstant(), findOptOutLimitInterval.getEnd().toInstant());
     }
 
     /**
