@@ -19,6 +19,7 @@
 #include "Controllable.h"
 #include "sorted_vector.h"
 #include "PointResponse.h"
+#include "mgr_paosched.h"
 
 namespace Cti {
 namespace Database {
@@ -322,6 +323,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     bool isVerificationAlreadyControlled();
     CtiCCSubstationBus& analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages);
     CtiCCSubstationBus& setCapBanksToVerifyFlags(int verificationStrategy, CtiMultiMsg_vec& ccEvents);
+    bool isBankSelectedByVerificationStrategy(int verificationStrategy, CtiCCCapBankPtr currentCapBank);
     CtiCCSubstationBus& recompileCapBanksToVerifyList();
     CtiCCSubstationBus& getNextCapBankToVerify(CtiMultiMsg_vec& ccEvents);
     bool sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
@@ -339,8 +341,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     long getNextTODStartTime();
 
     CtiCCSubstationBus& setVerificationAlreadyStartedFlag(bool verificationFlag);
-    void setVerificationStrategy(int verificationStrategy);
-    int getVerificationStrategy(void) const;
+    void setVerificationStrategy( CtiPAOScheduleManager::CtiVerificationStrategy verificationStrategy);
+    CtiPAOScheduleManager::CtiVerificationStrategy getVerificationStrategy(void) const;
     void setVerificationDisableOvUvFlag(bool flag);
     bool getVerificationDisableOvUvFlag(void) const;
     string getVerificationString();
@@ -456,7 +458,7 @@ private:
     long _voltReductionControlId;
     long _disableBusPointId;
     long _currentCapBankToVerifyAssumedOrigState;
-    int _verificationStrategy;
+    CtiPAOScheduleManager::CtiVerificationStrategy _verificationStrategy;
     bool _disableOvUvVerificationFlag;
     long _capBankToVerifyInactivityTime;
 

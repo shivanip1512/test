@@ -23,6 +23,7 @@ VerificationExecutor::VerificationExecutor(VerifyBanks* command)
     _verifyType = command->getCommandId();
     _disableOvUv = command->getDisableOvUv();
     _userName = command->getUser();
+    _bankId = 0;
 }
 
 VerificationExecutor::VerificationExecutor(VerifyInactiveBanks* command)
@@ -32,6 +33,16 @@ VerificationExecutor::VerificationExecutor(VerifyInactiveBanks* command)
     _disableOvUv = command->getDisableOvUv();
     _userName = command->getUser();
     _inactiveTime = command->getBankInactiveTime();
+    _bankId = 0;
+}
+
+VerificationExecutor::VerificationExecutor(VerifySelectedBank* command)
+{
+    _deviceId = command->getItemId();
+    _verifyType = command->getCommandId();
+    _disableOvUv = command->getDisableOvUv();
+    _userName = command->getUser();
+    _bankId = command->getBankId();
 }
 
 void VerificationExecutor::execute()
@@ -66,6 +77,7 @@ VerificationExecutor::VerificationAction VerificationExecutor::convertVerificati
         case CapControlCommand::VERIFY_FAILED_BANK:
         case CapControlCommand::VERIFY_QUESTIONABLE_BANK:
         case CapControlCommand::VERIFY_INACTIVE_BANKS:
+        case CapControlCommand::VERIFY_SELECTED_BANK:
         case CapControlCommand::VERIFY_STAND_ALONE_BANK:
             ret = VERIFY_START;
             break;
@@ -186,10 +198,10 @@ void VerificationExecutor::startVerification()
     if (currentSubstationBus->getVerificationFlag())
     {
         if (currentSubstationBus->getPerformingVerificationFlag() &&
-            _verifyType < currentSubstationBus->getVerificationStrategy())
+            _verifyType < (int)currentSubstationBus->getVerificationStrategy())
         {
             currentSubstationBus->setOverlappingVerificationFlag( true );
-            currentSubstationBus->setVerificationStrategy(_verifyType);
+            currentSubstationBus->setVerificationStrategy(CtiPAOScheduleManager::CtiVerificationStrategy(_verifyType));
             currentSubstationBus->setVerificationDisableOvUvFlag(_disableOvUv);
             currentSubstationBus->setCapBankInactivityTime(_inactiveTime);
             currentSubstationBus->setBusUpdatedFlag(true);
@@ -264,9 +276,15 @@ void VerificationExecutor::startVerification()
     }
 
     currentSubstationBus->setVerificationFlag(true);
-    currentSubstationBus->setVerificationStrategy(_verifyType);
+    currentSubstationBus->setVerificationStrategy(CtiPAOScheduleManager::CtiVerificationStrategy(_verifyType));
     currentSubstationBus->setVerificationDisableOvUvFlag(_disableOvUv);
     currentSubstationBus->setCapBankInactivityTime(_inactiveTime);
+    CtiCCCapBankPtr bank = store->getCapBankByPaoId(_bankId);
+    if (bank)
+    {
+        bank->setSelectedForVerificationFlag(true);
+    }
+    
     currentSubstationBus->setBusUpdatedFlag(true);
 
     string text = currentSubstationBus->getVerificationString();

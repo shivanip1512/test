@@ -292,7 +292,7 @@ void CtiCCClientListener::_check()
                         if( _CC_DEBUG & CC_DEBUG_CLIENT )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime()  << " - Removing Client Connection: " << toDelete->getConnectionName() << endl;
+                            dout << CtiTime()  << " - Removing Client Connection: " << toDelete->getPeerName() << endl;
                         }
                         itr = _connections.erase(itr);
                         delete toDelete;

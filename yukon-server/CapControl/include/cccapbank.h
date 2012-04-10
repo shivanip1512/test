@@ -150,6 +150,8 @@ public:
 
     int  getVCtrlIndex() const;
     int getAssumedOrigVerificationState() const;
+    CtiCCCapBank& setSelectedForVerificationFlag(bool individualVerificationFlag);
+    bool CtiCCCapBank::isSelectedForVerification( ) const;
 
     std::vector <CtiCCMonitorPointPtr>& getMonitorPoint() {return _monitorPoint;};
     bool addMonitorPoint(CtiCCMonitorPointPtr monPoint);
@@ -348,6 +350,7 @@ private:
     std::string _additionalFlags;
     long _verificationControlStatus;
     int _vCtrlIndex; //1,2, or 3
+    bool _selectedForVerificationFlag;
     bool _retryFlag;
     long _prevVerificationControlStatus;
     int _assumedOrigCapBankPos;

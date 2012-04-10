@@ -38,6 +38,7 @@ class CtiTime;
 #define CAP_CONTROL_COMMAND_ID       533
 #define SYSTEM_STATUS_MSG_ID         534
 #define DELETE_ITEM_MSG_ID           535
+#define VERIFY_SELECTED_BANK_MSG_ID  536
 
 
 

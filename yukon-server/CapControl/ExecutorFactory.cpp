@@ -44,6 +44,11 @@ std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessa
             delete message;
             message = NULL;
             break;
+        case VERIFY_SELECTED_BANK_MSG_ID:
+            ret_val.reset(new VerificationExecutor((VerifySelectedBank*)message));
+            delete message;
+            message = NULL;
+            break;
         case CTICCSUBVERIFICATIONMSG_ID:
             ret_val.reset(new VerificationExecutor((VerifyBanks*)message));
             delete message;

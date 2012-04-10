@@ -111,6 +111,7 @@ MsgCapControlCommand.obj \
 MsgCapControlMessage.obj \
 MsgItemCommand.obj \
 MsgVerifyInactiveBanks.obj \
+MsgVerifySelectedBank.obj \
 MsgChangeOpState.obj \
 MsgCapControlEventLog.obj \
 MsgObjectMove.obj \

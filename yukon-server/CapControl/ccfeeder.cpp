@@ -4910,6 +4910,10 @@ bool CtiCCFeeder::checkForAndPerformVerificationSendRetry(const CtiTime& current
 
 CtiCCFeeder& CtiCCFeeder::setVerificationFlag(bool verificationFlag)
 {
+    if( verificationFlag )
+    {
+        setVerificationDoneFlag(!verificationFlag);
+    }
     if (_verificationFlag != verificationFlag)
         _dirty = true;
     _verificationFlag = verificationFlag;
@@ -7394,6 +7398,7 @@ void CtiCCFeeder::resetVerificationFlags()
         currentCapBank->setVerificationDoneFlag(false);
         //wouldn't hurt to set this.
         currentCapBank->setVCtrlIndex(0);
+        currentCapBank->setSelectedForVerificationFlag(false);
     }
 }
 

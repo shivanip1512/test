@@ -113,7 +113,7 @@ CtiCCSubstationBus::CtiCCSubstationBus()
       _sendMoreTimeControlledCommandsFlag(false),
       _voltReductionControlId(0),
       _currentCapBankToVerifyAssumedOrigState(0),
-      _verificationStrategy(0),
+      _verificationStrategy(CtiPAOScheduleManager::AllBanks),
       _disableOvUvVerificationFlag(false),
       _capBankToVerifyInactivityTime(0),
       _targetvarvalue(0),
@@ -206,7 +206,7 @@ CtiCCSubstationBus::CtiCCSubstationBus(StrategyManager * strategyManager)
       _sendMoreTimeControlledCommandsFlag(false),
       _voltReductionControlId(0),
       _currentCapBankToVerifyAssumedOrigState(0),
-      _verificationStrategy(0),
+      _verificationStrategy(CtiPAOScheduleManager::AllBanks),
       _disableOvUvVerificationFlag(false),
       _capBankToVerifyInactivityTime(0),
       _targetvarvalue(0),
@@ -6944,7 +6944,7 @@ bool CtiCCSubstationBus::areThereMoreCapBanksToVerify(CtiMultiMsg_vec& ccEvents)
 
 
 
-void CtiCCSubstationBus::setVerificationStrategy(int verificationStrategy)
+void CtiCCSubstationBus::setVerificationStrategy(CtiPAOScheduleManager::CtiVerificationStrategy verificationStrategy)
 {
     if( _verificationStrategy != verificationStrategy )
     {
@@ -6957,7 +6957,7 @@ void CtiCCSubstationBus::setVerificationStrategy(int verificationStrategy)
     _verificationStrategy = verificationStrategy;
 }
 
-int CtiCCSubstationBus::getVerificationStrategy(void) const
+CtiPAOScheduleManager::CtiVerificationStrategy CtiCCSubstationBus::getVerificationStrategy(void) const
 {
     return _verificationStrategy;
 }
@@ -7005,442 +7005,58 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
     long x, j;
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
-    switch (verificationStrategy)
+    for (x = 0; x < _ccfeeders.size(); x++)
     {
-        //case ALLBANKS:
-        case CtiPAOScheduleManager::AllBanks:
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
+        if (!currentFeeder->getDisableFlag())
         {
-            for (x = 0; x < _ccfeeders.size(); x++)
+            if (!getOverlappingVerificationFlag())
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
-                if (!currentFeeder->getDisableFlag())
+                currentFeeder->setVerificationFlag(true);
+            }
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+            for(j=0;j<ccCapBanks.size();j++)
+            {
+                CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)(ccCapBanks[j]);
+                if (isBankSelectedByVerificationStrategy(verificationStrategy, currentCapBank))
                 {
-                    if (!getOverlappingVerificationFlag())
+                    string textInfo = string("CapBank: ");
+                    textInfo += currentCapBank->getPaoName();
+                    CtiCCEventType_t eventAction = capControlEnableVerification;
+                    if (!currentCapBank->getDisableFlag())
                     {
-                        currentFeeder->setVerificationFlag(true);
-                        currentFeeder->setVerificationDoneFlag(false);
-                    }
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(j=0;j<ccCapBanks.size();j++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                        if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
+                        if (!getOverlappingVerificationFlag())
                         {
-                            if (!currentCapBank->getDisableFlag())
+                            currentCapBank->setVerificationFlag(true);
+                        }
+                        else
+                        {
+                            if (!currentCapBank->getVerificationDoneFlag())
                             {
-                                if (!getOverlappingVerificationFlag())
-                                {
-                                    currentCapBank->setVerificationFlag(true);
-                                    currentCapBank->setVerificationDoneFlag(false);
-                                    currentCapBank->setVCtrlIndex(0);
-                                }
-                                else
-                                {
-                                    if (!currentCapBank->getVerificationDoneFlag())
-                                    {
-                                        currentCapBank->setVerificationFlag(true);
-                                        currentCapBank->setVerificationDoneFlag(false);
-                                        currentCapBank->setVCtrlIndex(0);
-                                        currentFeeder->setVerificationFlag(true);
-                                        currentFeeder->setVerificationDoneFlag(false);
-                                    }
-                                    else
-                                    {
-                                        currentFeeder->setVerificationDoneFlag(true);
-                                    }
-                                }
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " scheduled for verification.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
+                                currentCapBank->setVerificationFlag(true);
+                                currentFeeder->setVerificationFlag(true);
                             }
                             else
                             {
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " Disabled! Will not verify.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
+                                currentFeeder->setVerificationDoneFlag(true);
                             }
                         }
+
+                        textInfo += " scheduled for verification.";
                     }
+                    else
+                    {
+                        
+                        textInfo += " Disabled! Will not verify.";
+                        eventAction = capControlDisableVerification;
+                    }
+                    long stationId, areaId, spAreaId;
+                    store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
+                    ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), eventAction, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
                 }
             }
-            break;
         }
-        case CtiPAOScheduleManager::FailedAndQuestionableBanks:
-        {
-            for (x = 0; x < _ccfeeders.size(); x++)
-            {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
-                if (!currentFeeder->getDisableFlag())
-                {
-                    if (!getOverlappingVerificationFlag())
-                    {
-                        currentFeeder->setVerificationFlag(true);
-                        currentFeeder->setVerificationDoneFlag(false);
-                    }
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(j=0;j<ccCapBanks.size();j++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                        if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
-                            (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail ||
-                             currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ||
-                             currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
-                             currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
-                        {
-                            if (!currentCapBank->getDisableFlag())
-                            {
-                                if (!getOverlappingVerificationFlag())
-                                {
-                                    currentCapBank->setVerificationFlag(true);
-                                    currentCapBank->setVerificationDoneFlag(false);
-                                    currentCapBank->setVCtrlIndex(0);
-                                }
-                                else
-                                {
-                                    if (!currentCapBank->getVerificationDoneFlag())
-                                    {
-                                        currentCapBank->setVerificationFlag(true);
-                                        currentCapBank->setVerificationDoneFlag(false);
-                                        currentCapBank->setVCtrlIndex(0);
-                                        currentFeeder->setVerificationFlag(true);
-                                        currentFeeder->setVerificationDoneFlag(false);
-                                    }
-                                    else
-                                    {
-                                        currentFeeder->setVerificationDoneFlag(true);
-                                    }
-                                }
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " scheduled for verification.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
-                            }
-                            else
-                            {
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " Disabled! Will not verify.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
-                            }
-                        }
-                    }
-                }
-            }
-            break;
-        }
-
-        case CtiPAOScheduleManager::FailedBanks:
-        {
-            for (x = 0; x < _ccfeeders.size(); x++)
-            {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
-
-                if (!currentFeeder->getDisableFlag())
-                {
-                    if (!getOverlappingVerificationFlag())
-                    {
-                        currentFeeder->setVerificationFlag(true);
-                        currentFeeder->setVerificationDoneFlag(false);
-                    }
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(j=0;j<ccCapBanks.size();j++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                        if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
-                            ( currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail ||
-                              currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ) )
-                        {
-                            if (!currentCapBank->getDisableFlag())
-                            {
-                                if (!getOverlappingVerificationFlag())
-                                {
-                                    currentCapBank->setVerificationFlag(true);
-                                    currentCapBank->setVerificationDoneFlag(false);
-                                    currentCapBank->setVCtrlIndex(0);
-                                }
-                                else
-                                {
-                                    if (!currentCapBank->getVerificationDoneFlag())
-                                    {
-                                        currentCapBank->setVerificationFlag(true);
-                                        currentCapBank->setVerificationDoneFlag(false);
-                                        currentCapBank->setVCtrlIndex(0);
-                                        currentFeeder->setVerificationFlag(true);
-                                        currentFeeder->setVerificationDoneFlag(false);
-                                    }
-                                    else
-                                    {
-                                        currentFeeder->setVerificationDoneFlag(true);
-                                    }
-                                }
-
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " scheduled for verification.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
-                            }
-                            else
-                            {
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " Disabled! Will not verify.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
-                            }
-                        }
-                    }
-                }
-            }
-            break;
-        }
-        case CtiPAOScheduleManager::QuestionableBanks:
-        {
-            for (x = 0; x < _ccfeeders.size(); x++)
-            {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
-                if (!currentFeeder->getDisableFlag())
-                {
-                    if (!getOverlappingVerificationFlag())
-                    {
-                        currentFeeder->setVerificationFlag(true);
-                        currentFeeder->setVerificationDoneFlag(false);
-                    }
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(j=0;j<ccCapBanks.size();j++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                        if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
-                            (currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
-                             currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) )
-                        {
-                            if (!currentCapBank->getDisableFlag())
-                            {
-                                if (!getOverlappingVerificationFlag())
-                                {
-                                    currentCapBank->setVerificationFlag(true);
-                                    currentCapBank->setVerificationDoneFlag(false);
-                                    currentCapBank->setVCtrlIndex(0);
-                                }
-                                else
-                                {
-                                    if (!currentCapBank->getVerificationDoneFlag())
-                                    {
-                                        currentCapBank->setVerificationFlag(true);
-                                        currentCapBank->setVerificationDoneFlag(false);
-                                        currentCapBank->setVCtrlIndex(0);
-                                        currentFeeder->setVerificationFlag(true);
-                                        currentFeeder->setVerificationDoneFlag(false);
-                                    }
-                                    else
-                                    {
-                                        currentFeeder->setVerificationDoneFlag(true);
-                                    }
-                                }
-
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " scheduled for verification.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
-                            }
-                            else
-                            {
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " Disabled! Will not verify.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
-                            }
-                        }
-                    }
-                }
-            }
-            break;
-        }
-        case CtiPAOScheduleManager::SelectedForVerificationBanks:
-        {
-            break;
-        }
-        case CtiPAOScheduleManager::BanksInactiveForXTime:
-        {
-            CtiTime currentTime = CtiTime();
-            currentTime.now();
-            for (x = 0; x < _ccfeeders.size(); x++)
-            {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
-                if (!currentFeeder->getDisableFlag())
-                {
-                    if (!getOverlappingVerificationFlag())
-                    {
-                        currentFeeder->setVerificationFlag(true);
-                        currentFeeder->setVerificationDoneFlag(false);
-                    }
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(j=0;j<ccCapBanks.size();j++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                        if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
-                            ( currentCapBank->getLastStatusChangeTime().seconds() <= ( currentTime.seconds() - getCapBankInactivityTime())) )
-                        {
-                            if (!currentCapBank->getDisableFlag())
-                            {
-                                if (!getOverlappingVerificationFlag())
-                                {
-                                    currentCapBank->setVerificationFlag(true);
-                                    currentCapBank->setVerificationDoneFlag(false);
-                                    currentCapBank->setVCtrlIndex(0);
-                                }
-                                else
-                                {
-                                    if (!currentCapBank->getVerificationDoneFlag())
-                                    {
-                                        currentCapBank->setVerificationFlag(true);
-                                        currentCapBank->setVerificationDoneFlag(false);
-                                        currentCapBank->setVCtrlIndex(0);
-                                        currentFeeder->setVerificationFlag(true);
-                                        currentFeeder->setVerificationDoneFlag(false);
-                                    }
-                                    else
-                                    {
-                                        currentFeeder->setVerificationDoneFlag(true);
-                                    }
-                                }
-
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " scheduled for verification.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
-                            }
-                            else
-                            {
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " Disabled! Will not verify.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
-                            }
-                        }
-                    }
-                }
-            }
-
-            break;
-        }
-        case CtiPAOScheduleManager::StandAloneBanks:
-        {
-            for (x = 0; x < _ccfeeders.size(); x++)
-            {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[x];
-                if (!currentFeeder->getDisableFlag())
-                {
-                    if (!getOverlappingVerificationFlag())
-                    {
-                        currentFeeder->setVerificationFlag(true);
-                        currentFeeder->setVerificationDoneFlag(false);
-                    }
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(j=0;j<ccCapBanks.size();j++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
-                        if (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::StandAloneState) )
-                        {
-                            if (!currentCapBank->getDisableFlag() )
-                            {
-                                if (!getOverlappingVerificationFlag())
-                                {
-                                    currentCapBank->setVerificationFlag(true);
-                                    currentCapBank->setVerificationDoneFlag(false);
-                                    currentCapBank->setVCtrlIndex(0);
-                                }
-                                else
-                                {
-                                    if (!currentCapBank->getVerificationDoneFlag())
-                                    {
-                                        currentCapBank->setVerificationFlag(true);
-                                        currentCapBank->setVerificationDoneFlag(false);
-                                        currentCapBank->setVCtrlIndex(0);
-                                        currentFeeder->setVerificationFlag(true);
-                                        currentFeeder->setVerificationDoneFlag(false);
-                                    }
-                                    else
-                                    {
-                                        currentFeeder->setVerificationDoneFlag(true);
-                                    }
-                                }
-
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " scheduled for verification.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlEnableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
-                            }
-                            else
-                            {
-                                string textInfo;
-                                textInfo += string("CapBank: ");
-                                textInfo += currentCapBank->getPaoName();
-                                textInfo += " Disabled! Will not verify.";
-
-                                long stationId, areaId, spAreaId;
-                                store->getSubBusParentInfo(this, spAreaId, areaId, stationId);
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getPaoId(), currentFeeder->getPaoId(), capControlDisableVerification, getEventSequence(), currentCapBank->getControlStatus(), textInfo, "cap control verification"));
-                            }
-                        }
-                    }
-                }
-            }
-            break;
-        }
-        default:
-            break;
     }
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
@@ -7470,11 +7086,63 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
             dout <<endl;
         }
     }
-
-
     setBusUpdatedFlag(true);
 
     return *this;
+}
+
+
+bool CtiCCSubstationBus::isBankSelectedByVerificationStrategy(int verificationStrategy, CtiCCCapBankPtr currentCapBank)
+{
+
+    switch (verificationStrategy)
+    {
+        //case ALLBANKS:
+        case CtiPAOScheduleManager::AllBanks:
+        {
+            return ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState);
+        }
+        case CtiPAOScheduleManager::FailedAndQuestionableBanks:
+        {
+            return (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
+                            (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail ||
+                             currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ||
+                             currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
+                             currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) );
+        }
+
+        case CtiPAOScheduleManager::FailedBanks:
+        {
+           return (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
+                            ( currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail ||
+                              currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail ) );
+                        
+        }
+        case CtiPAOScheduleManager::QuestionableBanks:
+        {
+            return (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
+                            (currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
+                             currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ) );
+        }
+        case CtiPAOScheduleManager::SelectedForVerificationBanks:
+        {
+            return currentCapBank->isSelectedForVerification();
+        }
+        case CtiPAOScheduleManager::BanksInactiveForXTime:
+        {
+            CtiTime currentTime = CtiTime();
+            currentTime.now();
+            return (ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
+                            ( currentCapBank->getLastStatusChangeTime().seconds() <= ( currentTime.seconds() - getCapBankInactivityTime())) );
+        }
+        case CtiPAOScheduleManager::StandAloneBanks:
+        {
+            return ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::StandAloneState);
+        }
+        default:
+            return false;
+    }
+
 }
 
 void CtiCCSubstationBus::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
@@ -9802,7 +9470,7 @@ void CtiCCSubstationBus::restore(Cti::RowReader& rdr)
     setCurrentVerificationCapBankId(-1);
     setCurrentVerificationFeederId(-1);
     setCurrentVerificationCapBankState(0);
-    setVerificationStrategy(-1);
+    setVerificationStrategy(CtiPAOScheduleManager::Undefined );
     setVerificationDisableOvUvFlag(false);
     setCapBankInactivityTime(-1);
 
@@ -9940,7 +9608,9 @@ void CtiCCSubstationBus::setDynamicData(Cti::RowReader& rdr)
     rdr["currverifycbid"] >> _currentVerificationCapBankId;
     rdr["currverifyfeederid"] >> _currentVerificationFeederId;
     rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
-    rdr["verificationstrategy"] >> _verificationStrategy;
+    int temp;
+    rdr["verificationstrategy"] >> temp;
+    _verificationStrategy = CtiPAOScheduleManager::CtiVerificationStrategy(temp);
     rdr["cbinactivitytime"] >> _capBankToVerifyInactivityTime;
     rdr["currentvoltpointvalue"] >> _currentvoltloadpointvalue;
 
@@ -10038,6 +9708,11 @@ string CtiCCSubstationBus::getVerificationString()
         }
         case CapControlCommand::VERIFY_INACTIVE_BANKS:
         {
+            break;
+        }
+        case CapControlCommand::VERIFY_SELECTED_BANK:
+        {
+            text += " Selected";
             break;
         }
         case CapControlCommand::VERIFY_STAND_ALONE_BANK:

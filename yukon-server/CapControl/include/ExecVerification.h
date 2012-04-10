@@ -2,6 +2,7 @@
 
 #include "MsgVerifyBanks.h"
 #include "MsgVerifyInactiveBanks.h"
+#include "MsgVerifySelectedBank.h"
 #include "ccexecutor.h"
 
 class VerificationExecutor : public CtiCCExecutor
@@ -16,6 +17,7 @@ class VerificationExecutor : public CtiCCExecutor
 
         VerificationExecutor(VerifyBanks* command);
         VerificationExecutor(VerifyInactiveBanks* command);
+        VerificationExecutor(VerifySelectedBank* command);
         virtual void execute();
 
         VerificationAction convertVerificationCommand();
@@ -29,5 +31,6 @@ class VerificationExecutor : public CtiCCExecutor
         long _verifyType;
         bool _disableOvUv;
         long _inactiveTime;
+        long _bankId;
         string _userName;
 };

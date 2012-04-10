@@ -82,6 +82,7 @@ class CapControlCommand : public CtiMessage
             VERIFY_STAND_ALONE_BANK,//61
             STOP_VERIFICATION,//62
             EMERGENCY_STOP_VERIFICATION,//63
+            VERIFY_SELECTED_BANK,//64
 
             VOLTAGE_REGULATOR_INTEGRITY_SCAN = 70,
             VOLTAGE_REGULATOR_REMOTE_CONTROL_ENABLE,

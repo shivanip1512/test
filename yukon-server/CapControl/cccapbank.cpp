@@ -64,6 +64,7 @@ _originalswitchingorder(0),
 _originalcloseorder(0),
 _originaltriporder(0),
 _verificationControlStatus(0),
+_selectedForVerificationFlag(false),
 _vCtrlIndex(0),
 _retryFlag(false),
 _prevVerificationControlStatus(0),
@@ -953,6 +954,11 @@ CtiCCCapBank& CtiCCCapBank::setStatusPointId(long statuspoint)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setVerificationFlag(bool verificationFlag)
 {
+    if (verificationFlag)
+    {
+        setVerificationDoneFlag(!verificationFlag);
+        setVCtrlIndex(0);
+    }
 
     if (_verificationFlag != verificationFlag)
     {
@@ -962,6 +968,18 @@ CtiCCCapBank& CtiCCCapBank::setVerificationFlag(bool verificationFlag)
 
     return *this;
 }
+
+
+CtiCCCapBank& CtiCCCapBank::setSelectedForVerificationFlag(bool individualVerificationFlag)
+{
+    _selectedForVerificationFlag = individualVerificationFlag;
+    return *this;
+}
+bool CtiCCCapBank::isSelectedForVerification( ) const
+{
+    return _selectedForVerificationFlag;
+}
+
 
 CtiCCCapBank& CtiCCCapBank::setPerformingVerificationFlag(bool performingVerificationFlag)
 {
@@ -2092,6 +2110,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
         _assumedOrigCapBankPos = rightObj._assumedOrigCapBankPos;
         _prevVerificationControlStatus = rightObj._prevVerificationControlStatus;
         _vCtrlIndex = rightObj._vCtrlIndex;
+        _selectedForVerificationFlag = rightObj._selectedForVerificationFlag;
         _additionalFlags = rightObj._additionalFlags;
         _verificationFlag = rightObj._verificationFlag;
         _performingVerificationFlag = rightObj._performingVerificationFlag;
@@ -2193,6 +2212,7 @@ void CtiCCCapBank::restore(Cti::RowReader& rdr)
     setAssumedOrigVerificationState(CtiCCCapBank::Open);
     setPreviousVerificationControlStatus(CtiCCCapBank::Open);
     setVCtrlIndex(-1);
+    setSelectedForVerificationFlag(false);
     setVerificationFlag(false);
     setRetryOpenFailedFlag(false);
     setRetryCloseFailedFlag(false);

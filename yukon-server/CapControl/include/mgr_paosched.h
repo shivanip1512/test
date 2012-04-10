@@ -11,13 +11,14 @@ public:
 
     typedef enum
     {
-        AllBanks = 0,
+        Undefined = -1,
+        AllBanks = 56,
         FailedAndQuestionableBanks,
         FailedBanks,
         QuestionableBanks,
-        SelectedForVerificationBanks,
         BanksInactiveForXTime,
-        StandAloneBanks
+        StandAloneBanks,
+        SelectedForVerificationBanks= 64,
     } CtiVerificationStrategy;
 
     typedef enum
