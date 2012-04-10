@@ -956,7 +956,7 @@ CtiCCCapBank& CtiCCCapBank::setVerificationFlag(bool verificationFlag)
 {
     if (verificationFlag)
     {
-        setVerificationDoneFlag(!verificationFlag);
+        setVerificationDoneFlag(false);
         setVCtrlIndex(0);
     }
 

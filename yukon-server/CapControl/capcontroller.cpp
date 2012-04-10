@@ -841,8 +841,10 @@ void CtiCapController::controlLoop()
                         CtiMultiMsg_vec& temp = multiCapMsg->getData( );
                         for(int i=0;i<temp.size( );i++)
                         {
-                            CtiCCExecutorFactory::createExecutor((CtiMessage *) temp[i])->execute();
+                            CtiMessage* msgCopy = ((CtiMessage *)temp[i])->replicateMessage(); //copy deleted in executor.
+                            CtiCCExecutorFactory::createExecutor(msgCopy)->execute();
                         }
+                        delete multiCapMsg; //deletes all containing messages.
                         multiCapMsg = new CtiMultiMsg();
                     }
                 }

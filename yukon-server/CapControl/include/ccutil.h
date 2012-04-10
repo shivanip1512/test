@@ -3,6 +3,7 @@
 #include "pointattribute.h"
 #include "devicetypes.h"
 #include "msg_pcrequest.h"
+#include "mgr_paosched.h"
 
 namespace Cti           {
 namespace CapControl    {
@@ -59,6 +60,8 @@ bool isQualityOk(unsigned quality);
 
 static const std::set<int> ClosedStates = initClosedStates();
 static const std::set<int> OpenStates = initOpenStates();
+
+CtiPAOScheduleManager::VerificationStrategy ConvertIntToVerificationStrategy(int verifyId);
 
 class MissingPointAttribute : public std::exception
 {

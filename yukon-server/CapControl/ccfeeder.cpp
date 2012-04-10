@@ -4912,7 +4912,7 @@ CtiCCFeeder& CtiCCFeeder::setVerificationFlag(bool verificationFlag)
 {
     if( verificationFlag )
     {
-        setVerificationDoneFlag(!verificationFlag);
+        setVerificationDoneFlag(false);
     }
     if (_verificationFlag != verificationFlag)
         _dirty = true;

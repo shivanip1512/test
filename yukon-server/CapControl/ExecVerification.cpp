@@ -15,6 +15,7 @@ extern bool _LOG_MAPID_INFO;
 
 using std::endl;
 using Cti::CapControl::CapControlType;
+using Cti::CapControl::ConvertIntToVerificationStrategy;
 
 
 VerificationExecutor::VerificationExecutor(VerifyBanks* command)
@@ -201,7 +202,7 @@ void VerificationExecutor::startVerification()
             _verifyType < (int)currentSubstationBus->getVerificationStrategy())
         {
             currentSubstationBus->setOverlappingVerificationFlag( true );
-            currentSubstationBus->setVerificationStrategy(CtiPAOScheduleManager::CtiVerificationStrategy(_verifyType));
+            currentSubstationBus->setVerificationStrategy( ConvertIntToVerificationStrategy(_verifyType) );
             currentSubstationBus->setVerificationDisableOvUvFlag(_disableOvUv);
             currentSubstationBus->setCapBankInactivityTime(_inactiveTime);
             currentSubstationBus->setBusUpdatedFlag(true);
@@ -276,7 +277,7 @@ void VerificationExecutor::startVerification()
     }
 
     currentSubstationBus->setVerificationFlag(true);
-    currentSubstationBus->setVerificationStrategy(CtiPAOScheduleManager::CtiVerificationStrategy(_verifyType));
+    currentSubstationBus->setVerificationStrategy( ConvertIntToVerificationStrategy(_verifyType));
     currentSubstationBus->setVerificationDisableOvUvFlag(_disableOvUv);
     currentSubstationBus->setCapBankInactivityTime(_inactiveTime);
     CtiCCCapBankPtr bank = store->getCapBankByPaoId(_bankId);
@@ -438,5 +439,6 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
             }
         }
     }
-
 }
+
+

@@ -29,6 +29,7 @@ using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointResponsePtr;
 using Cti::CapControl::PointIdVector;
 using Cti::CapControl::PointResponseKey;
+using Cti::CapControl::ConvertIntToVerificationStrategy;
 
 using std::endl;
 using std::set;
@@ -6944,7 +6945,7 @@ bool CtiCCSubstationBus::areThereMoreCapBanksToVerify(CtiMultiMsg_vec& ccEvents)
 
 
 
-void CtiCCSubstationBus::setVerificationStrategy(CtiPAOScheduleManager::CtiVerificationStrategy verificationStrategy)
+void CtiCCSubstationBus::setVerificationStrategy(CtiPAOScheduleManager::VerificationStrategy verificationStrategy)
 {
     if( _verificationStrategy != verificationStrategy )
     {
@@ -6957,7 +6958,7 @@ void CtiCCSubstationBus::setVerificationStrategy(CtiPAOScheduleManager::CtiVerif
     _verificationStrategy = verificationStrategy;
 }
 
-CtiPAOScheduleManager::CtiVerificationStrategy CtiCCSubstationBus::getVerificationStrategy(void) const
+CtiPAOScheduleManager::VerificationStrategy CtiCCSubstationBus::getVerificationStrategy(void) const
 {
     return _verificationStrategy;
 }
@@ -7000,7 +7001,7 @@ long CtiCCSubstationBus::getCapBankInactivityTime(void) const
 }
 
 
-CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificationStrategy, CtiMultiMsg_vec& ccEvents)
+void CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificationStrategy, CtiMultiMsg_vec& ccEvents)
 {
     long x, j;
 
@@ -7060,35 +7061,25 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCapBanksToVerifyFlags(int verificatio
     }
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout <<" CapBank LIST:  ";
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout <<" CapBank LIST:  ";
         for (x = 0; x < _ccfeeders.size(); x++)
         {
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(x);
             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
             for(j=0;j<ccCapBanks.size();j++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[j]);
                 if (currentCapBank->getVerificationFlag())
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout <<"  " << currentCapBank->getPaoId();
-                    }
+                    dout <<"  " << currentCapBank->getPaoId();
                 }
-
             }
         }
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout <<endl;
-        }
+        dout <<endl;
     }
     setBusUpdatedFlag(true);
-
-    return *this;
 }
 
 
@@ -7097,7 +7088,6 @@ bool CtiCCSubstationBus::isBankSelectedByVerificationStrategy(int verificationSt
 
     switch (verificationStrategy)
     {
-        //case ALLBANKS:
         case CtiPAOScheduleManager::AllBanks:
         {
             return ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState);
@@ -7140,7 +7130,9 @@ bool CtiCCSubstationBus::isBankSelectedByVerificationStrategy(int verificationSt
             return ciStringEqual(currentCapBank->getOperationalState(),CtiCCCapBank::StandAloneState);
         }
         default:
+        {    
             return false;
+        }
     }
 
 }
@@ -9610,7 +9602,7 @@ void CtiCCSubstationBus::setDynamicData(Cti::RowReader& rdr)
     rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
     int temp;
     rdr["verificationstrategy"] >> temp;
-    _verificationStrategy = CtiPAOScheduleManager::CtiVerificationStrategy(temp);
+    _verificationStrategy = ConvertIntToVerificationStrategy(temp);
     rdr["cbinactivitytime"] >> _capBankToVerifyInactivityTime;
     rdr["currentvoltpointvalue"] >> _currentvoltloadpointvalue;
 

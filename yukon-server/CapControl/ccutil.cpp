@@ -136,5 +136,26 @@ std::string desolvePhase( const Phase & p )
     return "?";
 }
 
+CtiPAOScheduleManager::VerificationStrategy ConvertIntToVerificationStrategy(int verifyId)
+{
+    switch (verifyId)
+    {
+        case CtiPAOScheduleManager::AllBanks:
+        case CtiPAOScheduleManager::FailedAndQuestionableBanks:
+        case CtiPAOScheduleManager::FailedBanks:
+        case CtiPAOScheduleManager::QuestionableBanks:
+        case CtiPAOScheduleManager::BanksInactiveForXTime:
+        case CtiPAOScheduleManager::StandAloneBanks:
+        case CtiPAOScheduleManager::SelectedForVerificationBanks:
+        {
+            return CtiPAOScheduleManager::VerificationStrategy(verifyId);
+        }
+        default:
+        {
+            return CtiPAOScheduleManager::Undefined;
+        }
+    }
+}
+
 }
 }

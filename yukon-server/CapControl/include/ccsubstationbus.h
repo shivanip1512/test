@@ -322,7 +322,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     bool isVerificationAlreadyControlled();
     CtiCCSubstationBus& analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages);
-    CtiCCSubstationBus& setCapBanksToVerifyFlags(int verificationStrategy, CtiMultiMsg_vec& ccEvents);
+    void setCapBanksToVerifyFlags(int verificationStrategy, CtiMultiMsg_vec& ccEvents);
     bool isBankSelectedByVerificationStrategy(int verificationStrategy, CtiCCCapBankPtr currentCapBank);
     CtiCCSubstationBus& recompileCapBanksToVerifyList();
     CtiCCSubstationBus& getNextCapBankToVerify(CtiMultiMsg_vec& ccEvents);
@@ -341,8 +341,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     long getNextTODStartTime();
 
     CtiCCSubstationBus& setVerificationAlreadyStartedFlag(bool verificationFlag);
-    void setVerificationStrategy( CtiPAOScheduleManager::CtiVerificationStrategy verificationStrategy);
-    CtiPAOScheduleManager::CtiVerificationStrategy getVerificationStrategy(void) const;
+    void setVerificationStrategy( CtiPAOScheduleManager::VerificationStrategy verificationStrategy);
+    CtiPAOScheduleManager::VerificationStrategy getVerificationStrategy(void) const;
     void setVerificationDisableOvUvFlag(bool flag);
     bool getVerificationDisableOvUvFlag(void) const;
     string getVerificationString();
@@ -458,7 +458,7 @@ private:
     long _voltReductionControlId;
     long _disableBusPointId;
     long _currentCapBankToVerifyAssumedOrigState;
-    CtiPAOScheduleManager::CtiVerificationStrategy _verificationStrategy;
+    CtiPAOScheduleManager::VerificationStrategy _verificationStrategy;
     bool _disableOvUvVerificationFlag;
     long _capBankToVerifyInactivityTime;
 

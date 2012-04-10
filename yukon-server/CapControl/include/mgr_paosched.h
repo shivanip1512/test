@@ -18,8 +18,8 @@ public:
         QuestionableBanks,
         BanksInactiveForXTime,
         StandAloneBanks,
-        SelectedForVerificationBanks= 64,
-    } CtiVerificationStrategy;
+        SelectedForVerificationBanks = 64
+    } VerificationStrategy;
 
     typedef enum
     {
@@ -61,7 +61,6 @@ public:
     void runScheduledEvent(CtiPAOEvent *event);
     int parseEvent(const std::string& command, int &strategy, long &secsSinceLastOperation);
     std::string longToString(long val);
-
 
 private:
     CtiPAOScheduleManager();
