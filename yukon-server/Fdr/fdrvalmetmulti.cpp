@@ -190,8 +190,14 @@ int CtiFDR_ValmetMulti::readConfig()
     return true;
 }
 
+void CtiFDR_ValmetMulti::begineNewPoints()
+{
+    signalReloadList();
+}
+
 void CtiFDR_ValmetMulti::signalReloadList()
 {
+    _helper->clearMappings();
     //The list is being reloaded. Clear our tracking map to be re-filled.
     _receiveNameToPointId.clear();
 }

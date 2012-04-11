@@ -76,6 +76,7 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         virtual bool processTimeSyncMessage(Cti::Fdr::ServerConnection& connection,
                                             const char* data, unsigned int size);
 
+        virtual void begineNewPoints();
         virtual void signalReloadList();
         virtual void signalPointRemoved(std::string &pointName);
 
