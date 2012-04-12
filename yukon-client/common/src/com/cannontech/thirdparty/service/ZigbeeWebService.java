@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.cannontech.common.model.YukonCancelTextMessage;
 import com.cannontech.common.model.YukonTextMessage;
-import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
@@ -64,14 +63,18 @@ public interface ZigbeeWebService extends ZigbeeStateUpdaterService {
 	/**
 	 * Sends a text message to the gateway. 
      *  
+     *  Required YukonTextMessage to have a unique Id set by the Caller. If the ID is not unique the message will not go out to the device.
+     *  
+     *  Note: This should only be called by YukonServiceManger code, If another service wants to send a message, use the ActiveMQ Queue to get it to the YSM.
+     *  
 	 */
 	public void sendTextMessage(YukonTextMessage message) throws ZigbeeClusterLibraryException, DigiWebServiceException ;
 
     /**
      * Cancels a text message to the gateway. 
      *  
-     * @param cancelZigbeeText
-     * @throws ZigbeeClusterLibraryException
+     *  Note: This should only be called by YukonServiceManger code, If another service wants to cancel a message, use the ActiveMQ Queue to get it to the YSM.
+     *  
      */
     public void cancelTextMessage(YukonCancelTextMessage cancelZigbeeText) throws ZigbeeClusterLibraryException, DigiWebServiceException ;
 

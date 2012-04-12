@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 
+import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jsonOLD.JSONObject;
@@ -16,6 +17,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -38,6 +40,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.point.stategroup.Commissioned;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -48,7 +51,6 @@ import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
 import com.cannontech.thirdparty.digi.service.errors.ZigbeePingResponse;
-import com.cannontech.thirdparty.exception.ZigbeeClusterLibraryException;
 import com.cannontech.thirdparty.exception.ZigbeeCommissionException;
 import com.cannontech.thirdparty.model.ZigbeeDevice;
 import com.cannontech.thirdparty.service.ZigbeeStateUpdaterService;
@@ -84,6 +86,9 @@ public class ZigBeeHardwareController {
     private @Autowired YukonUserContextMessageSourceResolver messageSourceResolver;
     private @Autowired ZigbeeEventLogService zigbeeEventLogService;
     private @Autowired PaoDao paoDao;
+    private @Autowired NextValueHelper nextValueHelper;
+    // @Autowired by setter
+    private JmsTemplate jmsTemplate;
     
     @RequestMapping
     public void refresh(HttpServletResponse resp, YukonUserContext context, int deviceId) throws NoSuchMessageException, IOException {
@@ -389,13 +394,12 @@ public class ZigBeeHardwareController {
             inventoryIds.add(inventoryId);
             textMessage.setInventoryIds(inventoryIds);
             
-            zigbeeWebService.sendTextMessage(textMessage);
+            long yukonMessageId = nextValueHelper.getNextValue("ExternalToYukonMessageIdMapping");
+            textMessage.setMessageId(yukonMessageId);
+            jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", textMessage);
             
             zigbeeEventLogService.zigbeeSentText(pao.getPaoName(),textMessage.getMessage());
         } catch (DigiNotConfiguredException e) {
-            messageFailed = true;
-            errorMessage = e.getMessage();
-        } catch (ZigbeeClusterLibraryException e) {
             messageFailed = true;
             errorMessage = e.getMessage();
         } catch (DigiWebServiceException e) {
@@ -483,5 +487,11 @@ public class ZigBeeHardwareController {
         model.addAttribute("accountId", accountId);
         
         return "redirect:/spring/stars/operator/hardware/view";
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setPubSubDomain(false);
     }
 }

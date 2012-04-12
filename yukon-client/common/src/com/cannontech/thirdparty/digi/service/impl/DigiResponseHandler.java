@@ -257,7 +257,7 @@ public class DigiResponseHandler {
             try {
                 digiGateway =  gatewayDeviceDao.getDigiGateway(core.getDevMac());
             } catch ( EmptyResultDataAccessException e) {
-                log.warn("Unknown Gateway during DeviceCore refres: MAC: " + core.getDevMac() + " DevId: " + core.getDevId());
+                log.warn("Unknown Gateway during DeviceCore refresh: MAC: " + core.getDevMac() + " DevId: " + core.getDevId());
                 continue;
             }
             
