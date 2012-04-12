@@ -2545,6 +2545,19 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
             monPoint->dumpDynamicData(conn,currentDateTime);
         }
     }
+    try
+    {
+        if (stringContainsIgnoreCase(getControlDeviceType(), "CBC 702") )
+        {
+            CtiCCTwoWayPoints* twoWayPts = getTwoWayPoints();
+            twoWayPts->dumpDynamicData(conn,currentDateTime);
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
 
 void CtiCCCapBank::dumpDynamicPointResponseData(Cti::Database::DatabaseConnection& conn)

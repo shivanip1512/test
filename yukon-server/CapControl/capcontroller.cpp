@@ -3819,7 +3819,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 currentCapBank->setIgnoredReason(value);
                                 currentSubstationBus->setBusUpdatedFlag(true);
                                 currentCapBank->setIgnoreReasonTimeUpdated(timestamp);
-                             }
+                            }
 
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
@@ -4092,7 +4092,9 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
         afterVarsString += "ClosePending";
     }
     else
-    afterVarsString += currentCapBank->getControlStatusText();
+    {
+        afterVarsString += currentCapBank->getControlStatusText();
+    }
     text1 += afterVarsString;
     currentCapBank->setAfterVarsString(afterVarsString);
     currentCapBank->setPercentChangeString(" Rejection by " +currentCapBank->getIgnoreReasonText());

@@ -1033,21 +1033,6 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                 {
                                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                                     currentCapBank->dumpDynamicData(conn,currentDateTime);
-
-                                    try
-                                    {
-                                        if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(), "CBC 702") )
-                                        {
-                                            CtiCCTwoWayPoints* twoWayPts = currentCapBank->getTwoWayPoints();
-                                            twoWayPts->dumpDynamicData(conn,currentDateTime);
-                                        }
-                                    }
-                                    catch(...)
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                    }
-
                                     currentCapBank->getOperationStats().dumpDynamicData(conn,currentDateTime);
                                     for each(CtiCCMonitorPointPtr monPoint in currentCapBank->getMonitorPoint())
                                     {

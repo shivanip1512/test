@@ -484,6 +484,7 @@ bool CtiCCTwoWayPoints::setTwoWayStatusPointValue(long pointID, long value, CtiT
          (retVal = isTimestampNew(pointID, timestamp)) )
     {
         _pointValues.addPointValue(pointID, value, timestamp);
+        _dirty = true;
     }
     return retVal;
 }
@@ -496,6 +497,7 @@ bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue(long pointID, long value, CtiT
          (retVal = isTimestampNew(pointID, timestamp)) )
     {
         _pointValues.addPointValue(pointID, value, timestamp);
+        _dirty = true;
     }
     return retVal;
 }
@@ -508,6 +510,7 @@ bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(long pointID, long v
          (retVal = isTimestampNew(pointID, timestamp)) )
     {
         _pointValues.addPointValue(pointID, value, timestamp);
+        _dirty = true;
     }
     return retVal;
 }
