@@ -1607,13 +1607,13 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
             case CapControlCommand::SEND_OPEN_CAPBANK:
             {
                 actionText = string(" - Open");
-                OpenCapBank(bankId);
+                OpenCapBank(bankId, type != Cti::CapControl::CapBank);
                 break;
             }
             case CapControlCommand::SEND_CLOSE_CAPBANK:
             {
                 actionText = string(" - Close");
-                CloseCapBank(bankId);
+                CloseCapBank(bankId, type != Cti::CapControl::CapBank);
                 break;
             }
             case CapControlCommand::SEND_ENABLE_OVUV:
@@ -1973,7 +1973,7 @@ bool CtiCCCommandExecutor::checkForCommandRefusal(CtiCCFeeder* feeder)
 /*---------------------------------------------------------------------------
     OpenCapBank
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::OpenCapBank(long bankId)
+void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -2015,7 +2015,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId)
                     {
                         found = true;
                         controlID = currentCapBank->getControlDeviceId();
-                        if(!currentCapBank->getSendAllCommandFlag() &&
+                        if(!confirmImmediately &&
                            checkForCommandRefusal(currentFeeder))
                         {
                             {
@@ -2024,9 +2024,6 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId)
                             }
                             break;
                         }
-                        if (!currentCapBank->getSendAllCommandFlag())
-                            updatedSubs.push_back(currentSubstationBus);
-
                         updatedSubs.push_back(currentSubstationBus);
 
                         if (!currentSubstationBus->getVerificationFlag() &&
@@ -2148,9 +2145,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId)
                             }
 
 
-                            bool confirmImmediately = false;
-                            if( ciStringEqual(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::TimeOfDayControlMethod)||
-                                currentCapBank->getSendAllCommandFlag() )
+                            if( ciStringEqual(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::TimeOfDayControlMethod))
                             {
                                 confirmImmediately = true;
                             }
@@ -2202,7 +2197,6 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId)
                             }
                             else if (confirmImmediately)
                             {
-                                currentCapBank->setSendAllCommandFlag(false);
                                 doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, controlID);
                             }
                             currentSubstationBus->verifyControlledStatusFlags();
@@ -2285,7 +2279,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId)
 /*---------------------------------------------------------------------------
     CloseCapBank
 ---------------------------------------------------------------------------*/
-void CtiCCCommandExecutor::CloseCapBank(long bankId)
+void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -2329,7 +2323,7 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId)
                         found = true;
                         controlID = currentCapBank->getControlDeviceId();
 
-                        if(!currentCapBank->getSendAllCommandFlag() &&
+                        if(!confirmImmediately &&
                            checkForCommandRefusal(currentFeeder))
                         {
                             {
@@ -2338,11 +2332,7 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId)
                             }
                             break;
                         }
-                        if (!currentCapBank->getSendAllCommandFlag())
-                            updatedSubs.push_back(currentSubstationBus);
-
-                        currentCapBank->setSendAllCommandFlag(false);
-
+                        updatedSubs.push_back(currentSubstationBus);
 
                         if (!currentSubstationBus->getVerificationFlag() &&
                             currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::None)
@@ -2405,9 +2395,7 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId)
                                 double kvarAfter = 0;
                                 double kvarChange = 0;
 
-                                bool confirmImmediately = false;
-                                if( ciStringEqual(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::TimeOfDayControlMethod) ||
-                                    currentCapBank->getSendAllCommandFlag())
+                                if( ciStringEqual(currentSubstationBus->getStrategy()->getControlMethod(), ControlStrategy::TimeOfDayControlMethod))
                                 {
                                     confirmImmediately = true;
                                 }
@@ -2457,8 +2445,6 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId)
                                 if (confirmImmediately)
                                 {
                                     doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, controlID);
-                                    currentCapBank->setSendAllCommandFlag(false);
-
                                 }
                                 else
                                 {

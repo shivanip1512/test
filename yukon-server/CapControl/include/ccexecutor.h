@@ -93,8 +93,8 @@ class CtiCCCommandExecutor : public CtiCCExecutor
         void EnableCapBank();
         void DisableCapBank();
 
-        void OpenCapBank(long bankId);
-        void CloseCapBank(long bankId);
+        void OpenCapBank(long bankId, bool confirmImmediately = false);
+        void CloseCapBank(long bankId, bool confirmImmediately = false);
         void ConfirmOpen();
         void ConfirmClose();
         void doConfirmImmediately(CtiCCSubstationBus* currentSubstationBus, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, long controllerId);

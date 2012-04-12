@@ -94,7 +94,6 @@ _reportedCBCState(0),
 _ignoreFlag(false),
 _ignoreReason(0),
 _controlStatusQuality(false),
-_sendAllCommandFlag(false),
 _actionId(0),
 _insertDynamicDataFlag(true),
 _dirty(true)
@@ -538,11 +537,6 @@ long CtiCCCapBank::getControlStatusQuality() const
 bool CtiCCCapBank::getReEnableOvUvFlag() const
 {
     return _reEnableOvUvFlag;
-}
-
-bool CtiCCCapBank::getSendAllCommandFlag() const
-{
-    return _sendAllCommandFlag;
 }
 
 /*---------------------------------------------------------------------------
@@ -1599,13 +1593,6 @@ CtiCCCapBank& CtiCCCapBank::setActionId(long actionId)
     return *this;
 }
 
-
-CtiCCCapBank& CtiCCCapBank::setSendAllCommandFlag(bool flag)
-{
-    _sendAllCommandFlag = flag;
-    return *this;
-}
-
 bool CtiCCCapBank::updateVerificationState(void)
 {
 
@@ -2133,7 +2120,6 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
         _porterRetFailFlag = rightObj._porterRetFailFlag;
         _unsolicitedPendingFlag = rightObj._unsolicitedPendingFlag;
 
-        _sendAllCommandFlag = rightObj._sendAllCommandFlag;
         _ignoreReasonTimeUpdated = rightObj._ignoreReasonTimeUpdated;
         _ignoreIndicatorTimeUpdated = rightObj._ignoreIndicatorTimeUpdated;
         _unsolicitedChangeTimeUpdated = rightObj._unsolicitedChangeTimeUpdated;
@@ -2245,7 +2231,6 @@ void CtiCCCapBank::restore(Cti::RowReader& rdr)
     setPercentChangeString("none");
     setPartialPhaseInfo("(none)");
 
-    _sendAllCommandFlag = false;
     setIgnoreReasonTimeUpdated(gInvalidCtiTime);
     setIgnoreIndicatorTimeUpdated(gInvalidCtiTime);
     setUnsolicitedChangeTimeUpdated(gInvalidCtiTime);

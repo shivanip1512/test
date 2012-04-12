@@ -139,7 +139,6 @@ public:
     const std::string& getBeforeVarsString() const;
     const std::string& getAfterVarsString() const;
     const std::string& getPercentChangeString() const;
-    bool getSendAllCommandFlag() const;
     const CtiTime& getIgnoreReasonTimeUpdated() const;
     const CtiTime& getIgnoreIndicatorTimeUpdated() const;
     const CtiTime& getUnsolicitedChangeTimeUpdated() const;
@@ -216,7 +215,6 @@ public:
     CtiCCCapBank& setBeforeVarsString(const std::string& before);
     CtiCCCapBank& setAfterVarsString(const std::string& after);
     CtiCCCapBank& setPercentChangeString(const std::string& percent);
-    CtiCCCapBank& setSendAllCommandFlag(bool flag);
     CtiCCCapBank& setIgnoreReasonCounter(INT counter);
     CtiCCCapBank& setIgnoreReasonTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setIgnoreIndicatorTimeUpdated(const CtiTime& timestamp);
@@ -390,7 +388,6 @@ private:
     std::string _sPercentChange;
     long _controlStatusQuality;
 
-    bool _sendAllCommandFlag;
     CtiTime _ignoreReasonTimeUpdated;
     CtiTime _ignoreIndicatorTimeUpdated;
     CtiTime _unsolicitedChangeTimeUpdated;
