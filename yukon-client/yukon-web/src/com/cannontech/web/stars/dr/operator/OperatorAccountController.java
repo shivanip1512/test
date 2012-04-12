@@ -837,7 +837,9 @@ public class OperatorAccountController {
         modelMap.addAttribute("substations", substations);
 
         modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
-        modelMap.addAttribute("supportsPasswordSet", authenticationService.getDefaultAuthType(user));
+        boolean supportsPasswordSet =
+                authenticationService.supportsPasswordSet(authenticationService.getDefaultAuthType(user));
+        modelMap.addAttribute("supportsPasswordSet", supportsPasswordSet);
         modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
         modelMap.addAttribute("showLoginSection", showLoginSection);
         modelMap.addAttribute("ecResidentialGroups", ecResidentialGroups);
