@@ -5635,10 +5635,6 @@ void CtiCCSubstationBusStore::assignStrategyAtBus(CtiCCSubstationBusPtr bus, lon
         {
             bus->figureNextCheckTime();
         }
-        for (int i = 0; i < bus->getCCFeeders().size(); i++ )
-        {
-            ((CtiCCFeederPtr)bus->getCCFeeders()[i])->setStrategy( _strategyManager.getDefaultId() );
-        }
     }
 }
 
