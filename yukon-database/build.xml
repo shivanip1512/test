@@ -1,6 +1,27 @@
 <?xml version="1.0" ?>
 <project name="WriteToFiles" default="build">
 
+	<!-- SVN and SVN-ANT Tasks properties 
+	<property name="svn.repository.url" value="${svn.repository.url}"/>
+	<property name="svn.project.base.path" value="${svn.project.base.path}" />
+	<property name="svn.base.url" value="${svn.repository.url}/${svn.project.base.path}"/>
+	<property name="svnant.lib.dir" location="${basedir}svn-ant-lib"/>
+	<property name="svnant.javahl" value="false" />
+	<property name="svnant.svnkit" value="true" />
+	 SVN and SVN-ANT Tasks properties -->
+	
+	<path id="path.svnant">
+	    <pathelement location="${yukon-client.third-party}/svnant.jar"/>
+	    <pathelement location="${yukon-client.third-party}/svnClientAdapter.jar"/>
+        <pathelement location="${yukon-client.third-party}/svnjavahl.jar"/>
+	    <!-- ... -->
+	</path>
+
+	<typedef 
+	          resource="org/tigris/subversion/svnant/svnantlib.xml" 
+	          classpathref="path.svnant"
+	      />
+	
     <target name="build" >
         <antcall target="version_db_files"/>
     </target>
@@ -37,7 +58,18 @@
     	<copy file="Custom Scripts/SQL Server/DropDatabase.sql" tofile="tempDropDatabase.sql" overwrite="true" />
         <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
         <echo message="${databaseName}"/>
-        
+
+        <echo message="Checking out database snapshot folder" />
+    	<exec executable="svn">
+        	<arg value="checkout" />
+            <arg value="http://svn.cannontech.com/software/yukon/branches/development/databaseSnapshotTest/yukon-client/common/src/com/cannontech/database/snapshot"/>
+    		<arg value="./snapshots" />
+        	<arg value="--username" />
+        	<arg value="psplsoftwarebuild" />
+        	<arg value="--password" />
+        	<arg value="Cti123" />
+        </exec>
+
         <!-- Create sql server databse and user-->
         <sql
             driver="net.sourceforge.jtds.jdbc.Driver"
@@ -83,7 +115,7 @@
             <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=dbo"/>
-            <arg value="--outputXmlFile=${dbSnapshot}/mssql.xml"/>
+            <arg value="--outputXmlFile=./snapshots/mssql.xml"/>
             <classpath>
                <pathelement location="../yukon-client/third-party/jtds.jar"/>
             </classpath>
@@ -101,7 +133,25 @@
             </classpath>
             <transaction src="tempDropDatabase.sql" />
         </sql>
-        
+
+        <echo message="Latest diff" />
+        <exec executable="svn" dir="./snapshots">
+            <arg value="diff"/>
+        </exec>
+    	
+        <echo message="Checking in sql server database snapshot" />
+        <exec executable="svn" dir="./snapshots">
+        	<arg value="commit"/>
+        	<arg value="mssql.xml"/>
+            <arg value="-m" />
+        	<arg value="Checking in the latest database snapshot"/>
+        	<arg value="--username" />
+        	<arg value="psplsoftwarebuild" />
+        	<arg value="--password" />
+        	<arg value="Cti123" />
+        </exec>
+    	
+    	<echo message="Snapshot complete and checked in" />
     </target>
     
     <target name="oracleCreationScriptXMLFile" depends="version_db_files">
@@ -114,7 +164,18 @@
         <replace file="tempDropDatabase.sql" token="tempDatabase" value="${databaseName}"/>
         <echo message="${databaseName}"/>
         
-        <!-- Create oracle databse and user-->
+        <echo message="Checking out database snapshot folder" />
+        <exec executable="svn">
+            <arg value="checkout" />
+            <arg value="http://svn.cannontech.com/software/yukon/branches/development/databaseSnapshotTest/yukon-client/common/src/com/cannontech/database/snapshot"/>
+            <arg value="./snapshots" />
+            <arg value="--username" />
+            <arg value=" psplsoftwarebuild" />
+            <arg value="--password" />
+            <arg value="Cti123" />
+        </exec>    	
+        
+    	<!-- Create oracle databse and user-->
         <sql
             driver="oracle.jdbc.OracleDriver"
             url="jdbc:oracle:thin:@${dbServer}:${dbOracleServerPort}:${dbOracleServerAlias}"
@@ -141,7 +202,7 @@
             <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=${databaseName}"/>
-            <arg value="--outputXmlFile=${dbSnapshot}/oracle.xml"/>
+            <arg value="--outputXmlFile=./snapshots/oracle.xml"/>
             <classpath>
                 <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
             </classpath>
@@ -159,7 +220,24 @@
             </classpath>
             <transaction src="tempDropDatabase.sql" />
         </sql>
+    
+        <echo message="Latest diff" />
+        <exec executable="svn" dir="./snapshots">
+            <arg value="diff"/>
+        </exec>
         
+        <echo message="Checking in sql server database snapshot" />
+        <exec executable="svn" dir="./snapshots">
+            <arg value="commit"/>
+            <arg value="oracle.xml"/>
+            <arg value="-m" />
+            <arg value="Checking in the latest database snapshot"/>
+            <arg value="--username" />
+            <arg value="psplsoftwarebuild" />
+            <arg value="--password" />
+            <arg value="Cti123" />
+        </exec>
+
     </target>
 
 </project>
