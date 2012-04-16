@@ -1,11 +1,10 @@
 package com.cannontech.common.i18n;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 
 import com.cannontech.common.config.ConfigurationSource;
 
-public class YukonReloadableResourceBundleMessageSource extends ReloadableResourceBundleMessageSource implements InitializingBean {
+public class YukonReloadableResourceBundleMessageSource extends CaseInsensitiveReloadableResourceBundleMessageSource implements InitializingBean {
     
     private ConfigurationSource configurationSource;
 
