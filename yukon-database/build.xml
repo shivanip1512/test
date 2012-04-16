@@ -217,6 +217,7 @@
             <arg value="Cti123" />
         </exec>
 
+    	<echo message="Snapshot complete and checked in" />
     </target>
 
 </project>
