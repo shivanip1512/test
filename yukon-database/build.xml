@@ -1,27 +1,6 @@
 <?xml version="1.0" ?>
 <project name="WriteToFiles" default="build">
 
-	<!-- SVN and SVN-ANT Tasks properties 
-	<property name="svn.repository.url" value="${svn.repository.url}"/>
-	<property name="svn.project.base.path" value="${svn.project.base.path}" />
-	<property name="svn.base.url" value="${svn.repository.url}/${svn.project.base.path}"/>
-	<property name="svnant.lib.dir" location="${basedir}svn-ant-lib"/>
-	<property name="svnant.javahl" value="false" />
-	<property name="svnant.svnkit" value="true" />
-	 SVN and SVN-ANT Tasks properties -->
-	
-	<path id="path.svnant">
-	    <pathelement location="${yukon-client.third-party}/svnant.jar"/>
-	    <pathelement location="${yukon-client.third-party}/svnClientAdapter.jar"/>
-        <pathelement location="${yukon-client.third-party}/svnjavahl.jar"/>
-	    <!-- ... -->
-	</path>
-
-	<typedef 
-	          resource="org/tigris/subversion/svnant/svnantlib.xml" 
-	          classpathref="path.svnant"
-	      />
-	
     <target name="build" >
         <antcall target="version_db_files"/>
     </target>
