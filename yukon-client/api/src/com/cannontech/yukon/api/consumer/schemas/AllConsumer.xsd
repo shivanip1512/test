@@ -19,4 +19,21 @@
     <xsd:include schemaLocation="ThermostatAndScheduleListRequest.xsd"></xsd:include>
     <xsd:include schemaLocation="ThermostatAndScheduleListResponse.xsd"></xsd:include>
     
+    <!-- stars -->
+    <!-- revert to program -->
+    <xsd:include schemaLocation="../../stars/schemas/RunThermostatProgramRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="../../stars/schemas/RunThermostatProgramResponse.xsd"></xsd:include>
+    
+    <!-- send default schedule? -->
+    <xsd:include schemaLocation="../../stars/schemas/SendDefaultThermostatScheduleRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="../../stars/schemas/SendDefaultThermostatScheduleResponse.xsd"></xsd:include>
+    
+    <!-- send manual settings -->
+    <xsd:include schemaLocation="../../stars/schemas/SendManualThermostatSettingRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="../../stars/schemas/SendManualThermostatSettingResponse.xsd"></xsd:include>
+    
+    <!-- send schedule -->
+    <xsd:include schemaLocation="../../stars/schemas/SendThermostatScheduleRequest.xsd"></xsd:include>
+    <xsd:include schemaLocation="../../stars/schemas/SendThermostatScheduleResponse.xsd"></xsd:include>
+    
 </xsd:schema>
