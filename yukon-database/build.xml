@@ -41,7 +41,7 @@
         <echo message="Checking out database snapshot folder" />
     	<exec executable="svn">
         	<arg value="checkout" />
-            <arg value="http://svn.cannontech.com/software/yukon/branches/development/databaseSnapshotTest/yukon-client/common/src/com/cannontech/database/snapshot"/>
+            <arg value="http://svn.cannontech.com/software/yukon/trunk/yukon-client/common/src/com/cannontech/database/snapshot"/>
     		<arg value="./snapshots" />
         	<arg value="--username" />
         	<arg value="psplsoftwarebuild" />
@@ -146,7 +146,7 @@
         <echo message="Checking out database snapshot folder" />
         <exec executable="svn">
             <arg value="checkout" />
-            <arg value="http://svn.cannontech.com/software/yukon/branches/development/databaseSnapshotTest/yukon-client/common/src/com/cannontech/database/snapshot"/>
+            <arg value="http://svn.cannontech.com/software/yukon/trunk/yukon-client/common/src/com/cannontech/database/snapshot"/>
             <arg value="./snapshots" />
             <arg value="--username" />
             <arg value=" psplsoftwarebuild" />
