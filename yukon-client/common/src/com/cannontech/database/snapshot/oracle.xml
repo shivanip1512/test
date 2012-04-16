@@ -23904,7 +23904,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>MANUALHEATTEMP</i__columnName>
+            <i__columnName>MANUALCOOLTEMP</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>FLOAT</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -23920,7 +23920,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>MANUALCOOLTEMP</i__columnName>
+            <i__columnName>MANUALHEATTEMP</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>FLOAT</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
