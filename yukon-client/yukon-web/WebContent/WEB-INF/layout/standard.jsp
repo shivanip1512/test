@@ -163,5 +163,32 @@
 <tags:dataUpdateEnabler/>
 <cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
 
+<!-- Google Analytics -->
+<script>
+    var _gaq=[["_setAccount","${analytics_cooper_account_id}"],["_trackPageview"]];
+    gaAddAdditionalAccount("${analytics_additional_account_id}");
+
+    (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
+    g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
+    s.parentNode.insertBefore(g,s)}(document,"script"));
+
+    // Log all jQuery AJAX requests to Google Analytics
+	jQuery(document).ajaxSend(function(event, xhr, settings) {
+	    if (typeof _gaq !== "undefined" && _gaq !== null) {
+	        _gaq.push(['_trackPageview',settings.url]);
+	        gaAddAdditionalAccount("${analytics_additional_account_id}",settings.url);
+	    }
+	});
+
+    function gaAddAdditionalAccount(accountId, ajaxUrl) {
+    	if (typeof accountId !== "undefined" && accountId !== null && accountId !== "") {
+    	    var trackPageview = ['a._trackPageview'];
+			if (typeof ajaxUrl !== "undefined" && ajaxUrl !== null && ajaxUrl !== "") {
+				trackPageview.push(ajaxUrl);
+			}
+			_gaq.push(['a._setAccount',accountId],trackPageview);
+        }
+    }
+</script>
 </body>
 </html>

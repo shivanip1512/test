@@ -55,12 +55,12 @@ import com.google.common.collect.ImmutableList.Builder;
 
 @Controller
 public class LayoutController {
-    private RolePropertyDao rolePropertyDao;
-    private CommonModuleBuilder moduleBuilder;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private PageDetailProducer pageDetailProducer;
-    private ConfigurationSource configurationSource;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private CommonModuleBuilder moduleBuilder;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private PageDetailProducer pageDetailProducer;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     private List<String> layoutScriptFiles;
     
@@ -243,6 +243,19 @@ public class LayoutController {
         
         map.addAttribute("currentTime", new Date());
         
+        /* Google Analytics */
+        String cooperAccountId;
+        String additionalAccountId;
+        if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
+            cooperAccountId = messageSourceAccessor.getMessage("yukon.web.googleAnalytics.accountId.development.cooper");
+            additionalAccountId = messageSourceAccessor.getMessage("yukon.web.googleAnalytics.accountId.development.additional");
+        } else {
+            cooperAccountId = messageSourceAccessor.getMessage("yukon.web.googleAnalytics.accountId.production.cooper");
+            additionalAccountId = messageSourceAccessor.getMessage("yukon.web.googleAnalytics.accountId.production.additional");
+        }
+        map.addAttribute("analytics_cooper_account_id", cooperAccountId);
+        map.addAttribute("analytics_additional_account_id", additionalAccountId);
+
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-store");   
         
@@ -286,35 +299,4 @@ public class LayoutController {
         list.clear();
         list.addAll(set);
     }
-    
-    @Autowired
-    public void setModuleBuilder(CommonModuleBuilder moduleBuilder) {
-        this.moduleBuilder = moduleBuilder;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setPageDetailProducer(PageDetailProducer pageDetailProducer) {
-        this.pageDetailProducer = pageDetailProducer;
-    }
-    
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-    
-    @Autowired
-    public void setyukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
 }
