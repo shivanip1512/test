@@ -163,6 +163,7 @@
 <tags:dataUpdateEnabler/>
 <cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
 
+<c:if test="${!disable_analytics}">
 <!-- Google Analytics -->
 <script>
     var _gaq=[["_setAccount","${analytics_cooper_account_id}"],["_trackPageview"]];
@@ -190,5 +191,6 @@
         }
     }
 </script>
+</c:if>
 </body>
 </html>

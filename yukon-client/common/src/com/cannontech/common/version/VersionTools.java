@@ -11,15 +11,10 @@ import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.exception.StarsNotCreatedException;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.version.CTIDatabase;
-import com.cannontech.roles.yukon.SystemRole;
-
 import com.google.common.collect.Maps;
 
 /**
@@ -34,7 +29,6 @@ public final class VersionTools
     public static final String KEY_BUILD_INFO = "Hudson-Build-Details";
 	public static final String COMMON_JAR = "common.jar";
 	
-    private static boolean appCatFound = false;
 	private static Boolean crsPtjIntegration = null;
     private static Boolean staticLoadGroupMapping = null;
 	public static String yukonVersion = null;
@@ -42,6 +36,8 @@ public final class VersionTools
     public static Map<String, String> buildInfo = null; 
 	private static CTIDatabase db_obj = null;
 	
+	public static final String VERSION_UNKNOWN = "unknown";
+    public static final String VERSION_UNDEFINED = "undefined";
 
 	//we need a set of query strings for backward compatability
 	// since this is used in DBUpdates that get executed before
@@ -214,16 +210,24 @@ public synchronized final static String getYUKON_VERSION()
             }
         } catch ( IOException e ) {
             CTILogger.warn("Caught exception looking up yukon version, setting to 'unknown'", e);
-            yukonVersion = "unknown";
+            yukonVersion = VERSION_UNKNOWN;
         }
 
         if ( yukonVersion == null ) {
             CTILogger.warn("Yukon version was not found, setting to 'undefined'");
-            yukonVersion = "undefined";
+            yukonVersion = VERSION_UNDEFINED;
         }	
     }
 
     return yukonVersion;
+}
+
+public synchronized static boolean isYukonVersionDefined() {
+    final String version = getYUKON_VERSION();
+    if (VERSION_UNDEFINED.equals(version) || VERSION_UNKNOWN.equals(version)) {
+        return false;
+    }
+    return true;
 }
 
 public synchronized static final String getYukonDetails() {
@@ -248,12 +252,12 @@ public synchronized static final String getYukonDetails() {
             }
         } catch ( IOException e ) {
             CTILogger.warn("Caught exception looking up yukon details, setting to 'unknown'", e);
-            yukonDetails = "unknown";
+            yukonDetails = VERSION_UNKNOWN;
         }
 
         if ( yukonDetails == null ) {
             CTILogger.warn("Yukon details was not found, setting to 'undefined'");
-            yukonDetails = "undefined";
+            yukonDetails = VERSION_UNDEFINED;
         }
     }
     return yukonDetails;

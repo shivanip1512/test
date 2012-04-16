@@ -12,5 +12,6 @@ public enum MasterConfigBooleanKeysEnum {
 	BULK_IMPORTER_SINGLE_GROUP,	//option to limit membership to only 1 child group per parent group. 
 	DIGI_ENABLED,
 	ENABLE_INVENTORY_SAVE_TO_FILE,
+	DISABLE_ANALYTICS,
 	;
 }
