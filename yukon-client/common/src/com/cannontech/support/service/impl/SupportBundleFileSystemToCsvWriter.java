@@ -2,6 +2,7 @@ package com.cannontech.support.service.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -73,6 +74,9 @@ public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWri
             while ((read = inputStream.read(buffer)) != -1) {
                 md5Hasher.update(buffer, 0, read);
             }
+        } catch (FileNotFoundException fnfException) {
+            log.warn("Unable to hash file " + file.getAbsolutePath() + file.getName() + " The file might be used by another process.");
+            return "-Unable to hash-";
         } catch (IOException ioException) {
             throw new RuntimeException(ioException);
         } finally {
