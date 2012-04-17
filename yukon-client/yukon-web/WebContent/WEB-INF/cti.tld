@@ -136,6 +136,12 @@
   </tag>  
   
   <tag>
+    <name>checkYukonVersionUndefined</name>
+    <tag-class>com.cannontech.web.taglib.CheckYukonVersionUndefinedTag</tag-class>
+    <body-content>scriptless</body-content>
+  </tag>
+  
+  <tag>
   	<name>checkNoRole</name>
   	<tag-class>com.cannontech.web.taglib.CheckNoRole</tag-class>
   	<attribute>

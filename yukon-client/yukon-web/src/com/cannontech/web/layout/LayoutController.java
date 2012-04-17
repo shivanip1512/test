@@ -90,6 +90,7 @@ public class LayoutController {
         builder.add("/JavaScript/simpleDialog.js");
         builder.add("/JavaScript/alert.js");
         builder.add("/JavaScript/javaWebStartLauncher.js");
+        builder.add("/JavaScript/yukon/util/analytics_manager.js");
         
         layoutScriptFiles = builder.build();
     }
@@ -242,25 +243,6 @@ public class LayoutController {
         }
         
         map.addAttribute("currentTime", new Date());
-        
-        /* Google Analytics */
-        boolean disableAnalytics = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DISABLE_ANALYTICS);
-        map.addAttribute("disable_analytics", disableAnalytics);
-        
-        if (!disableAnalytics) {
-            String cooperAccountId;
-            String additionalAccountId;
-            if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE) ||
-                    !VersionTools.isYukonVersionDefined()) {
-                cooperAccountId = messageSourceAccessor.getMessage("yukon.web.googleAnalytics.accountId.development.cooper");
-                additionalAccountId = messageSourceAccessor.getMessage("yukon.web.googleAnalytics.accountId.development.additional");
-            } else {
-                cooperAccountId = messageSourceAccessor.getMessage("yukon.web.googleAnalytics.accountId.production.cooper");
-                additionalAccountId = messageSourceAccessor.getMessage("yukon.web.googleAnalytics.accountId.production.additional");
-            }
-            map.addAttribute("analytics_cooper_account_id", cooperAccountId);
-            map.addAttribute("analytics_additional_account_id", additionalAccountId);
-        }
 
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-store");   

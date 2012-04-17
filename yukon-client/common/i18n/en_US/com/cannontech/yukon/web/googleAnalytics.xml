@@ -3,11 +3,11 @@
 <properties>
 
 	<!-- CPS Account IDs -->
-	<entry key="yukon.web.googleAnalytics.accountId.development.cooper">UA-29085870-1</entry>
-	<entry key="yukon.web.googleAnalytics.accountId.production.cooper">UA-30741138-1</entry>
+	<entry key="yukon.web.googleAnalytics.trackingId.development.cooper">UA-30935838-1</entry>
+	<entry key="yukon.web.googleAnalytics.trackingId.production.cooper"></entry>
 
 	<!-- Additional Account IDs -->
-	<entry key="yukon.web.googleAnalytics.accountId.development.additional"></entry>
-	<entry key="yukon.web.googleAnalytics.accountId.production.additional"></entry>
+	<entry key="yukon.web.googleAnalytics.trackingId.development.additional"></entry>
+	<entry key="yukon.web.googleAnalytics.trackingId.production.additional"></entry>
 
 </properties>

@@ -87,6 +87,7 @@
                 </td>
             </tr>
         </table>
-	
+
+	   <ct:analyticsTrackPage/>
 	</body>
 </html>

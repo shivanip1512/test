@@ -1105,6 +1105,8 @@
         <property name="deviceGroupUiService" ref="deviceGroupUiService"/>
     </bean>
     
+    <bean id="checkYukonVersionUndefinedTagPrototype" class="com.cannontech.web.taglib.CheckYukonVersionUndefinedTag"/>
+
     <bean id="verifyRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyRolesAndPropertiesTag">
         <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
