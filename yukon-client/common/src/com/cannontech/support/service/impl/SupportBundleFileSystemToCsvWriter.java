@@ -47,9 +47,9 @@ public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWri
         File[] filesAndDirs = directory.listFiles();
 
         for (File file : filesAndDirs) {
-            if (file.isDirectory())
+            if (file.isDirectory()) {
                 writeDirToCsv(file, path + file.getName() + "/", csvWriter);
-            else {
+            } else {
                 String[] nextLine =
                     { path + file.getName(), String.valueOf(file.length()), getMD5(file) };
                 csvWriter.writeNext(nextLine);
