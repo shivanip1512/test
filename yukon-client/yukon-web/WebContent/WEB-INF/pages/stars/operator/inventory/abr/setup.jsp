@@ -65,7 +65,9 @@ function taskFinished() {
                         </tags:nameValue2>
                         
                         <tags:yukonListEntrySelectNameValue nameKey=".status" path="statusTypeId" energyCompanyId="${ecId}" listName="DEVICE_STATUS"/>
-                        <tags:yukonListEntrySelectNameValue nameKey=".voltage" path="voltageTypeId" energyCompanyId="${ecId}" listName="DEVICE_VOLTAGE"/>
+                        <c:if test="${showVoltage}">
+                            <tags:yukonListEntrySelectNameValue nameKey=".voltage" path="voltageTypeId" energyCompanyId="${ecId}" listName="DEVICE_VOLTAGE"/>
+                        </c:if>
                         <tags:selectNameValue nameKey=".serviceCompany" path="serviceCompanyId" itemLabel="serviceCompanyName" itemValue="serviceCompanyId" 
                                     items="${serviceCompanies}" defaultItemValue="0" defaultItemLabel="${none}"/>
                         <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>

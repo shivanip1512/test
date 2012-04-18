@@ -281,13 +281,15 @@ public class InventoryController {
 
         if (type.isZigbee()) {
             model.addAttribute("showMacAddress", true);
-            model.addAttribute("showVoltage", false);
             if (!type.isGateway()) {
                 model.addAttribute("showInstallCode", true);
             } else {
                 model.addAttribute("showFirmwareVersion", true);
             }
         }
+        
+        boolean showVoltage = !type.isZigbee() && !clazz.isGateway() && !clazz.isThermostat();
+        model.addAttribute("showVoltage", showVoltage);
         
         /* Hide route for meters and zigbee devices */
         if (!clazz.isMeter() && !type.isZigbee()) {

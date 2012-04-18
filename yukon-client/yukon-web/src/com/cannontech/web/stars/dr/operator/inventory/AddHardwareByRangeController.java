@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.SimpleValidator;
@@ -31,6 +32,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.AddByRange;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -49,6 +51,7 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.AddByRangeHel
 @RequestMapping("/operator/inventory/abr/*")
 public class AddHardwareByRangeController {
     
+    @Autowired private InventoryDao InventoryDao;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
@@ -110,20 +113,20 @@ public class AddHardwareByRangeController {
             AddByRangeTask task = (AddByRangeTask) resultsCache.getResult(taskId);
             model.addAttribute("task", task);
             model.addAttribute("abr", task.getAbr());
-            setupModel(model, context, entry);
+            setupModel(model, task.getAbr(), context, entry);
         } else {
             model.addAttribute("mode", PageEditMode.CREATE);
             
             AddByRange abr = new AddByRange();
             abr.setHardwareTypeId(hardwareTypeId);
             model.addAttribute("abr", abr);
-            setupModel(model, context, entry);
+            setupModel(model, abr, context, entry);
         }
         
         return "operator/inventory/abr/setup.jsp";
     }
     
-    private void setupModel(ModelMap model, YukonUserContext context, YukonListEntry hardwareTypeEntry) {
+    private void setupModel(ModelMap model, AddByRange abr, YukonUserContext context, YukonListEntry hardwareTypeEntry) {
         YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ec);
         
@@ -137,7 +140,12 @@ public class AddHardwareByRangeController {
             defaultRoute = accessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
         }
         
+        HardwareType hardwareType = InventoryDao.getHardwareTypeById(abr.getHardwareTypeId());
+        HardwareClass hardwareClass = hardwareType.getHardwareClass();
         List<LiteYukonPAObject> routes = energyCompany.getAllRoutes();
+        
+        boolean showVoltage = !hardwareType.isZigbee() && !hardwareClass.isGateway() && !hardwareClass.isThermostat();
+        model.addAttribute("showVoltage", showVoltage);
         
         model.addAttribute("hardwareTypeId", hardwareTypeEntry.getEntryID());
         model.addAttribute("type", hardwareTypeEntry.getEntryText());
@@ -162,12 +170,12 @@ public class AddHardwareByRangeController {
             model.addAttribute("mode", PageEditMode.CREATE);
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flash.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupModel(model, context, typeEntry);
+            setupModel(model, abr, context, typeEntry);
             return "operator/inventory/abr/setup.jsp";
         }
         
         model.addAttribute("mode", PageEditMode.VIEW);
-        setupModel(model, context, typeEntry);
+        setupModel(model, abr, context, typeEntry);
         
         AddByRangeTask task = helper.new AddByRangeTask(context, type, abr);
         String taskId = helper.startTask(task);
