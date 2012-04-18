@@ -43,7 +43,11 @@
 					<th>
 						<span class="fl"><i:inline key=".table.header.overrideStrategy"/>&nbsp;</span>
 					    <cti:msg2 var="titleText" key=".editStrategy"/>
-					    <span class="sub">(<a href="/editor/cbcBase.jsf?type=5&amp;itemid=${strategy.strategyID}" title="${titleText}">${strategy.strategyName}</a>)</span>
+					    <cti:url var="strategyUrl" value="/editor/cbcBase.jsf">
+					        <cti:param name="type" value="5"/>
+					        <cti:param name="itemid" value="${strategy.strategyID}"/>
+					    </cti:url>
+					    <span class="sub">(<a href="${strategyUrl}" title="${titleText}">${strategy.strategyName}</a>)</span>
 					</th>
 				</tr>
 				</thead>
@@ -61,7 +65,11 @@
 				
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 						<td>
-							<a href="/editor/cbcBase.jsf?type=2&amp;itemid=${voltagePoint.parentPaoIdentifier.paoId}">
+	                        <cti:url var="parentPaoUrl" value="/editor/cbcBase.jsf">
+	                            <cti:param name="type" value="2"/>
+	                            <cti:param name="itemid" value="${voltagePoint.parentPaoIdentifier.paoId}"/>
+	                        </cti:url>
+							<a href="${parentPaoUrl}">
 								<spring:escapeBody htmlEscape="true">
 									${voltagePoint.paoName}
 								</spring:escapeBody>
