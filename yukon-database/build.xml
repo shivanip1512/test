@@ -41,12 +41,12 @@
         <echo message="Checking out database snapshot folder" />
     	<exec executable="svn">
         	<arg value="checkout" />
-            <arg value="http://svn.cannontech.com/software/yukon/trunk/yukon-client/common/src/com/cannontech/database/snapshot"/>
-    		<arg value="./snapshots" />
+            <arg value="${svn.repo.dbSnapshot}"/>
+    		<arg value="${dbSnapshotTempDir}" />
         	<arg value="--username" />
-        	<arg value="psplsoftwarebuild" />
+        	<arg value="${svn.username}" />
         	<arg value="--password" />
-        	<arg value="Cti123" />
+        	<arg value="${svn.password}" />
         </exec>
 
         <!-- Create sql server databse and user-->
@@ -94,7 +94,7 @@
             <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=dbo"/>
-            <arg value="--outputXmlFile=./snapshots/mssql.xml"/>
+            <arg value="--outputXmlFile=${dbSnapshotTempDir}/mssql.xml"/>
             <classpath>
                <pathelement location="../yukon-client/third-party/jtds.jar"/>
             </classpath>
@@ -114,20 +114,20 @@
         </sql>
 
         <echo message="Latest diff" />
-        <exec executable="svn" dir="./snapshots">
+        <exec executable="svn" dir="${dbSnapshotTempDir}">
             <arg value="diff"/>
         </exec>
     	
         <echo message="Checking in sql server database snapshot" />
-        <exec executable="svn" dir="./snapshots">
+        <exec executable="svn" dir="${dbSnapshotTempDir}">
         	<arg value="commit"/>
         	<arg value="mssql.xml"/>
             <arg value="-m" />
         	<arg value="Checking in the latest database snapshot"/>
         	<arg value="--username" />
-        	<arg value="psplsoftwarebuild" />
+        	<arg value="${svn.username}" />
         	<arg value="--password" />
-        	<arg value="Cti123" />
+        	<arg value="${svn.password}" />
         </exec>
     	
     	<echo message="Snapshot complete and checked in" />
@@ -146,12 +146,12 @@
         <echo message="Checking out database snapshot folder" />
         <exec executable="svn">
             <arg value="checkout" />
-            <arg value="http://svn.cannontech.com/software/yukon/trunk/yukon-client/common/src/com/cannontech/database/snapshot"/>
-            <arg value="./snapshots" />
+            <arg value="${svn.repo.dbSnapshot}"/>
+            <arg value="${dbSnapshotTempDir}" />
             <arg value="--username" />
-            <arg value=" psplsoftwarebuild" />
+            <arg value=" ${svn.username}" />
             <arg value="--password" />
-            <arg value="Cti123" />
+            <arg value="${svn.password}" />
         </exec>    	
         
     	<!-- Create oracle databse and user-->
@@ -181,7 +181,7 @@
             <arg value="--user=${databaseName}"/>
             <arg value="--password=${databaseName}"/>
             <arg value="--schema=${databaseName}"/>
-            <arg value="--outputXmlFile=./snapshots/oracle.xml"/>
+            <arg value="--outputXmlFile=${dbSnapshotTempDir}/oracle.xml"/>
             <classpath>
                 <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
             </classpath>
@@ -201,20 +201,20 @@
         </sql>
     
         <echo message="Latest diff" />
-        <exec executable="svn" dir="./snapshots">
+        <exec executable="svn" dir="${dbSnapshotTempDir}">
             <arg value="diff"/>
         </exec>
         
         <echo message="Checking in sql server database snapshot" />
-        <exec executable="svn" dir="./snapshots">
+        <exec executable="svn" dir="${dbSnapshotTempDir}">
             <arg value="commit"/>
             <arg value="oracle.xml"/>
             <arg value="-m" />
             <arg value="Checking in the latest database snapshot"/>
             <arg value="--username" />
-            <arg value="psplsoftwarebuild" />
+            <arg value="${svn.username}" />
             <arg value="--password" />
-            <arg value="Cti123" />
+            <arg value="${svn.password}" />
         </exec>
 
     	<echo message="Snapshot complete and checked in" />
