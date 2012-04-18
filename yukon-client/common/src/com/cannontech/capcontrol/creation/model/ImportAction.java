@@ -22,7 +22,7 @@ public enum ImportAction implements DatabaseRepresentationSource {
 		try {
 			Builder<String, ImportAction> dbBuilder = ImmutableMap.builder();
 			for (ImportAction action : values()) {
-                dbBuilder.put(action.dbString, action);
+                dbBuilder.put(action.dbString.toLowerCase(), action);
             }
 			lookupByDbString = dbBuilder.build();
         } catch (IllegalArgumentException e) {
@@ -36,7 +36,7 @@ public enum ImportAction implements DatabaseRepresentationSource {
 	}
 	
 	public static ImportAction getForDbString(String dbString) {
-		ImportAction action = lookupByDbString.get(dbString);
+		ImportAction action = lookupByDbString.get(dbString.toLowerCase());
 		Validate.notNull(action, dbString);
 		return action;
 	}

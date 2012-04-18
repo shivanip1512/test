@@ -33,7 +33,7 @@ public enum CapControlImporterCbcField {
             ImmutableSet.Builder<CapControlImporterCbcField> requiredFieldsBuilder = ImmutableSet.builder();
             ImmutableSet.Builder<CapControlImporterCbcField> nonRequiredFieldsBuilder = ImmutableSet.builder();
             for (CapControlImporterCbcField column : values()) {
-                stringBuilder.put(column.getColumnName(), column);
+                stringBuilder.put(column.getColumnName().toLowerCase(), column);
                 if(column.isRequired()) {
                 	requiredFieldsBuilder.add(column);
                 } else {
@@ -54,7 +54,7 @@ public enum CapControlImporterCbcField {
 	}
 	
 	public static CapControlImporterCbcField getColumnByName(String columnName) throws IllegalArgumentException {
-		CapControlImporterCbcField column = lookupByString.get(columnName);
+		CapControlImporterCbcField column = lookupByString.get(columnName.toLowerCase());
 		Validate.notNull(column, columnName);
 		return column;
 	}

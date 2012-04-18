@@ -28,7 +28,7 @@ public enum CapControlXmlImport {
 		try {
 			Builder<String, CapControlXmlImport> dbBuilder = ImmutableMap.builder();
 			for (CapControlXmlImport value : values()) {
-                dbBuilder.put(value.xmlElementName, value);
+                dbBuilder.put(value.xmlElementName.toLowerCase(), value);
             }
 			lookupByXmlString = dbBuilder.build();
         } catch (IllegalArgumentException e) {
@@ -43,7 +43,7 @@ public enum CapControlXmlImport {
 	}
 	
 	public static CapControlXmlImport getForXmlString(String xmlString) {
-		CapControlXmlImport value = lookupByXmlString.get(xmlString);
+		CapControlXmlImport value = lookupByXmlString.get(xmlString.toLowerCase());
 		Validate.notNull(value, xmlString);
 		return value;
 	}
