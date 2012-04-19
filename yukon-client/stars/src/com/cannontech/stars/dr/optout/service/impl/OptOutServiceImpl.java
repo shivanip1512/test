@@ -391,7 +391,7 @@ public class OptOutServiceImpl implements OptOutService {
 				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
 		    CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
 			
-			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId, customerAccountId);
+			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId);
 			
 			Instant now = new Instant();
 			Duration optOutDuration = new Duration(now, lastEvent.getStopDate());
@@ -441,22 +441,21 @@ public class OptOutServiceImpl implements OptOutService {
 			LiteStarsLMHardware inventory = 
 				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
 			YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
-    		CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
+            CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
     		
 			OptOutEventState state = event.getState();
             if (OptOutEventState.START_OPT_OUT_SENT == state && 
                 event.getStopDate().isAfter(now)) {
-				// The opt out is active and the stop date is after now
 				
-				this.sendCancelCommandAndNotification(
-						inventory, yukonEnergyCompany, user, event, customerAccount);
+                // The opt out is active and the stop date is after now
+				sendCancelCommandAndNotification(inventory, yukonEnergyCompany, user, event);
 				
 				// Update event state
 				event.setState(OptOutEventState.CANCEL_SENT);
 				event.setStopDate(now);
 				optOutEventDao.save(event, OptOutAction.CANCEL, user);
 				
-				this.cancelLMHardwareControlGroupOptOut(inventoryId, customerAccount, event, user);
+				cancelLMHardwareControlGroupOptOut(inventoryId, event, user);
 				
 			} else if (OptOutEventState.SCHEDULED == state) {
 				// The opt out is scheduled but not active
@@ -469,13 +468,8 @@ public class OptOutServiceImpl implements OptOutService {
 				// Control history is calculated from actual LMHardwareControlGroup entries.
 				optOutEventDao.save(event, OptOutAction.CANCEL_SCHEDULE, user);
 				
-				ActivityLogger.logEvent(
-						user.getUserID(), 
-						customerAccount.getAccountId(), 
-						yukonEnergyCompany.getEnergyCompanyId(),
-						customerAccount.getCustomerId(), 
-						ActivityLogActions.PROGRAM_CANCEL_SCHEDULED_ACTION, 
-						"");
+				ActivityLogger.logEvent(user.getUserID(), customerAccount.getAccountId(), yukonEnergyCompany.getEnergyCompanyId(),
+						customerAccount.getCustomerId(), ActivityLogActions.PROGRAM_CANCEL_SCHEDULED_ACTION, "");
 
 				// Send cancel scheduled notification
 				try {
@@ -496,8 +490,7 @@ public class OptOutServiceImpl implements OptOutService {
 				throw new NotOptedOutException(inventoryId, customerAccount.getAccountId());
 			}
             
-            accountEventLogService.optOutCanceled(user, customerAccount.getAccountNumber(),
-                                                  inventory.getDeviceLabel());
+            accountEventLogService.optOutCanceled(user, customerAccount.getAccountNumber(), inventory.getDeviceLabel());
 		}
 	}
 
@@ -553,9 +546,7 @@ public class OptOutServiceImpl implements OptOutService {
 		}
 		
 		try {
-		    CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
-            
-            sendCancelCommandAndNotification(inventory, energyCompany, user, ooe, customerAccount);
+            sendCancelCommandAndNotification(inventory, energyCompany, user, ooe);
             
             // Update event state
             ooe.setState(OptOutEventState.CANCEL_SENT);
@@ -566,7 +557,7 @@ public class OptOutServiceImpl implements OptOutService {
             
             optOutEventDao.save(ooe, OptOutAction.CANCEL, user);
             
-            cancelLMHardwareControlGroupOptOut(inventory.getInventoryID(), customerAccount, ooe, user);
+            cancelLMHardwareControlGroupOptOut(inventory.getInventoryID(), ooe, user);
 		} catch (CommandCompletionException e) {
 		    // Can't do much - tried to cancel opt out.  Log the error and 
             // continue to cancel other opt outs
@@ -1013,11 +1004,11 @@ public class OptOutServiceImpl implements OptOutService {
 	@Override
 	@Transactional(propagation = Propagation.NEVER)
 	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany,
-	                                   OptOutEvent event, CustomerAccount customerAccount, LiteYukonUser user) 
-		throws CommandCompletionException {
+	                                   OptOutEvent event, LiteYukonUser user) 
+    throws CommandCompletionException {
 
-		cancelLMHardwareControlGroupOptOut(inventory.getInventoryID(), customerAccount, event, user);
-		sendCancelCommandAndNotification(inventory, yukonEnergyCompany, user, event, customerAccount);
+		cancelLMHardwareControlGroupOptOut(inventory.getInventoryID(), event, user);
+		sendCancelCommandAndNotification(inventory, yukonEnergyCompany, user, event);
 		
 	}
 	
@@ -1067,15 +1058,14 @@ public class OptOutServiceImpl implements OptOutService {
 	 * @param yukonEnergyCompany - Inventory's energy company
 	 * @param user - User requesting the cancel
 	 * @param event - Event being canceled
-	 * @param customerAccount - Inventory's account
 	 * @throws CommandCompletionException
 	 */
-	private void sendCancelCommandAndNotification(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany, 
-	                                              LiteYukonUser user, OptOutEvent event, CustomerAccount customerAccount) 
-		throws CommandCompletionException {
+	private void sendCancelCommandAndNotification(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user, OptOutEvent event) 
+	throws CommandCompletionException {
 		
+	    CustomerAccount customerAccount = customerAccountDao.getById(event.getCustomerAccountId());
+	    int accountId = customerAccount.getAccountId();
 		int inventoryId = inventory.getInventoryID();
-		int accountId = customerAccount.getAccountId();
 		
 		// Send the command to cancel opt out to the field
 		this.sendCancelRequest(inventory, yukonEnergyCompany, user);
@@ -1109,15 +1099,13 @@ public class OptOutServiceImpl implements OptOutService {
 	 * Helper method to update the LMHardwareControlGroup opt out row when an opt out is complete
 	 * or canceled
 	 * @param inventoryId - Inventory to cancel opt out for
-	 * @param customerAccount - Intentory's account
 	 * @param event - Event being canceled
 	 * @param user - User requesting the cancel
 	 */
-	private void cancelLMHardwareControlGroupOptOut(
-			int inventoryId, CustomerAccount customerAccount, OptOutEvent event, LiteYukonUser user) {
+	private void cancelLMHardwareControlGroupOptOut(int inventoryId, OptOutEvent event, LiteYukonUser user) {
 		
 		// Update the LMHardwareControlGroup table
-	    lmHardwareControlInformationService.stopOptOut(inventoryId, customerAccount.getAccountId(), user, event.getStopDate());
+	    lmHardwareControlInformationService.stopOptOut(inventoryId, user, event.getStopDate());
 	}
 	
 	/**

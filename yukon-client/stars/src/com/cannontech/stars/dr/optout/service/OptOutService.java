@@ -261,13 +261,10 @@ public interface OptOutService {
 	 * @param inventory - Inventory to cancel opt out for
 	 * @param yukonEnergyCompany - Inventory's energy company
 	 * @param event - Opt out event being canceled
-	 * @param customerAccount - Customer account for inventory
 	 * @param userContext - User canceling opt out 
 	 */
-	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory,
-			YukonEnergyCompany yukonEnergyCompany, OptOutEvent event,
-			CustomerAccount customerAccount, LiteYukonUser user)
-			throws CommandCompletionException;
+	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany, OptOutEvent event, LiteYukonUser user)
+    throws CommandCompletionException;
 
     public String checkOptOutStartDate(int accountId, LocalDate startDate,  YukonUserContext userContext, boolean isOperator);
 

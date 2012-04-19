@@ -27,14 +27,13 @@ public interface LMHardwareControlGroupDao {
     /** 
      * This method stops any opt out that matches the inventoryId and accountId supplied.
      */
-    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, ReadableInstant stopDate);
+    public void stopOptOut(int inventoryId, LiteYukonUser currentUser, ReadableInstant stopDate);
 
     /** 
      * This method stops any opt out that matches the inventoryId, accountId, 
      * and assignedProgramId supplied.
      */
-    public void stopOptOut(int inventoryId, int accountId, int assignedProgramId,
-                             LiteYukonUser currentUser, ReadableInstant stopDate);    
+    public void stopOptOut(int inventoryId, int assignedProgramId, LiteYukonUser currentUser, ReadableInstant stopDate);    
     
     public void resetEntriesForProgram(int programId, LiteYukonUser user);    
     
@@ -77,7 +76,9 @@ public interface LMHardwareControlGroupDao {
     public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountId(int inventoryId, int lmGroupId, int accountId);
     
     public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountIdAndType(int inventoryId, int lmGroupId, int accountId, int type);
-    
+
+    public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndType(int inventoryId, int lmGroupId, int type);
+
     public List<LMHardwareControlGroup> getAll();
 
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryId(int inventoryId);

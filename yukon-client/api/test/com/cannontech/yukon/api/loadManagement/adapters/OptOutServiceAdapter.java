@@ -136,8 +136,7 @@ public class OptOutServiceAdapter implements OptOutService {
 	}
 
 	@Override
-	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany,
-	                                   OptOutEvent event, CustomerAccount customerAccount, LiteYukonUser user)
+	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany, OptOutEvent event, LiteYukonUser user)
 	throws CommandCompletionException {
 		throw new UnsupportedOperationException("not implemented");
 	}

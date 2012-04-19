@@ -400,10 +400,10 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	}
 	
 	@Override
-	public OptOutEvent findLastEvent(int inventoryId, int customerAccountId) {
+	public OptOutEvent findLastEvent(int inventoryId) {
 		
 		// In English: 
-		// Select the most recent event for the inventory and account 
+		// Select the most recent event for the inventory
 		// with a start date earlier than or equal to today and a current state of ACTIVE_SENT 
 		// or CANCEL_SENT
 		SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -413,7 +413,6 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
         sql.append("    AND (EventState").eq(OptOutEventState.START_OPT_OUT_SENT.toString());
         sql.append("         OR EventState").eq(OptOutEventState.CANCEL_SENT.toString()).append(")");
         sql.append("    AND InventoryId").eq(inventoryId);
-        sql.append("    AND CustomerAccountId").eq(customerAccountId);
         sql.append("ORDER BY StopDate DESC");
         
         List<OptOutEvent> events = 

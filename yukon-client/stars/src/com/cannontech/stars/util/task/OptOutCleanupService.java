@@ -130,42 +130,29 @@ public class OptOutCleanupService implements InitializingBean {
     	return inventoryList;
     }
     
-    private void cleanUpCompletedOptOuts(List<LiteStarsLMHardware> optedOutInventory, 
-                                         LiteYukonUser user) 
-    {
+    private void cleanUpCompletedOptOuts(List<LiteStarsLMHardware> optedOutInventory, LiteYukonUser user) {
     	
     	for(LiteStarsLMHardware inventory : optedOutInventory) {
-            
-        	int accountId = inventory.getAccountID();
-        	int inventoryId = inventory.getInventoryID();
-
-        	OptOutEvent lastEvent = 
-        		optOutEventDao.findLastEvent(inventoryId, accountId);
+        	OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventory.getInventoryID());
         	
         	try {
         		cancelOptOutEvent(inventory, lastEvent, user);
         	} catch (IllegalArgumentException e) {
-        		logger.debug("Could not find last opt out event for inventory: " + inventoryId);
+        		logger.debug("Could not find last opt out event for inventory: " + inventory.getInventoryID());
         	}
         }
     }
     
-    private void cancelOptOutEvent(LiteStarsLMHardware inventory, 
-                                   OptOutEvent event, 
-                                   LiteYukonUser user) 
-    {
+    private void cancelOptOutEvent(LiteStarsLMHardware inventory, OptOutEvent event, LiteYukonUser user) {
     	Validate.notNull(event, "Event must not be null");
     	
     	int inventoryId = inventory.getInventoryID();
-    	
-    	CustomerAccount account = customerAccountDao.getById(event.getCustomerAccountId());
     	YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
     	
-    	logger.debug("Cleaning up opt out event for inventory: " + event.getInventoryId() 
-    			+ " and account: " + event.getCustomerAccountId());
+    	logger.debug("Cleaning up opt out event for inventory: " + event.getInventoryId() + " and account: " + event.getCustomerAccountId());
     	
         try {
-			optOutService.cleanUpCancelledOptOut(inventory, yukonEnergyCompany, event, account, user);
+			optOutService.cleanUpCancelledOptOut(inventory, yukonEnergyCompany, event, user);
 		} catch (CommandCompletionException e) {
 			logger.error("Attempt to reenable inventory: " + inventoryId + " failed", e);
 		} catch (ConnectionException e) {

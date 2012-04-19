@@ -101,10 +101,10 @@ public interface OptOutEventDao {
 	
 	/**
 	 * Method to get the last (or current) opt out event that actually happened (ignoring canceled 
-	 * scheduled events) for the given inventory and account
+	 * scheduled events) for the given inventory
 	 * @return Last or current event or null if no events
 	 */
-	public OptOutEvent findLastEvent(int inventoryId, int customerAccountId);
+	public OptOutEvent findLastEvent(int inventoryId);
 	
 	/**
 	 * Method to save an OptOutLog

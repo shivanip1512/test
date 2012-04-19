@@ -130,17 +130,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 if (programEnrollment.isEnroll() == false) {
                     
                     List<LMHardwareControlGroup> lmHardwareControlGroups = 
-                        lmHardwareControlGroupDao
-                            .getByInventoryIdAndGroupIdAndAccountIdAndType(programEnrollment.getInventoryId(), 
-                                                                           programEnrollment.getLmGroupId(), 
-                                                                           accountId, 
-                                                                           LMHardwareControlGroup.OPT_OUT_ENTRY);
+                        lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndType(programEnrollment.getInventoryId(), programEnrollment.getLmGroupId(), LMHardwareControlGroup.OPT_OUT_ENTRY);
                     
                     for (LMHardwareControlGroup lmHardwareControlGroup : lmHardwareControlGroups) {
-                        lmHardwareControlGroupDao.stopOptOut(lmHardwareControlGroup.getInventoryId(),
-                                                             lmHardwareControlGroup.getAccountId(),
-                                                             lmHardwareControlGroup.getProgramId(),
-                                                             user, now);
+                        lmHardwareControlGroupDao.stopOptOut(lmHardwareControlGroup.getInventoryId(), lmHardwareControlGroup.getProgramId(), user, now);
                     }
                 }
             }

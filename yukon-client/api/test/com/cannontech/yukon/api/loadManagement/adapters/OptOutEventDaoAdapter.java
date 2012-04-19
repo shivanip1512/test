@@ -71,7 +71,7 @@ public class OptOutEventDaoAdapter implements OptOutEventDao {
     }
 
     @Override
-    public OptOutEvent findLastEvent(int inventoryId, int customerAccountId) {
+    public OptOutEvent findLastEvent(int inventoryId) {
         throw new UnsupportedOperationException("not implemented");
     }
 

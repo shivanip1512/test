@@ -42,7 +42,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
 
             // Clear all the opt outs for the enrolled inventory
             if (optOutEventDao.isOptedOut(inventoryId, accountId)) {
-            	OptOutEvent findLastEvent = optOutEventDao.findLastEvent(inventoryId, accountId);
+            	OptOutEvent findLastEvent = optOutEventDao.findLastEvent(inventoryId);
             	List<Integer> lastEventIdList = Collections.singletonList(findLastEvent.getEventId());
             	optOutService.cancelOptOut(lastEventIdList, currentUser);
             }
@@ -147,13 +147,13 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     }
     
     @Override
-    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Instant stopDate) {
+    public void stopOptOut(int inventoryId, LiteYukonUser currentUser, Instant stopDate) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         
         try {
-            lmHardwareControlGroupDao.stopOptOut(inventoryId, accountId, currentUser, stopDate);
+            lmHardwareControlGroupDao.stopOptOut(inventoryId, currentUser, stopDate);
         } catch (Exception e) {
-            logger.error("Opt out was started/scheduled for InventoryId: " + inventoryId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
+            logger.error("Opt out was started/scheduled for InventoryId: " + inventoryId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
         }        
     }
     

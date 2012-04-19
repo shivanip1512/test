@@ -16,7 +16,7 @@ public interface LMHardwareControlInformationService {
     
     public void startOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Instant startDate);
     
-    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Instant stopDate);    
+    public void stopOptOut(int inventoryId, LiteYukonUser currentUser, Instant stopDate);    
     
     public boolean startOptOut(int inventoryId, int loadGroupID, int accountId, int programId, LiteYukonUser currentUser, Instant startDate);
     
