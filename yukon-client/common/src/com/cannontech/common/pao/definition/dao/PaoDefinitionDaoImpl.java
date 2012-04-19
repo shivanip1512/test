@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -31,7 +33,6 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.exolab.castor.xml.Unmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -62,21 +63,22 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.common.pao.definition.model.castor.Archive;
-import com.cannontech.common.pao.definition.model.castor.BasicLookup;
-import com.cannontech.common.pao.definition.model.castor.Calculation;
-import com.cannontech.common.pao.definition.model.castor.Cmd;
-import com.cannontech.common.pao.definition.model.castor.Command;
-import com.cannontech.common.pao.definition.model.castor.Component;
-import com.cannontech.common.pao.definition.model.castor.MappedLookup;
-import com.cannontech.common.pao.definition.model.castor.Pao;
-import com.cannontech.common.pao.definition.model.castor.PaoDefinitions;
-import com.cannontech.common.pao.definition.model.castor.Point;
-import com.cannontech.common.pao.definition.model.castor.PointRef;
-import com.cannontech.common.pao.definition.model.castor.Tag;
-import com.cannontech.common.pao.definition.model.castor.TypeFilter;
-import com.cannontech.common.pao.definition.model.castor.types.ComponentTypeType;
-import com.cannontech.common.pao.definition.model.castor.types.UpdateTypeType;
+import com.cannontech.common.pao.definition.model.jaxb.ArchiveDefaults;
+import com.cannontech.common.pao.definition.model.jaxb.AttributesType;
+import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute.BasicLookup;
+import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute.MappedLookup;
+import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute.MappedLookup.TypeFilter;
+import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command;
+import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command.Cmd;
+import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command.PointRef;
+import com.cannontech.common.pao.definition.model.jaxb.ComponentTypeType;
+import com.cannontech.common.pao.definition.model.jaxb.Pao;
+import com.cannontech.common.pao.definition.model.jaxb.PaoDefinitions;
+import com.cannontech.common.pao.definition.model.jaxb.PointsType.Point;
+import com.cannontech.common.pao.definition.model.jaxb.PointsType.Point.Calculation;
+import com.cannontech.common.pao.definition.model.jaxb.PointsType.Point.Calculation.Components.Component;
+import com.cannontech.common.pao.definition.model.jaxb.TagType.Tag;
+import com.cannontech.common.pao.definition.model.jaxb.UpdateTypeType;
 import com.cannontech.common.search.FilterType;
 import com.cannontech.common.util.SetUtils;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
@@ -615,12 +617,13 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 			InputStreamReader reader = new InputStreamReader(definitionResource.getInputStream());
 			
 			try {
-	            
-	            PaoDefinitions definition = (PaoDefinitions) Unmarshaller.unmarshal(PaoDefinitions.class, reader);
-	            
-	            for (Pao pao : definition.getPao()) {
-	        		if (pao.getEnabled()) {
-	        			
+	            JAXBContext jaxbContext = JAXBContext.newInstance(PaoDefinitions.class);
+	            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+	            PaoDefinitions definition = (PaoDefinitions) unmarshaller.unmarshal(reader);
+			    
+	            for(Pao pao : definition.getPao()) {
+	        		if(pao.isEnabled()) {
+	                
 	        			PaoStore paoStore = new PaoStore(pao);
 	        			String id = paoStore.getId();
 	        			
@@ -735,11 +738,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         
         // Add pao attributes
         Map<Attribute, AttributeDefinition> attributeMap = new HashMap<Attribute, AttributeDefinition>();
-        List<com.cannontech.common.pao.definition.model.castor.Attribute> attributes = pao.getEnabledAttributes();
-        for (com.cannontech.common.pao.definition.model.castor.Attribute attribute : attributes) {
+        List<AttributesType.Attribute> attributes = pao.getEnabledAttributes();
+        for (AttributesType.Attribute attribute : attributes) {
         	
-        	AttributeDefinition attributeDefinition = 
-        		createAttributeDefinition(attribute.getName(), attribute.getChoiceValue(), pointNameTemplateMap);
+        	Object lookup = attribute.getBasicLookup() != null ? attribute.getBasicLookup() : attribute.getMappedLookup();
+            AttributeDefinition attributeDefinition = createAttributeDefinition(attribute.getName(), lookup, pointNameTemplateMap);
         	Attribute pointAttribute = BuiltInAttribute.valueOf(attribute.getName());
         	
             if (attributeMap.containsKey(pointAttribute)) {
@@ -762,7 +765,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         List<Tag> tags = pao.getTags();
         ImmutableBiMap.Builder<PaoTag, PaoTagDefinition> supportedTagsBuilder = ImmutableBiMap.builder();
         for (Tag tag : tags) {
-            if (tag.getSupports()) {
+            if (tag.isSupports()) {
                 PaoTagDefinition definition = createPaoTagDefinition(tag.getName(), tag.getValue(), paoType.toString());
                 supportedTagsBuilder.put(definition.getTag(), definition);
                 typesBySupportedTag.get(definition.getTag()).put(paoType, paoDefinition);
@@ -800,7 +803,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                                         String javaConstant) {
         paoAllPointTemplateMap.put(paoType, template);
         
-        if (point.getInit()) {
+        if (point.isInit()) {
             paoInitPointTemplateMap.put(paoType, template);
         }
         
@@ -811,10 +814,10 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 
     /**
-     * Helper method to convert a castor AttributeLookup CHOICE object to a AttributeLookup definition
+     * Helper method to convert a jaxb AttributeLookup CHOICE object to a AttributeLookup definition
      * @param choiceLookup - The choice object from the attribute lookup
      * @param pointNameTemplateMap 
-     * @return The AttributeLookup definition representing the castor CHOICE lookup
+     * @return The AttributeLookup definition representing the jaxb CHOICE lookup
      */
 	private AttributeDefinition createAttributeDefinition(String attributeName,
             Object choiceLookup, Map<String, PointTemplate> pointNameTemplateMap) {
@@ -846,11 +849,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 	
     /**
-     * Helper method to convert a castor command to a command definition
+     * Helper method to convert a jaxb command to a command definition
      * @param paoName - Name of pao for commands
      * @param command - Command to convert
      * @param pointNameTemplateMap
-     * @return The command definition representing the castor command
+     * @return The command definition representing the jaxb command
      */
     private CommandDefinition createCommandDefinition(String paoName, Command command,
             Map<String, PointTemplate> pointNameTemplateMap) {
@@ -858,14 +861,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         CommandDefinition definition = new CommandDefinition(command.getName());
 
         // Add command text
-        Cmd[] cmds = command.getCmd();
-        for (Cmd cmd : cmds) {
+        for (Cmd cmd : command.getCmd()) {
             definition.addCommandString(cmd.getText());
         }
 
         // Add point reference
-        PointRef[] pointRefs = command.getPointRef();
-        for (PointRef pointRef : pointRefs) {
+        for (PointRef pointRef : command.getPointRef()) {
             if (!pointNameTemplateMap.containsKey(pointRef.getName())) {
                 throw new RuntimeException("Point name: " + pointRef.getName() + " not found for pao: " + paoName + ".  command pointRefs must reference a point name from the same pao in the paoDefinition.xml file. Point is not on pao, or point has been named incorrectly in a custom file.");
             }
@@ -878,11 +879,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 
     /**
-     * Helper method to convert a castor tag to tag definition.
-     * @param tagName
-     * @param value
-     * @param context 
-     * @return
+     * Helper method to convert a jaxb tag to tag definition.
      */
     private PaoTagDefinition createPaoTagDefinition(String tagName, String value, String context) {
     	
@@ -903,9 +900,9 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 
     /**
-     * Helper method to convert a castor point to a point template
+     * Helper method to convert a jaxb point to a point template
      * @param point - Point to convert
-     * @return The point template representing the castor point
+     * @return The point template representing the jaxb point
      */
     private PointTemplate createPointTemplate(Point point) {
 
@@ -916,37 +913,32 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         double multiplier = 1.0;
         int unitOfMeasure = PointUnits.UOMID_INVALID;
         int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
-        if (point.getPointChoice().getPointChoiceSequence() != null) {
-            if (point.getPointChoice().getPointChoiceSequence().getMultiplier() != null) {
-                multiplier = point.getPointChoice()
-                                  .getPointChoiceSequence()
-                                  .getMultiplier()
-                                  .getValue()
-                                  .doubleValue();
-            }
-            if (point.getPointChoice().getPointChoiceSequence().getUnitofmeasure() != null) {
-                String unitOfMeasureName = point.getPointChoice()
-                                                .getPointChoiceSequence()
-                                                .getUnitofmeasure()
-                                                .getValue();
-                LiteUnitMeasure unitMeasure = null;
-                try {
-                    unitMeasure = unitMeasureDao.getLiteUnitMeasure(unitOfMeasureName);
-                } catch (EmptyResultDataAccessException e) {
-                    throw new NotFoundException("Unit of measure does not exist: "
-                            + unitOfMeasureName + ". Check the paoDefinition.xml file ", e);
-                }
-                unitOfMeasure = unitMeasure.getUomID();
-            }
-            if (point.getPointChoice().getPointChoiceSequence().getDecimalplaces() != null) {
-                decimalPlaces = point.getPointChoice().getPointChoiceSequence().getDecimalplaces().getValue();
-            }
+        
+        if(point.getMultiplier() != null) {
+           multiplier = point.getMultiplier().getValue().doubleValue();
         }
+        
+        if(point.getUnitofmeasure() != null) {
+            String unitOfMeasureName = point.getUnitofmeasure().getValue();
+            LiteUnitMeasure unitMeasure = null;
+            try {
+                unitMeasure = unitMeasureDao.getLiteUnitMeasure(unitOfMeasureName);
+            } catch (EmptyResultDataAccessException e) {
+                throw new NotFoundException("Unit of measure does not exist: "
+                        + unitOfMeasureName + ". Check the paoDefinition.xml file ", e);
+            }
+            unitOfMeasure = unitMeasure.getUomID();
+        }
+        
+        if(point.getDecimalplaces() != null) {
+            decimalPlaces = point.getDecimalplaces().getValue();
+        }
+        
         template.setMultiplier(multiplier);
         template.setUnitOfMeasure(unitOfMeasure);
         template.setDecimalPlaces(decimalPlaces);
         
-        Archive archive = point.getArchive();
+        ArchiveDefaults archive = point.getArchive();
         if (archive != null) {
         	template.setPointArchiveType(PointArchiveType.valueOf(archive.getType()));
         	template.setPointArchiveInterval(PointArchiveInterval.valueOf(archive.getInterval()));
@@ -959,35 +951,34 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         boolean stateGroupSet = false;
         
         // if we have Status Point elements set
-        if (point.getPointChoice().getPointChoiceSequence2() != null) {
-            if (point.getPointChoice().getPointChoiceSequence2().getControlOffset() != null) {
-                template.setControlOffset(point.getPointChoice().getPointChoiceSequence2().getControlOffset().getValue());
+        if (point.getStategroup() != null) {
+            if (point.getControlOffset() != null) {
+                template.setControlOffset(point.getControlOffset().getValue());
             }
-            if (point.getPointChoice().getPointChoiceSequence2().getControlType() != null) {
-                ControlType controlType = ControlType.valueOf(point.getPointChoice().getPointChoiceSequence2().getControlType().getValue().toString());
+            if (point.getControlType() != null) {
+                ControlType controlType = ControlType.valueOf(point.getControlType().getValue().toString());
                 template.setControlType(controlType);
             }
-            if (point.getPointChoice().getPointChoiceSequence2().getStateZeroControl() != null) {
-                StateControlType stateZeroControl = StateControlType.valueOf(point.getPointChoice().getPointChoiceSequence2().getStateZeroControl().getValue().toString());
+            if (point.getStateZeroControl() != null) {
+                StateControlType stateZeroControl = StateControlType.valueOf(point.getStateZeroControl().getValue().toString());
                 template.setStateZeroControl(stateZeroControl);
             }
-            if (point.getPointChoice().getPointChoiceSequence2().getStateOneControl() != null) {
-                StateControlType stateOneControl = StateControlType.valueOf(point.getPointChoice().getPointChoiceSequence2().getStateOneControl().getValue().toString());
+            if (point.getStateOneControl() != null) {
+                StateControlType stateOneControl = StateControlType.valueOf(point.getStateOneControl().getValue().toString());
                 template.setStateOneControl(stateOneControl);
             }
-            if (point.getPointChoice().getPointChoiceSequence2().getStategroup() != null) {
+            if (point.getStategroup() != null) {
                 stateGroupSet = true;
-                stateGroupName = point.getPointChoice().getPointChoiceSequence2().getStategroup().getValue();
-                initialStateStr = point.getPointChoice().getPointChoiceSequence2().getStategroup().getInitialState();
+                stateGroupName = point.getStategroup().getValue();
+                initialStateStr = point.getStategroup().getInitialState();
             }
         }
         
         // if we have the Analog State Group set
-        if(point.getPointChoice().getPointChoiceSequence() != null &&
-           point.getPointChoice().getPointChoiceSequence().getAnalogstategroup() != null) {
+        if(point.getAnalogstategroup() != null) {
             stateGroupSet = true;
-            stateGroupName = point.getPointChoice().getPointChoiceSequence().getAnalogstategroup().getValue();
-            initialStateStr = point.getPointChoice().getPointChoiceSequence().getAnalogstategroup().getInitialState();
+            stateGroupName = point.getAnalogstategroup().getValue();
+            initialStateStr = point.getAnalogstategroup().getInitialState();
         }
         
         if(stateGroupSet) {
@@ -1032,12 +1023,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
         
         int periodicRate = calculation.getPeriodicRate();
-        boolean forceQualityNormal = calculation.getForceQualityNormal();
+        boolean forceQualityNormal = calculation.isForceQualityNormal();
         UpdateTypeType updateType = calculation.getUpdateType();
         CalcPointInfo calcPointInfo = new CalcPointInfo(updateType.toString(), periodicRate, forceQualityNormal);
         
         List<CalcPointComponent> calcPointComponents = Lists.newArrayList();
-        Component[] components = calculation.getComponents().getComponent();
+        List<Component> components = calculation.getComponents().getComponent();
         for (Component component : components) {
             ComponentTypeType componentType = component.getComponentType();
             String lookup = component.getPoint();

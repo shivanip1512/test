@@ -40,7 +40,6 @@ Class-Path: ./
  lucene-core-3.4.0.jar 
  log4j-1.2.14.jar 
  guava-11.0.1.jar 
- castor-xml.jar 
  rwav.jar 
  SqlServer.jar 
  jtds.jar 
@@ -62,4 +61,6 @@ Class-Path: ./
  org.springframework.integration.adapter-1.0.3.RELEASE.jar 
  org.springframework.integration.jms-1.0.3.RELEASE.jar 
  xbean-spring-3.4.jar 
+ jaxb-api.jar 
+ jaxb-impl.jar 
  

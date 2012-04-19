@@ -10,11 +10,11 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.common.pao.definition.model.castor.Attribute;
-import com.cannontech.common.pao.definition.model.castor.Command;
-import com.cannontech.common.pao.definition.model.castor.Pao;
-import com.cannontech.common.pao.definition.model.castor.Point;
-import com.cannontech.common.pao.definition.model.castor.Tag;
+import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute;
+import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command;
+import com.cannontech.common.pao.definition.model.jaxb.Pao;
+import com.cannontech.common.pao.definition.model.jaxb.PointsType.Point;
+import com.cannontech.common.pao.definition.model.jaxb.TagType.Tag;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.database.data.point.PointType;
@@ -29,7 +29,6 @@ public class PaoStore {
 	private boolean isAbstract = false;
 	private PaoType paoType = null;
 	
-	
 	// override-able if not already set by a child
 	private String displayName;
 	private String displayGroup;
@@ -40,35 +39,33 @@ public class PaoStore {
 	private Map<String, Attribute> attributes = new HashMap<String, Attribute>();
 	private Map<String, Tag> tags = new HashMap<String, Tag>();
 	
-	public PaoStore(Pao castor) {
-		
-		// set 
-		this.setId(castor.getId());
-		this.setEnabled(castor.getEnabled());
-		this.setCreatable(castor.getCreatable());
-		this.setAbstract(castor.getAbstract());
-		this.setInheritedIds(castor.getInherits());
+	public PaoStore(Pao jaxbPao) { 
+		this.setId(jaxbPao.getId());
+		this.setEnabled(jaxbPao.isEnabled());
+		this.setCreatable(jaxbPao.isCreatable());
+		this.setAbstract(jaxbPao.isAbstract());
+		this.setInheritedIds(jaxbPao.getInherits());
 		
 		if (!isAbstract()) {
 		    PaoType paoType = PaoType.valueOf(getId());
 		    this.setPaoType(paoType);
 		}
 		
-		// initial apply of castor object
-		this.applyDisplayName(castor.getDisplayName());
-		this.applyDisplayGroup(castor.getDisplayGroup());
-		this.applyChangeGroup(castor.getChangeGroup());
-		if (castor.getPoints() != null) {
-			this.applyPoints(IterableUtils.safeList(castor.getPoints().getPoint()));
+		// initial apply of jaxb object
+		this.applyDisplayName(jaxbPao.getDisplayName());
+		this.applyDisplayGroup(jaxbPao.getDisplayGroup());
+		this.applyChangeGroup(jaxbPao.getChangeGroup());
+		if (jaxbPao.getPoints() != null) {
+			this.applyPoints(IterableUtils.safeList(jaxbPao.getPoints().getPoint()));
 		}
-		if (castor.getCommands() != null) {
-			this.applyCommands(IterableUtils.safeList(castor.getCommands().getCommand()));
+		if (jaxbPao.getCommands() != null) {
+			this.applyCommands(IterableUtils.safeList(jaxbPao.getCommands().getCommand()));
 		}
-		if (castor.getAttributes() != null) {
-			this.applyAttributes(IterableUtils.safeList(castor.getAttributes().getAttribute()));
+		if (jaxbPao.getAttributes() != null) {
+			this.applyAttributes(IterableUtils.safeList(jaxbPao.getAttributes().getAttribute()));
 		}
-		if (castor.getTags() != null) {
-			this.applyTags(IterableUtils.safeList(castor.getTags().getTag()));
+		if (jaxbPao.getTags() != null) {
+			this.applyTags(IterableUtils.safeList(jaxbPao.getTags().getTag()));
 		}
 	}
 
@@ -83,7 +80,6 @@ public class PaoStore {
 		this.applyAttributes(inheritedPao.getEnabledAttributes());
 		this.applyTags(inheritedPao.getTags());
 	}
-	
 	
 	// SETTERS
 	// these items are defined at the pao level or are unique per pao and are not overridden by inherited abstract paos
@@ -156,13 +152,13 @@ public class PaoStore {
 			}
 				
 			// point was marked as disabled by child, leave it be
-			if (!existingPoint.getEnabled()) {
+			if (!existingPoint.isEnabled()) {
 				continue;
 			} 
 				
 			// apply items from inherited point if they have not already been set by some child
-			if (existingPoint.getInit() == null) {
-				existingPoint.setInit(inheritedPoint.getInit());
+			if (existingPoint.isInit() == null) {
+				existingPoint.setInit(inheritedPoint.isInit());
 			}
 			if (existingPoint.getName() == null) {
 				existingPoint.setName(inheritedPoint.getName());
@@ -171,24 +167,17 @@ public class PaoStore {
 				existingPoint.setDescription(inheritedPoint.getDescription());
 			}
 			
-			// existing point does not have state group set, and the inherited point has a multipier/uom to offer us...
-			// if we already have a state group then we are not interested in the inherited point's multiplier/uom.
-			if(existingPoint.getPointChoice().getPointChoiceSequence2() == null && inheritedPoint.getPointChoice().getPointChoiceSequence() != null) {
-				
-				// existing point doesn't have any multiplier/uom, take all that the inherited point has to give us
-				if (existingPoint.getPointChoice().getPointChoiceSequence() == null) {
-					existingPoint.getPointChoice().setPointChoiceSequence(inheritedPoint.getPointChoice().getPointChoiceSequence());
-				}
-			}
-
-			// existing point does not have multiplier/uom set, and the inherited point has state group to offer us...
-			// if we already have a multiplier/uom then we are not interested in the state group that the inherited point has to offer.
-			if (existingPoint.getPointChoice().getPointChoiceSequence() == null && inheritedPoint.getPointChoice().getPointChoiceSequence2() != null
-			        && inheritedPoint.getPointChoice().getPointChoiceSequence2().getStategroup() != null) {
-				
-				if (existingPoint.getPointChoice().getPointChoiceSequence2() != null &&
-				        existingPoint.getPointChoice().getPointChoiceSequence2().getStategroup() == null) {
-					existingPoint.getPointChoice().getPointChoiceSequence2().setStategroup(inheritedPoint.getPointChoice().getPointChoiceSequence2().getStategroup());
+			//If the existing point lacks both stategroup and multiplier, then settings can be taken
+			//from inhertited point. Existing point inherits either stategroup or multiplier/etc. from
+			//inherited point.
+			if(existingPoint.getStategroup() == null && existingPoint.getMultiplier() == null) { //&& inheritedPoint.getMultiplier() != null) {
+				if(inheritedPoint.getMultiplier() != null) {
+    			    existingPoint.setMultiplier(inheritedPoint.getMultiplier());
+    				existingPoint.setUnitofmeasure(inheritedPoint.getUnitofmeasure());
+    				existingPoint.setDecimalplaces(inheritedPoint.getDecimalplaces());
+    				existingPoint.setAnalogstategroup(inheritedPoint.getAnalogstategroup());
+				} else if(inheritedPoint.getStategroup() != null) {
+				    existingPoint.setStategroup(inheritedPoint.getStategroup());
 				}
 			}
 		}
@@ -266,7 +255,7 @@ public class PaoStore {
 		List<Point> enabledPoints = new ArrayList<Point>();
 		for (PointIdentifier id : this.points.keySet()) {
 			Point point = this.points.get(id);
-			if (point.getEnabled()) {
+			if (point.isEnabled()) {
 				enabledPoints.add(point);
 			}
 		}
@@ -277,7 +266,7 @@ public class PaoStore {
 	    List<Point> enabledPoints = new ArrayList<Point>();
 	    for (PointIdentifier id : this.calcPoints.keySet()) {
 	        Point point = this.calcPoints.get(id);
-	        if (point.getEnabled()) {
+	        if (point.isEnabled()) {
 	            enabledPoints.add(point);
 	        }
 	    }
@@ -288,7 +277,7 @@ public class PaoStore {
 		List<Command> enabledCommands = new ArrayList<Command>();
 		for (String id : this.commands.keySet()) {
 			Command command = this.commands.get(id);
-			if (command.getEnabled()) {
+			if (command.isEnabled()) {
 				enabledCommands.add(command);
 			}
 		}
@@ -299,7 +288,7 @@ public class PaoStore {
 		List<Attribute> enabledAttributes = new ArrayList<Attribute>();
 		for (String id : this.attributes.keySet()) {
 			Attribute attribute = this.attributes.get(id);
-			if (attribute.getEnabled()) {
+			if (attribute.isEnabled()) {
 				enabledAttributes.add(attribute);
 			}
 		}

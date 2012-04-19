@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+           jaxb:version="2.0">
 
     <xs:element name="paoDefinitions">
         <xs:complexType>
@@ -24,6 +26,11 @@
     </xs:attributeGroup>
     
     <xs:complexType name="paoType">
+      <xs:annotation>
+        <xs:appinfo>
+          <jaxb:class name="pao"/>
+        </xs:appinfo>
+      </xs:annotation>
       <xs:sequence minOccurs="1" maxOccurs="1">
         <xs:element name="displayName" type="xs:string" minOccurs="0" />
         <xs:element name="displayGroup" type="xs:string" minOccurs="0" />
@@ -110,11 +117,19 @@
             <xs:enumeration value="CLOSE"/>
         </xs:restriction>
     </xs:simpleType>
-
+    
+    <!-- This type should be equivalent to xs:nonNegativeInteger, but Jaxb will unmarshall it as an int
+         whereas xs:nonNegativeInteger is unmarshalled as a BigInteger -->
+    <xs:simpleType name="NonNegativeInt">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
 	<!-- POINTS -->
 	<xs:attributeGroup name="pointAttributes">
 		<xs:attribute name="type" type="xs:string" use="required" /> <!-- Type and offset together is the unique identifier for points for the parser. -->
-        <xs:attribute name="offset" type="xs:nonNegativeInteger" use="required" />
+        <xs:attribute name="offset" type="NonNegativeInt" use="required"/>
         <xs:attribute name="enabled" type="xs:boolean" default="true" />
     </xs:attributeGroup>
     
@@ -148,7 +163,7 @@
 	                            </xs:element>
 	                            <xs:element name="decimalplaces">
 	                                <xs:complexType>
-	                                    <xs:attribute name="value" type="xs:integer" use="required" />
+	                                    <xs:attribute name="value" type="xs:int" use="required" />
 	                                </xs:complexType>
 	                            </xs:element>
                                 <xs:element name="analogstategroup" minOccurs="0">
@@ -166,7 +181,7 @@
 								</xs:element>
 								<xs:element name="controlOffset" minOccurs="0">
 									<xs:complexType>
-										<xs:attribute name="value" type="xs:integer" use="required" />
+										<xs:attribute name="value" type="xs:int" use="required" />
 									</xs:complexType>
 								</xs:element>
 								<xs:element name="stateZeroControl" minOccurs="0">
@@ -191,7 +206,7 @@
                             <xs:complexType>
                                 <xs:sequence>
                                     <xs:element name="forceQualityNormal" minOccurs="0" type="xs:boolean" default="false" />
-                                    <xs:element name="periodicRate" minOccurs="0" type="xs:integer" default="1" />
+                                    <xs:element name="periodicRate" minOccurs="0" type="xs:int" default="1" />
                                     <xs:element name="updateType" minOccurs="0" type="updateTypeType" default="On First Change" />
 									<xs:element name="components" minOccurs="1" maxOccurs="1">
 			                            <xs:complexType>

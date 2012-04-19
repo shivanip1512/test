@@ -50,30 +50,24 @@
        <delete dir="build"/>        
     </target>
     
-	<!-- Target to generate the castor classes for the paoDefinition schema -->
-    <target name="generateCastorClasses">
-        
-        <taskdef name="castor-srcgen" classname="org.exolab.castor.tools.ant.taskdefs.CastorSourceGenTask">
-            <classpath id="jspc.class.path">
-                <fileset dir="${yukon.lib}">
-                    <include name="**/*.jar"/>
-                </fileset>
+	<!-- Target to generate the jaxb classes for the paoDefinition schema -->
+    <target name="generateJaxbClasses">
+        <!-- This task uses the JAXB2 Basics version of the xjc ant task
+             because the Oracle version has classpath issues with plugins
+             and we are using the JAXB 2 Default Value plugin-->
+    	<taskdef name="xjc" classname="org.jvnet.jaxb2_commons.xjc.XJC2Task">
+            <classpath>
+                <fileset dir=".." includes="**/*.jar"/>
             </classpath>
         </taskdef>
-
-		<!-- Clear out any old generated classes -->
-        <delete>
-            <fileset dir="src/com/cannontech/common/device/definition/model/castor" includes="*.java"/>
-        	<fileset dir="src/com/cannontech/common/pao/definition/model/castor" includes="*.java"/>
-        </delete>
-        <castor-srcgen file="src/com/cannontech/common/pao/definition/dao/paoDefinition.xsd"
-                          todir="src"
-                          package="com.cannontech.common.pao.definition.model.castor"
-                          types="j2"
-                          warnings="true"
-        				  properties="src/com/cannontech/common/pao/definition/dao/paoDefinitionBuild.properties"/>
+    	<xjc schema="src/com/cannontech/common/pao/definition/dao/paoDefinition.xsd" package="com.cannontech.common.pao.definition.model.jaxb" destdir="src">
+    	    <arg value="-extension"/>
+    		<arg value="-Xdefault-value"/>
+    		<!-- Everything in this "produces" dir should be overwritten on fresh build -->
+    		<produces dir="src/com/cannontech/common/pao/definition/model/jaxb"/>
+        </xjc>
     </target>
-
+	
     <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
     <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">

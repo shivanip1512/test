@@ -3,11 +3,12 @@ package com.cannontech.common.pao.definition.dao;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+
+import com.cannontech.common.pao.definition.model.jaxb.PaoDefinitions;
+
 import junit.framework.TestCase;
-
-import org.exolab.castor.xml.Unmarshaller;
-
-import com.cannontech.common.pao.definition.model.castor.PaoDefinitions;
 
 /**
  * Test class to test validity of deviceDefinition.xml file
@@ -26,8 +27,10 @@ public class PaoDefinitionXMLTest extends TestCase {
                                                .getClassLoader()
                                                .getResourceAsStream("com/cannontech/common/pao/definition/dao/paoDefinition.xml"));
 
-            // Use castor to parse the xml file
-            Unmarshaller.unmarshal(PaoDefinitions.class, reader);
+            // Use jaxb to parse the xml file
+            JAXBContext jaxbContext = JAXBContext.newInstance(PaoDefinitions.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            unmarshaller.unmarshal(reader);
 
         } catch (Exception e) {
             throw new Exception("Exception while parsing deviceDefinition.xml. ", e);
