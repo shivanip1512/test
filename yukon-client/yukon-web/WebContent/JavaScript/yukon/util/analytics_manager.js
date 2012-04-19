@@ -1,20 +1,3 @@
-/*  analytics_manager.js
- * 
- * requirements:
- *      jQuery 1.6+
- *      
- * abstract:
- *      Manages [Google] analytics for Yukon
- *      
- * usage:
- *      This singleton is initialized when the public method "setTrackingIds" is first called.
- *      This is also when event listeners are registered (currently this only includes listening for all non-dataupdater ajax calls).
- *      'Private' methods begin with '_' and should generally not be called.
- *      Public methods are limited to 
- *          * setting the tracking ids (a single cooper_tracking_id and a single additional_tracking_id 
- *              (which will generally be for the customer))
- */
-
 if(typeof(Yukon) === 'undefined'){
     Yukon = {};
 }
@@ -24,6 +7,15 @@ if(typeof(Yukon.Util) === 'undefined'){
 }
 
 if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
+    /**
+     * Singleton that manages [Google] analytics for Yukon. It is initialized 
+     * when the public method "setTrackingIds" is first called. This is also when event listeners 
+     * are registered (currently this only includes listening for all non-dataupdater ajax calls).
+     * 
+     * @class Manages [Google] analytics for Yukon
+     * @author <a href="mailto:alex.delegard@cooperindustries.com">Alex Delegard</a>
+     * @requires jQuery 1.6+
+     */
 	Yukon.Util.AnalyticsManager = {
         _initialized: false,
         _cooper_tracking_id: null,
@@ -33,23 +25,20 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
         /*---------------------*/
         /* 'PUBLIC' functions */
         /*---------------------*/
-        
-        /*
-         * Set the google analytics tracking Id's
-         * 
-         * args = object {}
-         *      cooper_tracking_id:string               - the google analytics cooper tracking id
-         *      additional_tracking_id:string           - the google analytics additional tracking id
+
+        /**
+         * Sets the google analytics tracking Id's
+         * @param {Object} args TrackingId arguments
+         * @param {String} args.cooper_tracking_id The Cooper Google Analytics Tracking Id
+         * @param {String} args.additional_tracking_id The additional Google Analytics Tracking Id
          */
         setTrackingIds: function(args){
             this._init();
-            if (typeof args.cooper_tracking_id !== "undefined" && args.cooper_tracking_id !== null &&
-                    args.cooper_tracking_id !== "") {
+            if (typeof args.cooper_tracking_id === "string" && args.cooper_tracking_id !== "") {
                 this._cooper_tracking_id = args.cooper_tracking_id;
                 _gaq=[["_setAccount",this._cooper_tracking_id],["_trackPageview"]];
             }
-            if (typeof args.additional_tracking_id !== "undefined" && args.additional_tracking_id !== null &&
-                    args.additional_tracking_id !== "") {
+            if (typeof args.additional_tracking_id === "string" && args.additional_tracking_id !== "") {
                 this._additional_tracking_id = args.additional_tracking_id;
                 this._setAdditionalTrackingId;
             }
@@ -88,11 +77,9 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
         },
 
         _setAdditionalTrackingId: function(args){
-            if (typeof this._additional_tracking_id !== "undefined" && this._additional_tracking_id !== null &&
-                    this._additional_tracking_id !== "") {
+            if (typeof this._additional_tracking_id === "string" && this._additional_tracking_id !== "") {
                 var trackPageview = ['a._trackPageview'];
-                if (typeof args.url !== "undefined" && 
-                        args.url !== null && args.url !== "") {
+                if (typeof args.url === "string" && args.url !== "") {
                     trackPageview.push(args.url);
                 }
                 _gaq.push(['a._setAccount',this._additional_tracking_id],trackPageview);
