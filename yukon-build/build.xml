@@ -263,8 +263,10 @@
 
         <!-- Tomcat Component -->
         <copy todir="${install.bag}/Tomcat" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-install/Tomcat6" />
+            <fileset dir="${basedir}/yukon-install/Tomcat7" />
         </copy>
+        <copy file="${basedir}/yukon-build/yukonservice.bat"
+        	todir="${install.bag}/Tomcat/bin" preservelastmodified="true"/>
 
         <!-- WebStart Component -->
         <copy todir="${install.bag}/WebStartJRE" preservelastmodified="true">

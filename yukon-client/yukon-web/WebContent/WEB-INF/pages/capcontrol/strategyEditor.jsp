@@ -230,7 +230,7 @@
                 
                 <x:htmlTag value="br"/>
                 
-                <x:outputText value="* ( - ) indicates leading" rendered="#{capControlForm.strategy.PFAlgorithm}" rendered="#{!capControlForm.timeOfDay}"/>
+                <x:outputText value="* ( - ) indicates leading" rendered="#{capControlForm.strategy.voltVar || capControlForm.strategy.KVarAlgorithm}"/>
             </x:htmlTag>
             
             <x:htmlTag value="br"/>

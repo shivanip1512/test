@@ -150,7 +150,7 @@
         }
     </script>
 
-	<form:form id="eventsFilterForm" action="report" method="get"commandName="backingBean">
+	<form:form id="eventsFilterForm" action="report" method="get" commandName="backingBean">
         <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
 
             <%-- LEFT SIDE COLUMN --%>

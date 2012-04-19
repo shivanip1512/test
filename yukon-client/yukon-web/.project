@@ -3,38 +3,50 @@
 	<name>yukon-web</name>
 	<comment></comment>
 	<projects>
-		<project>billing</project>
-		<project>cbc</project>
-		<project>commander</project>
 		<project>common</project>
-		<project>cttp</project>
-		<project>esub</project>
+		<project>web-common</project>
 		<project>loadcontrol</project>
-		<project>multispeak</project>
-		<project>report</project>
-		<project>servlet</project>
 		<project>stars</project>
-		<project>tdc</project>
-		<project>third-party</project>
-		<project>tools</project>
+		<project>servlet</project>
+		<project>cbc</project>
+		<project>billing</project>
+		<project>commander</project>
 		<project>trending</project>
+		<project>api</project>
+		<project>report</project>
+		<project>esub</project>
+		<project>tdc</project>
+		<project>multispeak</project>
+		<project>tools</project>
 		<project>yukonappserver</project>
 	</projects>
 	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.wst.jsdt.core.javascriptValidator</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.wst.common.project.facet.core.builder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.wst.validation.validationbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>org.springframework.ide.eclipse.core.springnature</nature>
-		<nature>com.ibm.etools.beaninfo.BeaninfoNature</nature>
-		<nature>com.ibm.etools.j2ee.WebNature</nature>
+		<nature>org.eclipse.jem.workbench.JavaEMFNature</nature>
+		<nature>org.eclipse.wst.common.modulecore.ModuleCoreNature</nature>
+		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
-		<nature>com.ibm.etools.webpage.template.templatenature</nature>
-		<nature>com.ibm.etools.siteedit.WebSiteNature</nature>
-		<nature>com.sysdeo.eclipse.tomcat.tomcatnature</nature>
-		<nature>com.ibm.etools.struts.StrutsNature</nature>
+		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 	</natures>
 </projectDescription>

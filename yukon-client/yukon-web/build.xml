@@ -4,7 +4,7 @@
     <property environment="env"/>   
 	<property file="../build/build.properties" />
 	<property name="yukon.web.src_build" value="build_src"/>
-    
+
     <path id="jspc.class.path">
         <fileset dir="${yukon.build}/lib">
             <include name="*.jar"/>
@@ -165,6 +165,8 @@
               <include name="**/*.jar" />
               <exclude name="jsp-api.jar"/>
               <exclude name="servlet-api.jar"/>
+              <exclude name="tomcat-api.jar"/>
+              <exclude name="tomcat-util.jar"/>
            </fileset>
         </copy>
 

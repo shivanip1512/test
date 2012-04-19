@@ -28,11 +28,11 @@
 	<c:forEach var="attr" items="${attributes}">
 	
 		<c:set var="selected" value=""/>
-		<c:set var="break" value="false"/>
+		<c:set var="found" value="false"/>
 		<c:forEach var="selectedAttribute" items="${pageScope.selectedAttributes}">
-			<c:if test="${!break && selectedAttribute == attr}">
+			<c:if test="${!found && selectedAttribute == attr}">
 				<c:set var="selected" value="selected"/>
-				<c:set var="break" value="true"/>
+				<c:set var="found" value="true"/>
 			</c:if>
 		</c:forEach>
 		

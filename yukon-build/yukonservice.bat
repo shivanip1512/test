@@ -3,10 +3,7 @@ if "%OS%" == "Windows_NT" setlocal
 
 set JRE_HOME=%2
 ::need to do some shenanigans here to remove the outer quotes
-set JRE_HOME=###%_string%###
-set JRE_HOME=%_string:"###=%
-set JRE_HOME=%_string:###"=%
-set JRE_HOME=%_string:###=%
+set JRE_HOME=%JRE_HOME:"=%
 
 set CURRENT_DIR=%cd%
 
@@ -15,7 +12,7 @@ set CATALINA_HOME=%cd%
 
 set CATALINA_BASE=%CATALINA_HOME%
  
-set EXECUTABLE=%CATALINA_HOME%\bin\tomcat5.exe
+set EXECUTABLE=%CATALINA_HOME%\bin\tomcat7.exe
 
 set SERVICE_NAME=YukonWebApplicationService
 
@@ -44,7 +41,7 @@ rem Each command line option is prefixed with PR_
 set PR_DESCRIPTION=Yukon web server 
 set PR_INSTALL=%EXECUTABLE%
 set PR_LOGPATH=%CATALINA_BASE%\logs
-set PR_CLASSPATH=%CATALINA_HOME%\bin\bootstrap.jar
+set "PR_CLASSPATH=%CATALINA_HOME%\bin\bootstrap.jar;%CATALINA_BASE%\bin\tomcat-juli.jar;%CATALINA_HOME%\bin\tomcat-juli.jar"
 
 rem Set the client jvm from JRE_HOME
 set PR_JVM=%JRE_HOME%\bin\client\jvm.dll
@@ -52,7 +49,7 @@ if exist "%PR_JVM%" goto foundJvm
 
 :foundJvm
 echo Using JVM:              %PR_JVM%
-"%EXECUTABLE%"//IS//%SERVICE_NAME% --Startup auto --StartClass org.apache.catalina.startup.Bootstrap --StopClass org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
+"%EXECUTABLE%" //IS//%SERVICE_NAME% --Startup auto --StartClass org.apache.catalina.startup.Bootstrap --StopClass org.apache.catalina.startup.Bootstrap --StartParams start --StopParams stop
 if not errorlevel 1 goto installed
 echo Failed installing '%PR_DISPLAYNAME%' service
 goto end
@@ -74,7 +71,7 @@ rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_STDOUTPUT=auto
 set PR_STDERROR=auto
-"%EXECUTABLE%"//US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp" --JvmMs 256 --JvmMx 384
+"%EXECUTABLE%"//US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp;-XX:MaxPermSize=128m" --JvmMs 256 --JvmMx 384
 echo The service 'Yukon Web Application Service' has been installed.
 
 :end

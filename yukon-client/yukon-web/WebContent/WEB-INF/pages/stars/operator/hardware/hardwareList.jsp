@@ -380,31 +380,31 @@
                         <th class="actions"><i:inline key=".actions"/></th>
                     </tr>
                     
-                    <c:forEach var="switch" items="${switches}">
+                    <c:forEach var="hwSwitch" items="${switches}">
                         <tr class="<tags:alternateRow odd="" even="altRow"/>">
                             <td>
-                                <a href="${viewUrl}${switch.inventoryId}">
-                                    <spring:escapeBody htmlEscape="true">${switch.serialNumber}</spring:escapeBody>
+                                <a href="${viewUrl}${hwSwitch.inventoryId}">
+                                    <spring:escapeBody htmlEscape="true">${hwSwitch.serialNumber}</spring:escapeBody>
                                 </a>
                             </td>
-                            <td><spring:escapeBody htmlEscape="true">${switch.displayType}</spring:escapeBody></td>
-                            <td><spring:escapeBody htmlEscape="true">${switch.displayLabel}</spring:escapeBody></td>
+                            <td><spring:escapeBody htmlEscape="true">${hwSwitch.displayType}</spring:escapeBody></td>
+                            <td><spring:escapeBody htmlEscape="true">${hwSwitch.displayLabel}</spring:escapeBody></td>
                             <td nowrap="nowrap">
                                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                     <c:if test="${inventoryChecking}">
                                         <tags:pickerDialog extraArgs="${energyCompanyId}" 
-                                                id="availableSwitchPicker${switch.inventoryId}" 
+                                                id="availableSwitchPicker${hwSwitch.inventoryId}" 
                                                 type="availableSwitchPicker" 
                                                 destinationFieldId="newInventoryId" 
                                                 immediateSelectMode="true"
-                                                endAction="function(items) { return changeOut(${switch.inventoryId}, false); }" 
+                                                endAction="function(items) { return changeOut(${hwSwitch.inventoryId}, false); }" 
                                                 linkType="button"
                                                 buttonRenderMode="image"
                                                 styleClass="vam"
                                                 nameKey="changeOut"/>
                                     </c:if>
                                 </cti:checkRolesAndProperties>
-                                <cti:img nameKey="editConfig" href="${editConfigUrl}${switch.inventoryId}"/>
+                                <cti:img nameKey="editConfig" href="${editConfigUrl}${hwSwitch.inventoryId}"/>
                             </td>
                         </tr>
                     </c:forEach>

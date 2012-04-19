@@ -73,8 +73,8 @@ public class DatabaseMigrationController {
         List<String> exportFilePaths = getExportDirectoryFilePaths(userContext);
         
         map.addAttribute("errorMsg", errorMsg);
-        map.addAttribute("export", exportTab);
-        map.addAttribute("import", importTab);
+        map.addAttribute("exportTab", exportTab);
+        map.addAttribute("importTab", importTab);
         map.addAttribute("exportTypeList", exportTypeList);
         map.addAttribute("serverFiles", exportFilePaths);
         addDbInfoToMav(map);
@@ -213,7 +213,7 @@ public class DatabaseMigrationController {
         
 		// error
 		if (loadError != null) {
-			map.addAttribute("import", true);
+			map.addAttribute("importTab", true);
 			map.addAttribute("errorMsg", loadError);
 			return "redirect:home";
 		}
@@ -244,7 +244,7 @@ public class DatabaseMigrationController {
 		// retrieve file
 		File importFile = new File(dataFilePath);
 		if (!importFile.exists()) {
-			map.addAttribute("import", true);
+			map.addAttribute("importTab", true);
 
 			MessageSourceAccessor messageSourceAccessor = 
 				messageSourceResolver.getMessageSourceAccessor(userContext);

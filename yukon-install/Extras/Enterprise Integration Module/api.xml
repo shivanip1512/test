@@ -1,5 +1,5 @@
-<Context path="api" 
-   docBase="C:\Yukon\Server\Extras\Enterprise Integration Module\api.war" >
+<Context path="/api" 
+   docBase="C:\Yukon\Server\Extras\Enterprise Integration Module\api.war">
 
   <Environment name="yukon.base" value="C:\Yukon"
          type="java.lang.String" override="false"/>

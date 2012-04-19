@@ -1336,7 +1336,6 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      * @param newValue the value of the new parameter
      * @return a full path and query string
      */
-    @SuppressWarnings("unchecked")
 	public static String tweakRequestURI(HttpServletRequest request, String newParameter, String newValue) {
         StringBuffer result = new StringBuffer();
         result.append(request.getRequestURI());
@@ -1592,7 +1591,6 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
      * @param request
      * @return
      */
-    @SuppressWarnings("unchecked")
     public static Map<String, String> getParameterMap(HttpServletRequest request) {
         
         Map<String, String[]> parameterMapWithArrays = request.getParameterMap();
@@ -1639,7 +1637,6 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
         }
     }
     
-    @SuppressWarnings("unchecked")
     /**
      * Helper method to put all String parameters with a given prefix into a map
      */
@@ -1648,12 +1645,12 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
 
         Map<String, String> returnMap = new HashMap<String, String>();
 
-        Map<String, Object> parameterMap = request.getParameterMap();
+        Map<String, String[]> parameterMap = request.getParameterMap();
         for (String key : parameterMap.keySet()) {
 
             if (key.startsWith(prefix)) {
                 String paramKey = key.substring(prefix.length());
-                String[] value = (String[]) parameterMap.get(key);
+                String[] value = parameterMap.get(key);
 
                 returnMap.put(paramKey, value[0]);
             }
@@ -1663,7 +1660,6 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
         return returnMap;
     }
 
-    @SuppressWarnings("unchecked")
     /**
      * Helper method to put all Integer parameters with a given prefix into a
      * map
@@ -1673,12 +1669,12 @@ public static synchronized Date parseDateStringLiberally(String dateStr, TimeZon
 
         Map<String, Integer> returnMap = new HashMap<String, Integer>();
 
-        Map<String, Object> parameterMap = request.getParameterMap();
+        Map<String, String[]> parameterMap = request.getParameterMap();
         for (String key : parameterMap.keySet()) {
 
             if (key.startsWith(prefix)) {
                 String paramKey = key.substring(prefix.length());
-                String[] object = (String[]) parameterMap.get(key);
+                String[] object = parameterMap.get(key);
                 Integer value = Integer.valueOf(object[0]);
 
                 returnMap.put(paramKey, value);

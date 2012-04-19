@@ -40,13 +40,13 @@
     <cti:tabbedContentSelector>
     
    		<%-- EXPORT TAB --%>
-		<cti:tabbedContentSelectorContent selectorName="${exportConfig}" initiallySelected="${export}">
+		<cti:tabbedContentSelectorContent selectorName="${exportConfig}" initiallySelected="${exportTab}">
 			<%@ include file="export.jspf" %>
 		</cti:tabbedContentSelectorContent>
 		
 		
 		<%-- IMPORT TAB --%>
-		<cti:tabbedContentSelectorContent selectorName="${importConfig}" initiallySelected="${import}">
+		<cti:tabbedContentSelectorContent selectorName="${importConfig}" initiallySelected="${importTab}">
 			<%@ include file="loadImport.jspf" %>
 		</cti:tabbedContentSelectorContent>
     

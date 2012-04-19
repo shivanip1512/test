@@ -124,11 +124,11 @@
 	<c:forEach var="cronDay" items="${state.allCronDays}">
 	
 		<c:set var="cronDayChecked" value=""/>
-		<c:set var="break" value="false"/>
+		<c:set var="found" value="false"/>
 		<c:forEach var="selectedCronDay" items="${state.selectedCronDays}">
-			<c:if test="${!break && selectedCronDay == cronDay}">
+			<c:if test="${!found && selectedCronDay == cronDay}">
 				<c:set var="cronDayChecked" value="checked"/>
-				<c:set var="break" value="true"/>
+				<c:set var="found" value="true"/>
 			</c:if>
 		</c:forEach>
 	

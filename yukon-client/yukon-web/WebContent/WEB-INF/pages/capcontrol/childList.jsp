@@ -152,7 +152,7 @@
 							rendered="#{capControlForm.editingAuthorized}"
 							value="Create Substation Bus"
 							title="Click here to create a Substation Bus. Return after creation to assign the Substation Bus.">
-							<f:param name="type" id="type"value="#{selLists.substationBusType}" />
+							<f:param name="type" id="type" value="#{selLists.substationBusType}" />
 							<f:param name="tabId" value="8"/>
 						</x:commandLink>
 					</x:htmlTag>
