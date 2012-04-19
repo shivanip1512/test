@@ -221,16 +221,12 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, 
-                             ReadableInstant stopDate) {
-
+    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, ReadableInstant stopDate) {
         stopOptOut(inventoryId, accountId, -1, currentUser, stopDate);
-
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void stopOptOut(int inventoryId, int accountId, int assignedProgram,
-                           LiteYukonUser currentUser, ReadableInstant stopDate) {
+    public void stopOptOut(int inventoryId, int accountId, int assignedProgram, LiteYukonUser currentUser, ReadableInstant stopDate) {
         
         SqlStatementBuilder optOutSQL = new SqlStatementBuilder();
         optOutSQL.append("UPDATE LMHardwareControlGroup");

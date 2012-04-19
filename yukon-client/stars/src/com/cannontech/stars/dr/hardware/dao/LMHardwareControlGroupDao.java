@@ -27,8 +27,7 @@ public interface LMHardwareControlGroupDao {
     /** 
      * This method stops any opt out that matches the inventoryId and accountId supplied.
      */
-    public void stopOptOut(int inventoryId, int accountId, 
-                             LiteYukonUser currentUser, ReadableInstant stopDate);
+    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, ReadableInstant stopDate);
 
     /** 
      * This method stops any opt out that matches the inventoryId, accountId, 

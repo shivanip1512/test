@@ -147,9 +147,9 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     }
     
     @Override
-    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, 
-                             Instant stopDate) {
+    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Instant stopDate) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
+        
         try {
             lmHardwareControlGroupDao.stopOptOut(inventoryId, accountId, currentUser, stopDate);
         } catch (Exception e) {
