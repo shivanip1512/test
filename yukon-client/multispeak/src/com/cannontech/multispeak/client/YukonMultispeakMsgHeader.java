@@ -77,6 +77,11 @@ public class YukonMultispeakMsgHeader extends MultiSpeakMsgHeader {
               sessionID,
               previousSessionID,
               objectsRemaining,
-              lastSent);
+              lastSent,
+              null,
+              null,
+              null,
+              null,
+              null);
     }
 }

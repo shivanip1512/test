@@ -576,7 +576,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     
     @Override
     public synchronized ErrorObject[] blockMeterReadEvent(final MultispeakVendor vendor, 
-            String meterNumber, final FormattedBlockProcessingService<Block> blockProcessingService) {
+            String meterNumber, final FormattedBlockProcessingService<Block> blockProcessingService,
+            final String transactionId) {
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
         log.info("Received " + meterNumber+ " for BlockMeterReading from " + vendor.getCompanyName());
@@ -635,7 +636,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 FormattedBlock formattedBlock = blockProcessingService.createMspFormattedBlock(block);
                 
                 try {
-                    ErrorObject[] errObjects = port.formattedBlockNotification(formattedBlock);
+                    ErrorObject[] errObjects = port.formattedBlockNotification(formattedBlock, transactionId, "errorString?");
                     if (!ArrayUtils.isEmpty(errObjects)) {
                         String endpointURL = vendor.getEndpointURL(MultispeakDefines.EA_Server_STR);
                         multispeakFuncs.logErrorObjects(endpointURL, "FormattedBlockNotification", errObjects);
@@ -904,7 +905,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(vendor);
             if (port != null) {
-                port.CDStateChangedNotification(yukonMeter.getMeterNumber(), loadActionCode, transactionId);
+                port.CDStateChangedNotification(yukonMeter.getMeterNumber(), loadActionCode, transactionId, "errorString?");
             } else {
                 log.error("Port not found for CB_Server (" + vendor.getCompanyName() + ")");
             }  

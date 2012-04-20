@@ -30,6 +30,8 @@ public class WdgCode implements java.io.Serializable {
     public static final java.lang.String _value11 = "Y-Y-D Ground";
     public static final java.lang.String _value12 = "Y-D one";
     public static final java.lang.String _value13 = "D-Y open";
+    public static final java.lang.String _value14 = "Y-D open";
+    public static final java.lang.String _value15 = "Unknown";
     public static final WdgCode value1 = new WdgCode(_value1);
     public static final WdgCode value2 = new WdgCode(_value2);
     public static final WdgCode value3 = new WdgCode(_value3);
@@ -43,6 +45,8 @@ public class WdgCode implements java.io.Serializable {
     public static final WdgCode value11 = new WdgCode(_value11);
     public static final WdgCode value12 = new WdgCode(_value12);
     public static final WdgCode value13 = new WdgCode(_value13);
+    public static final WdgCode value14 = new WdgCode(_value14);
+    public static final WdgCode value15 = new WdgCode(_value15);
     public java.lang.String getValue() { return _value_;}
     public static WdgCode fromValue(java.lang.String value)
           throws java.lang.IllegalArgumentException {

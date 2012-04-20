@@ -14,7 +14,7 @@ public class OutageCustomer  implements java.io.Serializable {
 
     private java.lang.String callBackPhone;
 
-    private com.cannontech.multispeak.deploy.service.OutageCustomerTimeToCall timeToCall;
+    private com.cannontech.multispeak.deploy.service.TimePeriod timeToCall;
 
     private java.lang.Boolean callBackFlag;
 
@@ -34,6 +34,14 @@ public class OutageCustomer  implements java.io.Serializable {
 
     private java.lang.String outageEventID;
 
+    private java.lang.String callerIDAC;
+
+    private java.lang.String callerIDPhone;
+
+    private java.lang.String servLoc;
+
+    private java.lang.String meterNo;
+
     public OutageCustomer() {
     }
 
@@ -41,7 +49,7 @@ public class OutageCustomer  implements java.io.Serializable {
            java.lang.String custID,
            java.lang.String callBackAC,
            java.lang.String callBackPhone,
-           com.cannontech.multispeak.deploy.service.OutageCustomerTimeToCall timeToCall,
+           com.cannontech.multispeak.deploy.service.TimePeriod timeToCall,
            java.lang.Boolean callBackFlag,
            java.lang.String callBackContactFirstName,
            java.lang.String callBackContactLastName,
@@ -50,7 +58,11 @@ public class OutageCustomer  implements java.io.Serializable {
            java.util.Calendar callBackCompletedTime,
            com.cannontech.multispeak.deploy.service.CallBackType callBackType,
            java.lang.String callRecordID,
-           java.lang.String outageEventID) {
+           java.lang.String outageEventID,
+           java.lang.String callerIDAC,
+           java.lang.String callerIDPhone,
+           java.lang.String servLoc,
+           java.lang.String meterNo) {
            this.custID = custID;
            this.callBackAC = callBackAC;
            this.callBackPhone = callBackPhone;
@@ -64,6 +76,10 @@ public class OutageCustomer  implements java.io.Serializable {
            this.callBackType = callBackType;
            this.callRecordID = callRecordID;
            this.outageEventID = outageEventID;
+           this.callerIDAC = callerIDAC;
+           this.callerIDPhone = callerIDPhone;
+           this.servLoc = servLoc;
+           this.meterNo = meterNo;
     }
 
 
@@ -132,7 +148,7 @@ public class OutageCustomer  implements java.io.Serializable {
      * 
      * @return timeToCall
      */
-    public com.cannontech.multispeak.deploy.service.OutageCustomerTimeToCall getTimeToCall() {
+    public com.cannontech.multispeak.deploy.service.TimePeriod getTimeToCall() {
         return timeToCall;
     }
 
@@ -142,7 +158,7 @@ public class OutageCustomer  implements java.io.Serializable {
      * 
      * @param timeToCall
      */
-    public void setTimeToCall(com.cannontech.multispeak.deploy.service.OutageCustomerTimeToCall timeToCall) {
+    public void setTimeToCall(com.cannontech.multispeak.deploy.service.TimePeriod timeToCall) {
         this.timeToCall = timeToCall;
     }
 
@@ -326,6 +342,86 @@ public class OutageCustomer  implements java.io.Serializable {
         this.outageEventID = outageEventID;
     }
 
+
+    /**
+     * Gets the callerIDAC value for this OutageCustomer.
+     * 
+     * @return callerIDAC
+     */
+    public java.lang.String getCallerIDAC() {
+        return callerIDAC;
+    }
+
+
+    /**
+     * Sets the callerIDAC value for this OutageCustomer.
+     * 
+     * @param callerIDAC
+     */
+    public void setCallerIDAC(java.lang.String callerIDAC) {
+        this.callerIDAC = callerIDAC;
+    }
+
+
+    /**
+     * Gets the callerIDPhone value for this OutageCustomer.
+     * 
+     * @return callerIDPhone
+     */
+    public java.lang.String getCallerIDPhone() {
+        return callerIDPhone;
+    }
+
+
+    /**
+     * Sets the callerIDPhone value for this OutageCustomer.
+     * 
+     * @param callerIDPhone
+     */
+    public void setCallerIDPhone(java.lang.String callerIDPhone) {
+        this.callerIDPhone = callerIDPhone;
+    }
+
+
+    /**
+     * Gets the servLoc value for this OutageCustomer.
+     * 
+     * @return servLoc
+     */
+    public java.lang.String getServLoc() {
+        return servLoc;
+    }
+
+
+    /**
+     * Sets the servLoc value for this OutageCustomer.
+     * 
+     * @param servLoc
+     */
+    public void setServLoc(java.lang.String servLoc) {
+        this.servLoc = servLoc;
+    }
+
+
+    /**
+     * Gets the meterNo value for this OutageCustomer.
+     * 
+     * @return meterNo
+     */
+    public java.lang.String getMeterNo() {
+        return meterNo;
+    }
+
+
+    /**
+     * Sets the meterNo value for this OutageCustomer.
+     * 
+     * @param meterNo
+     */
+    public void setMeterNo(java.lang.String meterNo) {
+        this.meterNo = meterNo;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof OutageCustomer)) return false;
@@ -376,7 +472,19 @@ public class OutageCustomer  implements java.io.Serializable {
               this.callRecordID.equals(other.getCallRecordID()))) &&
             ((this.outageEventID==null && other.getOutageEventID()==null) || 
              (this.outageEventID!=null &&
-              this.outageEventID.equals(other.getOutageEventID())));
+              this.outageEventID.equals(other.getOutageEventID()))) &&
+            ((this.callerIDAC==null && other.getCallerIDAC()==null) || 
+             (this.callerIDAC!=null &&
+              this.callerIDAC.equals(other.getCallerIDAC()))) &&
+            ((this.callerIDPhone==null && other.getCallerIDPhone()==null) || 
+             (this.callerIDPhone!=null &&
+              this.callerIDPhone.equals(other.getCallerIDPhone()))) &&
+            ((this.servLoc==null && other.getServLoc()==null) || 
+             (this.servLoc!=null &&
+              this.servLoc.equals(other.getServLoc()))) &&
+            ((this.meterNo==null && other.getMeterNo()==null) || 
+             (this.meterNo!=null &&
+              this.meterNo.equals(other.getMeterNo())));
         __equalsCalc = null;
         return _equals;
     }
@@ -427,6 +535,18 @@ public class OutageCustomer  implements java.io.Serializable {
         if (getOutageEventID() != null) {
             _hashCode += getOutageEventID().hashCode();
         }
+        if (getCallerIDAC() != null) {
+            _hashCode += getCallerIDAC().hashCode();
+        }
+        if (getCallerIDPhone() != null) {
+            _hashCode += getCallerIDPhone().hashCode();
+        }
+        if (getServLoc() != null) {
+            _hashCode += getServLoc().hashCode();
+        }
+        if (getMeterNo() != null) {
+            _hashCode += getMeterNo().hashCode();
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -461,7 +581,7 @@ public class OutageCustomer  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("timeToCall");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "timeToCall"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">outageCustomer>timeToCall"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "timePeriod"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
@@ -524,6 +644,34 @@ public class OutageCustomer  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("outageEventID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageEventID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("callerIDAC");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "callerIDAC"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("callerIDPhone");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "callerIDPhone"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("servLoc");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "servLoc"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("meterNo");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

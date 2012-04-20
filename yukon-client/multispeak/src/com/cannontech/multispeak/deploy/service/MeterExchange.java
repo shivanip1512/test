@@ -14,6 +14,12 @@ public class MeterExchange  extends com.cannontech.multispeak.deploy.service.Msp
 
     private com.cannontech.multispeak.deploy.service.MeterRead inMeterRead;
 
+    private com.cannontech.multispeak.deploy.service.MeterRead lastRead;
+
+    private java.util.Calendar lastReadDate;
+
+    private com.cannontech.multispeak.deploy.service.ConsumptionItem[] averageConsumption;
+
     public MeterExchange() {
     }
 
@@ -28,7 +34,10 @@ public class MeterExchange  extends com.cannontech.multispeak.deploy.service.Msp
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
            com.cannontech.multispeak.deploy.service.ServiceLocation serviceLocation,
            com.cannontech.multispeak.deploy.service.MeterRead outMeterRead,
-           com.cannontech.multispeak.deploy.service.MeterRead inMeterRead) {
+           com.cannontech.multispeak.deploy.service.MeterRead inMeterRead,
+           com.cannontech.multispeak.deploy.service.MeterRead lastRead,
+           java.util.Calendar lastReadDate,
+           com.cannontech.multispeak.deploy.service.ConsumptionItem[] averageConsumption) {
         super(
             objectID,
             verb,
@@ -41,6 +50,9 @@ public class MeterExchange  extends com.cannontech.multispeak.deploy.service.Msp
         this.serviceLocation = serviceLocation;
         this.outMeterRead = outMeterRead;
         this.inMeterRead = inMeterRead;
+        this.lastRead = lastRead;
+        this.lastReadDate = lastReadDate;
+        this.averageConsumption = averageConsumption;
     }
 
 
@@ -103,6 +115,66 @@ public class MeterExchange  extends com.cannontech.multispeak.deploy.service.Msp
         this.inMeterRead = inMeterRead;
     }
 
+
+    /**
+     * Gets the lastRead value for this MeterExchange.
+     * 
+     * @return lastRead
+     */
+    public com.cannontech.multispeak.deploy.service.MeterRead getLastRead() {
+        return lastRead;
+    }
+
+
+    /**
+     * Sets the lastRead value for this MeterExchange.
+     * 
+     * @param lastRead
+     */
+    public void setLastRead(com.cannontech.multispeak.deploy.service.MeterRead lastRead) {
+        this.lastRead = lastRead;
+    }
+
+
+    /**
+     * Gets the lastReadDate value for this MeterExchange.
+     * 
+     * @return lastReadDate
+     */
+    public java.util.Calendar getLastReadDate() {
+        return lastReadDate;
+    }
+
+
+    /**
+     * Sets the lastReadDate value for this MeterExchange.
+     * 
+     * @param lastReadDate
+     */
+    public void setLastReadDate(java.util.Calendar lastReadDate) {
+        this.lastReadDate = lastReadDate;
+    }
+
+
+    /**
+     * Gets the averageConsumption value for this MeterExchange.
+     * 
+     * @return averageConsumption
+     */
+    public com.cannontech.multispeak.deploy.service.ConsumptionItem[] getAverageConsumption() {
+        return averageConsumption;
+    }
+
+
+    /**
+     * Sets the averageConsumption value for this MeterExchange.
+     * 
+     * @param averageConsumption
+     */
+    public void setAverageConsumption(com.cannontech.multispeak.deploy.service.ConsumptionItem[] averageConsumption) {
+        this.averageConsumption = averageConsumption;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MeterExchange)) return false;
@@ -123,7 +195,16 @@ public class MeterExchange  extends com.cannontech.multispeak.deploy.service.Msp
               this.outMeterRead.equals(other.getOutMeterRead()))) &&
             ((this.inMeterRead==null && other.getInMeterRead()==null) || 
              (this.inMeterRead!=null &&
-              this.inMeterRead.equals(other.getInMeterRead())));
+              this.inMeterRead.equals(other.getInMeterRead()))) &&
+            ((this.lastRead==null && other.getLastRead()==null) || 
+             (this.lastRead!=null &&
+              this.lastRead.equals(other.getLastRead()))) &&
+            ((this.lastReadDate==null && other.getLastReadDate()==null) || 
+             (this.lastReadDate!=null &&
+              this.lastReadDate.equals(other.getLastReadDate()))) &&
+            ((this.averageConsumption==null && other.getAverageConsumption()==null) || 
+             (this.averageConsumption!=null &&
+              java.util.Arrays.equals(this.averageConsumption, other.getAverageConsumption())));
         __equalsCalc = null;
         return _equals;
     }
@@ -143,6 +224,23 @@ public class MeterExchange  extends com.cannontech.multispeak.deploy.service.Msp
         }
         if (getInMeterRead() != null) {
             _hashCode += getInMeterRead().hashCode();
+        }
+        if (getLastRead() != null) {
+            _hashCode += getLastRead().hashCode();
+        }
+        if (getLastReadDate() != null) {
+            _hashCode += getLastReadDate().hashCode();
+        }
+        if (getAverageConsumption() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getAverageConsumption());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getAverageConsumption(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -174,6 +272,28 @@ public class MeterExchange  extends com.cannontech.multispeak.deploy.service.Msp
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterRead"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("lastRead");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastRead"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterRead"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("lastReadDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lastReadDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("averageConsumption");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "averageConsumption"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "consumptionItem"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "consumptionItem"));
         typeDesc.addFieldDesc(elemField);
     }
 

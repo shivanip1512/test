@@ -22,6 +22,8 @@ public class MeasurementDevice  extends com.cannontech.multispeak.deploy.service
 
     private java.lang.String pointID;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public MeasurementDevice() {
     }
 
@@ -44,7 +46,8 @@ public class MeasurementDevice  extends com.cannontech.multispeak.deploy.service
            java.lang.String feeder,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCd,
            com.cannontech.multispeak.deploy.service.MeasurementDeviceStatus measurementDeviceStatus,
-           java.lang.String pointID) {
+           java.lang.String pointID,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -65,6 +68,7 @@ public class MeasurementDevice  extends com.cannontech.multispeak.deploy.service
         this.phaseCd = phaseCd;
         this.measurementDeviceStatus = measurementDeviceStatus;
         this.pointID = pointID;
+        this.GPS = GPS;
     }
 
 
@@ -207,6 +211,26 @@ public class MeasurementDevice  extends com.cannontech.multispeak.deploy.service
         this.pointID = pointID;
     }
 
+
+    /**
+     * Gets the GPS value for this MeasurementDevice.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this MeasurementDevice.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MeasurementDevice)) return false;
@@ -239,7 +263,10 @@ public class MeasurementDevice  extends com.cannontech.multispeak.deploy.service
               this.measurementDeviceStatus.equals(other.getMeasurementDeviceStatus()))) &&
             ((this.pointID==null && other.getPointID()==null) || 
              (this.pointID!=null &&
-              this.pointID.equals(other.getPointID())));
+              this.pointID.equals(other.getPointID()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -271,6 +298,9 @@ public class MeasurementDevice  extends com.cannontech.multispeak.deploy.service
         }
         if (getPointID() != null) {
             _hashCode += getPointID().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -328,6 +358,13 @@ public class MeasurementDevice  extends com.cannontech.multispeak.deploy.service
         elemField.setFieldName("pointID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "pointID"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

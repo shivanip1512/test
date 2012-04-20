@@ -30,6 +30,12 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
 
     private com.cannontech.multispeak.deploy.service.Module[] moduleList;
 
+    private java.lang.String[] subMeterList;
+
+    private java.lang.String[] parentMeterList;
+
+    private java.lang.String[] meterStatusList;
+
     public Meter() {
     }
 
@@ -56,7 +62,10 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
            java.lang.String AMRVendor,
            com.cannontech.multispeak.deploy.service.Nameplate nameplate,
            com.cannontech.multispeak.deploy.service.UtilityInfo utilityInfo,
-           com.cannontech.multispeak.deploy.service.Module[] moduleList) {
+           com.cannontech.multispeak.deploy.service.Module[] moduleList,
+           java.lang.String[] subMeterList,
+           java.lang.String[] parentMeterList,
+           java.lang.String[] meterStatusList) {
         super(
             objectID,
             verb,
@@ -81,6 +90,9 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
         this.nameplate = nameplate;
         this.utilityInfo = utilityInfo;
         this.moduleList = moduleList;
+        this.subMeterList = subMeterList;
+        this.parentMeterList = parentMeterList;
+        this.meterStatusList = meterStatusList;
     }
 
 
@@ -303,6 +315,66 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
         this.moduleList = moduleList;
     }
 
+
+    /**
+     * Gets the subMeterList value for this Meter.
+     * 
+     * @return subMeterList
+     */
+    public java.lang.String[] getSubMeterList() {
+        return subMeterList;
+    }
+
+
+    /**
+     * Sets the subMeterList value for this Meter.
+     * 
+     * @param subMeterList
+     */
+    public void setSubMeterList(java.lang.String[] subMeterList) {
+        this.subMeterList = subMeterList;
+    }
+
+
+    /**
+     * Gets the parentMeterList value for this Meter.
+     * 
+     * @return parentMeterList
+     */
+    public java.lang.String[] getParentMeterList() {
+        return parentMeterList;
+    }
+
+
+    /**
+     * Sets the parentMeterList value for this Meter.
+     * 
+     * @param parentMeterList
+     */
+    public void setParentMeterList(java.lang.String[] parentMeterList) {
+        this.parentMeterList = parentMeterList;
+    }
+
+
+    /**
+     * Gets the meterStatusList value for this Meter.
+     * 
+     * @return meterStatusList
+     */
+    public java.lang.String[] getMeterStatusList() {
+        return meterStatusList;
+    }
+
+
+    /**
+     * Sets the meterStatusList value for this Meter.
+     * 
+     * @param meterStatusList
+     */
+    public void setMeterStatusList(java.lang.String[] meterStatusList) {
+        this.meterStatusList = meterStatusList;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Meter)) return false;
@@ -347,7 +419,16 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
               this.utilityInfo.equals(other.getUtilityInfo()))) &&
             ((this.moduleList==null && other.getModuleList()==null) || 
              (this.moduleList!=null &&
-              java.util.Arrays.equals(this.moduleList, other.getModuleList())));
+              java.util.Arrays.equals(this.moduleList, other.getModuleList()))) &&
+            ((this.subMeterList==null && other.getSubMeterList()==null) || 
+             (this.subMeterList!=null &&
+              java.util.Arrays.equals(this.subMeterList, other.getSubMeterList()))) &&
+            ((this.parentMeterList==null && other.getParentMeterList()==null) || 
+             (this.parentMeterList!=null &&
+              java.util.Arrays.equals(this.parentMeterList, other.getParentMeterList()))) &&
+            ((this.meterStatusList==null && other.getMeterStatusList()==null) || 
+             (this.meterStatusList!=null &&
+              java.util.Arrays.equals(this.meterStatusList, other.getMeterStatusList())));
         __equalsCalc = null;
         return _equals;
     }
@@ -402,6 +483,39 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
                  i<java.lang.reflect.Array.getLength(getModuleList());
                  i++) {
                 java.lang.Object obj = java.lang.reflect.Array.get(getModuleList(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getSubMeterList() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getSubMeterList());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getSubMeterList(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getParentMeterList() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getParentMeterList());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getParentMeterList(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getMeterStatusList() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getMeterStatusList());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getMeterStatusList(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -496,6 +610,30 @@ public class Meter  extends com.cannontech.multispeak.deploy.service.MspDevice  
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "module"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("subMeterList");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "subMeterList"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "subMeterID"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("parentMeterList");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "parentMeterList"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "parentMeterID"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("meterStatusList");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterStatusList"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterStatus"));
         typeDesc.addFieldDesc(elemField);
     }
 

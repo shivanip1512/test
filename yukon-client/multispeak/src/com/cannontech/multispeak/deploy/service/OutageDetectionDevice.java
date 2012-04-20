@@ -22,6 +22,8 @@ public class OutageDetectionDevice  extends com.cannontech.multispeak.deploy.ser
 
     private com.cannontech.multispeak.deploy.service.OutageDetectDeviceStatus outageDetectDeviceStatus;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public OutageDetectionDevice() {
     }
 
@@ -44,7 +46,8 @@ public class OutageDetectionDevice  extends com.cannontech.multispeak.deploy.ser
            java.lang.Long phases,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCd,
            java.lang.String meterNo,
-           com.cannontech.multispeak.deploy.service.OutageDetectDeviceStatus outageDetectDeviceStatus) {
+           com.cannontech.multispeak.deploy.service.OutageDetectDeviceStatus outageDetectDeviceStatus,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -65,6 +68,7 @@ public class OutageDetectionDevice  extends com.cannontech.multispeak.deploy.ser
         this.phaseCd = phaseCd;
         this.meterNo = meterNo;
         this.outageDetectDeviceStatus = outageDetectDeviceStatus;
+        this.GPS = GPS;
     }
 
 
@@ -207,6 +211,26 @@ public class OutageDetectionDevice  extends com.cannontech.multispeak.deploy.ser
         this.outageDetectDeviceStatus = outageDetectDeviceStatus;
     }
 
+
+    /**
+     * Gets the GPS value for this OutageDetectionDevice.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this OutageDetectionDevice.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof OutageDetectionDevice)) return false;
@@ -239,7 +263,10 @@ public class OutageDetectionDevice  extends com.cannontech.multispeak.deploy.ser
               this.meterNo.equals(other.getMeterNo()))) &&
             ((this.outageDetectDeviceStatus==null && other.getOutageDetectDeviceStatus()==null) || 
              (this.outageDetectDeviceStatus!=null &&
-              this.outageDetectDeviceStatus.equals(other.getOutageDetectDeviceStatus())));
+              this.outageDetectDeviceStatus.equals(other.getOutageDetectDeviceStatus()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -271,6 +298,9 @@ public class OutageDetectionDevice  extends com.cannontech.multispeak.deploy.ser
         }
         if (getOutageDetectDeviceStatus() != null) {
             _hashCode += getOutageDetectDeviceStatus().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -328,6 +358,13 @@ public class OutageDetectionDevice  extends com.cannontech.multispeak.deploy.ser
         elemField.setFieldName("outageDetectDeviceStatus");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageDetectDeviceStatus"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageDetectDeviceStatus"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

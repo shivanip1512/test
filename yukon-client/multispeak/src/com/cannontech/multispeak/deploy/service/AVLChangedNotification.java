@@ -10,12 +10,20 @@ package com.cannontech.multispeak.deploy.service;
 public class AVLChangedNotification  implements java.io.Serializable {
     private com.cannontech.multispeak.deploy.service.AVLLocation[] events;
 
+    private java.lang.String transactionID;
+
+    private java.lang.String errorString;
+
     public AVLChangedNotification() {
     }
 
     public AVLChangedNotification(
-           com.cannontech.multispeak.deploy.service.AVLLocation[] events) {
+           com.cannontech.multispeak.deploy.service.AVLLocation[] events,
+           java.lang.String transactionID,
+           java.lang.String errorString) {
            this.events = events;
+           this.transactionID = transactionID;
+           this.errorString = errorString;
     }
 
 
@@ -38,6 +46,46 @@ public class AVLChangedNotification  implements java.io.Serializable {
         this.events = events;
     }
 
+
+    /**
+     * Gets the transactionID value for this AVLChangedNotification.
+     * 
+     * @return transactionID
+     */
+    public java.lang.String getTransactionID() {
+        return transactionID;
+    }
+
+
+    /**
+     * Sets the transactionID value for this AVLChangedNotification.
+     * 
+     * @param transactionID
+     */
+    public void setTransactionID(java.lang.String transactionID) {
+        this.transactionID = transactionID;
+    }
+
+
+    /**
+     * Gets the errorString value for this AVLChangedNotification.
+     * 
+     * @return errorString
+     */
+    public java.lang.String getErrorString() {
+        return errorString;
+    }
+
+
+    /**
+     * Sets the errorString value for this AVLChangedNotification.
+     * 
+     * @param errorString
+     */
+    public void setErrorString(java.lang.String errorString) {
+        this.errorString = errorString;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof AVLChangedNotification)) return false;
@@ -52,7 +100,13 @@ public class AVLChangedNotification  implements java.io.Serializable {
         _equals = true && 
             ((this.events==null && other.getEvents()==null) || 
              (this.events!=null &&
-              java.util.Arrays.equals(this.events, other.getEvents())));
+              java.util.Arrays.equals(this.events, other.getEvents()))) &&
+            ((this.transactionID==null && other.getTransactionID()==null) || 
+             (this.transactionID!=null &&
+              this.transactionID.equals(other.getTransactionID()))) &&
+            ((this.errorString==null && other.getErrorString()==null) || 
+             (this.errorString!=null &&
+              this.errorString.equals(other.getErrorString())));
         __equalsCalc = null;
         return _equals;
     }
@@ -75,6 +129,12 @@ public class AVLChangedNotification  implements java.io.Serializable {
                 }
             }
         }
+        if (getTransactionID() != null) {
+            _hashCode += getTransactionID().hashCode();
+        }
+        if (getErrorString() != null) {
+            _hashCode += getErrorString().hashCode();
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -92,6 +152,20 @@ public class AVLChangedNotification  implements java.io.Serializable {
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "AVLLocation"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("transactionID");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transactionID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("errorString");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "errorString"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }
 

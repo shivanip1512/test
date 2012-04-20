@@ -24,6 +24,8 @@ public class ReadingValue  implements java.io.Serializable {
 
     private java.util.Calendar dateTime;
 
+    private java.lang.String fieldName;
+
     public ReadingValue() {
     }
 
@@ -35,7 +37,8 @@ public class ReadingValue  implements java.io.Serializable {
            java.lang.String readingType,
            com.cannontech.multispeak.deploy.service.ReadingValueReadingValueType readingValueType,
            java.lang.String name,
-           java.util.Calendar dateTime) {
+           java.util.Calendar dateTime,
+           java.lang.String fieldName) {
            this.extensions = extensions;
            this.extensionsList = extensionsList;
            this.units = units;
@@ -44,6 +47,7 @@ public class ReadingValue  implements java.io.Serializable {
            this.readingValueType = readingValueType;
            this.name = name;
            this.dateTime = dateTime;
+           this.fieldName = fieldName;
     }
 
 
@@ -206,6 +210,26 @@ public class ReadingValue  implements java.io.Serializable {
         this.dateTime = dateTime;
     }
 
+
+    /**
+     * Gets the fieldName value for this ReadingValue.
+     * 
+     * @return fieldName
+     */
+    public java.lang.String getFieldName() {
+        return fieldName;
+    }
+
+
+    /**
+     * Sets the fieldName value for this ReadingValue.
+     * 
+     * @param fieldName
+     */
+    public void setFieldName(java.lang.String fieldName) {
+        this.fieldName = fieldName;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ReadingValue)) return false;
@@ -241,7 +265,10 @@ public class ReadingValue  implements java.io.Serializable {
               this.name.equals(other.getName()))) &&
             ((this.dateTime==null && other.getDateTime()==null) || 
              (this.dateTime!=null &&
-              this.dateTime.equals(other.getDateTime())));
+              this.dateTime.equals(other.getDateTime()))) &&
+            ((this.fieldName==null && other.getFieldName()==null) || 
+             (this.fieldName!=null &&
+              this.fieldName.equals(other.getFieldName())));
         __equalsCalc = null;
         return _equals;
     }
@@ -284,6 +311,9 @@ public class ReadingValue  implements java.io.Serializable {
         }
         if (getDateTime() != null) {
             _hashCode += getDateTime().hashCode();
+        }
+        if (getFieldName() != null) {
+            _hashCode += getFieldName().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -349,6 +379,13 @@ public class ReadingValue  implements java.io.Serializable {
         elemField.setFieldName("dateTime");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "dateTime"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("fieldName");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "fieldName"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

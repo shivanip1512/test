@@ -8,13 +8,13 @@
 package com.cannontech.multispeak.deploy.service;
 
 public class ModifyCBDataForServiceLocation  implements java.io.Serializable {
-    private com.cannontech.multispeak.deploy.service.ServiceLocation serviceLocationData;
+    private com.cannontech.multispeak.deploy.service.ServiceLocation[] serviceLocationData;
 
     public ModifyCBDataForServiceLocation() {
     }
 
     public ModifyCBDataForServiceLocation(
-           com.cannontech.multispeak.deploy.service.ServiceLocation serviceLocationData) {
+           com.cannontech.multispeak.deploy.service.ServiceLocation[] serviceLocationData) {
            this.serviceLocationData = serviceLocationData;
     }
 
@@ -24,7 +24,7 @@ public class ModifyCBDataForServiceLocation  implements java.io.Serializable {
      * 
      * @return serviceLocationData
      */
-    public com.cannontech.multispeak.deploy.service.ServiceLocation getServiceLocationData() {
+    public com.cannontech.multispeak.deploy.service.ServiceLocation[] getServiceLocationData() {
         return serviceLocationData;
     }
 
@@ -34,7 +34,7 @@ public class ModifyCBDataForServiceLocation  implements java.io.Serializable {
      * 
      * @param serviceLocationData
      */
-    public void setServiceLocationData(com.cannontech.multispeak.deploy.service.ServiceLocation serviceLocationData) {
+    public void setServiceLocationData(com.cannontech.multispeak.deploy.service.ServiceLocation[] serviceLocationData) {
         this.serviceLocationData = serviceLocationData;
     }
 
@@ -52,7 +52,7 @@ public class ModifyCBDataForServiceLocation  implements java.io.Serializable {
         _equals = true && 
             ((this.serviceLocationData==null && other.getServiceLocationData()==null) || 
              (this.serviceLocationData!=null &&
-              this.serviceLocationData.equals(other.getServiceLocationData())));
+              java.util.Arrays.equals(this.serviceLocationData, other.getServiceLocationData())));
         __equalsCalc = null;
         return _equals;
     }
@@ -65,7 +65,15 @@ public class ModifyCBDataForServiceLocation  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getServiceLocationData() != null) {
-            _hashCode += getServiceLocationData().hashCode();
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getServiceLocationData());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getServiceLocationData(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -83,6 +91,7 @@ public class ModifyCBDataForServiceLocation  implements java.io.Serializable {
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceLocation"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceLocation"));
         typeDesc.addFieldDesc(elemField);
     }
 

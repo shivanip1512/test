@@ -94,6 +94,20 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
 
     private java.lang.Float calculatedUsedYesterday;
 
+    private com.cannontech.multispeak.deploy.service.PhoneNumber[] phoneList;
+
+    private com.cannontech.multispeak.deploy.service.TimeZone timezone;
+
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
+    private java.lang.String description;
+
+    private java.util.Calendar acReceivable30DueDate;
+
+    private java.util.Calendar acReceivable60DueDate;
+
+    private java.util.Calendar acReceivable90DueDate;
+
     public ServiceLocation() {
     }
 
@@ -112,10 +126,10 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
            java.lang.String facilityID,
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            java.lang.String sectionID,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
+           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            java.lang.String custID,
@@ -160,7 +174,14 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
            java.util.Calendar calculatedCurrentBillDateTime,
            com.cannontech.multispeak.deploy.service.MeterRead[] calculatedCurrentBillReadings,
            java.lang.Float lastBillAmount,
-           java.lang.Float calculatedUsedYesterday) {
+           java.lang.Float calculatedUsedYesterday,
+           com.cannontech.multispeak.deploy.service.PhoneNumber[] phoneList,
+           com.cannontech.multispeak.deploy.service.TimeZone timezone,
+           com.cannontech.multispeak.deploy.service.GPS GPS,
+           java.lang.String description,
+           java.util.Calendar acReceivable30DueDate,
+           java.util.Calendar acReceivable60DueDate,
+           java.util.Calendar acReceivable90DueDate) {
         super(
             objectID,
             verb,
@@ -176,10 +197,10 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
             facilityID,
             graphicSymbol,
             annotationList,
-            toNodeID,
             fromNodeID,
-            parentSectionID,
             sectionID,
+            toNodeID,
+            parentSectionID,
             phaseCode,
             load);
         this.custID = custID;
@@ -225,6 +246,13 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
         this.calculatedCurrentBillReadings = calculatedCurrentBillReadings;
         this.lastBillAmount = lastBillAmount;
         this.calculatedUsedYesterday = calculatedUsedYesterday;
+        this.phoneList = phoneList;
+        this.timezone = timezone;
+        this.GPS = GPS;
+        this.description = description;
+        this.acReceivable30DueDate = acReceivable30DueDate;
+        this.acReceivable60DueDate = acReceivable60DueDate;
+        this.acReceivable90DueDate = acReceivable90DueDate;
     }
 
 
@@ -1087,6 +1115,146 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
         this.calculatedUsedYesterday = calculatedUsedYesterday;
     }
 
+
+    /**
+     * Gets the phoneList value for this ServiceLocation.
+     * 
+     * @return phoneList
+     */
+    public com.cannontech.multispeak.deploy.service.PhoneNumber[] getPhoneList() {
+        return phoneList;
+    }
+
+
+    /**
+     * Sets the phoneList value for this ServiceLocation.
+     * 
+     * @param phoneList
+     */
+    public void setPhoneList(com.cannontech.multispeak.deploy.service.PhoneNumber[] phoneList) {
+        this.phoneList = phoneList;
+    }
+
+
+    /**
+     * Gets the timezone value for this ServiceLocation.
+     * 
+     * @return timezone
+     */
+    public com.cannontech.multispeak.deploy.service.TimeZone getTimezone() {
+        return timezone;
+    }
+
+
+    /**
+     * Sets the timezone value for this ServiceLocation.
+     * 
+     * @param timezone
+     */
+    public void setTimezone(com.cannontech.multispeak.deploy.service.TimeZone timezone) {
+        this.timezone = timezone;
+    }
+
+
+    /**
+     * Gets the GPS value for this ServiceLocation.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this ServiceLocation.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
+
+    /**
+     * Gets the description value for this ServiceLocation.
+     * 
+     * @return description
+     */
+    public java.lang.String getDescription() {
+        return description;
+    }
+
+
+    /**
+     * Sets the description value for this ServiceLocation.
+     * 
+     * @param description
+     */
+    public void setDescription(java.lang.String description) {
+        this.description = description;
+    }
+
+
+    /**
+     * Gets the acReceivable30DueDate value for this ServiceLocation.
+     * 
+     * @return acReceivable30DueDate
+     */
+    public java.util.Calendar getAcReceivable30DueDate() {
+        return acReceivable30DueDate;
+    }
+
+
+    /**
+     * Sets the acReceivable30DueDate value for this ServiceLocation.
+     * 
+     * @param acReceivable30DueDate
+     */
+    public void setAcReceivable30DueDate(java.util.Calendar acReceivable30DueDate) {
+        this.acReceivable30DueDate = acReceivable30DueDate;
+    }
+
+
+    /**
+     * Gets the acReceivable60DueDate value for this ServiceLocation.
+     * 
+     * @return acReceivable60DueDate
+     */
+    public java.util.Calendar getAcReceivable60DueDate() {
+        return acReceivable60DueDate;
+    }
+
+
+    /**
+     * Sets the acReceivable60DueDate value for this ServiceLocation.
+     * 
+     * @param acReceivable60DueDate
+     */
+    public void setAcReceivable60DueDate(java.util.Calendar acReceivable60DueDate) {
+        this.acReceivable60DueDate = acReceivable60DueDate;
+    }
+
+
+    /**
+     * Gets the acReceivable90DueDate value for this ServiceLocation.
+     * 
+     * @return acReceivable90DueDate
+     */
+    public java.util.Calendar getAcReceivable90DueDate() {
+        return acReceivable90DueDate;
+    }
+
+
+    /**
+     * Sets the acReceivable90DueDate value for this ServiceLocation.
+     * 
+     * @param acReceivable90DueDate
+     */
+    public void setAcReceivable90DueDate(java.util.Calendar acReceivable90DueDate) {
+        this.acReceivable90DueDate = acReceivable90DueDate;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ServiceLocation)) return false;
@@ -1227,7 +1395,28 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
               this.lastBillAmount.equals(other.getLastBillAmount()))) &&
             ((this.calculatedUsedYesterday==null && other.getCalculatedUsedYesterday()==null) || 
              (this.calculatedUsedYesterday!=null &&
-              this.calculatedUsedYesterday.equals(other.getCalculatedUsedYesterday())));
+              this.calculatedUsedYesterday.equals(other.getCalculatedUsedYesterday()))) &&
+            ((this.phoneList==null && other.getPhoneList()==null) || 
+             (this.phoneList!=null &&
+              java.util.Arrays.equals(this.phoneList, other.getPhoneList()))) &&
+            ((this.timezone==null && other.getTimezone()==null) || 
+             (this.timezone!=null &&
+              this.timezone.equals(other.getTimezone()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS()))) &&
+            ((this.description==null && other.getDescription()==null) || 
+             (this.description!=null &&
+              this.description.equals(other.getDescription()))) &&
+            ((this.acReceivable30DueDate==null && other.getAcReceivable30DueDate()==null) || 
+             (this.acReceivable30DueDate!=null &&
+              this.acReceivable30DueDate.equals(other.getAcReceivable30DueDate()))) &&
+            ((this.acReceivable60DueDate==null && other.getAcReceivable60DueDate()==null) || 
+             (this.acReceivable60DueDate!=null &&
+              this.acReceivable60DueDate.equals(other.getAcReceivable60DueDate()))) &&
+            ((this.acReceivable90DueDate==null && other.getAcReceivable90DueDate()==null) || 
+             (this.acReceivable90DueDate!=null &&
+              this.acReceivable90DueDate.equals(other.getAcReceivable90DueDate())));
         __equalsCalc = null;
         return _equals;
     }
@@ -1375,6 +1564,35 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
         }
         if (getCalculatedUsedYesterday() != null) {
             _hashCode += getCalculatedUsedYesterday().hashCode();
+        }
+        if (getPhoneList() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getPhoneList());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getPhoneList(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getTimezone() != null) {
+            _hashCode += getTimezone().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
+        }
+        if (getDescription() != null) {
+            _hashCode += getDescription().hashCode();
+        }
+        if (getAcReceivable30DueDate() != null) {
+            _hashCode += getAcReceivable30DueDate().hashCode();
+        }
+        if (getAcReceivable60DueDate() != null) {
+            _hashCode += getAcReceivable60DueDate().hashCode();
+        }
+        if (getAcReceivable90DueDate() != null) {
+            _hashCode += getAcReceivable90DueDate().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -1685,6 +1903,56 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
         elemField.setFieldName("calculatedUsedYesterday");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "calculatedUsedYesterday"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("phoneList");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "phoneList"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "phoneNumber"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "phoneNumber"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("timezone");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "timezone"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "timeZone"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("description");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "description"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("acReceivable30DueDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "acReceivable30DueDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("acReceivable60DueDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "acReceivable60DueDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("acReceivable90DueDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "acReceivable90DueDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

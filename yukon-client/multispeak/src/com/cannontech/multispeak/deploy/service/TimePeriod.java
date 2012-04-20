@@ -8,16 +8,16 @@
 package com.cannontech.multispeak.deploy.service;
 
 public class TimePeriod  implements java.io.Serializable {
-    private org.apache.axis.types.Time startTime;
+    private java.util.Calendar startTime;
 
-    private org.apache.axis.types.Time endTime;
+    private java.util.Calendar endTime;
 
     public TimePeriod() {
     }
 
     public TimePeriod(
-           org.apache.axis.types.Time startTime,
-           org.apache.axis.types.Time endTime) {
+           java.util.Calendar startTime,
+           java.util.Calendar endTime) {
            this.startTime = startTime;
            this.endTime = endTime;
     }
@@ -28,7 +28,7 @@ public class TimePeriod  implements java.io.Serializable {
      * 
      * @return startTime
      */
-    public org.apache.axis.types.Time getStartTime() {
+    public java.util.Calendar getStartTime() {
         return startTime;
     }
 
@@ -38,7 +38,7 @@ public class TimePeriod  implements java.io.Serializable {
      * 
      * @param startTime
      */
-    public void setStartTime(org.apache.axis.types.Time startTime) {
+    public void setStartTime(java.util.Calendar startTime) {
         this.startTime = startTime;
     }
 
@@ -48,7 +48,7 @@ public class TimePeriod  implements java.io.Serializable {
      * 
      * @return endTime
      */
-    public org.apache.axis.types.Time getEndTime() {
+    public java.util.Calendar getEndTime() {
         return endTime;
     }
 
@@ -58,7 +58,7 @@ public class TimePeriod  implements java.io.Serializable {
      * 
      * @param endTime
      */
-    public void setEndTime(org.apache.axis.types.Time endTime) {
+    public void setEndTime(java.util.Calendar endTime) {
         this.endTime = endTime;
     }
 
@@ -110,14 +110,14 @@ public class TimePeriod  implements java.io.Serializable {
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("startTime");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "startTime"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "time"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("endTime");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "endTime"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "time"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

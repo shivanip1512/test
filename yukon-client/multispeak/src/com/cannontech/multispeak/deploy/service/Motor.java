@@ -42,6 +42,8 @@ public class Motor  extends com.cannontech.multispeak.deploy.service.MspMotorGen
 
     private java.lang.Float lrMult;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public Motor() {
     }
 
@@ -60,10 +62,10 @@ public class Motor  extends com.cannontech.multispeak.deploy.service.MspMotorGen
            java.lang.String facilityID,
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            java.lang.String sectionID,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
+           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            java.lang.String ssDesc,
@@ -86,7 +88,8 @@ public class Motor  extends com.cannontech.multispeak.deploy.service.MspMotorGen
            java.lang.Float sftStTap,
            java.lang.Float sftStWdg,
            java.lang.Float lrPf,
-           java.lang.Float lrMult) {
+           java.lang.Float lrMult,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -102,10 +105,10 @@ public class Motor  extends com.cannontech.multispeak.deploy.service.MspMotorGen
             facilityID,
             graphicSymbol,
             annotationList,
-            toNodeID,
             fromNodeID,
-            parentSectionID,
             sectionID,
+            toNodeID,
+            parentSectionID,
             phaseCode,
             load,
             ssDesc,
@@ -129,6 +132,7 @@ public class Motor  extends com.cannontech.multispeak.deploy.service.MspMotorGen
         this.sftStWdg = sftStWdg;
         this.lrPf = lrPf;
         this.lrMult = lrMult;
+        this.GPS = GPS;
     }
 
 
@@ -471,6 +475,26 @@ public class Motor  extends com.cannontech.multispeak.deploy.service.MspMotorGen
         this.lrMult = lrMult;
     }
 
+
+    /**
+     * Gets the GPS value for this Motor.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this Motor.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Motor)) return false;
@@ -533,7 +557,10 @@ public class Motor  extends com.cannontech.multispeak.deploy.service.MspMotorGen
               this.lrPf.equals(other.getLrPf()))) &&
             ((this.lrMult==null && other.getLrMult()==null) || 
              (this.lrMult!=null &&
-              this.lrMult.equals(other.getLrMult())));
+              this.lrMult.equals(other.getLrMult()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -595,6 +622,9 @@ public class Motor  extends com.cannontech.multispeak.deploy.service.MspMotorGen
         }
         if (getLrMult() != null) {
             _hashCode += getLrMult().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -722,6 +752,13 @@ public class Motor  extends com.cannontech.multispeak.deploy.service.MspMotorGen
         elemField.setFieldName("lrMult");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "lrMult"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

@@ -8,42 +8,54 @@
 package com.cannontech.multispeak.deploy.service;
 
 public class MspSwitchDeviceList  implements java.io.Serializable {
-    private com.cannontech.multispeak.deploy.service.MspSwitchingDevice mspSwitchingDevice;
+    private com.cannontech.multispeak.deploy.service.Cut cut;
 
     private com.cannontech.multispeak.deploy.service.MspOverCurrentDevice mspOverCurrentDevice;
 
     private com.cannontech.multispeak.deploy.service.MspSwitchingDevice _switch;
 
+    private com.cannontech.multispeak.deploy.service.Jumper jumper;
+
+    private com.cannontech.multispeak.deploy.service.Elbow elbow;
+
+    private com.cannontech.multispeak.deploy.service.MspSwitchingDevice mspSwitchingDevice;
+
     public MspSwitchDeviceList() {
     }
 
     public MspSwitchDeviceList(
-           com.cannontech.multispeak.deploy.service.MspSwitchingDevice mspSwitchingDevice,
+           com.cannontech.multispeak.deploy.service.Cut cut,
            com.cannontech.multispeak.deploy.service.MspOverCurrentDevice mspOverCurrentDevice,
-           com.cannontech.multispeak.deploy.service.MspSwitchingDevice _switch) {
-           this.mspSwitchingDevice = mspSwitchingDevice;
+           com.cannontech.multispeak.deploy.service.MspSwitchingDevice _switch,
+           com.cannontech.multispeak.deploy.service.Jumper jumper,
+           com.cannontech.multispeak.deploy.service.Elbow elbow,
+           com.cannontech.multispeak.deploy.service.MspSwitchingDevice mspSwitchingDevice) {
+           this.cut = cut;
            this.mspOverCurrentDevice = mspOverCurrentDevice;
            this._switch = _switch;
+           this.jumper = jumper;
+           this.elbow = elbow;
+           this.mspSwitchingDevice = mspSwitchingDevice;
     }
 
 
     /**
-     * Gets the mspSwitchingDevice value for this MspSwitchDeviceList.
+     * Gets the cut value for this MspSwitchDeviceList.
      * 
-     * @return mspSwitchingDevice
+     * @return cut
      */
-    public com.cannontech.multispeak.deploy.service.MspSwitchingDevice getMspSwitchingDevice() {
-        return mspSwitchingDevice;
+    public com.cannontech.multispeak.deploy.service.Cut getCut() {
+        return cut;
     }
 
 
     /**
-     * Sets the mspSwitchingDevice value for this MspSwitchDeviceList.
+     * Sets the cut value for this MspSwitchDeviceList.
      * 
-     * @param mspSwitchingDevice
+     * @param cut
      */
-    public void setMspSwitchingDevice(com.cannontech.multispeak.deploy.service.MspSwitchingDevice mspSwitchingDevice) {
-        this.mspSwitchingDevice = mspSwitchingDevice;
+    public void setCut(com.cannontech.multispeak.deploy.service.Cut cut) {
+        this.cut = cut;
     }
 
 
@@ -86,6 +98,66 @@ public class MspSwitchDeviceList  implements java.io.Serializable {
         this._switch = _switch;
     }
 
+
+    /**
+     * Gets the jumper value for this MspSwitchDeviceList.
+     * 
+     * @return jumper
+     */
+    public com.cannontech.multispeak.deploy.service.Jumper getJumper() {
+        return jumper;
+    }
+
+
+    /**
+     * Sets the jumper value for this MspSwitchDeviceList.
+     * 
+     * @param jumper
+     */
+    public void setJumper(com.cannontech.multispeak.deploy.service.Jumper jumper) {
+        this.jumper = jumper;
+    }
+
+
+    /**
+     * Gets the elbow value for this MspSwitchDeviceList.
+     * 
+     * @return elbow
+     */
+    public com.cannontech.multispeak.deploy.service.Elbow getElbow() {
+        return elbow;
+    }
+
+
+    /**
+     * Sets the elbow value for this MspSwitchDeviceList.
+     * 
+     * @param elbow
+     */
+    public void setElbow(com.cannontech.multispeak.deploy.service.Elbow elbow) {
+        this.elbow = elbow;
+    }
+
+
+    /**
+     * Gets the mspSwitchingDevice value for this MspSwitchDeviceList.
+     * 
+     * @return mspSwitchingDevice
+     */
+    public com.cannontech.multispeak.deploy.service.MspSwitchingDevice getMspSwitchingDevice() {
+        return mspSwitchingDevice;
+    }
+
+
+    /**
+     * Sets the mspSwitchingDevice value for this MspSwitchDeviceList.
+     * 
+     * @param mspSwitchingDevice
+     */
+    public void setMspSwitchingDevice(com.cannontech.multispeak.deploy.service.MspSwitchingDevice mspSwitchingDevice) {
+        this.mspSwitchingDevice = mspSwitchingDevice;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MspSwitchDeviceList)) return false;
@@ -98,15 +170,24 @@ public class MspSwitchDeviceList  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
-            ((this.mspSwitchingDevice==null && other.getMspSwitchingDevice()==null) || 
-             (this.mspSwitchingDevice!=null &&
-              this.mspSwitchingDevice.equals(other.getMspSwitchingDevice()))) &&
+            ((this.cut==null && other.getCut()==null) || 
+             (this.cut!=null &&
+              this.cut.equals(other.getCut()))) &&
             ((this.mspOverCurrentDevice==null && other.getMspOverCurrentDevice()==null) || 
              (this.mspOverCurrentDevice!=null &&
               this.mspOverCurrentDevice.equals(other.getMspOverCurrentDevice()))) &&
             ((this._switch==null && other.get_switch()==null) || 
              (this._switch!=null &&
-              this._switch.equals(other.get_switch())));
+              this._switch.equals(other.get_switch()))) &&
+            ((this.jumper==null && other.getJumper()==null) || 
+             (this.jumper!=null &&
+              this.jumper.equals(other.getJumper()))) &&
+            ((this.elbow==null && other.getElbow()==null) || 
+             (this.elbow!=null &&
+              this.elbow.equals(other.getElbow()))) &&
+            ((this.mspSwitchingDevice==null && other.getMspSwitchingDevice()==null) || 
+             (this.mspSwitchingDevice!=null &&
+              this.mspSwitchingDevice.equals(other.getMspSwitchingDevice())));
         __equalsCalc = null;
         return _equals;
     }
@@ -118,14 +199,23 @@ public class MspSwitchDeviceList  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        if (getMspSwitchingDevice() != null) {
-            _hashCode += getMspSwitchingDevice().hashCode();
+        if (getCut() != null) {
+            _hashCode += getCut().hashCode();
         }
         if (getMspOverCurrentDevice() != null) {
             _hashCode += getMspOverCurrentDevice().hashCode();
         }
         if (get_switch() != null) {
             _hashCode += get_switch().hashCode();
+        }
+        if (getJumper() != null) {
+            _hashCode += getJumper().hashCode();
+        }
+        if (getElbow() != null) {
+            _hashCode += getElbow().hashCode();
+        }
+        if (getMspSwitchingDevice() != null) {
+            _hashCode += getMspSwitchingDevice().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -138,9 +228,9 @@ public class MspSwitchDeviceList  implements java.io.Serializable {
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchDeviceList"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("mspSwitchingDevice");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchingDevice"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchingDevice"));
+        elemField.setFieldName("cut");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cut"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cut"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
@@ -154,6 +244,27 @@ public class MspSwitchDeviceList  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("_switch");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "switch"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchingDevice"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("jumper");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "jumper"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "jumper"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("elbow");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "elbow"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "elbow"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("mspSwitchingDevice");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchingDevice"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchingDevice"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

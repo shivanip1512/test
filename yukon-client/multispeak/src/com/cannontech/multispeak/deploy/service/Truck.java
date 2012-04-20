@@ -27,6 +27,7 @@ public class Truck  extends com.cannontech.multispeak.deploy.service.Vehicle  im
            java.lang.String comments,
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
            java.lang.String name,
+           java.lang.String AVLID,
            java.lang.String truckType,
            com.cannontech.multispeak.deploy.service.ContactInfo contactInfo,
            java.lang.Boolean isCompanyOwned) {
@@ -39,7 +40,8 @@ public class Truck  extends com.cannontech.multispeak.deploy.service.Vehicle  im
             extensions,
             comments,
             extensionsList,
-            name);
+            name,
+            AVLID);
         this.truckType = truckType;
         this.contactInfo = contactInfo;
         this.isCompanyOwned = isCompanyOwned;

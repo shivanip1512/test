@@ -24,9 +24,9 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
 
     private java.lang.Float cycleTime;
 
-    private java.lang.Float controlLoad;
-
     private java.lang.Long dutyCycle;
+
+    private java.lang.Float controlLoad;
 
     private java.lang.String pointID;
 
@@ -34,7 +34,7 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
 
     private com.cannontech.multispeak.deploy.service.Uom uom;
 
-    private com.cannontech.multispeak.deploy.service.LoadManagementEventStrategy strategy;
+    private com.cannontech.multispeak.deploy.service.Strategy strategy;
 
     private java.util.Calendar scheduleDateTime;
 
@@ -58,12 +58,12 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
            java.lang.Float applicationRate,
            java.lang.Float duration,
            java.lang.Float cycleTime,
-           java.lang.Float controlLoad,
            java.lang.Long dutyCycle,
+           java.lang.Float controlLoad,
            java.lang.String pointID,
            java.lang.Float target,
            com.cannontech.multispeak.deploy.service.Uom uom,
-           com.cannontech.multispeak.deploy.service.LoadManagementEventStrategy strategy,
+           com.cannontech.multispeak.deploy.service.Strategy strategy,
            java.util.Calendar scheduleDateTime) {
         super(
             objectID,
@@ -82,8 +82,8 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
         this.applicationRate = applicationRate;
         this.duration = duration;
         this.cycleTime = cycleTime;
-        this.controlLoad = controlLoad;
         this.dutyCycle = dutyCycle;
+        this.controlLoad = controlLoad;
         this.pointID = pointID;
         this.target = target;
         this.uom = uom;
@@ -253,26 +253,6 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
 
 
     /**
-     * Gets the controlLoad value for this LoadManagementEvent.
-     * 
-     * @return controlLoad
-     */
-    public java.lang.Float getControlLoad() {
-        return controlLoad;
-    }
-
-
-    /**
-     * Sets the controlLoad value for this LoadManagementEvent.
-     * 
-     * @param controlLoad
-     */
-    public void setControlLoad(java.lang.Float controlLoad) {
-        this.controlLoad = controlLoad;
-    }
-
-
-    /**
      * Gets the dutyCycle value for this LoadManagementEvent.
      * 
      * @return dutyCycle
@@ -289,6 +269,26 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
      */
     public void setDutyCycle(java.lang.Long dutyCycle) {
         this.dutyCycle = dutyCycle;
+    }
+
+
+    /**
+     * Gets the controlLoad value for this LoadManagementEvent.
+     * 
+     * @return controlLoad
+     */
+    public java.lang.Float getControlLoad() {
+        return controlLoad;
+    }
+
+
+    /**
+     * Sets the controlLoad value for this LoadManagementEvent.
+     * 
+     * @param controlLoad
+     */
+    public void setControlLoad(java.lang.Float controlLoad) {
+        this.controlLoad = controlLoad;
     }
 
 
@@ -357,7 +357,7 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
      * 
      * @return strategy
      */
-    public com.cannontech.multispeak.deploy.service.LoadManagementEventStrategy getStrategy() {
+    public com.cannontech.multispeak.deploy.service.Strategy getStrategy() {
         return strategy;
     }
 
@@ -367,7 +367,7 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
      * 
      * @param strategy
      */
-    public void setStrategy(com.cannontech.multispeak.deploy.service.LoadManagementEventStrategy strategy) {
+    public void setStrategy(com.cannontech.multispeak.deploy.service.Strategy strategy) {
         this.strategy = strategy;
     }
 
@@ -427,12 +427,12 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
             ((this.cycleTime==null && other.getCycleTime()==null) || 
              (this.cycleTime!=null &&
               this.cycleTime.equals(other.getCycleTime()))) &&
-            ((this.controlLoad==null && other.getControlLoad()==null) || 
-             (this.controlLoad!=null &&
-              this.controlLoad.equals(other.getControlLoad()))) &&
             ((this.dutyCycle==null && other.getDutyCycle()==null) || 
              (this.dutyCycle!=null &&
               this.dutyCycle.equals(other.getDutyCycle()))) &&
+            ((this.controlLoad==null && other.getControlLoad()==null) || 
+             (this.controlLoad!=null &&
+              this.controlLoad.equals(other.getControlLoad()))) &&
             ((this.pointID==null && other.getPointID()==null) || 
              (this.pointID!=null &&
               this.pointID.equals(other.getPointID()))) &&
@@ -483,11 +483,11 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
         if (getCycleTime() != null) {
             _hashCode += getCycleTime().hashCode();
         }
-        if (getControlLoad() != null) {
-            _hashCode += getControlLoad().hashCode();
-        }
         if (getDutyCycle() != null) {
             _hashCode += getDutyCycle().hashCode();
+        }
+        if (getControlLoad() != null) {
+            _hashCode += getControlLoad().hashCode();
         }
         if (getPointID() != null) {
             _hashCode += getPointID().hashCode();
@@ -571,16 +571,16 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("controlLoad");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "controlLoad"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setFieldName("dutyCycle");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "dutyCycle"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("dutyCycle");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "dutyCycle"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"));
+        elemField.setFieldName("controlLoad");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "controlLoad"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
@@ -608,7 +608,7 @@ public class LoadManagementEvent  extends com.cannontech.multispeak.deploy.servi
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("strategy");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "strategy"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">loadManagementEvent>strategy"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "strategy"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

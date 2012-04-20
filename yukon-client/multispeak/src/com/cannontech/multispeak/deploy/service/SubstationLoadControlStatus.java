@@ -16,7 +16,7 @@ public class SubstationLoadControlStatus  extends com.cannontech.multispeak.depl
 
     private com.cannontech.multispeak.deploy.service.ScadaAnalog scadaAnalog;
 
-    private com.cannontech.multispeak.deploy.service.SubstationLoadControlStatusControlledItemsControlItem[] controlledItems;
+    private com.cannontech.multispeak.deploy.service.ControlItem[] controlledItems;
 
     public SubstationLoadControlStatus() {
     }
@@ -34,7 +34,7 @@ public class SubstationLoadControlStatus  extends com.cannontech.multispeak.depl
            java.lang.String status,
            java.lang.String mode,
            com.cannontech.multispeak.deploy.service.ScadaAnalog scadaAnalog,
-           com.cannontech.multispeak.deploy.service.SubstationLoadControlStatusControlledItemsControlItem[] controlledItems) {
+           com.cannontech.multispeak.deploy.service.ControlItem[] controlledItems) {
         super(
             objectID,
             verb,
@@ -137,7 +137,7 @@ public class SubstationLoadControlStatus  extends com.cannontech.multispeak.depl
      * 
      * @return controlledItems
      */
-    public com.cannontech.multispeak.deploy.service.SubstationLoadControlStatusControlledItemsControlItem[] getControlledItems() {
+    public com.cannontech.multispeak.deploy.service.ControlItem[] getControlledItems() {
         return controlledItems;
     }
 
@@ -147,7 +147,7 @@ public class SubstationLoadControlStatus  extends com.cannontech.multispeak.depl
      * 
      * @param controlledItems
      */
-    public void setControlledItems(com.cannontech.multispeak.deploy.service.SubstationLoadControlStatusControlledItemsControlItem[] controlledItems) {
+    public void setControlledItems(com.cannontech.multispeak.deploy.service.ControlItem[] controlledItems) {
         this.controlledItems = controlledItems;
     }
 
@@ -253,7 +253,7 @@ public class SubstationLoadControlStatus  extends com.cannontech.multispeak.depl
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("controlledItems");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "controlledItems"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">>substationLoadControlStatus>controlledItems>controlItem"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "controlItem"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "controlItem"));

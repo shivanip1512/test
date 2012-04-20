@@ -10,6 +10,8 @@ package com.cannontech.multispeak.deploy.service;
 public class SwitchDeviceBank  extends com.cannontech.multispeak.deploy.service.MspSwitchingBank  implements java.io.Serializable {
     private com.cannontech.multispeak.deploy.service.MspSwitchDeviceList mspSwitchDeviceList;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public SwitchDeviceBank() {
     }
 
@@ -28,16 +30,17 @@ public class SwitchDeviceBank  extends com.cannontech.multispeak.deploy.service.
            java.lang.String facilityID,
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            java.lang.String sectionID,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
+           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            java.lang.Boolean isGanged,
            com.cannontech.multispeak.deploy.service.ObjectRef partner,
            java.lang.Long ldPoint,
-           com.cannontech.multispeak.deploy.service.MspSwitchDeviceList mspSwitchDeviceList) {
+           com.cannontech.multispeak.deploy.service.MspSwitchDeviceList mspSwitchDeviceList,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -53,16 +56,17 @@ public class SwitchDeviceBank  extends com.cannontech.multispeak.deploy.service.
             facilityID,
             graphicSymbol,
             annotationList,
-            toNodeID,
             fromNodeID,
-            parentSectionID,
             sectionID,
+            toNodeID,
+            parentSectionID,
             phaseCode,
             load,
             isGanged,
             partner,
             ldPoint);
         this.mspSwitchDeviceList = mspSwitchDeviceList;
+        this.GPS = GPS;
     }
 
 
@@ -85,6 +89,26 @@ public class SwitchDeviceBank  extends com.cannontech.multispeak.deploy.service.
         this.mspSwitchDeviceList = mspSwitchDeviceList;
     }
 
+
+    /**
+     * Gets the GPS value for this SwitchDeviceBank.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this SwitchDeviceBank.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SwitchDeviceBank)) return false;
@@ -99,7 +123,10 @@ public class SwitchDeviceBank  extends com.cannontech.multispeak.deploy.service.
         _equals = super.equals(obj) && 
             ((this.mspSwitchDeviceList==null && other.getMspSwitchDeviceList()==null) || 
              (this.mspSwitchDeviceList!=null &&
-              this.mspSwitchDeviceList.equals(other.getMspSwitchDeviceList())));
+              this.mspSwitchDeviceList.equals(other.getMspSwitchDeviceList()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -113,6 +140,9 @@ public class SwitchDeviceBank  extends com.cannontech.multispeak.deploy.service.
         int _hashCode = super.hashCode();
         if (getMspSwitchDeviceList() != null) {
             _hashCode += getMspSwitchDeviceList().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -128,6 +158,13 @@ public class SwitchDeviceBank  extends com.cannontech.multispeak.deploy.service.
         elemField.setFieldName("mspSwitchDeviceList");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchDeviceList"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspSwitchDeviceList"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

@@ -22,7 +22,7 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
 
     private java.util.Calendar shippedDate;
 
-    private com.cannontech.multispeak.deploy.service.EndDeviceShipmentTransponderIDRange transponderIDRange;
+    private com.cannontech.multispeak.deploy.service.TransponderIDRange transponderIDRange;
 
     private com.cannontech.multispeak.deploy.service.ReceivedElectricMeter[] receivedMeters;
 
@@ -31,6 +31,8 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
     private com.cannontech.multispeak.deploy.service.LoadManagementDevice[] receivedLoadManagementDevices;
 
     private com.cannontech.multispeak.deploy.service.CDDevice[] receivedCDDevices;
+
+    private java.util.Calendar receivedDate;
 
     public EndDeviceShipment() {
     }
@@ -51,11 +53,12 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
            java.lang.String recipient,
            com.cannontech.multispeak.deploy.service.Address shippedToAddress,
            java.util.Calendar shippedDate,
-           com.cannontech.multispeak.deploy.service.EndDeviceShipmentTransponderIDRange transponderIDRange,
+           com.cannontech.multispeak.deploy.service.TransponderIDRange transponderIDRange,
            com.cannontech.multispeak.deploy.service.ReceivedElectricMeter[] receivedMeters,
            com.cannontech.multispeak.deploy.service.Module[] receivedModules,
            com.cannontech.multispeak.deploy.service.LoadManagementDevice[] receivedLoadManagementDevices,
-           com.cannontech.multispeak.deploy.service.CDDevice[] receivedCDDevices) {
+           com.cannontech.multispeak.deploy.service.CDDevice[] receivedCDDevices,
+           java.util.Calendar receivedDate) {
         super(
             objectID,
             verb,
@@ -77,6 +80,7 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
         this.receivedModules = receivedModules;
         this.receivedLoadManagementDevices = receivedLoadManagementDevices;
         this.receivedCDDevices = receivedCDDevices;
+        this.receivedDate = receivedDate;
     }
 
 
@@ -225,7 +229,7 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
      * 
      * @return transponderIDRange
      */
-    public com.cannontech.multispeak.deploy.service.EndDeviceShipmentTransponderIDRange getTransponderIDRange() {
+    public com.cannontech.multispeak.deploy.service.TransponderIDRange getTransponderIDRange() {
         return transponderIDRange;
     }
 
@@ -235,7 +239,7 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
      * 
      * @param transponderIDRange
      */
-    public void setTransponderIDRange(com.cannontech.multispeak.deploy.service.EndDeviceShipmentTransponderIDRange transponderIDRange) {
+    public void setTransponderIDRange(com.cannontech.multispeak.deploy.service.TransponderIDRange transponderIDRange) {
         this.transponderIDRange = transponderIDRange;
     }
 
@@ -319,6 +323,26 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
         this.receivedCDDevices = receivedCDDevices;
     }
 
+
+    /**
+     * Gets the receivedDate value for this EndDeviceShipment.
+     * 
+     * @return receivedDate
+     */
+    public java.util.Calendar getReceivedDate() {
+        return receivedDate;
+    }
+
+
+    /**
+     * Sets the receivedDate value for this EndDeviceShipment.
+     * 
+     * @param receivedDate
+     */
+    public void setReceivedDate(java.util.Calendar receivedDate) {
+        this.receivedDate = receivedDate;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof EndDeviceShipment)) return false;
@@ -366,7 +390,10 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
               java.util.Arrays.equals(this.receivedLoadManagementDevices, other.getReceivedLoadManagementDevices()))) &&
             ((this.receivedCDDevices==null && other.getReceivedCDDevices()==null) || 
              (this.receivedCDDevices!=null &&
-              java.util.Arrays.equals(this.receivedCDDevices, other.getReceivedCDDevices())));
+              java.util.Arrays.equals(this.receivedCDDevices, other.getReceivedCDDevices()))) &&
+            ((this.receivedDate==null && other.getReceivedDate()==null) || 
+             (this.receivedDate!=null &&
+              this.receivedDate.equals(other.getReceivedDate())));
         __equalsCalc = null;
         return _equals;
     }
@@ -446,6 +473,9 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
                 }
             }
         }
+        if (getReceivedDate() != null) {
+            _hashCode += getReceivedDate().hashCode();
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -508,7 +538,7 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("transponderIDRange");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transponderIDRange"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">endDeviceShipment>transponderIDRange"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transponderIDRange"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
@@ -543,6 +573,13 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CDDevice"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("receivedDate");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "receivedDate"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }
 

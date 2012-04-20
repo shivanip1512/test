@@ -8,7 +8,34 @@
 package com.cannontech.multispeak.deploy.service;
 
 public class ModifyCBDataForServiceLocationResponse  implements java.io.Serializable {
+    private com.cannontech.multispeak.deploy.service.ErrorObject[] modifyCBDataForServiceLocationResult;
+
     public ModifyCBDataForServiceLocationResponse() {
+    }
+
+    public ModifyCBDataForServiceLocationResponse(
+           com.cannontech.multispeak.deploy.service.ErrorObject[] modifyCBDataForServiceLocationResult) {
+           this.modifyCBDataForServiceLocationResult = modifyCBDataForServiceLocationResult;
+    }
+
+
+    /**
+     * Gets the modifyCBDataForServiceLocationResult value for this ModifyCBDataForServiceLocationResponse.
+     * 
+     * @return modifyCBDataForServiceLocationResult
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] getModifyCBDataForServiceLocationResult() {
+        return modifyCBDataForServiceLocationResult;
+    }
+
+
+    /**
+     * Sets the modifyCBDataForServiceLocationResult value for this ModifyCBDataForServiceLocationResponse.
+     * 
+     * @param modifyCBDataForServiceLocationResult
+     */
+    public void setModifyCBDataForServiceLocationResult(com.cannontech.multispeak.deploy.service.ErrorObject[] modifyCBDataForServiceLocationResult) {
+        this.modifyCBDataForServiceLocationResult = modifyCBDataForServiceLocationResult;
     }
 
     private java.lang.Object __equalsCalc = null;
@@ -22,7 +49,10 @@ public class ModifyCBDataForServiceLocationResponse  implements java.io.Serializ
         }
         __equalsCalc = obj;
         boolean _equals;
-        _equals = true;
+        _equals = true && 
+            ((this.modifyCBDataForServiceLocationResult==null && other.getModifyCBDataForServiceLocationResult()==null) || 
+             (this.modifyCBDataForServiceLocationResult!=null &&
+              java.util.Arrays.equals(this.modifyCBDataForServiceLocationResult, other.getModifyCBDataForServiceLocationResult())));
         __equalsCalc = null;
         return _equals;
     }
@@ -34,6 +64,17 @@ public class ModifyCBDataForServiceLocationResponse  implements java.io.Serializ
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
+        if (getModifyCBDataForServiceLocationResult() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getModifyCBDataForServiceLocationResult());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getModifyCBDataForServiceLocationResult(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -44,6 +85,14 @@ public class ModifyCBDataForServiceLocationResponse  implements java.io.Serializ
 
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">ModifyCBDataForServiceLocationResponse"));
+        org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("modifyCBDataForServiceLocationResult");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ModifyCBDataForServiceLocationResult"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "errorObject"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "errorObject"));
+        typeDesc.addFieldDesc(elemField);
     }
 
     /**

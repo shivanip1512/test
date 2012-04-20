@@ -32,6 +32,8 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
 
     private java.lang.Float ratedCurrent;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public LoadManagementDevice() {
     }
 
@@ -59,7 +61,8 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
            com.cannontech.multispeak.deploy.service.Module[] moduleList,
            java.math.BigInteger numberOfRelays,
            java.lang.Float ratedVoltage,
-           java.lang.Float ratedCurrent) {
+           java.lang.Float ratedCurrent,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -85,6 +88,7 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
         this.numberOfRelays = numberOfRelays;
         this.ratedVoltage = ratedVoltage;
         this.ratedCurrent = ratedCurrent;
+        this.GPS = GPS;
     }
 
 
@@ -327,6 +331,26 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
         this.ratedCurrent = ratedCurrent;
     }
 
+
+    /**
+     * Gets the GPS value for this LoadManagementDevice.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this LoadManagementDevice.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof LoadManagementDevice)) return false;
@@ -374,7 +398,10 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
               this.ratedVoltage.equals(other.getRatedVoltage()))) &&
             ((this.ratedCurrent==null && other.getRatedCurrent()==null) || 
              (this.ratedCurrent!=null &&
-              this.ratedCurrent.equals(other.getRatedCurrent())));
+              this.ratedCurrent.equals(other.getRatedCurrent()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -429,6 +456,9 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
         }
         if (getRatedCurrent() != null) {
             _hashCode += getRatedCurrent().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -522,6 +552,13 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
         elemField.setFieldName("ratedCurrent");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ratedCurrent"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

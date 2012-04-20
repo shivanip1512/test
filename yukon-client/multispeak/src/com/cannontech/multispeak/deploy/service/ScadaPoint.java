@@ -16,6 +16,8 @@ public class ScadaPoint  extends com.cannontech.multispeak.deploy.service.MspPoi
 
     private java.lang.String GISFeatureType;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public ScadaPoint() {
     }
 
@@ -35,7 +37,8 @@ public class ScadaPoint  extends com.cannontech.multispeak.deploy.service.MspPoi
            java.lang.String description,
            com.cannontech.multispeak.deploy.service.ScadaPointType scadaPointType,
            java.lang.String GISFeatureID,
-           java.lang.String GISFeatureType) {
+           java.lang.String GISFeatureType,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -53,6 +56,7 @@ public class ScadaPoint  extends com.cannontech.multispeak.deploy.service.MspPoi
         this.scadaPointType = scadaPointType;
         this.GISFeatureID = GISFeatureID;
         this.GISFeatureType = GISFeatureType;
+        this.GPS = GPS;
     }
 
 
@@ -135,6 +139,26 @@ public class ScadaPoint  extends com.cannontech.multispeak.deploy.service.MspPoi
         this.GISFeatureType = GISFeatureType;
     }
 
+
+    /**
+     * Gets the GPS value for this ScadaPoint.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this ScadaPoint.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ScadaPoint)) return false;
@@ -158,7 +182,10 @@ public class ScadaPoint  extends com.cannontech.multispeak.deploy.service.MspPoi
               this.GISFeatureID.equals(other.getGISFeatureID()))) &&
             ((this.GISFeatureType==null && other.getGISFeatureType()==null) || 
              (this.GISFeatureType!=null &&
-              this.GISFeatureType.equals(other.getGISFeatureType())));
+              this.GISFeatureType.equals(other.getGISFeatureType()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -181,6 +208,9 @@ public class ScadaPoint  extends com.cannontech.multispeak.deploy.service.MspPoi
         }
         if (getGISFeatureType() != null) {
             _hashCode += getGISFeatureType().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -217,6 +247,13 @@ public class ScadaPoint  extends com.cannontech.multispeak.deploy.service.MspPoi
         elemField.setFieldName("GISFeatureType");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GISFeatureType"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

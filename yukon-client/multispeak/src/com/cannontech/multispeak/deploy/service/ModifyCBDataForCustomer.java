@@ -8,13 +8,13 @@
 package com.cannontech.multispeak.deploy.service;
 
 public class ModifyCBDataForCustomer  implements java.io.Serializable {
-    private com.cannontech.multispeak.deploy.service.Customer customerData;
+    private com.cannontech.multispeak.deploy.service.Customer[] customerData;
 
     public ModifyCBDataForCustomer() {
     }
 
     public ModifyCBDataForCustomer(
-           com.cannontech.multispeak.deploy.service.Customer customerData) {
+           com.cannontech.multispeak.deploy.service.Customer[] customerData) {
            this.customerData = customerData;
     }
 
@@ -24,7 +24,7 @@ public class ModifyCBDataForCustomer  implements java.io.Serializable {
      * 
      * @return customerData
      */
-    public com.cannontech.multispeak.deploy.service.Customer getCustomerData() {
+    public com.cannontech.multispeak.deploy.service.Customer[] getCustomerData() {
         return customerData;
     }
 
@@ -34,7 +34,7 @@ public class ModifyCBDataForCustomer  implements java.io.Serializable {
      * 
      * @param customerData
      */
-    public void setCustomerData(com.cannontech.multispeak.deploy.service.Customer customerData) {
+    public void setCustomerData(com.cannontech.multispeak.deploy.service.Customer[] customerData) {
         this.customerData = customerData;
     }
 
@@ -52,7 +52,7 @@ public class ModifyCBDataForCustomer  implements java.io.Serializable {
         _equals = true && 
             ((this.customerData==null && other.getCustomerData()==null) || 
              (this.customerData!=null &&
-              this.customerData.equals(other.getCustomerData())));
+              java.util.Arrays.equals(this.customerData, other.getCustomerData())));
         __equalsCalc = null;
         return _equals;
     }
@@ -65,7 +65,15 @@ public class ModifyCBDataForCustomer  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getCustomerData() != null) {
-            _hashCode += getCustomerData().hashCode();
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getCustomerData());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getCustomerData(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -83,6 +91,7 @@ public class ModifyCBDataForCustomer  implements java.io.Serializable {
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customer"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customer"));
         typeDesc.addFieldDesc(elemField);
     }
 

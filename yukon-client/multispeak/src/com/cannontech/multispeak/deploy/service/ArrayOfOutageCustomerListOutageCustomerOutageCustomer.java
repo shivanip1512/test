@@ -35,7 +35,7 @@ public class ArrayOfOutageCustomerListOutageCustomerOutageCustomer  extends com.
             custID,
             callBackAC,
             callBackPhone,
-            timeToCall,
+            new TimePeriod(timeToCall.getStartTime(), timeToCall.getEndTime()),
             callBackFlag,
             callBackContactFirstName,
             callBackContactLastName,
@@ -44,7 +44,11 @@ public class ArrayOfOutageCustomerListOutageCustomerOutageCustomer  extends com.
             callBackCompletedTime,
             callBackType,
             callRecordID,
-            outageEventID);
+            outageEventID,
+            null,
+            null,
+            servLoc,
+            meterNo);
         this.servLoc = servLoc;
         this.meterNo = meterNo;
     }

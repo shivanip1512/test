@@ -15,6 +15,131 @@ public class CD_ServerSoap_BindingImpl implements com.cannontech.multispeak.depl
     
     private CD_ServerSoap_PortType cd_server = YukonSpringHook.getBean("cd_server", CD_ServerSoap_PortType.class);
 
+    public ErrorObject[] pingURL() throws RemoteException {
+        return cd_server.pingURL();
+    }
+
+    public String[] getMethods() throws RemoteException {
+        return cd_server.getMethods();
+    }
+
+    public String[] getDomainNames() throws RemoteException {
+        return cd_server.getDomainNames();
+    }
+
+    public DomainMember[] getDomainMembers(String domainName)
+            throws RemoteException {
+        return cd_server.getDomainMembers(domainName);
+    }
+
+    public String requestRegistrationID() throws RemoteException {
+        return cd_server.requestRegistrationID();
+    }
+
+    public ErrorObject[] registerForService(RegistrationInfo registrationDetails)
+            throws RemoteException {
+        return cd_server.registerForService(registrationDetails);
+    }
+
+    public ErrorObject[] unregisterForService(String registrationID)
+            throws RemoteException {
+        return cd_server.unregisterForService(registrationID);
+    }
+
+    public RegistrationInfo getRegistrationInfoByID(String registrationID)
+            throws RemoteException {
+        return cd_server.getRegistrationInfoByID(registrationID);
+    }
+
+    public String[] getPublishMethods() throws RemoteException {
+        return cd_server.getPublishMethods();
+    }
+
+    public ErrorObject[] domainMembersChangedNotification(
+            DomainMember[] changedDomainMembers) throws RemoteException {
+        return cd_server.domainMembersChangedNotification(changedDomainMembers);
+    }
+
+    public ErrorObject[] domainNamesChangedNotification(
+            DomainNameChange[] changedDomainNames) throws RemoteException {
+        return cd_server.domainNamesChangedNotification(changedDomainNames);
+    }
+
+    public Meter[] getCDSupportedMeters(String lastReceived)
+            throws RemoteException {
+        return cd_server.getCDSupportedMeters(lastReceived);
+    }
+
+    public Meter[] getModifiedCDMeters(String previousSessionID,
+            String lastReceived) throws RemoteException {
+        return cd_server.getModifiedCDMeters(previousSessionID, lastReceived);
+    }
+
+    public LoadActionCode getCDMeterState(String meterNo)
+            throws RemoteException {
+        return cd_server.getCDMeterState(meterNo);
+    }
+
+    public ErrorObject[] initiateConnectDisconnect(
+            ConnectDisconnectEvent[] cdEvents, String responseURL,
+            String transactionID, float expirationTime) throws RemoteException {
+        return cd_server.initiateConnectDisconnect(cdEvents,
+                                                   responseURL,
+                                                   transactionID,
+                                                   expirationTime);
+    }
+
+    public ErrorObject[] initiateCDStateRequest(CDState[] states,
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
+        return cd_server.initiateCDStateRequest(states,
+                                                responseURL,
+                                                transactionID,
+                                                expirationTime);
+    }
+
+    public ErrorObject[] initiateArmCDDevice(CDState[] states,
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
+        return cd_server.initiateArmCDDevice(states,
+                                             responseURL,
+                                             transactionID,
+                                             expirationTime);
+    }
+
+    public ErrorObject[] initiateEnableCDDevice(CDState[] states,
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
+        return cd_server.initiateEnableCDDevice(states,
+                                                responseURL,
+                                                transactionID,
+                                                expirationTime);
+    }
+
+    public ErrorObject[] initiateDisableCDDevice(CDState[] states,
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
+        return cd_server.initiateDisableCDDevice(states,
+                                                 responseURL,
+                                                 transactionID,
+                                                 expirationTime);
+    }
+
+    public ErrorObject[] customerChangedNotification(Customer[] changedCustomers)
+            throws RemoteException {
+        return cd_server.customerChangedNotification(changedCustomers);
+    }
+
+    public ErrorObject[] serviceLocationChangedNotification(
+            ServiceLocation[] changedServiceLocations) throws RemoteException {
+        return cd_server.serviceLocationChangedNotification(changedServiceLocations);
+    }
+
+    public ErrorObject[] meterChangedNotification(Meter[] changedMeters)
+            throws RemoteException {
+        return cd_server.meterChangedNotification(changedMeters);
+    }
+
     public ErrorObject[] CDDeviceAddNotification(CDDevice[] addedCDDs)
             throws RemoteException {
         return cd_server.CDDeviceAddNotification(addedCDDs);
@@ -40,59 +165,5 @@ public class CD_ServerSoap_BindingImpl implements com.cannontech.multispeak.depl
         return cd_server.CDDeviceRetireNotification(retiredCDDs);
     }
 
-    public ErrorObject[] customerChangedNotification(Customer[] changedCustomers)
-            throws RemoteException {
-        return cd_server.customerChangedNotification(changedCustomers);
-    }
-
-    public LoadActionCode getCDMeterState(String meterNo)
-            throws RemoteException {
-        return cd_server.getCDMeterState(meterNo);
-    }
-
-    public Meter[] getCDSupportedMeters(String lastReceived)
-            throws RemoteException {
-        return cd_server.getCDSupportedMeters(lastReceived);
-    }
-
-    public DomainMember[] getDomainMembers(String domainName)
-            throws RemoteException {
-        return cd_server.getDomainMembers(domainName);
-    }
-
-    public String[] getDomainNames() throws RemoteException {
-        return cd_server.getDomainNames();
-    }
-
-    public String[] getMethods() throws RemoteException {
-        return cd_server.getMethods();
-    }
-
-    public Meter[] getModifiedCDMeters(String previousSessionID,
-            String lastReceived) throws RemoteException {
-        return cd_server.getModifiedCDMeters(previousSessionID, lastReceived);
-    }
-
-    public ErrorObject[] initiateConnectDisconnect(
-            ConnectDisconnectEvent[] cdEvents, String responseURL,
-            String transactionID) throws RemoteException {
-        return cd_server.initiateConnectDisconnect(cdEvents,
-                                                   responseURL,
-                                                   transactionID);
-    }
-
-    public ErrorObject[] meterChangedNotification(Meter[] changedMeters)
-            throws RemoteException {
-        return cd_server.meterChangedNotification(changedMeters);
-    }
-
-    public ErrorObject[] pingURL() throws RemoteException {
-        return cd_server.pingURL();
-    }
-
-    public ErrorObject[] serviceLocationChangedNotification(
-            ServiceLocation[] changedServiceLocations) throws RemoteException {
-        return cd_server.serviceLocationChangedNotification(changedServiceLocations);
-    }
     
 }

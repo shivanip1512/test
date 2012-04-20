@@ -18,6 +18,8 @@ public class OutageLocation  extends com.cannontech.multispeak.deploy.service.Ms
 
     private java.lang.String accountNumber;
 
+    private java.lang.String gridLocation;
+
     public OutageLocation() {
     }
 
@@ -34,7 +36,8 @@ public class OutageLocation  extends com.cannontech.multispeak.deploy.service.Ms
            java.lang.String meterNo,
            java.lang.String areaCode,
            java.lang.String phone,
-           java.lang.String accountNumber) {
+           java.lang.String accountNumber,
+           java.lang.String gridLocation) {
         super(
             objectID,
             verb,
@@ -49,6 +52,7 @@ public class OutageLocation  extends com.cannontech.multispeak.deploy.service.Ms
         this.areaCode = areaCode;
         this.phone = phone;
         this.accountNumber = accountNumber;
+        this.gridLocation = gridLocation;
     }
 
 
@@ -151,6 +155,26 @@ public class OutageLocation  extends com.cannontech.multispeak.deploy.service.Ms
         this.accountNumber = accountNumber;
     }
 
+
+    /**
+     * Gets the gridLocation value for this OutageLocation.
+     * 
+     * @return gridLocation
+     */
+    public java.lang.String getGridLocation() {
+        return gridLocation;
+    }
+
+
+    /**
+     * Sets the gridLocation value for this OutageLocation.
+     * 
+     * @param gridLocation
+     */
+    public void setGridLocation(java.lang.String gridLocation) {
+        this.gridLocation = gridLocation;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof OutageLocation)) return false;
@@ -177,7 +201,10 @@ public class OutageLocation  extends com.cannontech.multispeak.deploy.service.Ms
               this.phone.equals(other.getPhone()))) &&
             ((this.accountNumber==null && other.getAccountNumber()==null) || 
              (this.accountNumber!=null &&
-              this.accountNumber.equals(other.getAccountNumber())));
+              this.accountNumber.equals(other.getAccountNumber()))) &&
+            ((this.gridLocation==null && other.getGridLocation()==null) || 
+             (this.gridLocation!=null &&
+              this.gridLocation.equals(other.getGridLocation())));
         __equalsCalc = null;
         return _equals;
     }
@@ -203,6 +230,9 @@ public class OutageLocation  extends com.cannontech.multispeak.deploy.service.Ms
         }
         if (getAccountNumber() != null) {
             _hashCode += getAccountNumber().hashCode();
+        }
+        if (getGridLocation() != null) {
+            _hashCode += getGridLocation().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -245,6 +275,13 @@ public class OutageLocation  extends com.cannontech.multispeak.deploy.service.Ms
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("accountNumber");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "accountNumber"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("gridLocation");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "gridLocation"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

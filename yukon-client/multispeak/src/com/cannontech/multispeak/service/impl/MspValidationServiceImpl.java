@@ -19,6 +19,7 @@ import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
 import com.cannontech.multispeak.deploy.service.LoadManagementEventStrategy;
 import com.cannontech.multispeak.deploy.service.ObjectRef;
 import com.cannontech.multispeak.deploy.service.ScadaAnalog;
+import com.cannontech.multispeak.deploy.service.Strategy;
 import com.cannontech.multispeak.service.MspValidationService;
 
 public class MspValidationServiceImpl implements MspValidationService {
@@ -88,7 +89,7 @@ public class MspValidationServiceImpl implements MspValidationService {
 					"LoadManagementEvent", "isValidLoadManagementEvent", null);
 		} else {
 			//is strategy name defined?
-			LoadManagementEventStrategy strategy = loadManagementEvent.getStrategy();
+			Strategy strategy = loadManagementEvent.getStrategy();
 			if (strategy == null) {
 				errorObject = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), 
 						"Strategy is null, event not processed.",

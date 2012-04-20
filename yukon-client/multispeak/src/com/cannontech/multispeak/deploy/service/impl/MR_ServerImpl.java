@@ -46,21 +46,30 @@ import com.cannontech.multispeak.data.MspMeterReturnList;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.CustomersAffectedByOutage;
 import com.cannontech.multispeak.deploy.service.DomainMember;
+import com.cannontech.multispeak.deploy.service.DomainNameChange;
 import com.cannontech.multispeak.deploy.service.EndDeviceShipment;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.EventCode;
 import com.cannontech.multispeak.deploy.service.FormattedBlock;
+import com.cannontech.multispeak.deploy.service.FormattedBlockTemplate;
 import com.cannontech.multispeak.deploy.service.HistoryLog;
 import com.cannontech.multispeak.deploy.service.InHomeDisplay;
 import com.cannontech.multispeak.deploy.service.InHomeDisplayExchange;
 import com.cannontech.multispeak.deploy.service.MR_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.multispeak.deploy.service.MeterBase;
+import com.cannontech.multispeak.deploy.service.MeterBaseExchange;
 import com.cannontech.multispeak.deploy.service.MeterConnectivity;
 import com.cannontech.multispeak.deploy.service.MeterExchange;
 import com.cannontech.multispeak.deploy.service.MeterGroup;
+import com.cannontech.multispeak.deploy.service.MeterIdentifier;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.PhaseCd;
+import com.cannontech.multispeak.deploy.service.ReadingSchedule;
+import com.cannontech.multispeak.deploy.service.RegistrationInfo;
+import com.cannontech.multispeak.deploy.service.Schedule;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.multispeak.deploy.service.ServiceType;
 import com.cannontech.multispeak.service.MspValidationService;
 import com.cannontech.multispeak.service.MultispeakMeterService;
 import com.cannontech.yukon.BasicServerConnection;
@@ -260,7 +269,11 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     
     @Override
-    public FormattedBlock[] getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, java.lang.String lastReceived) throws java.rmi.RemoteException {
+    public FormattedBlock[] getReadingsByBillingCycle(String billingCycle,
+            Calendar billingDate, int kWhLookBack, int kWLookBack,
+            int kWLookForward, String lastReceived,
+            String formattedBlockTemplateName, String[] fieldName)
+            throws RemoteException {
         /* TODO
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
@@ -271,7 +284,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         return meterReads;
         */
-        throw new RemoteException("Method getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, java.lang.String lastReceived) is NOT supported.");
+        throw new RemoteException("Method getReadingsByBillingCycle is NOT supported.");
     }
     
     @Override
@@ -345,7 +358,8 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     //Perform an actual read of the meter and return a CB_MR readingChangedNotification message for each meterNo
     @Override
     public ErrorObject[] initiateMeterReadByMeterNumber(String[] meterNos,
-            String responseURL, String transactionID) throws RemoteException {
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
@@ -419,15 +433,17 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
 
     @Override
-    public FormattedBlock getLatestMeterReadingsByMeterGroup(String meterGroupID)
-            throws RemoteException {
+    public FormattedBlock getLatestMeterReadingsByMeterGroup(
+            String meterGroupID, String formattedBlockTemplateName,
+            String[] fieldName) throws RemoteException {
         init();
         return null;
     }
 
     @Override
     public ErrorObject[] initiateGroupMeterRead(String meterGroupName,
-            String responseURL, String transactionID) throws RemoteException {
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
         init();
         return null;
     }
@@ -475,14 +491,20 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         return null;
     }
     @Override
-    public FormattedBlock[] getReadingByMeterNumberFormattedBlock(String meterNumber, Calendar billingDate,
-            int whLookBack, int lookBack, int lookForward, String lastReceived) throws RemoteException {
+    public FormattedBlock[] getReadingByMeterNumberFormattedBlock(
+            String meterNumber, Calendar billingDate, int kWhLookBack,
+            int kWLookBack, int kWLookForward, String lastReceived,
+            String formattedBlockTemplateName, String[] fieldName)
+            throws RemoteException {
         init();
         return null;
     }
     @Override
-    public FormattedBlock[] getReadingsByDateFormattedBlock(Calendar billingDate, int whLookBack, int lookBack,
-            int lookForward, String lastReceived) throws RemoteException {
+    public FormattedBlock[] getReadingsByDateFormattedBlock(
+            Calendar billingDate, int kWhLookBack, int kWLookBack,
+            int kWLookForward, String lastReceived,
+            String formattedBlockTemplateName, String[] fieldName)
+            throws RemoteException {
         init();
         return null;
     }
@@ -545,7 +567,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     
     @Override
-    public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo, String readingType) throws RemoteException {
+    public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo,
+            String readingType, String formattedBlockTemplateName,
+            String[] fieldName) throws RemoteException {
         init();
         YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
         
@@ -580,7 +604,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     
     @Override
-    public FormattedBlock[] getLatestReadingByType(String readingType, String lastReceived) throws RemoteException {
+    public FormattedBlock[] getLatestReadingByType(String readingType,
+            String lastReceived, String formattedBlockTemplateName,
+            String[] fieldName) throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
@@ -597,7 +623,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     
     @Override
-    public FormattedBlock[] getReadingsByDateAndType(Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
+    public FormattedBlock[] getReadingsByDateAndType(Calendar startDate,
+            Calendar endDate, String readingType, String lastReceived,
+            String formattedBlockTemplateName, String[] fieldName)
+            throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
 
@@ -618,7 +647,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
 
     @Override
-    public FormattedBlock[] getReadingsByMeterNoAndType(String meterNo, Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
+    public FormattedBlock[] getReadingsByMeterNoAndType(String meterNo,
+            Calendar startDate, Calendar endDate, String readingType,
+            String lastReceived, String formattedBlockTemplateName,
+            String[] fieldName) throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         
@@ -655,8 +687,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     
     @Override
-    public ErrorObject[] initiateMeterReadByMeterNoAndType(String meterNo, String responseURL, 
-            String readingType, String transactionID) throws RemoteException {
+    public ErrorObject[] initiateMeterReadByMeterNoAndType(String meterNo, String responseURL,
+            String readingType, String transactionID,
+            float expirationTime) throws RemoteException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
@@ -671,7 +704,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         FormattedBlockProcessingService<Block> formattedBlockServ = 
             mspValidationService.getProcessingServiceByReadingType(readingTypesMap, readingType);
         
-        errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, formattedBlockServ);
+        errorObjects = multispeakMeterService.blockMeterReadEvent(vendor, meterNo, formattedBlockServ, transactionID);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
         return errorObjects;
@@ -686,10 +719,11 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     @Override
     public ErrorObject[] initiateMeterReadByObject(String objectName,
             String nounType, PhaseCd phaseCode, String responseURL,
-            String transactionID) throws RemoteException {
+            String transactionID, float expirationTime) throws RemoteException {
         init();
         return null;
     }
+
     @Override
     public ErrorObject[] meterConnectivityNotification(
             MeterConnectivity[] newConnectivity) throws RemoteException {
@@ -748,4 +782,214 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
 		this.paoDefinitionDao = paoDefinitionDao;
 	}
+
+    @Override
+    public ErrorObject[] meterBaseExchangeNotification(
+            MeterBaseExchange[] MBChangeout) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public String requestRegistrationID() throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] registerForService(RegistrationInfo registrationDetails)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] unregisterForService(String registrationID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public RegistrationInfo getRegistrationInfoByID(String registrationID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public String[] getPublishMethods() throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] domainMembersChangedNotification(
+            DomainMember[] changedDomainMembers) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] domainNamesChangedNotification(
+            DomainNameChange[] changedDomainNames) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public Schedule[] getSchedules(String lastReceived) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public Schedule getScheduleByID(String scheduleID) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ReadingSchedule[] getReadingSchedules(String lastReceived)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ReadingSchedule getReadingScheduleByID(String readingScheduleID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public FormattedBlock[] getLatestReadingsByMeterNoList(String[] meterNo,
+            Calendar startDate, Calendar endDate, String readingType,
+            String lastReceived, ServiceType serviceType,
+            String formattedBlockTemplateName, String[] fieldName)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public FormattedBlockTemplate[] getFormattedBlockTemplates(
+            String lastReceived) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public FormattedBlock[] getLatestReadingsByMeterNoListFormattedBlock(
+            String[] meterNo, Calendar startDate, Calendar endDate,
+            String formattedBlockTemplateName, String[] fieldName,
+            String lastReceived, ServiceType serviceType)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] initiateDemandReset(MeterIdentifier[] meterIDs,
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] insertMetersInConfigurationGroup(
+            String[] meterNumbers, String meterGroupID, ServiceType serviceType)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] removeMetersFromConfigurationGroup(
+            String[] meterNumbers, String meterGroupID, ServiceType serviceType)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] establishSchedules(Schedule[] schedules)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] deleteSchedule(String scheduleID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] establishReadingSchedules(
+            ReadingSchedule[] readingSchedules) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] enableReadingSchedule(String readingScheduleID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] disableReadingSchedule(String readingScheduleID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] deleteReadingSchedule(String readingScheduleID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] initiateMeterReadsByFieldName(String[] meterNumbers,
+            String[] fieldNames, String responseURL, String transactionID,
+            float expirationTime, String formattedBlockTemplateName)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] meterBaseChangedNotification(MeterBase[] changedMBs)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] meterBaseRemoveNotification(MeterBase[] removedMBs)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] meterBaseRetireNotification(MeterBase[] retiredMBs)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] meterBaseAddNotification(MeterBase[] addedMBs)
+            throws RemoteException {
+        init();
+        return null;
+    }
 }

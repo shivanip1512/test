@@ -150,6 +150,8 @@ public class WorkOrder  extends com.cannontech.multispeak.deploy.service.MspObje
 
     private com.cannontech.multispeak.deploy.service.BackgroundGraphics backgroundGraphics;
 
+    private com.cannontech.multispeak.deploy.service.SummaryItem[] statisticalSummary;
+
     public WorkOrder() {
     }
 
@@ -232,7 +234,8 @@ public class WorkOrder  extends com.cannontech.multispeak.deploy.service.MspObje
            java.lang.Float duration,
            java.lang.String accountNumber,
            com.cannontech.multispeak.deploy.service.Station[] stationList,
-           com.cannontech.multispeak.deploy.service.BackgroundGraphics backgroundGraphics) {
+           com.cannontech.multispeak.deploy.service.BackgroundGraphics backgroundGraphics,
+           com.cannontech.multispeak.deploy.service.SummaryItem[] statisticalSummary) {
         super(
             objectID,
             verb,
@@ -313,6 +316,7 @@ public class WorkOrder  extends com.cannontech.multispeak.deploy.service.MspObje
         this.accountNumber = accountNumber;
         this.stationList = stationList;
         this.backgroundGraphics = backgroundGraphics;
+        this.statisticalSummary = statisticalSummary;
     }
 
 
@@ -1735,6 +1739,26 @@ public class WorkOrder  extends com.cannontech.multispeak.deploy.service.MspObje
         this.backgroundGraphics = backgroundGraphics;
     }
 
+
+    /**
+     * Gets the statisticalSummary value for this WorkOrder.
+     * 
+     * @return statisticalSummary
+     */
+    public com.cannontech.multispeak.deploy.service.SummaryItem[] getStatisticalSummary() {
+        return statisticalSummary;
+    }
+
+
+    /**
+     * Sets the statisticalSummary value for this WorkOrder.
+     * 
+     * @param statisticalSummary
+     */
+    public void setStatisticalSummary(com.cannontech.multispeak.deploy.service.SummaryItem[] statisticalSummary) {
+        this.statisticalSummary = statisticalSummary;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof WorkOrder)) return false;
@@ -1959,7 +1983,10 @@ public class WorkOrder  extends com.cannontech.multispeak.deploy.service.MspObje
               java.util.Arrays.equals(this.stationList, other.getStationList()))) &&
             ((this.backgroundGraphics==null && other.getBackgroundGraphics()==null) || 
              (this.backgroundGraphics!=null &&
-              this.backgroundGraphics.equals(other.getBackgroundGraphics())));
+              this.backgroundGraphics.equals(other.getBackgroundGraphics()))) &&
+            ((this.statisticalSummary==null && other.getStatisticalSummary()==null) || 
+             (this.statisticalSummary!=null &&
+              java.util.Arrays.equals(this.statisticalSummary, other.getStatisticalSummary())));
         __equalsCalc = null;
         return _equals;
     }
@@ -2191,6 +2218,17 @@ public class WorkOrder  extends com.cannontech.multispeak.deploy.service.MspObje
         }
         if (getBackgroundGraphics() != null) {
             _hashCode += getBackgroundGraphics().hashCode();
+        }
+        if (getStatisticalSummary() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getStatisticalSummary());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getStatisticalSummary(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -2699,6 +2737,14 @@ public class WorkOrder  extends com.cannontech.multispeak.deploy.service.MspObje
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "backgroundGraphics"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("statisticalSummary");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "statisticalSummary"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "summaryItem"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "summaryItem"));
         typeDesc.addFieldDesc(elemField);
     }
 

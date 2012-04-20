@@ -8,13 +8,13 @@
 package com.cannontech.multispeak.deploy.service;
 
 public class ModifyCBDataForMeter  implements java.io.Serializable {
-    private com.cannontech.multispeak.deploy.service.Meter meterData;
+    private com.cannontech.multispeak.deploy.service.Meter[] meterData;
 
     public ModifyCBDataForMeter() {
     }
 
     public ModifyCBDataForMeter(
-           com.cannontech.multispeak.deploy.service.Meter meterData) {
+           com.cannontech.multispeak.deploy.service.Meter[] meterData) {
            this.meterData = meterData;
     }
 
@@ -24,7 +24,7 @@ public class ModifyCBDataForMeter  implements java.io.Serializable {
      * 
      * @return meterData
      */
-    public com.cannontech.multispeak.deploy.service.Meter getMeterData() {
+    public com.cannontech.multispeak.deploy.service.Meter[] getMeterData() {
         return meterData;
     }
 
@@ -34,7 +34,7 @@ public class ModifyCBDataForMeter  implements java.io.Serializable {
      * 
      * @param meterData
      */
-    public void setMeterData(com.cannontech.multispeak.deploy.service.Meter meterData) {
+    public void setMeterData(com.cannontech.multispeak.deploy.service.Meter[] meterData) {
         this.meterData = meterData;
     }
 
@@ -52,7 +52,7 @@ public class ModifyCBDataForMeter  implements java.io.Serializable {
         _equals = true && 
             ((this.meterData==null && other.getMeterData()==null) || 
              (this.meterData!=null &&
-              this.meterData.equals(other.getMeterData())));
+              java.util.Arrays.equals(this.meterData, other.getMeterData())));
         __equalsCalc = null;
         return _equals;
     }
@@ -65,7 +65,15 @@ public class ModifyCBDataForMeter  implements java.io.Serializable {
         __hashCodeCalc = true;
         int _hashCode = 1;
         if (getMeterData() != null) {
-            _hashCode += getMeterData().hashCode();
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getMeterData());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getMeterData(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -83,6 +91,7 @@ public class ModifyCBDataForMeter  implements java.io.Serializable {
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meter"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meter"));
         typeDesc.addFieldDesc(elemField);
     }
 

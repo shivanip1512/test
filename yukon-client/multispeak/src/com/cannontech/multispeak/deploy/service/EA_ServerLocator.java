@@ -22,7 +22,7 @@ public class EA_ServerLocator extends org.apache.axis.client.Service implements 
     }
 
     // Use to get a proxy class for EA_ServerSoap
-    private java.lang.String EA_ServerSoap_address = "http://localhost/MultiSpeakBusArchitectureV30v/EA_Server.asmx";
+    private java.lang.String EA_ServerSoap_address = "http://localhost:55273/EA_Server.asmx";
 
     public java.lang.String getEA_ServerSoapAddress() {
         return EA_ServerSoap_address;

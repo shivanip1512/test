@@ -65,7 +65,7 @@ public class CD_CB_Test {
 	    cdEvent.setObjectID("50000012");
 	    cdEvent.setLoadActionCode(LoadActionCode.Connect);
 	    cdEvents[0] = cdEvent;
-	    ErrorObject[] objects = instance.initiateConnectDisconnect(cdEvents, null, null);
+	    ErrorObject[] objects = instance.initiateConnectDisconnect(cdEvents, null, null, Float.MIN_NORMAL);
 	    if (objects != null && objects != null) {
             for (int i = 0; i < objects.length; i++) {
                 ErrorObject obj = objects[i];

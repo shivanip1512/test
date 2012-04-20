@@ -24,6 +24,8 @@ public class Tender  extends com.cannontech.multispeak.deploy.service.MspObject 
 
     private com.cannontech.multispeak.deploy.service.ResponseCode responseCode;
 
+    private java.lang.String financialTransactionID;
+
     public Tender() {
     }
 
@@ -43,7 +45,8 @@ public class Tender  extends com.cannontech.multispeak.deploy.service.MspObject 
            java.lang.String authorizationCode,
            com.cannontech.multispeak.deploy.service.PayableItemList payableItemList,
            java.lang.String paymentMode,
-           com.cannontech.multispeak.deploy.service.ResponseCode responseCode) {
+           com.cannontech.multispeak.deploy.service.ResponseCode responseCode,
+           java.lang.String financialTransactionID) {
         super(
             objectID,
             verb,
@@ -61,6 +64,7 @@ public class Tender  extends com.cannontech.multispeak.deploy.service.MspObject 
         this.payableItemList = payableItemList;
         this.paymentMode = paymentMode;
         this.responseCode = responseCode;
+        this.financialTransactionID = financialTransactionID;
     }
 
 
@@ -223,6 +227,26 @@ public class Tender  extends com.cannontech.multispeak.deploy.service.MspObject 
         this.responseCode = responseCode;
     }
 
+
+    /**
+     * Gets the financialTransactionID value for this Tender.
+     * 
+     * @return financialTransactionID
+     */
+    public java.lang.String getFinancialTransactionID() {
+        return financialTransactionID;
+    }
+
+
+    /**
+     * Sets the financialTransactionID value for this Tender.
+     * 
+     * @param financialTransactionID
+     */
+    public void setFinancialTransactionID(java.lang.String financialTransactionID) {
+        this.financialTransactionID = financialTransactionID;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Tender)) return false;
@@ -256,7 +280,10 @@ public class Tender  extends com.cannontech.multispeak.deploy.service.MspObject 
               this.paymentMode.equals(other.getPaymentMode()))) &&
             ((this.responseCode==null && other.getResponseCode()==null) || 
              (this.responseCode!=null &&
-              this.responseCode.equals(other.getResponseCode())));
+              this.responseCode.equals(other.getResponseCode()))) &&
+            ((this.financialTransactionID==null && other.getFinancialTransactionID()==null) || 
+             (this.financialTransactionID!=null &&
+              this.financialTransactionID.equals(other.getFinancialTransactionID())));
         __equalsCalc = null;
         return _equals;
     }
@@ -289,6 +316,9 @@ public class Tender  extends com.cannontech.multispeak.deploy.service.MspObject 
         }
         if (getResponseCode() != null) {
             _hashCode += getResponseCode().hashCode();
+        }
+        if (getFinancialTransactionID() != null) {
+            _hashCode += getFinancialTransactionID().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -352,6 +382,13 @@ public class Tender  extends com.cannontech.multispeak.deploy.service.MspObject 
         elemField.setFieldName("responseCode");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "responseCode"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "responseCode"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("financialTransactionID");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "financialTransactionID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

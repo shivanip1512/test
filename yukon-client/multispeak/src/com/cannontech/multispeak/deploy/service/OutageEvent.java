@@ -50,6 +50,20 @@ public class OutageEvent  extends com.cannontech.multispeak.deploy.service.MspOb
 
     private java.lang.Boolean isPlanned;
 
+    private com.cannontech.multispeak.deploy.service.PhaseCd outagedPhase;
+
+    private java.math.BigInteger customersAffected;
+
+    private java.math.BigInteger priorityCustomersCount;
+
+    private java.math.BigInteger ODEventCount;
+
+    private java.math.BigInteger customersRestored;
+
+    private java.lang.Boolean isCustomerResponsible;
+
+    private com.cannontech.multispeak.deploy.service.OutageReasonCodeList outageReasonCodeList;
+
     public OutageEvent() {
     }
 
@@ -82,7 +96,14 @@ public class OutageEvent  extends com.cannontech.multispeak.deploy.service.MspOb
            java.util.Calendar completed,
            com.cannontech.multispeak.deploy.service.Message message,
            java.lang.String[] crewsDispatched,
-           java.lang.Boolean isPlanned) {
+           java.lang.Boolean isPlanned,
+           com.cannontech.multispeak.deploy.service.PhaseCd outagedPhase,
+           java.math.BigInteger customersAffected,
+           java.math.BigInteger priorityCustomersCount,
+           java.math.BigInteger ODEventCount,
+           java.math.BigInteger customersRestored,
+           java.lang.Boolean isCustomerResponsible,
+           com.cannontech.multispeak.deploy.service.OutageReasonCodeList outageReasonCodeList) {
         super(
             objectID,
             verb,
@@ -113,6 +134,13 @@ public class OutageEvent  extends com.cannontech.multispeak.deploy.service.MspOb
         this.message = message;
         this.crewsDispatched = crewsDispatched;
         this.isPlanned = isPlanned;
+        this.outagedPhase = outagedPhase;
+        this.customersAffected = customersAffected;
+        this.priorityCustomersCount = priorityCustomersCount;
+        this.ODEventCount = ODEventCount;
+        this.customersRestored = customersRestored;
+        this.isCustomerResponsible = isCustomerResponsible;
+        this.outageReasonCodeList = outageReasonCodeList;
     }
 
 
@@ -535,6 +563,146 @@ public class OutageEvent  extends com.cannontech.multispeak.deploy.service.MspOb
         this.isPlanned = isPlanned;
     }
 
+
+    /**
+     * Gets the outagedPhase value for this OutageEvent.
+     * 
+     * @return outagedPhase
+     */
+    public com.cannontech.multispeak.deploy.service.PhaseCd getOutagedPhase() {
+        return outagedPhase;
+    }
+
+
+    /**
+     * Sets the outagedPhase value for this OutageEvent.
+     * 
+     * @param outagedPhase
+     */
+    public void setOutagedPhase(com.cannontech.multispeak.deploy.service.PhaseCd outagedPhase) {
+        this.outagedPhase = outagedPhase;
+    }
+
+
+    /**
+     * Gets the customersAffected value for this OutageEvent.
+     * 
+     * @return customersAffected
+     */
+    public java.math.BigInteger getCustomersAffected() {
+        return customersAffected;
+    }
+
+
+    /**
+     * Sets the customersAffected value for this OutageEvent.
+     * 
+     * @param customersAffected
+     */
+    public void setCustomersAffected(java.math.BigInteger customersAffected) {
+        this.customersAffected = customersAffected;
+    }
+
+
+    /**
+     * Gets the priorityCustomersCount value for this OutageEvent.
+     * 
+     * @return priorityCustomersCount
+     */
+    public java.math.BigInteger getPriorityCustomersCount() {
+        return priorityCustomersCount;
+    }
+
+
+    /**
+     * Sets the priorityCustomersCount value for this OutageEvent.
+     * 
+     * @param priorityCustomersCount
+     */
+    public void setPriorityCustomersCount(java.math.BigInteger priorityCustomersCount) {
+        this.priorityCustomersCount = priorityCustomersCount;
+    }
+
+
+    /**
+     * Gets the ODEventCount value for this OutageEvent.
+     * 
+     * @return ODEventCount
+     */
+    public java.math.BigInteger getODEventCount() {
+        return ODEventCount;
+    }
+
+
+    /**
+     * Sets the ODEventCount value for this OutageEvent.
+     * 
+     * @param ODEventCount
+     */
+    public void setODEventCount(java.math.BigInteger ODEventCount) {
+        this.ODEventCount = ODEventCount;
+    }
+
+
+    /**
+     * Gets the customersRestored value for this OutageEvent.
+     * 
+     * @return customersRestored
+     */
+    public java.math.BigInteger getCustomersRestored() {
+        return customersRestored;
+    }
+
+
+    /**
+     * Sets the customersRestored value for this OutageEvent.
+     * 
+     * @param customersRestored
+     */
+    public void setCustomersRestored(java.math.BigInteger customersRestored) {
+        this.customersRestored = customersRestored;
+    }
+
+
+    /**
+     * Gets the isCustomerResponsible value for this OutageEvent.
+     * 
+     * @return isCustomerResponsible
+     */
+    public java.lang.Boolean getIsCustomerResponsible() {
+        return isCustomerResponsible;
+    }
+
+
+    /**
+     * Sets the isCustomerResponsible value for this OutageEvent.
+     * 
+     * @param isCustomerResponsible
+     */
+    public void setIsCustomerResponsible(java.lang.Boolean isCustomerResponsible) {
+        this.isCustomerResponsible = isCustomerResponsible;
+    }
+
+
+    /**
+     * Gets the outageReasonCodeList value for this OutageEvent.
+     * 
+     * @return outageReasonCodeList
+     */
+    public com.cannontech.multispeak.deploy.service.OutageReasonCodeList getOutageReasonCodeList() {
+        return outageReasonCodeList;
+    }
+
+
+    /**
+     * Sets the outageReasonCodeList value for this OutageEvent.
+     * 
+     * @param outageReasonCodeList
+     */
+    public void setOutageReasonCodeList(com.cannontech.multispeak.deploy.service.OutageReasonCodeList outageReasonCodeList) {
+        this.outageReasonCodeList = outageReasonCodeList;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof OutageEvent)) return false;
@@ -609,7 +777,28 @@ public class OutageEvent  extends com.cannontech.multispeak.deploy.service.MspOb
               java.util.Arrays.equals(this.crewsDispatched, other.getCrewsDispatched()))) &&
             ((this.isPlanned==null && other.getIsPlanned()==null) || 
              (this.isPlanned!=null &&
-              this.isPlanned.equals(other.getIsPlanned())));
+              this.isPlanned.equals(other.getIsPlanned()))) &&
+            ((this.outagedPhase==null && other.getOutagedPhase()==null) || 
+             (this.outagedPhase!=null &&
+              this.outagedPhase.equals(other.getOutagedPhase()))) &&
+            ((this.customersAffected==null && other.getCustomersAffected()==null) || 
+             (this.customersAffected!=null &&
+              this.customersAffected.equals(other.getCustomersAffected()))) &&
+            ((this.priorityCustomersCount==null && other.getPriorityCustomersCount()==null) || 
+             (this.priorityCustomersCount!=null &&
+              this.priorityCustomersCount.equals(other.getPriorityCustomersCount()))) &&
+            ((this.ODEventCount==null && other.getODEventCount()==null) || 
+             (this.ODEventCount!=null &&
+              this.ODEventCount.equals(other.getODEventCount()))) &&
+            ((this.customersRestored==null && other.getCustomersRestored()==null) || 
+             (this.customersRestored!=null &&
+              this.customersRestored.equals(other.getCustomersRestored()))) &&
+            ((this.isCustomerResponsible==null && other.getIsCustomerResponsible()==null) || 
+             (this.isCustomerResponsible!=null &&
+              this.isCustomerResponsible.equals(other.getIsCustomerResponsible()))) &&
+            ((this.outageReasonCodeList==null && other.getOutageReasonCodeList()==null) || 
+             (this.outageReasonCodeList!=null &&
+              this.outageReasonCodeList.equals(other.getOutageReasonCodeList())));
         __equalsCalc = null;
         return _equals;
     }
@@ -691,6 +880,27 @@ public class OutageEvent  extends com.cannontech.multispeak.deploy.service.MspOb
         }
         if (getIsPlanned() != null) {
             _hashCode += getIsPlanned().hashCode();
+        }
+        if (getOutagedPhase() != null) {
+            _hashCode += getOutagedPhase().hashCode();
+        }
+        if (getCustomersAffected() != null) {
+            _hashCode += getCustomersAffected().hashCode();
+        }
+        if (getPriorityCustomersCount() != null) {
+            _hashCode += getPriorityCustomersCount().hashCode();
+        }
+        if (getODEventCount() != null) {
+            _hashCode += getODEventCount().hashCode();
+        }
+        if (getCustomersRestored() != null) {
+            _hashCode += getCustomersRestored().hashCode();
+        }
+        if (getIsCustomerResponsible() != null) {
+            _hashCode += getIsCustomerResponsible().hashCode();
+        }
+        if (getOutageReasonCodeList() != null) {
+            _hashCode += getOutageReasonCodeList().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -847,6 +1057,55 @@ public class OutageEvent  extends com.cannontech.multispeak.deploy.service.MspOb
         elemField.setFieldName("isPlanned");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "isPlanned"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("outagedPhase");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outagedPhase"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "phaseCd"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("customersAffected");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customersAffected"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "integer"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("priorityCustomersCount");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "priorityCustomersCount"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "integer"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("ODEventCount");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ODEventCount"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "integer"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("customersRestored");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customersRestored"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "integer"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("isCustomerResponsible");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "isCustomerResponsible"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("outageReasonCodeList");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageReasonCodeList"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageReasonCodeList"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

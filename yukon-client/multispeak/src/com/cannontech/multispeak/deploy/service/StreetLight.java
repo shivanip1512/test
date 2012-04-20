@@ -16,6 +16,8 @@ public class StreetLight  extends com.cannontech.multispeak.deploy.service.MspPo
 
     private java.lang.String transformerBankID;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public StreetLight() {
     }
 
@@ -35,7 +37,8 @@ public class StreetLight  extends com.cannontech.multispeak.deploy.service.MspPo
            java.lang.String lightType,
            java.lang.Long wattage,
            java.lang.Float brightness,
-           java.lang.String transformerBankID) {
+           java.lang.String transformerBankID,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -53,6 +56,7 @@ public class StreetLight  extends com.cannontech.multispeak.deploy.service.MspPo
         this.wattage = wattage;
         this.brightness = brightness;
         this.transformerBankID = transformerBankID;
+        this.GPS = GPS;
     }
 
 
@@ -135,6 +139,26 @@ public class StreetLight  extends com.cannontech.multispeak.deploy.service.MspPo
         this.transformerBankID = transformerBankID;
     }
 
+
+    /**
+     * Gets the GPS value for this StreetLight.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this StreetLight.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof StreetLight)) return false;
@@ -158,7 +182,10 @@ public class StreetLight  extends com.cannontech.multispeak.deploy.service.MspPo
               this.brightness.equals(other.getBrightness()))) &&
             ((this.transformerBankID==null && other.getTransformerBankID()==null) || 
              (this.transformerBankID!=null &&
-              this.transformerBankID.equals(other.getTransformerBankID())));
+              this.transformerBankID.equals(other.getTransformerBankID()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -181,6 +208,9 @@ public class StreetLight  extends com.cannontech.multispeak.deploy.service.MspPo
         }
         if (getTransformerBankID() != null) {
             _hashCode += getTransformerBankID().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -217,6 +247,13 @@ public class StreetLight  extends com.cannontech.multispeak.deploy.service.MspPo
         elemField.setFieldName("transformerBankID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transformerBankID"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

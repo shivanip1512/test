@@ -10,6 +10,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.DomainMember;
+import com.cannontech.multispeak.deploy.service.DomainNameChange;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.OD_ServerSoap_PortType;
@@ -17,7 +18,9 @@ import com.cannontech.multispeak.deploy.service.ObjectRef;
 import com.cannontech.multispeak.deploy.service.OutageDetectDeviceStatus;
 import com.cannontech.multispeak.deploy.service.OutageDetectDeviceType;
 import com.cannontech.multispeak.deploy.service.OutageDetectionDevice;
+import com.cannontech.multispeak.deploy.service.OutageEvent;
 import com.cannontech.multispeak.deploy.service.PhaseCd;
+import com.cannontech.multispeak.deploy.service.RegistrationInfo;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.service.MultispeakMeterService;
 
@@ -89,8 +92,8 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
     
     @Override
     public ErrorObject[] initiateOutageDetectionEventRequest(String[] meterNos,
-            Calendar requestDate, String responseURL, String transactionID)
-            throws RemoteException {
+            Calendar requestDate, String responseURL, String transactionID,
+            float expirationTime) throws RemoteException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
@@ -121,7 +124,8 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
     @Override
     public ErrorObject[] initiateODEventRequestByObject(String objectName,
             String nounType, PhaseCd phaseCode, Calendar requestDate,
-            String responseURL, String transactionID) throws RemoteException {
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
         init();
         return null;
     }
@@ -129,7 +133,7 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
     @Override
     public ErrorObject[] initiateODEventRequestByServiceLocation(
             String[] servLoc, Calendar requestDate, String responseURL,
-            String transactionID) throws RemoteException {
+            String transactionID, float expirationTime) throws RemoteException {
         init();
         return null;
     }
@@ -137,8 +141,8 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
     @Override
     public ErrorObject[] initiateODMonitoringRequestByObject(String objectName,
             String nounType, PhaseCd phaseCode, int periodicity,
-            Calendar requestDate, String responseURL, String transactionID)
-            throws RemoteException {
+            Calendar requestDate, String responseURL, String transactionID,
+            float expirationTime) throws RemoteException {
         init();
         return null;
     }
@@ -172,5 +176,59 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
     @Autowired
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
         this.multispeakFuncs = multispeakFuncs;
+    }
+
+    @Override
+    public String requestRegistrationID() throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] registerForService(RegistrationInfo registrationDetails)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] unregisterForService(String registrationID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public RegistrationInfo getRegistrationInfoByID(String registrationID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public String[] getPublishMethods() throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] domainMembersChangedNotification(
+            DomainMember[] changedDomainMembers) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] domainNamesChangedNotification(
+            DomainNameChange[] changedDomainNames) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] outageEventChangedNotification(OutageEvent[] oEvents)
+            throws RemoteException {
+        init();
+        return null;
     }
 }

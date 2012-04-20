@@ -22,7 +22,7 @@ public class LM_ServerLocator extends org.apache.axis.client.Service implements 
     }
 
     // Use to get a proxy class for LM_ServerSoap
-    private java.lang.String LM_ServerSoap_address = "http://localhost/MultiSpeakBusArchitectureV30v/LM_Server.asmx";
+    private java.lang.String LM_ServerSoap_address = "http://localhost:55273/LM_Server.asmx";
 
     public java.lang.String getLM_ServerSoapAddress() {
         return LM_ServerSoap_address;

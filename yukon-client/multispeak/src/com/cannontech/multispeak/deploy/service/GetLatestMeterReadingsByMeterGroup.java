@@ -10,12 +10,20 @@ package com.cannontech.multispeak.deploy.service;
 public class GetLatestMeterReadingsByMeterGroup  implements java.io.Serializable {
     private java.lang.String meterGroupID;
 
+    private java.lang.String formattedBlockTemplateName;
+
+    private java.lang.String[] fieldName;
+
     public GetLatestMeterReadingsByMeterGroup() {
     }
 
     public GetLatestMeterReadingsByMeterGroup(
-           java.lang.String meterGroupID) {
+           java.lang.String meterGroupID,
+           java.lang.String formattedBlockTemplateName,
+           java.lang.String[] fieldName) {
            this.meterGroupID = meterGroupID;
+           this.formattedBlockTemplateName = formattedBlockTemplateName;
+           this.fieldName = fieldName;
     }
 
 
@@ -38,6 +46,46 @@ public class GetLatestMeterReadingsByMeterGroup  implements java.io.Serializable
         this.meterGroupID = meterGroupID;
     }
 
+
+    /**
+     * Gets the formattedBlockTemplateName value for this GetLatestMeterReadingsByMeterGroup.
+     * 
+     * @return formattedBlockTemplateName
+     */
+    public java.lang.String getFormattedBlockTemplateName() {
+        return formattedBlockTemplateName;
+    }
+
+
+    /**
+     * Sets the formattedBlockTemplateName value for this GetLatestMeterReadingsByMeterGroup.
+     * 
+     * @param formattedBlockTemplateName
+     */
+    public void setFormattedBlockTemplateName(java.lang.String formattedBlockTemplateName) {
+        this.formattedBlockTemplateName = formattedBlockTemplateName;
+    }
+
+
+    /**
+     * Gets the fieldName value for this GetLatestMeterReadingsByMeterGroup.
+     * 
+     * @return fieldName
+     */
+    public java.lang.String[] getFieldName() {
+        return fieldName;
+    }
+
+
+    /**
+     * Sets the fieldName value for this GetLatestMeterReadingsByMeterGroup.
+     * 
+     * @param fieldName
+     */
+    public void setFieldName(java.lang.String[] fieldName) {
+        this.fieldName = fieldName;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GetLatestMeterReadingsByMeterGroup)) return false;
@@ -52,7 +100,13 @@ public class GetLatestMeterReadingsByMeterGroup  implements java.io.Serializable
         _equals = true && 
             ((this.meterGroupID==null && other.getMeterGroupID()==null) || 
              (this.meterGroupID!=null &&
-              this.meterGroupID.equals(other.getMeterGroupID())));
+              this.meterGroupID.equals(other.getMeterGroupID()))) &&
+            ((this.formattedBlockTemplateName==null && other.getFormattedBlockTemplateName()==null) || 
+             (this.formattedBlockTemplateName!=null &&
+              this.formattedBlockTemplateName.equals(other.getFormattedBlockTemplateName()))) &&
+            ((this.fieldName==null && other.getFieldName()==null) || 
+             (this.fieldName!=null &&
+              java.util.Arrays.equals(this.fieldName, other.getFieldName())));
         __equalsCalc = null;
         return _equals;
     }
@@ -66,6 +120,20 @@ public class GetLatestMeterReadingsByMeterGroup  implements java.io.Serializable
         int _hashCode = 1;
         if (getMeterGroupID() != null) {
             _hashCode += getMeterGroupID().hashCode();
+        }
+        if (getFormattedBlockTemplateName() != null) {
+            _hashCode += getFormattedBlockTemplateName().hashCode();
+        }
+        if (getFieldName() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getFieldName());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getFieldName(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -83,6 +151,21 @@ public class GetLatestMeterReadingsByMeterGroup  implements java.io.Serializable
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("formattedBlockTemplateName");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "formattedBlockTemplateName"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("fieldName");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "fieldName"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "string"));
         typeDesc.addFieldDesc(elemField);
     }
 

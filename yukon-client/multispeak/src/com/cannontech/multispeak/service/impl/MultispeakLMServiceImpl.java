@@ -55,6 +55,7 @@ import com.cannontech.multispeak.db.MspLMInterfaceMappingStrategyNameComparator;
 import com.cannontech.multispeak.db.MspLmInterfaceMappingColumnEnum;
 import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.deploy.service.ControlEventType;
+import com.cannontech.multispeak.deploy.service.ControlItem;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
 import com.cannontech.multispeak.deploy.service.ObjectRef;
@@ -443,8 +444,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 		substationLoadControlStatus.setObjectID(substationName);
 		substationLoadControlStatus.setSubstationName(substationName);
 
-		SubstationLoadControlStatusControlledItemsControlItem [] controlledItemsArray = 
-			new SubstationLoadControlStatusControlledItemsControlItem[controlledItemsList.size()];
+		ControlItem [] controlledItemsArray = 
+			new ControlItem[controlledItemsList.size()];
 		controlledItemsArray = controlledItemsList.toArray(controlledItemsArray);
 		substationLoadControlStatus.setControlledItems(controlledItemsArray);
 		return substationLoadControlStatus;

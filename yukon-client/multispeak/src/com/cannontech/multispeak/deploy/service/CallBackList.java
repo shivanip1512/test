@@ -14,9 +14,11 @@ public class CallBackList  extends com.cannontech.multispeak.deploy.service.MspO
 
     private java.lang.String outageDescription;
 
-    private com.cannontech.multispeak.deploy.service.ArrayOfOutageCustomerListOutageCustomerOutageCustomer[] outageCustomerList;
+    private com.cannontech.multispeak.deploy.service.OutageCustomer[] outageCustomerList;
 
     private com.cannontech.multispeak.deploy.service.Message message;
+
+    private java.lang.String callBackListType;
 
     public CallBackList() {
     }
@@ -33,8 +35,9 @@ public class CallBackList  extends com.cannontech.multispeak.deploy.service.MspO
            java.lang.String outageEventID,
            com.cannontech.multispeak.deploy.service.OutageStatus outageStatus,
            java.lang.String outageDescription,
-           com.cannontech.multispeak.deploy.service.ArrayOfOutageCustomerListOutageCustomerOutageCustomer[] outageCustomerList,
-           com.cannontech.multispeak.deploy.service.Message message) {
+           com.cannontech.multispeak.deploy.service.OutageCustomer[] outageCustomerList,
+           com.cannontech.multispeak.deploy.service.Message message,
+           java.lang.String callBackListType) {
         super(
             objectID,
             verb,
@@ -49,6 +52,7 @@ public class CallBackList  extends com.cannontech.multispeak.deploy.service.MspO
         this.outageDescription = outageDescription;
         this.outageCustomerList = outageCustomerList;
         this.message = message;
+        this.callBackListType = callBackListType;
     }
 
 
@@ -117,7 +121,7 @@ public class CallBackList  extends com.cannontech.multispeak.deploy.service.MspO
      * 
      * @return outageCustomerList
      */
-    public com.cannontech.multispeak.deploy.service.ArrayOfOutageCustomerListOutageCustomerOutageCustomer[] getOutageCustomerList() {
+    public com.cannontech.multispeak.deploy.service.OutageCustomer[] getOutageCustomerList() {
         return outageCustomerList;
     }
 
@@ -127,7 +131,7 @@ public class CallBackList  extends com.cannontech.multispeak.deploy.service.MspO
      * 
      * @param outageCustomerList
      */
-    public void setOutageCustomerList(com.cannontech.multispeak.deploy.service.ArrayOfOutageCustomerListOutageCustomerOutageCustomer[] outageCustomerList) {
+    public void setOutageCustomerList(com.cannontech.multispeak.deploy.service.OutageCustomer[] outageCustomerList) {
         this.outageCustomerList = outageCustomerList;
     }
 
@@ -149,6 +153,26 @@ public class CallBackList  extends com.cannontech.multispeak.deploy.service.MspO
      */
     public void setMessage(com.cannontech.multispeak.deploy.service.Message message) {
         this.message = message;
+    }
+
+
+    /**
+     * Gets the callBackListType value for this CallBackList.
+     * 
+     * @return callBackListType
+     */
+    public java.lang.String getCallBackListType() {
+        return callBackListType;
+    }
+
+
+    /**
+     * Sets the callBackListType value for this CallBackList.
+     * 
+     * @param callBackListType
+     */
+    public void setCallBackListType(java.lang.String callBackListType) {
+        this.callBackListType = callBackListType;
     }
 
     private java.lang.Object __equalsCalc = null;
@@ -177,7 +201,10 @@ public class CallBackList  extends com.cannontech.multispeak.deploy.service.MspO
               java.util.Arrays.equals(this.outageCustomerList, other.getOutageCustomerList()))) &&
             ((this.message==null && other.getMessage()==null) || 
              (this.message!=null &&
-              this.message.equals(other.getMessage())));
+              this.message.equals(other.getMessage()))) &&
+            ((this.callBackListType==null && other.getCallBackListType()==null) || 
+             (this.callBackListType!=null &&
+              this.callBackListType.equals(other.getCallBackListType())));
         __equalsCalc = null;
         return _equals;
     }
@@ -211,6 +238,9 @@ public class CallBackList  extends com.cannontech.multispeak.deploy.service.MspO
         }
         if (getMessage() != null) {
             _hashCode += getMessage().hashCode();
+        }
+        if (getCallBackListType() != null) {
+            _hashCode += getCallBackListType().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -246,7 +276,7 @@ public class CallBackList  extends com.cannontech.multispeak.deploy.service.MspO
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("outageCustomerList");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageCustomerList"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">ArrayOfOutageCustomerListOutageCustomer>outageCustomer"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageCustomer"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "outageCustomer"));
@@ -255,6 +285,13 @@ public class CallBackList  extends com.cannontech.multispeak.deploy.service.MspO
         elemField.setFieldName("message");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "message"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "message"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("callBackListType");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "callBackListType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

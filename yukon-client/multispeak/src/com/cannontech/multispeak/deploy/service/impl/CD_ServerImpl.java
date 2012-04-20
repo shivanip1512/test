@@ -25,13 +25,16 @@ import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.data.MspMeterReturnList;
 import com.cannontech.multispeak.deploy.service.CDDevice;
 import com.cannontech.multispeak.deploy.service.CDDeviceExchange;
+import com.cannontech.multispeak.deploy.service.CDState;
 import com.cannontech.multispeak.deploy.service.CD_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.DomainMember;
+import com.cannontech.multispeak.deploy.service.DomainNameChange;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.multispeak.deploy.service.RegistrationInfo;
 import com.cannontech.multispeak.service.MspValidationService;
 import com.cannontech.multispeak.service.MultispeakMeterService;
 
@@ -127,7 +130,7 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
     @Override
     public ErrorObject[] initiateConnectDisconnect(
             ConnectDisconnectEvent[] cdEvents, String responseURL,
-            String transactionID) throws RemoteException {
+            String transactionID, float expirationTime) throws RemoteException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
@@ -212,5 +215,84 @@ public class CD_ServerImpl implements CD_ServerSoap_PortType
             log.error(message, e);
             throw new RemoteException(message);
         }
+    }
+
+    @Override
+    public String requestRegistrationID() throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] registerForService(RegistrationInfo registrationDetails)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] unregisterForService(String registrationID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public RegistrationInfo getRegistrationInfoByID(String registrationID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public String[] getPublishMethods() throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] domainMembersChangedNotification(
+            DomainMember[] changedDomainMembers) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] domainNamesChangedNotification(
+            DomainNameChange[] changedDomainNames) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] initiateCDStateRequest(CDState[] states,
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] initiateArmCDDevice(CDState[] states,
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] initiateEnableCDDevice(CDState[] states,
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] initiateDisableCDDevice(CDState[] states,
+            String responseURL, String transactionID, float expirationTime)
+            throws RemoteException {
+        init();
+        return null;
     }
 }

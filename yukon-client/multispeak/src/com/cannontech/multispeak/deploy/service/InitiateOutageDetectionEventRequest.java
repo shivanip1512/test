@@ -16,6 +16,8 @@ public class InitiateOutageDetectionEventRequest  implements java.io.Serializabl
 
     private java.lang.String transactionID;
 
+    private float expirationTime;
+
     public InitiateOutageDetectionEventRequest() {
     }
 
@@ -23,11 +25,13 @@ public class InitiateOutageDetectionEventRequest  implements java.io.Serializabl
            java.lang.String[] meterNos,
            java.util.Calendar requestDate,
            java.lang.String responseURL,
-           java.lang.String transactionID) {
+           java.lang.String transactionID,
+           float expirationTime) {
            this.meterNos = meterNos;
            this.requestDate = requestDate;
            this.responseURL = responseURL;
            this.transactionID = transactionID;
+           this.expirationTime = expirationTime;
     }
 
 
@@ -110,6 +114,26 @@ public class InitiateOutageDetectionEventRequest  implements java.io.Serializabl
         this.transactionID = transactionID;
     }
 
+
+    /**
+     * Gets the expirationTime value for this InitiateOutageDetectionEventRequest.
+     * 
+     * @return expirationTime
+     */
+    public float getExpirationTime() {
+        return expirationTime;
+    }
+
+
+    /**
+     * Sets the expirationTime value for this InitiateOutageDetectionEventRequest.
+     * 
+     * @param expirationTime
+     */
+    public void setExpirationTime(float expirationTime) {
+        this.expirationTime = expirationTime;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof InitiateOutageDetectionEventRequest)) return false;
@@ -133,7 +157,8 @@ public class InitiateOutageDetectionEventRequest  implements java.io.Serializabl
               this.responseURL.equals(other.getResponseURL()))) &&
             ((this.transactionID==null && other.getTransactionID()==null) || 
              (this.transactionID!=null &&
-              this.transactionID.equals(other.getTransactionID())));
+              this.transactionID.equals(other.getTransactionID()))) &&
+            this.expirationTime == other.getExpirationTime();
         __equalsCalc = null;
         return _equals;
     }
@@ -165,6 +190,7 @@ public class InitiateOutageDetectionEventRequest  implements java.io.Serializabl
         if (getTransactionID() != null) {
             _hashCode += getTransactionID().hashCode();
         }
+        _hashCode += new Float(getExpirationTime()).hashCode();
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -201,6 +227,12 @@ public class InitiateOutageDetectionEventRequest  implements java.io.Serializabl
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transactionID"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("expirationTime");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "expirationTime"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }

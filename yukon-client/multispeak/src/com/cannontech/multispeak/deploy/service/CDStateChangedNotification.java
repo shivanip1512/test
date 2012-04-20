@@ -14,16 +14,20 @@ public class CDStateChangedNotification  implements java.io.Serializable {
 
     private java.lang.String transactionID;
 
+    private java.lang.String errorString;
+
     public CDStateChangedNotification() {
     }
 
     public CDStateChangedNotification(
            java.lang.String meterNo,
            com.cannontech.multispeak.deploy.service.LoadActionCode stateChange,
-           java.lang.String transactionID) {
+           java.lang.String transactionID,
+           java.lang.String errorString) {
            this.meterNo = meterNo;
            this.stateChange = stateChange;
            this.transactionID = transactionID;
+           this.errorString = errorString;
     }
 
 
@@ -86,6 +90,26 @@ public class CDStateChangedNotification  implements java.io.Serializable {
         this.transactionID = transactionID;
     }
 
+
+    /**
+     * Gets the errorString value for this CDStateChangedNotification.
+     * 
+     * @return errorString
+     */
+    public java.lang.String getErrorString() {
+        return errorString;
+    }
+
+
+    /**
+     * Sets the errorString value for this CDStateChangedNotification.
+     * 
+     * @param errorString
+     */
+    public void setErrorString(java.lang.String errorString) {
+        this.errorString = errorString;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof CDStateChangedNotification)) return false;
@@ -106,7 +130,10 @@ public class CDStateChangedNotification  implements java.io.Serializable {
               this.stateChange.equals(other.getStateChange()))) &&
             ((this.transactionID==null && other.getTransactionID()==null) || 
              (this.transactionID!=null &&
-              this.transactionID.equals(other.getTransactionID())));
+              this.transactionID.equals(other.getTransactionID()))) &&
+            ((this.errorString==null && other.getErrorString()==null) || 
+             (this.errorString!=null &&
+              this.errorString.equals(other.getErrorString())));
         __equalsCalc = null;
         return _equals;
     }
@@ -126,6 +153,9 @@ public class CDStateChangedNotification  implements java.io.Serializable {
         }
         if (getTransactionID() != null) {
             _hashCode += getTransactionID().hashCode();
+        }
+        if (getErrorString() != null) {
+            _hashCode += getErrorString().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -153,6 +183,13 @@ public class CDStateChangedNotification  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("transactionID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transactionID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("errorString");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "errorString"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

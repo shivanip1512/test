@@ -30,6 +30,8 @@ public class Pole  extends com.cannontech.multispeak.deploy.service.MspPointObje
 
     private com.cannontech.multispeak.deploy.service.JointUse[] jointUseList;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public Pole() {
     }
 
@@ -56,7 +58,8 @@ public class Pole  extends com.cannontech.multispeak.deploy.service.MspPointObje
            com.cannontech.multispeak.deploy.service.Treatment treatment,
            java.util.Date inspDate,
            com.cannontech.multispeak.deploy.service.PoleUseCode poleUse,
-           com.cannontech.multispeak.deploy.service.JointUse[] jointUseList) {
+           com.cannontech.multispeak.deploy.service.JointUse[] jointUseList,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -81,6 +84,7 @@ public class Pole  extends com.cannontech.multispeak.deploy.service.MspPointObje
         this.inspDate = inspDate;
         this.poleUse = poleUse;
         this.jointUseList = jointUseList;
+        this.GPS = GPS;
     }
 
 
@@ -303,6 +307,26 @@ public class Pole  extends com.cannontech.multispeak.deploy.service.MspPointObje
         this.jointUseList = jointUseList;
     }
 
+
+    /**
+     * Gets the GPS value for this Pole.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this Pole.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Pole)) return false;
@@ -347,7 +371,10 @@ public class Pole  extends com.cannontech.multispeak.deploy.service.MspPointObje
               this.poleUse.equals(other.getPoleUse()))) &&
             ((this.jointUseList==null && other.getJointUseList()==null) || 
              (this.jointUseList!=null &&
-              java.util.Arrays.equals(this.jointUseList, other.getJointUseList())));
+              java.util.Arrays.equals(this.jointUseList, other.getJointUseList()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -399,6 +426,9 @@ public class Pole  extends com.cannontech.multispeak.deploy.service.MspPointObje
                     _hashCode += obj.hashCode();
                 }
             }
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -487,6 +517,13 @@ public class Pole  extends com.cannontech.multispeak.deploy.service.MspPointObje
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "jointUse"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }
 

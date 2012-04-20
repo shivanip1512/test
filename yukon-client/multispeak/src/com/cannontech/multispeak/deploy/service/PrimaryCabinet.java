@@ -12,6 +12,8 @@ public class PrimaryCabinet  extends com.cannontech.multispeak.deploy.service.Ms
 
     private com.cannontech.multispeak.deploy.service.ObjectRef[] cabinetContentsList;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public PrimaryCabinet() {
     }
 
@@ -29,7 +31,8 @@ public class PrimaryCabinet  extends com.cannontech.multispeak.deploy.service.Ms
            java.lang.Float rotation,
            java.lang.String facilityID,
            java.lang.String structType,
-           com.cannontech.multispeak.deploy.service.ObjectRef[] cabinetContentsList) {
+           com.cannontech.multispeak.deploy.service.ObjectRef[] cabinetContentsList,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -45,6 +48,7 @@ public class PrimaryCabinet  extends com.cannontech.multispeak.deploy.service.Ms
             facilityID);
         this.structType = structType;
         this.cabinetContentsList = cabinetContentsList;
+        this.GPS = GPS;
     }
 
 
@@ -87,6 +91,26 @@ public class PrimaryCabinet  extends com.cannontech.multispeak.deploy.service.Ms
         this.cabinetContentsList = cabinetContentsList;
     }
 
+
+    /**
+     * Gets the GPS value for this PrimaryCabinet.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this PrimaryCabinet.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof PrimaryCabinet)) return false;
@@ -104,7 +128,10 @@ public class PrimaryCabinet  extends com.cannontech.multispeak.deploy.service.Ms
               this.structType.equals(other.getStructType()))) &&
             ((this.cabinetContentsList==null && other.getCabinetContentsList()==null) || 
              (this.cabinetContentsList!=null &&
-              java.util.Arrays.equals(this.cabinetContentsList, other.getCabinetContentsList())));
+              java.util.Arrays.equals(this.cabinetContentsList, other.getCabinetContentsList()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -130,6 +157,9 @@ public class PrimaryCabinet  extends com.cannontech.multispeak.deploy.service.Ms
                 }
             }
         }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -154,6 +184,13 @@ public class PrimaryCabinet  extends com.cannontech.multispeak.deploy.service.Ms
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cabinetContentsItem"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }
 

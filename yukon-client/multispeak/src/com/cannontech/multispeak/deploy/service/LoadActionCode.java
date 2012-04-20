@@ -24,6 +24,11 @@ public class LoadActionCode implements java.io.Serializable {
     public static final java.lang.String _Closed = "Closed";
     public static final java.lang.String _Armed = "Armed";
     public static final java.lang.String _Unknown = "Unknown";
+    public static final java.lang.String _Arm = "Arm";
+    public static final java.lang.String _Enable = "Enable";
+    public static final java.lang.String _Disable = "Disable";
+    public static final java.lang.String _Enabled = "Enabled";
+    public static final java.lang.String _Disabled = "Disabled";
     public static final LoadActionCode Connect = new LoadActionCode(_Connect);
     public static final LoadActionCode Disconnect = new LoadActionCode(_Disconnect);
     public static final LoadActionCode InitiatePowerLimitation = new LoadActionCode(_InitiatePowerLimitation);
@@ -31,6 +36,11 @@ public class LoadActionCode implements java.io.Serializable {
     public static final LoadActionCode Closed = new LoadActionCode(_Closed);
     public static final LoadActionCode Armed = new LoadActionCode(_Armed);
     public static final LoadActionCode Unknown = new LoadActionCode(_Unknown);
+    public static final LoadActionCode Arm = new LoadActionCode(_Arm);
+    public static final LoadActionCode Enable = new LoadActionCode(_Enable);
+    public static final LoadActionCode Disable = new LoadActionCode(_Disable);
+    public static final LoadActionCode Enabled = new LoadActionCode(_Enabled);
+    public static final LoadActionCode Disabled = new LoadActionCode(_Disabled);
     public java.lang.String getValue() { return _value_;}
     public static LoadActionCode fromValue(java.lang.String value)
           throws java.lang.IllegalArgumentException {

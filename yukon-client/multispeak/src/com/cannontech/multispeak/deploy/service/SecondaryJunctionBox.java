@@ -10,6 +10,8 @@ package com.cannontech.multispeak.deploy.service;
 public class SecondaryJunctionBox  extends com.cannontech.multispeak.deploy.service.MspPointObject  implements java.io.Serializable {
     private java.lang.String junctionBoxType;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public SecondaryJunctionBox() {
     }
 
@@ -26,7 +28,8 @@ public class SecondaryJunctionBox  extends com.cannontech.multispeak.deploy.serv
            java.lang.String gridLocation,
            java.lang.Float rotation,
            java.lang.String facilityID,
-           java.lang.String junctionBoxType) {
+           java.lang.String junctionBoxType,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -41,6 +44,7 @@ public class SecondaryJunctionBox  extends com.cannontech.multispeak.deploy.serv
             rotation,
             facilityID);
         this.junctionBoxType = junctionBoxType;
+        this.GPS = GPS;
     }
 
 
@@ -63,6 +67,26 @@ public class SecondaryJunctionBox  extends com.cannontech.multispeak.deploy.serv
         this.junctionBoxType = junctionBoxType;
     }
 
+
+    /**
+     * Gets the GPS value for this SecondaryJunctionBox.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this SecondaryJunctionBox.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SecondaryJunctionBox)) return false;
@@ -77,7 +101,10 @@ public class SecondaryJunctionBox  extends com.cannontech.multispeak.deploy.serv
         _equals = super.equals(obj) && 
             ((this.junctionBoxType==null && other.getJunctionBoxType()==null) || 
              (this.junctionBoxType!=null &&
-              this.junctionBoxType.equals(other.getJunctionBoxType())));
+              this.junctionBoxType.equals(other.getJunctionBoxType()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -91,6 +118,9 @@ public class SecondaryJunctionBox  extends com.cannontech.multispeak.deploy.serv
         int _hashCode = super.hashCode();
         if (getJunctionBoxType() != null) {
             _hashCode += getJunctionBoxType().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -106,6 +136,13 @@ public class SecondaryJunctionBox  extends com.cannontech.multispeak.deploy.serv
         elemField.setFieldName("junctionBoxType");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "junctionBoxType"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

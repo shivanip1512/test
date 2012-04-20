@@ -18,6 +18,10 @@ public class GetReadingsByDateFormattedBlock  implements java.io.Serializable {
 
     private java.lang.String lastReceived;
 
+    private java.lang.String formattedBlockTemplateName;
+
+    private java.lang.String[] fieldName;
+
     public GetReadingsByDateFormattedBlock() {
     }
 
@@ -26,12 +30,16 @@ public class GetReadingsByDateFormattedBlock  implements java.io.Serializable {
            int kWhLookBack,
            int kWLookBack,
            int kWLookForward,
-           java.lang.String lastReceived) {
+           java.lang.String lastReceived,
+           java.lang.String formattedBlockTemplateName,
+           java.lang.String[] fieldName) {
            this.billingDate = billingDate;
            this.kWhLookBack = kWhLookBack;
            this.kWLookBack = kWLookBack;
            this.kWLookForward = kWLookForward;
            this.lastReceived = lastReceived;
+           this.formattedBlockTemplateName = formattedBlockTemplateName;
+           this.fieldName = fieldName;
     }
 
 
@@ -134,6 +142,46 @@ public class GetReadingsByDateFormattedBlock  implements java.io.Serializable {
         this.lastReceived = lastReceived;
     }
 
+
+    /**
+     * Gets the formattedBlockTemplateName value for this GetReadingsByDateFormattedBlock.
+     * 
+     * @return formattedBlockTemplateName
+     */
+    public java.lang.String getFormattedBlockTemplateName() {
+        return formattedBlockTemplateName;
+    }
+
+
+    /**
+     * Sets the formattedBlockTemplateName value for this GetReadingsByDateFormattedBlock.
+     * 
+     * @param formattedBlockTemplateName
+     */
+    public void setFormattedBlockTemplateName(java.lang.String formattedBlockTemplateName) {
+        this.formattedBlockTemplateName = formattedBlockTemplateName;
+    }
+
+
+    /**
+     * Gets the fieldName value for this GetReadingsByDateFormattedBlock.
+     * 
+     * @return fieldName
+     */
+    public java.lang.String[] getFieldName() {
+        return fieldName;
+    }
+
+
+    /**
+     * Sets the fieldName value for this GetReadingsByDateFormattedBlock.
+     * 
+     * @param fieldName
+     */
+    public void setFieldName(java.lang.String[] fieldName) {
+        this.fieldName = fieldName;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GetReadingsByDateFormattedBlock)) return false;
@@ -154,7 +202,13 @@ public class GetReadingsByDateFormattedBlock  implements java.io.Serializable {
             this.kWLookForward == other.getKWLookForward() &&
             ((this.lastReceived==null && other.getLastReceived()==null) || 
              (this.lastReceived!=null &&
-              this.lastReceived.equals(other.getLastReceived())));
+              this.lastReceived.equals(other.getLastReceived()))) &&
+            ((this.formattedBlockTemplateName==null && other.getFormattedBlockTemplateName()==null) || 
+             (this.formattedBlockTemplateName!=null &&
+              this.formattedBlockTemplateName.equals(other.getFormattedBlockTemplateName()))) &&
+            ((this.fieldName==null && other.getFieldName()==null) || 
+             (this.fieldName!=null &&
+              java.util.Arrays.equals(this.fieldName, other.getFieldName())));
         __equalsCalc = null;
         return _equals;
     }
@@ -174,6 +228,20 @@ public class GetReadingsByDateFormattedBlock  implements java.io.Serializable {
         _hashCode += getKWLookForward();
         if (getLastReceived() != null) {
             _hashCode += getLastReceived().hashCode();
+        }
+        if (getFormattedBlockTemplateName() != null) {
+            _hashCode += getFormattedBlockTemplateName().hashCode();
+        }
+        if (getFieldName() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getFieldName());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getFieldName(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -215,6 +283,21 @@ public class GetReadingsByDateFormattedBlock  implements java.io.Serializable {
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("formattedBlockTemplateName");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "formattedBlockTemplateName"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("fieldName");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "fieldName"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "string"));
         typeDesc.addFieldDesc(elemField);
     }
 

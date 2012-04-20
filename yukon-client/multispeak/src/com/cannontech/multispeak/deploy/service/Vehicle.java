@@ -10,6 +10,8 @@ package com.cannontech.multispeak.deploy.service;
 public class Vehicle  extends com.cannontech.multispeak.deploy.service.MspObject  implements java.io.Serializable {
     private java.lang.String name;
 
+    private java.lang.String AVLID;
+
     public Vehicle() {
     }
 
@@ -22,7 +24,8 @@ public class Vehicle  extends com.cannontech.multispeak.deploy.service.MspObject
            com.cannontech.multispeak.deploy.service.Extensions extensions,
            java.lang.String comments,
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
-           java.lang.String name) {
+           java.lang.String name,
+           java.lang.String AVLID) {
         super(
             objectID,
             verb,
@@ -33,6 +36,7 @@ public class Vehicle  extends com.cannontech.multispeak.deploy.service.MspObject
             comments,
             extensionsList);
         this.name = name;
+        this.AVLID = AVLID;
     }
 
 
@@ -55,6 +59,26 @@ public class Vehicle  extends com.cannontech.multispeak.deploy.service.MspObject
         this.name = name;
     }
 
+
+    /**
+     * Gets the AVLID value for this Vehicle.
+     * 
+     * @return AVLID
+     */
+    public java.lang.String getAVLID() {
+        return AVLID;
+    }
+
+
+    /**
+     * Sets the AVLID value for this Vehicle.
+     * 
+     * @param AVLID
+     */
+    public void setAVLID(java.lang.String AVLID) {
+        this.AVLID = AVLID;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Vehicle)) return false;
@@ -69,7 +93,10 @@ public class Vehicle  extends com.cannontech.multispeak.deploy.service.MspObject
         _equals = super.equals(obj) && 
             ((this.name==null && other.getName()==null) || 
              (this.name!=null &&
-              this.name.equals(other.getName())));
+              this.name.equals(other.getName()))) &&
+            ((this.AVLID==null && other.getAVLID()==null) || 
+             (this.AVLID!=null &&
+              this.AVLID.equals(other.getAVLID())));
         __equalsCalc = null;
         return _equals;
     }
@@ -84,6 +111,9 @@ public class Vehicle  extends com.cannontech.multispeak.deploy.service.MspObject
         if (getName() != null) {
             _hashCode += getName().hashCode();
         }
+        if (getAVLID() != null) {
+            _hashCode += getAVLID().hashCode();
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -97,6 +127,13 @@ public class Vehicle  extends com.cannontech.multispeak.deploy.service.MspObject
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("name");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "name"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("AVLID");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "AVLID"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

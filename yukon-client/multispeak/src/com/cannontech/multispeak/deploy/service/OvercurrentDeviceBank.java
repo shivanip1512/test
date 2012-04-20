@@ -10,6 +10,8 @@ package com.cannontech.multispeak.deploy.service;
 public class OvercurrentDeviceBank  extends com.cannontech.multispeak.deploy.service.MspSwitchingBank  implements java.io.Serializable {
     private com.cannontech.multispeak.deploy.service.MspOverCurrentDeviceList mspOverCurrentDeviceList;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public OvercurrentDeviceBank() {
     }
 
@@ -28,16 +30,17 @@ public class OvercurrentDeviceBank  extends com.cannontech.multispeak.deploy.ser
            java.lang.String facilityID,
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            java.lang.String sectionID,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
+           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            java.lang.Boolean isGanged,
            com.cannontech.multispeak.deploy.service.ObjectRef partner,
            java.lang.Long ldPoint,
-           com.cannontech.multispeak.deploy.service.MspOverCurrentDeviceList mspOverCurrentDeviceList) {
+           com.cannontech.multispeak.deploy.service.MspOverCurrentDeviceList mspOverCurrentDeviceList,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -53,16 +56,17 @@ public class OvercurrentDeviceBank  extends com.cannontech.multispeak.deploy.ser
             facilityID,
             graphicSymbol,
             annotationList,
-            toNodeID,
             fromNodeID,
-            parentSectionID,
             sectionID,
+            toNodeID,
+            parentSectionID,
             phaseCode,
             load,
             isGanged,
             partner,
             ldPoint);
         this.mspOverCurrentDeviceList = mspOverCurrentDeviceList;
+        this.GPS = GPS;
     }
 
 
@@ -85,6 +89,26 @@ public class OvercurrentDeviceBank  extends com.cannontech.multispeak.deploy.ser
         this.mspOverCurrentDeviceList = mspOverCurrentDeviceList;
     }
 
+
+    /**
+     * Gets the GPS value for this OvercurrentDeviceBank.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this OvercurrentDeviceBank.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof OvercurrentDeviceBank)) return false;
@@ -99,7 +123,10 @@ public class OvercurrentDeviceBank  extends com.cannontech.multispeak.deploy.ser
         _equals = super.equals(obj) && 
             ((this.mspOverCurrentDeviceList==null && other.getMspOverCurrentDeviceList()==null) || 
              (this.mspOverCurrentDeviceList!=null &&
-              this.mspOverCurrentDeviceList.equals(other.getMspOverCurrentDeviceList())));
+              this.mspOverCurrentDeviceList.equals(other.getMspOverCurrentDeviceList()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -113,6 +140,9 @@ public class OvercurrentDeviceBank  extends com.cannontech.multispeak.deploy.ser
         int _hashCode = super.hashCode();
         if (getMspOverCurrentDeviceList() != null) {
             _hashCode += getMspOverCurrentDeviceList().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -128,6 +158,13 @@ public class OvercurrentDeviceBank  extends com.cannontech.multispeak.deploy.ser
         elemField.setFieldName("mspOverCurrentDeviceList");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspOverCurrentDeviceList"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspOverCurrentDeviceList"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

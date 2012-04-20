@@ -22,7 +22,7 @@ public class CD_ServerLocator extends org.apache.axis.client.Service implements 
     }
 
     // Use to get a proxy class for CD_ServerSoap
-    private java.lang.String CD_ServerSoap_address = "http://localhost/MultiSpeakBusArchitectureV30v/CD_Server.asmx";
+    private java.lang.String CD_ServerSoap_address = "http://localhost:55273/CD_Server.asmx";
 
     public java.lang.String getCD_ServerSoapAddress() {
         return CD_ServerSoap_address;

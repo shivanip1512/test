@@ -26,6 +26,8 @@ public class Generator  extends com.cannontech.multispeak.deploy.service.MspMoto
 
     private com.cannontech.multispeak.deploy.service.LdCon connected;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public Generator() {
     }
 
@@ -44,10 +46,10 @@ public class Generator  extends com.cannontech.multispeak.deploy.service.MspMoto
            java.lang.String facilityID,
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            java.lang.String sectionID,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
+           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            java.lang.String ssDesc,
@@ -62,7 +64,8 @@ public class Generator  extends com.cannontech.multispeak.deploy.service.MspMoto
            java.lang.Float kvarLead,
            java.lang.Float kvarLag,
            java.lang.Float srcVolts,
-           com.cannontech.multispeak.deploy.service.LdCon connected) {
+           com.cannontech.multispeak.deploy.service.LdCon connected,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -78,10 +81,10 @@ public class Generator  extends com.cannontech.multispeak.deploy.service.MspMoto
             facilityID,
             graphicSymbol,
             annotationList,
-            toNodeID,
             fromNodeID,
-            parentSectionID,
             sectionID,
+            toNodeID,
+            parentSectionID,
             phaseCode,
             load,
             ssDesc,
@@ -97,6 +100,7 @@ public class Generator  extends com.cannontech.multispeak.deploy.service.MspMoto
         this.kvarLag = kvarLag;
         this.srcVolts = srcVolts;
         this.connected = connected;
+        this.GPS = GPS;
     }
 
 
@@ -279,6 +283,26 @@ public class Generator  extends com.cannontech.multispeak.deploy.service.MspMoto
         this.connected = connected;
     }
 
+
+    /**
+     * Gets the GPS value for this Generator.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this Generator.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Generator)) return false;
@@ -317,7 +341,10 @@ public class Generator  extends com.cannontech.multispeak.deploy.service.MspMoto
               this.srcVolts.equals(other.getSrcVolts()))) &&
             ((this.connected==null && other.getConnected()==null) || 
              (this.connected!=null &&
-              this.connected.equals(other.getConnected())));
+              this.connected.equals(other.getConnected()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -355,6 +382,9 @@ public class Generator  extends com.cannontech.multispeak.deploy.service.MspMoto
         }
         if (getConnected() != null) {
             _hashCode += getConnected().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -426,6 +456,13 @@ public class Generator  extends com.cannontech.multispeak.deploy.service.MspMoto
         elemField.setFieldName("connected");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "connected"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ldCon"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

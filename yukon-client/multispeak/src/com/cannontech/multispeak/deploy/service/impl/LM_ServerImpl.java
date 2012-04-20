@@ -13,12 +13,14 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.DomainMember;
+import com.cannontech.multispeak.deploy.service.DomainNameChange;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LMDeviceExchange;
 import com.cannontech.multispeak.deploy.service.LM_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.LoadManagementDevice;
 import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
 import com.cannontech.multispeak.deploy.service.PowerFactorManagementEvent;
+import com.cannontech.multispeak.deploy.service.RegistrationInfo;
 import com.cannontech.multispeak.deploy.service.ScadaAnalog;
 import com.cannontech.multispeak.deploy.service.ScadaPoint;
 import com.cannontech.multispeak.deploy.service.ScadaStatus;
@@ -288,4 +290,51 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
 			MspValidationService mspValidationService) {
 		this.mspValidationService = mspValidationService;
 	}
+
+    @Override
+    public String requestRegistrationID() throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] registerForService(RegistrationInfo registrationDetails)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] unregisterForService(String registrationID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public RegistrationInfo getRegistrationInfoByID(String registrationID)
+            throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public String[] getPublishMethods() throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] domainMembersChangedNotification(
+            DomainMember[] changedDomainMembers) throws RemoteException {
+        init();
+        return null;
+    }
+
+    @Override
+    public ErrorObject[] domainNamesChangedNotification(
+            DomainNameChange[] changedDomainNames) throws RemoteException {
+        init();
+        return null;
+    }
 }

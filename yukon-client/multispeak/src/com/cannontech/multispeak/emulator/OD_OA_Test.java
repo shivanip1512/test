@@ -35,7 +35,7 @@ public class OD_OA_Test {
 	{
 		OD_OA_Test test = new OD_OA_Test();
 		YukonMultispeakMsgHeader testHeader = new YukonMultispeakMsgHeader();
-		testHeader.setCompany("milsoft");
+		testHeader.setCompany("cannon");
 		test.header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", testHeader);
 		try {
 			if( args != null && args.length > 0)
@@ -45,7 +45,7 @@ public class OD_OA_Test {
 			String[] mn = new String[3];
 			mn[0] = "86200262";
 			mn[1] = "86200263";
-			mn[2] = "86200264";
+			mn[2] = "1000119";
 			if( args.length > 2)	// comma separated list of meter numbers
 			{
 				String m = args[2];

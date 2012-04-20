@@ -16,6 +16,8 @@ public class RegulatorBank  extends com.cannontech.multispeak.deploy.service.Msp
 
     private com.cannontech.multispeak.deploy.service.Regulator[] regulatorList;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public RegulatorBank() {
     }
 
@@ -34,16 +36,17 @@ public class RegulatorBank  extends com.cannontech.multispeak.deploy.service.Msp
            java.lang.String facilityID,
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            java.lang.String sectionID,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
+           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            java.lang.String regType,
            com.cannontech.multispeak.deploy.service.MspPhase ctrlPhase,
            java.lang.String wdgType,
-           com.cannontech.multispeak.deploy.service.Regulator[] regulatorList) {
+           com.cannontech.multispeak.deploy.service.Regulator[] regulatorList,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -59,16 +62,17 @@ public class RegulatorBank  extends com.cannontech.multispeak.deploy.service.Msp
             facilityID,
             graphicSymbol,
             annotationList,
-            toNodeID,
             fromNodeID,
-            parentSectionID,
             sectionID,
+            toNodeID,
+            parentSectionID,
             phaseCode,
             load);
         this.regType = regType;
         this.ctrlPhase = ctrlPhase;
         this.wdgType = wdgType;
         this.regulatorList = regulatorList;
+        this.GPS = GPS;
     }
 
 
@@ -151,6 +155,26 @@ public class RegulatorBank  extends com.cannontech.multispeak.deploy.service.Msp
         this.regulatorList = regulatorList;
     }
 
+
+    /**
+     * Gets the GPS value for this RegulatorBank.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this RegulatorBank.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof RegulatorBank)) return false;
@@ -174,7 +198,10 @@ public class RegulatorBank  extends com.cannontech.multispeak.deploy.service.Msp
               this.wdgType.equals(other.getWdgType()))) &&
             ((this.regulatorList==null && other.getRegulatorList()==null) || 
              (this.regulatorList!=null &&
-              java.util.Arrays.equals(this.regulatorList, other.getRegulatorList())));
+              java.util.Arrays.equals(this.regulatorList, other.getRegulatorList()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -205,6 +232,9 @@ public class RegulatorBank  extends com.cannontech.multispeak.deploy.service.Msp
                     _hashCode += obj.hashCode();
                 }
             }
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -244,6 +274,13 @@ public class RegulatorBank  extends com.cannontech.multispeak.deploy.service.Msp
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "regulator"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }
 

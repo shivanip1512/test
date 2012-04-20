@@ -14,6 +14,8 @@ public class Riser  extends com.cannontech.multispeak.deploy.service.MspPointObj
 
     private java.lang.String material;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public Riser() {
     }
 
@@ -32,7 +34,8 @@ public class Riser  extends com.cannontech.multispeak.deploy.service.MspPointObj
            java.lang.String facilityID,
            java.lang.String constType,
            java.lang.Long riserHeight,
-           java.lang.String material) {
+           java.lang.String material,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -49,6 +52,7 @@ public class Riser  extends com.cannontech.multispeak.deploy.service.MspPointObj
         this.constType = constType;
         this.riserHeight = riserHeight;
         this.material = material;
+        this.GPS = GPS;
     }
 
 
@@ -111,6 +115,26 @@ public class Riser  extends com.cannontech.multispeak.deploy.service.MspPointObj
         this.material = material;
     }
 
+
+    /**
+     * Gets the GPS value for this Riser.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this Riser.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Riser)) return false;
@@ -131,7 +155,10 @@ public class Riser  extends com.cannontech.multispeak.deploy.service.MspPointObj
               this.riserHeight.equals(other.getRiserHeight()))) &&
             ((this.material==null && other.getMaterial()==null) || 
              (this.material!=null &&
-              this.material.equals(other.getMaterial())));
+              this.material.equals(other.getMaterial()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -151,6 +178,9 @@ public class Riser  extends com.cannontech.multispeak.deploy.service.MspPointObj
         }
         if (getMaterial() != null) {
             _hashCode += getMaterial().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -180,6 +210,13 @@ public class Riser  extends com.cannontech.multispeak.deploy.service.MspPointObj
         elemField.setFieldName("material");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "material"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

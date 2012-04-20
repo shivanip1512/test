@@ -16,6 +16,7 @@ import com.cannontech.multispeak.deploy.service.LM_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
 import com.cannontech.multispeak.deploy.service.LoadManagementEventStrategy;
 import com.cannontech.multispeak.deploy.service.ObjectRef;
+import com.cannontech.multispeak.deploy.service.Strategy;
 import com.cannontech.multispeak.deploy.service.Uom;
 
 public class LM_ServerTest {
@@ -79,7 +80,7 @@ public class LM_ServerTest {
 	    event.setDuration(new Float(14));
 	    event.setTarget(new Float(1));
 	    event.setUom(Uom.value4);
-	    LoadManagementEventStrategy strategy = new LoadManagementEventStrategy();
+	    Strategy strategy = new Strategy();
 	    strategy.setStrategyName("All devices");
 	    ObjectRef[] pointList = new ObjectRef[1];
 	    ObjectRef point = new ObjectRef();

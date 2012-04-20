@@ -42,6 +42,80 @@ public interface EA_ServerSoap_PortType extends java.rmi.Remote {
     public com.cannontech.multispeak.deploy.service.DomainMember[] getDomainMembers(java.lang.String domainName) throws java.rmi.RemoteException;
 
     /**
+     * This service requests of the publisher a unique registration
+     * ID that would subsequently be used to refer unambiguously to that
+     * specific subscription.  The return parameter is the registrationID,
+     * which is a string-type value.  It is recommended that the server not
+     * implement registration in such a manner that one client can guess
+     * the registrationID of another.  For instance the use of sequential
+     * numbers for registrationIDs is discouraged.
+     */
+    public java.lang.String requestRegistrationID() throws java.rmi.RemoteException;
+
+    /**
+     * This method establishs a subscription using a previously requested
+     * registrationID. The calling parameter registrationInfo is a complex
+     * type that includes the following information: registrationID - the
+     * previously requested registrationID obtained from the publisher by
+     * calling RequestRegistrationID, responseURL – the URL to which information
+     * should subsequently be published on this subscription, msFunction
+     * – the abbreviated string name of the MultiSpeak method making the
+     * subscription request (for instance, if an application that exposes
+     * the Meter Reading function has made the request, then the msFunction
+     * variable should include “MR�?), methodsList – An array of strings that
+     * contain the string names of the MultiSpeak methods to which the subscriber
+     * would like to subscribe.  Subsequent calls to RegisterForService on
+     * an existing subscription replace prior subscription details in their
+     * entirety - they do NOT add to an existing subscription.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] registerForService(com.cannontech.multispeak.deploy.service.RegistrationInfo registrationDetails) throws java.rmi.RemoteException;
+
+    /**
+     * This method deletes a previously established subscription (registration
+     * for service) that carries the registration identifer listed in the
+     * input parameter registrationID.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] unregisterForService(java.lang.String registrationID) throws java.rmi.RemoteException;
+
+    /**
+     * This method requests the return of existing registration information
+     * (that is to say the details of what is subscribed on this subscription)
+     * for a specific registrationID.  The server should return a SOAPFault
+     * if the registrationID is not valid.
+     */
+    public com.cannontech.multispeak.deploy.service.RegistrationInfo getRegistrationInfoByID(java.lang.String registrationID) throws java.rmi.RemoteException;
+
+    /**
+     * Requester requests list of methods to which this server can
+     * publish information.
+     */
+    public java.lang.String[] getPublishMethods() throws java.rmi.RemoteException;
+
+    /**
+     * This method permits a client to have changed information on
+     * domain members published to it using a previously arranged subscription,
+     * set up using the RegisterForServiceMethod. The client should first
+     * obtain a registrationID and then register for service, including the
+     * DomainMembersChangedNotification as one of the methods in the list
+     * of methods to which the client has subscribed.  The server shall include
+     * the registrationID for the subscription in the message header so that
+     * the client can determine the source of the  domainMember information.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] domainMembersChangedNotification(com.cannontech.multispeak.deploy.service.DomainMember[] changedDomainMembers) throws java.rmi.RemoteException;
+
+    /**
+     * This method permits a client to have changed information on
+     * domain names published to it using a previously arranged subscription,
+     * set up using the RegisterForServiceMethod. The client should first
+     * obtain a registrationID and then register for service, including the
+     * DomainNamesChangedNotification as one of the methods in the list of
+     * methods to which the client has subscribed.  The server shall include
+     * the registrationID for the subscription in the message header so that
+     * the client can determine the source of the  domainName information.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] domainNamesChangedNotification(com.cannontech.multispeak.deploy.service.DomainNameChange[] changedDomainNames) throws java.rmi.RemoteException;
+
+    /**
      * Returns all load flow analysis results.  The calling parameter
      * lastReceived is included so that large sets of data can be returned
      * in manageable blocks.  lastReceived should carry an empty string the
@@ -265,13 +339,12 @@ public interface EA_ServerSoap_PortType extends java.rmi.Remote {
      * Returns the meter connectivity for all meters served from a
      * given substation.  The client requests the data by passing a substation
      * name, which it previously received using the GetSubstationNames method.
-     * (Optional)
      */
     public com.cannontech.multispeak.deploy.service.MeterConnectivity[] getMeterConnectivityBySubstation(java.lang.String substationName) throws java.rmi.RemoteException;
 
     /**
      * Returns the meter connectivity for a specific meter.  The client
-     * requests the data by passing a meterNo. (Optional)
+     * requests the data by passing a meterNo.
      */
     public com.cannontech.multispeak.deploy.service.MeterConnectivity getMeterConnectivityByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException;
 
@@ -289,74 +362,106 @@ public interface EA_ServerSoap_PortType extends java.rmi.Remote {
     /**
      * Publisher notifies EA of a change in circuit elements by sending
      * a changed MultiSpeak object.  EA returns failed transactions using
-     * an array of errorObjects.
+     * an array of errorObjects. The message header attribute 'registrationID'
+     * should be added to all publish messages to indicate to the subscriber
+     * under which registrationID they received this notification data.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] circuitElementChangedNotification(com.cannontech.multispeak.deploy.service.MultiSpeak circuitElements) throws java.rmi.RemoteException;
 
     /**
-     * Publisher publishes new meter readings to the EA by sending
-     * a formattedBlock object.  EA returns information about failed transactions
-     * in an array of errorObjects.
+     * Publisher publishes new meter readings to the Subscriber by
+     * sending a formattedBlock object.  CB returns information about failed
+     * transactions in an array of errorObjects.The transactionID calling
+     * parameter links this Initiate request with the published data method
+     * call. The message header attribute 'registrationID' should be added
+     * to all publish messages to indicate to the subscriber under which
+     * registrationID they received this notification data.
      */
-    public com.cannontech.multispeak.deploy.service.ErrorObject[] formattedBlockNotification(com.cannontech.multispeak.deploy.service.FormattedBlock changedMeterReads) throws java.rmi.RemoteException;
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] formattedBlockNotification(com.cannontech.multispeak.deploy.service.FormattedBlock changedMeterReads, java.lang.String transactionID, java.lang.String errorString) throws java.rmi.RemoteException;
 
     /**
      * Publisher Notifies EA of a new or modified work order by sending
      * a changed work order object.  EA returns failed transactions using
-     * an array of errorObjects.(Recommended)
+     * an array of errorObjects. The message header attribute 'registrationID'
+     * should be added to all publish messages to indicate to the subscriber
+     * under which registrationID they received this notification data.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] workOrderChangedNotification(com.cannontech.multispeak.deploy.service.WorkOrder workOrder) throws java.rmi.RemoteException;
 
     /**
      * Publisher Notifies EA of a change in connectivity by sending
      * a changed MultiSpeak object.  EA returns failed transactions using
-     * an array of errorObjects.(Recommended)
+     * an array of errorObjects. The message header attribute 'registrationID'
+     * should be added to all publish messages to indicate to the subscriber
+     * under which registrationID they received this notification data.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] connectivityChangedNotification(com.cannontech.multispeak.deploy.service.MultiSpeak connectivity) throws java.rmi.RemoteException;
 
     /**
      * Publisher Notifies CD of a change in the Customer object by
      * sending the changed customer object(s).  CD returns information about
-     * failed transactions using an array of errorObjects.
+     * failed transactions using an array of errorObjects. The message header
+     * attribute 'registrationID' should be added to all publish messages
+     * to indicate to the subscriber under which registrationID they received
+     * this notification data.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] customerChangedNotification(com.cannontech.multispeak.deploy.service.Customer[] changedCustomers) throws java.rmi.RemoteException;
 
     /**
      * Publisher Notifies CD of a change in the Service Location object
      * by sending the changed serviceLocation object(s).  CD returns information
-     * about failed transactions using an array of errorObjects.
+     * about failed transactions using an array of errorObjects. The message
+     * header attribute 'registrationID' should be added to all publish messages
+     * to indicate to the subscriber under which registrationID they received
+     * this notification data.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] serviceLocationChangedNotification(com.cannontech.multispeak.deploy.service.ServiceLocation[] changedServiceLocations) throws java.rmi.RemoteException;
 
     /**
      * Publisher Notifies CD of a change in the Meter object by sending
      * the changed meter object(s).  CD returns information about failed
-     * transactions using an array of errorObjects.
+     * transactions using an array of errorObjects. The message header attribute
+     * 'registrationID' should be added to all publish messages to indicate
+     * to the subscriber under which registrationID they received this notification
+     * data.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] meterChangedNotification(com.cannontech.multispeak.deploy.service.Meter[] changedMeters) throws java.rmi.RemoteException;
 
     /**
      * Publisher notifies MR to remove the associated meter(s).  MR
      * returns information about failed transactions using an array of errorObjects.
+     * The message header attribute 'registrationID' should be added to all
+     * publish messages to indicate to the subscriber under which registrationID
+     * they received this notification data.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] meterRemoveNotification(com.cannontech.multispeak.deploy.service.Meter[] removedMeters) throws java.rmi.RemoteException;
 
     /**
      * Publisher notifies MR that the associated meter(s)have been
      * retired from the system.  MR returns information about failed transactions
-     * using an array of errorObjects.
+     * using an array of errorObjects. The message header attribute 'registrationID'
+     * should be added to all publish messages to indicate to the subscriber
+     * under which registrationID they received this notification data.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] meterRetireNotification(com.cannontech.multispeak.deploy.service.Meter[] retiredMeters) throws java.rmi.RemoteException;
 
     /**
      * Publisher notifies MR to Add the associated meter(s).MR returns
      * information about failed transactions using an array of errorObjects.
+     * The message header attribute 'registrationID' should be added to all
+     * publish messages to indicate to the subscriber under which registrationID
+     * they received this notification data.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] meterAddNotification(com.cannontech.multispeak.deploy.service.Meter[] addedMeters) throws java.rmi.RemoteException;
 
     /**
-     * Publisher notifies MR that meter(s) have been deployed or exchanged.
-     * MR returns information about failed transactions in an array of errorObjects.
+     * Publisher notifies MR that meter(s) have been deployed or exchanged.A
+     * meterExchange shall be a paired transaction of a meter being removed
+     * and a meter being installed in the same meter base.  MR returns information
+     * about failed transactions in an array of errorObjects. The message
+     * header attribute 'registrationID' should be added to all publish messages
+     * to indicate to the subscriber under which registrationID they received
+     * this notification data.
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] meterExchangeNotification(com.cannontech.multispeak.deploy.service.MeterExchange[] meterChangeout) throws java.rmi.RemoteException;
 }

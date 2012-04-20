@@ -38,6 +38,10 @@ public class TransformerBank  extends com.cannontech.multispeak.deploy.service.M
 
     private com.cannontech.multispeak.deploy.service.Transformer[] transformerList;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
+    private com.cannontech.multispeak.deploy.service.MspPhase centerTapPhase;
+
     public TransformerBank() {
     }
 
@@ -56,10 +60,10 @@ public class TransformerBank  extends com.cannontech.multispeak.deploy.service.M
            java.lang.String facilityID,
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            java.lang.String sectionID,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
+           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            com.cannontech.multispeak.deploy.service.WdgCode wdgCode,
@@ -76,7 +80,9 @@ public class TransformerBank  extends com.cannontech.multispeak.deploy.service.M
            java.lang.Float secVolt,
            java.lang.Float ratedVolt,
            java.lang.String priProt,
-           com.cannontech.multispeak.deploy.service.Transformer[] transformerList) {
+           com.cannontech.multispeak.deploy.service.Transformer[] transformerList,
+           com.cannontech.multispeak.deploy.service.GPS GPS,
+           com.cannontech.multispeak.deploy.service.MspPhase centerTapPhase) {
         super(
             objectID,
             verb,
@@ -92,10 +98,10 @@ public class TransformerBank  extends com.cannontech.multispeak.deploy.service.M
             facilityID,
             graphicSymbol,
             annotationList,
-            toNodeID,
             fromNodeID,
-            parentSectionID,
             sectionID,
+            toNodeID,
+            parentSectionID,
             phaseCode,
             load);
         this.wdgCode = wdgCode;
@@ -113,6 +119,8 @@ public class TransformerBank  extends com.cannontech.multispeak.deploy.service.M
         this.ratedVolt = ratedVolt;
         this.priProt = priProt;
         this.transformerList = transformerList;
+        this.GPS = GPS;
+        this.centerTapPhase = centerTapPhase;
     }
 
 
@@ -415,6 +423,46 @@ public class TransformerBank  extends com.cannontech.multispeak.deploy.service.M
         this.transformerList = transformerList;
     }
 
+
+    /**
+     * Gets the GPS value for this TransformerBank.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this TransformerBank.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
+
+    /**
+     * Gets the centerTapPhase value for this TransformerBank.
+     * 
+     * @return centerTapPhase
+     */
+    public com.cannontech.multispeak.deploy.service.MspPhase getCenterTapPhase() {
+        return centerTapPhase;
+    }
+
+
+    /**
+     * Sets the centerTapPhase value for this TransformerBank.
+     * 
+     * @param centerTapPhase
+     */
+    public void setCenterTapPhase(com.cannontech.multispeak.deploy.service.MspPhase centerTapPhase) {
+        this.centerTapPhase = centerTapPhase;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof TransformerBank)) return false;
@@ -471,7 +519,13 @@ public class TransformerBank  extends com.cannontech.multispeak.deploy.service.M
               this.priProt.equals(other.getPriProt()))) &&
             ((this.transformerList==null && other.getTransformerList()==null) || 
              (this.transformerList!=null &&
-              java.util.Arrays.equals(this.transformerList, other.getTransformerList())));
+              java.util.Arrays.equals(this.transformerList, other.getTransformerList()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS()))) &&
+            ((this.centerTapPhase==null && other.getCenterTapPhase()==null) || 
+             (this.centerTapPhase!=null &&
+              this.centerTapPhase.equals(other.getCenterTapPhase())));
         __equalsCalc = null;
         return _equals;
     }
@@ -535,6 +589,12 @@ public class TransformerBank  extends com.cannontech.multispeak.deploy.service.M
                     _hashCode += obj.hashCode();
                 }
             }
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
+        }
+        if (getCenterTapPhase() != null) {
+            _hashCode += getCenterTapPhase().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -651,6 +711,20 @@ public class TransformerBank  extends com.cannontech.multispeak.deploy.service.M
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transformer"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("centerTapPhase");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "centerTapPhase"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mspPhase"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }
 

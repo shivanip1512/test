@@ -36,9 +36,9 @@ public abstract class MspElectricLine  extends com.cannontech.multispeak.deploy.
            java.lang.String gridLocation,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            java.lang.String sectionID,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.Conductor[] conductorList,
            java.lang.String condN,
@@ -58,9 +58,9 @@ public abstract class MspElectricLine  extends com.cannontech.multispeak.deploy.
             gridLocation,
             annotationList,
             fromNodeID,
-            toNodeID,
             parentSectionID,
-            sectionID);
+            sectionID,
+            toNodeID);
         this.phaseCode = phaseCode;
         this.conductorList = conductorList;
         this.condN = condN;

@@ -24,7 +24,7 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
 
     private com.cannontech.multispeak.deploy.service.InstrumentTransformers instrumentTransformers;
 
-    private com.cannontech.multispeak.deploy.service.MeterBaseDeviceList deviceList;
+    private com.cannontech.multispeak.deploy.service.DeviceList deviceList;
 
     public MeterBase() {
     }
@@ -50,7 +50,7 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
            java.lang.String _class,
            com.cannontech.multispeak.deploy.service.BaseType baseType,
            com.cannontech.multispeak.deploy.service.InstrumentTransformers instrumentTransformers,
-           com.cannontech.multispeak.deploy.service.MeterBaseDeviceList deviceList) {
+           com.cannontech.multispeak.deploy.service.DeviceList deviceList) {
         super(
             objectID,
             verb,
@@ -241,7 +241,7 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
      * 
      * @return deviceList
      */
-    public com.cannontech.multispeak.deploy.service.MeterBaseDeviceList getDeviceList() {
+    public com.cannontech.multispeak.deploy.service.DeviceList getDeviceList() {
         return deviceList;
     }
 
@@ -251,7 +251,7 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
      * 
      * @param deviceList
      */
-    public void setDeviceList(com.cannontech.multispeak.deploy.service.MeterBaseDeviceList deviceList) {
+    public void setDeviceList(com.cannontech.multispeak.deploy.service.DeviceList deviceList) {
         this.deviceList = deviceList;
     }
 
@@ -401,7 +401,7 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("deviceList");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "deviceList"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">meterBase>deviceList"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "deviceList"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

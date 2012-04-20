@@ -76,7 +76,7 @@ public class CD_CBSoap_BindingImpl implements com.cannontech.multispeak.deploy.s
 			ConnectDisconnectEvent[] cdEvents, String responseURL,
 			String transactionID) throws RemoteException {
 		return cd_server.initiateConnectDisconnect(cdEvents, responseURL,
-				transactionID);
+				transactionID, Float.MIN_NORMAL);
 	}
 
 	public ErrorObject[] meterChangedNotification(Meter[] changedMeters)

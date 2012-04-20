@@ -52,6 +52,14 @@ public class PhysicalObjectList  implements java.io.Serializable {
 
     private com.cannontech.multispeak.deploy.service.SecondaryJunctionBox[] secondaryJunctionBox;
 
+    private com.cannontech.multispeak.deploy.service.Guy[] guy;
+
+    private com.cannontech.multispeak.deploy.service.Cut[] cut;
+
+    private com.cannontech.multispeak.deploy.service.Jumper[] jumper;
+
+    private com.cannontech.multispeak.deploy.service.Elbow[] elbow;
+
     public PhysicalObjectList() {
     }
 
@@ -77,7 +85,11 @@ public class PhysicalObjectList  implements java.io.Serializable {
            com.cannontech.multispeak.deploy.service.UgSecondaryLine[] ugSecondaryLine,
            com.cannontech.multispeak.deploy.service.RegulatorBank[] regulatorBank,
            com.cannontech.multispeak.deploy.service.ServiceLocation[] serviceLocation,
-           com.cannontech.multispeak.deploy.service.SecondaryJunctionBox[] secondaryJunctionBox) {
+           com.cannontech.multispeak.deploy.service.SecondaryJunctionBox[] secondaryJunctionBox,
+           com.cannontech.multispeak.deploy.service.Guy[] guy,
+           com.cannontech.multispeak.deploy.service.Cut[] cut,
+           com.cannontech.multispeak.deploy.service.Jumper[] jumper,
+           com.cannontech.multispeak.deploy.service.Elbow[] elbow) {
            this.extensions = extensions;
            this.extensionsList = extensionsList;
            this.capacitorBank = capacitorBank;
@@ -100,6 +112,10 @@ public class PhysicalObjectList  implements java.io.Serializable {
            this.regulatorBank = regulatorBank;
            this.serviceLocation = serviceLocation;
            this.secondaryJunctionBox = secondaryJunctionBox;
+           this.guy = guy;
+           this.cut = cut;
+           this.jumper = jumper;
+           this.elbow = elbow;
     }
 
 
@@ -702,6 +718,118 @@ public class PhysicalObjectList  implements java.io.Serializable {
         this.secondaryJunctionBox[i] = _value;
     }
 
+
+    /**
+     * Gets the guy value for this PhysicalObjectList.
+     * 
+     * @return guy
+     */
+    public com.cannontech.multispeak.deploy.service.Guy[] getGuy() {
+        return guy;
+    }
+
+
+    /**
+     * Sets the guy value for this PhysicalObjectList.
+     * 
+     * @param guy
+     */
+    public void setGuy(com.cannontech.multispeak.deploy.service.Guy[] guy) {
+        this.guy = guy;
+    }
+
+    public com.cannontech.multispeak.deploy.service.Guy getGuy(int i) {
+        return this.guy[i];
+    }
+
+    public void setGuy(int i, com.cannontech.multispeak.deploy.service.Guy _value) {
+        this.guy[i] = _value;
+    }
+
+
+    /**
+     * Gets the cut value for this PhysicalObjectList.
+     * 
+     * @return cut
+     */
+    public com.cannontech.multispeak.deploy.service.Cut[] getCut() {
+        return cut;
+    }
+
+
+    /**
+     * Sets the cut value for this PhysicalObjectList.
+     * 
+     * @param cut
+     */
+    public void setCut(com.cannontech.multispeak.deploy.service.Cut[] cut) {
+        this.cut = cut;
+    }
+
+    public com.cannontech.multispeak.deploy.service.Cut getCut(int i) {
+        return this.cut[i];
+    }
+
+    public void setCut(int i, com.cannontech.multispeak.deploy.service.Cut _value) {
+        this.cut[i] = _value;
+    }
+
+
+    /**
+     * Gets the jumper value for this PhysicalObjectList.
+     * 
+     * @return jumper
+     */
+    public com.cannontech.multispeak.deploy.service.Jumper[] getJumper() {
+        return jumper;
+    }
+
+
+    /**
+     * Sets the jumper value for this PhysicalObjectList.
+     * 
+     * @param jumper
+     */
+    public void setJumper(com.cannontech.multispeak.deploy.service.Jumper[] jumper) {
+        this.jumper = jumper;
+    }
+
+    public com.cannontech.multispeak.deploy.service.Jumper getJumper(int i) {
+        return this.jumper[i];
+    }
+
+    public void setJumper(int i, com.cannontech.multispeak.deploy.service.Jumper _value) {
+        this.jumper[i] = _value;
+    }
+
+
+    /**
+     * Gets the elbow value for this PhysicalObjectList.
+     * 
+     * @return elbow
+     */
+    public com.cannontech.multispeak.deploy.service.Elbow[] getElbow() {
+        return elbow;
+    }
+
+
+    /**
+     * Sets the elbow value for this PhysicalObjectList.
+     * 
+     * @param elbow
+     */
+    public void setElbow(com.cannontech.multispeak.deploy.service.Elbow[] elbow) {
+        this.elbow = elbow;
+    }
+
+    public com.cannontech.multispeak.deploy.service.Elbow getElbow(int i) {
+        return this.elbow[i];
+    }
+
+    public void setElbow(int i, com.cannontech.multispeak.deploy.service.Elbow _value) {
+        this.elbow[i] = _value;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof PhysicalObjectList)) return false;
@@ -779,7 +907,19 @@ public class PhysicalObjectList  implements java.io.Serializable {
               java.util.Arrays.equals(this.serviceLocation, other.getServiceLocation()))) &&
             ((this.secondaryJunctionBox==null && other.getSecondaryJunctionBox()==null) || 
              (this.secondaryJunctionBox!=null &&
-              java.util.Arrays.equals(this.secondaryJunctionBox, other.getSecondaryJunctionBox())));
+              java.util.Arrays.equals(this.secondaryJunctionBox, other.getSecondaryJunctionBox()))) &&
+            ((this.guy==null && other.getGuy()==null) || 
+             (this.guy!=null &&
+              java.util.Arrays.equals(this.guy, other.getGuy()))) &&
+            ((this.cut==null && other.getCut()==null) || 
+             (this.cut!=null &&
+              java.util.Arrays.equals(this.cut, other.getCut()))) &&
+            ((this.jumper==null && other.getJumper()==null) || 
+             (this.jumper!=null &&
+              java.util.Arrays.equals(this.jumper, other.getJumper()))) &&
+            ((this.elbow==null && other.getElbow()==null) || 
+             (this.elbow!=null &&
+              java.util.Arrays.equals(this.elbow, other.getElbow())));
         __equalsCalc = null;
         return _equals;
     }
@@ -1025,6 +1165,50 @@ public class PhysicalObjectList  implements java.io.Serializable {
                 }
             }
         }
+        if (getGuy() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getGuy());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getGuy(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getCut() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getCut());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getCut(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getJumper() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getJumper());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getJumper(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getElbow() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getElbow());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getElbow(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -1206,6 +1390,38 @@ public class PhysicalObjectList  implements java.io.Serializable {
         elemField.setFieldName("secondaryJunctionBox");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "secondaryJunctionBox"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "secondaryJunctionBox"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setMaxOccursUnbounded(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("guy");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "guy"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "guy"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setMaxOccursUnbounded(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("cut");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cut"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "cut"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setMaxOccursUnbounded(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("jumper");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "jumper"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "jumper"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setMaxOccursUnbounded(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("elbow");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "elbow"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "elbow"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setMaxOccursUnbounded(true);

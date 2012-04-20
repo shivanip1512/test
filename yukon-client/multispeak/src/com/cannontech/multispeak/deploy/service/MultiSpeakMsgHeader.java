@@ -34,6 +34,16 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
 
     private java.lang.String lastSent;  // attribute
 
+    private java.lang.String registrationID;  // attribute
+
+    private java.lang.String auditID;  // attribute
+
+    private java.lang.String messageID;  // attribute
+
+    private java.util.Calendar timeStamp;  // attribute
+
+    private java.lang.String buildString;  // attribute
+
     public MultiSpeakMsgHeader() {
     }
 
@@ -50,7 +60,12 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
            java.lang.String sessionID,
            java.lang.String previousSessionID,
            java.math.BigInteger objectsRemaining,
-           java.lang.String lastSent) {
+           java.lang.String lastSent,
+           java.lang.String registrationID,
+           java.lang.String auditID,
+           java.lang.String messageID,
+           java.util.Calendar timeStamp,
+           java.lang.String buildString) {
            this.version = version;
            this.userID = userID;
            this.pwd = pwd;
@@ -64,6 +79,11 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
            this.previousSessionID = previousSessionID;
            this.objectsRemaining = objectsRemaining;
            this.lastSent = lastSent;
+           this.registrationID = registrationID;
+           this.auditID = auditID;
+           this.messageID = messageID;
+           this.timeStamp = timeStamp;
+           this.buildString = buildString;
     }
 
 
@@ -326,6 +346,106 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
         this.lastSent = lastSent;
     }
 
+
+    /**
+     * Gets the registrationID value for this MultiSpeakMsgHeader.
+     * 
+     * @return registrationID
+     */
+    public java.lang.String getRegistrationID() {
+        return registrationID;
+    }
+
+
+    /**
+     * Sets the registrationID value for this MultiSpeakMsgHeader.
+     * 
+     * @param registrationID
+     */
+    public void setRegistrationID(java.lang.String registrationID) {
+        this.registrationID = registrationID;
+    }
+
+
+    /**
+     * Gets the auditID value for this MultiSpeakMsgHeader.
+     * 
+     * @return auditID
+     */
+    public java.lang.String getAuditID() {
+        return auditID;
+    }
+
+
+    /**
+     * Sets the auditID value for this MultiSpeakMsgHeader.
+     * 
+     * @param auditID
+     */
+    public void setAuditID(java.lang.String auditID) {
+        this.auditID = auditID;
+    }
+
+
+    /**
+     * Gets the messageID value for this MultiSpeakMsgHeader.
+     * 
+     * @return messageID
+     */
+    public java.lang.String getMessageID() {
+        return messageID;
+    }
+
+
+    /**
+     * Sets the messageID value for this MultiSpeakMsgHeader.
+     * 
+     * @param messageID
+     */
+    public void setMessageID(java.lang.String messageID) {
+        this.messageID = messageID;
+    }
+
+
+    /**
+     * Gets the timeStamp value for this MultiSpeakMsgHeader.
+     * 
+     * @return timeStamp
+     */
+    public java.util.Calendar getTimeStamp() {
+        return timeStamp;
+    }
+
+
+    /**
+     * Sets the timeStamp value for this MultiSpeakMsgHeader.
+     * 
+     * @param timeStamp
+     */
+    public void setTimeStamp(java.util.Calendar timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+
+    /**
+     * Gets the buildString value for this MultiSpeakMsgHeader.
+     * 
+     * @return buildString
+     */
+    public java.lang.String getBuildString() {
+        return buildString;
+    }
+
+
+    /**
+     * Sets the buildString value for this MultiSpeakMsgHeader.
+     * 
+     * @param buildString
+     */
+    public void setBuildString(java.lang.String buildString) {
+        this.buildString = buildString;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MultiSpeakMsgHeader)) return false;
@@ -376,7 +496,22 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
               this.objectsRemaining.equals(other.getObjectsRemaining()))) &&
             ((this.lastSent==null && other.getLastSent()==null) || 
              (this.lastSent!=null &&
-              this.lastSent.equals(other.getLastSent())));
+              this.lastSent.equals(other.getLastSent()))) &&
+            ((this.registrationID==null && other.getRegistrationID()==null) || 
+             (this.registrationID!=null &&
+              this.registrationID.equals(other.getRegistrationID()))) &&
+            ((this.auditID==null && other.getAuditID()==null) || 
+             (this.auditID!=null &&
+              this.auditID.equals(other.getAuditID()))) &&
+            ((this.messageID==null && other.getMessageID()==null) || 
+             (this.messageID!=null &&
+              this.messageID.equals(other.getMessageID()))) &&
+            ((this.timeStamp==null && other.getTimeStamp()==null) || 
+             (this.timeStamp!=null &&
+              this.timeStamp.equals(other.getTimeStamp()))) &&
+            ((this.buildString==null && other.getBuildString()==null) || 
+             (this.buildString!=null &&
+              this.buildString.equals(other.getBuildString())));
         __equalsCalc = null;
         return _equals;
     }
@@ -426,6 +561,21 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
         }
         if (getLastSent() != null) {
             _hashCode += getLastSent().hashCode();
+        }
+        if (getRegistrationID() != null) {
+            _hashCode += getRegistrationID().hashCode();
+        }
+        if (getAuditID() != null) {
+            _hashCode += getAuditID().hashCode();
+        }
+        if (getMessageID() != null) {
+            _hashCode += getMessageID().hashCode();
+        }
+        if (getTimeStamp() != null) {
+            _hashCode += getTimeStamp().hashCode();
+        }
+        if (getBuildString() != null) {
+            _hashCode += getBuildString().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -500,6 +650,31 @@ public class MultiSpeakMsgHeader  implements java.io.Serializable {
         attrField = new org.apache.axis.description.AttributeDesc();
         attrField.setFieldName("lastSent");
         attrField.setXmlName(new javax.xml.namespace.QName("", "LastSent"));
+        attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        typeDesc.addFieldDesc(attrField);
+        attrField = new org.apache.axis.description.AttributeDesc();
+        attrField.setFieldName("registrationID");
+        attrField.setXmlName(new javax.xml.namespace.QName("", "RegistrationID"));
+        attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        typeDesc.addFieldDesc(attrField);
+        attrField = new org.apache.axis.description.AttributeDesc();
+        attrField.setFieldName("auditID");
+        attrField.setXmlName(new javax.xml.namespace.QName("", "AuditID"));
+        attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        typeDesc.addFieldDesc(attrField);
+        attrField = new org.apache.axis.description.AttributeDesc();
+        attrField.setFieldName("messageID");
+        attrField.setXmlName(new javax.xml.namespace.QName("", "MessageID"));
+        attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        typeDesc.addFieldDesc(attrField);
+        attrField = new org.apache.axis.description.AttributeDesc();
+        attrField.setFieldName("timeStamp");
+        attrField.setXmlName(new javax.xml.namespace.QName("", "TimeStamp"));
+        attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        typeDesc.addFieldDesc(attrField);
+        attrField = new org.apache.axis.description.AttributeDesc();
+        attrField.setFieldName("buildString");
+        attrField.setXmlName(new javax.xml.namespace.QName("", "BuildString"));
         attrField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         typeDesc.addFieldDesc(attrField);
     }

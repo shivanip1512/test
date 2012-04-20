@@ -54,6 +54,14 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.deploy.servi
 
     private com.cannontech.multispeak.deploy.service.Premise[] premise;
 
+    private com.cannontech.multispeak.deploy.service.Anchor[] anchor;
+
+    private com.cannontech.multispeak.deploy.service.Guy[] guy;
+
+    private com.cannontech.multispeak.deploy.service.CDDevice[] CDDevice;
+
+    private com.cannontech.multispeak.deploy.service.SpanGuy[] spanGuy;
+
     public SpatialFeatureGroup() {
     }
 
@@ -92,7 +100,11 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.deploy.servi
            com.cannontech.multispeak.deploy.service.UgSecondaryLine[] ugSecondaryLine,
            com.cannontech.multispeak.deploy.service.SecondaryJunctionBox[] secondaryJunctionBox,
            com.cannontech.multispeak.deploy.service.Parcel[] parcel,
-           com.cannontech.multispeak.deploy.service.Premise[] premise) {
+           com.cannontech.multispeak.deploy.service.Premise[] premise,
+           com.cannontech.multispeak.deploy.service.Anchor[] anchor,
+           com.cannontech.multispeak.deploy.service.Guy[] guy,
+           com.cannontech.multispeak.deploy.service.CDDevice[] CDDevice,
+           com.cannontech.multispeak.deploy.service.SpanGuy[] spanGuy) {
         super(
             objectID,
             verb,
@@ -129,6 +141,10 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.deploy.servi
         this.secondaryJunctionBox = secondaryJunctionBox;
         this.parcel = parcel;
         this.premise = premise;
+        this.anchor = anchor;
+        this.guy = guy;
+        this.CDDevice = CDDevice;
+        this.spanGuy = spanGuy;
     }
 
 
@@ -775,6 +791,118 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.deploy.servi
         this.premise[i] = _value;
     }
 
+
+    /**
+     * Gets the anchor value for this SpatialFeatureGroup.
+     * 
+     * @return anchor
+     */
+    public com.cannontech.multispeak.deploy.service.Anchor[] getAnchor() {
+        return anchor;
+    }
+
+
+    /**
+     * Sets the anchor value for this SpatialFeatureGroup.
+     * 
+     * @param anchor
+     */
+    public void setAnchor(com.cannontech.multispeak.deploy.service.Anchor[] anchor) {
+        this.anchor = anchor;
+    }
+
+    public com.cannontech.multispeak.deploy.service.Anchor getAnchor(int i) {
+        return this.anchor[i];
+    }
+
+    public void setAnchor(int i, com.cannontech.multispeak.deploy.service.Anchor _value) {
+        this.anchor[i] = _value;
+    }
+
+
+    /**
+     * Gets the guy value for this SpatialFeatureGroup.
+     * 
+     * @return guy
+     */
+    public com.cannontech.multispeak.deploy.service.Guy[] getGuy() {
+        return guy;
+    }
+
+
+    /**
+     * Sets the guy value for this SpatialFeatureGroup.
+     * 
+     * @param guy
+     */
+    public void setGuy(com.cannontech.multispeak.deploy.service.Guy[] guy) {
+        this.guy = guy;
+    }
+
+    public com.cannontech.multispeak.deploy.service.Guy getGuy(int i) {
+        return this.guy[i];
+    }
+
+    public void setGuy(int i, com.cannontech.multispeak.deploy.service.Guy _value) {
+        this.guy[i] = _value;
+    }
+
+
+    /**
+     * Gets the CDDevice value for this SpatialFeatureGroup.
+     * 
+     * @return CDDevice
+     */
+    public com.cannontech.multispeak.deploy.service.CDDevice[] getCDDevice() {
+        return CDDevice;
+    }
+
+
+    /**
+     * Sets the CDDevice value for this SpatialFeatureGroup.
+     * 
+     * @param CDDevice
+     */
+    public void setCDDevice(com.cannontech.multispeak.deploy.service.CDDevice[] CDDevice) {
+        this.CDDevice = CDDevice;
+    }
+
+    public com.cannontech.multispeak.deploy.service.CDDevice getCDDevice(int i) {
+        return this.CDDevice[i];
+    }
+
+    public void setCDDevice(int i, com.cannontech.multispeak.deploy.service.CDDevice _value) {
+        this.CDDevice[i] = _value;
+    }
+
+
+    /**
+     * Gets the spanGuy value for this SpatialFeatureGroup.
+     * 
+     * @return spanGuy
+     */
+    public com.cannontech.multispeak.deploy.service.SpanGuy[] getSpanGuy() {
+        return spanGuy;
+    }
+
+
+    /**
+     * Sets the spanGuy value for this SpatialFeatureGroup.
+     * 
+     * @param spanGuy
+     */
+    public void setSpanGuy(com.cannontech.multispeak.deploy.service.SpanGuy[] spanGuy) {
+        this.spanGuy = spanGuy;
+    }
+
+    public com.cannontech.multispeak.deploy.service.SpanGuy getSpanGuy(int i) {
+        return this.spanGuy[i];
+    }
+
+    public void setSpanGuy(int i, com.cannontech.multispeak.deploy.service.SpanGuy _value) {
+        this.spanGuy[i] = _value;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SpatialFeatureGroup)) return false;
@@ -855,7 +983,19 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.deploy.servi
               java.util.Arrays.equals(this.parcel, other.getParcel()))) &&
             ((this.premise==null && other.getPremise()==null) || 
              (this.premise!=null &&
-              java.util.Arrays.equals(this.premise, other.getPremise())));
+              java.util.Arrays.equals(this.premise, other.getPremise()))) &&
+            ((this.anchor==null && other.getAnchor()==null) || 
+             (this.anchor!=null &&
+              java.util.Arrays.equals(this.anchor, other.getAnchor()))) &&
+            ((this.guy==null && other.getGuy()==null) || 
+             (this.guy!=null &&
+              java.util.Arrays.equals(this.guy, other.getGuy()))) &&
+            ((this.CDDevice==null && other.getCDDevice()==null) || 
+             (this.CDDevice!=null &&
+              java.util.Arrays.equals(this.CDDevice, other.getCDDevice()))) &&
+            ((this.spanGuy==null && other.getSpanGuy()==null) || 
+             (this.spanGuy!=null &&
+              java.util.Arrays.equals(this.spanGuy, other.getSpanGuy())));
         __equalsCalc = null;
         return _equals;
     }
@@ -1120,6 +1260,50 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.deploy.servi
                 }
             }
         }
+        if (getAnchor() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getAnchor());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getAnchor(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getGuy() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getGuy());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getGuy(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getCDDevice() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getCDDevice());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getCDDevice(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getSpanGuy() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getSpanGuy());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getSpanGuy(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -1310,6 +1494,38 @@ public class SpatialFeatureGroup  extends com.cannontech.multispeak.deploy.servi
         elemField.setFieldName("premise");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "premise"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "premise"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setMaxOccursUnbounded(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("anchor");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "anchor"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "anchor"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setMaxOccursUnbounded(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("guy");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "guy"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "guy"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setMaxOccursUnbounded(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("CDDevice");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CDDevice"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CDDevice"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setMaxOccursUnbounded(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("spanGuy");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "spanGuy"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "spanGuy"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         elemField.setMaxOccursUnbounded(true);

@@ -18,6 +18,8 @@ public class SetOutageElementStatus  implements java.io.Serializable {
 
     private java.util.Calendar eventTime;
 
+    private java.lang.String dispatcherResponsible;
+
     public SetOutageElementStatus() {
     }
 
@@ -26,12 +28,14 @@ public class SetOutageElementStatus  implements java.io.Serializable {
            com.cannontech.multispeak.deploy.service.OutageElementStatus statusPhaseA,
            com.cannontech.multispeak.deploy.service.OutageElementStatus statusPhaseB,
            com.cannontech.multispeak.deploy.service.OutageElementStatus statusPhaseC,
-           java.util.Calendar eventTime) {
+           java.util.Calendar eventTime,
+           java.lang.String dispatcherResponsible) {
            this.troubledElement = troubledElement;
            this.statusPhaseA = statusPhaseA;
            this.statusPhaseB = statusPhaseB;
            this.statusPhaseC = statusPhaseC;
            this.eventTime = eventTime;
+           this.dispatcherResponsible = dispatcherResponsible;
     }
 
 
@@ -134,6 +138,26 @@ public class SetOutageElementStatus  implements java.io.Serializable {
         this.eventTime = eventTime;
     }
 
+
+    /**
+     * Gets the dispatcherResponsible value for this SetOutageElementStatus.
+     * 
+     * @return dispatcherResponsible
+     */
+    public java.lang.String getDispatcherResponsible() {
+        return dispatcherResponsible;
+    }
+
+
+    /**
+     * Sets the dispatcherResponsible value for this SetOutageElementStatus.
+     * 
+     * @param dispatcherResponsible
+     */
+    public void setDispatcherResponsible(java.lang.String dispatcherResponsible) {
+        this.dispatcherResponsible = dispatcherResponsible;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof SetOutageElementStatus)) return false;
@@ -160,7 +184,10 @@ public class SetOutageElementStatus  implements java.io.Serializable {
               this.statusPhaseC.equals(other.getStatusPhaseC()))) &&
             ((this.eventTime==null && other.getEventTime()==null) || 
              (this.eventTime!=null &&
-              this.eventTime.equals(other.getEventTime())));
+              this.eventTime.equals(other.getEventTime()))) &&
+            ((this.dispatcherResponsible==null && other.getDispatcherResponsible()==null) || 
+             (this.dispatcherResponsible!=null &&
+              this.dispatcherResponsible.equals(other.getDispatcherResponsible())));
         __equalsCalc = null;
         return _equals;
     }
@@ -186,6 +213,9 @@ public class SetOutageElementStatus  implements java.io.Serializable {
         }
         if (getEventTime() != null) {
             _hashCode += getEventTime().hashCode();
+        }
+        if (getDispatcherResponsible() != null) {
+            _hashCode += getDispatcherResponsible().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -229,6 +259,13 @@ public class SetOutageElementStatus  implements java.io.Serializable {
         elemField.setFieldName("eventTime");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "eventTime"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "dateTime"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("dispatcherResponsible");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "dispatcherResponsible"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }

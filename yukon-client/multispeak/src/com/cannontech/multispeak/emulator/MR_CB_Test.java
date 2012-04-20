@@ -53,7 +53,7 @@ public class MR_CB_Test {
 			printMeters(meters);
 			
 			//Readings tests
-			String meterNumber = "0300031";		
+			String meterNumber = "1000119";		
 			System.out.println(meterNumber + "- IS AMR METER? " + test.isAMRMeter(meterNumber));
 			
 /*			objects = test.initiateMeterReadByMeterNo();
@@ -64,8 +64,8 @@ public class MR_CB_Test {
 			meterReads = test.getReadingsByMeterNo(meterNumber);
 			printMeterReads(meterReads);
 			*/
-			meterReads = test.getReadingsByDate(null);
-			printMeterReads(meterReads);
+//			meterReads = test.getReadingsByDate(null);
+//			printMeterReads(meterReads);
 
 			
 			//Formatted Block reading tests
@@ -105,7 +105,7 @@ public class MR_CB_Test {
 	
 	private ErrorObject[] initiateMeterReadByMeterNo() throws RemoteException {
 		String[] meterNumbers = new String[]{"0300031", "10620108"};
-		ErrorObject[] errorObject = instance.initiateMeterReadByMeterNumber(meterNumbers, null, "999");
+		ErrorObject[] errorObject = instance.initiateMeterReadByMeterNumber(meterNumbers, null, "999", Float.MIN_NORMAL);
 		return errorObject;
 	}
 	
@@ -150,7 +150,8 @@ public class MR_CB_Test {
 		instance = new MR_ServerSoap_BindingStub(new URL(endpointURL), new Service());
 		
 		YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
-		msgHeader.setCompany("Cannon MSP1");
+//		msgHeader.setCompany("Cannon MSP1");
+		msgHeader.setCompany("Cannon");
 		
 		SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 		instance.setHeader(header);
@@ -178,23 +179,23 @@ public class MR_CB_Test {
 	}
 
 	private ErrorObject[] initiateMeterReadByMeterNoAndType(String meterNumber, String readingType) throws RemoteException {
-		return instance.initiateMeterReadByMeterNoAndType(meterNumber, null, readingType, "999");
+		return instance.initiateMeterReadByMeterNoAndType(meterNumber, null, readingType, "999", Float.MIN_NORMAL);
 	}
 
 	private FormattedBlock getLatestReadingByMeterNoAndType(String meterNumber, String readingType) throws RemoteException {
-		return instance.getLatestReadingByMeterNoAndType(meterNumber, readingType);
+		return instance.getLatestReadingByMeterNoAndType(meterNumber, readingType, null, null);
 	}
 
 	private FormattedBlock[] getLatestReadingByType(String readingType) throws RemoteException {
-		return instance.getLatestReadingByType(readingType, null);
+		return instance.getLatestReadingByType(readingType, null, null, null);
 	}
 
 	private FormattedBlock[] getReadingsByDateAndType(String meterNumber, String readingType) throws RemoteException {
-		return instance.getReadingsByDateAndType(getStartDate(), getEndDate(), readingType, null);
+		return instance.getReadingsByDateAndType(getStartDate(), getEndDate(), readingType, null, null, null);
 	}
 	
 	private FormattedBlock[] getReadingsByMeterNoAndType(String meterNumber, String readingType) throws RemoteException {
-		return instance.getReadingsByMeterNoAndType(meterNumber, getStartDate(), getEndDate(), readingType, null);
+		return instance.getReadingsByMeterNoAndType(meterNumber, getStartDate(), getEndDate(), readingType, null, null, null);
 	}
 	
 	private String[] getSupportedReadingTypes() throws RemoteException {

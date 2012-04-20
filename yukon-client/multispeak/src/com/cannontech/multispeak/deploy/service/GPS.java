@@ -10,17 +10,17 @@ package com.cannontech.multispeak.deploy.service;
 public class GPS  implements java.io.Serializable {
     private java.lang.Boolean GPSValidity;
 
-    private java.lang.Float latitude;
+    private java.lang.Double latitude;
 
-    private java.lang.Float longitude;
+    private java.lang.Double longitude;
 
     public GPS() {
     }
 
     public GPS(
            java.lang.Boolean GPSValidity,
-           java.lang.Float latitude,
-           java.lang.Float longitude) {
+           java.lang.Double latitude,
+           java.lang.Double longitude) {
            this.GPSValidity = GPSValidity;
            this.latitude = latitude;
            this.longitude = longitude;
@@ -52,7 +52,7 @@ public class GPS  implements java.io.Serializable {
      * 
      * @return latitude
      */
-    public java.lang.Float getLatitude() {
+    public java.lang.Double getLatitude() {
         return latitude;
     }
 
@@ -62,7 +62,7 @@ public class GPS  implements java.io.Serializable {
      * 
      * @param latitude
      */
-    public void setLatitude(java.lang.Float latitude) {
+    public void setLatitude(java.lang.Double latitude) {
         this.latitude = latitude;
     }
 
@@ -72,7 +72,7 @@ public class GPS  implements java.io.Serializable {
      * 
      * @return longitude
      */
-    public java.lang.Float getLongitude() {
+    public java.lang.Double getLongitude() {
         return longitude;
     }
 
@@ -82,7 +82,7 @@ public class GPS  implements java.io.Serializable {
      * 
      * @param longitude
      */
-    public void setLongitude(java.lang.Float longitude) {
+    public void setLongitude(java.lang.Double longitude) {
         this.longitude = longitude;
     }
 
@@ -147,14 +147,14 @@ public class GPS  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("latitude");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "latitude"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("longitude");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "longitude"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

@@ -22,7 +22,7 @@ public class OD_ServerLocator extends org.apache.axis.client.Service implements 
     }
 
     // Use to get a proxy class for OD_ServerSoap
-    private java.lang.String OD_ServerSoap_address = "http://localhost/MultiSpeakBusArchitectureV30v/OD_Server.asmx";
+    private java.lang.String OD_ServerSoap_address = "http://localhost:55273/OD_Server.asmx";
 
     public java.lang.String getOD_ServerSoapAddress() {
         return OD_ServerSoap_address;

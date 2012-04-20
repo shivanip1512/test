@@ -38,6 +38,8 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
 
     private java.lang.String name;
 
+    private com.cannontech.multispeak.deploy.service.GPS GPS;
+
     public Substation() {
     }
 
@@ -56,10 +58,10 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
            java.lang.String facilityID,
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
-           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            java.lang.String sectionID,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
+           com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            java.lang.String zMin,
@@ -76,7 +78,8 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
            com.cannontech.multispeak.deploy.service.LdCon ldCon,
            java.lang.Boolean isRegulated,
            com.cannontech.multispeak.deploy.service.FeederObject[] feederList,
-           java.lang.String name) {
+           java.lang.String name,
+           com.cannontech.multispeak.deploy.service.GPS GPS) {
         super(
             objectID,
             verb,
@@ -92,10 +95,10 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
             facilityID,
             graphicSymbol,
             annotationList,
-            toNodeID,
             fromNodeID,
-            parentSectionID,
             sectionID,
+            toNodeID,
+            parentSectionID,
             phaseCode,
             load);
         this.zMin = zMin;
@@ -113,6 +116,7 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
         this.isRegulated = isRegulated;
         this.feederList = feederList;
         this.name = name;
+        this.GPS = GPS;
     }
 
 
@@ -415,6 +419,26 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
         this.name = name;
     }
 
+
+    /**
+     * Gets the GPS value for this Substation.
+     * 
+     * @return GPS
+     */
+    public com.cannontech.multispeak.deploy.service.GPS getGPS() {
+        return GPS;
+    }
+
+
+    /**
+     * Sets the GPS value for this Substation.
+     * 
+     * @param GPS
+     */
+    public void setGPS(com.cannontech.multispeak.deploy.service.GPS GPS) {
+        this.GPS = GPS;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Substation)) return false;
@@ -471,7 +495,10 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
               java.util.Arrays.equals(this.feederList, other.getFeederList()))) &&
             ((this.name==null && other.getName()==null) || 
              (this.name!=null &&
-              this.name.equals(other.getName())));
+              this.name.equals(other.getName()))) &&
+            ((this.GPS==null && other.getGPS()==null) || 
+             (this.GPS!=null &&
+              this.GPS.equals(other.getGPS())));
         __equalsCalc = null;
         return _equals;
     }
@@ -535,6 +562,9 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
         }
         if (getName() != null) {
             _hashCode += getName().hashCode();
+        }
+        if (getGPS() != null) {
+            _hashCode += getGPS().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -649,6 +679,13 @@ public class Substation  extends com.cannontech.multispeak.deploy.service.MspEle
         elemField.setFieldName("name");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "name"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("GPS");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "GPS"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

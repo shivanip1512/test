@@ -22,7 +22,7 @@ public class CB_ServerLocator extends org.apache.axis.client.Service implements 
     }
 
     // Use to get a proxy class for CB_ServerSoap
-    private java.lang.String CB_ServerSoap_address = "http://localhost/MultiSpeakBusArchitectureV30v/CB_Server.asmx";
+    private java.lang.String CB_ServerSoap_address = "http://localhost:55273/CB_Server.asmx";
 
     public java.lang.String getCB_ServerSoapAddress() {
         return CB_ServerSoap_address;
