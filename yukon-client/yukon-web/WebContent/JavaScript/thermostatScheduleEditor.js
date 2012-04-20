@@ -23,30 +23,32 @@ Yukon.ThermostatScheduleEditor = {
             input.observe('keydown', Yukon.ThermostatScheduleEditor.tempKeydown);
         });
         
-        TIME_SLIDER = new Control.Slider($("timeSlider").down('.handle'), $("timeSlider").down('.track'), {
-            range: $R(0, 24*60),
-            sliderValue: 0,
-            onSlide: function(value, e) {
-                CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value, parseInt(Yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
-            },
-            onChange: function(value, e) {
-                Yukon.ThermostatScheduleEditor.commitTimeValue(timeFormatter.formatTime(value, parseInt(Yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60)), CURRENT_TIME_INPUT);
+        TIME_SLIDER = jQuery("#timeSlider .track").slider({
+        	max: 24*60,
+        	min: 0,
+        	value: 0,
+        	slide: function(event, ui){
+        		CURRENT_TIME_INPUT.value = timeFormatter.formatTime(ui.value, parseInt(Yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
+        	},
+        	change: function(event, ui){
+        		Yukon.ThermostatScheduleEditor.commitTimeValue(timeFormatter.formatTime(ui.value, parseInt(Yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60)), CURRENT_TIME_INPUT);
                 CURRENT_TIME_INPUT.select();    //Good ol' IE needs this.
-            }
+        	}
         });
         
-        TEMP_SLIDER = new Control.Slider($("tempSlider").down('.handle'), $("tempSlider").down('.track'), {
-            range: $R(this.thermostat.HEAT.lower.getF(), Yukon.ThermostatScheduleEditor.thermostat.HEAT.upper.getF()),
-            sliderValue: 72,
-            onSlide: function(value) {
+        TEMP_SLIDER = jQuery("#tempSlider .track").slider({
+        	max: this.thermostat.HEAT.lower.getF(),
+        	min: this.thermostat.HEAT.upper.getF(),
+        	value: 72,
+        	slide: function(event, ui){
             	var tempMode = CURRENT_TEMP_INPUT.readAttribute("data-temperatureMode");
-            	Yukon.ThermostatScheduleEditor.thermostat.assignDegreesOrSnapToLimit(value, tempMode);
+            	Yukon.ThermostatScheduleEditor.thermostat.assignDegreesOrSnapToLimit(ui.value, tempMode);
             	CURRENT_TEMP_INPUT.value = Yukon.ThermostatScheduleEditor.thermostat[tempMode].temperature.sanitizedString();
-            },
-            onChange: function(value, e) {
-                Yukon.ThermostatScheduleEditor.commitTempValue(value, CURRENT_TEMP_INPUT);
-                CURRENT_TEMP_INPUT.select();    //Good ol' IE needs this.
-            }
+        	},
+        	change: function(event, ui){
+        		Yukon.ThermostatScheduleEditor.commitTempValue(ui.value, CURRENT_TEMP_INPUT);
+              CURRENT_TEMP_INPUT.select();    //Good ol' IE needs this.
+        	}
         });
 
         $$(".schedules input:text, .createSchedule input:text").invoke('observe', 'focus', function(event){
@@ -337,7 +339,7 @@ Yukon.ThermostatScheduleEditor = {
         
         var windowModeType = event.currentTarget.readAttribute("data-temperatureMode");
         CURRENT_TEMP_INPUT.value = Yukon.ThermostatScheduleEditor.thermostat[windowModeType].temperature.sanitizedString();
-        TEMP_SLIDER.setValue(Yukon.ThermostatScheduleEditor.thermostat[windowModeType].temperature.getResolvedTemp());
+        TEMP_SLIDER.slider('value', Yukon.ThermostatScheduleEditor.thermostat[windowModeType].temperature.getResolvedTemp());
         event.stop();
     },
     
@@ -362,17 +364,17 @@ Yukon.ThermostatScheduleEditor = {
         }
         
         var windowModeType = event.currentTarget.readAttribute("data-temperatureMode");
-        TEMP_SLIDER.increment = _self.thermostat[windowModeType].temperature.getResolution();
+        TEMP_SLIDER.slider('option', 'step', _self.thermostat[windowModeType].temperature.getResolution());
         var startLabel = start.sanitizedString();
         var endLabel = end.sanitizedString();
         
         CURRENT_TEMP_INPUT = this;
-        TEMP_SLIDER.options.range.start = start.degrees;
-        TEMP_SLIDER.options.range.end = end.degrees;
-        TEMP_SLIDER.setValue(startingValue.degrees);
+        TEMP_SLIDER.slider('option', 'min', start.degrees);
+        TEMP_SLIDER.slider('option', 'max', end.degrees);
+        TEMP_SLIDER.slider('value', startingValue.degrees);
         
-        $("tempSlider").down(".startLabel").innerHTML = startLabel;
-        $("tempSlider").down(".endLabel").innerHTML = endLabel;
+        $("tempSlider").down(".startLabel .tempHolder").innerHTML = startLabel;
+        $("tempSlider").down(".endLabel .tempHolder").innerHTML = endLabel;
         $("tempSlider").show();
         
         var inputDimensions = this.getDimensions();
@@ -467,7 +469,7 @@ Yukon.ThermostatScheduleEditor = {
             CURRENT_TIME_INPUT.value = timeFormatter.formatTime(value, parseInt(Yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
             
             //round to nearest 15
-            TIME_SLIDER.setValue(value);
+            TIME_SLIDER.slider('value', value);
         }
         event.stop();
     },
@@ -506,13 +508,13 @@ Yukon.ThermostatScheduleEditor = {
         endSeconds = Math.floor((endSeconds+1-_self.thermostat.secondsBetweenPeriods)/60)*60;
 
         CURRENT_TIME_INPUT = this;
-        TIME_SLIDER.options.range.start = startSeconds/60;
-        TIME_SLIDER.options.range.end = endSeconds/60;
+        TIME_SLIDER.slider('option', 'min', startSeconds/60);
+        TIME_SLIDER.slider('option', 'max', endSeconds/60);
         
-        TIME_SLIDER.setValue(startingValueSeconds/60);
+        TIME_SLIDER.slider('value', startingValueSeconds/60);
         
-        $("timeSlider").down(".startLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.start, parseInt(Yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
-        $("timeSlider").down(".endLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.options.range.end, parseInt(Yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
+        $("timeSlider").down(".startLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.slider('option', 'min'), parseInt(Yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
+        $("timeSlider").down(".endLabel").innerHTML = timeFormatter.formatTime(TIME_SLIDER.slider('option', 'max'), parseInt(Yukon.ThermostatScheduleEditor.thermostat.secondsResolution/60));
         $("timeSlider").show();
         
         var inputDimensions = this.getDimensions();
@@ -586,10 +588,9 @@ Yukon.ThermostatScheduleEditor = {
             elem.removeClassName('F');
             elem.addClassName('C');
         });
-        $("tempSlider").select(".tempHolder").each(function(elem){
-            elem.removeClassName('F');
-            elem.addClassName('C');
-        });
+        
+        jQuery("#tempSlider .startLabel, #tempSlider .endLabel").removeClass('F').addClass('C');
+        
         $$("input[name=temperatureUnit]").each(function(elem){
             elem.value = "C";
         });
@@ -613,10 +614,7 @@ Yukon.ThermostatScheduleEditor = {
             elem.removeClassName('C');
             elem.addClassName('F');
         });
-        $("tempSlider").select(".tempHolder").each(function(elem){
-            elem.removeClassName('C');
-            elem.addClassName('F');
-        });
+        jQuery("#tempSlider .startLabel, #tempSlider .endLabel").removeClass('C').addClass('F');
         $$("input[name=temperatureUnit]").each(function(elem){
             elem.value = "F";
         });

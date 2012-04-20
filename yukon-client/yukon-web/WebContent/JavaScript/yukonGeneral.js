@@ -247,12 +247,16 @@ function alignTableColumnsByTable() {
 	});
 }
 
-// Flash an element yellow
+/**
+ * Flashes the background of an element 'Yukon yellow'
+ * @param element	[DOM node] we want to give a temporary splash of yellow
+ * @param duration  [float] how long the effect should last in seconds
+ */
 function flashYellow(element, duration) {
     if(!duration) {
         duration = 0.8;
     }
-    new Effect.Highlight(element, {'duration': duration, 'startcolor': '#FFFF00'});
+    jQuery(element).flashColor({color: "#FF0", duration: duration*1000});
 }
 
 function showBusy() {

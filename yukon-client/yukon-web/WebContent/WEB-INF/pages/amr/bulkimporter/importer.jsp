@@ -8,7 +8,6 @@
 <div class="notAuthorized">Note: <a href="/spring/bulk/bulkHome">Bulk Operations</a> is the preferred method of importing or updating meters.</div>
 <br>
 
-<cti:includeScript link="SCRIPTACULOUS_EFFECTS"/>
 <cti:includeScript link="/JavaScript/bulkImporter.js"/>
 
 <script type="text/javascript">

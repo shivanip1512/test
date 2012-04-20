@@ -71,6 +71,7 @@ public class LayoutController {
         //jquery MUST be included before any js library that commandeers the $ var.
         builder.add(JsLibrary.JQUERY.getPath()); 
         builder.add(JsLibrary.JQUERY_UI.getPath());
+        builder.add(JsLibrary.JQUERY_COLOR.getPath());
         builder.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
         builder.add(JsLibrary.JQUERY_FORM.getPath());
 
@@ -85,7 +86,6 @@ public class LayoutController {
         }
         builder.add("/JavaScript/CtiMenu.js");
         builder.add("/JavaScript/dataUpdater.js");
-        builder.add(JsLibrary.SCRIPTACULOUS.getPath());
         builder.add("/JavaScript/simpleCookies.js");
         builder.add("/JavaScript/simpleDialog.js");
         builder.add("/JavaScript/alert.js");

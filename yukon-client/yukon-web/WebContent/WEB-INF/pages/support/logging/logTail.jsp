@@ -5,7 +5,6 @@
 
 <cti:standardPage module="support" page="logTail">
 
-<cti:includeScript link="SCRIPTACULOUS_EFFECTS"/>
 <cti:includeScript link="/JavaScript/logUpdater.js"/>
 
 <script type="text/javascript">

@@ -19,12 +19,11 @@ function initiateCannonLogUpdate(url, periodSecs) {
 			 
 			 if((logLastMod != null) && 
 			   (logLastMod != "") &&
-			   (logLastMod != $('lastMod').innerHTML)){
-				$('lastMod').innerHTML = logLastMod;
+			   (logLastMod != jQuery('#lastMod')[0].innerHTML)){
+				$('lastMod')[0].innerHTML = logLastMod;
 				var tempFileLength = (fileLength/1024).toString();
-				$('fileLength').innerHTML = (tempFileLength.split(".")[0]);
-				new Effect.Highlight('lastMod', {startcolor:'#ffff88', endcolor:'#ffffff'});
-				new Effect.Highlight('fileLength', {startcolor:'#ffff88', endcolor:'#ffffff'});
+				jQuery('#fileLength')[0].innerHTML = (tempFileLength.split(".")[0]);
+				jQuery("#lastMod, #fileLength").flashColor({color: "#FF8", duration: 1000});
 			}		
 		
 			/* This part of the function updates the log contents shown

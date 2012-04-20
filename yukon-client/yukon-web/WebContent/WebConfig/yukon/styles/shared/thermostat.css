@@ -339,26 +339,32 @@ a.default {
 	font-size: 10px;
 }
 
-.slider .handle {
+.slider .ui-slider-handle {
     height: 20px;
     width: 20px;
     background: transparent url(../../Icons/slider-handle.png) top left no-repeat;
-    margin-top: -10px;
+    margin-top: -7px;
+    margin-left: -10px;
 }
 
 .slider .track {
-    width: 238px;
+    width: 230px;
     height: 1px;
     border: solid 1px #666;
     background-color: #999;
     position: absolute;
-    left: 5px;
+    left: 9px;
     top: 19px;
 }
 
 .slider .label {
     margin: 0 5px;
 }
+
+.slider .startLabel, .slider .endLabel {
+	margin: 0 5px;
+}
+
 
 .chevron {
     font-size: 0;

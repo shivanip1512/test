@@ -42,22 +42,18 @@ Event.observe(window, 'load', function(){
 <div id="timeSlider" class="slider">
     <div class="chevron"></div>
     <div class="startLabel fl"></div>
-    <div class="track">
-        <div class="handle"></div>
-    </div>
+    <div class="track"></div>
     <div class="endLabel fr"></div>
 </div>
 
 <div id="tempSlider" class="slider">
     <div class="chevron"></div>
-    <div class="box fl tempHolder ${temperatureUnit}">
-        <div class="startLabel fl"></div><span class="C"><i:inline key="yukon.web.defaults.celsius"/></span><span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
+    <div class="box fl startLabel ${temperatureUnit}">
+        <div class="tempHolder fl"></div><span class="C"><i:inline key="yukon.web.defaults.celsius"/></span><span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
     </div>
-    <div class="track">
-        <div class="handle"></div>
-    </div>
-    <div class="box fr tempHolder ${temperatureUnit}">
-        <div class="endLabel fl"></div><span class="C"><i:inline key="yukon.web.defaults.celsius"/></span><span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
+    <div class="track"></div>
+    <div class="box fr endLabel ${temperatureUnit}">
+        <div class="tempHolder fl"></div><span class="C"><i:inline key="yukon.web.defaults.celsius"/></span><span class="F"><i:inline key="yukon.web.defaults.fahrenheit"/></span>
     </div>
 </div>
 
