@@ -21,7 +21,7 @@
 <cti:includeScript link="/capcontrol/js/updaterFunctions.js"/>
 <cti:includeScript link="/JavaScript/cconelinepopup.js"/>
 <cti:includeScript link="/JavaScript/simpleDialog.js"/>
-<cti:includeScript link="/JavaScript/scriptaculous/scriptaculous.js"/>
+<cti:includeScript link="SCRIPTACULOUS_161"/>
 <cti:includeScript link="/JavaScript/ol/overlib_mini.js"/>
 <cti:includeScript link="/JavaScript/validation.js"/>
 <cti:includeScript link="/JavaScript/GreyBox/AmiJS.js"/>

@@ -36,8 +36,6 @@ public enum JsLibrary {
     OVERLIB("/JavaScript/ol/overlib_mini.js"),
     PROTOTYPE("/JavaScript/lib/prototype/1.7.0.0/prototype.js"),
     RSV("/JavaScript/lib/prototype/plugins/rsv/2.5.1/prototype.rsv.js"),
-    SCRIPTACULOUS("/JavaScript/lib/scriptaculous/1.8.3/scriptaculous.js"),
-    SCRIPTACULOUS_EFFECTS("/JavaScript/lib/scriptaculous/1.8.3/effects.js"),
     YUKON_UI("/JavaScript/yukon/ui/general.js"),
     
     // --DEPRECATED VERSIONS --//
