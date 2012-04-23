@@ -6,6 +6,7 @@
 	<property environment="env"/>
 
 	<property name="soapUI.home" value="C:/Program Files (x86)/SmartBear/soapUI-4.5.0-Beta1"/>
+	<property name="FindReplaceIP" value="replaceText.bat"/>
 	
 	<target name="targets">
 		<echo message="The following targets are available"/>
@@ -25,7 +26,21 @@
     </target>
 	
     <target name="soapui-tests" depends="checkos">
-       <for param="file">
+       
+    	<for param="file">
+            <path> 
+              <fileset dir="integration-tests" casesensitive="yes" includes="*.xml"/>
+            </path>
+            <sequential>
+              <exec executable="${FindReplaceIP}" failonerror="yes" failifexecutionfails="yes" >
+                <arg value="localhost:8081"/>
+                <arg value="${TARGET_IP_PORT}"/>
+              	<arg path="@{file}"/>
+             </exec>
+            </sequential>
+       </for>
+    	
+    	<for param="file">
         <path> 
           <fileset dir="integration-tests" casesensitive="yes" includes="*.xml"/>
         </path>
