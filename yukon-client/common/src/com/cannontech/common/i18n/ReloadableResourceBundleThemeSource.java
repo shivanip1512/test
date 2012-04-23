@@ -31,8 +31,7 @@ public class ReloadableResourceBundleThemeSource extends ResourceBundleThemeSour
     
     @Override
     protected MessageSource createMessageSource(String basename) {
-        ReloadableResourceBundleMessageSource messageSource =
-                new CaseInsensitiveReloadableResourceBundleMessageSource();
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename(basename);
         messageSource.setCacheSeconds(cacheSeconds);
         messageSource.setUseCodeAsDefaultMessage(useCodeAsDefaultMessage);
