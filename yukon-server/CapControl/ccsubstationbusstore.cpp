@@ -3441,7 +3441,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
             {
                 long paObjectId;
                 //Update Area Strategy Values with dbChanged/editted strategy values
-                for (Cti::CapControl::CapControlType objectType = Feeder; objectType <= SpecialArea; objectType = Cti::CapControl::CapControlType(int(objectType) + 1))
+                for (Cti::CapControl::CapControlType objectType = SpecialArea; objectType >= Feeder; objectType = Cti::CapControl::CapControlType(int(objectType) -1))
                 {
                     string paObjectColumn = getDbColumnString(objectType);
                     string capControlObjectTable = getDbTableString(objectType);
@@ -3637,7 +3637,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
         if (strategyId >= 0)
         {
             //Update Area Strategy Values with dbChanged/editted strategy values
-            for (Cti::CapControl::CapControlType objectType = Feeder; objectType <= SpecialArea; objectType = Cti::CapControl::CapControlType(int(objectType) + 1))
+            for (Cti::CapControl::CapControlType objectType = SpecialArea; objectType >= Feeder; objectType = Cti::CapControl::CapControlType(int(objectType) -1))
             {
                 string paObjectColumn = getDbColumnString(objectType);
                 string capControlObjectTable = getDbTableString(objectType);
@@ -4984,7 +4984,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                  CtiCCSubstationPtr currentStation = findSubstationByPAObjectID(findSubstationIDbySubBusID(subBusId) != NULL ? findSubstationIDbySubBusID(subBusId) : 0 );
                  if (currentStation != NULL)
                  {
-                     sqlID += string(" OR SSA.paobjectid = ?");
+                     sqlID += string(" OR SSA.paobjectid = ? ORDER BY SSB.substationbusid");
                      dbRdr.setCommandText(sqlID);
                      dbRdr << subBusId;
                      dbRdr << currentStation->getParentId();
@@ -4993,7 +4993,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
              }
              else
              {
-                 dbRdr.setCommandText(sqlNoID);
+                 string sqlID = string(sqlNoID + " ORDER BY SSB.substationbusid ");
+                 dbRdr.setCommandText(sqlID);
              }
 
              dbRdr.execute();
