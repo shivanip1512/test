@@ -36,13 +36,14 @@
                 <arg value="localhost:8081"/>
                 <arg value="${TARGET_IP_PORT}"/>
               	<arg path="@{file}"/>
+              	<arg value=" > converted_@{file}"/>
              </exec>
             </sequential>
        </for>
     	
     	<for param="file">
         <path> 
-          <fileset dir="integration-tests" casesensitive="yes" includes="*.xml"/>
+          <fileset dir="integration-tests" casesensitive="yes" includes="converted_*.xml"/>
         </path>
         <sequential>
           <exec executable="${testrunner.cmd}"
