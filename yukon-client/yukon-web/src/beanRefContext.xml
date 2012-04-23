@@ -17,7 +17,6 @@
 			<value>com/cannontech/billing/billingContext.xml</value>
 			<value>com/cannontech/cbc/cbcContext.xml</value>
             <value>com/cannontech/report/reportContext.xml</value>
-            <value>com/cannontech/common/opc/applicationContext.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg>
