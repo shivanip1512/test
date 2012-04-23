@@ -15,9 +15,7 @@
               target="${yukon.javac.target}" 
  	          source="${yukon.javac.source}"
               bootclasspath="${yukon.javac.bootclasspath}"
-              debug="${yukon.javac.debug}"
-              fork="true"
-		      memoryMaximumSize="128M">                               
+              debug="${yukon.javac.debug}">                               
           <classpath>
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
