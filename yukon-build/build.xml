@@ -388,17 +388,17 @@
         
     </target>
     
-    <taskdef name= "jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="yukon-build/jsdoc-toolkit/jsdoc-toolkit-ant-task-1.1.2.jar;yukon-build/jsdoc-toolkit/java/classes/js.jar"/>
-    <jsdoctoolkit jsdochome="${basedir}/yukon-build/jsdoc-toolkit/" template="/jsdoc" outputdir="${basedir}/yukon-build/jsdoc/output">
-   	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript" />
-        <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/stars" />
-        <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/yukon/ui" />
-        <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/dynatree/treeHelper.js" />
-        <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jQueryUI/dialog-helper.js" />
-        <source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jqGrid/jqGridHelper.js" />
-    </jsdoctoolkit>
-                
-    <target name = "jsdoctoolkit"/>
-    
+    <target name="jsdoctoolkit">
+    	<taskdef name= "jsdoctoolkit" classname="uk.co.darrenhurley.ant.tasks.JsDocToolkit" classpath="yukon-build/jsdoc-toolkit/jsdoc-toolkit-ant-task-1.1.2.jar;yukon-build/jsdoc-toolkit/java/classes/js.jar"/>
+    	<jsdoctoolkit jsdochome="${basedir}/yukon-build/jsdoc-toolkit/" template="/jsdoc" outputdir="${basedir}/yukon-build/jsdoc">
+        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript" />
+        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/stars" />
+        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/yukon/ui" />
+        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/dynatree/treeHelper.js" />
+        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jQueryUI/dialog-helper.js" />
+        	<source file="${basedir}/yukon-client/yukon-web/WebContent/JavaScript/lib/jQuery/plugins/jqGrid/jqGridHelper.js" />
+    	</jsdoctoolkit>
+    </target>
 
+    
 </project>
