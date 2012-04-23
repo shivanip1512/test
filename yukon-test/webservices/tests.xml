@@ -6,7 +6,7 @@
 	<property environment="env"/>
 
 	<property name="soapUI.home" value="C:/Program Files/SmartBear/soapUI-4.5.0/"/>
-	<property name="FindReplaceIP" value="./fart.exe"/>
+	<property name="FindReplaceIP" value="${env.WORKSPACE}/fart.exe"/>
 	
 	<target name="targets">
 		<echo message="The following targets are available"/>
