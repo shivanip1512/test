@@ -732,8 +732,8 @@ void CtiDeviceAnsi::createPointData(CtiPointAnalogSPtr pPoint, double value, dou
     CtiReturnMsg *msgPtr = CTIDBG_new CtiReturnMsg();
     CtiPointDataMsg *pData = NULL;
     
-    value *= (pPoint->getMultiplier() != NULL ? pPoint->getMultiplier() : 1);
-    value += (pPoint->getDataOffset() != NULL ? pPoint->getDataOffset() : 0) ;
+    value *= (pPoint->getMultiplier() != NULL ? pPoint->getMultiplier() : 1.0);
+    value += (pPoint->getDataOffset() != NULL ? pPoint->getDataOffset() : 0.0) ;
     
     _result_string += getName() + " / " + pPoint->getName() + ": " + CtiNumStr(value, boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces()) + "\n";
 
@@ -766,8 +766,8 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
     double timestamp = 0;
     double lpValue = 0;
     int    qual = NormalQuality;
-    int ptMultiplier = pPoint->getMultiplier();
-    int ptOffset = pPoint->getDataOffset();
+    double ptMultiplier = pPoint->getMultiplier();
+    double ptOffset = pPoint->getDataOffset();
     CtiPointDataMsg *pData = NULL;
     CtiReturnMsg *msgPtr = CTIDBG_new CtiReturnMsg();
     int msgCntr = 0;
@@ -780,8 +780,8 @@ void CtiDeviceAnsi::createLoadProfilePointData(CtiPointAnalogSPtr pPoint, list< 
         if (getANSIProtocol().getLPTime(y) > lastLoadProfileTime.seconds())
         {
             lpValue = getANSIProtocol().getLPValue(y);
-            lpValue *= (ptMultiplier != NULL ? ptMultiplier : 1);
-            lpValue += (ptOffset != NULL ? ptOffset : 0) ;
+            lpValue *= (ptMultiplier != NULL ? ptMultiplier : 1.0);
+            lpValue += (ptOffset != NULL ? ptOffset : 0.0) ;
             
             pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), lpValue, (int) getANSIProtocol().getLPQuality(y), pPoint->getType());
             pData->setTags( TAG_POINT_LOAD_PROFILE_DATA );
