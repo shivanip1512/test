@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/4/2012 1:02:41 PM                          */
+/* Created on:     4/24/2012 4:50:34 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9912,6 +9912,7 @@ INSERT INTO YukonServices VALUES (16, 'SepMessageListener', 'classpath:com/canno
 INSERT INTO YukonServices VALUES (17, 'DigiPollingService', 'classpath:com/cannontech/services/digiPollingService/digiPollingService.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (18, 'CymDISTMessageListener', 'classpath:com/cannontech/services/cymDISTService/cymDISTServiceContext.xml', 'ServiceManager');
 INSERT INTO YukonServices VALUES (19, 'YukonMessageListener','classpath:com/cannontech/services/yukonMessageListener/yukonMessageListener.xml', 'ServiceManager');
+INSERT INTO YukonServices VALUES (20, 'OpcService','classpath:com/cannontech/services/opc/opcService.xml','ServiceManager');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
