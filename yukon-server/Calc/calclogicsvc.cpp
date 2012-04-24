@@ -1796,12 +1796,11 @@ void CtiCalcLogicService::loadConfigParameters()
         ENABLE_CRT_SHUTDOWN_CHECK;
 }
 
-void CtiCalcLogicService::sendUserQuit(void *who)
+void CtiCalcLogicService::sendUserQuit( const std::string & who )
 {
-    string *strPtr = (string *) who;
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << *strPtr << " has asked for shutdown."<< endl;
+        dout << CtiTime() << " **** Checkpoint **** " << who << " has asked for shutdown."<< endl;
     }
     UserQuit = TRUE;
 }

@@ -17,47 +17,64 @@
 
 #include "thread_register_data.h"
 
-using std::string;
 using namespace boost::posix_time;
 
-//===========================================================================================================
-// the first 4 args are required
-//===========================================================================================================
 
-CtiThreadRegData::CtiThreadRegData( int id,
-                                     string name,
-                                     Behaviours type,
-                                     int tickle_freq_sec,
-                                     behaviourFuncPtr ptr,
-                                     void *args ) :
+CtiThreadRegData::CtiThreadRegData( const int id,
+                                    const std::string & name,
+                                    const Behaviors type,
+                                    const int tickle_freq_sec,
+                                    const BehaviorFunction ptr,
+                                    const std::string & args )
+  : _id(id),
+    _name(name),
+    _behaviorType(type),
+    _tickleFreq(tickle_freq_sec),
+    _action(ptr),
+    _action_args(args),
     _tickledTime( second_clock::local_time() ),
     _critical(true),
     _actionTaken(false),
-   _unreportedCount(0),
-   _unreportedFilter(0),
+    _unreportedCount(0),
+    _unreportedFilter(0),
     _reported(true)
 {
-   _id = id;
-   _name = name;
-   _behaviourType = type;
-   _tickleFreq = tickle_freq_sec;
-   _action = ptr;
-   _action_args = args;
-
-   if(( !_id ) || ( _name == "default" ))
-      setReported(  false );
+    if (( !_id ) || ( _name == "default" ))
+    {
+       setReported(  false );
+    }
 }
+
+
+CtiThreadRegData::CtiThreadRegData( const int id,
+                                    const std::string & name,
+                                    const Behaviors type )
+  : _id(id),
+    _name(name),
+    _behaviorType(type),
+    _tickleFreq(0),
+    _action(0),
+    _action_args(""),
+    _tickledTime( second_clock::local_time() ),
+    _critical(true),
+    _actionTaken(false),
+    _unreportedCount(0),
+    _unreportedFilter(0),
+    _reported(true)
+{
+    if (( !_id ) || ( _name == "default" ))
+    {
+       setReported(  false );
+    }
+}
+
 
 //===========================================================================================================
 //===========================================================================================================
 
 CtiThreadRegData::~CtiThreadRegData()
 {
-    if( _action_args )
-    {
-        delete _action_args;
-        _action_args = NULL;
-    }
+    // empty
 }
 
 //===========================================================================================================
@@ -71,7 +88,7 @@ bool CtiThreadRegData::operator<( const CtiThreadRegData& y ) const
 //===========================================================================================================
 //===========================================================================================================
 
-string CtiThreadRegData::getName( void )
+std::string CtiThreadRegData::getName( void )
 {
    return( _name );
 }
@@ -87,9 +104,9 @@ int CtiThreadRegData::getId( void )
 //===========================================================================================================
 //===========================================================================================================
 
-CtiThreadRegData::Behaviours CtiThreadRegData::getBehaviour( void )
+CtiThreadRegData::Behaviors CtiThreadRegData::getBehavior( void )
 {
-   return( _behaviourType );
+   return( _behaviorType );
 }
 
 //===========================================================================================================
@@ -103,7 +120,7 @@ ptime CtiThreadRegData::getTickledTime( void )
 //===========================================================================================================
 //===========================================================================================================
 
-CtiThreadRegData::behaviourFuncPtr CtiThreadRegData::getActionFunc( void )
+CtiThreadRegData::BehaviorFunction CtiThreadRegData::getActionFunc( void )
 {
    return( _action );
 }
@@ -112,7 +129,7 @@ CtiThreadRegData::behaviourFuncPtr CtiThreadRegData::getActionFunc( void )
 // this should be a function that causes the death of whatever thread has gone awry
 //===========================================================================================================
 
-void CtiThreadRegData::setActionFunc( behaviourFuncPtr in )
+void CtiThreadRegData::setActionFunc( BehaviorFunction in )
 {
    _action = in;
 }
@@ -120,7 +137,7 @@ void CtiThreadRegData::setActionFunc( behaviourFuncPtr in )
 //===========================================================================================================
 //===========================================================================================================
 
-void* CtiThreadRegData::getActionArgs( void )
+std::string CtiThreadRegData::getActionArgs()
 {
    return( _action_args );
 }
@@ -128,12 +145,8 @@ void* CtiThreadRegData::getActionArgs( void )
 //===========================================================================================================
 //===========================================================================================================
 
-void CtiThreadRegData::setActionArgs( void* args )
+void CtiThreadRegData::setActionArgs( const std::string & args )
 {
-    if( _action_args )
-    {
-        delete _action_args;
-    }
    _action_args = args;
 }
 
@@ -215,16 +228,16 @@ void CtiThreadRegData::setTickleFreq( ULONG seconds_between_tickles )
 // is a 'out-to-lunch' episode
 //===========================================================================================================
 
-void CtiThreadRegData::setBehaviour( CtiThreadRegData::Behaviours in )
+void CtiThreadRegData::setBehavior( CtiThreadRegData::Behaviors in )
 {
-   _behaviourType = in;
+   _behaviorType = in;
 }
 
 
 //===========================================================================================================
 //===========================================================================================================
 
-void CtiThreadRegData::setName( const string in )
+void CtiThreadRegData::setName( const std::string in )
 {
    _name = in;
 }

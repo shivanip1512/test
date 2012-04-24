@@ -59,7 +59,7 @@ private:
 
     void _registerForPoints();
 
-    static void sendUserQuit(void *who);
+    static void sendUserQuit( const std::string & who );
 
     time_t   _nextCheckTime;
 

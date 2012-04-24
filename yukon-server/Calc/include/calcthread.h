@@ -63,7 +63,7 @@ private:
     void onUpdateThread( void );
     void historicalThread( void );
     void baselineThread( void );
-    static void sendUserQuit(void *who);
+    static void sendUserQuit( const std::string & who );
 
     mutable RWRecursiveLock<RWMutexLock> _mutex;
 

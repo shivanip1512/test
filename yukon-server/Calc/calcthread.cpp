@@ -1741,12 +1741,11 @@ void CtiCalculateThread::sendConstants()
     }
 }
 
-void CtiCalculateThread::sendUserQuit(void *who)
+void CtiCalculateThread::sendUserQuit( const std::string & who )
 {
-    string *strPtr = (string *) who;
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << *strPtr << " has asked for shutdown."<< endl;
+        dout << CtiTime() << " **** Checkpoint **** " << who << " has asked for shutdown."<< endl;
     }
     UserQuit = TRUE;
 }

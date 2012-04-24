@@ -264,7 +264,7 @@ void CtiThreadMonitor::processExpired( void )
                     messageOut( "tsisvs", "Thread W/ID", i->first, "", regData->getName(), "Is UNREPORTED" );
                     messageOut( "tsisvs", "Thread W/ID", i->first, " Last heard from: ", timeString( regData->getTickledTime() ),"");
 
-                    int reaction_type = regData->getBehaviour();
+                    int reaction_type = regData->getBehavior();
 
                     switch( reaction_type )
                     {
@@ -276,8 +276,8 @@ void CtiThreadMonitor::processExpired( void )
 
                         case CtiThreadRegData::Action:
                             {
-                                CtiThreadRegData::behaviourFuncPtr action1 = regData->getActionFunc();
-                                void* action1_args = regData->getActionArgs();
+                                CtiThreadRegData::BehaviorFunction action1 = regData->getActionFunc();
+                                std::string action1_args = regData->getActionArgs();
 
                                 if( action1 )
                                 {
@@ -341,7 +341,7 @@ void CtiThreadMonitor::processExtraCommands( void )
     {
         for( ThreadData::spiterator i = _threadData.getMap().begin(); i != _threadData.getMap().end(); )
         {
-            if( i->second->getBehaviour() == CtiThreadRegData::LogOut )
+            if( i->second->getBehavior() == CtiThreadRegData::LogOut )
             {
                 if( getDebugLevel() & DEBUGLEVEL_THREAD_MONITOR )
                     messageOut( "tsis", "Thread ID", i->first, "Logging Out" );

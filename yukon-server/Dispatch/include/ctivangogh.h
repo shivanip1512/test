@@ -120,7 +120,7 @@ private:
     bool processInputFunction(CHAR Char);
     void queueSignalToSystemLog( CtiSignalMsg *&pSig );
     void stopDispatch();
-    static void sendbGCtrlC(void *who);
+    static void sendbGCtrlC( const std::string & who );
     void sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr point );
     void sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointSPtr point, PtVerifyTriggerSPtr verificationPtr);
     bool limitStateCheck( const int alarm, const CtiTablePointLimit &limit, double val, int &direction);

@@ -7891,12 +7891,11 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
     return pMulti;
 }
 
-void CtiVanGogh::sendbGCtrlC(void *who)
+void CtiVanGogh::sendbGCtrlC( const std::string & who )
 {
-    string *strPtr = (string *) who;
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << *strPtr << " has asked for shutdown."<< endl;
+        dout << CtiTime() << " **** Checkpoint **** " << who << " has asked for shutdown."<< endl;
     }
     bGCtrlC = TRUE;
 }

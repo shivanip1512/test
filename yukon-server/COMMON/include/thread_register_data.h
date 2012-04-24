@@ -14,21 +14,25 @@ class IM_EX_CTIBASE CtiThreadRegData
 {
 public:
 
-   enum Behaviours   //absence detect behaviour type
+   enum Behaviors    //absence detect behavior type
    {
       None,
       Action,        //Function call
       LogOut
    };
 
-   typedef void (*behaviourFuncPtr)( void *p );
+   typedef void (*BehaviorFunction)( const std::string & p );
 
-   CtiThreadRegData( int id = 0,
-                      std::string name = "default",
-                      Behaviours type = None,
-                      int tickle_freq_sec = 0,
-                      behaviourFuncPtr ptr = 0,
-                      void *args = 0 );
+   CtiThreadRegData( const int id,
+                     const std::string & name,
+                     const Behaviors type,
+                     const int tickle_freq_sec,
+                     const BehaviorFunction ptr,
+                     const std::string & args );
+
+   CtiThreadRegData( const int id,
+                     const std::string & name,
+                     const Behaviors type );
 
    virtual ~CtiThreadRegData();
 
@@ -43,8 +47,8 @@ public:
    int getUnreportedCount(void);
    void setUnreportedCount(int count);
 
-   CtiThreadRegData::Behaviours getBehaviour( void );
-   void setBehaviour( CtiThreadRegData::Behaviours in );
+   Behaviors getBehavior( void );
+   void setBehavior( Behaviors in );
 
    ULONG getTickleFreq( void );
    void setTickleFreq( ULONG seconds_between_tickles );
@@ -52,11 +56,11 @@ public:
    boost::posix_time::ptime getTickledTime( void );
    void setTickledTime( boost::posix_time::ptime in );
 
-   behaviourFuncPtr getActionFunc( void );
-   void setActionFunc( behaviourFuncPtr in );
+   BehaviorFunction getActionFunc( void );
+   void setActionFunc( BehaviorFunction in );
 
-   void* getActionArgs( void );
-   void setActionArgs( void *in );
+   std::string getActionArgs();
+   void setActionArgs( const std::string & args );
 
    bool getReported( void );
    void setReported( const bool in );
@@ -74,8 +78,6 @@ protected:
 
 private:
 
-//   CtiThreadRegData();
-
    bool                     _reported;
    bool                     _critical;//is it critical or not (default true)
    bool                     _actionTaken;//clear until action is taken (makes sure we dont take action twice!)
@@ -84,18 +86,18 @@ private:
    int                      _unreportedFilter;
 
    //
-   //registeration: must haves
+   //registration: must haves
    //
    std::string          _name;
    int                  _id;
-   Behaviours           _behaviourType;
+   Behaviors            _behaviorType;
    ULONG                _tickleFreq;
 
    //
-   //registeration: optionals
+   //registration: optionals
    //
-   behaviourFuncPtr     _action;
-   void*                _action_args;
+   BehaviorFunction     _action;
+   std::string          _action_args;
 };
 
 // This will be used to sort these things in a CtiQueue.
