@@ -75,6 +75,7 @@ void CtiFDRSocketServer::clearFailedLayers() {
         ConnectionList::iterator tempIter = myIter;
         ++myIter;
         if ((*tempIter)->isFailed()) {
+            (*tempIter)->stop();
             delete *tempIter;
             _connectionList.erase(tempIter);
         }
