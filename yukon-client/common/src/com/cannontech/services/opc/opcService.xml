@@ -9,8 +9,7 @@
 
     <context:component-scan base-package="com.cannontech.services.opc"/>
 
-    <bean id="opcService" class="com.cannontech.common.opc.service.OpcService" 
-            scope="singleton" init-method="initialize"  destroy-method="shutdownAll">
+    <bean id="opcService" class="com.cannontech.common.opc.service.OpcService" scope="singleton" init-method="initialize">
         <property name="fdrTranslationDao" ref="fdrTranslationDao" />
         <property name="globalScheduledExecutor" ref = "globalScheduledExecutor" />
         <property name="config" ref = "configurationSource" />

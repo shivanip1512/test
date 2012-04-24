@@ -25,9 +25,6 @@ public interface YukonOpcConnection {
 	
 	public void shutdown();
 	
-    @SuppressWarnings("unchecked")
     public void removeOpcConnectionListener(OpcConnectionListener listener);
-    
-    @SuppressWarnings("unchecked")
     public void addOpcConnectionListener(OpcConnectionListener listener);
 }

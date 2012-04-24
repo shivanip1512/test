@@ -1,6 +1,12 @@
 package com.cannontech.common.opc.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -9,12 +15,12 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.UnknownKeyException;
-import com.cannontech.common.opc.OpcConnectionListener;
-import com.cannontech.common.opc.YukonOpcConnection;
-import com.cannontech.common.opc.impl.YukonOpcConnectionImpl;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
+import com.cannontech.common.opc.OpcConnectionListener;
+import com.cannontech.common.opc.YukonOpcConnection;
+import com.cannontech.common.opc.impl.YukonOpcConnectionImpl;
 import com.cannontech.common.opc.model.YukonOpcItem;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -30,6 +36,8 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class OpcService implements OpcConnectionListener, DBChangeListener {
 
@@ -43,10 +51,10 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
 
     /* Master.cfg values */
     private final Map<String, String> serverAddressMap;
+    private final Map<String,String> opcServerToStatusItemNameMap;
     private final Set<PointQuality> goodQualitiesSet;
     private int refreshSeconds;
     private boolean serviceEnabled = false;
-    private String cparmOpcItemName = "";
 
     /* Item Tracking Maps - dynamic */
     private final Map<String, Integer> opcServerToStatusPointIdMap;
@@ -56,10 +64,11 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
     private Logger log = YukonLogManager.getLogger(OpcService.class);
 
     public OpcService() {
-        serverAddressMap = new HashMap<String, String>();
-        opcServerToStatusPointIdMap = new HashMap<String, Integer>();
-        goodQualitiesSet = new HashSet<PointQuality>();
-        opcConnectionMap = new HashMap<String, YukonOpcConnection>();
+        serverAddressMap = Maps.newHashMap();
+        opcServerToStatusItemNameMap = Maps.newHashMap();
+        opcServerToStatusPointIdMap = Maps.newHashMap();
+        goodQualitiesSet = Sets.newHashSet();
+        opcConnectionMap = Maps.newHashMap();
     }
 
     /**
@@ -70,15 +79,10 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
             serviceEnabled = Boolean.parseBoolean(config.getRequiredString("OPC_ENABLED"));
         } catch (UnknownKeyException e) {
             log.debug(" Enabled flag is not setup, defaulting to disabled. ");
+            return;
         }
+        
         if (serviceEnabled) {
-
-            try {
-                cparmOpcItemName = config.getRequiredString("OPC_STATUSITEM");
-                log.info(" Status Item name set to " + cparmOpcItemName);
-            } catch (UnknownKeyException e) {
-                cparmOpcItemName = "";
-            }
 
             try {
                 refreshSeconds = Integer.parseInt(config.getRequiredString("OPC_REFRESH"));
@@ -90,6 +94,12 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
             /* Reset the Good Qualities List */
             loadGoodQualities();
 
+            try {
+                loadLinkStatusNames();
+            } catch (UnknownKeyException e) {
+                log.warn("No Status Items specified in master.cfg, will use default 'YukonStatusGroup.YukonStatus' for all connections.");
+            }
+            
             try {
                 String ips = config.getRequiredString("OPC_SERVERS");
                 StringTokenizer tokens = new StringTokenizer(ips, ";", false);
@@ -116,12 +126,10 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
 
         globalScheduledExecutor.execute(new Runnable() {
             public void run() {
-                List<FdrTranslation> opcTranslations =
-                    fdrTranslationDao.getByInterfaceType(FdrInterfaceType.OPC);
+                List<FdrTranslation> opcTranslations = fdrTranslationDao.getByInterfaceType(FdrInterfaceType.OPC);
 
                 /* Load Server Status Points */
-                List<FdrTranslation> statusPointsTranslations =
-                    fdrTranslationDao.getByInterfaceType(FdrInterfaceType.SYSTEM);
+                List<FdrTranslation> statusPointsTranslations = fdrTranslationDao.getByInterfaceType(FdrInterfaceType.SYSTEM);
                 setupServerStatusPoints(statusPointsTranslations);
 
                 for (FdrTranslation fdr : opcTranslations) {
@@ -241,6 +249,18 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
         }
     }
 
+    /**
+     * Loads the Server Name to Link Status Item Name Map.
+     */
+    private void loadLinkStatusNames() {
+        String masterCfgLine = config.getRequiredString("OPC_SERVER_TO_STATUS_ITEM_NAME");
+        StringTokenizer tokens = new StringTokenizer(masterCfgLine, ";", false);
+        while (tokens.hasMoreTokens()) {
+            String[] value = tokens.nextToken().split(":");
+            opcServerToStatusItemNameMap.put(value[0], value[1]);
+        }
+    }
+    
     private void loadGoodQualities() {
         goodQualitiesSet.clear();
         String qualName = "";
@@ -261,16 +281,6 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
                 }
             }
         }
-    }
-
-    /**
-     * Shuts down all OPC connections.
-     */
-    private void shutdownAll() {
-        for (YukonOpcConnection conn : opcConnectionMap.values()) {
-            conn.shutdown();
-        }
-
     }
 
     @Override
@@ -374,11 +384,9 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
     }
 
     /* This will have to change with a different implementation of Connection. */
-    private YukonOpcConnection createNewConnection(String serverAddress, String serverName,
-                                                   OpcConnectionListener listener) {
-
-        YukonOpcConnectionImpl conn =
-            new YukonOpcConnectionImpl(serverAddress, serverName, refreshSeconds);
+    private YukonOpcConnection createNewConnection(String serverAddress, String serverName, OpcConnectionListener listener) {
+        
+        YukonOpcConnectionImpl conn = new YukonOpcConnectionImpl(serverAddress, serverName, refreshSeconds);
 
         /* Configure Connection */
         conn.addOpcConnectionListener(listener);
@@ -387,8 +395,9 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
         conn.setDataSource(dataSource);
         conn.setScheduledExecutor(globalScheduledExecutor);
 
-        if (!cparmOpcItemName.equals("")) {
-            conn.setStatusItemName(cparmOpcItemName);
+        String statusItemName = opcServerToStatusItemNameMap.get(serverName);
+        if (statusItemName != null) {
+            conn.setStatusItemName(statusItemName);
         }
 
         return conn;

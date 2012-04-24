@@ -1,9 +1,7 @@
 package com.cannontech.common.opc.impl;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -145,7 +143,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 	}
 	
 	private boolean registerStatusItem() {
-		statusGroup = opcServer.addGroup(statusGroupName, yukonOpcStatusGroupId, refreshRate);
+	    statusGroup = opcServer.addGroup(statusGroupName, yukonOpcStatusGroupId, refreshRate);
 		int [] retIds = statusGroup.addItems(new String[]{statusItemName}, new int[]{yukonOpcStatusItemId});
 		statusItemId = retIds[0];
 		
@@ -204,31 +202,20 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		return ret;
 	}
 	
-    @SuppressWarnings("unchecked")
     public void removeOpcConnectionListener(OpcConnectionListener listener) {
-        List list = Arrays.asList(connectionStatusListeners.getListenerList());
-        if (list.contains(listener)) {
-            connectionStatusListeners.remove(OpcConnectionListener.class,
-                                             listener);
-        }
+        connectionStatusListeners.remove(OpcConnectionListener.class, listener);
     }
     
-    @SuppressWarnings("unchecked")
     public void addOpcConnectionListener(OpcConnectionListener listener) {
-    	List list = Arrays.asList(connectionStatusListeners.getListenerList());
-    	if (!list.contains(listener)) {
-    		connectionStatusListeners.add(OpcConnectionListener.class, listener);
-    	}
+        connectionStatusListeners.add(OpcConnectionListener.class, listener);
     }
 
-    @SuppressWarnings("unchecked")
     private void sendConnectionStatus(boolean status) {
     	connStatus = status;
         Object[] list = connectionStatusListeners.getListenerList();
         for (int i = 0; i < list.length; i += 2) {
-            Class listenerClass = (Class) (list[i]);
-            if (listenerClass == OpcConnectionListener.class) {
-                OpcConnectionListener listener = (OpcConnectionListener) (list[i + 1]);
+            if (list[i] == OpcConnectionListener.class) {
+                OpcConnectionListener listener = (OpcConnectionListener) (list[i+1]);
                 listener.connectionStatusChanged(serverName,status);
             }
         }
