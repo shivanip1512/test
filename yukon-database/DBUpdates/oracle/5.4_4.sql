@@ -11,3 +11,4 @@ VALUES (20,'OpcService','classpath:com/cannontech/services/opc/opcService.xml','
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.4', 'Garrett D', '24-APR-2012', 'Latest Update', 4 );
