@@ -14,6 +14,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.opc.OpcConnectionListener;
 import com.cannontech.common.opc.YukonOpcConnection;
 import com.cannontech.common.opc.model.YukonOpcItem;
+import com.cannontech.common.opc.model.YukonOpcServer;
 import com.cannontech.common.opc.service.OpcService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -34,11 +35,11 @@ import com.netmodule.jpc.driver.opc.OpcServer;
 public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, AllPointDataListener {	
 	private Logger log = YukonLogManager.getLogger(OpcService.class);
 	
-	public String statusGroupName = "YukonStatusGroup";
-	public String statusItemName = "YukonStatusGroup.YukonStatus";
+	public static final String statusGroupName = "YukonStatusGroup";
+	private String statusItemName;
 	
-	public static int    yukonOpcStatusItemId = 1;
-	public static int    yukonOpcStatusGroupId = 1;
+	public static final int    yukonOpcStatusItemId = 1;
+	public static final int    yukonOpcStatusGroupId = 1;
 	
 	private int nextClientGroupHandle = yukonOpcStatusGroupId + 1;
 	
@@ -55,7 +56,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
     private final Map<Integer,YukonOpcItem> sendItemMap;
     private final int refreshRate;
     
-    private OpcServer opcServer;
+    private YukonOpcServer opcServer;
     private int statusItemId = -1;
 	private OpcGroup statusGroup = null;
     
@@ -64,19 +65,19 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 	private AsyncDynamicDataSource dataSource;
 	private Set<PointQuality> goodQualitiesSet;
 	
-    public YukonOpcConnectionImpl(String host, String serverName, int refreshRate) {
+    public YukonOpcConnectionImpl(String host, String serverName, String statusItemName, int refreshRate) {
 		this.hostIp = host;
 		this.serverName = serverName;
 		this.refreshRate = refreshRate;
+		this.statusItemName = statusItemName;
 		
 		connectionStatusListeners = new EventListenerList();
-		
 		groupMap = new HashMap<String,OpcGroup>();
 		sinkMap = new HashMap<OpcGroup,YukonOpcAdviceSinkImpl>();
 		receiveItemMap = new HashMap<Integer,YukonOpcItem>();
 		sendItemMap = new HashMap<Integer,YukonOpcItem>();
 		
-		opcServer = new OpcServer();
+		opcServer = new YukonOpcServer(new OpcServer(),this.statusItemName);
 	}
 		
 	public boolean connect() {
@@ -85,7 +86,6 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 			
 			if (ret) {
 				log.info( serverName + ", is connected." );
-				
 				boolean status = registerStatusItem();
 				
 				if (!status) {
@@ -143,17 +143,26 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 	}
 	
 	private boolean registerStatusItem() {
-	    statusGroup = opcServer.addGroup(statusGroupName, yukonOpcStatusGroupId, refreshRate);
+	    statusGroup = opcServer.addGroup(statusGroupName, yukonOpcStatusGroupId,refreshRate);
+	    
 		int [] retIds = statusGroup.addItems(new String[]{statusItemName}, new int[]{yukonOpcStatusItemId});
 		statusItemId = retIds[0];
 		
 		boolean ret = statusItemId > 0;
 		
 		if (ret) {
-			log.info( serverName + "'s, Status Item is registered." );
+			log.info( serverName + "'s, Status Item is registered." + statusItemName);
 			sendConnectionStatus(true);
 		} else {
-			log.error( serverName + "'s, Status Item could not be registered." );
+//		        int [] retIdsb = statusGroup.addItems(new String[]{statusItemName}, new int[]{yukonOpcStatusItemId});
+//		        statusItemId = retIdsb[0]; 
+//		        ret = statusItemId > 0;
+//		        if (ret) {
+//		            log.info( serverName + "'s, Status Item is registered." + statusItemName);
+//		            sendConnectionStatus(true);
+//		        } else {
+		            log.error( serverName + "'s, Status Item could not be registered. " + statusItemName );
+//		        }
 		}
 		
 		return ret;
@@ -464,9 +473,4 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
     	sendConnectionStatus(true);
     	return true;
     }
-
-	public void setStatusItemName(String statusItemName) {
-		this.statusItemName = statusItemName;
-	}
-    
 }

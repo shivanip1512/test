@@ -86,6 +86,18 @@ public class YukonOpcAdviceSinkImpl extends OpcAdviseSink {
                 newValue += yOpcItem.getOffset();
                 break;
             }
+            case OpcItem.DATA_TYPE_I1: {
+                newValue = opcItem.getByte();
+                newValue *= yOpcItem.getMultiplier();
+                newValue += yOpcItem.getOffset();
+                break;
+            }
+            case 17: {
+                newValue = opcItem.getByte();
+                newValue *= yOpcItem.getMultiplier();
+                newValue += yOpcItem.getOffset();
+                break;
+            }
             default: {
                 log.error("Received an unhandled data type from the OPC server. Type: " + type);
                 return;

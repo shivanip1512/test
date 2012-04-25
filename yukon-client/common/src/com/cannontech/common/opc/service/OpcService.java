@@ -244,7 +244,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
         }
 
         if (item == null) {
-            log.error(" Error adding item, " + itemName + ". to connection");
+            log.error(" Error adding item, " + itemName + " to connection");
             return;
         }
     }
@@ -385,8 +385,12 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
 
     /* This will have to change with a different implementation of Connection. */
     private YukonOpcConnection createNewConnection(String serverAddress, String serverName, OpcConnectionListener listener) {
-        
-        YukonOpcConnectionImpl conn = new YukonOpcConnectionImpl(serverAddress, serverName, refreshSeconds);
+        String statusItemName = opcServerToStatusItemNameMap.get(serverName);
+        if (statusItemName == null) {
+            statusItemName = "YukonStatusGroup.YukonStatus";
+        }
+
+        YukonOpcConnectionImpl conn = new YukonOpcConnectionImpl(serverAddress, serverName, statusItemName, refreshSeconds);
 
         /* Configure Connection */
         conn.addOpcConnectionListener(listener);
@@ -395,10 +399,6 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
         conn.setDataSource(dataSource);
         conn.setScheduledExecutor(globalScheduledExecutor);
 
-        String statusItemName = opcServerToStatusItemNameMap.get(serverName);
-        if (statusItemName != null) {
-            conn.setStatusItemName(statusItemName);
-        }
 
         return conn;
     }
