@@ -45,9 +45,7 @@ public class YukonOpcServer {
      * @return
      */
     private void registerExtraItem(OpcGroup opcGroup) {
-        int ret [] = opcGroup.addItems(new String[]{statusItemName}, new int[]{YukonOpcConnectionImpl.yukonOpcStatusItemId});
-        int i = 0;
-        i++;
+        opcGroup.addItems(new String[]{statusItemName}, new int[]{YukonOpcConnectionImpl.yukonOpcStatusItemId});
         return;
     }
     

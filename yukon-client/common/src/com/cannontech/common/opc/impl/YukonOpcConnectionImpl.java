@@ -77,7 +77,9 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		receiveItemMap = new HashMap<Integer,YukonOpcItem>();
 		sendItemMap = new HashMap<Integer,YukonOpcItem>();
 		
-		opcServer = new YukonOpcServer(new OpcServer(),this.statusItemName);
+		OpcServer jopcServer = new OpcServer();
+		
+		opcServer = new YukonOpcServer(jopcServer,this.statusItemName);
 	}
 		
 	public boolean connect() {
@@ -154,15 +156,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 			log.info( serverName + "'s, Status Item is registered." + statusItemName);
 			sendConnectionStatus(true);
 		} else {
-//		        int [] retIdsb = statusGroup.addItems(new String[]{statusItemName}, new int[]{yukonOpcStatusItemId});
-//		        statusItemId = retIdsb[0]; 
-//		        ret = statusItemId > 0;
-//		        if (ret) {
-//		            log.info( serverName + "'s, Status Item is registered." + statusItemName);
-//		            sendConnectionStatus(true);
-//		        } else {
-		            log.error( serverName + "'s, Status Item could not be registered. " + statusItemName );
-//		        }
+		    log.error( serverName + "'s, Status Item could not be registered. " + statusItemName );
 		}
 		
 		return ret;
