@@ -129,7 +129,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
                         mask = 0x0F;
                     else
                         mask = 0xF0;
-                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extendedStatus[j] = _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[(j+1/2)] & mask;
+                    _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extendedStatus[j] = _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[(j+1)/2] & mask;
                 }
 
             }
