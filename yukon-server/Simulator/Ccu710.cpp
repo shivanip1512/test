@@ -161,13 +161,9 @@ error_t Ccu710::readRequest(CommsIn &comms_in, request_t &request) const
 
     error_t error;
 
-    if( !comms_in.read(request_data_oitr, 1) )
+    if( !comms_in.read(back_inserter(request.message), 2) )
     {
         return "Timeout reading address/operation";
-    }
-    if( isExtendedAddress(request.message[0]) && !comms_in.read(request_data_oitr, 1) )
-    {
-        return "Timeout reading address";
     }
     if( error = extractAddress(request.message, request.address) )
     {

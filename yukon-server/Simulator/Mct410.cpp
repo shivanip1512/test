@@ -42,9 +42,7 @@ BehaviorCollection<MctBehavior> Mct410Sim::_behaviorCollection;
 
 Mct410Sim::Mct410Sim(int address) :
     _address(address),
-    _memory(address, MemoryMapSize), 
-    _last_freeze_timestamp(CtiTime::neg_infin),
-    _last_voltage_freeze_timestamp(CtiTime::neg_infin),
+    _memory(address, MemoryMapSize),
     _mct410tag("MCT410(" + CtiNumStr(address) + ")")
 {
     if( !_memory.isInitialized() )
@@ -69,6 +67,9 @@ Mct410Sim::Mct410Sim(int address) :
     
         // Default the Demand Interval to 15 minutes.
         _memory.writeValueToMemoryMap(MM_DemandInterval, 0x0f);
+
+        // Default the Load Profile Interval to 15 minutes.
+        _memory.writeValueToMemoryMap(MM_LoadProfileInterval, 0x0f);
     }
 }
 
@@ -102,25 +103,25 @@ Mct410Sim::function_reads_t Mct410Sim::initFunctionReads()
 
     read_range = makeFunctionReadRange(FR_LoadProfileChannel1Min,
                                        FR_LoadProfileChannel1Max,
-                                       boost::bind(&Mct410Sim::getLoadProfile, _1, 1, _2));
+                                       boost::bind(&Mct410Sim::getLoadProfile, _1, _2, 1));
 
     reads.insert(read_range.begin(), read_range.end());
 
     read_range = makeFunctionReadRange(FR_LoadProfileChannel2Min,
                                        FR_LoadProfileChannel2Max,
-                                       boost::bind(&Mct410Sim::getLoadProfile, _1, 2, _2));
+                                       boost::bind(&Mct410Sim::getLoadProfile, _1, _2, 2));
 
     reads.insert(read_range.begin(), read_range.end());
 
     read_range = makeFunctionReadRange(FR_LoadProfileChannel3Min,
                                        FR_LoadProfileChannel3Max,
-                                       boost::bind(&Mct410Sim::getLoadProfile, _1, 3, _2));
+                                       boost::bind(&Mct410Sim::getLoadProfile, _1, _2, 3));
 
     reads.insert(read_range.begin(), read_range.end());
 
     read_range = makeFunctionReadRange(FR_LoadProfileChannel4Min,
                                        FR_LoadProfileChannel4Max,
-                                       boost::bind(&Mct410Sim::getLoadProfile, _1, 4, _2));
+                                       boost::bind(&Mct410Sim::getLoadProfile, _1, _2, 4));
 
     reads.insert(read_range.begin(), read_range.end());
 
@@ -131,6 +132,7 @@ Mct410Sim::function_writes_t Mct410Sim::initFunctionWrites()
 {
     function_writes_t writes;
 
+    writes[FW_Intervals]          = function_write_t(&Mct410Sim::putIntervals);
     writes[FW_PointOfInterest]    = function_write_t(&Mct410Sim::putPointOfInterest);
     writes[FW_ScheduledFreezeDay] = function_write_t(&Mct410Sim::putScheduledFreezeDay);
 
@@ -158,9 +160,13 @@ Mct410Sim::commands_t Mct410Sim::initCommands()
 {
     commands_t commands;
 
-    commands[C_ClearAllEventFlags] = command_t(&Mct410Sim::clearEventFlags);
-    commands[C_PutFreezeOne]       = command_t(&Mct410Sim::putFreezeOne);
-    commands[C_PutFreezeTwo]       = command_t(&Mct410Sim::putFreezeTwo);
+    commands[C_ClearAllEventFlags]      = command_t(&Mct410Sim::clearEventFlags);
+    commands[C_PutFreezeOne]            = command_t(boost::bind(&Mct410Sim::putFreeze, _1, 1));
+    commands[C_PutFreezeTwo]            = command_t(boost::bind(&Mct410Sim::putFreeze, _1, 2));
+    commands[C_SetLpIntervalFiveMin]    = command_t(boost::bind(&Mct410Sim::setLpInterval, _1, 5));
+    commands[C_SetLpIntervalFifteenMin] = command_t(boost::bind(&Mct410Sim::setLpInterval, _1, 15));
+    commands[C_SetLpIntervalThirtyMin]  = command_t(boost::bind(&Mct410Sim::setLpInterval, _1, 30));
+    commands[C_SetLpIntervalSixtyMin]   = command_t(boost::bind(&Mct410Sim::setLpInterval, _1, 60));
 
     return commands;
 }
@@ -490,16 +496,6 @@ bytes Mct410Sim::getScheduledFreezeDay()
     return bytes(1, _memory.getValueFromMemoryMapLocation(MM_ScheduledFreezeDay));
 }
 
-void Mct410Sim::putFreezeOne()
-{
-    putFreeze(1);
-}
-
-void Mct410Sim::putFreezeTwo()
-{
-    putFreeze(2);
-}
-
 /**
  * From MCT410 SSPEC: 
  * 
@@ -597,6 +593,65 @@ void Mct410Sim::putFreeze(unsigned incoming_freeze)
     }
 }
 
+/**
+ * From MCT-410 SSPEC: 
+ *  
+ * 4.22 Load Profile Interval 
+ *  
+ * Interval, in minute increments, over which standard load 
+ * profile values are kept for.  Valid values are 5, 15, 30 and 
+ * 60. This value should not be written directly but rather is 
+ * set by commands 0x70 - 0x73. 
+ */
+void Mct410Sim::setLpInterval(unsigned interval_minutes)
+{
+    switch( interval_minutes )
+    {
+        case 5:
+        case 15:
+        case 30:
+        case 60:
+        {
+            _memory.writeValueToMemoryMap(MM_LoadProfileInterval, interval_minutes);
+        }
+    }
+}
+
+void Mct410Sim::setDemandInterval(unsigned interval_minutes)
+{
+    if( interval_minutes >= 0 && interval_minutes <= 60 )
+    {
+        _memory.writeValueToMemoryMap(MM_DemandInterval, interval_minutes);
+    }
+}
+
+void Mct410Sim::setVoltageDemandInterval(unsigned interval_minutes)
+{
+    if( interval_minutes >= 0 && interval_minutes <= 255 )
+    {
+        _memory.writeValueToMemoryMap(MM_VoltageDemandInterval, interval_minutes);
+    }
+}
+
+void Mct410Sim::setVoltageLpInterval(unsigned interval_minutes)
+{
+    switch( interval_minutes )
+    {
+        case 5:
+        case 15:
+        case 30:
+        case 60:
+        {
+            _memory.writeValueToMemoryMap(MM_VoltageLoadProfileInterval, interval_minutes);
+        }
+    }
+}
+
+unsigned Mct410Sim::getLpIntervalSeconds()
+{
+    return (SecondsPerMinute * _memory.getValueFromMemoryMapLocation(MM_LoadProfileInterval));
+}
+
 void Mct410Sim::putScheduledFreezeDay(const bytes &data)
 {
     if( !data.empty() )
@@ -605,13 +660,42 @@ void Mct410Sim::putScheduledFreezeDay(const bytes &data)
     }
 }
 
+void Mct410Sim::putIntervals(const bytes &data)
+{
+    // This should always be 4 bytes of data.
+    if( data.size() == 4 )
+    {
+        setDemandInterval(data[0]);
+        setLpInterval(data[1]);
+        setVoltageDemandInterval(data[2]);
+        setVoltageLpInterval(data[3]);
+    }
+}
+
 bytes Mct410Sim::getFrozenKwh()
 {
-    // Bytes 0-2:  Frozen Meter Read 1
-    bytes data = _memory.getValueVectorFromMemoryMap(MM_FrozenMeterReading1, MML_FrozenMeterReading1);
+    const bytes frozenData = _memory.getValueVectorFromMemoryMap(MM_FrozenMeterReading1, MML_FrozenMeterReading1);
+    unsigned freezeCounter = _memory.getValueFromMemoryMapLocation(MM_FreezeCounter);
+
+    return formatFrozenKwh(frozenData, freezeCounter);
+}
+
+bytes Mct410Sim::formatFrozenKwh(const bytes &frozenData, unsigned freezeCounter)
+{
+    bytes data;
+
+    if (frozenData.size() == 3)
+    {
+        // Bytes 0-2:  Frozen Meter Read 1
+        data.insert(data.begin(), frozenData.begin(), frozenData.end());
+    }
+    else
+    {
+        data.insert(data.begin(), 3, 0x00);
+    }
 
     // Byte 3: Freeze Counter
-    data.insert(data.end(), _memory.getValueFromMemoryMapLocation(MM_FreezeCounter));
+    data.insert(data.end(), freezeCounter);
 
     // Bytes 4-6:  Frozen Meter Read 2
     // Bytes 7-9:  Frozen Meter Read 3
@@ -623,33 +707,44 @@ bytes Mct410Sim::getFrozenKwh()
 
 bytes Mct410Sim::getAllFrozenChannel1Readings()
 {
+    const short peakDemand = _memory.getValueFromMemoryMapLocation(MM_FrozenPeakDemand1, 
+                                                                   MML_FrozenPeakDemand1);
+    const unsigned long frozenTime = _memory.getValueFromMemoryMapLocation(MM_FrozenPeakDemand1Timestamp, 
+                                                                           MML_FrozenPeakDemandTimestamp);
+    const unsigned long frozenRead = _memory.getValueFromMemoryMapLocation(MM_FrozenMeterReading1, 
+                                                                           MML_FrozenMeterReading1);
+
+    const unsigned freezeCounter = _memory.getValueFromMemoryMapLocation(MM_FreezeCounter);
+
+    const unsigned hwh = getHectoWattHours(_address, CtiTime::now());
+
+    return formatAllFrozenChannel1Readings(frozenRead, frozenTime, hwh, freezeCounter, peakDemand);
+}
+
+bytes Mct410Sim::formatAllFrozenChannel1Readings(const unsigned long frozenRead, const unsigned long frozenTime, 
+                                                 const unsigned hWh, const unsigned freezeCounter, const short peakDemand )
+{
     bytes data;
 
     // Bytes 0-1: Frozen Peak Demand #1
-    short int peakDemand = _memory.getValueFromMemoryMapLocation(MM_FrozenPeakDemand1, MML_FrozenPeakDemand1);
     data.push_back(peakDemand >> 8);
     data.push_back(peakDemand);
 
     // Bytes 2-5: Frozen Time Of Peak #1
-    unsigned long frozenTime = _memory.getValueFromMemoryMapLocation(MM_FrozenPeakDemand1Timestamp, 
-                                                                     MML_FrozenPeakDemandTimestamp);
-
     data.push_back(frozenTime >> 24);
     data.push_back(frozenTime >> 16);
     data.push_back(frozenTime >> 8);
     data.push_back(frozenTime);
 
     // Bytes 6-8: Frozen Meter Read #1
-    unsigned long frozenRead = _memory.getValueFromMemoryMapLocation(MM_FrozenMeterReading1, MML_FrozenMeterReading1);
     data.push_back(frozenRead >> 16);
     data.push_back(frozenRead >> 8);
     data.push_back(frozenRead);
 
     // Byte 9: Freeze Counter
-    data.push_back(_memory.getValueFromMemoryMapLocation(MM_FreezeCounter));
+    data.push_back(freezeCounter);
 
     // Bytes 10-12: Current Meter Read #1
-    unsigned hWh = getHectoWattHours(_address, CtiTime());
     data.push_back(hWh >> 16);
     data.push_back(hWh >> 8);
     data.push_back(hWh);
@@ -659,17 +754,22 @@ bytes Mct410Sim::getAllFrozenChannel1Readings()
 
 bytes Mct410Sim::getAllCurrentPeakDemandReadings()
 {
-    bytes data, peakDemand, peakTimestamp, consumption, zeroes(4, 0x00);
+    bytes peakDemand = _memory.getValueVectorFromMemoryMap(MM_CurrentPeakDemand1, MML_CurrentPeakDemand1);
+    bytes peakTimestamp = _memory.getValueVectorFromMemoryMap(MM_CurrentPeakDemand1Timestamp, MML_CurrentPeakDemand1Timestamp);
+
+    return formatAllCurrentPeakDemandReadings(_address, peakDemand, peakTimestamp);
+}
+
+bytes Mct410Sim::formatAllCurrentPeakDemandReadings(const unsigned address, const bytes &peakDemand, const bytes &peakTimestamp)
+{
+    bytes data, consumption, zeroes(4, 0x00);
 
     CtiTime now;
 
     //  ensure reads during the same minute will return the same value.
     now -= now.second();
 
-    peakDemand = _memory.getValueVectorFromMemoryMap(MM_CurrentPeakDemand1, MML_CurrentPeakDemand1);
-    peakTimestamp = _memory.getValueVectorFromMemoryMap(MM_CurrentPeakDemand1Timestamp, MML_CurrentPeakDemand1Timestamp);
-
-    const unsigned consumption_hWh = getHectoWattHours(_address, now);
+    const unsigned consumption_hWh = getHectoWattHours(address, now);
 
     consumption.push_back(consumption_hWh >> 16);
     consumption.push_back(consumption_hWh >> 8);
@@ -691,14 +791,19 @@ bytes Mct410Sim::getAllCurrentPeakDemandReadings()
 
 bytes Mct410Sim::getAllCurrentMeterReadings()
 {
-    bytes data = bytes(13, 0x00);
+    return formatAllCurrentMeterReadings(_address);
+}
+
+bytes Mct410Sim::formatAllCurrentMeterReadings(const unsigned address)
+{
+    bytes data(13, 0x00);
 
     CtiTime now;
 
     //  ensure reads during the same minute will return the same value.
     now -= now.second();
 
-    const unsigned   consumption_hWh  = getHectoWattHours(_address, now);
+    const unsigned   consumption_hWh  = getHectoWattHours(address, now);
 
     const unsigned char *byte_ptr = reinterpret_cast<const unsigned char *>(&consumption_hWh);
 
@@ -711,58 +816,86 @@ bytes Mct410Sim::getAllCurrentMeterReadings()
 unsigned Mct410Sim::getHectoWattHours(const unsigned address, const CtiTime now )
 {
     const unsigned duration = now.seconds() - DawnOfTime.seconds();
-    const double   consumption_Ws  = makeValue_consumption(address, DawnOfTime, duration);
+    const double   consumption_Ws  = makeValueConsumption(address, DawnOfTime, duration);
     const double   consumption_Wh  = consumption_Ws / SecondsPerHour;
     //  hecto-watt-hours - the 100 watt-hour units the MCT returns
+
+    /*  Introduced an offset value to be added to the value of the curve
+        based  on the value of the address passed in to the function. This
+        offset allows for a range of 0-7350 to be added to the kWh reading
+        that is returned to the device, thus providing a better way of
+        distinguishing meter readings whose addresses are similar or near
+        each other in value. Meters whose addresses are within one of each
+        other will now have a 7.35 kWh difference between them for easier
+        distinguishing.                                                     */
+    const double offset = (address % 1000) * 7350;
+
+    int reading = consumption_Wh + (offset * getConsumptionMultiplier(address));
 
     // Mod the hWh by 10000000 to reduce the range from 0 to 9999999,
     // since the MCT Device reads hWh this corresponds to 999,999.9 kWh
     // which is the desired changeover point.
-    return int(consumption_Wh / 100.0) % 10000000;
+    return int(reading / 100.0) % 10000000;
 }
 
 bytes Mct410Sim::getAllRecentDemandReadings()
 {
-    bytes data = bytes(13, 0x00);
+    const unsigned nowSeconds = CtiTime::now().seconds();
 
-    const unsigned now_seconds = CtiTime::now().seconds();
+    const short peakDemand = _memory.getValueFromMemoryMapLocation(MM_CurrentPeakDemand1, MML_CurrentPeakDemand1);
+    const unsigned demandInterval = _memory.getValueFromMemoryMapLocation(MM_DemandInterval) * SecondsPerMinute;
 
-    const unsigned beginningOfLastInterval = now_seconds - (now_seconds % Demand_Interval_seconds) - Demand_Interval_seconds;
-
-    const double demand_hwh_begin = getHectoWattHours(_address, beginningOfLastInterval);
-    const double demand_hwh_end   = getHectoWattHours(_address, beginningOfLastInterval + Demand_Interval_seconds);
-
-    const double diffWh = (demand_hwh_end - demand_hwh_begin) * 100.0;
-
-    int dynamicDemand = mct410_utility::makeDynamicDemand(diffWh);
-
-    short int peakDemand = _memory.getValueFromMemoryMapLocation(MM_CurrentPeakDemand1, MML_CurrentPeakDemand1);
+    int dynamicDemand = getDynamicDemand(_address, demandInterval, nowSeconds);
 
     if( dynamicDemand > peakDemand )
     {
         // New peak demand value and timestamp
-        bytes demandData, demandTimestamp;
-
-        demandData.push_back(dynamicDemand >> 8);
-        demandData.push_back(dynamicDemand);
-
-        demandTimestamp.push_back(now_seconds >> 24);
-        demandTimestamp.push_back(now_seconds >> 16);
-        demandTimestamp.push_back(now_seconds >>  8);
-        demandTimestamp.push_back(now_seconds);
-
-        _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1, demandData);
-        _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1Timestamp, demandTimestamp);
+        writeNewPeakDemand(dynamicDemand, nowSeconds);
     }
+
+    return formatAllRecentDemandReadings(dynamicDemand);
+}
+
+bytes Mct410Sim::formatAllRecentDemandReadings(const int dynamicDemand)
+{
+    bytes data(13, 0x00);
 
     const unsigned char *demand_ptr = reinterpret_cast<const unsigned char *>(&dynamicDemand);
 
     //  copy out the two least-significant bytes in big-endian order
     reverse_copy(demand_ptr, demand_ptr + 2, data.begin());
 
-//  TODO-P2: recent voltage, outages, ch2/3 demand
+    //  TODO-P2: recent voltage, outages, ch2/3 demand
 
     return data;
+}
+
+int Mct410Sim::getDynamicDemand(const unsigned address, const unsigned demandIntervalSeconds, unsigned nowSeconds)
+{
+    const unsigned beginningOfLastInterval = nowSeconds - (nowSeconds % demandIntervalSeconds) - demandIntervalSeconds;
+
+    const double demand_hwh_begin = getHectoWattHours(address, beginningOfLastInterval);
+    const double demand_hwh_end   = getHectoWattHours(address, beginningOfLastInterval + demandIntervalSeconds);
+
+    const double diffWh = (demand_hwh_end - demand_hwh_begin) * 100.0;
+
+    return mct410_utility::makeDynamicDemand(diffWh);
+}
+
+void Mct410Sim::writeNewPeakDemand(const int dynamicDemand, const unsigned seconds)
+{
+    bytes demandData, demandTimestamp;
+
+    demandData.push_back(dynamicDemand >> 8);
+    demandData.push_back(dynamicDemand);
+
+    demandTimestamp.push_back(seconds >> 24);
+    demandTimestamp.push_back(seconds >> 16);
+    demandTimestamp.push_back(seconds >>  8);
+    demandTimestamp.push_back(seconds);
+
+    _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1, demandData);
+    _memory.writeDataToMemoryMap(MM_CurrentPeakDemand1Timestamp, demandTimestamp);
 }
 
 double Mct410Sim::getConsumptionMultiplier(const unsigned address)
@@ -789,37 +922,27 @@ double Mct410Sim::getConsumptionMultiplier(const unsigned address)
     {                                       //
         return 10.0;                        //  This scale was made in order to represent more real-world
     }                                       //  readings and model the fact that some households consume
-    else                                    //  drastically more than other households do. The consumption
+    else                                    //  drastically more than other households do.
     {
         return 20.0;
     }
 }
 
 //  The consumption value is constructed using the current time and meter address.
-double Mct410Sim::makeValue_consumption(const unsigned address, const CtiTime &c_time, const unsigned duration)
+double Mct410Sim::makeValueConsumption(const unsigned address, const CtiTime time, const unsigned duration)
 {
     if( duration == 0 )  return 0;
 
     const double consumption_multiplier = getConsumptionMultiplier(address);
 
-    const unsigned begin_seconds = c_time.seconds();
-    const unsigned end_seconds   = c_time.seconds() + duration;
+    const unsigned begin_seconds = time.seconds();
+    const unsigned end_seconds   = time.seconds() + duration;
 
     const double year_period = 2.0 * Pi / static_cast<double>(SecondsPerYear);
     const double day_period  = 2.0 * Pi / static_cast<double>(SecondsPerDay);
 
     const double year_period_reciprocal = 1.0 / year_period;
     const double day_period_reciprocal  = 1.0 / day_period;
-
-    /*  Introduced an offset value to be added to the value of the curve
-        based  on the value of the address passed in to the function. This
-        offset allows for a range of 0-7350 to be added to the kWh reading
-        that is returned to the device, thus providing a better way of
-        distinguishing meter readings whose addresses are similar or near
-        each other in value. Meters whose addresses are within one of each
-        other will now have a 7.35 kWh difference between them for easier
-        distinguishing.                                                     */
-    const double offset = (address % 1000) * 7.35 * 3600000;
 
     /*  These multipliers affect the amplification of the curve for the
         consumption. amp_year being set at 700.0 gives a normalized
@@ -830,8 +953,7 @@ double Mct410Sim::makeValue_consumption(const unsigned address, const CtiTime &c
 
 //  TODO-P3: move all value computation into policy classes
     return (amp_year * (duration + year_period_reciprocal * (sin(begin_seconds * year_period) - sin(end_seconds * year_period))) +
-           amp_day  * (duration + day_period_reciprocal  * (sin(begin_seconds * day_period)  - sin(end_seconds * day_period))) +
-           offset) * consumption_multiplier;
+           amp_day  * (duration + day_period_reciprocal  * (sin(begin_seconds * day_period)  - sin(end_seconds * day_period)))) * consumption_multiplier;
 }
 
 //  Generate output using two cosine waves - 1 year period and 1 day period.
@@ -861,10 +983,18 @@ double Mct410Sim::makeValue_averageDemand(const unsigned address, const CtiTime 
         return makeValue_instantaneousDemand(address, begin_time);
     }
 
-    return makeValue_consumption(address, begin_time, duration) / duration;
+    return makeValueConsumption(address, begin_time, duration) / duration;
 }
 
-bytes Mct410Sim::getLongLoadProfile(unsigned offset)
+bytes Mct410Sim::getLongLoadProfile(const unsigned offset)
+{
+    unsigned lpIntervalSeconds = getLpIntervalSeconds();
+
+    return formatLongLoadProfile(offset, _address, _llp_interest.time, _llp_interest.channel, lpIntervalSeconds);
+}
+
+bytes Mct410Sim::formatLongLoadProfile(const unsigned offset, const unsigned address, const CtiTime periodOfInterest,
+                                       const unsigned channelOfInterest, const unsigned lpIntervalSeconds )
 {
     // Example of the crc for byte 0 of LLP
     //
@@ -878,10 +1008,6 @@ bytes Mct410Sim::getLongLoadProfile(unsigned offset)
     //    interest[4] = _llpInterest.channel + 1;
     //
     //    if( crc8(interest, 5) == DSt->Message[0] )
-
-    //  CRC calculation
-    const CtiTime  periodOfInterest  = _llp_interest.time;
-    const unsigned channelOfInterest = _llp_interest.channel;
 
     bytes interest_bytes;
     byte_appender interest_oitr = byte_appender(interest_bytes);
@@ -899,29 +1025,35 @@ bytes Mct410Sim::getLongLoadProfile(unsigned offset)
 
     *result_oitr++ = mct410_utility::crc8(&interest_bytes.front(), interest_bytes.size());
 
-    const CtiTime blockStart = periodOfInterest + offset * LoadProfile_IntervalsPerBlock * LoadProfile_Interval_seconds;
+    const CtiTime blockStart = periodOfInterest + offset * LoadProfile_IntervalsPerBlock * lpIntervalSeconds;
 
-    if( _llp_interest.channel != 1 )
+    if( channelOfInterest != 1 )
     {
         fill_n(result_oitr, 12, 0);
 
         return result_bytes;
     }
 
-    fill_loadProfile(_address, blockStart, LoadProfile_Interval_seconds, result_oitr);
+    fillLoadProfile(address, blockStart, lpIntervalSeconds, result_oitr);
 
     return result_bytes;
 }
 
-bytes Mct410Sim::getLoadProfile(unsigned offset, unsigned channel)
+bytes Mct410Sim::getLoadProfile(const unsigned offset, const unsigned channel)
 {
-    CtiTime now;
+    CtiTime readTime = CtiTime::now();
+    unsigned lpIntervalSeconds = getLpIntervalSeconds();
 
-    bytes      result_bytes;
+    return formatLoadProfile(offset, channel, _address, readTime, lpIntervalSeconds);
+}
+
+bytes Mct410Sim::formatLoadProfile(const unsigned offset, const unsigned channel, const unsigned address, 
+                                   const CtiTime readTime, const unsigned lpIntervalSeconds)
+{
+    bytes result_bytes;
     byte_appender result_oitr = byte_appender(result_bytes);
 
-    //  LP table pointer, see SSPEC-S01029 MCT-410.doc, 8.12.1, page 82
-    *result_oitr++ = ((now.seconds() / (LoadProfile_Interval_seconds)) % 96) + 1;
+    *result_oitr++ = getTablePointer(readTime, lpIntervalSeconds);
 
     //  Only doing Channel 1 for now.
     if( channel != 1 )
@@ -931,25 +1063,24 @@ bytes Mct410Sim::getLoadProfile(unsigned offset, unsigned channel)
         return result_bytes;
     }
 
-    const long block_length = LoadProfile_IntervalsPerBlock * LoadProfile_Interval_seconds;
+    const long block_length = LoadProfile_IntervalsPerBlock * lpIntervalSeconds;
 
-    const CtiTime previous_block_end = now - (now.seconds() % block_length);
+    const CtiTime previous_block_end = readTime - (readTime.seconds() % block_length);
 
-    fill_loadProfile(_address, previous_block_end - LoadProfile_Interval_seconds, -LoadProfile_Interval_seconds, result_oitr);
+    fillLoadProfile(address, previous_block_end, lpIntervalSeconds, result_oitr);
 
     return result_bytes;
 }
 
-void Mct410Sim::fill_loadProfile(const unsigned address, const CtiTime &blockStart, const int interval_length, byte_appender &out_itr)
+void Mct410Sim::fillLoadProfile(const unsigned address, const CtiTime &blockStart, const unsigned interval_length, byte_appender &out_itr)
 {
     for( unsigned interval = 0; interval < LoadProfile_IntervalsPerBlock; ++interval )
     {   
-        double valueBegin = getHectoWattHours(address, blockStart + interval * interval_length);
-        double valueEnd   = getHectoWattHours(address, blockStart + interval * interval_length + interval_length);
+        double conumptionWs = makeValueConsumption(address, blockStart - (interval + 1) * interval_length, interval_length);
 
-        double diffWh = (valueEnd - valueBegin) * 100.0; // Multiply by 100 to get wH.
+        double conumptionWh = conumptionWs / SecondsPerHour;
 
-        int dynamicDemand = mct410_utility::makeDynamicDemand(diffWh);
+        int dynamicDemand = mct410_utility::makeDynamicDemand(conumptionWh);
 
         *out_itr++ = dynamicDemand >> 8;
         *out_itr++ = dynamicDemand >> 0;
@@ -984,6 +1115,12 @@ void Mct410Sim::clearEventFlags()
 {
     _memory.writeValueToMemoryMap(MM_EventFlags1, 0x00);
     _memory.writeValueToMemoryMap(MM_MeterAlarms1, 0x00);
+}
+
+unsigned Mct410Sim::getTablePointer(const CtiTime time, unsigned intervalSeconds)
+{
+    //  LP table pointer, see SSPEC-S01029 MCT-410.doc, 8.12.1, page 82
+    return ((time.seconds() / intervalSeconds) % 96) + 1;
 }
 
 }

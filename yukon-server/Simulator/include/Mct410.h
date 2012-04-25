@@ -60,9 +60,6 @@ private:
     int _address;
     std::string _mct410tag;
 
-    CtiTime _last_freeze_timestamp;
-    CtiTime _last_voltage_freeze_timestamp;
-
     struct llp_interest_t
     {
         llp_interest_t() : channel(1) { };
@@ -75,42 +72,46 @@ private:
     DeviceMemoryManager _memory;
 
     static const double   Pi;
-    static const CtiTime  DawnOfTime;
     static const double   alarmFlagChance;
     static const unsigned MemoryMapSize;
 
-    static unsigned getHectoWattHours(const unsigned address, const CtiTime c_time);
-
-    static double makeValue_consumption        (const unsigned address, const CtiTime &c_time, const unsigned duration);
     static double makeValue_instantaneousDemand(const unsigned address, const CtiTime &c_time);
     static double makeValue_averageDemand      (const unsigned address, const CtiTime &begin_time, const unsigned duration);
+
+    int getDynamicDemand(const unsigned address, const unsigned demandIntervalSeconds, unsigned nowSeconds); 
+
+    void writeNewPeakDemand(const int dynamicDemand, const unsigned seconds);
 
     void processFlags(Logger &logger);
 
     void putScheduledFreezeDay(const bytes &data);
+    void putIntervals(const bytes &data);
 
     // Data Reads
     bytes getFreezeInfo();
     bytes getScheduledFreezeDay();
 
-    void  putFreezeOne();
-    void  putFreezeTwo();
     void  putFreeze(unsigned incoming_freeze);
+
+    void setLpInterval    (unsigned interval_minutes);
+    void setDemandInterval(unsigned interval_minutes);
+    void setVoltageDemandInterval(unsigned interval_minutes);
+    void setVoltageLpInterval(unsigned interval_minutes);
+
+    unsigned getLpIntervalSeconds();
 
     bytes getFrozenKwh();
     bytes getAllFrozenChannel1Readings();
     bytes getAllCurrentMeterReadings();
     bytes getAllRecentDemandReadings();
     bytes getAllCurrentPeakDemandReadings();
-    bytes getLongLoadProfile(unsigned offset);
-    bytes getLoadProfile    (unsigned offset, unsigned channel);
+    bytes getLongLoadProfile(const unsigned offset);
+    bytes getLoadProfile(const unsigned offset, const unsigned channel);
 
     bytes getValueVectorFromMemory(unsigned pos, unsigned length);
 
     CtiTime  getLongLoadProfilePeriodOfInterest() const;
     unsigned getLongLoadProfileChannelOfInterest() const;
-
-    static void fill_loadProfile(const unsigned address, const CtiTime &blockStart, const int interval_length, byte_appender &out_itr);
 
     void putPointOfInterest(const bytes &payload);
 
@@ -125,9 +126,6 @@ private:
 
         ReadLength = 13,
 
-        Demand_Interval_seconds = 300,
-
-        LoadProfile_Interval_seconds  = 3600,
         LoadProfile_IntervalsPerBlock = 6
     };
 
@@ -135,6 +133,10 @@ private:
     {
         C_PutFreezeOne = 0x51,
         C_PutFreezeTwo = 0x52,
+        C_SetLpIntervalFiveMin = 0x70,
+        C_SetLpIntervalFifteenMin = 0x71,
+        C_SetLpIntervalThirtyMin = 0x72,
+        C_SetLpIntervalSixtyMin = 0x73,
         C_ClearAllEventFlags = 0x8A
     };
 
@@ -179,6 +181,9 @@ private:
         MM_MeterAlarms1 = 0x08,
         MM_EventFlags1AlarmMask = 0x0A,
         MM_DemandInterval = 0x1a,
+        MM_LoadProfileInterval = 0x1b,
+        MM_VoltageDemandInterval = 0x1c,
+        MM_VoltageLoadProfileInterval = 0x1d,
         MM_LastFreezeTimestamp = 0x26,
         MM_FreezeCounter = 0x2a,
         MM_LastVoltageFreezeTimestamp = 0x2b,
@@ -244,8 +249,32 @@ public:
     bool write(const words_t &request_words);
 
 protected:
+    static const CtiTime DawnOfTime;
+
+    static unsigned getTablePointer(const CtiTime time, unsigned intervalSeconds);
+
     // Moved to protected for unit testing.
     static double getConsumptionMultiplier(const unsigned address);
+    static double makeValueConsumption    (const unsigned address, const CtiTime time, const unsigned duration);
+
+    static unsigned getHectoWattHours(const unsigned address, const CtiTime c_time);
+
+    static void fillLoadProfile(const unsigned address, const CtiTime &blockStart, const unsigned interval_length, byte_appender &out_itr);
+
+    static bytes formatAllFrozenChannel1Readings(const unsigned long frozenRead, const unsigned long frozenTime, 
+                                                 const unsigned hwh, const unsigned freezeCounter, const short peakDemand);
+
+    static bytes formatAllCurrentMeterReadings(const unsigned address);
+    static bytes formatAllRecentDemandReadings(const int dynamicDemand);
+    static bytes formatAllCurrentPeakDemandReadings(const unsigned address, const bytes &peakDemand, const bytes &peakTimestamp);
+
+    static bytes formatLongLoadProfile(unsigned offset, const unsigned address, const CtiTime periodOfInterest,
+                                       const unsigned channelOfInterest, const unsigned lpIntervalSeconds);
+
+    static bytes formatFrozenKwh(const bytes &frozenData, unsigned freezeCounter);
+
+    static bytes formatLoadProfile(const unsigned offset, const unsigned channel, const unsigned address, 
+                                   const CtiTime readTime, const unsigned lpIntervalSeconds);
 };
 
 }

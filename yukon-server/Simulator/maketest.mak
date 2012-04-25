@@ -312,7 +312,7 @@ test_mct410_sim.obj:	Mct410.h EmetconWords.h types.h ctitime.h \
 		dlldefs.h SimulatorLogger.h logger.h thread.h mutex.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h numstr.h \
 		CtiPCPtrQueue.h DeviceMemoryManager.h BehaviorCollection.h \
-		MctBehavior.h
+		MctBehavior.h ctidate.h
 test_random_consumption_behavior.obj:	RandomConsumptionBehavior.h \
 		MctBehavior.h SimulatorLogger.h logger.h dlldefs.h thread.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \

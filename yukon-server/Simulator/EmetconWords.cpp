@@ -292,7 +292,7 @@ EmetconWordC::EmetconWordC(const bytes &data_, bool flag_, unsigned bch_) :
 
 unsigned EmetconWordC::words_needed( unsigned payload_length )
 {
-    return payload_length / EmetconWordC::PayloadLength;
+    return (payload_length + EmetconWordC::PayloadLength - 1) / EmetconWordC::PayloadLength;
 }
 
 const EmetconWord *EmetconWordC::restore(const bytes &buf)
