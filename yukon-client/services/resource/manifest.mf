@@ -32,7 +32,7 @@ Class-Path: ./
  axis.jar 
  jaxrpc.jar 
  jaxm-runtime.jar 
- jopcbridge.jar
+ jopcbridge.jar 
  jaxm-api.jar 
  saaj.jar 
  commons-discovery.jar 
