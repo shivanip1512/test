@@ -88,9 +88,6 @@
     <bean id="inventoryFileWriteSwitchCommands" class="com.cannontech.web.stars.action.inventory.FileWriteSwitchCommandsController"
           parent="starsInventoryActionController"/>
     
-    <bean id="inventorySearchInventory" class="com.cannontech.web.stars.action.inventory.SearchInventoryController"
-          parent="starsInventoryActionController"/>
-
     <bean id="inventoryCreateMCT" class="com.cannontech.web.stars.action.inventory.CreateMCTController"
           parent="starsInventoryActionController">
         <property name="switchContextService" ref="switchContextService"/>

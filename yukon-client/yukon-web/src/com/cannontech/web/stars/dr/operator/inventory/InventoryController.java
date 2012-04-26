@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -48,6 +50,7 @@ import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole.MeteringType;
 import com.cannontech.stars.InventorySearchResult;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.dr.general.model.OperatorInventorySearchBy;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
@@ -58,6 +61,7 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -148,48 +152,78 @@ public class InventoryController {
         
         return "operator/inventory/home.jsp";
     }
-
+    
     /* Search Post */
     @RequestMapping
-    public String search(ModelMap model, YukonUserContext context, 
+    public String search(HttpServletRequest request,
+                         ModelMap model, 
+                         YukonUserContext context, 
                          @ModelAttribute InventorySearch inventorySearch, 
                          Integer itemsPerPage, 
-                         Integer page) {
+                         Integer page,
+                         FlashScope flashScope) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.INVENTORY_SEARCH, context.getYukonUser());
         YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser()); //This may be wrong
         LiteStarsEnergyCompany liteEc = starsDatabaseCache.getEnergyCompany(ec);
-
-        MeteringType value= ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, EnergyCompanyRole.MeteringType.class,  ec);
-        boolean starsMeters = value == MeteringType.stars;
-        model.addAttribute("starsMeters", starsMeters);
         
-        // PAGING
-        if (page == null) page = 1;
-        if (itemsPerPage == null) itemsPerPage = 25;
-        int startIndex = (page - 1) * itemsPerPage;
+        String searchByStr = ServletRequestUtils.getStringParameter(request, "searchBy", null);
         
-        SearchResult<InventorySearchResult> results = inventoryDao.search(inventorySearch, 
-                                                                          liteEc.getAllEnergyCompaniesDownward(), 
-                                                                          startIndex, 
-                                                                          itemsPerPage,
-                                                                          starsMeters);
-        
-        // Redirect to inventory page if only one result is found
-        if (results.getHitCount() == 1) {
-            InventorySearchResult inventory = results.getResultList().get(0);
-            
-            if (inventory.getAccountId() > 0) {
-                model.addAttribute("inventoryId", inventory.getInventoryIdentifier().getInventoryId());
-                model.addAttribute("accountId", inventory.getAccountId());
-                return "redirect:/spring/stars/operator/hardware/view";
-            }
-            else {
-                model.addAttribute("inventoryId", inventory.getInventoryIdentifier().getInventoryId());
-                return "redirect:/spring/stars/operator/inventory/view";
-            }
+        if (StringUtils.isNotBlank(searchByStr)) {
+            //search initiated from Operations.jsp (Search for existing hardware)
+            OperatorInventorySearchBy searchBy = OperatorInventorySearchBy.valueOf(searchByStr);
+            String searchValue = ServletRequestUtils.getStringParameter(request, "searchValue", null);
+            updateInventorySearch(inventorySearch, searchBy, searchValue);
         }
         
-        model.addAttribute("results", results);
+        boolean hasWarnings = false;
+        if (StringUtils.isNotBlank(inventorySearch.getPhoneNumber())) {
+            try {
+                String phoneNo = ServletUtils.formatPhoneNumberForSearch(inventorySearch.getPhoneNumber());
+                inventorySearch.setPhoneNumber(phoneNo);
+            } catch (WebClientException e) {
+                MessageSourceResolvable invalidPhoneNumberWarning = new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.invalidPhoneNumber");
+                flashScope.setWarning(Collections.singletonList(invalidPhoneNumberWarning));
+                hasWarnings = true;
+            }
+        }
+                
+        if(!hasWarnings){
+            MeteringType value= ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, EnergyCompanyRole.MeteringType.class,  ec);
+            boolean starsMeters = value == MeteringType.stars;
+            model.addAttribute("starsMeters", starsMeters);
+            
+            // PAGING
+            if (page == null) page = 1;
+            if (itemsPerPage == null) itemsPerPage = 25;
+            int startIndex = (page - 1) * itemsPerPage;
+            
+            SearchResult<InventorySearchResult> results = inventoryDao.search(inventorySearch, 
+                                                                              liteEc.getAllEnergyCompaniesDownward(), 
+                                                                              startIndex, 
+                                                                              itemsPerPage,
+                                                                              starsMeters);
+            if(results.getHitCount() == 0){
+                final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
+                String warning = buildSearchResultsNotFoundWarning(inventorySearch, messageSourceAccessor);
+                MessageSourceResolvable notFoundWarning = new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.noResultsForFilter", warning);
+                flashScope.setWarning(Collections.singletonList(notFoundWarning));
+            }
+            // Redirect to inventory page if only one result is found
+            else if (results.getHitCount() == 1) {
+                InventorySearchResult inventory = results.getResultList().get(0);
+                
+                if (inventory.getAccountId() > 0) {
+                    model.addAttribute("inventoryId", inventory.getInventoryIdentifier().getInventoryId());
+                    model.addAttribute("accountId", inventory.getAccountId());
+                    return "redirect:/spring/stars/operator/hardware/view";
+                }
+                else {
+                    model.addAttribute("inventoryId", inventory.getInventoryIdentifier().getInventoryId());
+                    return "redirect:/spring/stars/operator/inventory/view";
+                }
+            }
+            model.addAttribute("results", results);
+        }
         
         model.addAttribute("showAccountNumber", StringUtils.isNotBlank(inventorySearch.getAccountNumber()));
         model.addAttribute("showPhoneNumber", StringUtils.isNotBlank(inventorySearch.getPhoneNumber()));
@@ -199,6 +233,80 @@ public class InventoryController {
         model.addAttribute("showEc", liteEc.hasChildEnergyCompanies());
         
         return "operator/inventory/inventoryList.jsp";
+    }
+    
+    /**
+     * Updates inventory search with the search value
+     *
+     * @param inventorySearch
+     * @param searchBy
+     * @param searchValue
+     */
+    private void updateInventorySearch(InventorySearch inventorySearch, OperatorInventorySearchBy searchBy, String searchValue){
+        switch(searchBy){
+        case SERIAL_NUMBER:
+            inventorySearch.setSerialNumber(searchValue);
+            break;
+        case METER_NUMBER:
+            inventorySearch.setMeterNumber(searchValue);
+            break;
+        case ACCOUNT_NUMBER:
+            inventorySearch.setAccountNumber(searchValue);
+            break;
+        case PHONE_NUMBER:
+            inventorySearch.setPhoneNumber(searchValue);
+            break;
+        case LAST_NAME:
+            inventorySearch.setLastName(searchValue);
+            break;
+        case WORK_ORDER_NUMBER:
+            inventorySearch.setWorkOrderNumber(searchValue);
+            break;
+        case ALT_TRACKING_NUMBER:
+            inventorySearch.setAltTrackingNumber(searchValue);
+            break;
+        }
+    }
+    
+    /**
+     * Builds warning for search results that were not found
+     *
+     * @param inventorySearch
+     * @param messageSourceAccessor
+     * @return 
+     */
+    private String buildSearchResultsNotFoundWarning(InventorySearch inventorySearch, MessageSourceAccessor messageSourceAccessor) {
+        StringBuilder warning = new StringBuilder();
+        buildSearchResultsNotFoundFieldWarning(inventorySearch.getSerialNumber(), OperatorInventorySearchBy.SERIAL_NUMBER, " starts with ", messageSourceAccessor, warning);
+        buildSearchResultsNotFoundFieldWarning(inventorySearch.getMeterNumber(), OperatorInventorySearchBy.METER_NUMBER, " starts with ", messageSourceAccessor, warning);
+        buildSearchResultsNotFoundFieldWarning(inventorySearch.getAccountNumber(), OperatorInventorySearchBy.ACCOUNT_NUMBER, " starts with ", messageSourceAccessor, warning);
+        buildSearchResultsNotFoundFieldWarning(inventorySearch.getPhoneNumber(), OperatorInventorySearchBy.PHONE_NUMBER, " starts with ", messageSourceAccessor, warning);
+        buildSearchResultsNotFoundFieldWarning(inventorySearch.getLastName(), OperatorInventorySearchBy.LAST_NAME, " starts with ", messageSourceAccessor, warning);
+        buildSearchResultsNotFoundFieldWarning(inventorySearch.getWorkOrderNumber(), OperatorInventorySearchBy.WORK_ORDER_NUMBER, " starts with ", messageSourceAccessor, warning);
+        buildSearchResultsNotFoundFieldWarning(inventorySearch.getAltTrackingNumber(), OperatorInventorySearchBy.ALT_TRACKING_NUMBER, " starts with ", messageSourceAccessor, warning);
+        return warning.toString();
+    }
+    
+    /**
+     * Builds warning for search field that was not found
+     *
+     * @param value
+     * @param searchBy
+     * @param operator
+     * @param messageSourceAccessor
+     * @param warning
+     */
+    private void buildSearchResultsNotFoundFieldWarning(String value, OperatorInventorySearchBy searchBy, String operator, MessageSourceAccessor messageSourceAccessor, StringBuilder warning) {
+        if (StringUtils.isNotBlank(value)) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(" ");
+            if (warning.length() > 0) {
+                sb.append("and ");
+            }
+            sb.append(messageSourceAccessor.getMessage(searchBy.getFormatKey()));
+            sb.append(operator).append("'").append(value).append("'");
+            warning.append(sb.toString());
+        }
     }
     
     /* VIEW page for a particular hardware device */
@@ -529,5 +637,5 @@ public class InventoryController {
         binder.registerCustomEditor(Date.class, "fieldRemoveDate", dateValidationType.getPropertyEditor());
         
     }
-    
+        
 }

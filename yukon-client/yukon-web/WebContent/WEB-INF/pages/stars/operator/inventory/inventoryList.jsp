@@ -13,33 +13,33 @@
         <form:form commandName="inventorySearch" action="search" method="post">
             <div class="fl" style="width:33%;">
                 <tags:nameValueContainer2 tableClass="nonwrapping">
-                    <tags:nameValue2 nameKey=".serialNumber">
+                    <tags:nameValue2 nameKey="yukon.web.modules.operator.inventory.operatorInventorySearchByEnum.SERIAL_NUMBER">
                         <form:input path="serialNumber" size="20" class="f_focus"/>
-                    </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".meterNumber">
+                  </tags:nameValue2>
+                    <tags:nameValue2 nameKey="yukon.web.modules.operator.inventory.operatorInventorySearchByEnum.METER_NUMBER">
                         <form:input path="meterNumber" size="20"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".accountNumber">
+                    <tags:nameValue2 nameKey="yukon.web.modules.operator.inventory.operatorInventorySearchByEnum.ACCOUNT_NUMBER">
                         <form:input path="accountNumber" size="20"/>
-                    </tags:nameValue2>
+                    </tags:nameValue2>  
                 </tags:nameValueContainer2>
             </div>
             <div class="fl" style="width:33%;">
                 <tags:nameValueContainer2 tableClass="nonwrapping">
-                    <tags:nameValue2 nameKey=".phoneNumber">
+                    <tags:nameValue2 nameKey="yukon.web.modules.operator.inventory.operatorInventorySearchByEnum.PHONE_NUMBER">
                         <form:input path="phoneNumber" size="20"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".lastName">
+                    <tags:nameValue2 nameKey="yukon.web.modules.operator.inventory.operatorInventorySearchByEnum.LAST_NAME">
                         <form:input path="lastName" size="20"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
             <div class="fl" style="width:33%;">
                 <tags:nameValueContainer2 tableClass="nonwrapping">
-                    <tags:nameValue2 nameKey=".workOrderNumber">
+                    <tags:nameValue2 nameKey="yukon.web.modules.operator.inventory.operatorInventorySearchByEnum.WORK_ORDER_NUMBER">
                         <form:input path="workOrderNumber" size="20"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".altTrackingNumber">
+                    <tags:nameValue2 nameKey="yukon.web.modules.operator.inventory.operatorInventorySearchByEnum.ALT_TRACKING_NUMBER">
                         <form:input path="altTrackingNumber" size="20"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>

@@ -15,9 +15,10 @@
 		<entry key="yukon.web.modules.operator.accountInfoFragment.extraInfo">{0)</entry>
 	 -->
 	 
-	 <!-- search -->
+	<!-- search -->
     <entry key="yukon.web.modules.operator.search.searchPrompt">Search for existing customer:</entry>
-	 
+	<entry key="yukon.web.modules.operator.search.hardwareSearchPrompt">Search for existing hardware:</entry>
+	  
 	<!-- accountLog -->
     <entry key="yukon.web.modules.operator.accountLog.pageName">Account Log</entry>
     <entry key="yukon.web.modules.operator.accountLog.title">Account Log</entry>

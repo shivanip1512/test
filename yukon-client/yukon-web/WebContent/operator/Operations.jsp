@@ -205,23 +205,29 @@
 
 
                 <!-- Hardware search form -->
-                <cti:checkRolesAndProperties value="INVENTORY_SEARCH">
-                    <div class="sectionForm">
-                        <form name="invSearchForm" method="POST" action="<cti:url value="/servlet/InventoryManager"/>">
-                            <input type="hidden" name="action" value="SearchInventory"> <input type="hidden" name="REDIRECT" value="<cti:url value="/operator/Hardware/ResultSet.jsp"/>">
-                            <div class="sectionFormLabel">Search for existing hardware:</div>
-                            <div>
-                                <select name="SearchBy" onchange="document.invSearchForm.SearchValue.value=''">
-                                    <c:forEach items="${inventorySearchList}" var="entry">
-                                        <option value="${entry.yukonDefID}">${entry.content}</option>
-                                    </c:forEach>
-                                </select> <input type="text" name="SearchValue" size="15" value=""> <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>"
-                                    alt="search" onclick="Javascript:document.invSearchForm.submit();">
+				<cti:checkRolesAndProperties value="INVENTORY_SEARCH">
+					<div class="sectionForm">
+						<form id="invSearchForm"
+							action="/spring/stars/operator/inventory/search" method="get">
+						  <div class="sectionFormLabel">
+                                <cti:msg key="yukon.web.modules.operator.search.hardwareSearchPrompt" />
                             </div>
-                        </form>
-                    </div>
-                </cti:checkRolesAndProperties>
-            </tags:operationSection>
+							<div>
+								<select name="searchBy"
+									onchange="$('invSearchValue').value = ''">
+									<c:forEach var="operatorInventorySearchBy" items="${operatorInventorySearchBys}">
+										<option value="${operatorInventorySearchBy}">
+											<cti:msg key="${operatorInventorySearchBy.formatKey}" />
+										</option>
+									</c:forEach>
+								</select> <input type="text" name="searchValue" id="invSearchValue"
+									value="" size="15"> <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>"
+									alt="search" onClick="$('invSearchForm').submit();">
+							</div>
+						</form>
+					</div>
+				</cti:checkRolesAndProperties>
+			</tags:operationSection>
 
         </cti:checkRole>
 

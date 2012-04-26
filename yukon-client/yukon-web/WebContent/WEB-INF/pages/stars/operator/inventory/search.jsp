@@ -10,25 +10,25 @@
 
     <form:form commandName="inventorySearch" action="search" method="post">
         <tags:nameValueContainer2 id="inventorySearch" tableClass="nonwrapping">
-            <tags:nameValue2 nameKey=".serialNumber">
+            <tags:nameValue2 nameKey=".operatorInventorySearchByEnum.SERIAL_NUMBER">
                 <form:input path="serialNumber" size="40" class="f_focus"/>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".meterNumber">
+            <tags:nameValue2 nameKey=".operatorInventorySearchByEnum.METER_NUMBER">
                 <form:input path="meterNumber" size="40"/>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".accountNumber">
+            <tags:nameValue2 nameKey=".operatorInventorySearchByEnum.ACCOUNT_NUMBER">
                 <form:input path="accountNumber" size="40"/>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".phoneNumber">
+            <tags:nameValue2 nameKey=".operatorInventorySearchByEnum.PHONE_NUMBER">
                 <form:input path="phoneNumber" size="40"/>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".lastName">
+            <tags:nameValue2 nameKey=".operatorInventorySearchByEnum.LAST_NAME">
                 <form:input path="lastName" size="40"/>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".workOrderNumber">
+            <tags:nameValue2 nameKey=".operatorInventorySearchByEnum.WORK_ORDER_NUMBER">
                 <form:input path="workOrderNumber" size="40"/>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".altTrackingNumber">
+            <tags:nameValue2 nameKey=".operatorInventorySearchByEnum.ALT_TRACKING_NUMBER">
                 <form:input path="altTrackingNumber" size="40"/>
             </tags:nameValue2>
         </tags:nameValueContainer2>
