@@ -16,6 +16,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.spring.CheckConfigParam;
 import com.cannontech.stars.dr.settlement.model.AvailableRate;
 import com.cannontech.stars.dr.settlement.model.SettlementDto;
 import com.cannontech.stars.dr.settlement.service.SettlementService;
@@ -26,6 +27,7 @@ import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentH
 import com.cannontech.web.common.flashScope.FlashScope;
 
 @Controller
+@CheckConfigParam("ENABLE_SETTLEMENTS")
 @RequestMapping("/energyCompany/settlement/*")
 public class SettlementController { 
     

@@ -1587,6 +1587,7 @@
                                         </pages>
                                     </page>
                                     <page name="settlements.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="ENABLE_SETTLEMENTS"/>
                                         <menu>energyCompanySetup|home</menu>
                                         <link>/spring/adminSetup/energyCompany/settlement/list?ecId=${ecId}</link>
                                         <labelArgument>${energyCompanyName}</labelArgument>
