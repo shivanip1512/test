@@ -155,10 +155,11 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     }
     
     @Override
-    public boolean isSerialNumberValid(int serialNumber) {
+    public boolean isSerialNumberValid(String cbcName, int serialNumber) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT SerialNumber");
-        sql.append("FROM DeviceCBC");
+        sql.append("SELECT D.SerialNumber");
+        sql.append("FROM YukonPaObject PAO JOIN DeviceCBC D ON PAO.PaObjectId = D.DeviceId");
+        sql.append("WHERE PAO.PaoName").neq(cbcName);
         
         List<Integer> serialNumbers = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         

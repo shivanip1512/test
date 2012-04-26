@@ -14,6 +14,7 @@ public enum CapControlImporterCbcField {
 	MASTER_ADDRESS("Master Address", true),
 	SLAVE_ADDRESS("Slave Address", true),
 	COMM_CHANNEL("Comm Channel", true),
+	SCAN_ENABLED("Scan Enabled", false),
 	SCAN_INTERVAL("Scan Interval", false),
 	ALT_INTERVAL("Alt Interval", false),
 	IMPORT_ACTION("Import Action", true),

@@ -10,16 +10,24 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
           paoTypes={PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024, 
                     PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP})
 public class CompleteTwoWayCbc extends CompleteCbcBase {
-    private CompleteDeviceScanRate completeDeviceScanRate = new CompleteDeviceScanRate();
+    private CompleteDeviceScanRate completeDeviceScanRate = null;
     private CompleteDeviceWindow completeDeviceWindow = new CompleteDeviceWindow();
     private CompleteDeviceDirectCommSettings completeDeviceDirectCommSettings = new CompleteDeviceDirectCommSettings();
     private CompleteDeviceAddress completeDeviceAddress = new CompleteDeviceAddress();
 
+    public boolean isScannable() {
+        return completeDeviceScanRate != null;
+    }
+    
     @YukonPaoField
     public CompleteDeviceScanRate getCompleteDeviceScanRate() {
         return completeDeviceScanRate;
     }
 
+    public void setCompleteDeviceScanRate(CompleteDeviceScanRate completeDeviceScanRate) {
+        this.completeDeviceScanRate = completeDeviceScanRate;
+    }
+    
     @YukonPaoField
     public CompleteDeviceWindow getCompleteDeviceWindow() {
         return completeDeviceWindow;

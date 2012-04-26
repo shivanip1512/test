@@ -24,6 +24,7 @@
 					<xsd:element name="masterAddress" minOccurs="1" maxOccurs="1" type="xsd:integer"/>
 					<xsd:element name="slaveAddress" minOccurs="1" maxOccurs="1" type="xsd:integer"/>
 					<xsd:element name="commChannel" minOccurs="1" maxOccurs="1" type="xsd:string"/>
+                    <xsd:element name="scanEnabled" minOccurs="0" maxOccurs="1" type="xsd:boolean"/>
 					<xsd:element name="scanInterval" minOccurs="0" maxOccurs="1" type="xsd:integer"/>
 					<xsd:element name="altInterval" minOccurs="0" maxOccurs="1" type="xsd:integer"/>
 				</xsd:sequence>

@@ -133,14 +133,23 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 				    }
 				}
 				
-				Integer scanColumn = headerColumnMap.get(CapControlImporterCbcField.SCAN_INTERVAL);
-				if (scanColumn != null && !StringUtils.isBlank(line[scanColumn])) {
-					cbcData.setScanInterval(Integer.decode(line[scanColumn]));
-				}
-				
-				Integer altColumn = headerColumnMap.get(CapControlImporterCbcField.ALT_INTERVAL);
-				if (altColumn != null && !StringUtils.isBlank(line[altColumn])) {
-					cbcData.setAltInterval(Integer.decode(line[altColumn]));
+				Integer scanEnabledColumn = headerColumnMap.get(CapControlImporterCbcField.SCAN_ENABLED);
+				if (scanEnabledColumn != null) {
+				    boolean scanEnabled = "Y".equals(line[headerColumnMap.get(CapControlImporterCbcField.SCAN_ENABLED)]);
+				    
+				    cbcData.setScanEnabled(scanEnabled);
+				    
+				    if (scanEnabled) {
+		                Integer scanColumn = headerColumnMap.get(CapControlImporterCbcField.SCAN_INTERVAL);
+		                if (scanColumn != null && !StringUtils.isBlank(line[scanColumn])) {
+		                    cbcData.setScanInterval(Integer.decode(line[scanColumn]));
+		                }
+		                
+		                Integer altColumn = headerColumnMap.get(CapControlImporterCbcField.ALT_INTERVAL);
+		                if (altColumn != null && !StringUtils.isBlank(line[altColumn])) {
+		                    cbcData.setAltInterval(Integer.decode(line[altColumn]));
+		                }
+				    } 
 				}
 				
 				return cbcData;

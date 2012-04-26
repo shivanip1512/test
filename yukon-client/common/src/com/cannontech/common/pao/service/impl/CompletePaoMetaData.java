@@ -1,6 +1,6 @@
 package com.cannontech.common.pao.service.impl;
 
-import java.lang.reflect.Method;
+import java.beans.PropertyDescriptor;
 
 import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
@@ -52,28 +52,19 @@ import com.google.common.collect.Lists;
     private Iterable<PaoFieldMetaData> fields = Lists.newArrayList();
     
     /**
-     * Used for classes annotated with the YukonPaoPort annotation contained within a class 
-     * annotated with the {@link YukonPao} annotation. This method is invoked to retrieve the 
-     * {@link YukonPaoPart} object in order to set or get its data.
+     * Used to grab the getter and setter for a {@link YukonPaoField} or {@link YukonPaoPart}.
      */
-    private Method partGetter;
+    private PropertyDescriptor propertyDescriptor;
 
     public CompletePaoMetaData() {
     }
 
-    public CompletePaoMetaData(CompletePaoMetaData toCopy, Method partGetter) {
+    public CompletePaoMetaData(CompletePaoMetaData toCopy, PropertyDescriptor propertyDescriptor) {
         this.klass = toCopy.klass;
         this.dbTableName = toCopy.dbTableName;
         this.dbIdColumnName = toCopy.dbIdColumnName;
         this.fields = toCopy.fields;
-        this.partGetter = partGetter;
-    }
-
-    @Override
-    public String toString() {
-        return "CompletePaoMetaData [klass=" + klass + ", dbTableName=" + dbTableName
-               + ", dbIdColumnName=" + dbIdColumnName + ", fields=" + fields + ", partGetter="
-               + partGetter + "]";
+        this.propertyDescriptor = propertyDescriptor;
     }
 
     public Class<?> getKlass() {
@@ -107,12 +98,19 @@ import com.google.common.collect.Lists;
     public void setFields(Iterable<PaoFieldMetaData> fields) {
         this.fields = fields;
     }
-
-    public Method getPartGetter() {
-        return partGetter;
+    
+    public void setPropertyDescriptor(PropertyDescriptor propertyDescriptor) {
+        this.propertyDescriptor = propertyDescriptor;
+    }
+    
+    public PropertyDescriptor getPropertyDescriptor() {
+        return propertyDescriptor;
     }
 
-    public void setPartGetter(Method partGetter) {
-        this.partGetter = partGetter;
+    @Override
+    public String toString() {
+        return "CompletePaoMetaData [klass=" + klass + ", dbTableName=" + dbTableName
+               + ", dbIdColumnName=" + dbIdColumnName + ", fields=" + fields
+               + ", propertyDescriptor=" + propertyDescriptor + "]";
     }
 }

@@ -38,6 +38,7 @@ import com.cannontech.common.pao.model.CompleteCapControlSpecialArea;
 import com.cannontech.common.pao.model.CompleteCapControlSubstation;
 import com.cannontech.common.pao.model.CompleteCapControlSubstationBus;
 import com.cannontech.common.pao.model.CompleteCbcBase;
+import com.cannontech.common.pao.model.CompleteDeviceScanRate;
 import com.cannontech.common.pao.model.CompleteOneWayCbc;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
 import com.cannontech.common.pao.model.CompleteYukonPao;
@@ -177,11 +178,14 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)pao;
             cbc.setMasterAddress(cbcImportData.getMasterAddress());
             cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
-            if (cbcImportData.getAltInterval() != null) {
-                cbc.setAlternateRate(cbcImportData.getAltInterval());
-            }
-            if (cbcImportData.getScanInterval() != null ){
-                cbc.setIntervalRate(cbcImportData.getScanInterval());
+            if (cbcImportData.isScanEnabled()) {
+                cbc.setCompleteDeviceScanRate(new CompleteDeviceScanRate());
+                if (cbcImportData.getAltInterval() != null) {
+                    cbc.setAlternateRate(cbcImportData.getAltInterval());
+                }
+                if (cbcImportData.getScanInterval() != null ){
+                    cbc.setIntervalRate(cbcImportData.getScanInterval());
+                }
             }
             
             YukonPao commChannel = paoDao.findYukonPao(cbcImportData.getCommChannel(),
@@ -197,7 +201,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             return;
         }
 
-        if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcSerialNumber())) {
+        if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcName(), cbcImportData.getCbcSerialNumber())) {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
             return;
         }
@@ -259,18 +263,24 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                 return;
             }
             
-            if (cbcImportData.getAltInterval() != null) {
-                cbc.setAlternateRate(cbcImportData.getAltInterval());
-            }
-            if (cbcImportData.getScanInterval() != null) {
-                cbc.setIntervalRate(cbcImportData.getScanInterval());
+            if (cbcImportData.isScanEnabled()) {
+                cbc.setCompleteDeviceScanRate(new CompleteDeviceScanRate());
+                if (cbcImportData.getAltInterval() != null) {
+                    cbc.setAlternateRate(cbcImportData.getAltInterval());
+                }
+                if (cbcImportData.getScanInterval() != null) {
+                    cbc.setIntervalRate(cbcImportData.getScanInterval());
+                }
+            } else {
+                // The template may have had scan enabled, but the import says no, so null it out!
+                cbc.setCompleteDeviceScanRate(null);
             }
         } else {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_PARENT));
             return;
         }
 
-        if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcSerialNumber())) {
+        if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcName(), cbcImportData.getCbcSerialNumber())) {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
             return;
         }
@@ -314,11 +324,17 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             if (cbcImportData.getSlaveAddress() != null) {
                 cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
             }
-            if (cbcImportData.getAltInterval() != null) {
-                cbc.setAlternateRate(cbcImportData.getAltInterval());
-            }
-            if (cbcImportData.getScanInterval() != null) {
-                cbc.setIntervalRate(cbcImportData.getScanInterval());
+            if (cbcImportData.isScanEnabled()) {
+                cbc.setCompleteDeviceScanRate(new CompleteDeviceScanRate());
+                if (cbcImportData.getAltInterval() != null) {
+                    cbc.setAlternateRate(cbcImportData.getAltInterval());
+                }
+                if (cbcImportData.getScanInterval() != null) {
+                    cbc.setIntervalRate(cbcImportData.getScanInterval());
+                }
+            } else {
+                // Null this guy out, the import says scan should be disabled.
+                cbc.setCompleteDeviceScanRate(null);
             }
             
             if (cbcImportData.getCommChannel() != null) {
@@ -337,7 +353,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         }
         
         if (cbcImportData.getCbcSerialNumber() != null) {
-            if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcSerialNumber())) {
+            if (!capbankControllerDao.isSerialNumberValid(cbcImportData.getCbcName(), cbcImportData.getCbcSerialNumber())) {
                 results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_SERIAL_NUMBER));
                 return;
             }

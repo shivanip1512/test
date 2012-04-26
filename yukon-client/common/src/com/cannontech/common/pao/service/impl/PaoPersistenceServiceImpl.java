@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.annotation.PostConstruct;
 
@@ -175,7 +176,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
                             CompletePaoMetaData partMapping = dbTableMappings.get(returnType);
                             if (partMapping != null) {
                                 classTableMappings.add(new CompletePaoMetaData(partMapping,
-                                                                          propertyDescriptor.getReadMethod()));
+                                                                               propertyDescriptor));
                                 field.setPaoPart(true);
                             }
                         }
@@ -315,9 +316,10 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
     }
 
     @Override
-    public <T extends CompleteYukonPao> T retreivePao(PaoIdentifier paoIdentifier, Class<T> klass) {
+    public <T extends CompleteYukonPao> T retreivePao(PaoIdentifier paoIdentifier, final Class<T> klass) {
         try {
             final T newInstance = klass.newInstance();
+            
             newInstance.setPaoIdentifier(paoIdentifier);
             
             Set<PaoType> supportedTypes = classToPaoTypeMapping.get(klass);
@@ -331,9 +333,8 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
             final List<CompletePaoMetaData> dbTableMappings = paoTypeToTableMapping.get(newInstance.getPaoType());
             for (final CompletePaoMetaData paoMetaData : dbTableMappings) {
                 if (paoMetaData != null) {
-                    
-                    Method partGetter = paoMetaData.getPartGetter();
-                    final Object objToWriteToDb = (partGetter != null) ? partGetter.invoke(newInstance) : newInstance;
+                    final PropertyDescriptor propertyDescriptor = paoMetaData.getPropertyDescriptor();
+                    final Method partSetter = propertyDescriptor == null ? null : propertyDescriptor.getWriteMethod();
                     
                     // build a query for the table
                     SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -344,17 +345,57 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
                     sql.append("FROM").append(paoMetaData.getDbTableName());
                     sql.append("WHERE").append(paoMetaData.getDbIdColumnName()).eq(newInstance.getPaObjectId());
                     
+                    final AtomicBoolean rowExists = new AtomicBoolean(false);
+                    
                     jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
                         @Override
                         public void processRow(YukonResultSet rs) throws SQLException {
-                            for (PaoFieldMetaData paoFieldMetaData : paoMetaData.getFields()) {
-                                paoFieldMetaData.updateField(objToWriteToDb, rs);
+                            Object objFromDb = newInstance;
+                            Method partGetter = propertyDescriptor == null ? null : propertyDescriptor.getReadMethod();
+                            if (partGetter != null) {
+                                // Get the part from newInstance.
+                                Object partInstance;
+                                try {
+                                    partInstance = partGetter.invoke(newInstance);
+
+                                    if (partInstance == null) {
+                                        Class<?> partClass = propertyDescriptor.getPropertyType();
+                                        
+                                        // newInstance's getter returned null, we need to create an instance
+                                        // to store the data if a row exists in the db for this table.
+                                        if (partSetter == null) {
+                                            // How can we give newInstance the data without a setter?
+                                            throw new RuntimeException(klass.getSimpleName() + " doesn't have a setter method " +
+                                                                       "for its " + partClass.getSimpleName() + " member!");
+                                        }
+                                        partInstance = partClass.newInstance();
+                                        partSetter.invoke(newInstance, partInstance);
+                                    }
+
+                                    objFromDb = partInstance;
+                                } catch (IllegalArgumentException e) {
+                                    log.warn("caught exception in processRow", e);
+                                } catch (IllegalAccessException e) {
+                                    log.warn("caught exception in processRow", e);
+                                } catch (InvocationTargetException e) {
+                                    log.warn("caught exception in processRow", e);
+                                } catch (InstantiationException e) {
+                                    log.warn("caught exception in processRow", e);
+                                }
                             }
+                            
+                            for (PaoFieldMetaData paoFieldMetaData : paoMetaData.getFields()) {
+                                paoFieldMetaData.updateField(objFromDb, rs);
+                            }
+                            rowExists.set(true);
                         }
                     });
+                    
+                    if (!rowExists.get() && (partSetter != null)) {
+                        partSetter.invoke(newInstance, (Object)null);
+                    }
                 }
             }
-            
             return newInstance;
         } catch (InstantiationException e) {
             log.error("caught exception in retreivePao", e);
@@ -400,7 +441,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
      * @param paoType the PaoType for the new PAO.
      */
     private void createNewPao(CompleteYukonPao pao, PaoType paoType) {
-     // Get the next paoId to insert this into the DB with.
+        // Get the next paoId to insert this into the DB with.
         int paoId = paoDao.getNextPaoId();
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
         pao.setPaoIdentifier(paoIdentifier);
@@ -462,27 +503,49 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
                                            " the PaoType " + pao.getPaoIdentifier().getPaoType());
             }
 
-            List<CompletePaoMetaData> dbTableMappings = paoTypeToTableMapping.get(pao.getPaoType());
+            List<CompletePaoMetaData> metaDataList = paoTypeToTableMapping.get(pao.getPaoType());
 
-            for (CompletePaoMetaData dbTableMapping : dbTableMappings) {
+            for (CompletePaoMetaData paoMetaData : metaDataList) {
                 // Build the SQL for the table
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                SqlParameterSink params = isUpdate ? sql.update(dbTableMapping.getDbTableName()) :
-                                                     sql.insertInto(dbTableMapping.getDbTableName());
+                SqlParameterSink params = isUpdate ? sql.update(paoMetaData.getDbTableName()) :
+                                                     sql.insertInto(paoMetaData.getDbTableName());
 
                 if (!isUpdate) {
-                    params.addValue(dbTableMapping.getDbIdColumnName(), pao.getPaObjectId());
-                }
-
-                Method partGetter = dbTableMapping.getPartGetter();
-                Object objToWriteToDb = pao;
-                if (partGetter != null) {
-                    objToWriteToDb = partGetter.invoke(pao);
+                    params.addValue(paoMetaData.getDbIdColumnName(), pao.getPaObjectId());
                 }
                 
-                for (PaoFieldMetaData dbFieldMapping : dbTableMapping.getFields()) {
+                Object objToWriteToDb = pao;
+                
+                if (isUpdate) {
+                    processNullableField(pao, paoMetaData);
+                }
+                
+                PropertyDescriptor propertyDescriptor = paoMetaData.getPropertyDescriptor();
+                if (propertyDescriptor != null) {
+                    Method getter = propertyDescriptor.getReadMethod();
+                    if (getter == null) {
+                        throw new RuntimeException(paoMetaData.getDbTableName() + " doesn't have " +
+                                                   "a getter method!");
+                    }
+                    
+                    Object obj = getter.invoke(pao);
+                    if (obj != null) {
+                        objToWriteToDb = obj;
+                    } else {
+                        if (propertyDescriptor.getWriteMethod() == null) {
+                            throw new RuntimeException(paoMetaData.getDbTableName() + " does " +
+                            		"not have a setter method and its value is null!");
+                        }
+                        // We have no object to perform on since it was nullable and null.
+                        continue;
+                    }
+                }
+                
+                for (PaoFieldMetaData dbFieldMapping : paoMetaData.getFields()) {
                     Method getter = dbFieldMapping.getPropertyDescriptor().getReadMethod();
                     Object obj = getter.invoke(objToWriteToDb);
+                    
                     if (obj instanceof Boolean || obj.getClass() == Boolean.TYPE) {
                         obj = YNBoolean.valueOf((Boolean)obj);
                     } else if (obj instanceof String) {
@@ -492,7 +555,7 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
                 }
 
                 if (isUpdate) {
-                    sql.append("WHERE").append(dbTableMapping.getDbIdColumnName()).eq(pao.getPaObjectId());
+                    sql.append("WHERE").append(paoMetaData.getDbIdColumnName()).eq(pao.getPaObjectId());
                 }
 
                 jdbcTemplate.update(sql);
@@ -506,6 +569,92 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
         } catch (InvocationTargetException e) {
             log.error("caught exception in createPao", e);
             throw new RuntimeException(e);
+        }
+    }
+    
+    /**
+     * This method is used to check for nullable fields in the CompleteYukonPao object in order
+     * to handle the following two specific cases pre-update on the object:
+     * 
+     *  1. The object contains a populated nullable field for which a corresponding entry does
+     *     not exist already in the database. In this case, we want to insert an entry manually
+     *     into the database, since calling update on the object will not result in data being
+     *     entered into the database automatically.
+     *  2. The object contains a nullable field which is null but has an entry in the database
+     *     from a previous update or insert. In this case, we want to delete the entry manually
+     *     from the database.
+     */
+    private void processNullableField(CompleteYukonPao pao, CompletePaoMetaData paoMetaData) 
+            throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        PropertyDescriptor propertyDescriptor = paoMetaData.getPropertyDescriptor();
+        
+        if (propertyDescriptor != null) {
+            Method getter = propertyDescriptor.getReadMethod();
+            Method setter = propertyDescriptor.getWriteMethod();
+            
+            Object obj = (getter == null) ? null : getter.invoke(pao);
+            
+            if (obj == null) {
+                // This is PROBABLY a nullable object; it better have a setter if it is!
+                if (setter == null) {
+                    throw new RuntimeException(paoMetaData.getDbTableName() + " does not have a " +
+                                               "setter method and its value is null!");
+                }
+                
+                /* 
+                 * We need to "check" if a delete is necessary. Since blindly executing
+                 * a delete doesn't hurt anything, we can just execute the query without
+                 * any worries.
+                 */
+                SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+                deleteSql.append("DELETE FROM").append(paoMetaData.getDbTableName());
+                deleteSql.append("WHERE").append(paoMetaData.getDbIdColumnName()).eq(pao.getPaObjectId());
+                
+                jdbcTemplate.update(deleteSql);
+            } else {
+                if (setter != null) {
+                    /*
+                     * This object has a setter, so it's nullable. We need to check to see if
+                     * an insert is necessary.
+                     */                    
+                    final AtomicBoolean rowExists = new AtomicBoolean(false);
+                     
+                    SqlStatementBuilder sql = new SqlStatementBuilder();
+                    sql.append("SELECT").append(paoMetaData.getDbIdColumnName());
+                    sql.append("FROM").append(paoMetaData.getDbTableName());
+                    sql.append("WHERE").append(paoMetaData.getDbIdColumnName()).eq(pao.getPaObjectId());
+                     
+                    jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+                        @Override
+                        public void processRow(YukonResultSet rs) throws SQLException {
+                            rowExists.set(true);
+                        } 
+                    });
+                     
+                    if (!rowExists.get()) {
+                        // No entry, time to insert!
+                        SqlStatementBuilder insertSql = new SqlStatementBuilder();
+                        SqlParameterSink params = insertSql.insertInto(paoMetaData.getDbTableName());
+                        params.addValue(paoMetaData.getDbIdColumnName(), pao.getPaObjectId());
+                         
+                        for (PaoFieldMetaData dbFieldMapping : paoMetaData.getFields()) {
+                            Method fieldGetter = dbFieldMapping.getPropertyDescriptor().getReadMethod();
+                            Object field = fieldGetter.invoke(obj);
+                             
+                            if (field instanceof Boolean || field.getClass() == Boolean.TYPE) {
+                                field = YNBoolean.valueOf((Boolean)field);
+                            } else if (field instanceof String) {
+                                field = SqlUtils.convertStringToDbValue((String) field);
+                            }
+                            params.addValue(dbFieldMapping.getDbColumnName(), field);
+                        }
+                         
+                        jdbcTemplate.update(insertSql);
+                         
+                        System.out.println(insertSql.getSql());
+                    }
+                }
+            }
         }
     }
 }

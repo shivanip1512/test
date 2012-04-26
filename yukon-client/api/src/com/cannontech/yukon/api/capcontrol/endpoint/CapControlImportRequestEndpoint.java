@@ -325,14 +325,19 @@ public class CapControlImportRequestEndpoint {
 			cbcImportData.setCapBankName(capBankName);
 		}
 		
-		Integer scanInterval = cbcTemplate.evaluateAsInt("y:scanInterval");
-		if (scanInterval != null) {
-			cbcImportData.setScanInterval(scanInterval);
-		}
-		
-		Integer altInterval = cbcTemplate.evaluateAsInt("y:altInterval");
-		if (altInterval != null) {
-			cbcImportData.setAltInterval(altInterval);
+		Boolean scanEnabled = cbcTemplate.evaluateAsBoolean("y:scanEnabled");
+		if (scanEnabled != null && scanEnabled) {
+		    cbcImportData.setScanEnabled(true);
+		    
+    		Integer scanInterval = cbcTemplate.evaluateAsInt("y:scanInterval");
+    		if (scanInterval != null) {
+    			cbcImportData.setScanInterval(scanInterval);
+    		}
+    		
+    		Integer altInterval = cbcTemplate.evaluateAsInt("y:altInterval");
+    		if (altInterval != null) {
+    			cbcImportData.setAltInterval(altInterval);
+    		}
 		}
 		
 		return cbcImportData;
@@ -384,12 +389,6 @@ public class CapControlImportRequestEndpoint {
 	
 	private void populateHierarchyImportData(Node hierarchyNode, HierarchyImportData data) {
         SimpleXPathTemplate hierarchyTemplate = YukonXml.getXPathTemplateForNode(hierarchyNode);
-
-        // Not required. Check for nulls.
-		String parent = hierarchyTemplate.evaluateAsString("y:parent");
-		if (parent != null) {
-			data.setParent(parent);
-		}
 		
 		String description = hierarchyTemplate.evaluateAsString("y:description");
 		if (description != null) {
@@ -409,25 +408,38 @@ public class CapControlImportRequestEndpoint {
 			}
 		}
 		
-		String mapLocationId = hierarchyTemplate.evaluateAsString("y:mapLocationId");
-		if (mapLocationId != null) {
-			data.setMapLocationId(mapLocationId);
-		}
-		
-		String opState = hierarchyTemplate.evaluateAsString("y:operationalState");
-		if (opState != null) {
-		    try {
-		        BankOpState bankOpState = BankOpState.getStateByName(opState);
-		        data.setBankOpState(bankOpState);
-		    } catch (IllegalArgumentException e) {
-		        throw new CapControlHierarchyImportException("Operational state field contained invalid data.",
-		                                                     HierarchyImportResultType.INVALID_OPERATIONAL_STATE, e);
-		    }
-		}
-		
-		Integer capBankSize = hierarchyTemplate.evaluateAsInt("y:capBankSize");
-		if (capBankSize != null) {
-		    data.setCapBankSize(capBankSize);
-		}
+        if (data.getPaoType() != PaoType.CAP_CONTROL_AREA && 
+            data.getPaoType() != PaoType.CAP_CONTROL_SPECIAL_AREA) {
+            
+            // We don't care about the parent or location if it's an Area or Special area, ignore them.
+            String parent = hierarchyTemplate.evaluateAsString("y:parent");
+            if (parent != null) {
+                data.setParent(parent);
+            }
+            
+    		String mapLocationId = hierarchyTemplate.evaluateAsString("y:mapLocationId");
+    		if (mapLocationId != null) {
+    			data.setMapLocationId(mapLocationId);
+    		}
+    		
+    		if (data.getPaoType() == PaoType.CAPBANK) {
+    		    // These columns only matter for cap banks, no need to validate or even look at them otherwise.
+        		String opState = hierarchyTemplate.evaluateAsString("y:operationalState");
+        		if (opState != null) {
+        		    try {
+        		        BankOpState bankOpState = BankOpState.getStateByName(opState);
+        		        data.setBankOpState(bankOpState);
+        		    } catch (IllegalArgumentException e) {
+        		        throw new CapControlHierarchyImportException("Operational state field contained invalid data.",
+        		                                                     HierarchyImportResultType.INVALID_OPERATIONAL_STATE, e);
+        		    }
+        		}
+        		
+        		Integer capBankSize = hierarchyTemplate.evaluateAsInt("y:capBankSize");
+        		if (capBankSize != null) {
+        		    data.setCapBankSize(capBankSize);
+        		}
+    		}
+        }
 	}
 }
