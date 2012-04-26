@@ -2,7 +2,6 @@ package com.cannontech.support.service.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
@@ -47,14 +46,22 @@ public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWri
     private void writeDirToCsv(File directory, String path, CSVWriter csvWriter) {
         File[] filesAndDirs = directory.listFiles();
 
-        for (File file : filesAndDirs) {
-            if (file.isDirectory()) {
-                writeDirToCsv(file, path + file.getName() + "/", csvWriter);
-            } else {
-                String[] nextLine =
+        // If java cannot access a directory, listFiles() returns null
+        if (filesAndDirs != null) {
+            for (File file : filesAndDirs) {
+                if (file.isDirectory()) {
+                    writeDirToCsv(file, path + file.getName() + "/", csvWriter);
+                } else if (file.isFile()){
+                    String[] nextLine =
                     { path + file.getName(), String.valueOf(file.length()), getMD5(file) };
-                csvWriter.writeNext(nextLine);
+                    csvWriter.writeNext(nextLine);
+                }
             }
+        } else {
+            log.warn("Unable to access directory " + directory.getAbsolutePath() + ". It cannot be added to csv output.");
+            String[] nextLine =
+            { path, "0", "-Unable to include directory-" };
+            csvWriter.writeNext(nextLine);
         }
     }
 
@@ -63,7 +70,8 @@ public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWri
         try {
             md5Hasher = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException noSuchAlgorithmException) {
-            throw new RuntimeException(noSuchAlgorithmException);
+            log.error("MD5 algorithm not supported", noSuchAlgorithmException);
+            return "-Unable to hash-";
         }
 
         InputStream inputStream = null;
@@ -74,11 +82,9 @@ public class SupportBundleFileSystemToCsvWriter extends AbstractSupportBundleWri
             while ((read = inputStream.read(buffer)) != -1) {
                 md5Hasher.update(buffer, 0, read);
             }
-        } catch (FileNotFoundException fnfException) {
+        } catch (IOException ioException) {
             log.warn("Unable to hash file " + file.getAbsolutePath() + file.getName() + " The file might be used by another process.");
             return "-Unable to hash-";
-        } catch (IOException ioException) {
-            throw new RuntimeException(ioException);
         } finally {
             if (inputStream != null) {
                 try {
