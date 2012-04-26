@@ -210,8 +210,8 @@ string Ccu721Device::queueReport() const
 
     report << "Waiting requests (INUSE) : " << setw(5) << waiting.size() << " : in Yukon's queue" << endl;
 
-    report << setw(8) << "PaoId" << "|"
-           << setw(3) << "Pri"   << "|"
+    report << setw(8) << "MCT ID" << "|"
+           << setw(3) << "Pri"    << "|"
                       << "Command" << endl;
 
     for each(KlondikeProtocol::request_status request in waiting)
@@ -222,7 +222,7 @@ string Ccu721Device::queueReport() const
         {
             OUTMESS *om = *itr;
 
-            report << setw(8) << om->DeviceID << "|"
+            report << setw(8) << om->TargetID << "|"
                    << setw(3) << om->Priority << "|"
                               << om->Request.CommandStr << endl;
         }
@@ -257,7 +257,7 @@ string Ccu721Device::queueReport() const
             OUTMESS *om = *itr;
 
             report << setw(8) << request.queue_id << "|"
-                   << setw(8) << om->DeviceID << "|"
+                   << setw(8) << om->TargetID << "|"
                    << setw(3) << om->Priority << "|"
                               << om->Request.CommandStr << endl;
         }
@@ -294,7 +294,7 @@ string Ccu721Device::queueReport() const
             OUTMESS *om = *itr;
 
             report << setw(8) << request.queue_id << "|"
-                   << setw(8) << om->DeviceID << "|"
+                   << setw(8) << om->TargetID << "|"
                    << setw(3) << om->Priority << "|"
                               << om->Request.CommandStr << endl;
         }
@@ -328,7 +328,7 @@ string Ccu721Device::queueReport() const
         {
             OUTMESS *om = *itr;
 
-            report << setw(8) << om->DeviceID << "|"
+            report << setw(8) << om->TargetID << "|"
                               << om->Request.CommandStr << endl;
         }
         else if( request.requester == this )
