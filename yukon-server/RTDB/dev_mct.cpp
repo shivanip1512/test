@@ -2699,30 +2699,9 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         outList.push_back( OutMessage );
-
-        if( function == EmetconProtocol::Control_Disconnect ||
-            function == EmetconProtocol::Control_Connect )
-        {
-            OUTMESS *gs_OutMessage = new OUTMESS(*OutMessage);
-
-            if( getOperation(EmetconProtocol::GetStatus_Disconnect, gs_OutMessage->Buffer.BSt) )
-            {
-                gs_OutMessage->Sequence = EmetconProtocol::GetStatus_Disconnect;
-
-                //  this doesn't need the silence referenced above
-                gs_OutMessage->MessageFlags = gs_OutMessage->MessageFlags & ~MessageFlag_AddMctDisconnectSilence;
-
-                outList.push_back(gs_OutMessage);
-            }
-            else
-            {
-                delete gs_OutMessage;
-            }
-        }
-
+        
         OutMessage = NULL;
     }
-
 
     return nRet;
 }
@@ -3226,15 +3205,13 @@ INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, Ct
 
 INT MctDevice::decodeControl(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = NORMAL,
-          j;
-    ULONG pfCount = 0;
+    INT status = NORMAL;
     string resultString;
+    bool expectMore = false;
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
-
 
     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
     {
@@ -3251,7 +3228,33 @@ INT MctDevice::decodeControl(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList
         resultString = getName( ) + " / control sent";
         ReturnMsg->setResultString( resultString );
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        const bool isConnectOrDisconnectFunction = ( InMessage->Sequence == EmetconProtocol::Control_Disconnect ||
+                                                     InMessage->Sequence == EmetconProtocol::Control_Connect );
+
+        // Set expect more here if appropriate.
+        if( isConnectOrDisconnectFunction )
+        {
+            expectMore = true;
+        }
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
+
+        if( isConnectOrDisconnectFunction )
+        {
+            CtiRequestMsg newReq(getID(),
+                                 "getstatus disconnect",
+                                 InMessage->Return.UserID,
+                                 InMessage->Return.GrpMsgID,
+                                 getRouteID(),
+                                 selectInitialMacroRouteOffset(getRouteID()),  //  this bypasses PIL, so we need to calculate this
+                                 0,
+                                 InMessage->Return.OptionsField,
+                                 InMessage->Priority);
+
+            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+
+            beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+        }
     }
 
     return status;
