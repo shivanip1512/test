@@ -16,6 +16,8 @@
 
 #define SCREEN_WIDTH    80
 
+#define DEBUG_INPUT_FROM_SCADA 0x00000010
+
 using namespace std;
 
 INT CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, INT ErrorCode) const
@@ -1294,7 +1296,7 @@ INT CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Pri
             }
             else if(status != ERROR_QUE_EMPTY)
             {
-                if(gConfigParms.getValueAsULong("DEBUG_PORT_SHARE") & 0x10)
+                if(gConfigParms.getValueAsULong("DEBUG_PORT_SHARE") & DEBUG_INPUT_FROM_SCADA)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " " << getName() << " was unable to read from the port share queue. Error: " << status << endl;
@@ -1724,7 +1726,7 @@ INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Pri
         setSharingStatus(true);   // Indicates a sharing condition.
         status = WriteQueue( _portShareQueue, Request, DataSize, Data, Priority, &QueEntries);
 
-        if(gConfigParms.getValueAsULong("PORT_SHARE_QUEUE") & 0x00000010)
+        if(gConfigParms.getValueAsULong("PORT_SHARE_QUEUE") & DEBUG_INPUT_FROM_SCADA)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << getName() << " has " << QueEntries << " elements on the port share queue " << endl;
