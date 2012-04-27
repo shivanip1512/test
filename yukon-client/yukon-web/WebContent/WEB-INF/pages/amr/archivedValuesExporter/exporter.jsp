@@ -526,7 +526,7 @@
                             </td>
                             <td class="nonwrapping"><spring:escapeBody htmlEscape="true"><i:inline key="${field.attribute.dataSelection}" /></spring:escapeBody>
                             </td>
-                            <td class="nonwrapping"><spring:escapeBody htmlEscape="true">${field.attribute.daysPrevious}</spring:escapeBody>
+                            <td class="nonwrapping"><spring:escapeBody htmlEscape="true"><c:if test="${not empty field.attributeField}">${field.attribute.daysPrevious}</c:if></spring:escapeBody>
                             </td>
                             <td class="nonwrapping"><i:inline key="${field.missingAttribute}" />&nbsp&nbsp<spring:escapeBody htmlEscape="true">${field.missingAttributeValue}</spring:escapeBody>
                             </td>
