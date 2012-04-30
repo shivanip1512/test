@@ -42,7 +42,7 @@ public interface PaoDefinitionDao {
      * @param pointTemplate
      * @return BuiltInAttribute
      */
-    public BuiltInAttribute getAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate);
+    public BuiltInAttribute findAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate);
 
     // POINTS
     //============================================

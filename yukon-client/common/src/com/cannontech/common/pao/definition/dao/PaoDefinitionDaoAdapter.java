@@ -178,7 +178,7 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     }
 
     @Override
-    public BuiltInAttribute getAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate) {
+    public BuiltInAttribute findAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate) {
         throw new UnsupportedOperationException("not implemented");
     }
 }

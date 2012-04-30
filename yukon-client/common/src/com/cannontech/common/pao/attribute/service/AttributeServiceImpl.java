@@ -282,9 +282,9 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public BuiltInAttribute getAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches) {
+    public BuiltInAttribute findAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches) {
         
-        BuiltInAttribute attribute = getAttributeForPaoPointIdentifier(paoPointIdentifier);
+        BuiltInAttribute attribute = findAttributeForPaoPointIdentifier(paoPointIdentifier);
         
         if (attribute != null && possibleMatches.contains(attribute)) return attribute;
         
@@ -292,10 +292,10 @@ public class AttributeServiceImpl implements AttributeService {
     }
     
     @Override
-    public BuiltInAttribute getAttributeForPaoPointIdentifier(PaoPointIdentifier paoPointIdentifier) {
+    public BuiltInAttribute findAttributeForPaoPointIdentifier(PaoPointIdentifier paoPointIdentifier) {
         PaoType paoType = paoPointIdentifier.getPaoIdentifier().getPaoType();
         PointTemplate pointTemplate = new PointTemplate(paoPointIdentifier.getPointIdentifier().getPointType(), paoPointIdentifier.getPointIdentifier().getOffset());
-        return paoDefinitionDao.getAttributeForPoaTypeAndPoint(paoType, pointTemplate);
+        return paoDefinitionDao.findAttributeForPoaTypeAndPoint(paoType, pointTemplate);
     }
     
     @Override

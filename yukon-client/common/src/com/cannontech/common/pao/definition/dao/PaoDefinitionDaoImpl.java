@@ -262,7 +262,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
     
     @Override
-    public BuiltInAttribute getAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate) {
+    public BuiltInAttribute findAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate) {
         Pair<PaoType, PointTemplate> paoAndPoint = new Pair<PaoType, PointTemplate>(paoType, pointTemplate);
         return paoAndPointToAttributeMap.get(paoAndPoint);
     }

@@ -155,7 +155,7 @@ public interface AttributeService {
      * @param possibleMatches
      * @return BuiltInAttribute
      */
-    public BuiltInAttribute getAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches);
+    public BuiltInAttribute findAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches);
 
     /**
      * Returns the BuiltInAttribute for the PaoPointIdentifier provided or null if no attribute
@@ -163,6 +163,6 @@ public interface AttributeService {
      * @param paoPointIdentifier
      * @return BuiltInAttribute
      */
-    public BuiltInAttribute getAttributeForPaoPointIdentifier(PaoPointIdentifier paoPointIdentifier);
+    public BuiltInAttribute findAttributeForPaoPointIdentifier(PaoPointIdentifier paoPointIdentifier);
 
 }

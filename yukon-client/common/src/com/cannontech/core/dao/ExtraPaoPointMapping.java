@@ -2,6 +2,9 @@ package com.cannontech.core.dao;
 
 import com.cannontech.enums.RegulatorPointMapping;
 
+/**
+ * Class to bundle the point id mapped to the regulator point mapping (previously these were mapped attributes)
+ */
 public class ExtraPaoPointMapping {
     
     private RegulatorPointMapping regulatorPointMapping;
