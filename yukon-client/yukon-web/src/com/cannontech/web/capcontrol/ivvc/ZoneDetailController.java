@@ -43,7 +43,6 @@ import com.cannontech.cbc.commands.CommandResultCallback;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.LazyList;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -59,6 +58,7 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
+import com.cannontech.enums.RegulatorPointMapping;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.capcontrol.model.CapControlServerResponse;
 import com.cannontech.message.capcontrol.model.CommandType;
@@ -292,7 +292,7 @@ public class ZoneDetailController {
     public String chart(ModelMap model, YukonUserContext context, int zoneId) {
         LiteYukonUser user = context.getYukonUser();
         
-        boolean zoneAttributesExist = voltageFlatnessGraphService. zoneHasRequiredAttribute(zoneId, BuiltInAttribute.VOLTAGE_Y, user);
+        boolean zoneAttributesExist = voltageFlatnessGraphService. zoneHasRequiredRegulatorPointMapping(zoneId, RegulatorPointMapping.VOLTAGE_Y, user);
         model.addAttribute("zoneAttributesExist", zoneAttributesExist);
 
         if (zoneAttributesExist) {

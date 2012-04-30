@@ -14,7 +14,6 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.CtiUtilities;
@@ -23,6 +22,7 @@ import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.enums.RegulatorPointMapping;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
@@ -89,10 +89,10 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         //Point Mappings
         List<ExtraPaoPointMapping> eppMappings = Lists.newArrayList();
         int voltageYPointId = 0;
-        for(VoltageRegulatorPointMapping mapping : pointMappings) {
+        for (VoltageRegulatorPointMapping mapping : pointMappings) {
             eppMappings.add(mapping.getExtraPaoPointMapping());
             //check to see if a voltage Y point is still attached
-            if(mapping.getAttribute() == BuiltInAttribute.VOLTAGE_Y) {
+            if (mapping.getRegulatorPointMapping() == RegulatorPointMapping.VOLTAGE_Y) {
                 voltageYPointId = mapping.getPointId();
             }
         }

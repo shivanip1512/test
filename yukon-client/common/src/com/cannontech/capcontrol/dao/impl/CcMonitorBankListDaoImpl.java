@@ -11,7 +11,6 @@ import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
@@ -27,6 +26,7 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
+import com.cannontech.enums.RegulatorPointMapping;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -302,7 +302,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getPointIdSql.append("SELECT PointId");
         getPointIdSql.append("FROM ExtraPaoPointAssignment");
         getPointIdSql.append("WHERE PaObjectId").eq(regulatorId);
-        getPointIdSql.append("AND Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y);
+        getPointIdSql.append("AND Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
         int pointId = yukonJdbcTemplate.queryForInt(getPointIdSql);
         
         LimitsHolder limits = getLimitsFromStrategyBySubbusId(substationBusId);
@@ -342,7 +342,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getRegulatorPointSql.append("FROM CcMonitorBankList cc");
         getRegulatorPointSql.append("JOIN ExtraPaoPointAssignment eppa ON cc.DeviceId = eppa.PAObjectId");
         getRegulatorPointSql.append("WHERE cc.DeviceId").eq(regulatorId);
-        getRegulatorPointSql.append("AND eppa.Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y);
+        getRegulatorPointSql.append("AND eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
         
         try {
             //if there is no voltage_y point assigned, this will throw an exception
@@ -410,7 +410,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getZoneInfoSql.append("FROM RegulatorToZoneMapping");
         getZoneInfoSql.append("JOIN ExtraPaoPointAssignment eppa ON RegulatorId = eppa.PAObjectId");
         getZoneInfoSql.append("WHERE RegulatorId").eq(regulatorId);
-        getZoneInfoSql.append("AND Attribute").eq_k(BuiltInAttribute.VOLTAGE_Y);
+        getZoneInfoSql.append("AND Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
         
         return yukonJdbcTemplate.queryForObject(getZoneInfoSql, regulatorPointRowMapper);
     }

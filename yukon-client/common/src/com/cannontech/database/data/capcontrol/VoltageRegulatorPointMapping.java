@@ -1,8 +1,8 @@
 package com.cannontech.database.data.capcontrol;
 
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.search.FilterType;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
+import com.cannontech.enums.RegulatorPointMapping;
 
 public class VoltageRegulatorPointMapping implements Comparable<VoltageRegulatorPointMapping>{
 
@@ -60,12 +60,12 @@ public class VoltageRegulatorPointMapping implements Comparable<VoltageRegulator
     	
     }
     
-    public Attribute getAttribute() {
-        return extraPaoPointMapping.getAttribute();
+    public RegulatorPointMapping getRegulatorPointMapping() {
+        return extraPaoPointMapping.getRegulatorPointMapping();
     }
     
-    public void setAttribute(Attribute attribute) {
-        this.extraPaoPointMapping.setAttribute(attribute);
+    public void setRegulatorPointMapping(RegulatorPointMapping regulatorPointMapping) {
+        this.extraPaoPointMapping.setRegulatorPointMapping(regulatorPointMapping);
     }
     
     public int getPointId() {
@@ -86,6 +86,6 @@ public class VoltageRegulatorPointMapping implements Comparable<VoltageRegulator
 
     @Override
     public int compareTo(VoltageRegulatorPointMapping o) {
-        return getAttribute().getDescription().compareTo(o.getAttribute().getDescription());
+        return getRegulatorPointMapping().getDescription().compareTo(o.getRegulatorPointMapping().getDescription());
     }
 }

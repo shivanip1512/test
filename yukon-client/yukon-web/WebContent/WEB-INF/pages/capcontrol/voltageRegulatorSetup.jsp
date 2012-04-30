@@ -69,7 +69,7 @@
                     <f:facet name="header">
                         <h:outputText value="Attribute"/>
                     </f:facet>
-                    <h:outputText value="#{mapping.attribute.description}" />
+                    <h:outputText value="#{mapping.regulatorPointMapping.description}" />
                 </h:column>
                 
                 <h:column>

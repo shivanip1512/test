@@ -27,7 +27,7 @@ import com.cannontech.common.inventory.LmHardwareInventoryIdentifierMapper;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
+import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
@@ -95,7 +95,7 @@ public class InventoryDaoImpl implements InventoryDao {
 
     @Override
     public List<Pair<LiteLmHardware, SimplePointValue>> getZigbeeProblemDevices(final String inWarehouseMsg) {
-        BasicAttributeDefinition definition = (BasicAttributeDefinition) paoDefinitionDao.getAttributeLookup(PaoType.ZIGBEE_ENDPOINT, BuiltInAttribute.ZIGBEE_LINK_STATUS);
+        AttributeDefinition definition = (AttributeDefinition) paoDefinitionDao.getAttributeLookup(PaoType.ZIGBEE_ENDPOINT, BuiltInAttribute.ZIGBEE_LINK_STATUS);
         int pointOffset = definition.getPointTemplate().getOffset();
         PointType pointType = definition.getPointTemplate().getPointType();
         

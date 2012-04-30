@@ -31,10 +31,10 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.GraphIntervalRounding;
+import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -50,6 +50,7 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
+import com.cannontech.enums.RegulatorPointMapping;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.SubBus;
@@ -69,7 +70,7 @@ import com.google.common.collect.Sets;
 
 public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphService {
     
-    private AttributeService attributeService;
+    private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     private PaoDao paoDao;
     private DynamicDataSource dynamicDataSource;
     private StrategyDao strategyDao;
@@ -355,13 +356,12 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     
     private LitePoint getRegulatorVoltagePoint(int regulatorId) {
         YukonPao regulatorPao = paoDao.getYukonPao(regulatorId);
-        BuiltInAttribute regulatorVoltageAttribute = BuiltInAttribute.VOLTAGE_Y;
-        boolean pointExists = attributeService.pointExistsForAttribute(regulatorPao, regulatorVoltageAttribute);
-        if (!pointExists) {
+        RegulatorPointMapping regulatorVoltageMapping = RegulatorPointMapping.VOLTAGE_Y;
+        try {
+            return extraPaoPointAssignmentDao.getLitePoint(regulatorPao, regulatorVoltageMapping);
+        } catch (NotFoundException e) {
             return null;
         }
-        LitePoint regulatorPoint = attributeService.getPointForAttribute(regulatorPao, regulatorVoltageAttribute);
-        return regulatorPoint;
     }
 
     private Set<Integer> getAllPointsInZoneGraph(int zoneId) {
@@ -393,11 +393,11 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     }
     
     @Override
-    public boolean allZonesHaveRequiredAttributes(int subBusId, LiteYukonUser user) {
+    public boolean allZonesHaveRequiredRegulatorPointMapping(int subBusId, LiteYukonUser user) {
         List<Zone> zones = zoneService.getZonesBySubBusId(subBusId);
         for (Zone zone : zones) {
-            boolean hasRequiredAttribute = zoneHasRequiredAttribute(zone.getId(), 
-                                                                    BuiltInAttribute.VOLTAGE_Y,
+            boolean hasRequiredAttribute = zoneHasRequiredRegulatorPointMapping(zone.getId(), 
+                                                                    RegulatorPointMapping.VOLTAGE_Y,
                                                                     user);
             if (!hasRequiredAttribute) {
                 return false;
@@ -407,12 +407,13 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     }
     
     @Override
-    public boolean zoneHasRequiredAttribute(int zoneId, BuiltInAttribute attribute, LiteYukonUser user) {
+    public boolean zoneHasRequiredRegulatorPointMapping(int zoneId, RegulatorPointMapping regulatorPointMapping, LiteYukonUser user) {
         AbstractZone abstractZone = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
         for (RegulatorToZoneMapping regulatorToZone : abstractZone.getRegulatorsList()) {
             YukonPao yukonPao = paoDao.getYukonPao(regulatorToZone.getRegulatorId());
-            boolean hasAttribute = attributeService.pointExistsForAttribute(yukonPao, attribute);
-            if (!hasAttribute) {
+            try {
+                extraPaoPointAssignmentDao.getPointId(yukonPao, regulatorPointMapping);
+            } catch (NotFoundException e) {
                 return false;
             }
         }
@@ -766,8 +767,8 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
     }
 
     @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
+    public void setExtraPaoPointAssignmentDao(ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
+        this.extraPaoPointAssignmentDao = extraPaoPointAssignmentDao;
     }
     
     @Autowired

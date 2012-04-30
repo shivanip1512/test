@@ -23,7 +23,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
-import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
@@ -314,8 +313,8 @@ public class DeviceDefinitionViewerController extends AbstractController {
 		public AttributeWrapper(PaoDefinition deviceDefiniton, AttributeDefinition attribute) {
 			
 			this.attribute = attribute;
-			if (attribute instanceof BasicAttributeDefinition) {
-                BasicAttributeDefinition basicAttributeLookup = (BasicAttributeDefinition) attribute;
+			if (attribute instanceof AttributeDefinition) {
+                AttributeDefinition basicAttributeLookup = (AttributeDefinition) attribute;
                 
                 this.pointTemplateWrapper = new PointTemplateWrapper(deviceDefiniton, basicAttributeLookup.getPointTemplate());
             }

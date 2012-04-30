@@ -67,7 +67,6 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -310,7 +309,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
-                BuiltInAttribute thisAttribute = getAttributeForPoint(paoPointIdentifier, attributes);
+                BuiltInAttribute thisAttribute = attributeService.getAttributeForPoint(paoPointIdentifier, attributes);
                 if (thisAttribute == null) return;
                 if (thisAttribute == BuiltInAttribute.DISCONNECT_STATUS) {
                     setLoadActionCode(multispeakFuncs.getLoadActionCode(meter, value));
@@ -498,7 +497,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
-                BuiltInAttribute thisAttribute = getAttributeForPoint(paoPointIdentifier, attributes);
+                BuiltInAttribute thisAttribute = attributeService.getAttributeForPoint(paoPointIdentifier, attributes);
                 if (thisAttribute == null) return;
                 
                 // Get a new updater object for the current value
@@ -558,20 +557,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         deviceAttributeReadService.initiateRead(allPaosToRead, attributes, callback, DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
         
         return mspObjectDao.toErrorObject(errorObjects);
-    }
-    
-    private BuiltInAttribute getAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches) {
-        for (BuiltInAttribute builtInAttribute : possibleMatches) {
-            try {
-                PaoPointIdentifier pointForThisAttribute = attributeService.getPaoPointIdentifierForNonMappedAttribute(paoPointIdentifier.getPaoIdentifier(), builtInAttribute);
-                if (paoPointIdentifier.equals(pointForThisAttribute)) {
-                    return builtInAttribute;
-                }
-            } catch (IllegalUseOfAttribute e) {
-                // skip, consider as not a match.
-            }
-        }
-        return null;
     }
     
     @Override
@@ -650,7 +635,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
                 // the following is expensive but unavoidable until PointData is changed
                 PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(value.getId());
-                BuiltInAttribute thisAttribute = getAttributeForPoint(paoPointIdentifier, attributes);
+                BuiltInAttribute thisAttribute = attributeService.getAttributeForPoint(paoPointIdentifier, attributes);
                 if (thisAttribute == null) return;
                 
                 // Get a new updater object for the current value

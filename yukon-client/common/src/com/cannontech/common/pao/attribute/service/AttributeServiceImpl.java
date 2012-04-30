@@ -23,15 +23,13 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.model.MappableAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
-import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
-import com.cannontech.common.pao.definition.attribute.lookup.MappedAttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.IterableUtils;
@@ -95,28 +93,11 @@ public class AttributeServiceImpl implements AttributeService {
         }
     }
 
+    @Override
     public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
-        try {
-            PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPointIdentifier(pao);
-            return paoPointIdentifier;
-        } catch (NotFoundException nfe) {
-            throw new IllegalUseOfAttribute("Illegal use of attribute (no mapping): " + attribute.getDescription());
-        }
-    }
-    
-    @Override
-    public PaoPointIdentifier getPaoPointIdentifierForNonMappedAttribute(YukonPao pao,
-                                                                         Attribute attribute)
-            throws IllegalUseOfAttribute {
-        BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
-        AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
-        if (attributeDefinition instanceof BasicAttributeDefinition) {
-            return attributeDefinition.getPointIdentifier(pao);
-        } else {
-            throw new IllegalUseOfAttribute("Illegal use of mapped attribute: " + attribute.getDescription());
-        }
+        return attributeDefinition.getPointIdentifier(pao);
     }
     
     @Override
@@ -137,7 +118,7 @@ public class AttributeServiceImpl implements AttributeService {
                 List<PaoPointIdentifier> points = Lists.newArrayListWithCapacity(attributes.size());
                 for (Attribute attribute : attributes) {
                     try {
-                        PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifierForNonMappedAttribute(pao, attribute);
+                        PaoPointIdentifier paoPointIdentifier = getPaoPointIdentifierForAttribute(pao, attribute);
                         points.add(paoPointIdentifier);
                     } catch (IllegalUseOfAttribute e) {
                         LogHelper.warn(log, "unable to look up values for %s on %s: %s", attribute, pao, e.toString());
@@ -211,10 +192,7 @@ public class AttributeServiceImpl implements AttributeService {
     public PaoPointTemplate getPaoPointTemplateForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
-        if (attributeDefinition.isPointTemplateAvailable()) {
-            return attributeDefinition.getPointTemplate(pao);
-        }
-        throw new IllegalUseOfAttribute("Cannot create " + attribute + " on " + pao);
+        return attributeDefinition.getPointTemplate(pao);
     }
 
     @Override
@@ -267,35 +245,17 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public Set<MappableAttribute> getMappableAttributes(PaoType paoType) {
-        Set<MappableAttribute> result = Sets.newHashSet();
-        
-        Set<AttributeDefinition> definedAttributes = paoDefinitionDao.getDefinedAttributes(paoType);
-        for (AttributeDefinition attributeDefinition : definedAttributes) {
-            if( attributeDefinition instanceof MappedAttributeDefinition) {
-                MappedAttributeDefinition mappedAttributeDefinition = (MappedAttributeDefinition) attributeDefinition;
-                result.add(new MappableAttribute(mappedAttributeDefinition.getAttribute(), mappedAttributeDefinition.getFilterType()));
-            }
-        }
-        
-        return result;
-    }
-    
-    @Override
     public SqlFragmentSource getAttributeLookupSql(Attribute attribute) {
         Map<PaoType, Map<Attribute, AttributeDefinition>> definitionMap = paoDefinitionDao.getPaoAttributeAttrDefinitionMap();
         
         SetMultimap<PointIdentifier, PaoType> typesByPointIdentifier = HashMultimap.create();
-        boolean haveMapped = false;
         for (Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : definitionMap.entrySet()) {
             AttributeDefinition attributeDefinition = entry.getValue().get(attribute);
+            
             if (attributeDefinition == null) continue;
-            if (attributeDefinition instanceof BasicAttributeDefinition) {
-                PointIdentifier pointIdentifier = ((BasicAttributeDefinition) attributeDefinition).getPointTemplate().getPointIdentifier();
-                typesByPointIdentifier.put(pointIdentifier, entry.getKey());
-            } else if (attributeDefinition instanceof MappedAttributeDefinition) {
-                haveMapped = true;
-            }
+            
+            PointIdentifier pointIdentifier = attributeDefinition.getPointTemplate().getPointIdentifier();
+            typesByPointIdentifier.put(pointIdentifier, entry.getKey());
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -318,14 +278,24 @@ public class AttributeServiceImpl implements AttributeService {
             sql.append("WHERE").appendFragment(orCollection);
         }
         
-        if (haveMapped) {
-            sql.append("UNION");
-            sql.append("SELECT eppa_als.paObjectId, eppa_als.pointId");
-            sql.append("FROM ExtraPaoPointAssignment eppa_als");
-            sql.append("WHERE eppa_als.Attribute").eq(attribute.getKey());
-        }
-        
         return sql;
+    }
+    
+    @Override
+    public BuiltInAttribute getAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches) {
+        
+        BuiltInAttribute attribute = getAttributeForPaoPointIdentifier(paoPointIdentifier);
+        
+        if (attribute != null && possibleMatches.contains(attribute)) return attribute;
+        
+        return null;
+    }
+    
+    @Override
+    public BuiltInAttribute getAttributeForPaoPointIdentifier(PaoPointIdentifier paoPointIdentifier) {
+        PaoType paoType = paoPointIdentifier.getPaoIdentifier().getPaoType();
+        PointTemplate pointTemplate = new PointTemplate(paoPointIdentifier.getPointIdentifier().getPointType(), paoPointIdentifier.getPointIdentifier().getOffset());
+        return paoDefinitionDao.getAttributeForPoaTypeAndPoint(paoType, pointTemplate);
     }
     
     @Override
@@ -357,4 +327,5 @@ public class AttributeServiceImpl implements AttributeService {
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
+    
 }

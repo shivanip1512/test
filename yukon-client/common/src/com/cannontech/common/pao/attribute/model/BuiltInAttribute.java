@@ -16,8 +16,6 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 public enum BuiltInAttribute implements Attribute {
     
-    AUTO_BLOCK_ENABLE("Auto Block Enable"),
-    AUTO_REMOTE_CONTROL("Auto/Remote Control"),
     BLINK_COUNT("Blink Count"), 
     CONNECTION_STATUS("Connection Status"),
     CONTROL_POINT("Control Point"),
@@ -29,13 +27,10 @@ public enum BuiltInAttribute implements Attribute {
     DISCONNECT_STATUS("Disconnect Status"),
     FAULT_STATUS("Fault Status"),
     GENERAL_ALARM_FLAG("General Alarm Flag"),
-    KEEP_ALIVE("Keep Alive"),
-    KEEP_ALIVE_TIMER("Keep Alive Timer"),
     KVAR("kVAr"),
     KVARH("kVArh"),
     LM_GROUP_STATUS("LM Group Status"),
     LOAD_PROFILE("Load Profile"),
-    TAP_DOWN("Lower Tap Position"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),
     MINIMUM_VOLTAGE("Minimum Voltage"),
     OUTAGE_LOG("Outage Log"),
@@ -45,10 +40,8 @@ public enum BuiltInAttribute implements Attribute {
     POWER_FAIL_FLAG("Power Fail Flag"),
     PROFILE_CHANNEL_2("Profile Channel 2"),
     PROFILE_CHANNEL_3("Profile Channel 3"),
-    TAP_UP("Raise Tap Position"),
     REVERSE_POWER_FLAG("Reverse Power Flag"),
     TAMPER_FLAG("Tamper Flag"),
-    TAP_POSITION("Tap Position"),
     TOU_RATE_A_PEAK_DEMAND("Tou Rate A Peak"),
     TOU_RATE_B_PEAK_DEMAND("Tou Rate B Peak"),
     TOU_RATE_C_PEAK_DEMAND("Tou Rate C Peak"),
@@ -62,9 +55,6 @@ public enum BuiltInAttribute implements Attribute {
     VOLTAGE_PHASE_A("Voltage (Phase A)"),
     VOLTAGE_PHASE_B("Voltage (Phase B)"),
     VOLTAGE_PHASE_C("Voltage (Phase C)"),
-    VOLTAGE_X("Voltage X"), // Source Side
-    VOLTAGE_Y("Voltage Y"), // Load Side
-    TERMINATE("Terminate"),
     VOLTAGE_PROFILE("Voltage Profile"),
     USAGE_WATER("Water Usage Reading"),
     ZERO_USAGE_FLAG("Zero Usage Flag"),

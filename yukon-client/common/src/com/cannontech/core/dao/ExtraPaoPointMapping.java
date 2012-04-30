@@ -1,18 +1,18 @@
 package com.cannontech.core.dao;
 
-import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.enums.RegulatorPointMapping;
 
 public class ExtraPaoPointMapping {
     
-    private Attribute attribute;
+    private RegulatorPointMapping regulatorPointMapping;
     private int pointId;
-    
-    public Attribute getAttribute() {
-        return attribute;
+
+    public RegulatorPointMapping getRegulatorPointMapping() {
+        return regulatorPointMapping;
     }
     
-    public void setAttribute(Attribute attribute) {
-        this.attribute = attribute;
+    public void setRegulatorPointMapping(RegulatorPointMapping regulatorPointMapping) {
+        this.regulatorPointMapping = regulatorPointMapping;
     }
 
     public void setPointId(int pointId) {

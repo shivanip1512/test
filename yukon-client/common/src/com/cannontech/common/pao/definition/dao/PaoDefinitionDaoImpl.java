@@ -52,8 +52,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
-import com.cannontech.common.pao.definition.attribute.lookup.BasicAttributeDefinition;
-import com.cannontech.common.pao.definition.attribute.lookup.MappedAttributeDefinition;
 import com.cannontech.common.pao.definition.model.CalcPointComponent;
 import com.cannontech.common.pao.definition.model.CalcPointInfo;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
@@ -66,8 +64,6 @@ import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.model.jaxb.ArchiveDefaults;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType;
 import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute.BasicLookup;
-import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute.MappedLookup;
-import com.cannontech.common.pao.definition.model.jaxb.AttributesType.Attribute.MappedLookup.TypeFilter;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command.Cmd;
 import com.cannontech.common.pao.definition.model.jaxb.CommandsType.Command.PointRef;
@@ -79,9 +75,8 @@ import com.cannontech.common.pao.definition.model.jaxb.PointsType.Point.Calculat
 import com.cannontech.common.pao.definition.model.jaxb.PointsType.Point.Calculation.Components.Component;
 import com.cannontech.common.pao.definition.model.jaxb.TagType.Tag;
 import com.cannontech.common.pao.definition.model.jaxb.UpdateTypeType;
-import com.cannontech.common.search.FilterType;
+import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.SetUtils;
-import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
@@ -139,10 +134,10 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Map<PaoTag, BiMap<PaoType, PaoDefinition>> typesBySupportedTag;
     private Set<PaoDefinition> creatablePaoDefinitions = null;
     private List<String> fileIdOrder = null;
+    private Map<Pair<PaoType, PointTemplate>, BuiltInAttribute> paoAndPointToAttributeMap;
     
     private UnitMeasureDao unitMeasureDao;
     private StateDao stateDao;
-    private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     private PointDao pointDao;
     @Autowired private ConfigResourceLoader configResourceLoader;
     
@@ -154,11 +149,6 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     @Autowired
     public void setStateDao(StateDao stateDao) {
         this.stateDao = stateDao;
-    }
-    
-    @Autowired
-    public void setExtraPaoPointAssignmentDao(ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao) {
-        this.extraPaoPointAssignmentDao = extraPaoPointAssignmentDao;
     }
     
     @Autowired
@@ -269,6 +259,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     public Set<PointTemplate> getInitPointTemplates(PaoType paoType) {
         Set<PointTemplate> templates = paoInitPointTemplateMap.get(paoType);
         return Collections.unmodifiableSet(templates);
+    }
+    
+    @Override
+    public BuiltInAttribute getAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate) {
+        Pair<PaoType, PointTemplate> paoAndPoint = new Pair<PaoType, PointTemplate>(paoType, pointTemplate);
+        return paoAndPointToAttributeMap.get(paoAndPoint);
     }
     
     // COMMANDS
@@ -507,7 +503,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
      * For unit tests, the setCustomInputFile method must be called BEFORE you call this initialize method.
      */
     public void initialize() throws Exception {
-
+        paoAndPointToAttributeMap = Maps.newHashMap();
         paoTypeMap = EnumHashBiMap.create(PaoType.class);
         paoAllPointTemplateMap = HashMultimap.create();
         paoInitPointTemplateMap = HashMultimap.create();
@@ -741,14 +737,15 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         List<AttributesType.Attribute> attributes = pao.getEnabledAttributes();
         for (AttributesType.Attribute attribute : attributes) {
         	
-        	Object lookup = attribute.getBasicLookup() != null ? attribute.getBasicLookup() : attribute.getMappedLookup();
-            AttributeDefinition attributeDefinition = createAttributeDefinition(attribute.getName(), lookup, pointNameTemplateMap);
-        	Attribute pointAttribute = BuiltInAttribute.valueOf(attribute.getName());
+            AttributeDefinition attributeDefinition = createAttributeDefinition(attribute.getName(), attribute.getBasicLookup(), pointNameTemplateMap);
+            BuiltInAttribute pointAttribute = BuiltInAttribute.valueOf(attribute.getName());
         	
             if (attributeMap.containsKey(pointAttribute)) {
                 throw new RuntimeException("Attribute: " + attribute.getName() + " is used twice for pao type: " + javaConstant + " in the paoDefinition.xml file - attribute names must be unique within a pao type");
             }
         	attributeMap.put(pointAttribute, attributeDefinition);
+        	Pair<PaoType, PointTemplate> paoAndPoint = new Pair<PaoType, PointTemplate>(pao.getPaoType(), attributeDefinition.getPointTemplate());
+        	paoAndPointToAttributeMap.put(paoAndPoint, pointAttribute);
         }   
         paoAttributeAttrDefinitionMap.put(paoType, attributeMap);
 
@@ -814,38 +811,26 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     }
 
     /**
-     * Helper method to convert a jaxb AttributeLookup CHOICE object to a AttributeLookup definition
-     * @param choiceLookup - The choice object from the attribute lookup
+     * Helper method to convert a jaxb AttributeLookup object to a AttributeLookup definition
+     * @param lookup - The BasicLookup of this attribute
      * @param pointNameTemplateMap 
      * @return The AttributeLookup definition representing the jaxb CHOICE lookup
      */
 	private AttributeDefinition createAttributeDefinition(String attributeName,
-            Object choiceLookup, Map<String, PointTemplate> pointNameTemplateMap) {
+            BasicLookup lookup, Map<String, PointTemplate> pointNameTemplateMap) {
 
         AttributeDefinition attributeDefinition = null;
         BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeName);
 
-        if (choiceLookup instanceof BasicLookup) {
-            BasicLookup lookup = (BasicLookup) choiceLookup;
-            PointTemplate pointTemplate = pointNameTemplateMap.get(lookup.getPoint());
-            if (pointTemplate == null) {
-                throw new IllegalArgumentException("Can't resolve point name '" + lookup.getPoint() + "'");
-            }
-            
-            attributeDefinition = new BasicAttributeDefinition(attribute, pointTemplate, pointDao);
-        } else if(choiceLookup instanceof MappedLookup) {
-            MappedLookup lookup = (MappedLookup) choiceLookup;
-            TypeFilter typeFilter = lookup.getTypeFilter();
-            String typeString = typeFilter.getType();
-            FilterType filterType = FilterType.valueOf(typeString);
-            attributeDefinition = new MappedAttributeDefinition(attribute, filterType, extraPaoPointAssignmentDao);
+        PointTemplate pointTemplate = pointNameTemplateMap.get(lookup.getPoint());
+        if (pointTemplate == null) {
+            throw new IllegalArgumentException("Can't resolve point name '" + lookup.getPoint() + "'");
         }
+        
+        attributeDefinition = new AttributeDefinition(attribute, pointTemplate, pointDao);
 
-        if (attributeDefinition != null) {
-            return attributeDefinition;
-        }
+        return attributeDefinition;
 
-        throw new IllegalArgumentException("Attribute Choice '" + choiceLookup.toString() + "' is not supported.");
     }
 	
     /**

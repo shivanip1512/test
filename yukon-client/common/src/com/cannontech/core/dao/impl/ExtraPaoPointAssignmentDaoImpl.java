@@ -11,18 +11,22 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
 import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.enums.RegulatorPointMapping;
 
 public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDao {
-
+    
+    @Autowired private PointDao pointDao;
+    
     private YukonJdbcTemplate yukonJdbcTemplate;
     private ParameterizedRowMapper<PaoPointIdentifier> paoPointIdentifierRowMapper = new ParameterizedRowMapper<PaoPointIdentifier>() {
 
@@ -41,33 +45,33 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
     };
 
     @Override
-    public PaoPointIdentifier getPaoPointIdentifier(YukonPao pao, Attribute attribute) {
+    public PaoPointIdentifier getPaoPointIdentifier(YukonPao pao, RegulatorPointMapping regulatorPointMapping) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ypo.paobjectId paobjectId, ypo.type paoType, point.PointType pointType, point.PointOffset pointOffset");
         sql.append("from Point point");
         sql.append("join ExtraPaoPointAssignment eppa on point.PointId = eppa.PointId");
         sql.append("join YukonPaobject ypo on ypo.paobjectid = point.paobjectId");
         sql.append("where eppa.PAObjectId = ").appendArgument(pao.getPaoIdentifier().getPaoId());
-        sql.append("and eppa.Attribute = ").appendArgument(attribute);
+        sql.append("and eppa.Attribute = ").appendArgument(regulatorPointMapping);
         try {
             return yukonJdbcTemplate.queryForObject(sql, paoPointIdentifierRowMapper);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Point not does not exist for pao: " + pao + " and attribute: " + attribute.getDescription(), e);
+            throw new NotFoundException("Point not does not exist for pao: " + pao + " and attribute: " + regulatorPointMapping.getDescription(), e);
         }
     }
     
     @Override
-    public int getPointId(YukonPao pao, Attribute attribute) {
+    public int getPointId(YukonPao pao, RegulatorPointMapping regulatorPointMapping) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT point.PointId");
         sql.append("FROM Point point");
         sql.append(    "JOIN ExtraPaoPointAssignment eppa ON point.PointId = eppa.PointId");
         sql.append("WHERE eppa.PAObjectId").eq(pao.getPaoIdentifier().getPaoId());
-        sql.append(    "AND eppa.Attribute").eq(attribute);
+        sql.append(    "AND eppa.Attribute").eq(regulatorPointMapping);
         try {
             return yukonJdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Point not does not exist for pao: " + pao + " and attribute: " + attribute.getDescription(), e);
+            throw new NotFoundException("Point not does not exist for pao: " + pao + " and attribute: " + regulatorPointMapping.getDescription(), e);
         }
     }
 
@@ -78,7 +82,7 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
             if(mapping.getPointId() > 0) {
                 SqlStatementBuilder sql = new SqlStatementBuilder("insert into ExtraPaoPointAssignment");
                 sql.append("values (").appendArgument(pao.getPaoIdentifier().getPaoId()).append(", ").appendArgument(mapping.getPointId());
-                sql.append(", ").appendArgument(mapping.getAttribute()).append(")");
+                sql.append(", ").appendArgument(mapping.getRegulatorPointMapping()).append(")");
                 yukonJdbcTemplate.update(sql);
             }
         }
@@ -94,6 +98,11 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+
+    @Override
+    public LitePoint getLitePoint(YukonPao regulator, RegulatorPointMapping regulatorMapping) {
+        return pointDao.getLitePoint(getPointId(regulator, regulatorMapping));
     }
 
 }

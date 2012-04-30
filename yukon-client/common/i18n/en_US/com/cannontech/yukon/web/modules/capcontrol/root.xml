@@ -542,4 +542,17 @@
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.BUSOPTIMIZED_FEEDER">Bus Optimized Feeder</entry>
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.MANUAL_ONLY">Manual Only</entry>
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.TIME_OF_DAY">Time of Day</entry>
+    
+    <!-- RegulatorPointMapping Enum -->
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.AUTO_REMOTE_CONTROL">Auto/Remote Control</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.AUTO_BLOCK_ENABLE">Auto Block Enable</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.TAP_UP">Raise Tap Position</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.TAP_DOWN">Lower Tap Position</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.TAP_POSITION">Tap Position</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.TERMINATE">Terminate</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.VOLTAGE_X">Voltage X</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.VOLTAGE_Y">Voltage Y</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE">Keep Alive</entry>
+    <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE_TIMER">Keep Alive Timer</entry>
+    
 </properties>

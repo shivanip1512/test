@@ -273,9 +273,7 @@
                                 </tr>
                                 <c:forEach var="point" items="${regulatorPointMappingsMap[phaseA]}" varStatus="status">
                                     <tr class="<tags:alternateRow odd="" even="altRow"/> regulatorAttributeRow">
-                                        <td><spring:escapeBody htmlEscape="true">
-                                            ${point.attribute.description}
-                                        </spring:escapeBody></td>
+                                        <td><i:inline key="${point.regulatorPointMapping}"/></td>
                                         <c:forEach items="${zoneDto.regulators}" var="regulator">
                                             <c:set var="phaseKey" value="${regulator.key}"/>
                                             <td>
@@ -312,9 +310,7 @@
                                     </tr>
                                     <c:forEach var="point" items="${regulatorPointMappingsMap[phaseKey]}">
                                         <tr class="<tags:alternateRow odd="" even="altRow"/> regulatorAttributeRow">
-                                            <td><spring:escapeBody htmlEscape="true">
-                                                ${point.attribute.description}
-                                            </spring:escapeBody></td>
+                                            <td><i:inline key="${point.regulatorPointMapping}"/></td>
                                             <td>
                                                 <c:choose>
                                                     <c:when test="${point.pointId > 0}">
@@ -359,9 +355,7 @@
                                 <c:set var="phaseKey" value="${regulator.key}"/>
             		            <c:forEach var="point" items="${regulatorPointMappingsMap[phaseKey]}">
             		                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-            		                    <td><spring:escapeBody htmlEscape="true">
-                                            ${point.attribute.description}
-                                        </spring:escapeBody></td>
+            		                    <td><i:inline key="${point.regulatorPointMapping}"/></td>
             		                    <td>
             		                        <c:choose>
             		                            <c:when test="${point.pointId > 0}">

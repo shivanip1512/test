@@ -176,4 +176,9 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     public void setConfigResourceLoader(ConfigResourceLoader loader) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    @Override
+    public BuiltInAttribute getAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

@@ -78,7 +78,7 @@ public class BusViewController {
     @RequestMapping
     public String chart(ModelMap model, FlashScope flash, YukonUserContext userContext, int subBusId) {
         boolean zoneAttributesExist = voltageFlatnessGraphService.
-                                                allZonesHaveRequiredAttributes(subBusId,
+                                                allZonesHaveRequiredRegulatorPointMapping(subBusId,
                                                                                userContext.getYukonUser());
         model.addAttribute("zoneAttributesExist", zoneAttributesExist);
         if (zoneAttributesExist) {

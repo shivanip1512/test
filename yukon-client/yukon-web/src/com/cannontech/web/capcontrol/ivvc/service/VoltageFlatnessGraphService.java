@@ -1,7 +1,7 @@
 package com.cannontech.web.capcontrol.ivvc.service;
 
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.enums.RegulatorPointMapping;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 
@@ -43,20 +43,20 @@ public interface VoltageFlatnessGraphService {
     public long getLargestPointTimeForZoneGraph(int zoneId);
 
     /**
-     * Returns true if the regulators for all zones have a point existing for the BuiltInAttribute VOLTAGE_Y. 
-     * This method may change in the future to check more than just this attribute.
+     * Returns true if the regulators for all zones have a point existing for the RegulatorPointMapping VOLTAGE_Y. 
+     * This method may change in the future to check more than just this RegulatorPointMapping.
      * @param subBusId
      * @param user
      * @return
      */
-    public boolean allZonesHaveRequiredAttributes(int subBusId, LiteYukonUser user);
+    public boolean allZonesHaveRequiredRegulatorPointMapping(int subBusId, LiteYukonUser user);
 
     /**
-     * Returns true if the regulators for this zone have a point existing for the BuiltInAttribute VOLTAGE_Y. 
-     * This method may change in the future to check more than just this attribute.
+     * Returns true if the regulators for this zone have a point existing for the RegulatorPointMapping VOLTAGE_Y. 
+     * This method may change in the future to check more than just this RegulatorPointMapping.
      * @param zoneId
      * @param user
      * @return
      */
-    public boolean zoneHasRequiredAttribute(int zoneId, BuiltInAttribute attribute, LiteYukonUser user);
+    public boolean zoneHasRequiredRegulatorPointMapping(int zoneId, RegulatorPointMapping regulatorPointMapping, LiteYukonUser user);
 }

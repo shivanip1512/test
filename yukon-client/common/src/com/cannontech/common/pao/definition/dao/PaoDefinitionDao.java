@@ -34,6 +34,15 @@ public interface PaoDefinitionDao {
     public Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap();
     
     public abstract AttributeDefinition getAttributeLookup(PaoType paoType, BuiltInAttribute attribute) throws IllegalUseOfAttribute;
+    
+    /**
+     * Returns the BuiltInAttribute for the pao type and point template or null if no attribute is 
+     * defined for that pao type, point template combination
+     * @param paoType
+     * @param pointTemplate
+     * @return BuiltInAttribute
+     */
+    public BuiltInAttribute getAttributeForPoaTypeAndPoint(PaoType paoType, PointTemplate pointTemplate);
 
     // POINTS
     //============================================
@@ -163,4 +172,5 @@ public interface PaoDefinitionDao {
     // UNIT TESTING SETTERS
     //===========================================
     public abstract void setConfigResourceLoader(ConfigResourceLoader loader);
+
 }

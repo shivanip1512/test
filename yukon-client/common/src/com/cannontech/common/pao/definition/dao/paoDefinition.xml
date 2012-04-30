@@ -7184,66 +7184,12 @@
     </pao>
     
     <pao id="VOLTAGE_REGULATOR" abstract="true">
-    	<attributes>
-            <attribute name="AUTO_REMOTE_CONTROL">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_UP">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_DOWN">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TAP_POSITION">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="VOLTAGE_Y">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="KEEP_ALIVE">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-        </attributes>
         <tags>
         	<tag name="VOLTAGE_REGULATOR"/>
         </tags>
     </pao>
 
     <pao id="PHASE_AND_GANG_BASE" inherits="VOLTAGE_REGULATOR" abstract="true">
-        <attributes>
-            <attribute name="VOLTAGE_X">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="TERMINATE">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="AUTO_BLOCK_ENABLE">
-                <mappedLookup>
-                    <typeFilter type="STATUSPOINT"/>
-                </mappedLookup>
-            </attribute>
-            <attribute name="KEEP_ALIVE_TIMER">
-                <mappedLookup>
-                    <typeFilter type="ANALOGPOINT"/>
-                </mappedLookup>
-            </attribute>
-        </attributes>
     </pao>
     
     <pao id="LOAD_TAP_CHANGER" inherits="VOLTAGE_REGULATOR">

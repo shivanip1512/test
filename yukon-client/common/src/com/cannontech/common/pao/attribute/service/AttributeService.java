@@ -8,7 +8,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.MappableAttribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
@@ -29,19 +29,6 @@ public interface AttributeService {
     /**
      * Method to get the PaoPointIdentifier for the given PAO for the given attribute.
      * 
-     * This method will not require a database lookup for non-mapped Attributes.
-     * 
-     * @param pao - Pao to get point for
-     * @param attribute - Attribute to get point for
-     * @return The paoPointIdentifier for the given attribute and pao
-     * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
-     * @throws IllegalArgumentException if the pao does not have that attribute
-     */
-    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
-    
-    /**
-     * Method to get the PaoPointIdentifier for the given PAO for the given attribute.
-     * 
      * This is a temporary method designed to be used by code that wishes to assert
      * that it does not support mapped attributes. This is useful because attributes
      * will be redefined in the 5.4 scope to no longer support the concept of "mapped".
@@ -53,7 +40,7 @@ public interface AttributeService {
      * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
      * @throws IllegalArgumentException if the pao does not have that attribute
      */
-    public PaoPointIdentifier getPaoPointIdentifierForNonMappedAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
     
     
     /**
@@ -101,14 +88,6 @@ public interface AttributeService {
      *         called)
      */
     public Set<Attribute> getAllExistingAttributes(YukonPao pao);
-    
-    /**
-     * Returns the set of Mappable Attributes defined for the given 
-     * PaoType 
-     * @param paoType
-     * @return
-     */
-    public Set<MappableAttribute> getMappableAttributes(PaoType paoType);
     
     public Attribute resolveAttributeName(String name);
     
@@ -167,5 +146,23 @@ public interface AttributeService {
      * @return
      */
     public List<SimpleDevice> getDevicesInGroupThatSupportAttribute(DeviceGroup group, Attribute attribute);
+
+    /**
+     * Reverse lookup of BuiltInAttribute based on Pao and Point Identifier from set of possible attributes.
+     * Will return null if no attribute in possible set matches the pao point identifier definition.
+     * Used primarily by MultispeakMeterService to retrieve readable attributes.
+     * @param paoPointIdentifier
+     * @param possibleMatches
+     * @return BuiltInAttribute
+     */
+    public BuiltInAttribute getAttributeForPoint(PaoPointIdentifier paoPointIdentifier, Set<BuiltInAttribute> possibleMatches);
+
+    /**
+     * Returns the BuiltInAttribute for the PaoPointIdentifier provided or null if no attribute
+     * is defined for that pao and point combination.
+     * @param paoPointIdentifier
+     * @return BuiltInAttribute
+     */
+    public BuiltInAttribute getAttributeForPaoPointIdentifier(PaoPointIdentifier paoPointIdentifier);
 
 }
