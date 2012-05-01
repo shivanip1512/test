@@ -42,4 +42,11 @@
 		<nature>org.eclipse.jem.workbench.JavaEMFNature</nature>
 		<nature>org.eclipse.wst.jsdt.core.jsNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>resource</name>
+			<type>2</type>
+			<locationURI>WORKSPACE_LOC/resource</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
