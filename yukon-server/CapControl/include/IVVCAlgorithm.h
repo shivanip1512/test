@@ -71,6 +71,7 @@ class IVVCAlgorithm
         void setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, CtiMultiMsg_vec& ccEvents);
         bool allRegulatorsInRemoteMode(const long subbusId) const;
 
+        void sendDisableRemoteControl( CtiCCSubstationBusPtr subbus );
         void handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
 
         bool hasTapOpsRemaining(const IVVCState::TapOperationZoneMap & tapOp) const;

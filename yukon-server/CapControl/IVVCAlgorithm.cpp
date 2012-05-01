@@ -126,9 +126,12 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     {
         if (state->isShowBusDisableMsg())
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
 
-            dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". The bus is disabled." << std::endl;
+                dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". The bus is disabled." << std::endl;
+            }
+            sendDisableRemoteControl( subbus );
         }
         state->setShowBusDisableMsg(false);
         state->setState(IVVCState::IVVC_WAIT);
@@ -1971,6 +1974,55 @@ double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const
 }
 
 
+void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
+{
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+
+    if (_CC_DEBUG & CC_DEBUG_IVVC)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - IVVC Algorithm: "<< subbus->getPaoName() << " - Sending remote control disable. " << std::endl;
+    }
+
+    ZoneManager & zoneManager = store->getZoneManager();
+    Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        {
+            try
+            {
+                VoltageRegulatorManager::SharedPtr regulator =
+                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                if ( regulator->getOperatingMode() == VoltageRegulator::RemoteMode )
+                {
+                    regulator->executeDisableRemoteControl();
+                }
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+            }
+            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            {
+                if (missingAttribute.complain())
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                }
+            }
+        }
+    }
+}
+
+
 void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
 {
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
@@ -1980,45 +2032,10 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Comms lost, sending remote control disable. " << std::endl;
+            dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << " - Comms lost." << std::endl;
         }
 
-        ZoneManager & zoneManager = store->getZoneManager();
-        Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
-
-        for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
-        {
-            ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
-
-            for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
-            {
-                try
-                {
-                    VoltageRegulatorManager::SharedPtr regulator =
-                            store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
-
-                    if ( regulator->getOperatingMode() == VoltageRegulator::RemoteMode )
-                    {
-                        regulator->executeDisableRemoteControl();
-                    }
-                }
-                catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
-                }
-                catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
-                {
-                    if (missingAttribute.complain())
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                        dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
-                    }
-                }
-            }
-        }
+        sendDisableRemoteControl( subbus );
     }
 
     // Write to the event log.
