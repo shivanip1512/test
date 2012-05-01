@@ -143,21 +143,37 @@ int DNPInterface::generate( CtiXfer &xfer )
 
                 break;
             }
+            case Command_Class1230Read_WithTime:
+            {
+                _app_layer.setCommand(ApplicationLayer::RequestRead);
+
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class0));
+
+                break;
+            }
             case Command_Class1230Read:
             {
                 _app_layer.setCommand(ApplicationLayer::RequestRead);
 
-                ObjectBlock *time = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate),
-                            *dob1 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1),
-                            *dob2 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2),
-                            *dob3 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3),
-                            *dob0 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class0);
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class0));
 
-                _app_layer.addObjectBlock(time);
-                _app_layer.addObjectBlock(dob1);
-                _app_layer.addObjectBlock(dob2);
-                _app_layer.addObjectBlock(dob3);
-                _app_layer.addObjectBlock(dob0);
+                break;
+            }
+            case Command_Class123Read_WithTime:
+            {
+                _app_layer.setCommand(ApplicationLayer::RequestRead);
+
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
 
                 break;
             }
@@ -165,22 +181,16 @@ int DNPInterface::generate( CtiXfer &xfer )
             {
                 _app_layer.setCommand(ApplicationLayer::RequestRead);
 
-                ObjectBlock *time = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate),
-                            *dob1 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1),
-                            *dob2 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2),
-                            *dob3 = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3);
-
-                _app_layer.addObjectBlock(time);
-                _app_layer.addObjectBlock(dob1);
-                _app_layer.addObjectBlock(dob2);
-                _app_layer.addObjectBlock(dob3);
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
 
                 break;
             }
             case Command_SetAnalogOut:
             {
-                if( _command_parameters.size() == 1 && 
-				   (_command_parameters[0].type == AnalogOutputPointType || _command_parameters[0].type == AnalogOutputFloatPointType ))
+                if( _command_parameters.size() == 1 &&
+                   (_command_parameters[0].type == AnalogOutputPointType || _command_parameters[0].type == AnalogOutputFloatPointType ))
                 {
                     _app_layer.setCommand(ApplicationLayer::RequestDirectOp);
 
@@ -587,7 +597,9 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                     case Command_Class2Read:
                     case Command_Class3Read:
                     case Command_Class123Read:
+                    case Command_Class123Read_WithTime:
                     case Command_Class1230Read:
+                    case Command_Class1230Read_WithTime:
                     {
                         _string_results.push_back(CTIDBG_new string(pointSummary(5)));
 

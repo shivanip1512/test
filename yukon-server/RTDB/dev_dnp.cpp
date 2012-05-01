@@ -18,6 +18,30 @@
 
 using namespace std;
 
+std::set<long> parseCsvLongs(const std::string &csv)
+{
+    boost::char_separator<char> sep(",");
+    Boost_char_tokenizer tok(csv, sep);
+    Boost_char_tokenizer::iterator tok_iter = tok.begin();
+
+    string id_str;
+    long   id;
+
+    set<long> longs;
+
+    while( (tok_iter != tok.end()) && !(id_str = *tok_iter++).empty() )
+    {
+        if( id = atol(id_str.c_str()) )
+        {
+            longs.insert(id);
+        }
+    }
+
+    return longs;
+}
+
+set<long> gDnpTimeAverseDevices = parseCsvLongs(gConfigParms.getValueAsString("YUKON_DNP_OMIT_TIME_REQUEST_DEVICEIDS"));
+
 namespace Cti {
 namespace Devices {
 
@@ -380,7 +404,14 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
             {
                 case ScanRateGeneral:
                 {
-                    command = Protocol::DNPInterface::Command_Class123Read;
+                    if( gDnpTimeAverseDevices.count(getID()) )
+                    {
+                        command = Protocol::DNPInterface::Command_Class123Read;
+                    }
+                    else
+                    {
+                        command = Protocol::DNPInterface::Command_Class123Read_WithTime;
+                    }
 
                     break;
                 }
@@ -397,7 +428,14 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
                 case ScanRateIntegrity:
                 {
-                    command = Protocol::DNPInterface::Command_Class1230Read;
+                    if( gDnpTimeAverseDevices.count(getID()) )
+                    {
+                        command = Protocol::DNPInterface::Command_Class1230Read;
+                    }
+                    else
+                    {
+                        command = Protocol::DNPInterface::Command_Class1230Read_WithTime;
+                    }
 
                     break;
                 }
