@@ -4,6 +4,18 @@ var KEYUP = 38;
 var KEYDOWN = 40;
 var TEMPERATURE_WINDOW_TYPES = ["HEAT","COOL"];
 
+if(typeof(Yukon) === 'undefined'){
+	/**
+	 * Yukon global object
+	 * @class
+	 */
+	Yukon={};
+}
+
+/**
+ * Thermostat editing singleton
+ * @class
+ */
 Yukon.ThermostatScheduleEditor = {
     //Initializes the UI
     init: function(args) {
