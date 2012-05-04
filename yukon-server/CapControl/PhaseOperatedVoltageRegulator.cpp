@@ -246,7 +246,8 @@ VoltageRegulator::IDSet PhaseOperatedVoltageRegulator::getVoltagePointIDs()
     We get this value from an attached point.  In case of no point update or value out of range (negative) we return 0 which
         disables the automatic keep alive.  The value represents the amount of time (in minutes) it takes for the regulator
         to time out and return to auto mode after receiving a valid keep alive.
-        We convert to seconds but divide by two because we want send keep alive messages twice as frequently as necessary.
+        We convert to seconds but divide by three and subtract two because we want send three keep alive messages
+        inside the window.
 */
 long PhaseOperatedVoltageRegulator::getKeepAliveRefreshRate()
 {
@@ -255,7 +256,7 @@ long PhaseOperatedVoltageRegulator::getKeepAliveRefreshRate()
 
     if ( getPointValue( point.getPointId(), value ) )
     {
-        return ( value <= 0.0 ) ? 0 : static_cast<long>( value * 60.0 / 2.0 );
+        return ( value <= 0.0 ) ? 0 : static_cast<long>( (value * 60.0 / 3.0) - 2.0 );
     }
 
     return 0;
