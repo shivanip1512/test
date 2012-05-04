@@ -192,9 +192,8 @@ public class ExportField implements Displayable{
      * @param dateTime
      * @return formatted String
      */
-    public String formatTimestamp(Instant dateTimeInstant,  DateTimeZone timeZone) {
+    public String formatTimestamp(DateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormat.forPattern(pattern);
-        formatter.withZone(timeZone);
-        return dateTimeInstant.toString(formatter);
+        return dateTime.toString(formatter);
     }
 }

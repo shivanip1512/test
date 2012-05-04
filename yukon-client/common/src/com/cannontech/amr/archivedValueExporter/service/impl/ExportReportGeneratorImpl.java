@@ -198,6 +198,8 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
                     break;
                 }
                 DateTime startDate = getStartDate(field.getAttribute(), stopDate);
+                stopDate = stopDate.plusDays(1);
+                
                 ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues =
                     rawPointHistoryDao.getLimitedAttributeData(meters,
                                                                field.getAttribute().getAttribute(),
@@ -384,8 +386,8 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
                                 PointValueQualityHolder pointValueQualityHolder) {
         String formattedValue = "";
         if (pointValueQualityHolder != null) {
-            Instant dateTimeInstant = new Instant(pointValueQualityHolder.getPointDataTimeStamp());
-            formattedValue = field.formatTimestamp(dateTimeInstant, timeZone);
+            DateTime dateTime = new DateTime(pointValueQualityHolder.getPointDataTimeStamp()).withZone(timeZone);
+            formattedValue = field.formatTimestamp(dateTime);
         }
         return formattedValue;
 
