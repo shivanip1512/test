@@ -66,10 +66,10 @@ public class FlashScopeMessagesTag extends YukonTagSupport {
 					out.println("<ul>");
 					for (MessageSourceResolvable messageSourceResolvable : flashScopeMessage.getMessages()) {
 					    String bullet = "";
-					    if( messageSourceResolvable instanceof YukonMessageSourceResolvable){
+					    if(messageSourceResolvable instanceof YukonMessageSourceResolvable){
 					        YukonMessageSourceResolvable yukonMessageSourceResolvable = (YukonMessageSourceResolvable)messageSourceResolvable;
 					        if(yukonMessageSourceResolvable.getDisplayType() == DisplayType.BULLETED){
-					            bullet = "&nbsp;&bull;";
+					            bullet = "&nbsp;&bull;&nbsp;";
 					        }
 					    }
 						String resolvedMessage = resolveMessage(messageSourceResolvable);
