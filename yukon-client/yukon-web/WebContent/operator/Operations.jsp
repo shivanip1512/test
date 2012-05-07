@@ -25,12 +25,23 @@
 <cti:standardPage title="Energy Services Operations Center" module="operations">
     <cti:standardMenu />
 
-    <script type="text/javascript">
+<script type="text/javascript">
 	function confirmDelete() {
 		if (confirm("Are you sure you want to delete the energy company and all customer account information belongs to it?")
 			&& confirm("Are you really sure you want to delete the energy company?"))
 			document.DeleteForm.submit();
 	}
+	
+	function resetFieldOnChange(e){
+	    jQuery(jQuery(this).attr('data-input')).val('');
+	}
+	
+	jQuery(function(){
+	    jQuery(document).delegate('.resetFieldOnChange', 'change', resetFieldOnChange);
+	});
+
+
+
 </script>
 
     <div id="main">
@@ -87,7 +98,7 @@
                                 <cti:msg key="yukon.web.modules.operator.search.searchPrompt" />
                             </div>
                             <div>
-                                <select name="searchBy" onchange="$('accountSearchValue').value = ''">
+                                <select name="searchBy" data-input="#accountSearchValue" class="resetFieldOnChange">
                                     <c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}">
                                         <option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
                                             <cti:msg key="${operatorAccountSearchBy.formatKey}" />
@@ -213,8 +224,7 @@
                                 <cti:msg key="yukon.web.modules.operator.search.hardwareSearchPrompt" />
                             </div>
 							<div>
-								<select name="searchBy"
-									onchange="$('invSearchValue').value = ''">
+								<select name="searchBy" data-input="#invSearchValue" class="resetFieldOnChange">
 									<c:forEach var="operatorInventorySearchBy" items="${operatorInventorySearchBys}">
 										<option value="${operatorInventorySearchBy}">
 											<cti:msg key="${operatorInventorySearchBy.formatKey}" />
@@ -222,7 +232,7 @@
 									</c:forEach>
 								</select> <input type="text" name="searchValue" id="invSearchValue"
 									value="" size="15"> <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>"
-									alt="search" onClick="$('invSearchForm').submit();">
+									alt="search" onClick="$('invSearchForm').submit();"
 							</div>
 						</form>
 					</div>
@@ -248,7 +258,7 @@
 
                         <div class="sectionFormLabel">Search for existing service order:</div>
                         <div>
-                            <select name="SearchBy" onchange="document.soSearchForm.SearchValue.value=''">
+                            <select name="SearchBy" data-input="#SearchValue" class="resetFieldOnChange">
                                 <c:forEach items="${serviceOrderSearchList}" var="entry">
                                     <option value="${entry.yukonDefID}">${entry.content}</option>
                                 </c:forEach>

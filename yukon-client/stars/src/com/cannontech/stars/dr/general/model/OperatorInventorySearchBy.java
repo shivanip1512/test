@@ -4,17 +4,17 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum OperatorInventorySearchBy implements DisplayableEnum {
 	
-	SERIAL_NUMBER,
-    METER_NUMBER, 
-    ACCOUNT_NUMBER,
-    PHONE_NUMBER,
-	LAST_NAME,
-	WORK_ORDER_NUMBER,
-	ALT_TRACKING_NUMBER;
+	serialNumber,
+    meterNumber, 
+    accountNumber,
+    phoneNumber,
+	lastName,
+	workOrderNumber,
+	altTrackingNumber;
 
     @Override
     public String getFormatKey() {
-    	return "yukon.web.modules.operator.inventory.operatorInventorySearchByEnum." + this.toString();
+    	return "yukon.web.modules.operator.inventory." + this.toString();
     }
 
 }

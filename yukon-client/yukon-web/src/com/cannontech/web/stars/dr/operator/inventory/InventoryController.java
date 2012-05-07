@@ -1,9 +1,12 @@
 package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,6 +48,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonMessageSourceResolvable.DisplayType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole.MeteringType;
@@ -73,6 +77,7 @@ import com.cannontech.web.stars.dr.operator.HardwareModelHelper;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareValidator;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -204,9 +209,17 @@ public class InventoryController {
                                                                               starsMeters);
             if(results.getHitCount() == 0){
                 final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-                String warning = buildSearchResultsNotFoundWarning(inventorySearch, messageSourceAccessor);
-                MessageSourceResolvable notFoundWarning = new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.noResultsForFilter", warning);
-                flashScope.setWarning(Collections.singletonList(notFoundWarning));
+                List<Map<String, String>>  fieldList = buildNotFoundFieldList(inventorySearch, messageSourceAccessor);
+                List<MessageSourceResolvable> messages = Lists.newArrayList();
+                MessageSourceResolvable noResultsForFilter = new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.noResultsForFilter");
+                messages.add(noResultsForFilter);
+                for (Map<String, String> keyValue : fieldList){
+                    String field = keyValue.keySet().iterator().next();
+                    String fieldValue = keyValue.get(field);
+                    MessageSourceResolvable noResultsForFilterItem = new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.noResultsForFilterItem", DisplayType.BULLETED , field, fieldValue);
+                    messages.add(noResultsForFilterItem);
+                }
+                flashScope.setWarning(messages);
             }
             // Redirect to inventory page if only one result is found
             else if (results.getHitCount() == 1) {
@@ -244,25 +257,25 @@ public class InventoryController {
      */
     private void updateInventorySearch(InventorySearch inventorySearch, OperatorInventorySearchBy searchBy, String searchValue){
         switch(searchBy){
-        case SERIAL_NUMBER:
+        case serialNumber:
             inventorySearch.setSerialNumber(searchValue);
             break;
-        case METER_NUMBER:
+        case meterNumber:
             inventorySearch.setMeterNumber(searchValue);
             break;
-        case ACCOUNT_NUMBER:
+        case accountNumber:
             inventorySearch.setAccountNumber(searchValue);
             break;
-        case PHONE_NUMBER:
+        case phoneNumber:
             inventorySearch.setPhoneNumber(searchValue);
             break;
-        case LAST_NAME:
+        case lastName:
             inventorySearch.setLastName(searchValue);
             break;
-        case WORK_ORDER_NUMBER:
+        case workOrderNumber:
             inventorySearch.setWorkOrderNumber(searchValue);
             break;
-        case ALT_TRACKING_NUMBER:
+        case altTrackingNumber:
             inventorySearch.setAltTrackingNumber(searchValue);
             break;
         }
@@ -272,19 +285,18 @@ public class InventoryController {
      * Builds warning for search results that were not found
      *
      * @param inventorySearch
-     * @param messageSourceAccessor
      * @return 
      */
-    private String buildSearchResultsNotFoundWarning(InventorySearch inventorySearch, MessageSourceAccessor messageSourceAccessor) {
-        StringBuilder warning = new StringBuilder();
-        buildSearchResultsNotFoundFieldWarning(inventorySearch.getSerialNumber(), OperatorInventorySearchBy.SERIAL_NUMBER, " starts with ", messageSourceAccessor, warning);
-        buildSearchResultsNotFoundFieldWarning(inventorySearch.getMeterNumber(), OperatorInventorySearchBy.METER_NUMBER, " starts with ", messageSourceAccessor, warning);
-        buildSearchResultsNotFoundFieldWarning(inventorySearch.getAccountNumber(), OperatorInventorySearchBy.ACCOUNT_NUMBER, " starts with ", messageSourceAccessor, warning);
-        buildSearchResultsNotFoundFieldWarning(inventorySearch.getPhoneNumber(), OperatorInventorySearchBy.PHONE_NUMBER, " starts with ", messageSourceAccessor, warning);
-        buildSearchResultsNotFoundFieldWarning(inventorySearch.getLastName(), OperatorInventorySearchBy.LAST_NAME, " starts with ", messageSourceAccessor, warning);
-        buildSearchResultsNotFoundFieldWarning(inventorySearch.getWorkOrderNumber(), OperatorInventorySearchBy.WORK_ORDER_NUMBER, " starts with ", messageSourceAccessor, warning);
-        buildSearchResultsNotFoundFieldWarning(inventorySearch.getAltTrackingNumber(), OperatorInventorySearchBy.ALT_TRACKING_NUMBER, " starts with ", messageSourceAccessor, warning);
-        return warning.toString();
+    private List<Map<String, String>> buildNotFoundFieldList(InventorySearch inventorySearch, MessageSourceAccessor messageSourceAccessor) {
+        List<Map<String, String>> notFoundList = new ArrayList<Map<String, String>>();
+        buildNotFoundKeyValue(inventorySearch.getSerialNumber(), OperatorInventorySearchBy.serialNumber,  messageSourceAccessor, notFoundList);
+        buildNotFoundKeyValue(inventorySearch.getMeterNumber(), OperatorInventorySearchBy.meterNumber,  messageSourceAccessor, notFoundList);
+        buildNotFoundKeyValue(inventorySearch.getAccountNumber(), OperatorInventorySearchBy.accountNumber, messageSourceAccessor, notFoundList);
+        buildNotFoundKeyValue(inventorySearch.getPhoneNumber(), OperatorInventorySearchBy.phoneNumber,  messageSourceAccessor, notFoundList);
+        buildNotFoundKeyValue(inventorySearch.getLastName(), OperatorInventorySearchBy.lastName, messageSourceAccessor, notFoundList);
+        buildNotFoundKeyValue(inventorySearch.getWorkOrderNumber(), OperatorInventorySearchBy.workOrderNumber, messageSourceAccessor, notFoundList);
+        buildNotFoundKeyValue(inventorySearch.getAltTrackingNumber(), OperatorInventorySearchBy.altTrackingNumber, messageSourceAccessor, notFoundList);
+        return notFoundList;
     }
     
     /**
@@ -292,20 +304,13 @@ public class InventoryController {
      *
      * @param value
      * @param searchBy
-     * @param operator
-     * @param messageSourceAccessor
-     * @param warning
+     * @param notFoundList
      */
-    private void buildSearchResultsNotFoundFieldWarning(String value, OperatorInventorySearchBy searchBy, String operator, MessageSourceAccessor messageSourceAccessor, StringBuilder warning) {
+    private void buildNotFoundKeyValue(String value, OperatorInventorySearchBy searchBy,  MessageSourceAccessor messageSourceAccessor, List<Map<String,String>> notFoundList) {
         if (StringUtils.isNotBlank(value)) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(" ");
-            if (warning.length() > 0) {
-                sb.append("and ");
-            }
-            sb.append(messageSourceAccessor.getMessage(searchBy.getFormatKey()));
-            sb.append(operator).append("'").append(value).append("'");
-            warning.append(sb.toString());
+            Map<String,String> keyValue = new HashMap<String,String>();
+            keyValue.put(messageSourceAccessor.getMessage(searchBy.getFormatKey()), "'"+value+"'");
+            notFoundList.add(keyValue);
         }
     }
     

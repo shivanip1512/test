@@ -12,7 +12,15 @@ import com.google.common.collect.ObjectArrays;
  * Yukon extension of DefaultMessageSourceResolvable with convenience
  * constructor
  */
-public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable {
+public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable { 
+    
+    public enum DisplayType{
+        BULLETED,
+        PLAIN
+    }
+    
+    private DisplayType displayType = DisplayType.PLAIN;
+
     private static final long serialVersionUID = 3775006143046764578L;
 
     public YukonMessageSourceResolvable(MessageSourceResolvable resolvable) {
@@ -30,6 +38,11 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
     public YukonMessageSourceResolvable(String[] codes, Object[] arguments) {
         super(codes, arguments);
     }
+    
+    public YukonMessageSourceResolvable(String[] codes, Object[] arguments, DisplayType displayType) {
+        this(codes, arguments);
+        this.displayType = displayType;
+    }
 
     public YukonMessageSourceResolvable(String[] codes, String defaultMessage) {
         super(codes, defaultMessage);
@@ -39,8 +52,18 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
         super(codes);
     }
     
+    public YukonMessageSourceResolvable(String[] codes, DisplayType displayType) {
+        this(codes);
+        this.displayType = displayType;
+    }
+    
     public YukonMessageSourceResolvable(String code, Object... args) {
         super(new String[] { code }, args);
+    }
+    
+    public YukonMessageSourceResolvable(String code, DisplayType displayType, Object... args) {
+        this(code, args);
+        this.displayType = displayType;
     }
 
     public static MessageSourceResolvable createSingleCode(String code) {
@@ -112,4 +135,9 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
         }
         return getCodes()[0] + "+";
     }
+
+    public DisplayType getDisplayType() {
+        return displayType;
+    }
+
 }
