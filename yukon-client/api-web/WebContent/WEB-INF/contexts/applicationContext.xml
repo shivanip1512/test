@@ -24,7 +24,4 @@
     <bean id="themeResolver" class="org.springframework.web.servlet.theme.FixedThemeResolver">
         <property name="defaultThemeName" value="default"/>
     </bean>
-
-    <bean class="com.cannontech.yukon.api.common.service.impl.TokenServiceImpl"/>
-    <bean class="com.cannontech.yukon.api.amr.service.impl.ProfileCollectionServiceImpl"/>
 </beans>

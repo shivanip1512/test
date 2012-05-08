@@ -50,5 +50,6 @@
   <bean id="pointMonitorService" class="com.cannontech.core.monitors.PointMonitorListenerFactory"/>
 
   <bean id="tableToDBChangeMappingServiceImpl" class="com.cannontech.core.service.impl.TableToDBChangeMappingServiceImpl"/>
-  
+
+  <bean class="com.cannontech.common.token.service.impl.TokenServiceImpl"/>
 </beans>

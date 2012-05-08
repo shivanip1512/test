@@ -1,4 +1,4 @@
-package com.cannontech.yukon.api.common.service;
+package com.cannontech.common.token;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;

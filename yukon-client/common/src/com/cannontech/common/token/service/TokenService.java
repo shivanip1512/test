@@ -1,6 +1,10 @@
-package com.cannontech.yukon.api.common.service;
+package com.cannontech.common.token.service;
 
 import java.util.Set;
+
+import com.cannontech.common.token.Token;
+import com.cannontech.common.token.TokenStatus;
+import com.cannontech.common.token.TokenType;
 
 public interface TokenService {
     /**
@@ -11,11 +15,6 @@ public interface TokenService {
         TokenType getHandledType();
         TokenStatus getStatus(Token token);
     }
-
-    /**
-     * Get the status of the job described by the given token.
-     */
-    TokenStatus getStatus(Token token);
 
     /**
      * A convenience method for making a token.  This will generate a token using the current time

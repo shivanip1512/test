@@ -1,14 +1,13 @@
-package com.cannontech.yukon.api.amr.service;
+package com.cannontech.amr.profileCollection.service;
 
 import java.util.Set;
 
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.token.Token;
+import com.cannontech.common.token.service.TokenService.TokenHandler;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.api.common.service.Token;
-import com.cannontech.yukon.api.common.service.TokenService;
-import com.cannontech.yukon.api.common.service.TokenService.TokenHandler;
 
 public interface ProfileCollectionService extends TokenHandler {
     /**

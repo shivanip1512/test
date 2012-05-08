@@ -1,6 +1,7 @@
-package com.cannontech.yukon.api.common.service;
+package com.cannontech.common.token;
 
 import org.apache.commons.lang.Validate;
+
 
 
 /**

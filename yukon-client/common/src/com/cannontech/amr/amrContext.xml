@@ -362,5 +362,6 @@
     <bean id="phaseDetectService" class="com.cannontech.amr.phaseDetect.service.impl.PhaseDetectServiceImpl">
         <property name="phaseDetectResultsCache" ref="phaseDetectResultsCache"/>
     </bean>
-    
+
+    <bean class="com.cannontech.amr.profileCollection.service.impl.ProfileCollectionServiceImpl"/>
 </beans>
