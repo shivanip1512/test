@@ -41,8 +41,13 @@
 				<c:forEach var="serverFile" items="${serverFiles}">
 					<option value="${serverFile}">${serverFile}</option>
 				</c:forEach>
-			</select> 
-			<tags:slowInput myFormId="loadServerFileForm" label="${loadFile}" />
+			</select>
+            <c:if test="${empty serverFiles}">
+			    <tags:slowInput myFormId="loadServerFileForm" label="${loadFile}" disabled="true"/>
+            </c:if>
+            <c:if test="${not empty serverFiles}">
+                <tags:slowInput myFormId="loadServerFileForm" label="${loadFile}" />
+            </c:if>
 		</form>
 	</tags:nameValue>
 

@@ -50,6 +50,7 @@
 	<entry key="yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.noFile">No file provided.</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.emptyFile">Empty file.</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.doesNotExist">File does not exist.</entry>
+    <entry key="yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.noServerFile">No valid server file selected.</entry>
 	
 	<!-- Import Validation importValidate.jsp -->
     <entry key="yukon.web.modules.support.databaseMigration.importValidate.mag.img">/WebConfig/yukon/Icons/magnifier.gif</entry>

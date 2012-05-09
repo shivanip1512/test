@@ -33,15 +33,15 @@ import com.cannontech.common.databaseMigration.model.DatabaseMigrationContainer;
 import com.cannontech.common.databaseMigration.model.DisplayableExportType;
 import com.cannontech.common.databaseMigration.model.ExportTypeEnum;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
@@ -51,18 +51,17 @@ import com.google.common.collect.Lists;
 @RequestMapping("/database/migration/*")
 public class DatabaseMigrationController {
 
-    private DatabaseMigrationService databaseMigrationService;
-	private PoolManager poolManager;
-	private RolePropertyDao rolePropertyDao;
-	private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DatabaseMigrationService databaseMigrationService;
+    @Autowired private PoolManager poolManager;
+    @Autowired private RolePropertyDao rolePropertyDao;
 
     private Map<String, FileSystemResource> fileStore = new HashMap<String, FileSystemResource>();
 	
     private boolean ALLOW_EXPORT_ALL = false;
     
 	@RequestMapping
-    public String home(HttpServletRequest request, ModelMap map, String errorMsg, 
-    		YukonUserContext userContext) {
+	public String home(HttpServletRequest request, ModelMap map,
+    		YukonUserContext userContext, FlashScope flashScope) {
         
         boolean exportTab = ServletRequestUtils.getBooleanParameter(request, "export", false);
         boolean importTab = ServletRequestUtils.getBooleanParameter(request, "import", false);
@@ -72,7 +71,6 @@ public class DatabaseMigrationController {
         
         List<String> exportFilePaths = getExportDirectoryFilePaths(userContext);
         
-        map.addAttribute("errorMsg", errorMsg);
         map.addAttribute("exportTab", exportTab);
         map.addAttribute("importTab", importTab);
         map.addAttribute("exportTypeList", exportTypeList);
@@ -182,39 +180,37 @@ public class DatabaseMigrationController {
 	
 	@RequestMapping
     public String loadLocalFile(HttpServletRequest request, ModelMap map, 
-    		@RequestParam MultipartFile dataFile, YukonUserContext userContext) {
-		
-		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+    		@RequestParam MultipartFile dataFile, YukonUserContext userContext, FlashScope flashScope) {
 		
 		File importFile = null;
-		String loadError = null;
-		
 		String errorPrefix = "yukon.web.modules.support.databaseMigration.loadImport.loadFile.error"; 
+		String loadErrorSuffix = null;
+		
 		if(ServletFileUpload.isMultipartContent(request)) {
             try {
                 if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-                	loadError = messageSourceAccessor.getMessage(errorPrefix + ".noFile");
+                	loadErrorSuffix = ".noFile";
                 } 
                 else {
                     InputStream inputStream = dataFile.getInputStream();
                     if (inputStream.available() <= 0) {
-                    	loadError = messageSourceAccessor.getMessage(errorPrefix + ".emptyFile");
+                    	loadErrorSuffix = ".emptyFile";
                     } else {	// No loadErrors so far, get importFile
                     	importFile = WebFileUtils.convertToTempFile(dataFile, dataFile.getOriginalFilename() + "_", "");
                     }
                 }
             } catch (IOException e) {
-            	loadError = messageSourceAccessor.getMessage(errorPrefix + ".noFile");
+            	loadErrorSuffix = ".noFile";
             }
         }
         else {
-        	loadError = messageSourceAccessor.getMessage(errorPrefix + ".noFile");
+        	loadErrorSuffix = ".noFile";
         }
         
 		// error
-		if (loadError != null) {
-			map.addAttribute("importTab", true);
-			map.addAttribute("errorMsg", loadError);
+		if (loadErrorSuffix != null) {
+			map.addAttribute("import", true);
+			flashScope.setError(new YukonMessageSourceResolvable(errorPrefix + loadErrorSuffix));
 			return "redirect:home";
 		}
 
@@ -237,21 +233,22 @@ public class DatabaseMigrationController {
     }
 	
 	@RequestMapping
-    public String loadServerFile(ModelMap map, String dataFilePath, YukonUserContext userContext) 
+    public String loadServerFile(ModelMap map, String dataFilePath, YukonUserContext userContext, FlashScope flashScope) 
 		throws ServletException {
 		
-		
-		// retrieve file
+		// Was a valid file selected?
+	    if(dataFilePath == null) {
+	        map.addAttribute("import", true);  
+            flashScope.setError(new YukonMessageSourceResolvable(
+                    "yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.noServerFile"));
+            return "redirect:home";
+	    }
+	    // retrieve file
 		File importFile = new File(dataFilePath);
 		if (!importFile.exists()) {
-			map.addAttribute("importTab", true);
-
-			MessageSourceAccessor messageSourceAccessor = 
-				messageSourceResolver.getMessageSourceAccessor(userContext);
-			String errorMessage = 
-				messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.doesNotExist");
-			map.addAttribute("errorMsg", errorMessage);
-			
+			map.addAttribute("import", true);
+			flashScope.setError(new YukonMessageSourceResolvable(
+			        "yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.doesNotExist"));
 			return "redirect:home";
 		}
 		
@@ -435,23 +432,4 @@ public class DatabaseMigrationController {
 		}
 	}
 	
-	@Autowired
-	public void setDatabaseMigrationService(DatabaseMigrationService databaseMigrationService) {
-	    this.databaseMigrationService = databaseMigrationService;
-	}
-
-	@Autowired
-	public void setPoolManager(PoolManager poolManager) {
-		this.poolManager = poolManager;
-	}
-	
-	@Autowired
-	public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-		this.messageSourceResolver = messageSourceResolver;
-	}
-	
-	@Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
 }

@@ -27,14 +27,6 @@
     	a.exportComponentLabel {}
     </style>
     
-    <%-- ERROR --%>
-    <c:if test="${not empty errorMsg}">
-    	<div class="errorRed">
-            <spring:escapeBody htmlEscape="true">${errorMsg}</spring:escapeBody>
-        </div>
-    	<br>
-    </c:if>
-    
     <tags:simpleDialog id="sharedPopupDialog"/>
     
     <cti:tabbedContentSelector>
