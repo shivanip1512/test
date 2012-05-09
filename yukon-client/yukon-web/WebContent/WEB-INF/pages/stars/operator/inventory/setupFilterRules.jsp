@@ -14,8 +14,14 @@
     <cti:includeScript link="/JavaScript/picker.js" />
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
-    
-    <script>
+
+	<cti:msg key="yukon.common.calendarcontrol.months" var="months" />
+	<cti:msg key="yukon.common.calendarcontrol.days" var="days" />
+	<cti:msg key="yukon.common.calendarcontrol.clear" var="clear" />
+	<cti:msg key="yukon.common.calendarcontrol.close" var="close" />
+    <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
+
+	<script>
         function removeRule(row) {
             $('removeRule').value = row;
             $('selectionForm').submit();
@@ -87,9 +93,17 @@
                                         </c:when>
 
                                         <c:when test="${rule.ruleType eq 'DEVICE_STATUS_DATE_RANGE'}">
-                                            <tags:dateInputCalendar fieldName="filterRules[${row.index}].deviceStateDateFrom" springInput="true" showErrorOnNextLine="false"/>
+											<form:input path="filterRules[${row.index}].deviceStateDateFrom" id="filterRules[${row.index}].deviceStateDateFrom" size="10" maxlength="10"/>
+											<span onclick="javascript:showCalendarControl('filterRules[${row.index}].deviceStateDateFrom', '${months}', '${days}', '${clear}', '${close}');"
+												style="cursor: pointer;"> <img id="calImg_filterRules[${row.index}].deviceStateDateFrom" src="${calImgUrl}" width="20" height="15" border="0" /> </span>
                                             <i:inline key=".deviceStateDateRangeSeperator"/>
-                                            <tags:dateInputCalendar fieldName="filterRules[${row.index}].deviceStateDateTo" springInput="true"/>
+                                            
+                                            <form:input path="filterRules[${row.index}].deviceStateDateTo" id="filterRules[${row.index}].deviceStateDateTo" size="10" maxlength="10"/>
+											<span onclick="javascript:showCalendarControl('filterRules[${row.index}].deviceStateDateTo', '${months}', '${days}', '${clear}', '${close}');"
+												style="cursor: pointer;"> <img id="calImg_filterRules[${row.index}].deviceStateDateTo" src="${calImgUrl}" width="20" height="15" border="0" /> </span>
+                                            
+                                            <div><form:errors path="filterRules[${row.index}].deviceStateDateFrom" cssClass="errorMessage"/></div>
+                                            <div><form:errors path="filterRules[${row.index}].deviceStateDateTo" cssClass="errorMessage"/></div>
                                         </c:when>
 
                                                                                 

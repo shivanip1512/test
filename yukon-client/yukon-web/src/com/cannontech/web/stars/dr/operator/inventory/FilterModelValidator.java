@@ -25,7 +25,8 @@ public class FilterModelValidator extends SimpleValidator<FilterModel> {
             switch (rule.getRuleType()) {
             
                 case DEVICE_STATUS_DATE_RANGE:
-                    if (rule.getDeviceStateDateFrom().isAfter(rule.getDeviceStateDateTo())) {
+                    if (rule.getDeviceStateDateFrom() != null && rule.getDeviceStateDateTo() != null && 
+                            rule.getDeviceStateDateFrom().isAfter(rule.getDeviceStateDateTo())) {
                         YukonValidationUtils.rejectValues(errors,
                                                           "yukon.web.modules.operator.filterSelection.error.invalidDeviceStatusDateRange",
                                                           "deviceStateDateFrom",

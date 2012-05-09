@@ -97,9 +97,12 @@ public class InventoryFilterController {
     
     /* Add Filter Rule */
     @RequestMapping(value = "applyFilter", method=RequestMethod.POST, params="addButton")
-    public String addFilterRow(@ModelAttribute("filterModel") FilterModel filterModel, 
+    public String addFilterRow(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult, FlashScope flashScope,
                                HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext, String ruleType) {
-
+        boolean hasErrors = validate(bindingResult, filterModel, modelMap, flashScope, userContext);
+        if(hasErrors) {
+            return "operator/inventory/setupFilterRules.jsp";
+        }
         /* Add a row and return to filter setup page. */
         FilterRuleType filterRuleType = FilterRuleType.valueOf(ruleType);
         RuleModel newRule = new RuleModel(filterRuleType);
@@ -125,12 +128,8 @@ public class InventoryFilterController {
     @RequestMapping(value = "applyFilter", method=RequestMethod.POST, params="apply")
     public String applyFilter(@ModelAttribute("filterModel") FilterModel filterModel, BindingResult bindingResult, FlashScope flashScope,
                               HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ParseException {
-        
-        filterModelValidator.validate(filterModel, bindingResult);
-        if(bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            setupFilterSelectionModelMap(modelMap, userContext);
+        boolean hasErrors = validate(bindingResult, filterModel, modelMap, flashScope, userContext);
+        if(hasErrors) {
             return "operator/inventory/setupFilterRules.jsp";
         }
         
@@ -160,6 +159,16 @@ public class InventoryFilterController {
         modelMap.addAttribute("inventoryCollection", temporaryCollection);
         modelMap.addAllAttributes(temporaryCollection.getCollectionParameters());
         return "redirect:inventoryActions";
+    }
+    
+    private boolean validate(BindingResult bindingResult, FilterModel filterModel, ModelMap modelMap, FlashScope flashScope, YukonUserContext userContext){
+        filterModelValidator.validate(filterModel, bindingResult);
+        if(bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            setupFilterSelectionModelMap(modelMap, userContext);
+        }
+        return bindingResult.hasErrors();
     }
     
     /* Remove Rule - This guy as no 'params' in the @RequestMapping because the form had to be submitted via javascript for removes. */
@@ -283,6 +292,8 @@ public class InventoryFilterController {
         DateType dateValidationType = new DateType();
         binder.registerCustomEditor(Date.class, "filterRules.fieldInstallDate", dateValidationType.getPropertyEditor());
         binder.registerCustomEditor(Date.class, "filterRules.programSignupDate", dateValidationType.getPropertyEditor());
+        binder.registerCustomEditor(Date.class, "filterRules.deviceStateDateFrom", dateValidationType.getPropertyEditor());
+        binder.registerCustomEditor(Date.class, "filterRules.deviceStateDateTo", dateValidationType.getPropertyEditor());
 
         datePropertyEditorFactory.setupLocalDatePropertyEditor(binder, userContext, BlankMode.CURRENT);
         
