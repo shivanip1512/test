@@ -13,6 +13,7 @@
 #include "MsgVerifyBanks.h"
 #include "amq_connection.h"
 #include "IVVCAnalysisMessage.h"
+#include "ccutil.h"
 
 using Cti::CapControl::PaoIdVector;
 using Cti::CapControl::PointIdVector;
@@ -1122,6 +1123,10 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 
     Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
 
+    // need to send each phase seperated by a small delay...
+    // first send poly phase and phase A
+    // wait 1 second, send B, wait 1 s, send C
+
     for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
@@ -1130,18 +1135,113 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
         {
             try
             {
-                VoltageRegulatorManager::SharedPtr regulator =
-                        store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
-
-                if ( regulator->isTimeToSendKeepAlive() )
+                if ( mapping.first == Cti::CapControl::Phase_Poly || mapping.first == Cti::CapControl::Phase_A )
                 {
-                    regulator->executeEnableKeepAlive();
+                    VoltageRegulatorManager::SharedPtr regulator =
+                            store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                    if( _CC_DEBUG & CC_DEBUG_IVVC )
+                    if ( regulator->isTimeToSendKeepAlive() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
-                                          << subbus->getPaoName() << std::endl;
+                        regulator->executeEnableKeepAlive();
+
+                        if( _CC_DEBUG & CC_DEBUG_IVVC )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
+                                              << subbus->getPaoName() << std::endl;
+                        }
+                    }
+                }
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+            }
+            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            {
+                if (missingAttribute.complain())
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                }
+            }
+        }
+    }
+
+    Sleep(1000);    // wait 1 second between phases
+
+    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        {
+            try
+            {
+                if ( mapping.first == Cti::CapControl::Phase_B )
+                {
+                    VoltageRegulatorManager::SharedPtr regulator =
+                            store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                    if ( regulator->isTimeToSendKeepAlive() )
+                    {
+                        regulator->executeEnableKeepAlive();
+
+                        if( _CC_DEBUG & CC_DEBUG_IVVC )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
+                                              << subbus->getPaoName() << std::endl;
+                        }
+                    }
+                }
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+            }
+            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            {
+                if (missingAttribute.complain())
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                }
+            }
+        }
+    }
+
+    Sleep(1000);    // wait 1 second between phases
+
+    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+        {
+            try
+            {
+                if ( mapping.first == Cti::CapControl::Phase_C )
+                {
+                    VoltageRegulatorManager::SharedPtr regulator =
+                            store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                    if ( regulator->isTimeToSendKeepAlive() )
+                    {
+                        regulator->executeEnableKeepAlive();
+
+                        if( _CC_DEBUG & CC_DEBUG_IVVC )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
+                                              << subbus->getPaoName() << std::endl;
+                        }
                     }
                 }
             }
