@@ -7069,7 +7069,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
             }
             for each ( std::pair<long, int>  thePair in requiredPointResponses )
             {
-                long busId = findSubBusIDbyCapBankID(thePair.first);
+                long busId = findSubBusIDbyCapBankID(thePair.second);
                 if (busId == NULL)
                 {
                     continue;
@@ -7136,12 +7136,6 @@ bool CtiCCSubstationBusStore::loadCapBankMonitorPoint(CtiCCMonitorPointPtr curre
             return false;
         }
         CtiCCSubstationBusPtr subBusPtr = paobject_subbus_map->find(feederPtr->getParentId())->second;
-
-        if (!subBusPtr->addMonitorPoint(currentMonPoint->getPointId(), currentMonPoint))
-        {
-            return false;
-        }
-
         for each (CtiCCFeeder* feeder in subBusPtr->getCCFeeders())
         {
             for each (CtiCCCapBankPtr bank in feeder->getCCCapBanks())
