@@ -160,6 +160,8 @@
     <entry key="yukon.web.modules.support.uiDemos.inline3.label">In-line 3, custom event okAction</entry>
     <entry key="yukon.web.modules.support.uiDemos.inlineDialog4.title">In-line Test, options</entry>
     <entry key="yukon.web.modules.support.uiDemos.inline4.label">In-line 4, options</entry>
+    <entry key="yukon.web.modules.support.uiDemos.inlineDialog5.title">In-line Test, options (custom buttons)</entry>
+    <entry key="yukon.web.modules.support.uiDemos.inline5.label">In-line 5, options (custom buttons)</entry>
 
     <entry key="yukon.web.modules.support.setupDatabase.pageName">Setup Development Database</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.label">Setup Development Database</entry>

@@ -49,6 +49,11 @@ jQuery(document).ready(function() {
     set to "{'modal' : false}" to turn of modality.<p>
 </dialog:inline>
 
+<dialog:inline id="inlineDialog5" okEvent="none" nameKey="inlineDialog5" on="#sampleInlineBtn5"
+                options="{'buttons': {'Button 1': function(){ alert('Sup, Im button 1!'); }, 'Button 2': function() { alert('Oh hey, Im button 2!'); }, 'Cancel': function() { jQuery(this).dialog('close'); } } }">
+	<p>I'm an example of an in-line dialog box with options, specifically demonstrating how to have custom buttons<p>
+</dialog:inline>
+
 <p class="pageDescription">
 This page shows some examples of how to use AJAX dialogs in Yukon.
 </p>
@@ -81,5 +86,6 @@ This page shows some examples of how to use AJAX dialogs in Yukon.
         <li><cti:button id="sampleInlineBtn2" nameKey="inline2"/></li>
         <li><cti:button id="sampleInlineBtn3" nameKey="inline3"/></li>
         <li><cti:button id="sampleInlineBtn4" nameKey="inline4"/></li>
+        <li><cti:button id="sampleInlineBtn5" nameKey="inline5"/></li>
     </ul>
 </tags:sectionContainer>
