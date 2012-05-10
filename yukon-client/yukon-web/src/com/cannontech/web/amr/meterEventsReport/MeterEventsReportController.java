@@ -96,6 +96,7 @@ public class MeterEventsReportController {
     public void initialize() {
         Builder<String, Comparator<MeterReportEvent>> builder = ImmutableMap.builder();
         builder.put("NAME", getMeterNameComparator());
+        builder.put("METER_NUMBER", getMeterNumberComparator());
         builder.put("TYPE", getDeviceTypeComparator());
         builder.put("DATE", getDateComparator());
         builder.put("EVENT", getEventComparator());
@@ -163,11 +164,12 @@ public class MeterEventsReportController {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         //header row
-        String[] headerRow = new String[4];
+        String[] headerRow = new String[5];
         headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceName.linkText");
-        headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.date.linkText");
-        headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.event.linkText");
-        headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.value.linkText");
+        headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.meterNumber.linkText");
+        headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.date.linkText");
+        headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.event.linkText");
+        headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.amr.meterEventsReport.report.tableHeader.value.linkText");
         
         //data rows
         List<MeterReportEvent> events = getReportEvents(backingBean, userContext);
@@ -183,17 +185,18 @@ public class MeterEventsReportController {
         
         List<String[]> dataRows = Lists.newArrayList();
         for(MeterReportEvent event : events) {
-            String[] dataRow = new String[4];
+            String[] dataRow = new String[5];
             dataRow[0] = event.getMeter().getName();
+            dataRow[1] = event.getMeter().getMeterNumber();
             
             DateTime timeStamp = new DateTime(event.getPointValueHolder().getPointDataTimeStamp(), userContext.getJodaTimeZone());
             String dateTimeString = timeStamp.toString(DateTimeFormat.mediumDateTime());
-            dataRow[1] = dateTimeString;
+            dataRow[2] = dateTimeString;
             
-            dataRow[2] = event.getPointName();
+            dataRow[3] = event.getPointName();
             
             String valueString = pointFormattingService.getValueString(event.getPointValueHolder(), Format.VALUE, userContext);
-            dataRow[3] = valueString;
+            dataRow[4] = valueString;
             dataRows.add(dataRow);
         }
         
@@ -419,6 +422,17 @@ public class MeterEventsReportController {
                 }
             });
         return nameOrdering;
+    }
+    
+    private static Comparator<MeterReportEvent> getMeterNumberComparator() {
+        Ordering<String> normalStringComparer = Ordering.natural().nullsLast();
+        Ordering<MeterReportEvent> meterNumberOrdering = normalStringComparer
+                .onResultOf(new Function<MeterReportEvent, String>() {
+                    public String apply(MeterReportEvent from) {
+                        return from.getMeter().getMeterNumber();
+                    }
+                });
+        return meterNumberOrdering;
     }
     
     private static Comparator<MeterReportEvent> getDeviceTypeComparator() {

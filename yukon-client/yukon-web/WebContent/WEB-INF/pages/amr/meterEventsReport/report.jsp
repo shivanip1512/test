@@ -257,31 +257,37 @@
 			</cti:dataGridCell>
 		</cti:dataGrid>
 	</form:form>
+	<br>
 
-	<form:form id="csvForm" action="csv" method="post" commandName="backingBean" cssClass="fr">
-		<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
-		<tags:sortFields backingBean="${backingBean}" />
-		<form:hidden path="toDate" id="toDate_csv"/>
-		<form:hidden path="fromDate" id="fromDate_csv"/>
-		<form:hidden path="onlyAbnormalEvents" id="onlyAbnormalEvents_csv"/>
-		<form:hidden path="onlyLatestEvent" id="onlyLatestEvent_csv"/>
-		<form:hidden path="includeDisabledPaos" id="includeDisabledPaos_csv"/>
-		<cti:button nameKey="csv" renderMode="labeledImage" type="submit" />
-	</form:form>
-	<div class="cr"></div>
+    <c:if test="${filterResult.hitCount > 0}">
+		<form:form id="csvForm" action="csv" method="post" commandName="backingBean" cssClass="fr">
+			<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
+			<tags:sortFields backingBean="${backingBean}" />
+			<form:hidden path="toDate" id="toDate_csv"/>
+			<form:hidden path="fromDate" id="fromDate_csv"/>
+			<form:hidden path="onlyAbnormalEvents" id="onlyAbnormalEvents_csv"/>
+			<form:hidden path="onlyLatestEvent" id="onlyLatestEvent_csv"/>
+			<form:hidden path="includeDisabledPaos" id="includeDisabledPaos_csv"/>
+			<cti:button nameKey="csv" renderMode="labeledImage" type="submit" />
+		</form:form>
+		<div class="cr"></div>
+	</c:if>
 
-	<c:set var="linkHeaderHtml">
-		<span class="navLink"> <cti:link
-				href="/spring/bulk/collectionActions"
-				key="yukon.web.modules.amr.deviceSelection.performCollectionAction">
-				<cti:mapParam value="${collectionFromReportResults.collectionParameters}" />
-			</cti:link> </span>
-	</c:set>
+    <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
+		<c:set var="linkHeaderHtml">
+			<span class="navLink"> <cti:link
+					href="/spring/bulk/collectionActions"
+					key="yukon.web.modules.amr.deviceSelection.performCollectionAction">
+					<cti:mapParam value="${collectionFromReportResults.collectionParameters}" />
+				</cti:link> </span>
+		</c:set>
+	</c:if>
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${linkHeaderHtml}">
 		<table id="eventsTable" class="compactResultsTable">
 			<tr>
 				<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="NAME" isDefault="false" /></th>
+				<th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="report" fieldName="METER_NUMBER" isDefault="false" /></th>
 				<th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="report" fieldName="TYPE" /></th>
 				<th><tags:sortLink nameKey="tableHeader.date" baseUrl="report" fieldName="DATE" isDefault="true" /></th>
 				<th><tags:sortLink nameKey="tableHeader.event" baseUrl="report" fieldName="EVENT" /></th>
@@ -301,13 +307,8 @@
 						    </c:choose>
 						</cti:paoDetailUrl>
 					</td>
-					<td>
-					    <cti:paoTypeIcon yukonPao="${event.meter}" /> &nbsp
-					    <c:choose>
-					        <c:when test="${empty event.meter.paoType}"></c:when>
-					        <c:otherwise>${event.meter.paoType.dbString}</c:otherwise>
-					    </c:choose>
-					</td>
+                    <td>${event.meter.meterNumber}</td>
+					<td><tags:paoType yukonPao="${event.meter}"/></td>
 					<td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
 	                <td><spring:escapeBody>${event.pointName}</spring:escapeBody></td>
 					<td class="eventStatus${event.formattedValue}">${event.formattedValue}</td>

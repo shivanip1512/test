@@ -42,6 +42,7 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.report.filter.helpText">Help</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableTitle.title">Meter Events</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceName.linkText">Device Name</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.meterNumber.linkText">Meter Number</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.deviceType.linkText">Device Type</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.date.linkText">Date</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.tableHeader.event.linkText">Event</entry>
