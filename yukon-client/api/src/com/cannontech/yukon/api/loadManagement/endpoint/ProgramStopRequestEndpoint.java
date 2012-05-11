@@ -81,11 +81,11 @@ public class ProgramStopRequestEndpoint {
             resp.addContent(fe);
             return resp;
         } catch (BadServerResponseException e) {
-            Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "ServerCommunicationError", "The communication with the server has failed.");
+            Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "ServerCommunicationError", e.getMessage());
             resp.addContent(fe);
             return resp;
         } catch (ConnectionException e) {
-            Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "ServerCommunicationError", "The communication with the server has failed.");
+            Element fe = XMLFailureGenerator.generateFailure(programStopRequest, e, "ServerCommunicationError", e.getMessage());
             resp.addContent(fe);
             return resp;
         } catch (Exception e) {

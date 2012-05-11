@@ -87,11 +87,11 @@ public class ScenarioStopRequestEndpoint {
             resp.addContent(fe);
             return resp;
         } catch (BadServerResponseException e) {
-            Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "ServerCommunicationError", "The communication with the server has failed.");
+            Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "ServerCommunicationError", e.getMessage());
             resp.addContent(fe);
             return resp;
         } catch (ConnectionException e) {
-            Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "ServerCommunicationError", "The communication with the server has failed.");
+            Element fe = XMLFailureGenerator.generateFailure(scenarioStopRequest, e, "ServerCommunicationError", e.getMessage());
             resp.addContent(fe);
             return resp;
         } catch (Exception e) {

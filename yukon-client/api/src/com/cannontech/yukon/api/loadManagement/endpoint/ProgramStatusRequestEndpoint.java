@@ -20,6 +20,8 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.message.util.BadServerResponseException;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 
@@ -66,6 +68,14 @@ public class ProgramStatusRequestEndpoint {
             return resp;
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "UserNotAuthorized", "The user is not authorized to request program status.");
+            resp.addContent(fe);
+            return resp;
+        } catch (BadServerResponseException e) {
+            Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "ServerCommunicationError", e.getMessage());
+            resp.addContent(fe);
+            return resp;
+        } catch (ConnectionException e) {
+            Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "ServerCommunicationError", e.getMessage());
             resp.addContent(fe);
             return resp;
         }

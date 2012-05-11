@@ -213,13 +213,15 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     }
     
     /**
-     * Returns an ImmutableSet of all LMProgramBase objects
+     * Returns an ImmutableSet of all LMProgramBase objects. Throws ConnectionException if the connection is not valid.
      */
     public Set<LMProgramBase> getAllProgramsSet() {
+        
+        if(!isValid()) {
+            throw new ConnectionException("The Load Management server connection is not valid.");
+        }
     	
     	List<DatedObject<LMProgramBase>> datedPrograms = new ArrayList<DatedObject<LMProgramBase>>(programs.values());
-    	
-    	
     	
     	List<LMProgramBase> programs = Lists.transform(datedPrograms, new Function<DatedObject<LMProgramBase>, LMProgramBase>() {
 								    		@Override
