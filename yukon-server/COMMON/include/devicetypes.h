@@ -54,11 +54,12 @@
 #define TYPECBC8020                          270
 
 #define TYPERFN430A3                         300
-#define TYPERFN430EKA                        301
+#define TYPERFN430ELO                        301
 #define TYPERFN430KV                         302
 #define TYPERFN410FL                         310
 #define TYPERFN410FX                         311
 #define TYPERFN410FD                         312
+#define TYPERFN420ELO                        320
 
    /* Substation device identifiers */
 #define TYPE_CCU700                          1000

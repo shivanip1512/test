@@ -369,12 +369,14 @@ device_lookup_t init_device_lookups()
     device_types.insert(make_pair("fmu",                TYPE_FMU));
     device_types.insert(make_pair("page receiver",      TYPE_PAGING_RECEIVER));
 
-    //  --- Eka ---
+    //  --- RF mesh meters ---
     device_types.insert(make_pair("rfn-410fd",          TYPERFN410FD));
     device_types.insert(make_pair("rfn-410fl",          TYPERFN410FL));
     device_types.insert(make_pair("rfn-410fx",          TYPERFN410FX));
     device_types.insert(make_pair("rfn-430a3",          TYPERFN430A3));
     device_types.insert(make_pair("rfn-430kv",          TYPERFN430KV));
+    device_types.insert(make_pair("rfn-420elo",         TYPERFN420ELO));
+    device_types.insert(make_pair("rfn-430elo",         TYPERFN430ELO));
 
     //  --- RTU devices ---
     device_types.insert(make_pair("rtu-dart",           TYPE_DARTRTU));

@@ -174,11 +174,13 @@ string desolveDeviceType( int aType )
         case TYPEMCT470:        Ret = "mct-470";        break;
         case TYPELMT2:          Ret = "lmt-2";          break;
 
-        case TYPERFN430A3:      Ret = "rfn-430a3"; break;
-        case TYPERFN430KV:      Ret = "rfn-430kv"; break;
-        case TYPERFN410FL:      Ret = "rfn-410fl"; break;
-        case TYPERFN410FX:      Ret = "rfn-410fx"; break;
-        case TYPERFN410FD:      Ret = "rfn-410fd"; break;
+        case TYPERFN430A3:      Ret = "rfn-430a3";  break;
+        case TYPERFN430KV:      Ret = "rfn-430kv";  break;
+        case TYPERFN410FL:      Ret = "rfn-410fl";  break;
+        case TYPERFN410FX:      Ret = "rfn-410fx";  break;
+        case TYPERFN410FD:      Ret = "rfn-410fd";  break;
+        case TYPERFN420ELO:     Ret = "rfn-420elo"; break;
+        case TYPERFN430ELO:     Ret = "rfn-430elo"; break;
 
         case TYPELCR3102:       Ret = "lcr-3102";       break;
 

@@ -98,6 +98,8 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPERFN410FL]     = "RFN-410FL";
     type_lookups[TYPERFN410FX]     = "RFN-410FX";
     type_lookups[TYPERFN410FD]     = "RFN-410FD";
+    type_lookups[TYPERFN420ELO]    = "RFN-420ELO";
+    type_lookups[TYPERFN430ELO]    = "RFN-430ELO";
 
     type_lookups[TYPELMT2]         = "LMT-2";
 
