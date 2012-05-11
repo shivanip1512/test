@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            elementFormDefault="qualified" version="1.0"
+            targetNamespace="http://yukon.cannontech.com/api">
+            
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="./CapControlTypes.xsd"/>
+
+	<xsd:complexType name="CapControlRemoveRequest">
+		<xsd:complexContent>
+			<xsd:extension base="yukon:YukonMessage">
+				<xsd:choice minOccurs="1" maxOccurs="unbounded">
+					<xsd:element name="area" type="yukon:NamedElement"/>
+                    <xsd:element name="specialArea" type="yukon:NamedElement"/>
+                    <xsd:element name="substation" type="yukon:NamedElement"/>
+                    <xsd:element name="substationBus" type="yukon:NamedElement"/>
+                    <xsd:element name="feeder" type="yukon:NamedElement"/>
+                    <xsd:element name="capBank" type="yukon:NamedElement"/>
+                    <xsd:element name="cbc" type="yukon:NamedElement"/>
+				</xsd:choice>
+			</xsd:extension>
+		</xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:element name="capControlRemoveRequest" type="yukon:CapControlRemoveRequest"/>
+            
+</xsd:schema>

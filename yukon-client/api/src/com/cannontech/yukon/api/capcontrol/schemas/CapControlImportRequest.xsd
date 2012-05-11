@@ -5,33 +5,8 @@
             targetNamespace="http://yukon.cannontech.com/api">
             
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="./CapControlTypes.xsd"/>
 
-	<xsd:complexType name="ImportBase">
-		<xsd:sequence>
-			<xsd:element name="name" minOccurs="1" maxOccurs="1" type="xsd:string"/>
-		</xsd:sequence>
-		<xsd:attribute name="action" use="required" type="yukon:ImportAction"/>
-	</xsd:complexType>
-
-	<xsd:complexType name="CbcImportData">
-		<xsd:complexContent>
-			<xsd:extension base="yukon:ImportBase">
-				<xsd:sequence>
-					<xsd:element name="templateName" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-					<xsd:element name="type" minOccurs="1" maxOccurs="1" type="yukon:CbcTypes"/>
-					<xsd:element name="serialNumber" minOccurs="1" maxOccurs="1" type="xsd:integer"/>
-					<xsd:element name="capBankName" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-					<xsd:element name="masterAddress" minOccurs="1" maxOccurs="1" type="xsd:integer"/>
-					<xsd:element name="slaveAddress" minOccurs="1" maxOccurs="1" type="xsd:integer"/>
-					<xsd:element name="commChannel" minOccurs="1" maxOccurs="1" type="xsd:string"/>
-                    <xsd:element name="scanEnabled" minOccurs="0" maxOccurs="1" type="xsd:boolean"/>
-					<xsd:element name="scanInterval" minOccurs="0" maxOccurs="1" type="xsd:integer"/>
-					<xsd:element name="altInterval" minOccurs="0" maxOccurs="1" type="xsd:integer"/>
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	
 	<xsd:complexType name="HierarchyImportData">
 		<xsd:complexContent>
 			<xsd:extension base="yukon:ImportBase">
@@ -46,41 +21,6 @@
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-    
-    <xsd:simpleType name="CapBankOperationalState">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="Fixed"/>
-            <xsd:enumeration value="Switched"/>
-            <xsd:enumeration value="StandAlone"/>
-            <xsd:enumeration value="Uninstalled"/>
-        </xsd:restriction>
-    </xsd:simpleType>
-	
-	<xsd:simpleType name="ImportAction">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="Add"/>
-            <xsd:enumeration value="Update"/>
-            <xsd:enumeration value="Remove"/>
-        </xsd:restriction>
-    </xsd:simpleType>
-    
-    <xsd:simpleType name="CbcTypes">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="CBC 7010"/>
-			<xsd:enumeration value="CBC 7020"/>
-			<xsd:enumeration value="CBC 7022"/>
-			<xsd:enumeration value="CBC 7023"/>
-			<xsd:enumeration value="CBC 7024"/>
-			<xsd:enumeration value="CBC 7011"/>
-			<xsd:enumeration value="CBC 7012"/>
-			<xsd:enumeration value="CBC 8020"/>
-			<xsd:enumeration value="CBC 8024"/>
-			<xsd:enumeration value="CBC DNP"/>
-			<xsd:enumeration value="CBC FP-2800"/>
-			<xsd:enumeration value="CBC Versacom"/>
-			<xsd:enumeration value="CBC Expresscom"/>
-        </xsd:restriction>
-    </xsd:simpleType>
 
 	<xsd:complexType name="HierarchyList">
 		<xsd:sequence>

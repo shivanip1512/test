@@ -5,24 +5,7 @@
             targetNamespace="http://yukon.cannontech.com/api">
             
 	<xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
-	
-	<xsd:complexType name="CbcImportResponse">
-		<xsd:sequence>
-			<xsd:element name="cbcImportResultType" minOccurs="0" maxOccurs="1" type="yukon:CbcImportResultType"/>
-			<xsd:element name="resultDetail" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-		</xsd:sequence>
-		<xsd:attribute name="success" use="required" type="xsd:boolean"/>
-        <xsd:attribute name="errorCode" use="required" type="xsd:int"/>
-	</xsd:complexType>
-	
-	<xsd:complexType name="HierarchyImportResponse">
-		<xsd:sequence>
-			<xsd:element name="hierarchyImportResultType" minOccurs="0" maxOccurs="1" type="yukon:HierarchyImportResultType"/>
-			<xsd:element name="resultDetail" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-		</xsd:sequence>
-		<xsd:attribute name="success" use="required" type="xsd:boolean"/>
-        <xsd:attribute name="errorCode" use="required" type="xsd:int"/>
-	</xsd:complexType>
+    <xsd:include schemaLocation="./CapControlTypes.xsd"/>
 	
 	<xsd:complexType name="HierarchyResponseList">
 		<xsd:sequence>
@@ -35,29 +18,6 @@
 			<xsd:element name="cbcImportResponse" minOccurs="0" maxOccurs="unbounded" type="yukon:CbcImportResponse"/>
 		</xsd:sequence>
 	</xsd:complexType>
-	
-	<xsd:simpleType name="CbcImportResultType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Missing Data"/>
-			<xsd:enumeration value="Invalid Comm Channel"/>
-			<xsd:enumeration value="Invalid Import Action"/>
-			<xsd:enumeration value="Invalid Type"/>
-			<xsd:enumeration value="Device Already Exists"/>
-			<xsd:enumeration value="Object Doesn't Exist"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
-	<xsd:simpleType name="HierarchyImportResultType">
-		<xsd:restriction base="xsd:string">
-			<xsd:enumeration value="Invalid Parent Name"/>
-			<xsd:enumeration value="Invalid Hierarchy Type"/>
-			<xsd:enumeration value="Invalid Import Action"/>
-			<xsd:enumeration value="Invalid Disabled Value"/>
-			<xsd:enumeration value="Missing Data"/>
-			<xsd:enumeration value="Object Already Exists"/>
-			<xsd:enumeration value="Object Doesn't Exist"/>
-		</xsd:restriction>
-	</xsd:simpleType>
 	
 	<xsd:complexType name="CapControlImportResponse">
 		<xsd:complexContent>

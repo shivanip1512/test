@@ -49,7 +49,7 @@
     </hierarchyList>
     
     <cbcList>
-        <cbc action="Remove">
+        <cbc action="Add">
             <name>CBC Import 1</name>
             <type>CBC 7020</type>
             <serialNumber>100</serialNumber>

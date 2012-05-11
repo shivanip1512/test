@@ -8,4 +8,15 @@
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />        
 	<xsd:include schemaLocation="CapControlImportRequest.xsd"/>
 	<xsd:include schemaLocation="CapControlImportResponse.xsd"/>
+    <xsd:include schemaLocation="CapControlAddRequest.xsd"/>
+    <xsd:include schemaLocation="CapControlAddResponse.xsd"/>
+    <xsd:include schemaLocation="CapControlUpdateRequest.xsd"/>
+    <xsd:include schemaLocation="CapControlUpdateResponse.xsd"/>
+    <xsd:include schemaLocation="CapControlRemoveRequest.xsd"/>
+    <xsd:include schemaLocation="CapControlRemoveResponse.xsd"/>
+    <xsd:include schemaLocation="CapControlReportRequest.xsd"/>
+    <xsd:include schemaLocation="CapControlReportResponse.xsd"/>
+    <xsd:include schemaLocation="CapControlStatusRequest.xsd"/>
+    <xsd:include schemaLocation="CapControlStatusResponse.xsd"/>
+    <xsd:include schemaLocation="CapControlTypes.xsd"/>
 </xsd:schema>

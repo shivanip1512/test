@@ -515,7 +515,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         case CAP_CONTROL_AREA:
             return true;
         case CAP_CONTROL_SUBSTATION:
-            return (parentType == PaoType.CAP_CONTROL_AREA);
+            return (parentType == PaoType.CAP_CONTROL_AREA || parentType == PaoType.CAP_CONTROL_SPECIAL_AREA);
         case CAP_CONTROL_SUBBUS:
             return (parentType == PaoType.CAP_CONTROL_SUBSTATION);
         case CAP_CONTROL_FEEDER:

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<capControlAddRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlAddRequest.xsd"
+           version="1.0">
+
+    <area>
+        <name>ImportArea</name>
+        <description>Import Test</description>
+        <disabled>N</disabled>
+    </area>
+    
+    <specialArea>
+        <name>ImportSpecialArea</name>
+        <description>Import Test</description>
+        <disabled>N</disabled>
+    </specialArea>
+    
+    <substation>
+        <name>ImportSub</name>
+        <description>Import Test</description>
+        <disabled>N</disabled>
+        <parent>ImportArea</parent>
+        <mapLocationId>T1S1</mapLocationId>
+    </substation>
+    
+    <substationBus>
+        <name>ImportSubBus</name>
+        <description>Import Test</description>
+        <disabled>F</disabled>
+        <parent>ImportSub</parent>
+        <mapLocationId>T1S1SS1</mapLocationId>
+    </substationBus>
+    
+    <feeder>
+        <name>ImportFeeder</name>
+        <description>Import Test</description>
+        <disabled>N</disabled>
+        <parent>ImportSubBus</parent>
+        <mapLocationId>T1S1SS1F1</mapLocationId>
+    </feeder>
+    
+    <capBank>
+        <name>ImportCapBank</name>
+        <description>Import Test</description>
+        <disabled>N</disabled>
+        <parent>ImportFeeder</parent>
+        <mapLocationId>T1S1SS1F1C1</mapLocationId>
+        <operationalState>StandAlone</operationalState>
+        <capBankSize>1200</capBankSize>
+    </capBank>
+
+    <cbc>
+        <name>CBC Import 1</name>
+        <capBankName>testCapBank2</capBankName>
+        <scanEnabled>true</scanEnabled>
+        <scanInterval>60</scanInterval>
+        <altInterval>1440</altInterval>
+        <type>CBC 7020</type>
+        <serialNumber>100</serialNumber>
+        <masterAddress>59</masterAddress>
+        <slaveAddress>57</slaveAddress>
+        <commChannel>Cart A 710 Comm</commChannel>
+    </cbc>
+
+    <cbc>
+        <name>CBC Import 2</name>
+        <type>CBC 7020</type>
+        <serialNumber>101</serialNumber>
+        <masterAddress>56</masterAddress>
+        <slaveAddress>60</slaveAddress>
+        <commChannel>Cart A 710 Comm</commChannel>
+    </cbc>
+    
+</capControlAddRequest>

@@ -35,14 +35,14 @@ public class CbcImportInvalidDataResult implements CbcImportResult {
     
     @Override
     public Element getResponseElement(Namespace ns) {
-        Element response = new Element("hierarchyImportResponse", ns);
+        Element response = new Element("cbcImportResponse", ns);
         
-        Element resultTypeElement = new Element("hierarchyImportResultType", ns);
+        Element resultTypeElement = new Element("cbcImportResultType", ns);
         resultTypeElement.addContent(resultType.getDbString());
         response.addContent(resultTypeElement);
 
         Element detailElement = new Element("resultDetail", ns);
-        String detail = "Hierarchy Import failed because it has invalid data in field " + invalidField.getColumnName();
+        String detail = "Cbc Import failed because it has invalid data in field " + invalidField.getColumnName();
         detailElement.addContent(detail);
 
         response.addContent(detailElement);

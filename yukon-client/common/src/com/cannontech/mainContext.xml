@@ -302,4 +302,7 @@
     <bean id="yukonTextMessageDao" class="com.cannontech.message.activemq.impl.YukonTextMessageDaoImpl"/>
 
     <bean class="com.cannontech.spring.MasterConfigInterceptor"/>
+    
+    <bean class="com.cannontech.common.requests.service.impl.JobManagementServiceImpl"/>
+    <bean class="com.cannontech.common.requests.runnable.capcontrol.CapControlRunnableFactory"/>
 </beans>

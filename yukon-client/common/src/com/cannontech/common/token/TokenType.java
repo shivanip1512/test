@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public enum TokenType {
     PROFILE_COLLECTION("PC"),
+    CAP_CONTROL_IMPORT("CCI"),
     ;
 
     private final static ImmutableMap<String, TokenType> byShortName;

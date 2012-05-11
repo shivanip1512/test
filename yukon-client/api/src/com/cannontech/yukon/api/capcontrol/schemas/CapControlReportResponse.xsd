@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            elementFormDefault="qualified" version="1.0"
+            targetNamespace="http://yukon.cannontech.com/api">
+            
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="./CapControlTypes.xsd"/>
+    
+    <xsd:complexType name="CapControlReportResponse">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:choice minOccurs="1" maxOccurs="unbounded">
+                    <xsd:element name="hierarchyImportResponse" type="yukon:HierarchyImportResponse"/>
+                    <xsd:element name="cbcImportResponse" type="yukon:CbcImportResponse"/>
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="capControlReportResponse" type="yukon:CapControlReportResponse"/>
+</xsd:schema>
