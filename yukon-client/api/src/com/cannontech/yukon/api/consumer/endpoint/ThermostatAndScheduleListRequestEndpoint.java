@@ -52,7 +52,7 @@ public class ThermostatAndScheduleListRequestEndpoint {
             Map<Thermostat, List<AccountThermostatSchedule>> thermostatSchedules = getThermostatSchedules(customerAccount.getAccountId(), thermostats);
             if(!thermostatSchedules.isEmpty()){
                 //build a response
-                buildResponse(customerAccount.getAccountId(), thermostatSchedules,  response);
+                buildResponse(customerAccount.getAccountNumber(), thermostatSchedules,  response);
             }
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(thermostatAndScheduleListRequest, e, "UserNotAuthorized", "The user is not authorized to retrieve thermostat and schedule list.");
@@ -76,11 +76,11 @@ public class ThermostatAndScheduleListRequestEndpoint {
     }
     
 
-    private void buildResponse(Integer accountId, Map<Thermostat, List<AccountThermostatSchedule>> thermostatSchedules, Element response){
+    private void buildResponse(String accountNumber, Map<Thermostat, List<AccountThermostatSchedule>> thermostatSchedules, Element response){
        
         Element ThermostatAndScheduleListResponse = new Element("thermostatAndScheduleList", ns);
         Element accountElement = new Element("account", ns);
-        accountElement.addContent(XmlUtils.createIntegerElement("accountId", ns,  accountId));
+        accountElement.addContent(XmlUtils.createStringElement("accountNumber", ns,  accountNumber));
         
         for (Thermostat thermostat : thermostatSchedules.keySet()) {
             Element thermostatElement = new Element("thermostat", ns);

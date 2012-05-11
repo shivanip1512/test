@@ -44,7 +44,7 @@
 
     <xsd:complexType name="Account">
         <xsd:sequence>
-            <xsd:element name="accountId" type="yukon:nonNegativeInt" />
+            <xsd:element name="accountNumber" type="yukon:AccountNumber"/>
             <xsd:element name="thermostat" type="yukon:Thermostat" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
