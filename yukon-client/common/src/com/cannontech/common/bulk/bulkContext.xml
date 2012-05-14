@@ -419,12 +419,12 @@
     </bean>
     
     <bean id="templateBulkImportMethod" class="com.cannontech.common.bulk.service.impl.TemplateBulkImportMethod">
-        <property name="type" value="DLC"/>
+        <property name="type" value="MCT"/>
         <property name="name" value="TEMPLATE"/>
     </bean>
     
     <bean id="deviceTypeBulkImportMethod" class="com.cannontech.common.bulk.service.impl.DeviceTypeBulkImportMethod">
-        <property name="type" value="DLC"/>
+        <property name="type" value="MCT"/>
         <property name="name" value="DEVICE_TYPE"/>
     </bean>
     

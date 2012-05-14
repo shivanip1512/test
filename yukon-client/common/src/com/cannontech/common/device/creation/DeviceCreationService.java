@@ -7,7 +7,7 @@ import com.cannontech.common.pao.PaoType;
 public interface DeviceCreationService {
 
     /**
-     * Creates DLC device by template.
+     * Creates MCT device by template.
      *
      * @param templateName
      * @param newDeviceName
@@ -32,7 +32,7 @@ public interface DeviceCreationService {
     public SimpleDevice createRfnDeviceByTemplate(String templateName, String newDeviceName, String model, String manufacturer, String serialNumber, boolean copyPoints) throws DeviceCreationException;
     
     /**
-     * Creates the DLC device by device type.
+     * Creates the MCT device by device type.
      *
      * @param deviceType
      * @param name

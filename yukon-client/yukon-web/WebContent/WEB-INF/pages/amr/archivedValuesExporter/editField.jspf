@@ -105,12 +105,12 @@
                     <a id="helperTimestamp" href="javascript:void(0);"> <cti:img nameKey="helpTimestampPattern" styleClass="hoverableImage" /> </a>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".fieldSize"
-                    rowClass="METER_NUMBER ROUTE DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
+                    rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
                     <tags:input id="exportField.maxLength" path="exportField.maxLength" size="5" maxlength="5" />
                     <i:inline key=".fieldSizeMax" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".padding"
-                    rowClass="METER_NUMBER ROUTE DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
+                    rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
                     <form:select id="padSideSelect" path="exportField.padSide" data-selection="#padSideSelect" data-field-to-display="#padCharSelectFields">
                         <c:forEach var="padSide" items="${padSide}">
                             <form:option value="${padSide}">
@@ -139,7 +139,7 @@
         <tags:sectionContainer2 nameKey="otherOptions" styleClass="f_renderFields">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".unsupportedField"
-                    rowClass="METER_NUMBER ROUTE DEVICE_NAME DLC_ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
+                    rowClass="METER_NUMBER ROUTE DEVICE_NAME ADDRESS RF_MANUFACTURER RF_MODEL RF_SERIAL_NUMBER ATTRIBUTE ATTRIBUTE_TIMESTAMP ATTRIBUTE_VALUE ATTRIBUTE_UNIT_OF_MEASURE ATTRIBUTE_QUALITY">
                     <form:select id="unsupportedFieldSelect" path="exportField.missingAttribute" data-selection="#unsupportedFieldSelect" data-field-to-display="#fixedValue">
                         <c:forEach var="missingAttribute" items="${missingAttribute}">
                             <form:option value="${missingAttribute}">

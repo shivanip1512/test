@@ -8,7 +8,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 public enum FieldType implements Displayable{
     METER_NUMBER("Meter Number"),
     DEVICE_NAME("Device Name"),
-    DLC_ADDRESS("DLC Address"),
+    ADDRESS("Address"),
     ROUTE("Route"),
     PLAIN_TEXT("Plain Text"),
     ATTRIBUTE("Attribute");

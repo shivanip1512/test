@@ -243,7 +243,7 @@
 
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.METER_NUMBER">Meter Number</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.DEVICE_NAME">Device Name</entry>
-    <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.DLC_ADDRESS">DLC Address</entry>
+    <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.ADDRESS">Address</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.RF_MANUFACTURER">RF Manufacturer</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.RF_MODEL">RF Model</entry>
     <entry key="yukon.web.modules.amr.archivedValueExporter.fieldType.RF_SERIAL_NUMBER">RF Serial Number</entry>

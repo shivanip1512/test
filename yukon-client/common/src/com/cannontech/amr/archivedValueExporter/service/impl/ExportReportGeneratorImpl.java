@@ -279,7 +279,7 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
         case DEVICE_NAME:
             value = meter.getName();
             break;
-        case DLC_ADDRESS:
+        case ADDRESS:
             value = meter.getAddress();
             break;
         case PLAIN_TEXT:
