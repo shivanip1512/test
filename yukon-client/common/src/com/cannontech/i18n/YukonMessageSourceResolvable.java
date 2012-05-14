@@ -14,7 +14,7 @@ import com.google.common.collect.ObjectArrays;
  */
 public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable { 
     
-	/* specifies a style for a an element
+	/* specifies a style for an element
 	 * example: <li class=\"" + className + "\">" + resolvedMessage + "</li>"*/
     private String className;
 
@@ -72,8 +72,6 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
     public static MessageSourceResolvable createDefault(String code, String defaultMessage) {
         return new YukonMessageSourceResolvable(new String[] { code }, new Object[]{}, defaultMessage);
     }
-
-
 
     public static MessageSourceResolvable createDefaultWithoutCode(String defaultMessage) {
         return new YukonMessageSourceResolvable(null, new Object[]{}, defaultMessage);
