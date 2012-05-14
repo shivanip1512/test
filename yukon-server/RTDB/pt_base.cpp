@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pt_base
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "pt_base.h"
@@ -136,20 +123,12 @@ string            CtiPointBase::getName() const                  { return _point
 LONG              CtiPointBase::getDeviceID() const              { return _pointBase.getPAObjectID();}
 
 
-//string            CtiPointBase::getLogicalGroup() const          { return _pointBase.getLogicalGroup();}
 LONG              CtiPointBase::getStateGroupID() const          { return _pointBase.getStateGroupID();}
 
-BOOL              CtiPointBase::getDisableTag() const            { return _pointBase.getDisableTag();}
-BOOL              CtiPointBase::isInService() const              { return !(_pointBase.getDisableTag());}
-BOOL              CtiPointBase::isOutOfService() const           { return _pointBase.getDisableTag();}
-
-BOOL              CtiPointBase::getAlarmDisableTag() const       { return _pointBase.getAlarmDisableTag();}
 BOOL              CtiPointBase::isAlarmDisabled() const          { return _pointBase.getAlarmDisableTag();}
 
-BOOL              CtiPointBase::getPseudoTag() const             { return _pointBase.getPseudoTag();}
 BOOL              CtiPointBase::isPseudoPoint() const            { return _pointBase.getPseudoTag();}
 
-BOOL              CtiPointBase::getArchivePending() const        { return _pointBase.getArchivePending();}
 BOOL              CtiPointBase::isArchivePending() const         { return _pointBase.getArchivePending();}
 
 CtiPointType_t    CtiPointBase::getType() const                  { return _pointBase.getType();}

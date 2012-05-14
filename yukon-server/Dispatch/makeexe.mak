@@ -236,7 +236,7 @@ ctivangogh.obj:	precompiled.h collectable.h counter.h guard.h \
 		tbl_pao_lite.h tbl_rtcomm.h tbl_static_paoinfo.h tbl_base.h \
 		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		tbl_dyn_ptalarming.h thread_monitor.h thread_register_data.h \
-		ThreadStatusKeeper.h mgr_ptclients.h ptconnect.h slctpnt.h \
+		ThreadStatusKeeper.h mgr_ptclients.h ptconnect.h \
 		database_writer.h row_writer.h dllvg.h dllyukon.h ctidate.h \
 		debug_timer.h millisecond_timer.h
 dispmain.obj:	precompiled.h ctitime.h dlldefs.h dispsvc.h cservice.h \

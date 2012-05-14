@@ -20,8 +20,6 @@ exe_reg.obj:	J:\dev\yukon\server\message.h \
 		J:\dev\yukon\server\con_mgr_vg.h \
 		J:\dev\yukon\server\server_b.h J:\dev\yukon\server\msg_reg.h \
 		J:\dev\yukon\server\yukon.h
-pointtest.obj:	J:\dev\yukon\server\mgr_point.h \
-		J:\dev\yukon\server\rtdb.h
 porttest.obj:	J:\dev\yukon\server\mgr_port.h \
 		J:\dev\yukon\server\rtdb.h
 queuetest.obj:	J:\dev\yukon\server\que_omsg.h \

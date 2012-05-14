@@ -44,7 +44,6 @@
 
 #include "mgr_ptclients.h"
 #include "dlldefs.h"
-#include "slctpnt.h"
 
 #include "logger.h"
 #include "database_connection.h"

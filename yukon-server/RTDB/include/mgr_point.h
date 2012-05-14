@@ -9,11 +9,11 @@ class IM_EX_PNTDB CtiPointManager
 {
 public:
 
-   typedef CtiLockGuard<CtiMutex>    LockGuard;
-   typedef CtiSmartMap <CtiPoint>    coll_type;              // This is the collection type!
-   typedef coll_type::ptr_type       ptr_type;
-   typedef coll_type::spiterator     spiterator;
-   typedef coll_type::insert_pair    insert_pair;
+   typedef CtiLockGuard<CtiMutex>       LockGuard;
+   typedef CtiSmartMap <CtiPointBase>   coll_type;              // This is the collection type!
+   typedef coll_type::ptr_type          ptr_type;
+   typedef coll_type::spiterator        spiterator;
+   typedef coll_type::insert_pair       insert_pair;
 
    typedef std::map<LONG, CtiPointWPtr> WeakPointMap;
 
@@ -31,7 +31,7 @@ private:
 
     void refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr);
 
-    void updateAccess(long pointid, time_t time_now=time(0));
+    void updateAccess(long pointid);
 
     void addPoint(CtiPointBase *point);  //  also used by the unit test
 
@@ -80,7 +80,6 @@ public:
 
     void processExpired();
 
-    virtual void DumpList(void);
     virtual void ClearList(void);
 
     void     apply(void (*applyFun)(const long, ptr_type, void*), void* d);

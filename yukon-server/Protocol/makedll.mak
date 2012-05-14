@@ -286,6 +286,10 @@ ansi_focus_mtable_013.obj:	precompiled.h ansi_focus_mtable_013.h \
 		dlldefs.h std_ansi_tbl_base.h types.h logger.h thread.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h numstr.h CtiPCPtrQueue.h
+ansi_focus_mtable_024.obj:	precompiled.h ansi_focus_mtable_024.h \
+		dlldefs.h std_ansi_tbl_base.h types.h logger.h thread.h \
+		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
+		os2_2w32.h numstr.h CtiPCPtrQueue.h
 ansi_kv2_mtable_000.obj:	precompiled.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -596,18 +600,19 @@ prot_ansi_focus.obj:	precompiled.h guard.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		logger.h thread.h mutex.h CtiPCPtrQueue.h prot_ansi_focus.h \
 		ansi_focus_mtable_004.h std_ansi_tbl_base.h \
-		ansi_focus_mtable_013.h prot_ansi.h dllbase.h dsm2.h \
-		cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h words.h \
-		optional.h ansi_application.h ansi_datalink.h xfer.h \
-		ansi_billing_table.h std_ansi_tbl_00.h std_ansi_tbl_01.h \
-		std_ansi_tbl_08.h std_ansi_tbl_10.h std_ansi_tbl_11.h \
-		std_ansi_tbl_12.h std_ansi_tbl_13.h std_ansi_tbl_14.h \
-		std_ansi_tbl_15.h std_ansi_tbl_16.h std_ansi_tbl_21.h \
-		std_ansi_tbl_22.h std_ansi_tbl_23.h std_ansi_tbl_25.h \
-		std_ansi_tbl_27.h std_ansi_tbl_28.h std_ansi_tbl_31.h \
-		std_ansi_tbl_32.h std_ansi_tbl_33.h std_ansi_tbl_51.h \
-		std_ansi_tbl_52.h std_ansi_tbl_61.h std_ansi_tbl_62.h \
-		std_ansi_tbl_63.h std_ansi_tbl_64.h ctidate.h pointdefs.h
+		ansi_focus_mtable_013.h ansi_focus_mtable_024.h prot_ansi.h \
+		dllbase.h dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h \
+		dsm2err.h words.h optional.h ansi_application.h \
+		ansi_datalink.h xfer.h ansi_billing_table.h std_ansi_tbl_00.h \
+		std_ansi_tbl_01.h std_ansi_tbl_08.h std_ansi_tbl_10.h \
+		std_ansi_tbl_11.h std_ansi_tbl_12.h std_ansi_tbl_13.h \
+		std_ansi_tbl_14.h std_ansi_tbl_15.h std_ansi_tbl_16.h \
+		std_ansi_tbl_21.h std_ansi_tbl_22.h std_ansi_tbl_23.h \
+		std_ansi_tbl_25.h std_ansi_tbl_27.h std_ansi_tbl_28.h \
+		std_ansi_tbl_31.h std_ansi_tbl_32.h std_ansi_tbl_33.h \
+		std_ansi_tbl_51.h std_ansi_tbl_52.h std_ansi_tbl_61.h \
+		std_ansi_tbl_62.h std_ansi_tbl_63.h std_ansi_tbl_64.h \
+		ctidate.h pointdefs.h
 prot_ansi_kv2.obj:	precompiled.h guard.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h logger.h \
 		thread.h mutex.h CtiPCPtrQueue.h prot_ansi_kv2.h prot_ansi.h \

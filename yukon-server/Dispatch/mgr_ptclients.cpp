@@ -478,54 +478,6 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
     }
 }
 
-void CtiPointClientManager::DumpList(void)
-{
-    CtiPointSPtr p;
-    try
-    {
-        coll_type::reader_lock_guard_t guard(getLock());
-
-        spiterator itr = Inherited::begin();
-        spiterator listEnd = Inherited::end();
-
-        for( ;itr != listEnd; itr++)
-        {
-            p = itr->second;
-
-            {
-                const CtiDynamicPointDispatchSPtr pDyn = getDynamic(p);
-
-                if(p->isValid() && pDyn)
-                {
-                    cout << "MemoryPoint \"" << p->getID( ) << "\" defined and initialized" << endl;
-                    cout << " Point Value         : " << pDyn->getValue() << endl;
-                    cout << " Point Quality       : 0x" << hex << pDyn->getQuality() << dec << endl;
-                    cout << " Point Time          : " << pDyn->getTimeStamp() << endl;
-                }
-                else
-                {
-                    cout << " Point \"" << p->getID( ) << "\" has been deleted from the database... cleaning up is recommended" << endl;
-                }
-            }
-        }
-    }
-    catch(RWExternalErr e )
-    {
-        //Make sure the list is cleared
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        cout << "Attempting to clear point list..." << endl;
-
-        DeleteList();
-
-        cout << "DumpMemoryPoints:  " << e.why() << endl;
-        RWTHROW(e);
-
-    }
-}
-
 int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const CtiPointRegistrationMsg &aReg, bool debugprint)
 {
     int nRet = 0;
@@ -898,8 +850,6 @@ void CtiPointClientManager::storeDirtyRecords()
 
     return;
 }
-
-CtiPointClientManager::CtiPointClientManager() {}
 
 CtiPointClientManager::~CtiPointClientManager()
 {

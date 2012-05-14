@@ -51,7 +51,7 @@ private:
 
    // Store for the dynamic data on a point. It reflects dynamic database data.
    // This should be is removed from on point deletion but not expiration.
-   DynamicPointDispatchMap  _dynamic; 
+   DynamicPointDispatchMap  _dynamic;
 
    typedef CtiPointManager Inherited;
 
@@ -78,8 +78,6 @@ private:
 
 public:
 
-   CtiPointClientManager();
-
    virtual ~CtiPointClientManager();
    virtual std::set<long> refreshList(LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
    virtual void refreshListByPointIDs(const std::set<long> &ids);
@@ -93,7 +91,6 @@ public:
    CtiPointManager::ptr_type   getOffsetTypeEqual(LONG pao, INT offset, CtiPointType_t type);
    CtiPointManager::ptr_type   getControlOffsetEqual(LONG pao, INT offset);
 
-   void DumpList(void);
    void DeleteList(void);
    virtual void expire (long pid);
    virtual void erase  (long pid);

@@ -18,10 +18,7 @@
 
 class CtiTablePointAlarming;
 
-/*----------------------------------------------------------------------------------------*
- * CtiPointBase is the base class for all point objects in the YUKON system.
- *----------------------------------------------------------------------------------------*/
-class IM_EX_PNTDB CtiPointBase : public CtiMemDBObject
+class IM_EX_PNTDB CtiPointBase : public CtiMemDBObject, boost::noncopyable
 {
 public:
 
@@ -57,23 +54,15 @@ public:
    LONG            getPointID() const;
    LONG            getID() const;
 
-   std::string          getName() const;
+   std::string     getName() const;
    LONG            getDeviceID() const;
 
-   //string          getLogicalGroup() const;
    LONG            getStateGroupID() const;
 
-   BOOL            getDisableTag() const;
-   BOOL            isInService() const;
-   BOOL            isOutOfService() const;
-
-   BOOL            getAlarmDisableTag() const;
    BOOL            isAlarmDisabled() const;
 
-   BOOL            getPseudoTag() const;
    BOOL            isPseudoPoint() const;
 
-   BOOL            getArchivePending() const;
    BOOL            isArchivePending() const;
 
    void            setType(CtiPointType_t type);
@@ -100,10 +89,6 @@ public:
 
    virtual int getControlOffset() const { return 0; }
 };
-
-void IM_EX_PNTDB DefDynamicFactory(const CtiPointBase& pt);
-
-typedef CtiPointBase CtiPoint;
 
 typedef boost::shared_ptr< CtiPointBase > CtiPointSPtr;
 typedef boost::weak_ptr< CtiPointBase > CtiPointWPtr;

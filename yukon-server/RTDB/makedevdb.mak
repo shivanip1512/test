@@ -924,7 +924,8 @@ dev_focus.obj:	precompiled.h porter.h dsm2.h cticonnect.h yukon.h \
 		std_ansi_tbl_64.h dllyukon.h pt_analog.h pt_numeric.h \
 		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h pt_status.h \
 		tbl_pt_status.h prot_ansi_focus.h ansi_focus_mtable_004.h \
-		ansi_focus_mtable_013.h prot_ansi_sentinel.h ctidate.h
+		ansi_focus_mtable_013.h ansi_focus_mtable_024.h \
+		prot_ansi_sentinel.h ctidate.h
 dev_fulcrum.obj:	precompiled.h ctidate.h dlldefs.h logger.h thread.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h porter.h dsm2.h \
@@ -1307,7 +1308,8 @@ dev_ipc410al.obj:	precompiled.h dev_ipc410al.h dlldefs.h dev_focus.h \
 		std_ansi_tbl_64.h dllyukon.h pt_analog.h pt_numeric.h \
 		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h pt_status.h \
 		tbl_pt_status.h prot_ansi_focus.h ansi_focus_mtable_004.h \
-		ansi_focus_mtable_013.h prot_ansi_sentinel.h
+		ansi_focus_mtable_013.h ansi_focus_mtable_024.h \
+		prot_ansi_sentinel.h
 dev_ipc420ad.obj:	precompiled.h dev_ipc420ad.h dlldefs.h dev_focus.h \
 		dev_meter.h tbl_metergrp.h yukon.h types.h ctidbgmem.h \
 		vcomdefs.h dbmemobject.h dllbase.h dsm2.h cticonnect.h \
@@ -1341,7 +1343,8 @@ dev_ipc420ad.obj:	precompiled.h dev_ipc420ad.h dlldefs.h dev_focus.h \
 		std_ansi_tbl_64.h dllyukon.h pt_analog.h pt_numeric.h \
 		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h pt_status.h \
 		tbl_pt_status.h prot_ansi_focus.h ansi_focus_mtable_004.h \
-		ansi_focus_mtable_013.h prot_ansi_sentinel.h
+		ansi_focus_mtable_013.h ansi_focus_mtable_024.h \
+		prot_ansi_sentinel.h
 dev_kv2.obj:	precompiled.h porter.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -2583,16 +2586,6 @@ points.obj:	precompiled.h pt_accum.h boostutil.h utility.h ctitime.h \
 		desolvers.h tbl_pt_property.h tbl_pt_trigger.h tbl_pt_unit.h \
 		tbl_unitmeasure.h tbl_pt_accum.h tbl_pt_accumhistory.h \
 		string_utility.h pt_analog.h tbl_pt_analog.h
-pointtest.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
-		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		types.h numstr.h CtiPCPtrQueue.h mgr_point.h pt_base.h \
-		yukon.h ctidbgmem.h row_reader.h boostutil.h dbmemobject.h \
-		resolvers.h pointtypes.h db_entry_defines.h pointdefs.h \
-		tbl_pt_base.h dllbase.h dsm2.h cticonnect.h netports.h \
-		dsm2err.h words.h optional.h dbaccess.h desolvers.h \
-		tbl_pt_property.h tbl_pt_trigger.h smartmap.h \
-		readers_writer_lock.h critical_section.h rtdb.h hashkey.h \
-		hash_functions.h string_utility.h
 port_base.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
 		types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
@@ -3042,23 +3035,16 @@ slctdev.obj:	precompiled.h dev_710.h dev_idlc.h types.h os2_2w32.h \
 		ansi_kv2_mtable_110.h dllyukon.h dev_sentinel.h dev_ansi.h \
 		prot_ansi_sentinel.h dev_focus.h prot_ansi_focus.h \
 		ansi_focus_mtable_004.h ansi_focus_mtable_013.h \
-		dev_ipc410al.h dev_ipc420ad.h dev_mark_v.h prot_transdata.h \
-		transdata_application.h transdata_tracker.h \
-		transdata_datalink.h prot_ymodem.h transdata_data.h msg_cmd.h \
-		dev_rds.h dev_repeater800.h dev_repeater.h dev_repeater850.h \
-		dev_rtc.h tbl_dv_rtc.h dev_sixnet.h prot_sixnet.h rte_macro.h \
-		tbl_rtmacro.h rte_ccu.h rte_xcu.h smartmap.h \
-		readers_writer_lock.h tbl_rtcarrier.h tbl_rtrepeater.h \
-		rte_versacom.h tbl_rtversacom.h master.h rte_expresscom.h \
-		dev_fmu.h rtdb.h slctdev.h
-slctpnt.obj:	precompiled.h rtdb.h dlldefs.h hashkey.h hash_functions.h \
-		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
-		numstr.h string_utility.h dllbase.h dsm2.h cticonnect.h \
-		yukon.h ctidbgmem.h netports.h mutex.h guard.h dsm2err.h \
-		words.h optional.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h slctpnt.h pt_base.h row_reader.h \
-		boostutil.h dbmemobject.h pointdefs.h tbl_pt_base.h \
-		desolvers.h tbl_pt_property.h tbl_pt_trigger.h
+		ansi_focus_mtable_024.h dev_ipc410al.h dev_ipc420ad.h \
+		dev_mark_v.h prot_transdata.h transdata_application.h \
+		transdata_tracker.h transdata_datalink.h prot_ymodem.h \
+		transdata_data.h msg_cmd.h dev_rds.h dev_repeater800.h \
+		dev_repeater.h dev_repeater850.h dev_rtc.h tbl_dv_rtc.h \
+		dev_sixnet.h prot_sixnet.h rte_macro.h tbl_rtmacro.h \
+		rte_ccu.h rte_xcu.h smartmap.h readers_writer_lock.h \
+		tbl_rtcarrier.h tbl_rtrepeater.h rte_versacom.h \
+		tbl_rtversacom.h master.h rte_expresscom.h dev_fmu.h rtdb.h \
+		slctdev.h
 slctprt.obj:	precompiled.h port_dialout.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h mutex.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
@@ -3696,6 +3682,13 @@ test_mgr_point.obj:	mgr_point.h pt_base.h yukon.h types.h ctidbgmem.h \
 		tbl_unitmeasure.h tbl_pt_analog.h logger.h thread.h \
 		CtiPCPtrQueue.h string_utility.h pt_accum.h tbl_pt_accum.h \
 		tbl_pt_accumhistory.h
+test_pt_base.obj:	pt_base.h yukon.h types.h ctidbgmem.h row_reader.h \
+		ctitime.h dlldefs.h boostutil.h utility.h queues.h cticalls.h \
+		os2_2w32.h numstr.h dbmemobject.h resolvers.h pointtypes.h \
+		db_entry_defines.h pointdefs.h tbl_pt_base.h dllbase.h dsm2.h \
+		cticonnect.h netports.h mutex.h guard.h dsm2err.h words.h \
+		optional.h dbaccess.h desolvers.h tbl_pt_property.h \
+		tbl_pt_trigger.h
 test_rtdb_sql.obj:	database_reader.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \

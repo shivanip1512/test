@@ -681,11 +681,11 @@ CtiPointBase* PointFactory(Cti::RowReader &rdr)
 
 void CtiPointManager::refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr)
 {
-    vector<CtiPoint *> newPoints;
+    vector<CtiPointBase *> newPoints;
 
     while( rdr() )
     {
-        CtiPoint *newPoint = PointFactory(rdr);    // Use the reader to get me an object of the proper type
+        CtiPointBase *newPoint = PointFactory(rdr);    // Use the reader to get me an object of the proper type
         newPoint->DecodeDatabaseReader(rdr);       // Fills himself in from the reader
 
         // Add it to my list....
@@ -698,19 +698,18 @@ void CtiPointManager::refreshPoints(std::set<long> &pointIdsFound, Cti::RowReade
     {
         coll_type::writer_lock_guard_t guard(getLock());
 
-        vector<CtiPoint *>::iterator point_itr = newPoints.begin(),
-                                     point_end = newPoints.end();
-
-        while( point_itr != point_end )
+        for each(CtiPointBase *newPoint in newPoints )
         {
-            addPoint(*point_itr++);
+            addPoint(newPoint);
         }
     }
 }
 
 
-void CtiPointManager::updateAccess(long pointid, time_t time_now)
+void CtiPointManager::updateAccess(long pointid)
 {
+    time_t time_now = time(0);
+
     lru_guard_t lru_guard(_lru_mux);
 
     time_t time_index = time_now / 10;
@@ -1053,38 +1052,6 @@ long CtiPointManager::getPAOIdForPointId(long pointid)
     if( p )  return p->getDeviceID();
 
     return -1;
-}
-
-
-void CtiPointManager::DumpList(void)
-{
-    try
-    {
-        coll_type::reader_lock_guard_t guard(getLock());
-
-        spiterator itr, itr_end = end();
-
-        for( itr = begin(); itr != itr_end; itr++)
-        {
-            itr->second->DumpData();
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl;
-            }
-        }
-    }
-    catch(RWExternalErr e )
-    {
-        //Make sure the list is cleared
-        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear device list..." << endl;}
-
-        ClearList();
-
-        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DumpPoints:  " << e.why() << endl;}
-        RWTHROW(e);
-
-    }
 }
 
 

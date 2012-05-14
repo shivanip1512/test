@@ -108,6 +108,10 @@ mgr_device_scannable.obj:	precompiled.h mgr_device_scannable.h \
 		msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
 		exchange.h msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h prot_base.h xfer.h debug_timer.h
+pexec.obj:	precompiled.h yukon.h types.h ctidbgmem.h logger.h \
+		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
+		queues.h cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h \
+		scanglob.h netports.h dsm2err.h
 scanglob.obj:	precompiled.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
