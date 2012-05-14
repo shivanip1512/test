@@ -125,6 +125,12 @@ void CtiLoadManager::start()
   ---------------------------------------------------------------------------*/
 void CtiLoadManager::stop()
 {
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Shutting down load manager thread..." << endl;
+    }
+
     try
     {
         if( _loadManagerThread.isValid() && _loadManagerThread.requestCancellation(20000) == RW_THR_ABORTED )
@@ -149,6 +155,12 @@ void CtiLoadManager::stop()
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Load manager thread shutdown." << endl;
+    }
+
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
@@ -156,7 +168,8 @@ void CtiLoadManager::stop()
         {
             _dispatchConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         }
-        _dispatchConnection->ShutdownConnection();
+        delete _dispatchConnection;
+        _dispatchConnection = NULL;
     }
     catch( ... )
     {
@@ -171,7 +184,24 @@ void CtiLoadManager::stop()
         {
             _pilConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         }
-        _pilConnection->ShutdownConnection();
+        delete _pilConnection;
+        _pilConnection = NULL;
+    }
+    catch( ... )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+    try
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        if( _notificationConnection!=NULL && _notificationConnection->valid() )
+        {
+            _notificationConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+        }
+        delete _notificationConnection;
+        _notificationConnection = NULL;
     }
     catch( ... )
     {
@@ -180,15 +210,6 @@ void CtiLoadManager::stop()
     }
 }
 
-/*----------------------------------------------------------------------------
-  handleMessage
-
-  Handles any CtiMessages received from a client in the main thread.
-----------------------------------------------------------------------------*/
-void CtiLoadManager::handleMessage(CtiMessage* msg)
-{
-    _main_queue.putQueue(msg);
-}
 
 /*---------------------------------------------------------------------------
   controlLoop
@@ -201,6 +222,11 @@ void CtiLoadManager::controlLoop()
 {
     try
     {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " LoadManager Thread started TID: " << CurrentTID () << endl;
+        }
+
         CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
         {
             //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -221,6 +247,9 @@ void CtiLoadManager::controlLoop()
         //remember when the last control area messages were sent
         time_t last_ca_msg_sent = 0;
 
+        const int HOURLY_SCHEDULE = 3600;
+        CtiTime next_dynamic_data_store_time = nextScheduledTimeAlignedOnRate(CtiTime::now(), HOURLY_SCHEDULE);
+
         loadControlLoopCParms();
 
         // Fire up the notification server
@@ -231,7 +260,7 @@ void CtiLoadManager::controlLoop()
             long main_wait = control_loop_delay;
             bool received_message = false;
             Sleep(250);
-            while( (msg = _main_queue.getQueue(main_wait)) != NULL )
+            while( (msg = CtiLMClientListener::getInstance()->getQueue(main_wait)) != NULL )
             {
                 CtiLMExecutor* executor = executorFactory.createExecutor(msg);
                 try
@@ -629,6 +658,13 @@ void CtiLoadManager::controlLoop()
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                }
+
+
+                if( next_dynamic_data_store_time < CtiTime::now() )
+                {
+                    next_dynamic_data_store_time = nextScheduledTimeAlignedOnRate(CtiTime::now(), HOURLY_SCHEDULE);
+                    CtiLMControlAreaStore::getInstance()->dumpAllDynamicData();
                 }
             }
 

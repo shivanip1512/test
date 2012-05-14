@@ -256,11 +256,11 @@ void CtiConnection::InThread()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             if(_port >= 0)
             {
-                dout << CtiTime() << " InThread  : " << whoStr << " has begun operations " << endl;
+                dout << CtiTime() << " InThread  : " << whoStr << " has begun operations TID: " << CurrentTID() << endl;
             }
             else
             {
-                dout << CtiTime() << " InThread  : " << whoStr << " has begun operations " << " Server Connection" << endl;
+                dout << CtiTime() << " InThread  : " << whoStr << " has begun operations " << " Server Connection TID: " << CurrentTID() << endl;
             }
         }
     }
@@ -537,11 +537,11 @@ void CtiConnection::OutThread()
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             if(_port >= 0)
             {
-                dout << CtiTime() << " OutThread : " << whoStr << " has begun operations " << endl;
+                dout << CtiTime() << " OutThread : " << whoStr << " has begun operations TID: " << CurrentTID() << endl;
             }
             else
             {
-                dout << CtiTime() << " OutThread : " << whoStr << " has begun operations " << " Server Connection" << endl;
+                dout << CtiTime() << " OutThread : " << whoStr << " has begun operations " << " Server Connection TID: " << CurrentTID() << endl;
             }
         }
     }
@@ -1285,12 +1285,6 @@ void CtiConnection::messagePeek( CtiMessage *MyMsg )
         {
             messagePeek(((CtiMessage*)(pMulti->getData()[i])));             // recurse.
         }
-    }
-    else if(MyMsg->isA() > 0x8000 || (MyMsg->isA() < 1510 && !(MyMsg->isA() > 700 && MyMsg->isA() < 710)))
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "  ODD MESSAGE TYPE " << MyMsg->isA() << endl;
     }
 
     return;

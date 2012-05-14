@@ -47,7 +47,6 @@ test_lmprogram.obj \
 test_lm_constraintviolations.obj
 
 LOADMANAGEMENTBASEOBJS= \
-clientconn.obj \
 clistener.obj \
 executor.obj \
 ConstraintViolation.obj \
@@ -153,10 +152,9 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		connection.h exchange.h string_utility.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h \
 		tbl_lmprogramhistory.h lmprogramcontrolwindow.h lmutility.h \
-		lmconstraint.h lmmessage.h clientconn.h ctdpcptrq.h \
-		ConstraintViolation.h executor.h msg_server_req.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		test_reader.h
+		lmconstraint.h lmmessage.h ConstraintViolation.h executor.h \
+		ctdpcptrq.h msg_server_req.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h test_reader.h
 test_lm_constraintviolations.obj:	ConstraintViolation.h ctitime.h \
 		dlldefs.h ctidate.h logger.h thread.h mutex.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \

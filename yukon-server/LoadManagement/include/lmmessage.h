@@ -6,7 +6,6 @@
 #include <rw/vstream.h>
 #include "ctitime.h"
 
-#include "clientconn.h"
 #include "message.h"
 #include "lmcontrolarea.h"
 #include "lmprogramdirect.h"
@@ -18,7 +17,6 @@
 class CtiLMMessage : public CtiMessage
 {
 RWDECLARE_COLLECTABLE( CtiLMMessage )
-    friend class CtiLMConnection;
 
 public:
     CtiLMMessage() { };
@@ -27,14 +25,12 @@ public:
     virtual ~CtiLMMessage() { };
 
     const std::string& getMessage() const;
-    CtiLMConnectionPtr getConnection();
     
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
 
 private:
     // The connection that received/produced this message
-    CtiLMConnectionWeakPtr _connection;
     std::string _message;
 };
 
@@ -349,18 +345,6 @@ private:
     std::string _useridname;
     std::string _nameofackperson;
     std::string _curtailmentnotes;
-};
-
-
-class CtiLMShutdown : public CtiLMMessage
-{
-RWDECLARE_COLLECTABLE( CtiLMShutdown )
-
-public:
-    CtiLMShutdown() : CtiLMMessage("Shutdown") { } ;
-    
-    void restoreGuts( RWvistream& );
-    void saveGuts( RWvostream&) const;
 };
 
 class CtiLMDynamicGroupDataMsg : public CtiMessage

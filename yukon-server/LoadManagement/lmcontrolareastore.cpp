@@ -54,6 +54,8 @@
 #include "tbl_lmprogramhistory.h"
 #include "database_connection.h"
 #include "database_writer.h"
+#include "debug_timer.h"
+#include "clistener.h"
 
 using namespace std;
 using Cti::Database::DatabaseConnection;
@@ -92,22 +94,13 @@ CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterfor
 -----------------------------------------------------------------------------*/
 CtiLMControlAreaStore::~CtiLMControlAreaStore()
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-    /*{
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CtiLMControlAreaStore destructor called..." << endl;
-    }*/
     if( _resetthr.isValid() )
     {
-        _resetthr.requestCancellation();
-        _resetthr.join();
+        _resetthr.requestCancellation(30000);
+        _resetthr.join(30000);
     }
 
     shutdown();
-    /*{
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CtiLMControlAreaStore destructor done!!!" << endl;
-    }*/
 }
 
 /*---------------------------------------------------------------------------
@@ -204,14 +197,9 @@ vector<CtiLMControlArea*> CtiLMControlAreaStore::findControlAreasByPointID(long 
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::dumpAllDynamicData()
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
-    /*{
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Begin writing dynamic data to the database..." << endl;
-    }*/
     if( _controlAreas->size() > 0 )
     {
+        Cti::Timing::DebugTimer debugTime("Dump All Dynamic Data", true, 3);
         CtiTime currentDateTime = CtiTime();
 
         Cti::Database::DatabaseConnection   conn;
@@ -231,16 +219,6 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
             CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
             currentLMControlArea->dumpDynamicData(conn,currentDateTime);
 
-            vector<CtiLMControlAreaTrigger*>& lmControlAreaTriggers = currentLMControlArea->getLMControlAreaTriggers();
-            if( lmControlAreaTriggers.size() > 0 )
-            {
-                for( LONG x=0;x<lmControlAreaTriggers.size();x++ )
-                {
-                    CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers.at(x);
-                    currentLMControlAreaTrigger->dumpDynamicData(conn,currentDateTime);
-                }
-            }
-
             vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
             if( lmPrograms.size() > 0 )
             {
@@ -252,7 +230,6 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
                     if( currentLMProgramBase->getPAOType() ==  TYPE_LMPROGRAM_DIRECT )
                     {
                         CtiLMProgramDirectSPtr currentLMProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect>(currentLMProgramBase);
-                        currentLMProgramDirect->dumpDynamicData(conn,currentDateTime);
 
                         CtiLMGroupVec groups  = currentLMProgramDirect->getLMProgramDirectGroups();
                         for( CtiLMGroupIter k = groups.begin(); k != groups.end(); k++ )
@@ -279,9 +256,6 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
 
                         }
                     }
-                    else
-                    {
-                    }
                 }
             }
         }
@@ -292,11 +266,6 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - ***No control areas to write to dynamic tables***" << endl;
     }
-
-    /*{
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Done writing dynamic data to the database!!!" << endl;
-    }*/
 }
 
 /*---------------------------------------------------------------------------
@@ -1871,8 +1840,8 @@ void CtiLMControlAreaStore::reset()
         }
         _wascontrolareadeletedflag = false;
 
-        // Make sure all the clients get the new control areas, let the main thread do it
-        CtiLoadManager::getInstance()->handleMessage(CTIDBG_new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
+        // Make sure all the clients get the new control areas
+        CtiLMClientListener::getInstance()->BroadcastMessage(CTIDBG_new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
     }
     catch( ... )
     {
@@ -1888,17 +1857,8 @@ void CtiLMControlAreaStore::reset()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::shutdown()
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
-    /*{
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Calling dumpAllDynamicData()" << endl;
-    }*/
     dumpAllDynamicData();
-    /*{
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Done with dumpAllDynamicData()" << endl;
-    }*/
+
     delete_container(*_controlAreas);
     _controlAreas->clear();
     delete _controlAreas;
@@ -2020,10 +1980,22 @@ CtiLMControlAreaStore* CtiLMControlAreaStore::getInstance()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::deleteInstance()
 {
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Shutting down control area store..." << endl;
+    }
+
     if( _instance != NULL )
     {
         delete _instance;
         _instance = NULL;
+    }
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Control area store shutdown." << endl;
     }
 }
 

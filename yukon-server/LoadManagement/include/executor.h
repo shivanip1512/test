@@ -175,16 +175,6 @@ private:
 };
 
 
-class CtiLMShutdownExecutor : public CtiLMExecutor
-{
-public:
-    CtiLMShutdownExecutor() {};
-    virtual ~CtiLMShutdownExecutor() {};
-
-    virtual void Execute();
-};
-
-
 class CtiLMExecutorFactory
 {
 public:

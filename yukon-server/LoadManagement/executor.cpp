@@ -502,10 +502,10 @@ void CtiLMCommandExecutor::SendAllControlAreas()
 
     CtiLMControlAreaMsg* msg = CTIDBG_new CtiLMControlAreaMsg(*store->getControlAreas(CtiTime()),CtiLMControlAreaMsg::AllControlAreasSent);
 
-    CtiLMConnectionPtr connection = _command->getConnection();
-    if( connection )
+    if( _command->getConnectionHandle() != NULL )
     {
-        connection->write(msg);
+        msg->setConnectionHandle(_command->getConnectionHandle());
+        CtiLMClientListener::getInstance()->sendMessageToClient(msg);
     }
     else
     {
@@ -1449,11 +1449,11 @@ void CtiLMManualControlRequestExecutor::Execute()
         {
             response->dump();
         }
-        //Send the response to all the clients
-        CtiLMConnectionPtr connection = _controlMsg->getConnection();
-        if( connection )
+        //Send the response to one or all of the clients
+        if( _controlMsg->getConnectionHandle() != NULL )
         {
-            connection->write(response);
+            response->setConnectionHandle(_controlMsg->getConnectionHandle());
+            CtiLMClientListener::getInstance()->sendMessageToClient(response);
         }
         else
         {
@@ -2742,89 +2742,6 @@ void CtiLMForwardMsgToDispatchExecutor::Execute()
     CtiLoadManager::getInstance()->sendMessageToDispatch(_ctiMessage->replicateMessage());
 }
 
-
-/*===========================================================================
-    CtiLMShutdown
-===========================================================================*/
-
-/*---------------------------------------------------------------------------
-    Execute
-
-    Executes a shutdown on the server
-    THIS EXECUTOR IS THE EXCEPTION
-    IT MUST NOT BE EXECUTED ON THE MAIN THREAD AS THE REST OF THEM SHOULD BE
-    THE REASON IS BECAUSE IT SHUTS DOWN THE CTILOADMANAGER WHICH OWNS
-    THE MAIN THREAD
----------------------------------------------------------------------------*/
-void CtiLMShutdownExecutor::Execute()
-{
-    try
-    {
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Shutting down client listener thread..." << endl;
-        }
-
-        CtiLMClientListener::getInstance()->stop();
-
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Client listener thread shutdown." << endl;
-        }
-    }
-    catch( ... )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-
-    try
-    {
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Shutting down load manager thread..." << endl;
-        }
-
-        CtiLoadManager::getInstance()->stop();
-
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Load manager thread shutdown." << endl;
-        }
-    }
-    catch( ... )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-
-    try
-    {
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Shutting down control area store..." << endl;
-        }
-
-        CtiLMControlAreaStore::deleteInstance();
-
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Control area store shutdown." << endl;
-        }
-    }
-    catch( ... )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-}
-
 /*===========================================================================
     CtiLMExecutorFactory
 ===========================================================================*/
@@ -2886,10 +2803,6 @@ CtiLMExecutor* CtiLMExecutorFactory::createExecutor(const CtiMessage* message)
 
     case MSG_MULTI:
         ret_val = CTIDBG_new CtiLMMultiMsgExecutor( (CtiMultiMsg*)message );
-        break;
-
-    case CTILMSHUTDOWN_ID:
-        ret_val = CTIDBG_new CtiLMShutdownExecutor();
         break;
 
     default:

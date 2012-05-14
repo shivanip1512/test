@@ -666,7 +666,11 @@ CtiLMGroupBase& CtiLMGroupBase::setControlStartTime(const CtiTime& start)
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupBase::setControlCompleteTime(const CtiTime& complete)
 {
-    _controlcompletetime = complete;
+    if( _controlcompletetime != complete )
+    {
+        _controlcompletetime = complete;
+        setDirty(true);
+    }
     return *this;
 }
 
@@ -726,7 +730,11 @@ CtiLMGroupBase& CtiLMGroupBase::resetDailyOps(int ops)
 
 void CtiLMGroupBase::setInternalState(unsigned state)
 {
-    _internalState = state;
+    if( _internalState != state )
+    {
+        _internalState = state;
+        setDirty(true);
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -1369,7 +1377,7 @@ void CtiLMGroupBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, Ct
     }
 
     _dynamic_timestamp = currentDateTime;
-    setDirty(false);
+    resetDirty();
 }
 
 /*----------------------------------------------------------------------------

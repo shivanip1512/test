@@ -43,11 +43,7 @@ bool CtrlHandler(DWORD fdwCtrlType)
     case CTRL_BREAK_EVENT:
 
         load_management_do_quit = TRUE;
-        Sleep(30000);
         return TRUE;
-
-        /* CTRL+CLOSE: confirm that the user wants to exit. */
-        /* Pass other signals to the next handler. */
 
     case CTRL_LOGOFF_EVENT:
 
@@ -191,16 +187,37 @@ void CtiLMService::OnStop()
         dout << CtiTime().asString() << " - Load Management shutting down...." << endl;
     }
 
-    //Time to quit - send a shutdown message through the system
-    CtiLMExecutorFactory f;
+    try
+    {
+        CtiLoadManager::getInstance()->stop();
+    }
+    catch( ... )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 
-    CtiLMShutdown* msg = CTIDBG_new CtiLMShutdown();
-    CtiLMExecutor* executor = f.createExecutor(msg);
-    executor->Execute();
+    try
+    {
+        CtiLMControlAreaStore::deleteInstance();
+    }
+    catch( ... )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+    try
+    {
+        CtiLMClientListener::getInstance()->stop();
+    }
+    catch( ... )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 
     SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
-
-    delete executor;
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

@@ -38,17 +38,6 @@ const string& CtiLMMessage::getMessage() const
     return _message;
 }
 
-/*-----------------------------------------------------------------------------
-  getConnection
-
-  Returns a shared pointer to the connecition that produced this message.
-  It is possible for the shared_ptr that is returned to be invalid and it
-  must be tested against NULL or 0 before used!
------------------------------------------------------------------------------*/
-CtiLMConnectionPtr CtiLMMessage::getConnection()
-{
-    return _connection.lock();
-}
 
 /*---------------------------------------------------------------------------
     restoreGuts
@@ -1254,33 +1243,6 @@ CtiLMCurtailmentAcknowledgeMsg& CtiLMCurtailmentAcknowledgeMsg::operator=(const 
     return *this;
 }
 
-
-/*===========================================================================
-    CtiLMShutdown
-===========================================================================*/
-
-RWDEFINE_COLLECTABLE( CtiLMShutdown, CTILMSHUTDOWN_ID )
-
-
-/*---------------------------------------------------------------------------
-    restoreGuts
-
-    Restores the state of self fromt he given RWvistream
----------------------------------------------------------------------------*/
-void CtiLMShutdown::restoreGuts(RWvistream& strm)
-{
-    CtiLMMessage::restoreGuts(strm);
-}
-
-/*---------------------------------------------------------------------------
-    saveGuts
-
-    Saves the state of self into the given RWvostream
----------------------------------------------------------------------------*/
-void CtiLMShutdown::saveGuts(RWvostream& strm) const
-{
-    CtiLMMessage::saveGuts(strm);
-}
 
 RWDEFINE_COLLECTABLE( CtiLMDynamicGroupDataMsg, CTILMDYNAMICGROUPMSG_ID )
 RWDEFINE_COLLECTABLE( CtiLMDynamicProgramDataMsg, CTILMDYNAMICPROGRAMMSG_ID )

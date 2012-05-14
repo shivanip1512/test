@@ -520,7 +520,11 @@ CtiLMProgramDirect& CtiLMProgramDirect::setDirectStopTime(const CtiTime& stop)
 CtiLMProgramDirect& CtiLMProgramDirect::setAdditionalInfo(const string& additional)
 {
 
-    _additionalinfo = additional;
+    if( _additionalinfo != additional )
+    {
+        _additionalinfo = additional;
+        setDirty(true);
+    }
 
     return *this;
 }
@@ -5629,7 +5633,7 @@ void CtiLMProgramDirect::dumpDynamicData(Cti::Database::DatabaseConnection& conn
     }
 
     _dynamictimestamp = currentDateTime;
-    setDirty(false);
+    resetDirty();
 }
 
 /*
@@ -6359,7 +6363,11 @@ bool CtiLMProgramDirect::isControlling()
 
 void CtiLMProgramDirect::setCurrentHistLogId(unsigned long logID)
 {
-    _curLogID = logID;
+    if( _curLogID != logID )
+    {
+        _curLogID = logID;
+        setDirty(true);
+    }
 }
 
 unsigned long CtiLMProgramDirect::getCurrentHistLogId()

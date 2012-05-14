@@ -18,6 +18,9 @@
 #include "executor.h"
 #include "logger.h"
 
+#include <rw/toolpro/sockport.h>
+#include <rw/toolpro/inetaddr.h>
+
 #include <rw/toolpro/inetaddr.h>
 
 using std::endl;
@@ -65,7 +68,7 @@ CtiLMClientListener* CtiLMClientListener::getInstance()
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
-CtiLMClientListener::CtiLMClientListener(LONG port) : _port(port), _doquit(FALSE), _socketListener(NULL)
+CtiLMClientListener::CtiLMClientListener(LONG port) : _port(port), _doquit(FALSE)
 {
 }
 
@@ -107,19 +110,56 @@ void CtiLMClientListener::stop()
 {
     try
     {
-        _doquit = TRUE;
-        if ( _socketListener != NULL )
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            delete _socketListener;
-            _socketListener = NULL;
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Shutting down client listener thread..." << endl;
+        }
 
-            _listenerthr.join(30000);
-            _checkthr.join(30000);
+        _doquit = TRUE;
+
+        _listenerthr.join(5000);
+        _checkthr.join(5000);
+
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Client listener thread shutdown." << endl;
         }
     }
     catch(RWxmsg& msg)
     {
         std::cerr << msg.why() << endl;
+    }
+}
+
+void CtiLMClientListener::sendMessageToClient(CtiMessage *msg)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+
+    try
+    {
+        for( int i = 0; i < _connections.size(); i++ )
+        {
+            // replicate message makes a deep copy
+            if( _connections[i].get() == msg->getConnectionHandle() && _connections[i]->valid() )
+            {
+                _connections[i]->WriteConnQue(msg);
+                msg = NULL;
+                break;
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard< CtiLogger > g(dout);
+        dout << CtiTime() << __FILE__ << " (" << __LINE__ <<
+             ")  An unknown exception has occurred." << endl;
+    }
+    if( msg != NULL )
+    {
+        delete msg;
+        msg = NULL;
     }
 }
 
@@ -140,18 +180,18 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
         for( int i = 1; i < _connections.size(); i++ )
         {
             // replicate message makes a deep copy
-            if( _connections[i]->isValid() )
+            if( _connections[i]->valid() )
             {
                 CtiMessage* replicated_msg = msg->replicateMessage();
-                _connections[i]->write(replicated_msg);
+                _connections[i]->WriteConnQue(replicated_msg);
             }
         }
         //Use up the original on the first client, no waste
         if(_connections.size() > 0)
         {
-            if( _connections[0]->isValid())
+            if( _connections[0]->valid())
             {
-                _connections[0]->write(msg);
+                _connections[0]->WriteConnQue(msg);
                 msg = NULL;
             }
         }
@@ -178,79 +218,142 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
 ---------------------------------------------------------------------------*/
 void CtiLMClientListener::_listen()
 {
-
-    try
+    do
     {
-        _socketListener = CTIDBG_new RWSocketListener( RWInetAddr( (int) _port )  );
-        /*{
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime()  << " - Listening for clients..." << endl;
-        }*/
+        int i=0;
+
+        UINT sanity = 0;
+
+        CtiExchange *XChg;
+        RWInetPort  NetPort;
+        RWInetAddr  NetAddr;
+        RWSocket    listenerSocket;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Client Listener Thread started TID: " << CurrentTID () << endl;
+        }
+
+        NetPort = RWInetPort((int) _port);
+        NetAddr = RWInetAddr(NetPort);
+
+        listenerSocket.listen(NetAddr);
+
+        // This is here for looks, in reality it is rarely called.
+        if( !listenerSocket.valid() )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "Could not open socket " << NetAddr << " for listening" << endl;
+
+            exit(-1);
+        }
+
+        /* Up this threads priority a notch over the other procs */
+        CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_BELOW_NORMAL);
 
         do
         {
             try
             {
-                {
-                    RWPortal portal = (*_socketListener)();
-                    CtiLMConnectionPtr conn(CTIDBG_new CtiLMConnection(portal));
+                // It seems necessary to make this copy. RW does this and now so do we.
+                RWSocket tempSocket = listenerSocket;
+                RWSocket newSocket = tempSocket.accept();
+                RWSocketPortal sock;
 
-                    {
-                        RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-            conn->_weak_this_ptr = CtiLMConnectionWeakPtr(conn);
-                        _connections.push_back(conn);
-                    }
-                }
-            }
-            catch(RWSockErr& msg)
-            {
-                if( msg.errorNumber() == 10004 )
+                if( !newSocket.valid() )
                 {
-                    /*CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << "CtiLMClientListener thread interupted" << endl;*/
-                    break;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "Could not accept new connection " << endl;
                 }
                 else
                 {
+                    // This is very important. We tell the socket portal that we own the socket!
+                    sock = RWSocketPortal(newSocket, RWSocketPortalBase::Application);
+
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "CtiLMClientListener hickup: " << msg.errorNumber() << endl;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Connection Handler Thread. New connect. " << endl;
                     }
-                    delete _socketListener;
-                    _socketListener = CTIDBG_new RWSocketListener( RWInetAddr( (int) _port )  );
+
+                    {
+                        XChg = CTIDBG_new CtiExchange(sock);
+                        CtiLMConnectionPtr conn(CTIDBG_new CtiConnection(XChg, &_incomingQueue));
+
+                        {
+                            RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+                            _connections.push_back(conn); // Note that valid was already set in the connection constructor.
+                        }
+
+                        conn->ThreadInitiate();     // Kick off the connection's communication threads.
+                        
+                    }
                 }
             }
-            catch(RWxmsg& msg)
+            catch(RWSockErr& msg )
+            {
+                if(msg.errorNumber() == RWNETENOTSOCK)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Socket error RWNETENOTSOCK" << endl;
+                }
+
+                break; // break out of first loop and re set everything up??
+            }
+            catch(RWxmsg& msg )
             {
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << "CtiLMClientListener hickup (RWxmsg&): " << msg.why() << endl;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << endl << "ConnectionHandler Failed: " ;
+                    dout << msg.why() << endl;
                 }
+                break; // break out of first loop and re set everything up??
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                break;
             }
+
             rwSleep(500);
         } while ( !_doquit );
 
-        /*{
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime()  << " - CtiLMClientListener::_listen() - exiting" << endl;
-        }*/
-    }
-    catch(...)
+        try
+        {
+            // This forces the listener thread to exit on shutdown.
+            listenerSocket.close();
+        }
+        catch(...)
+        {
+            // Dont really care, we are shutting down.
+        }
+
+    } while( !_doquit );
+
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Client Listener Thread shutting down " << endl;
     }
+
+    return;
+}
+
+
+
+CtiMessage* CtiLMClientListener::getQueue(unsigned time)
+{
+    return _incomingQueue.getQueue(time);
 }
 
 void CtiLMClientListener::_check()
 {
     try
     {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Client Check Thread started TID: " << CurrentTID () << endl;
+        }
+
         do
         {
             try
@@ -263,7 +366,7 @@ void CtiLMClientListener::_check()
                     while(i != _connections.end())
                     {
                         CtiLMConnectionPtr conn = *i;
-                        if(!conn->isValid())
+                        if(!conn->valid())
                         {
                             i = _connections.erase(i);
                         }

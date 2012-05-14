@@ -37,8 +37,6 @@ public:
     void start();
     void stop();
 
-    void handleMessage(CtiMessage* msg);
-
     void sendMessageToDispatch(CtiMessage* message);
     void sendMessageToPIL(CtiMessage* message);
     void sendMessageToNotification(CtiMessage* message);
@@ -66,8 +64,6 @@ private:
 
     static CtiLoadManager* _instance;
     RWThread _loadManagerThread;
-
-    CtiQueue< CtiMessage, std::greater< CtiMessage > > _main_queue;
 
     CtiConnection* _pilConnection;
     CtiConnection* _dispatchConnection;

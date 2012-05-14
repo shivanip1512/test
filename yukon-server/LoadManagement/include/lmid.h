@@ -16,7 +16,6 @@
 #define CTILMMESSAGE_ID                         600
 #define CTILMCOMMAND_ID                         601
 #define CTILMCONTROLAREA_MSG_ID                 602
-#define CTILMSHUTDOWN_ID                        603
 #define CTILMCONTROLAREA_ID                     604
 #define CTILMCONTROLAREATRIGGER_ID              605
 #define CTILMPROGRAMDIRECT_ID                   606

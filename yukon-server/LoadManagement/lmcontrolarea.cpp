@@ -2519,76 +2519,82 @@ void CtiLMControlArea::dumpDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    if( !_insertDynamicDataFlag )
     {
-        if( !_insertDynamicDataFlag )
+        static const std::string sql_update = "update dynamiclmcontrolarea"
+                                              " set "
+                                                "nextchecktime = ?, "
+                                                "newpointdatareceivedflag = ?, "
+                                                "updatedflag = ?, "
+                                                "controlareastate = ?, "
+                                                "currentpriority = ?, "
+                                                "timestamp = ?, "
+                                                "currentdailystarttime = ?, "
+                                                "currentdailystoptime = ?"
+                                              " where "
+                                                "deviceid = ?";
+
+        Cti::Database::DatabaseWriter   updater(conn, sql_update);
+
+        updater
+            << getNextCheckTime()
+            << ( getNewPointDataReceivedFlag() ? std::string("Y") : std::string("N") )
+            << ( getUpdatedFlag() ? std::string("Y") : std::string("N") )
+            << getControlAreaState()
+            << getCurrentStartPriority()
+            << currentDateTime
+            << _currentdailystarttime
+            << _currentdailystoptime
+            << getPAOId();
+
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            static const std::string sql_update = "update dynamiclmcontrolarea"
-                                                  " set "
-                                                    "nextchecktime = ?, "
-                                                    "newpointdatareceivedflag = ?, "
-                                                    "updatedflag = ?, "
-                                                    "controlareastate = ?, "
-                                                    "currentpriority = ?, "
-                                                    "timestamp = ?, "
-                                                    "currentdailystarttime = ?, "
-                                                    "currentdailystoptime = ?"
-                                                  " where "
-                                                    "deviceid = ?";
-
-            Cti::Database::DatabaseWriter   updater(conn, sql_update);
-
-            updater
-                << getNextCheckTime()
-                << ( getNewPointDataReceivedFlag() ? std::string("Y") : std::string("N") )
-                << ( getUpdatedFlag() ? std::string("Y") : std::string("N") )
-                << getControlAreaState()
-                << getCurrentStartPriority()
-                << currentDateTime
-                << _currentdailystarttime
-                << _currentdailystoptime
-                << getPAOId();
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString() << endl;
-            }
-
-            updater.execute();
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << updater.asString() << endl;
         }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted control area into DynamicLMControlArea: " << getPAOName() << endl;
-            }
 
-            static const std::string sql_insert = "insert into dynamiclmcontrolarea values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
-
-            inserter
-                << getPAOId()
-                << getNextCheckTime()
-                << ( getNewPointDataReceivedFlag() ? std::string("Y") : std::string("N") )
-                << ( getUpdatedFlag() ? std::string("Y") : std::string("N") )
-                << getControlAreaState()
-                << getCurrentStartPriority()
-                << currentDateTime
-                << _currentdailystarttime
-                << _currentdailystoptime;
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << inserter.asString() << endl;
-            }
-
-            inserter.execute();
-
-            _insertDynamicDataFlag = FALSE;
-        }
+        updater.execute();
     }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Inserted control area into DynamicLMControlArea: " << getPAOName() << endl;
+        }
+
+        static const std::string sql_insert = "insert into dynamiclmcontrolarea values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
+
+        inserter
+            << getPAOId()
+            << getNextCheckTime()
+            << ( getNewPointDataReceivedFlag() ? std::string("Y") : std::string("N") )
+            << ( getUpdatedFlag() ? std::string("Y") : std::string("N") )
+            << getControlAreaState()
+            << getCurrentStartPriority()
+            << currentDateTime
+            << _currentdailystarttime
+            << _currentdailystoptime;
+
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << inserter.asString() << endl;
+        }
+
+        inserter.execute();
+
+        _insertDynamicDataFlag = FALSE;
+    }
+
+    for( int i=0;i<_lmcontrolareatriggers.size();i++ )
+    {
+        CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers.at(i);
+        currentTrigger->dumpDynamicData();
+    }
+
+    resetDirty();
 }
 
 /*-------------------------------------------------------------------------

@@ -1063,7 +1063,7 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
         inserter.execute();
     }
 
-    setDirty(false);
+    resetDirty(false);
 }
 
 /*---------------------------------------------------------------------------
