@@ -15,7 +15,9 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 
 public enum BuiltInAttribute implements Attribute {
-    
+
+	/* NOTE: Remember to add any new attributes to point.xml for i18n'ing, too */
+	
     BLINK_COUNT("Blink Count"), 
     CONNECTION_STATUS("Connection Status"),
     CONTROL_POINT("Control Point"),
@@ -25,6 +27,7 @@ public enum BuiltInAttribute implements Attribute {
     CURRENT_PHASE_C("Current (Phase C)"),
     DEMAND("Demand"), 
     DISCONNECT_STATUS("Disconnect Status"),
+    ENERGY_GENERATED("Energy Generated"),
     FAULT_STATUS("Fault Status"),
     GENERAL_ALARM_FLAG("General Alarm Flag"),
     KVAR("kVAr"),

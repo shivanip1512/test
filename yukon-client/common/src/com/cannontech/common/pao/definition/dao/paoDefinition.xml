@@ -5131,6 +5131,9 @@
             <attribute name="RFN_OUTAGE_RESTORE_COUNT">
                 <basicLookup point="Outage Restore Count" />
             </attribute>
+            <attribute name="ENERGY_GENERATED">
+            	<basicLookup point="Received kWh"/>
+            </attribute>
 
             <!-- Outage Duration -->
             <attribute name="OUTAGE_LOG">
