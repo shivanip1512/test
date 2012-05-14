@@ -9,6 +9,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -16,7 +17,6 @@ import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.i18n.YukonMessageSourceResolvable.DisplayType;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessage;
 import com.google.common.collect.Iterables;
@@ -65,15 +65,19 @@ public class FlashScopeMessagesTag extends YukonTagSupport {
 					
 					out.println("<ul>");
 					for (MessageSourceResolvable messageSourceResolvable : flashScopeMessage.getMessages()) {
-					    String bullet = "";
+						String resolvedMessage = resolveMessage(messageSourceResolvable);
+						String className = "";
 					    if(messageSourceResolvable instanceof YukonMessageSourceResolvable){
 					        YukonMessageSourceResolvable yukonMessageSourceResolvable = (YukonMessageSourceResolvable)messageSourceResolvable;
-					        if(yukonMessageSourceResolvable.getDisplayType() == DisplayType.BULLETED){
-					            bullet = "&nbsp;&bull;&nbsp;";
+					        if(StringUtils.isNotEmpty(yukonMessageSourceResolvable.getClassName())){
+					            className = yukonMessageSourceResolvable.getClassName();
 					        }
 					    }
-						String resolvedMessage = resolveMessage(messageSourceResolvable);
-						out.println("<li>" + bullet + resolvedMessage + "</li>");
+						if(StringUtils.isEmpty(className)){
+							out.println("<li>" + resolvedMessage + "</li>");
+						}else{
+							out.println("<li class=\"" + className + "\">" + resolvedMessage + "</li>");
+						}
 					}
 					out.println("</ul>");
 				}

@@ -1816,3 +1816,8 @@ tr.ui-priority-secondary {
 button.wideButton {
     width: 185px;
 }
+
+li.bullet {
+    background: transparent url(../Icons/bullet.png) left top no-repeat;
+    padding-left: 18px;
+}

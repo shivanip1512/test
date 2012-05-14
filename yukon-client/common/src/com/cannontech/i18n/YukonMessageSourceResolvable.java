@@ -14,12 +14,9 @@ import com.google.common.collect.ObjectArrays;
  */
 public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable { 
     
-    public enum DisplayType{
-        BULLETED,
-        PLAIN
-    }
-    
-    private DisplayType displayType = DisplayType.PLAIN;
+	/* specifies a style for a an element
+	 * example: <li class=\"" + className + "\">" + resolvedMessage + "</li>"*/
+    private String className;
 
     private static final long serialVersionUID = 3775006143046764578L;
 
@@ -38,11 +35,6 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
     public YukonMessageSourceResolvable(String[] codes, Object[] arguments) {
         super(codes, arguments);
     }
-    
-    public YukonMessageSourceResolvable(String[] codes, Object[] arguments, DisplayType displayType) {
-        this(codes, arguments);
-        this.displayType = displayType;
-    }
 
     public YukonMessageSourceResolvable(String[] codes, String defaultMessage) {
         super(codes, defaultMessage);
@@ -51,19 +43,14 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
     public YukonMessageSourceResolvable(String[] codes) {
         super(codes);
     }
-    
-    public YukonMessageSourceResolvable(String[] codes, DisplayType displayType) {
-        this(codes);
-        this.displayType = displayType;
-    }
-    
+        
     public YukonMessageSourceResolvable(String code, Object... args) {
         super(new String[] { code }, args);
     }
     
-    public YukonMessageSourceResolvable(String code, DisplayType displayType, Object... args) {
+    public YukonMessageSourceResolvable(String code, String className, Object... args) {
         this(code, args);
-        this.displayType = displayType;
+        this.className = className;
     }
 
     public static MessageSourceResolvable createSingleCode(String code) {
@@ -136,8 +123,12 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
         return getCodes()[0] + "+";
     }
 
-    public DisplayType getDisplayType() {
-        return displayType;
+    /**
+     * Gets the class name (style of an element).
+     *
+     * @return the class name
+     */
+    public String getClassName() {
+        return className;
     }
-
 }
