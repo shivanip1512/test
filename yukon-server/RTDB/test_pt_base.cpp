@@ -44,4 +44,39 @@ BOOST_AUTO_TEST_CASE(test_pt_base_isNumeric)
     BOOST_CHECK( ! p.isNumeric());
 }
 
+BOOST_AUTO_TEST_CASE(test_pt_base_isStatus)
+{
+    test_CtiPointBase p;
+
+    p.setType(AnalogPointType);
+    BOOST_CHECK( ! p.isStatus());
+
+    p.setType(PulseAccumulatorPointType);
+    BOOST_CHECK( ! p.isStatus());
+
+    p.setType(DemandAccumulatorPointType);
+    BOOST_CHECK( ! p.isStatus());
+
+    p.setType(CalculatedPointType);
+    BOOST_CHECK( ! p.isStatus());
+
+    p.setType(AnalogOutputPointType);
+    BOOST_CHECK( ! p.isStatus());
+
+    p.setType(SystemPointType);
+    BOOST_CHECK( p.isStatus());
+
+    p.setType(StatusOutputPointType);
+    BOOST_CHECK( p.isStatus());
+
+    p.setType(StatusPointType);
+    BOOST_CHECK( p.isStatus());
+
+    p.setType(CalculatedStatusPointType);
+    BOOST_CHECK( p.isStatus());
+
+    p.setType(InvalidPointType);
+    BOOST_CHECK( p.isStatus());
+}
+
 BOOST_AUTO_TEST_SUITE_END()
