@@ -7,7 +7,7 @@
 <c:choose>
     <c:when test="${pointId == 0}">
         <span class="errorMessage">
-            <cti:msg2 key="yukon.common.attributes.pointNotFound" arguments="${attribute.description}"/>
+            <cti:msg2 key="yukon.common.attributes.pointNotFound"/>
         </span>
     </c:when>
     <c:otherwise>

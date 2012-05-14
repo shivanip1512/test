@@ -41,6 +41,6 @@
 <entry key="yukon.common.prefixedByteValue.pebi">{0,number,#,##0.0} PB</entry>
 <entry key="yukon.common.prefixedByteValue.exbi">{0,number,#,##0.0} EB</entry>
 
-<entry key="yukon.common.attributes.pointNotFound">Point missing for {0} attribute.</entry>
+<entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 
 </properties>
