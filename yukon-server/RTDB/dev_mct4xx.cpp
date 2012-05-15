@@ -2048,157 +2048,155 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    switch( InMessage->Sequence )
     {
-        switch( InMessage->Sequence )
+        case EmetconProtocol::PutConfig_Install:
         {
-            case EmetconProtocol::PutConfig_Install:
+            if(InMessage->Buffer.DSt.Length>0)
             {
-                if(InMessage->Buffer.DSt.Length>0)
+                resultString = "Config data received: ";
+                for(int i = 0; i<InMessage->Buffer.DSt.Length;i++)
                 {
-                    resultString = "Config data received: ";
-                    for(int i = 0; i<InMessage->Buffer.DSt.Length;i++)
-                    {
-                        resultString.append( (CtiNumStr(InMessage->Buffer.DSt.Message[i]).hex().zpad(2)).toString(),0,2);
-                    }
+                    resultString.append( (CtiNumStr(InMessage->Buffer.DSt.Message[i]).hex().zpad(2)).toString(),0,2);
                 }
-                ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-                ReturnMsg->setResultString( resultString );
+            }
+            ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+            ReturnMsg->setResultString( resultString );
 
-                //note that at the moment only putconfig install will ever have a group message count.
-                decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-                if (InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0)
-                {
-                    ReturnMsg->setExpectMore(true);
-                }
-
-                retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
-
-                break;
+            //note that at the moment only putconfig install will ever have a group message count.
+            decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+            if (InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0)
+            {
+                ReturnMsg->setExpectMore(true);
             }
 
-            case EmetconProtocol::PutConfig_LoadProfileReportPeriod:
+            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList );
+
+            break;
+        }
+
+        case EmetconProtocol::PutConfig_LoadProfileReportPeriod:
+        {
+            unsigned delay = getUsageReportDelay(getLoadProfileInterval(_llpPeakInterest.channel), _llpPeakInterest.period);
+
+            if( delay > 2 && !strstr(InMessage->Return.CommandStr, " noqueue") )
             {
-                unsigned delay = getUsageReportDelay(getLoadProfileInterval(_llpPeakInterest.channel), _llpPeakInterest.period);
-
-                if( delay > 2 && !strstr(InMessage->Return.CommandStr, " noqueue") )
-                {
-                    //  take two seconds off if it's queued
-                    delay -= 2;
-                }
-
-                CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
-                                                          InMessage->Return.CommandStr,
-                                                          InMessage->Return.UserID,
-                                                          InMessage->Return.GrpMsgID,
-                                                          InMessage->Return.RouteID,
-                                                          0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
-                                                          0,
-                                                          InMessage->Return.OptionsField,
-                                                          InMessage->Priority);
-
-                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
-                newReq->setCommandString(newReq->CommandString() + " read");
-
-                //  set it to execute in the future
-                newReq->setMessageTime(CtiTime::now().seconds() + delay);
-
-                retList.push_back(newReq);
-
-                ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-                ReturnMsg->setConnectionHandle(InMessage->Return.Connection);
-                ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(delay) + " seconds for device peak report processing (until " + (CtiTime::now() + delay).asString() + ")");
-
-                retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true);
-
-                break;
+                //  take two seconds off if it's queued
+                delay -= 2;
             }
 
-            case EmetconProtocol::PutConfig_LoadProfileInterest:
-            {
-                //  was this part of a long load profile read?
-                if( InMessage->Return.OptionsField )
-                {
-                    if( InMessage->Return.OptionsField == _llpRequest.request_id )
-                    {
-                        CtiString lp_read(InMessage->Return.CommandStr);
+            CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
+                                                      InMessage->Return.CommandStr,
+                                                      InMessage->Return.UserID,
+                                                      InMessage->Return.GrpMsgID,
+                                                      InMessage->Return.RouteID,
+                                                      0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
+                                                      0,
+                                                      InMessage->Return.OptionsField,
+                                                      InMessage->Priority);
 
-                        if( lp_read.contains("putconfig emetcon") &&
-                            lp_read.contains("llp interest channel") )
+            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+            newReq->setCommandString(newReq->CommandString() + " read");
+
+            //  set it to execute in the future
+            newReq->setMessageTime(CtiTime::now().seconds() + delay);
+
+            retList.push_back(newReq);
+
+            ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+            ReturnMsg->setConnectionHandle(InMessage->Return.Connection);
+            ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(delay) + " seconds for device peak report processing (until " + (CtiTime::now() + delay).asString() + ")");
+
+            retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true);
+
+            break;
+        }
+
+        case EmetconProtocol::PutConfig_LoadProfileInterest:
+        {
+            //  was this part of a long load profile read?
+            if( InMessage->Return.OptionsField )
+            {
+                if( InMessage->Return.OptionsField == _llpRequest.request_id )
+                {
+                    CtiString lp_read(InMessage->Return.CommandStr);
+
+                    if( lp_read.contains("putconfig emetcon") &&
+                        lp_read.contains("llp interest channel") )
+                    {
+                        lp_read.replace("putconfig emetcon",    "getvalue");
+                        lp_read.replace("llp interest channel", "lp channel");
+
+                        //  now do the actual read
+                        CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
+                                                                  lp_read,
+                                                                  InMessage->Return.UserID,
+                                                                  InMessage->Return.GrpMsgID,
+                                                                  getRouteID(),  //  make sure that we start over on any macro routes
+                                                                  0,  //  this will be recalculated by PIL
+                                                                  0,
+                                                                  InMessage->Return.OptionsField,
+                                                                  InMessage->Priority);
+
+                        newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                        newReq->setCommandString(newReq->CommandString() + " read");
+
+                        if( getType() == TYPEMCT470 || isMct430(getType()) )
                         {
-                            lp_read.replace("putconfig emetcon",    "getvalue");
-                            lp_read.replace("llp interest channel", "lp channel");
+                            unsigned fixed_delay = gConfigParms.getValueAsULong("PORTER_MCT470_LLP_READ_DELAY", 45);
 
-                            //  now do the actual read
-                            CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
-                                                                      lp_read,
-                                                                      InMessage->Return.UserID,
-                                                                      InMessage->Return.GrpMsgID,
-                                                                      getRouteID(),  //  make sure that we start over on any macro routes
-                                                                      0,  //  this will be recalculated by PIL
-                                                                      0,
-                                                                      InMessage->Return.OptionsField,
-                                                                      InMessage->Priority);
-
-                            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
-                            newReq->setCommandString(newReq->CommandString() + " read");
-
-                            if( getType() == TYPEMCT470 || isMct430(getType()) )
+                            //  set it to execute in the future
+                            if( !strstr(InMessage->Return.CommandStr, " noqueue") )
                             {
-                                unsigned fixed_delay = gConfigParms.getValueAsULong("PORTER_MCT470_LLP_READ_DELAY", 45);
-
-                                //  set it to execute in the future
-                                if( !strstr(InMessage->Return.CommandStr, " noqueue") )
-                                {
-                                    //  take two seconds off if it's queued
-                                    newReq->setMessageTime(CtiTime::now().seconds() + fixed_delay - 2);
-                                }
-                                else
-                                {
-                                    newReq->setMessageTime(CtiTime::now().seconds() + fixed_delay);
-                                }
-
-                                ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-                                ReturnMsg->setConnectionHandle(InMessage->Return.Connection);
-                                ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(fixed_delay) + " seconds for IED LP scan (until " + (CtiTime::now() + fixed_delay).asString() + ")");
-
-                                retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true);
+                                //  take two seconds off if it's queued
+                                newReq->setMessageTime(CtiTime::now().seconds() + fixed_delay - 2);
+                            }
+                            else
+                            {
+                                newReq->setMessageTime(CtiTime::now().seconds() + fixed_delay);
                             }
 
-                            retList.push_back(newReq);
+                            ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+                            ReturnMsg->setConnectionHandle(InMessage->Return.Connection);
+                            ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(fixed_delay) + " seconds for IED LP scan (until " + (CtiTime::now() + fixed_delay).asString() + ")");
+
+                            retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true);
                         }
-                        else
-                        {
-                            string error_string;
 
-                            error_string += getName();
-                            error_string += " / period of interest sent, but cannot continue LLP read - command string \"";
-                            error_string += lp_read;
-                            error_string += "\" does not contain \"putconfig emetcon\" and \"lp channel\"";
+                        retList.push_back(newReq);
+                    }
+                    else
+                    {
+                        string error_string;
 
-                            ReturnMsg->setResultString(error_string);
+                        error_string += getName();
+                        error_string += " / period of interest sent, but cannot continue LLP read - command string \"";
+                        error_string += lp_read;
+                        error_string += "\" does not contain \"putconfig emetcon\" and \"lp channel\"";
 
-                            retMsgHandler(InMessage->Return.CommandStr, BADPARAM, ReturnMsg.release(), vgList, retList);
-                        }
+                        ReturnMsg->setResultString(error_string);
+
+                        retMsgHandler(InMessage->Return.CommandStr, BADPARAM, ReturnMsg.release(), vgList, retList);
                     }
                 }
-                else
-                {
-                    ReturnMsg->setResultString(getName() + " / period of interest sent");
-
-                    retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList);
-                }
-
-                break;
             }
-
-            default:
+            else
             {
-                status = Inherited::decodePutConfig(InMessage,TimeNow,vgList,retList,outList);
-                break;
+                ReturnMsg->setResultString(getName() + " / period of interest sent");
+
+                retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList);
             }
+
+            break;
+        }
+
+        default:
+        {
+            status = Inherited::decodePutConfig(InMessage,TimeNow,vgList,retList,outList);
+            break;
         }
     }
+
     return status;
 }
 
@@ -2539,65 +2537,60 @@ INT Mct4xxDevice::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, CtiMe
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiString resultString;
+    unsigned long timestamp;
+    char timezone_offset;
+
+    if( InMessage->Sequence == EmetconProtocol::GetConfig_Time )
     {
-        // No error occured, we must do a real decode!
+        timezone_offset = InMessage->Buffer.DSt.Message[0];
 
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiString resultString;
-        unsigned long timestamp;
-        char timezone_offset;
+        timestamp = InMessage->Buffer.DSt.Message[1] << 24 |
+                    InMessage->Buffer.DSt.Message[2] << 16 |
+                    InMessage->Buffer.DSt.Message[3] <<  8 |
+                    InMessage->Buffer.DSt.Message[4];
 
-        if( InMessage->Sequence == EmetconProtocol::GetConfig_Time )
+        resultString  = getName() + " / Current Time: " + printable_time(timestamp) + "\n";
+
+        resultString += getName() + " / Timezone Offset: ";
+
+        if( timezone_offset <=  48 &&
+            timezone_offset >= -48 )
         {
-            timezone_offset = InMessage->Buffer.DSt.Message[0];
-
-            timestamp = InMessage->Buffer.DSt.Message[1] << 24 |
-                        InMessage->Buffer.DSt.Message[2] << 16 |
-                        InMessage->Buffer.DSt.Message[3] <<  8 |
-                        InMessage->Buffer.DSt.Message[4];
-
-            resultString  = getName() + " / Current Time: " + printable_time(timestamp) + "\n";
-
-            resultString += getName() + " / Timezone Offset: ";
-
-            if( timezone_offset <=  48 &&
-                timezone_offset >= -48 )
-            {
-                resultString += CtiNumStr(((float)timezone_offset) / 4.0, 2) + " hours\n";
-            }
-            else if( timezone_offset == 0x7f )
-            {
-                resultString += "(uninitialized [0x7f])\n";
-            }
-            else
-            {
-                resultString += "(invalid [" + CtiNumStr(timezone_offset).xhex(2) + "])\n";
-            }
+            resultString += CtiNumStr(((float)timezone_offset) / 4.0, 2) + " hours\n";
         }
-        else if( InMessage->Sequence == EmetconProtocol::GetConfig_TSync )
+        else if( timezone_offset == 0x7f )
         {
-            timestamp = InMessage->Buffer.DSt.Message[0] << 24 |
-                        InMessage->Buffer.DSt.Message[1] << 16 |
-                        InMessage->Buffer.DSt.Message[2] <<  8 |
-                        InMessage->Buffer.DSt.Message[3];
-
-            resultString = getName() + " / Time Last Synced at: " + printable_time(timestamp);
+            resultString += "(uninitialized [0x7f])\n";
         }
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
+            resultString += "(invalid [" + CtiNumStr(timezone_offset).xhex(2) + "])\n";
         }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
+    else if( InMessage->Sequence == EmetconProtocol::GetConfig_TSync )
+    {
+        timestamp = InMessage->Buffer.DSt.Message[0] << 24 |
+                    InMessage->Buffer.DSt.Message[1] << 16 |
+                    InMessage->Buffer.DSt.Message[2] <<  8 |
+                    InMessage->Buffer.DSt.Message[3];
+
+        resultString = getName() + " / Time Last Synced at: " + printable_time(timestamp);
+    }
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -2614,158 +2607,154 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow,
     bool   expectMore = false;
 
     //  add error handling for automated load profile retrieval... !
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+
+    CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
+        return MEMORY;
+    }
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    unsigned char interest[5];
+
+    const int interval_len = getLoadProfileInterval(_llpRequest.channel);
+
+    const unsigned long interval_beginning_time = _llpInterest.time - interval_len;
+
+    interest[0] = interval_beginning_time >> 24;
+    interest[1] = interval_beginning_time >> 16;
+    interest[2] = interval_beginning_time >>  8;
+    interest[3] = interval_beginning_time;
+    interest[4] = _llpRequest.channel + 1;
+
+    if( InMessage->Return.OptionsField != _llpRequest.request_id && !_llpRequest.request_id )
+    {
+        resultString += "Load profile request cancelled\n";
+    }
+    else if( crc8(interest, 5) == DSt->Message[0] )
+    {
+        //  if we succeeded, we should be okay for successive reads...
+        _llpRequest.retry = 0;
+
+        string point_name = "LP channel ";
+        point_name += CtiNumStr(_llpRequest.channel + 1);
+
+        for( int i = 0; i < 6; i++, _llpRequest.begin += interval_len )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            long lp_interval = getLoadProfileInterval(_llpRequest.channel);
 
-            return MEMORY;
+            if( lp_interval != 0 )
+            {
+                point_info pi = getLoadProfileData(_llpRequest.channel, lp_interval, DSt->Message + (i * 2) + 1, 2);
+
+                insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + 1 + _llpRequest.channel,
+                                      ReturnMsg, pi, point_name, _llpRequest.begin, 1.0, TAG_POINT_LOAD_PROFILE_DATA);
+            }
         }
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        unsigned char interest[5];
-
-        const int interval_len = getLoadProfileInterval(_llpRequest.channel);
-
-        const unsigned long interval_beginning_time = _llpInterest.time - interval_len;
-
-        interest[0] = interval_beginning_time >> 24;
-        interest[1] = interval_beginning_time >> 16;
-        interest[2] = interval_beginning_time >>  8;
-        interest[3] = interval_beginning_time;
-        interest[4] = _llpRequest.channel + 1;
-
-        if( InMessage->Return.OptionsField != _llpRequest.request_id && !_llpRequest.request_id )
+        if( _llpRequest.begin < _llpRequest.end )
         {
-            resultString += "Load profile request cancelled\n";
-        }
-        else if( crc8(interest, 5) == DSt->Message[0] )
-        {
-            //  if we succeeded, we should be okay for successive reads...
-            _llpRequest.retry = 0;
+            CtiTime time_begin(_llpRequest.begin),
+                    time_end  (_llpRequest.end);
 
-            string point_name = "LP channel ";
-            point_name += CtiNumStr(_llpRequest.channel + 1);
+            CtiString lp_request_str = "getvalue lp ";
 
-            for( int i = 0; i < 6; i++, _llpRequest.begin += interval_len )
-            {
-                long lp_interval = getLoadProfileInterval(_llpRequest.channel);
+            lp_request_str += "channel " + CtiNumStr(_llpRequest.channel + 1) + " " + time_begin.asString() + " " + time_end.asString();
 
-                if( lp_interval != 0 )
-                {
-                    point_info pi = getLoadProfileData(_llpRequest.channel, lp_interval, DSt->Message + (i * 2) + 1, 2);
+            //  if it's a background message, it's queued
+            if(      strstr(InMessage->Return.CommandStr, " background") )   lp_request_str += " background";
+            else if( strstr(InMessage->Return.CommandStr, " noqueue") )      lp_request_str += " noqueue";
 
-                    insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + 1 + _llpRequest.channel,
-                                          ReturnMsg, pi, point_name, _llpRequest.begin, 1.0, TAG_POINT_LOAD_PROFILE_DATA);
-                }
-            }
+            expectMore = true;
+            CtiRequestMsg newReq(getID(),
+                                 lp_request_str,
+                                 InMessage->Return.UserID,
+                                 InMessage->Return.GrpMsgID,
+                                 getRouteID(),
+                                 selectInitialMacroRouteOffset(getRouteID()),  //  this bypasses PIL, so we need to calculate this
+                                 0,
+                                 InMessage->Return.OptionsField,  //  communicate our request ID back to executeGetValueLoadProfile()
+                                 InMessage->Priority);
 
-            if( _llpRequest.begin < _llpRequest.end )
-            {
-                CtiTime time_begin(_llpRequest.begin),
-                        time_end  (_llpRequest.end);
+            //  this may be NULL if it's a background request, but assign it anyway
+            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
-                CtiString lp_request_str = "getvalue lp ";
-
-                lp_request_str += "channel " + CtiNumStr(_llpRequest.channel + 1) + " " + time_begin.asString() + " " + time_end.asString();
-
-                //  if it's a background message, it's queued
-                if(      strstr(InMessage->Return.CommandStr, " background") )   lp_request_str += " background";
-                else if( strstr(InMessage->Return.CommandStr, " noqueue") )      lp_request_str += " noqueue";
-
-                expectMore = true;
-                CtiRequestMsg newReq(getID(),
-                                     lp_request_str,
-                                     InMessage->Return.UserID,
-                                     InMessage->Return.GrpMsgID,
-                                     getRouteID(),
-                                     selectInitialMacroRouteOffset(getRouteID()),  //  this bypasses PIL, so we need to calculate this
-                                     0,
-                                     InMessage->Return.OptionsField,  //  communicate our request ID back to executeGetValueLoadProfile()
-                                     InMessage->Priority);
-
-                //  this may be NULL if it's a background request, but assign it anyway
-                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-                beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
-            }
-            else
-            {
-                resultString += "Load profile request complete\n";
-
-                //  reset, we're not executing any more
-                if( InMessage->Return.OptionsField == InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage->Return.OptionsField) )
-                {
-                    purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin);
-                    purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd);
-                }
-            }
+            beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
         }
         else
         {
-            resultString = "Load Profile Interest check does not match";
+            resultString += "Load profile request complete\n";
 
-            if( _llpRequest.retry < LPRetries )
+            //  reset, we're not executing any more
+            if( InMessage->Return.OptionsField == InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage->Return.OptionsField) )
             {
+                purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin);
+                purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd);
+            }
+        }
+    }
+    else
+    {
+        resultString = "Load Profile Interest check does not match";
+
+        if( _llpRequest.retry < LPRetries )
+        {
+            _llpInterest.time = 0;
+            _llpRequest.retry++;
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time, _llpInterest.time);
+
+            resultString += ", retrying";
+
+            // new command string must remove "read" or else it is not considered a retry.
+            CtiString newCommandStr = InMessage->Return.CommandStr;
+            newCommandStr.replace(" read","");
+
+            expectMore = true;
+            CtiRequestMsg newReq(getID(),
+                                 newCommandStr,
+                                 InMessage->Return.UserID,
+                                 InMessage->Return.GrpMsgID,
+                                 getRouteID(),
+                                 selectInitialMacroRouteOffset(getRouteID()),  //  this bypasses PIL, so we need to calculate this
+                                 0,
+                                 InMessage->Return.OptionsField,  //  communicate our request ID back to executeGetValueLoadProfile()
+                                 InMessage->Priority);
+
+            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+
+            beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+        }
+        else
+        {
+            resultString += " - try message again";
+
+            //  reset, we're not executing any more
+            if( InMessage->Return.OptionsField == InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage->Return.OptionsField) )
+            {
+                //  reset our internal time of interest - it didn't match, so we'll have to send it again
                 _llpInterest.time = 0;
-                _llpRequest.retry++;
+                _llpRequest.retry = 0;
 
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time, _llpInterest.time);
-
-                resultString += ", retrying";
-
-                // new command string must remove "read" or else it is not considered a retry.
-                CtiString newCommandStr = InMessage->Return.CommandStr;
-                newCommandStr.replace(" read","");
-
-                expectMore = true;
-                CtiRequestMsg newReq(getID(),
-                                     newCommandStr,
-                                     InMessage->Return.UserID,
-                                     InMessage->Return.GrpMsgID,
-                                     getRouteID(),
-                                     selectInitialMacroRouteOffset(getRouteID()),  //  this bypasses PIL, so we need to calculate this
-                                     0,
-                                     InMessage->Return.OptionsField,  //  communicate our request ID back to executeGetValueLoadProfile()
-                                     InMessage->Priority);
-
-                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-                beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
-            }
-            else
-            {
-                resultString += " - try message again";
-
-                //  reset, we're not executing any more
-                if( InMessage->Return.OptionsField == InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage->Return.OptionsField) )
-                {
-                    //  reset our internal time of interest - it didn't match, so we'll have to send it again
-                    _llpInterest.time = 0;
-                    _llpRequest.retry = 0;
-
-                    setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time, _llpInterest.time);
-                }
             }
         }
-
-        //  this is gross
-        if( !ReturnMsg->ResultString().empty() )
-        {
-            resultString = ReturnMsg->ResultString() + "\n" + resultString;
-        }
-
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
     }
+
+    //  this is gross
+    if( !ReturnMsg->ResultString().empty() )
+    {
+        resultString = ReturnMsg->ResultString() + "\n" + resultString;
+    }
+
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
 
     return status;
 }
@@ -2780,175 +2769,170 @@ INT Mct4xxDevice::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, CtiMes
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
+    unsigned long timestamp;
+    CtiTime tmpTime;
+
+    int schedulenum = parse.getiValue("tou_schedule");
+
+    if( schedulenum > 0 && schedulenum <= 4 )
     {
-        // No error occured, we must do a real decode!
+        long timeArray[2][5];
+        long rateArray[2][6];
+        schedulenum -= (schedulenum - 1) % 2;
 
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        string resultString;
-        unsigned long timestamp;
-        CtiTime tmpTime;
-
-        int schedulenum = parse.getiValue("tou_schedule");
-
-        if( schedulenum > 0 && schedulenum <= 4 )
+        for( int offset = 0; offset < 2; offset++ )
         {
-            long timeArray[2][5];
-            long rateArray[2][6];
-            schedulenum -= (schedulenum - 1) % 2;
+            int rates, current_rate, previous_rate, byte_offset, time_offset;
 
-            for( int offset = 0; offset < 2; offset++ )
+            resultString += getName() + " / TOU Schedule " + CtiNumStr(schedulenum + offset) + ":\n";
+
+            if( offset == 0 )
             {
-                int rates, current_rate, previous_rate, byte_offset, time_offset;
-
-                resultString += getName() + " / TOU Schedule " + CtiNumStr(schedulenum + offset) + ":\n";
-
-                if( offset == 0 )
-                {
-                    rates = ((InMessage->Buffer.DSt.Message[5] & 0x0f) << 8) | InMessage->Buffer.DSt.Message[6];
-                    byte_offset = 0;
-                }
-                else
-                {
-                    rates = ((InMessage->Buffer.DSt.Message[5] & 0xf0) << 4) | InMessage->Buffer.DSt.Message[12];
-                    byte_offset = 7;
-                }
-
-                rateArray[offset][0] = (rates >> 2) & 0x03;
-                rateArray[offset][1] = (rates >> 4) & 0x03;
-                rateArray[offset][2] = (rates >> 6) & 0x03;
-                rateArray[offset][3] = (rates >> 8) & 0x03;
-                rateArray[offset][4] = (rates >> 10) & 0x03;
-                rateArray[offset][5] = (rates) & 0x03;
-
-                current_rate = rates & 0x03;
-                resultString += "00:00: ";
-                resultString += (char)('A' + current_rate);
-                resultString += "\n";
-                rates >>= 2;
-
-                time_offset = 0;
-                previous_rate = current_rate;
-                for( int switchtime = 0; switchtime < 5; switchtime++ )
-                {
-                    int hour, minute;
-
-                    time_offset += InMessage->Buffer.DSt.Message[byte_offset + switchtime] * 300;
-                    timeArray[offset][switchtime] = InMessage->Buffer.DSt.Message[byte_offset + switchtime];
-
-                    hour   = time_offset / 3600;
-                    minute = (time_offset / 60) % 60;
-
-                    current_rate = rates & 0x03;
-
-                    if( (hour <= 23) && (current_rate != previous_rate) )
-                    {
-                        resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2) + ": " + (char)('A' + current_rate) + "\n";
-                    }
-
-                    previous_rate = current_rate;
-
-                    rates >>= 2;
-                }
-
-                resultString += "- end of day - \n\n";
-            }
-
-            string dayScheduleA, dayScheduleB;
-            createTOUDayScheduleString(dayScheduleA, timeArray[0], rateArray[0]);
-            createTOUDayScheduleString(dayScheduleB, timeArray[1], rateArray[1]);
-
-            if( schedulenum < 2 )
-            {
-                CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dayScheduleA);
-                CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dayScheduleB);
+                rates = ((InMessage->Buffer.DSt.Message[5] & 0x0f) << 8) | InMessage->Buffer.DSt.Message[6];
+                byte_offset = 0;
             }
             else
             {
-                CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dayScheduleA);
-                CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dayScheduleB);
+                rates = ((InMessage->Buffer.DSt.Message[5] & 0xf0) << 4) | InMessage->Buffer.DSt.Message[12];
+                byte_offset = 7;
             }
 
+            rateArray[offset][0] = (rates >> 2) & 0x03;
+            rateArray[offset][1] = (rates >> 4) & 0x03;
+            rateArray[offset][2] = (rates >> 6) & 0x03;
+            rateArray[offset][3] = (rates >> 8) & 0x03;
+            rateArray[offset][4] = (rates >> 10) & 0x03;
+            rateArray[offset][5] = (rates) & 0x03;
+
+            current_rate = rates & 0x03;
+            resultString += "00:00: ";
+            resultString += (char)('A' + current_rate);
+            resultString += "\n";
+            rates >>= 2;
+
+            time_offset = 0;
+            previous_rate = current_rate;
+            for( int switchtime = 0; switchtime < 5; switchtime++ )
+            {
+                int hour, minute;
+
+                time_offset += InMessage->Buffer.DSt.Message[byte_offset + switchtime] * 300;
+                timeArray[offset][switchtime] = InMessage->Buffer.DSt.Message[byte_offset + switchtime];
+
+                hour   = time_offset / 3600;
+                minute = (time_offset / 60) % 60;
+
+                current_rate = rates & 0x03;
+
+                if( (hour <= 23) && (current_rate != previous_rate) )
+                {
+                    resultString += CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2) + ": " + (char)('A' + current_rate) + "\n";
+                }
+
+                previous_rate = current_rate;
+
+                rates >>= 2;
+            }
+
+            resultString += "- end of day - \n\n";
+        }
+
+        string dayScheduleA, dayScheduleB;
+        createTOUDayScheduleString(dayScheduleA, timeArray[0], rateArray[0]);
+        createTOUDayScheduleString(dayScheduleB, timeArray[1], rateArray[1]);
+
+        if( schedulenum < 2 )
+        {
+            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule1, dayScheduleA);
+            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule2, dayScheduleB);
         }
         else
         {
-            resultString = getName() + " / TOU Status:\n\n";
-
-            timestamp = InMessage->Buffer.DSt.Message[6] << 24 |
-                        InMessage->Buffer.DSt.Message[7] << 16 |
-                        InMessage->Buffer.DSt.Message[8] <<  8 |
-                        InMessage->Buffer.DSt.Message[9];
-
-            resultString += "Current time: " + CtiTime(timestamp).asString() + "\n";
-
-            int tz_offset = (char)InMessage->Buffer.DSt.Message[10] * 15;
-
-            resultString += "Time zone offset: " + CtiNumStr((float)tz_offset / 60.0, 1) + " hours ( " + CtiNumStr(tz_offset) + " minutes)\n";
-
-            if( InMessage->Buffer.DSt.Message[3] & 0x80 )
-            {
-                resultString += "Critical peak active\n";
-            }
-            if( InMessage->Buffer.DSt.Message[4] & 0x80 )
-            {
-                resultString += "Holiday active\n";
-            }
-            if( InMessage->Buffer.DSt.Message[4] & 0x40 )
-            {
-                resultString += "DST active\n";
-            }
-
-            resultString += "Current rate: " + string(1, (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f))) + "\n";
-
-            resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
-/*
-            resultString += "Current switch time: ";
-
-            if( InMessage->Buffer.DSt.Message[5] == 0xff )
-            {
-                resultString += "not active\n";
-            }
-            else
-            {
-                 resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
-            }
-*/
-            resultString += "Default rate: ";
-
-            if( InMessage->Buffer.DSt.Message[2] == 0xff )
-            {
-                resultString += "No TOU active\n";
-            }
-            else
-            {
-                resultString += string(1, (char)('A' + InMessage->Buffer.DSt.Message[2])) + "\n";
-            }
-
-            resultString += "\nDay table: \n";
-
-            char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
-
-            for( int i = 0; i < 8; i++ )
-            {
-                int dayschedule = InMessage->Buffer.DSt.Message[1 - i/4] >> ((i % 4) * 2) & 0x03;
-
-                resultString += "Schedule " + CtiNumStr(dayschedule + 1) + " - " + daynames[i] + "\n";
-            }
+            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule3, dayScheduleA);
+            CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DaySchedule4, dayScheduleB);
         }
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
+    else
+    {
+        resultString = getName() + " / TOU Status:\n\n";
+
+        timestamp = InMessage->Buffer.DSt.Message[6] << 24 |
+                    InMessage->Buffer.DSt.Message[7] << 16 |
+                    InMessage->Buffer.DSt.Message[8] <<  8 |
+                    InMessage->Buffer.DSt.Message[9];
+
+        resultString += "Current time: " + CtiTime(timestamp).asString() + "\n";
+
+        int tz_offset = (char)InMessage->Buffer.DSt.Message[10] * 15;
+
+        resultString += "Time zone offset: " + CtiNumStr((float)tz_offset / 60.0, 1) + " hours ( " + CtiNumStr(tz_offset) + " minutes)\n";
+
+        if( InMessage->Buffer.DSt.Message[3] & 0x80 )
+        {
+            resultString += "Critical peak active\n";
+        }
+        if( InMessage->Buffer.DSt.Message[4] & 0x80 )
+        {
+            resultString += "Holiday active\n";
+        }
+        if( InMessage->Buffer.DSt.Message[4] & 0x40 )
+        {
+            resultString += "DST active\n";
+        }
+
+        resultString += "Current rate: " + string(1, (char)('A' + (InMessage->Buffer.DSt.Message[3] & 0x7f))) + "\n";
+
+        resultString += "Current schedule: " + CtiNumStr((int)(InMessage->Buffer.DSt.Message[4] & 0x03) + 1) + "\n";
+/*
+        resultString += "Current switch time: ";
+
+        if( InMessage->Buffer.DSt.Message[5] == 0xff )
+        {
+            resultString += "not active\n";
+        }
+        else
+        {
+             resultString += CtiNumStr((int)InMessage->Buffer.DSt.Message[5]) + "\n";
+        }
+*/
+        resultString += "Default rate: ";
+
+        if( InMessage->Buffer.DSt.Message[2] == 0xff )
+        {
+            resultString += "No TOU active\n";
+        }
+        else
+        {
+            resultString += string(1, (char)('A' + InMessage->Buffer.DSt.Message[2])) + "\n";
+        }
+
+        resultString += "\nDay table: \n";
+
+        char *(daynames[8]) = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Holiday"};
+
+        for( int i = 0; i < 8; i++ )
+        {
+            int dayschedule = InMessage->Buffer.DSt.Message[1 - i/4] >> ((i % 4) * 2) & 0x03;
+
+            resultString += "Schedule " + CtiNumStr(dayschedule + 1) + " - " + daynames[i] + "\n";
+        }
+    }
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -2986,106 +2970,101 @@ INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, Cti
         dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ret_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ret_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        return MEMORY;
+    }
 
-            return MEMORY;
-        }
+    ret_msg->setUserMessageId(InMessage->Return.UserID);
 
-        ret_msg->setUserMessageId(InMessage->Return.UserID);
+    if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
+        (block   = parse.getiValue("scan_loadprofile_block",   0)) )
+    {
+        //  parse is 1-based, we need it 0-based
+        channel--;
 
-        if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
-            (block   = parse.getiValue("scan_loadprofile_block",   0)) )
-        {
-            //  parse is 1-based, we need it 0-based
-            channel--;
+        interval_len = getLoadProfileInterval(channel);
 
-            interval_len = getLoadProfileInterval(channel);
+        //  this is where the block started...
+        timestamp  = TimeNow.seconds();
+        timestamp -= interval_len * 6 * block;
+        timestamp -= timestamp % (interval_len * 6);
 
-            //  this is where the block started...
-            timestamp  = TimeNow.seconds();
-            timestamp -= interval_len * 6 * block;
-            timestamp -= timestamp % (interval_len * 6);
-
-            //  make sure we're getting the same block we're expecting
-            if( ! isProfileTablePointerCurrent(DSt->Message[0], TimeNow, interval_len) )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - LP error for device \"" << getName() << "\"; ";
-                    dout << "Table Pointer = " << (unsigned)DSt->Message[0] << ", ";
-                    dout << "TimeNow = " << TimeNow;
-                    dout << "interval_len = " << interval_len;
-                    dout << " in " __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "commandstr = " << InMessage->Return.CommandStr << endl;
-                }
-
-                status = ErrorInvalidTimestamp;
-            }
-            else if( timestamp != _lp_info[channel].collection_point )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint -  LP error for device \"" << getName() << "\"; ";
-                    dout << "calculated timestamp = " << CtiTime(timestamp) << "; ";
-                    dout << "collection_point = " << CtiTime(_lp_info[channel].collection_point) << endl;
-                    dout << "commandstr = " << InMessage->Return.CommandStr << endl;
-                }
-
-                status = ErrorInvalidTimestamp;
-            }
-            else
-            {
-                if( !getDevicePointOffsetTypeEqual(PointOffset_LoadProfileOffset + channel + 1, DemandAccumulatorPointType) )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - no load profile point defined for \"" << getName() << "\" in Mct4xxDevice::decodeScanLoadProfile() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
-                }
-                else
-                {
-                    for( int offset = 5; offset >= 0; offset-- )
-                    {
-                        long lp_interval = getLoadProfileInterval(channel);
-
-                        if( lp_interval != 0 )
-                        {
-                            // getLoadProfileInterval would have squawked if it were zero, no need to log here.
-                            pi = getLoadProfileData(channel, lp_interval, DSt->Message + offset*2 + 1, 2);
-
-                            insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + channel + 1,
-                                                  ret_msg, pi, "", timestamp + interval_len * (6 - offset), 1.0, TAG_POINT_LOAD_PROFILE_DATA);
-                        }
-                    }
-                }
-
-                //  unnecessary?
-                setLastLPTime (timestamp + interval_len * 6);
-
-                _lp_info[channel].collection_point = timestamp + interval_len * 6;
-            }
-        }
-        else
+        //  make sure we're getting the same block we're expecting
+        if( ! isProfileTablePointerCurrent(DSt->Message[0], TimeNow, interval_len) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - missing scan_loadprofile token in decodeScanLoadProfile for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - LP error for device \"" << getName() << "\"; ";
+                dout << "Table Pointer = " << (unsigned)DSt->Message[0] << ", ";
+                dout << "TimeNow = " << TimeNow;
+                dout << "interval_len = " << interval_len;
+                dout << " in " __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "commandstr = " << InMessage->Return.CommandStr << endl;
             }
 
-            ret_msg->setResultString("Malformed LP command string for '" + getName() + "'");
+            status = ErrorInvalidTimestamp;
+        }
+        else if( timestamp != _lp_info[channel].collection_point )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint -  LP error for device \"" << getName() << "\"; ";
+                dout << "calculated timestamp = " << CtiTime(timestamp) << "; ";
+                dout << "collection_point = " << CtiTime(_lp_info[channel].collection_point) << endl;
+                dout << "commandstr = " << InMessage->Return.CommandStr << endl;
+            }
+
+            status = ErrorInvalidTimestamp;
+        }
+        else
+        {
+            if( !getDevicePointOffsetTypeEqual(PointOffset_LoadProfileOffset + channel + 1, DemandAccumulatorPointType) )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - no load profile point defined for \"" << getName() << "\" in Mct4xxDevice::decodeScanLoadProfile() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
+            }
+            else
+            {
+                for( int offset = 5; offset >= 0; offset-- )
+                {
+                    long lp_interval = getLoadProfileInterval(channel);
+
+                    if( lp_interval != 0 )
+                    {
+                        // getLoadProfileInterval would have squawked if it were zero, no need to log here.
+                        pi = getLoadProfileData(channel, lp_interval, DSt->Message + offset*2 + 1, 2);
+
+                        insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + channel + 1,
+                                              ret_msg, pi, "", timestamp + interval_len * (6 - offset), 1.0, TAG_POINT_LOAD_PROFILE_DATA);
+                    }
+                }
+            }
+
+            //  unnecessary?
+            setLastLPTime (timestamp + interval_len * 6);
+
+            _lp_info[channel].collection_point = timestamp + interval_len * 6;
+        }
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - missing scan_loadprofile token in decodeScanLoadProfile for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ret_msg, vgList, retList );
+        ret_msg->setResultString("Malformed LP command string for '" + getName() + "'");
     }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ret_msg, vgList, retList );
 
     return status;
 }
@@ -3167,193 +3146,188 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
     else if( parse.getiValue("channel") == 3 )       key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenDemand3PeakTimestamp;
     else                                             key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenDemandPeakTimestamp;
 
-    if( !(status = decodeCheckErrorReturn(InMessage, retList, outList)) )
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        const unsigned char *freeze_counter = 0;
-
-        if( parse.getFlags() & CMD_FLAG_FROZEN )
-        {
-            freeze_counter = DSt->Message + 9;
-        }
-
-        if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
-        {
-            //  TOU memory layout
-            pi_kwh         = getAccumulatorData(DSt->Message, 3, freeze_counter);
-
-            pi_kw          = getDemandData(DSt->Message + 3, 2, freeze_counter);
-            pi_kw_time     = getData(DSt->Message + 5, 4, ValueType_Raw);
-        }
-        else
-        {
-            //  normal peak memory layout
-            pi_kw          = getDemandData(DSt->Message, 2, freeze_counter);
-            pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
-
-            pi_kwh         = getAccumulatorData(DSt->Message + 6, 3, freeze_counter);
-        }
-
-        //  turn raw pulses into a demand reading - TOU reads use LP interval
-        if( InMessage->Sequence == EmetconProtocol::GetValue_TOUPeak )
-        {
-            pi_kw.value *= double(3600 / getLoadProfileInterval(channel));
-        }
-        else
-        {
-            pi_kw.value *= double(3600 / getDemandInterval());
-        }
-
-        kw_time      = CtiTime(pi_kw_time.value);
-
-        if( freeze_counter )
-        {
-            string freeze_error;
-
-            //  this check is mainly for the frozen kWh reading
-            if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
-            {
-                result_string += freeze_error + "\n";
-
-                pi_kwh.quality = InvalidQuality;
-                pi_kwh.value = 0;
-
-                switch( status )
-                {
-                    case ErrorFreezeNotRecorded:    pi_kwh.description = "Last freeze not stored";  break;
-                    case ErrorInvalidFreezeCounter: pi_kwh.description = "Invalid freeze counter";  break;
-                }
-            }
-            else if( pi_kwh.freeze_bit != getExpectedFreezeParity() )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi_kwh.freeze_bit <<
-                                        ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
-                                        ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                result_string += "Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(getExpectedFreezeParity()).toString() + "), last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString() + "\n";
-                status = ErrorInvalidFrozenReadingParity;
-
-                pi_kwh.description = "Invalid freeze parity";
-                pi_kwh.quality = InvalidQuality;
-                pi_kwh.value = 0;
-            }
-            else
-            {
-                kwh_time  = getLastFreezeTimestamp(TimeNow);
-                kwh_time -= kwh_time.seconds() % 60;
-            }
-
-            if( kw_time.is_special() )
-            {
-                pi_kw.description = "Invalid peak timestamp";
-                pi_kw.quality = InvalidQuality;
-                pi_kw.value = 0;
-            }
-            else if( hasDynamicInfo(key_peak_timestamp) && getDynamicInfo(key_peak_timestamp) > kw_time.seconds() )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << CtiTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                //  defer to the kWh errors
-                if( !status )
-                {
-                    status = ErrorInvalidFrozenPeakTimestamp;
-                }
-
-                result_string += "New peak is before old peak (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(key_peak_timestamp)).asString() + ")\n";
-
-                pi_kw.description = "Invalid peak timestamp";
-                pi_kw.quality = InvalidQuality;
-                pi_kw.value = 0;
-            }
-            else if( getLastFreezeTimestamp(TimeNow) < kw_time.seconds() )
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is after KW freeze time \"" << getLastFreezeTimestamp(TimeNow) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                //  defer to the kWh errors
-                if( !status )
-                {
-                    status = ErrorInvalidFrozenPeakTimestamp;
-                }
-
-                result_string += "Peak timestamp after freeze  (" + kw_time.asString() + ") > (" + getLastFreezeTimestamp(TimeNow).asString() + ")\n";
-
-                pi_kw.description = "Invalid peak timestamp";
-                pi_kw.quality = InvalidQuality;
-                pi_kw.value = 0;
-            }
-            else
-            {
-                setDynamicInfo(key_peak_timestamp, (unsigned long) kw_time.seconds());
-            }
-        }
-        else
-        {
-            //  just a normal peak read, no freeze-related work needed
-
-            kwh_time  = CtiTime::now();
-        }
-
-        string peak_demand_str   = "Peak Demand",
-               meter_reading_str = "Meter Reading",
-               rate_str;
-
-        if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate_str = " rate A";
-        else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate_str = " rate B";
-        else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate_str = " rate C";
-        else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate_str = " rate D";
-
-        if( !rate_str.empty() )
-        {
-            peak_demand_str   += rate_str;
-            meter_reading_str += rate_str;
-        }
-
-        if( parse.getiValue("channel") > 1 )
-        {
-            string channel_str = "Channel " + CtiNumStr(parse.getiValue("channel")) + " ";
-
-            peak_demand_str   = channel_str + peak_demand_str;
-            meter_reading_str = channel_str + meter_reading_str;
-        }
-
-        //  If it's not a TOU read OR the MCT supports TOU peaks, include the peak data
-        if( !(parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) || isSupported(Feature_TouPeaks) )
-        {
-            insertPointDataReport(DemandAccumulatorPointType, pointoffset + PointOffset_PeakOffset,
-                                  ReturnMsg, pi_kw, peak_demand_str, kw_time);
-        }
-
-        insertPointDataReport(PulseAccumulatorPointType, pointoffset,
-                              ReturnMsg, pi_kwh, meter_reading_str, kwh_time, 0.1);
-
-        if( !result_string.empty() )
-        {
-            //  we want any error messages to follow at the end
-            ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + result_string);
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    const unsigned char *freeze_counter = 0;
+
+    if( parse.getFlags() & CMD_FLAG_FROZEN )
+    {
+        freeze_counter = DSt->Message + 9;
+    }
+
+    if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
+    {
+        //  TOU memory layout
+        pi_kwh         = getAccumulatorData(DSt->Message, 3, freeze_counter);
+
+        pi_kw          = getDemandData(DSt->Message + 3, 2, freeze_counter);
+        pi_kw_time     = getData(DSt->Message + 5, 4, ValueType_Raw);
+    }
+    else
+    {
+        //  normal peak memory layout
+        pi_kw          = getDemandData(DSt->Message, 2, freeze_counter);
+        pi_kw_time     = getData(DSt->Message + 2, 4, ValueType_Raw);
+
+        pi_kwh         = getAccumulatorData(DSt->Message + 6, 3, freeze_counter);
+    }
+
+    //  turn raw pulses into a demand reading - TOU reads use LP interval
+    if( InMessage->Sequence == EmetconProtocol::GetValue_TOUPeak )
+    {
+        pi_kw.value *= double(3600 / getLoadProfileInterval(channel));
+    }
+    else
+    {
+        pi_kw.value *= double(3600 / getDemandInterval());
+    }
+
+    kw_time      = CtiTime(pi_kw_time.value);
+
+    if( freeze_counter )
+    {
+        string freeze_error;
+
+        //  this check is mainly for the frozen kWh reading
+        if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
+        {
+            result_string += freeze_error + "\n";
+
+            pi_kwh.quality = InvalidQuality;
+            pi_kwh.value = 0;
+
+            switch( status )
+            {
+                case ErrorFreezeNotRecorded:    pi_kwh.description = "Last freeze not stored";  break;
+                case ErrorInvalidFreezeCounter: pi_kwh.description = "Invalid freeze counter";  break;
+            }
+        }
+        else if( pi_kwh.freeze_bit != getExpectedFreezeParity() )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi_kwh.freeze_bit <<
+                                    ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
+                                    ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            result_string += "Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(getExpectedFreezeParity()).toString() + "), last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString() + "\n";
+            status = ErrorInvalidFrozenReadingParity;
+
+            pi_kwh.description = "Invalid freeze parity";
+            pi_kwh.quality = InvalidQuality;
+            pi_kwh.value = 0;
+        }
+        else
+        {
+            kwh_time  = getLastFreezeTimestamp(TimeNow);
+            kwh_time -= kwh_time.seconds() % 60;
+        }
+
+        if( kw_time.is_special() )
+        {
+            pi_kw.description = "Invalid peak timestamp";
+            pi_kw.quality = InvalidQuality;
+            pi_kw.value = 0;
+        }
+        else if( hasDynamicInfo(key_peak_timestamp) && getDynamicInfo(key_peak_timestamp) > kw_time.seconds() )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << CtiTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            //  defer to the kWh errors
+            if( !status )
+            {
+                status = ErrorInvalidFrozenPeakTimestamp;
+            }
+
+            result_string += "New peak is before old peak (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(key_peak_timestamp)).asString() + ")\n";
+
+            pi_kw.description = "Invalid peak timestamp";
+            pi_kw.quality = InvalidQuality;
+            pi_kw.value = 0;
+        }
+        else if( getLastFreezeTimestamp(TimeNow) < kw_time.seconds() )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is after KW freeze time \"" << getLastFreezeTimestamp(TimeNow) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            //  defer to the kWh errors
+            if( !status )
+            {
+                status = ErrorInvalidFrozenPeakTimestamp;
+            }
+
+            result_string += "Peak timestamp after freeze  (" + kw_time.asString() + ") > (" + getLastFreezeTimestamp(TimeNow).asString() + ")\n";
+
+            pi_kw.description = "Invalid peak timestamp";
+            pi_kw.quality = InvalidQuality;
+            pi_kw.value = 0;
+        }
+        else
+        {
+            setDynamicInfo(key_peak_timestamp, (unsigned long) kw_time.seconds());
+        }
+    }
+    else
+    {
+        //  just a normal peak read, no freeze-related work needed
+
+        kwh_time  = CtiTime::now();
+    }
+
+    string peak_demand_str   = "Peak Demand",
+           meter_reading_str = "Meter Reading",
+           rate_str;
+
+    if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate_str = " rate A";
+    else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate_str = " rate B";
+    else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate_str = " rate C";
+    else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate_str = " rate D";
+
+    if( !rate_str.empty() )
+    {
+        peak_demand_str   += rate_str;
+        meter_reading_str += rate_str;
+    }
+
+    if( parse.getiValue("channel") > 1 )
+    {
+        string channel_str = "Channel " + CtiNumStr(parse.getiValue("channel")) + " ";
+
+        peak_demand_str   = channel_str + peak_demand_str;
+        meter_reading_str = channel_str + meter_reading_str;
+    }
+
+    //  If it's not a TOU read OR the MCT supports TOU peaks, include the peak data
+    if( !(parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) || isSupported(Feature_TouPeaks) )
+    {
+        insertPointDataReport(DemandAccumulatorPointType, pointoffset + PointOffset_PeakOffset,
+                              ReturnMsg, pi_kw, peak_demand_str, kw_time);
+    }
+
+    insertPointDataReport(PulseAccumulatorPointType, pointoffset,
+                          ReturnMsg, pi_kwh, meter_reading_str, kwh_time, 0.1);
+
+    if( !result_string.empty() )
+    {
+        //  we want any error messages to follow at the end
+        ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + result_string);
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

@@ -2718,24 +2718,20 @@ INT MctDevice::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        resultString = getName( ) + " / successful ping";
-        ReturnMsg->setResultString( resultString );
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    resultString = getName( ) + " / successful ping";
+    ReturnMsg->setResultString( resultString );
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -2754,59 +2750,53 @@ INT MctDevice::decodeGetValue(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
     double Value;
     string resultStr;
 
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    switch( InMessage->Sequence )
+    {
+        case EmetconProtocol::GetValue_PFCount:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            int pfCount, i;
 
-            return MEMORY;
-        }
+            pfCount = 0;
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        switch( InMessage->Sequence )
-        {
-            case EmetconProtocol::GetValue_PFCount:
+            for(i = 0; i < 2; i++)
             {
-                int pfCount, i;
+                pfCount = (pfCount << 8) + DSt.Message[i];
+            }
 
-                pfCount = 0;
+            if( (pPoint = getDevicePointOffsetTypeEqual( PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType )) )
+            {
+                Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pfCount);
 
-                for(i = 0; i < 2; i++)
+                string pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+                                                                                         boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
+
+                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), (double)Value, NormalQuality, PulseAccumulatorPointType, pointString);
+                if(pData != NULL)
                 {
-                    pfCount = (pfCount << 8) + DSt.Message[i];
-                }
-
-                if( (pPoint = getDevicePointOffsetTypeEqual( PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType )) )
-                {
-                    Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pfCount);
-
-                    string pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                             boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-
-                    pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), (double)Value, NormalQuality, PulseAccumulatorPointType, pointString);
-                    if(pData != NULL)
-                    {
-                        ReturnMsg->PointData().push_back(pData);
-                        pData = NULL;  // We just put it on the list...
-                    }
-                }
-                else
-                {
-                    resultStr = getName() + " / Blink Counter = " + CtiNumStr(pfCount);
-
-                    ReturnMsg->setResultString( resultStr );
+                    ReturnMsg->PointData().push_back(pData);
+                    pData = NULL;  // We just put it on the list...
                 }
             }
-        }
+            else
+            {
+                resultStr = getName() + " / Blink Counter = " + CtiNumStr(pfCount);
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+                ReturnMsg->setResultString( resultStr );
+            }
+        }
     }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -2826,240 +2816,234 @@ INT MctDevice::decodeGetConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
 
     string resultStr;
 
+    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        switch( InMessage->Sequence )
-        {
-            //  needs to be moved to the 4xx base class when the inheritance gets reworked
-            case EmetconProtocol::GetConfig_Holiday:
-            {
-                unsigned long timestamp;
-                CtiTime holiday;
-                string result;
-
-                result  = getName() + " / Holiday schedule:\n";
-
-                timestamp = DSt.Message[0] << 24 |
-                            DSt.Message[1] << 16 |
-                            DSt.Message[2] << 8  |
-                            DSt.Message[3];
-
-                holiday = CtiTime(timestamp);
-                result += "Holiday 1: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
-
-                timestamp = DSt.Message[4] << 24 |
-                            DSt.Message[5] << 16 |
-                            DSt.Message[6] << 8  |
-                            DSt.Message[7];
-
-                holiday = CtiTime(timestamp);
-                result += "Holiday 2: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
-
-                timestamp = DSt.Message[8]  << 24 |
-                            DSt.Message[9]  << 16 |
-                            DSt.Message[10] << 8  |
-                            DSt.Message[11];
-
-                holiday = CtiTime(timestamp);
-                result += "Holiday 3: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
-
-                ReturnMsg->setResultString( result );
-
-                break;
-            }
-            case EmetconProtocol::GetConfig_GroupAddress:
-            {
-                long gold, silver, bronze, lead_load, lead_meter;
-
-                bronze     = DSt.Message[0];
-                lead_load  = ((DSt.Message[3] & 0xf0) << 4) | DSt.Message[1];
-                lead_meter = ((DSt.Message[3] & 0x0f) << 8) | DSt.Message[2];
-                gold       = (DSt.Message[4] & 0xc0) >> 6;
-                silver     = (DSt.Message[4] & 0x3f);
-
-                resultStr  = getName() + " / Group Addresses:\n";
-                resultStr += "Gold:       " + CtiNumStr(gold + 1).spad(5) + string("\n");
-                resultStr += "Silver:     " + CtiNumStr(silver + 1).spad(5) + string("\n");
-                resultStr += "Bronze:     " + CtiNumStr(bronze + 1).spad(5) + string("\n");
-                resultStr += "Lead Meter: " + CtiNumStr(lead_meter + 1).spad(5) + string("\n");
-                resultStr += "Lead Load:  " + CtiNumStr(lead_load + 1).spad(5) + string("\n");
-
-                ReturnMsg->setResultString( resultStr );
-
-                break;
-            }
-
-            case EmetconProtocol::GetConfig_DemandInterval:
-            {
-                //  see MCT22X ResultDecode for an additional MCT22X step
-
-                sec = DSt.Message[0] * 15;
-
-                min = sec / 60;
-                sec = sec % 60;
-
-                resultStr = getName() + " / Demand Interval: " + CtiNumStr( min ) + " min";
-                if( sec )
-                    resultStr += ", " + CtiNumStr( sec ) + string(" sec");
-
-                ReturnMsg->setResultString( resultStr );
-
-                break;
-            }
-
-            case EmetconProtocol::GetConfig_LoadProfileInterval:
-            {
-                min = DSt.Message[0] * 5;
-
-                resultStr = getName() + " / Load Profile Interval: " + CtiNumStr( min ) + " min";
-
-                ReturnMsg->setResultString( resultStr );
-
-                break;
-            }
-
-            case EmetconProtocol::GetConfig_Multiplier:
-            case EmetconProtocol::GetConfig_Multiplier2:
-            case EmetconProtocol::GetConfig_Multiplier3:
-            case EmetconProtocol::GetConfig_Multiplier4:
-            {
-                resultStr  = getName() + " / ";
-
-                if( parse.isKeyValid("multchannel") )
-                {
-                    channel = parse.getiValue("multchannel");
-                    resultStr += "channel " + CtiNumStr( channel );
-                }
-
-
-                if( isDebugLudicrous() )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "message[0] = " << (int)DSt.Message[0] << endl;
-                    dout << "message[1] = " << (int)DSt.Message[1] << endl;
-                }
-
-                multnum   = (int)DSt.Message[0];
-                multnum <<= 8;
-                multnum  |= (int)DSt.Message[1];
-
-                if( multnum == 1000 )
-                {
-                    resultStr += " multiplier: 1.000 (pulses)\n";
-                }
-                else
-                {
-                    mult = (double)multnum;
-                    mult /= 100.0;
-                    resultStr += " multiplier: " + CtiNumStr::CtiNumStr(mult, 3) + string("\n");
-                }
-
-                ReturnMsg->setResultString( resultStr );
-
-                break;
-            }
-
-            case EmetconProtocol::GetConfig_Time:
-            case EmetconProtocol::GetConfig_TSync:
-            {
-                char days[8][4] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat","???"};
-                unsigned char ticper12hr, ticper5min, ticper15sec;
-                int day, hour, minute;
-
-                //  time values are kept by 3 decrementing counters.
-                //    Message[2] decrements once every 12 hours, and starts from 14 (7 days left, denoting Sunday midnight).
-                //    Message[1] decrements once every 5 minutes, and starts from 144 (12 hours left).
-                //    Message[0] decrements once every 15 seconds, and starts from 20 (5 minutes left).
-
-                ticper12hr  = 14  - DSt.Message[2];  //  invert counter to be how many units have PASSED,
-                ticper5min  = 144 - DSt.Message[1];  //    NOT how many are LEFT.
-                ticper15sec = 20  - DSt.Message[0];  //
-
-                day = (ticper12hr * 12) / 24;       //  find how many days have passed
-                if( day > 7 )
-                    day = 7;
-
-                hour  = (ticper5min * 5) / 60;      //  find out how many hours have passed
-                hour += (ticper12hr * 12) % 24;     //    add on 12 hours if in PM (ticper12hr = 0 - Sunday AM, 1 - Sunday PM, etc)
-
-                minute  = (ticper5min * 5) % 60;    //  find out how many minutes have passed
-                minute += (ticper15sec * 15) / 60;  //    add on the 15 second timer - divide by 4 to get minutes
-
-                if( InMessage->Sequence == EmetconProtocol::GetConfig_Time )
-                {
-                    resultStr = getName() + " / time:  ";
-                }
-                else if( InMessage->Sequence == EmetconProtocol::GetConfig_TSync )
-                {
-                    resultStr = getName() + " / time sync:  ";
-                }
-
-                resultStr += string(days[day]) + " " + CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2);
-
-                ReturnMsg->setResultString( resultStr );
-
-                break;
-            }
-
-            case EmetconProtocol::GetConfig_Raw:
-            {
-                int rawloc, rawlen;
-
-                rawloc = parse.getiValue("rawloc");
-
-                if( parse.isKeyValid("rawlen") )
-                {
-                    rawlen = std::min(parse.getiValue("rawlen"), 13);
-                }
-                else
-                {
-                    rawlen = DSt.Length;
-                }
-
-                if( parse.isKeyValid("rawfunc") )
-                {
-                    for( int i = 0; i < rawlen; i++ )
-                    {
-                        resultStr += getName( ) +
-                                        " / FR " + CtiNumStr(parse.getiValue("rawloc")).xhex().zpad(2) +
-                                        " byte " + CtiNumStr(i).zpad(2) +
-                                        " : " + CtiNumStr((int)DSt.Message[i]).xhex().zpad(2) + "\n";
-                    }
-                }
-                else
-                {
-                    for( int i = 0; i < rawlen; i++ )
-                    {
-                        resultStr += getName( ) +
-                                        " / byte " + CtiNumStr(i+rawloc).xhex().zpad(2) +
-                                        " : " + CtiNumStr((int)DSt.Message[i]).xhex().zpad(2) + "\n";
-                    }
-                }
-
-                ReturnMsg->setResultString( resultStr );
-
-                break;
-            }
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    switch( InMessage->Sequence )
+    {
+        //  needs to be moved to the 4xx base class when the inheritance gets reworked
+        case EmetconProtocol::GetConfig_Holiday:
+        {
+            unsigned long timestamp;
+            CtiTime holiday;
+            string result;
+
+            result  = getName() + " / Holiday schedule:\n";
+
+            timestamp = DSt.Message[0] << 24 |
+                        DSt.Message[1] << 16 |
+                        DSt.Message[2] << 8  |
+                        DSt.Message[3];
+
+            holiday = CtiTime(timestamp);
+            result += "Holiday 1: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
+
+            timestamp = DSt.Message[4] << 24 |
+                        DSt.Message[5] << 16 |
+                        DSt.Message[6] << 8  |
+                        DSt.Message[7];
+
+            holiday = CtiTime(timestamp);
+            result += "Holiday 2: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
+
+            timestamp = DSt.Message[8]  << 24 |
+                        DSt.Message[9]  << 16 |
+                        DSt.Message[10] << 8  |
+                        DSt.Message[11];
+
+            holiday = CtiTime(timestamp);
+            result += "Holiday 3: " + (holiday.isValid()?holiday.asString():"(invalid)") + "\n";
+
+            ReturnMsg->setResultString( result );
+
+            break;
+        }
+        case EmetconProtocol::GetConfig_GroupAddress:
+        {
+            long gold, silver, bronze, lead_load, lead_meter;
+
+            bronze     = DSt.Message[0];
+            lead_load  = ((DSt.Message[3] & 0xf0) << 4) | DSt.Message[1];
+            lead_meter = ((DSt.Message[3] & 0x0f) << 8) | DSt.Message[2];
+            gold       = (DSt.Message[4] & 0xc0) >> 6;
+            silver     = (DSt.Message[4] & 0x3f);
+
+            resultStr  = getName() + " / Group Addresses:\n";
+            resultStr += "Gold:       " + CtiNumStr(gold + 1).spad(5) + string("\n");
+            resultStr += "Silver:     " + CtiNumStr(silver + 1).spad(5) + string("\n");
+            resultStr += "Bronze:     " + CtiNumStr(bronze + 1).spad(5) + string("\n");
+            resultStr += "Lead Meter: " + CtiNumStr(lead_meter + 1).spad(5) + string("\n");
+            resultStr += "Lead Load:  " + CtiNumStr(lead_load + 1).spad(5) + string("\n");
+
+            ReturnMsg->setResultString( resultStr );
+
+            break;
+        }
+
+        case EmetconProtocol::GetConfig_DemandInterval:
+        {
+            //  see MCT22X ResultDecode for an additional MCT22X step
+
+            sec = DSt.Message[0] * 15;
+
+            min = sec / 60;
+            sec = sec % 60;
+
+            resultStr = getName() + " / Demand Interval: " + CtiNumStr( min ) + " min";
+            if( sec )
+                resultStr += ", " + CtiNumStr( sec ) + string(" sec");
+
+            ReturnMsg->setResultString( resultStr );
+
+            break;
+        }
+
+        case EmetconProtocol::GetConfig_LoadProfileInterval:
+        {
+            min = DSt.Message[0] * 5;
+
+            resultStr = getName() + " / Load Profile Interval: " + CtiNumStr( min ) + " min";
+
+            ReturnMsg->setResultString( resultStr );
+
+            break;
+        }
+
+        case EmetconProtocol::GetConfig_Multiplier:
+        case EmetconProtocol::GetConfig_Multiplier2:
+        case EmetconProtocol::GetConfig_Multiplier3:
+        case EmetconProtocol::GetConfig_Multiplier4:
+        {
+            resultStr  = getName() + " / ";
+
+            if( parse.isKeyValid("multchannel") )
+            {
+                channel = parse.getiValue("multchannel");
+                resultStr += "channel " + CtiNumStr( channel );
+            }
+
+
+            if( isDebugLudicrous() )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "message[0] = " << (int)DSt.Message[0] << endl;
+                dout << "message[1] = " << (int)DSt.Message[1] << endl;
+            }
+
+            multnum   = (int)DSt.Message[0];
+            multnum <<= 8;
+            multnum  |= (int)DSt.Message[1];
+
+            if( multnum == 1000 )
+            {
+                resultStr += " multiplier: 1.000 (pulses)\n";
+            }
+            else
+            {
+                mult = (double)multnum;
+                mult /= 100.0;
+                resultStr += " multiplier: " + CtiNumStr::CtiNumStr(mult, 3) + string("\n");
+            }
+
+            ReturnMsg->setResultString( resultStr );
+
+            break;
+        }
+
+        case EmetconProtocol::GetConfig_Time:
+        case EmetconProtocol::GetConfig_TSync:
+        {
+            char days[8][4] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat","???"};
+            unsigned char ticper12hr, ticper5min, ticper15sec;
+            int day, hour, minute;
+
+            //  time values are kept by 3 decrementing counters.
+            //    Message[2] decrements once every 12 hours, and starts from 14 (7 days left, denoting Sunday midnight).
+            //    Message[1] decrements once every 5 minutes, and starts from 144 (12 hours left).
+            //    Message[0] decrements once every 15 seconds, and starts from 20 (5 minutes left).
+
+            ticper12hr  = 14  - DSt.Message[2];  //  invert counter to be how many units have PASSED,
+            ticper5min  = 144 - DSt.Message[1];  //    NOT how many are LEFT.
+            ticper15sec = 20  - DSt.Message[0];  //
+
+            day = (ticper12hr * 12) / 24;       //  find how many days have passed
+            if( day > 7 )
+                day = 7;
+
+            hour  = (ticper5min * 5) / 60;      //  find out how many hours have passed
+            hour += (ticper12hr * 12) % 24;     //    add on 12 hours if in PM (ticper12hr = 0 - Sunday AM, 1 - Sunday PM, etc)
+
+            minute  = (ticper5min * 5) % 60;    //  find out how many minutes have passed
+            minute += (ticper15sec * 15) / 60;  //    add on the 15 second timer - divide by 4 to get minutes
+
+            if( InMessage->Sequence == EmetconProtocol::GetConfig_Time )
+            {
+                resultStr = getName() + " / time:  ";
+            }
+            else if( InMessage->Sequence == EmetconProtocol::GetConfig_TSync )
+            {
+                resultStr = getName() + " / time sync:  ";
+            }
+
+            resultStr += string(days[day]) + " " + CtiNumStr(hour).zpad(2) + ":" + CtiNumStr(minute).zpad(2);
+
+            ReturnMsg->setResultString( resultStr );
+
+            break;
+        }
+
+        case EmetconProtocol::GetConfig_Raw:
+        {
+            int rawloc, rawlen;
+
+            rawloc = parse.getiValue("rawloc");
+
+            if( parse.isKeyValid("rawlen") )
+            {
+                rawlen = std::min(parse.getiValue("rawlen"), 13);
+            }
+            else
+            {
+                rawlen = DSt.Length;
+            }
+
+            if( parse.isKeyValid("rawfunc") )
+            {
+                for( int i = 0; i < rawlen; i++ )
+                {
+                    resultStr += getName( ) +
+                                    " / FR " + CtiNumStr(parse.getiValue("rawloc")).xhex().zpad(2) +
+                                    " byte " + CtiNumStr(i).zpad(2) +
+                                    " : " + CtiNumStr((int)DSt.Message[i]).xhex().zpad(2) + "\n";
+                }
+            }
+            else
+            {
+                for( int i = 0; i < rawlen; i++ )
+                {
+                    resultStr += getName( ) +
+                                    " / byte " + CtiNumStr(i+rawloc).xhex().zpad(2) +
+                                    " : " + CtiNumStr((int)DSt.Message[i]).xhex().zpad(2) + "\n";
+                }
+            }
+
+            ReturnMsg->setResultString( resultStr );
+
+            break;
+        }
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3079,124 +3063,119 @@ INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, Ct
     double    Value;
     string resultStr, defaultStateName;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        Value = CLOSED;
-
-        switch( getType() )
-        {
-            case TYPEMCT213:
-            {
-                switch( DSt.Message[0] & 0xc0 )
-                {
-                    case Mct210Device::MCT210_StatusConnected:     Value = CLOSED;  defaultStateName = "Connected";      break;
-                    case Mct210Device::MCT210_StatusDisconnected:  Value = OPENED;  defaultStateName = "Disconnected";   break;
-                    default:  Value = -1;
-                }
-
-                break;
-            }
-            case TYPEMCT310ID:
-            case TYPEMCT310IDL:
-            {
-                switch( DSt.Message[0] & 0xc0 )
-                {
-                    case Mct310Device::MCT310_StatusConnected:           Value = CLOSED;         defaultStateName = "Connected";             break;
-                    case Mct310Device::MCT310_StatusConnectArmed:        Value = INDETERMINATE;  defaultStateName = "Connect armed";         break;
-                    case Mct310Device::MCT310_StatusConnectInProgress:   Value = INDETERMINATE;  defaultStateName = "Connect in progress";   break;
-                    case Mct310Device::MCT310_StatusDisconnected:        Value = OPENED;         defaultStateName = "Disconnected";          break;
-                }
-
-                break;
-            }
-            case TYPEMCT410CL:
-            case TYPEMCT410FL:
-            case TYPEMCT410GL:
-            case TYPEMCT410IL:
-            //case TYPEMCT420CL:  //  the MCT-420CL does not support the disconnect collar
-            case TYPEMCT420CLD:
-            case TYPEMCT420FL:
-            case TYPEMCT420FLD:
-            {
-                switch( DSt.Message[0] & 0x03 )
-                {
-                    case Mct410Device::RawStatus_Connected:
-                    {
-                        Value = Mct410Device::StateGroup_Connected;                   defaultStateName = "Connected";                 break;
-                    }
-                    case Mct410Device::RawStatus_ConnectArmed:
-                    {
-                        Value = Mct410Device::StateGroup_ConnectArmed;                defaultStateName = "Connect armed";             break;
-                    }
-                    case Mct410Device::RawStatus_DisconnectedUnconfirmed:
-                    {
-                        Value = Mct410Device::StateGroup_DisconnectedUnconfirmed;     defaultStateName = "Unconfirmed disconnected";  break;
-                    }
-                    case Mct410Device::RawStatus_DisconnectedConfirmed:
-                    {
-                        Value = Mct410Device::StateGroup_DisconnectedConfirmed;       defaultStateName = "Confirmed disconnected";    break;
-                    }
-                    default:
-                    {
-                        Value = -1;
-                        defaultStateName = "Invalid raw value from 410";
-                    }
-                }
-
-                break;
-            }
-            default:
-            {
-                Value = INDETERMINATE;
-                defaultStateName = "Not a disconnect meter";
-            }
-        }
-
-        pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
-
-        if(pPoint)
-        {
-            //  This isn't useful when the status to be returned is anything but "connected" or "disconnected" - we need "Connect armed" instead, so this
-            //    will not work too well.
-            string stateName; /* = ResolveStateName(pPoint->getStateGroupID(), Value);
-
-            if( stateName.empty() )*/
-            {
-                stateName = defaultStateName;
-            }
-
-            resultStr = getName() + " / " + pPoint->getName() + ":" + stateName;
-
-            //  Send this value to requestor via retList.
-
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultStr, TAG_POINT_MUST_ARCHIVE);
-
-            if(pData != NULL)
-            {
-                ReturnMsg->PointData().push_back(pData);
-                pData = NULL;
-            }
-        }
-        else
-        {
-            resultStr = getName() + " / Disconnect Status: " + defaultStateName;
-            ReturnMsg->setResultString(resultStr);
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    Value = CLOSED;
+
+    switch( getType() )
+    {
+        case TYPEMCT213:
+        {
+            switch( DSt.Message[0] & 0xc0 )
+            {
+                case Mct210Device::MCT210_StatusConnected:     Value = CLOSED;  defaultStateName = "Connected";      break;
+                case Mct210Device::MCT210_StatusDisconnected:  Value = OPENED;  defaultStateName = "Disconnected";   break;
+                default:  Value = -1;
+            }
+
+            break;
+        }
+        case TYPEMCT310ID:
+        case TYPEMCT310IDL:
+        {
+            switch( DSt.Message[0] & 0xc0 )
+            {
+                case Mct310Device::MCT310_StatusConnected:           Value = CLOSED;         defaultStateName = "Connected";             break;
+                case Mct310Device::MCT310_StatusConnectArmed:        Value = INDETERMINATE;  defaultStateName = "Connect armed";         break;
+                case Mct310Device::MCT310_StatusConnectInProgress:   Value = INDETERMINATE;  defaultStateName = "Connect in progress";   break;
+                case Mct310Device::MCT310_StatusDisconnected:        Value = OPENED;         defaultStateName = "Disconnected";          break;
+            }
+
+            break;
+        }
+        case TYPEMCT410CL:
+        case TYPEMCT410FL:
+        case TYPEMCT410GL:
+        case TYPEMCT410IL:
+        //case TYPEMCT420CL:  //  the MCT-420CL does not support the disconnect collar
+        case TYPEMCT420CLD:
+        case TYPEMCT420FL:
+        case TYPEMCT420FLD:
+        {
+            switch( DSt.Message[0] & 0x03 )
+            {
+                case Mct410Device::RawStatus_Connected:
+                {
+                    Value = Mct410Device::StateGroup_Connected;                   defaultStateName = "Connected";                 break;
+                }
+                case Mct410Device::RawStatus_ConnectArmed:
+                {
+                    Value = Mct410Device::StateGroup_ConnectArmed;                defaultStateName = "Connect armed";             break;
+                }
+                case Mct410Device::RawStatus_DisconnectedUnconfirmed:
+                {
+                    Value = Mct410Device::StateGroup_DisconnectedUnconfirmed;     defaultStateName = "Unconfirmed disconnected";  break;
+                }
+                case Mct410Device::RawStatus_DisconnectedConfirmed:
+                {
+                    Value = Mct410Device::StateGroup_DisconnectedConfirmed;       defaultStateName = "Confirmed disconnected";    break;
+                }
+                default:
+                {
+                    Value = -1;
+                    defaultStateName = "Invalid raw value from 410";
+                }
+            }
+
+            break;
+        }
+        default:
+        {
+            Value = INDETERMINATE;
+            defaultStateName = "Not a disconnect meter";
+        }
+    }
+
+    pPoint = getDevicePointOffsetTypeEqual(1, StatusPointType);
+
+    if(pPoint)
+    {
+        //  This isn't useful when the status to be returned is anything but "connected" or "disconnected" - we need "Connect armed" instead, so this
+        //    will not work too well.
+        string stateName; /* = ResolveStateName(pPoint->getStateGroupID(), Value);
+
+        if( stateName.empty() )*/
+        {
+            stateName = defaultStateName;
+        }
+
+        resultStr = getName() + " / " + pPoint->getName() + ":" + stateName;
+
+        //  Send this value to requestor via retList.
+
+        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, resultStr, TAG_POINT_MUST_ARCHIVE);
+
+        if(pData != NULL)
+        {
+            ReturnMsg->PointData().push_back(pData);
+            pData = NULL;
+        }
+    }
+    else
+    {
+        resultStr = getName() + " / Disconnect Status: " + defaultStateName;
+        ReturnMsg->setResultString(resultStr);
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3213,48 +3192,45 @@ INT MctDevice::decodeControl(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-            return MEMORY;
-        }
+        return MEMORY;
+    }
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        resultString = getName( ) + " / control sent";
-        ReturnMsg->setResultString( resultString );
+    resultString = getName( ) + " / control sent";
+    ReturnMsg->setResultString( resultString );
 
-        const bool isConnectOrDisconnectFunction = ( InMessage->Sequence == EmetconProtocol::Control_Disconnect ||
-                                                     InMessage->Sequence == EmetconProtocol::Control_Connect );
+    const bool isConnectOrDisconnectFunction = ( InMessage->Sequence == EmetconProtocol::Control_Disconnect ||
+                                                 InMessage->Sequence == EmetconProtocol::Control_Connect );
 
-        // Set expect more here if appropriate.
-        if( isConnectOrDisconnectFunction )
-        {
-            expectMore = true;
-        }
+    // Set expect more here if appropriate.
+    if( isConnectOrDisconnectFunction )
+    {
+        expectMore = true;
+    }
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
 
-        if( isConnectOrDisconnectFunction )
-        {
-            CtiRequestMsg newReq(getID(),
-                                 "getstatus disconnect",
-                                 InMessage->Return.UserID,
-                                 InMessage->Return.GrpMsgID,
-                                 getRouteID(),
-                                 selectInitialMacroRouteOffset(getRouteID()),  //  this bypasses PIL, so we need to calculate this
-                                 0,
-                                 InMessage->Return.OptionsField,
-                                 InMessage->Priority);
+    if( isConnectOrDisconnectFunction )
+    {
+        CtiRequestMsg newReq(getID(),
+                             "getstatus disconnect",
+                             InMessage->Return.UserID,
+                             InMessage->Return.GrpMsgID,
+                             getRouteID(),
+                             selectInitialMacroRouteOffset(getRouteID()),  //  this bypasses PIL, so we need to calculate this
+                             0,
+                             InMessage->Return.OptionsField,
+                             InMessage->Priority);
 
-            newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+        newReq.setConnectionHandle((void *)InMessage->Return.Connection);
 
-            beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
-        }
+        beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
     }
 
     return status;
@@ -3273,23 +3249,20 @@ INT MctDevice::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLis
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        resultString = getName( ) + " / command complete";
-        ReturnMsg->setResultString( resultString );
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    resultString = getName( ) + " / command complete";
+    ReturnMsg->setResultString( resultString );
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3306,24 +3279,20 @@ INT MctDevice::decodePutStatus(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
 
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        resultString = getName( ) + " / command complete";
-        ReturnMsg->setResultString( resultString );
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    resultString = getName( ) + " / command complete";
+    ReturnMsg->setResultString( resultString );
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3345,108 +3314,140 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
 
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    switch( InMessage->Sequence )
+    {
+        case EmetconProtocol::PutConfig_Parameters:                 resultString = getName() + " / Meter parameters sent";  break;
+
+        case EmetconProtocol::PutConfig_Multiplier:
+        case EmetconProtocol::PutConfig_Multiplier2:
+        case EmetconProtocol::PutConfig_Multiplier3:                resultString = getName() + " / Multiplier sent"; break;
+
+        case EmetconProtocol::PutConfig_GroupAddress_Bronze:
+        case EmetconProtocol::PutConfig_GroupAddress_GoldSilver:
+        case EmetconProtocol::PutConfig_GroupAddress_Lead:
+        case EmetconProtocol::PutConfig_UniqueAddress:              resultString = getName() + " / Address reconfiguration sent";   break;
+
+        case EmetconProtocol::PutConfig_GroupAddressEnable:         resultString = getName() + " / Group addressing enable sent";   break;
+        case EmetconProtocol::PutConfig_GroupAddressInhibit:        resultString = getName() + " / Group addressing inhibit sent";  break;
+
+        case EmetconProtocol::PutConfig_LoadProfileInterest:        resultString = getName() + " / Load profile period of interest sent";   break;
+        case EmetconProtocol::PutConfig_LoadProfileReportPeriod:    resultString = getName() + " / Load profile reporting period sent";     break;
+        case EmetconProtocol::PutConfig_DailyReadInterest:          resultString = getName() + " / Daily read period of interest sent";     break;
+
+        case EmetconProtocol::PutConfig_Raw:                        resultString = getName() + " / Raw bytes sent";         break;
+        case EmetconProtocol::PutConfig_TSync:                      resultString = getName() + " / Time sync sent";         break;
+        case EmetconProtocol::PutConfig_Intervals:                  resultString = getName() + " / Intervals sent";         break;
+        case EmetconProtocol::PutConfig_DemandInterval:             resultString = getName() + " / Demand interval sent";   break;
+        case EmetconProtocol::PutConfig_LoadProfileInterval:        resultString = getName() + " / Load profile interval sent"; break;
+        case EmetconProtocol::PutConfig_OutageThreshold:            resultString = getName() + " / Outage threshold sent";  break;
+        case EmetconProtocol::PutConfig_ChannelSetup:               resultString = getName() + " / Channel config sent";    break;
+        case EmetconProtocol::PutConfig_IEDClass:                   resultString = getName() + " / IED class info sent";    break;
+        case EmetconProtocol::PutConfig_IEDScan:                    resultString = getName() + " / IED scan rate sent";     break;
+        case EmetconProtocol::PutConfig_Disconnect:                 resultString = getName() + " / Disconnect config sent"; break;
+        case EmetconProtocol::PutConfig_TOU:                        resultString = getName() + " / TOU config sent";        break;
+        case EmetconProtocol::PutConfig_TimeZoneOffset:             resultString = getName() + " / Time zone sent";         break;
+        case EmetconProtocol::PutConfig_Holiday:                    resultString = getName() + " / Holiday dates sent";     break;
+        case EmetconProtocol::PutConfig_TOUEnable:                  resultString = getName() + " / TOU enable sent";        break;
+        case EmetconProtocol::PutConfig_TOUDisable:                 resultString = getName() + " / TOU disable sent";       break;
+
+        case EmetconProtocol::PutConfig_AlarmMask:                  resultString = getName() + " / Alarm Event Mask sent";           break;
+        case EmetconProtocol::PutConfig_Options:                    resultString = getName() + " / options sent";           break;
+        case EmetconProtocol::PutConfig_PhaseDetectClear:           resultString = getName() + " / Phase Detect flag clear sent";       break;
+        case EmetconProtocol::PutConfig_PhaseDetect:                resultString = getName() + " / Phase Detect test settings sent";    break;
+        case EmetconProtocol::PutConfig_AutoReconnect:              resultString = getName() + " / Autoreconnect settings sent";    break;
+
+        case EmetconProtocol::PutConfig_Install:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            int sspec;
+            bool sspecValid;
 
-            return MEMORY;
-        }
+            //  LMT-2 sspec - it only has 1 sspec byte...
+            //    make sure any additional sspec rev numbers do not have 36 as their least-significant byte,
+            //    or this will have to change.
+            //
+            //  36, 292, 548, 804, 1060, 1316, 1572, 1828, 2084, 2340, 2596, 2852, 3108, 3364, 3620, 3876, ...
 
-        switch( InMessage->Sequence )
-        {
-            case EmetconProtocol::PutConfig_Parameters:                 resultString = getName() + " / Meter parameters sent";  break;
-
-            case EmetconProtocol::PutConfig_Multiplier:
-            case EmetconProtocol::PutConfig_Multiplier2:
-            case EmetconProtocol::PutConfig_Multiplier3:                resultString = getName() + " / Multiplier sent"; break;
-
-            case EmetconProtocol::PutConfig_GroupAddress_Bronze:
-            case EmetconProtocol::PutConfig_GroupAddress_GoldSilver:
-            case EmetconProtocol::PutConfig_GroupAddress_Lead:
-            case EmetconProtocol::PutConfig_UniqueAddress:              resultString = getName() + " / Address reconfiguration sent";   break;
-
-            case EmetconProtocol::PutConfig_GroupAddressEnable:         resultString = getName() + " / Group addressing enable sent";   break;
-            case EmetconProtocol::PutConfig_GroupAddressInhibit:        resultString = getName() + " / Group addressing inhibit sent";  break;
-
-            case EmetconProtocol::PutConfig_LoadProfileInterest:        resultString = getName() + " / Load profile period of interest sent";   break;
-            case EmetconProtocol::PutConfig_LoadProfileReportPeriod:    resultString = getName() + " / Load profile reporting period sent";     break;
-            case EmetconProtocol::PutConfig_DailyReadInterest:          resultString = getName() + " / Daily read period of interest sent";     break;
-
-            case EmetconProtocol::PutConfig_Raw:                        resultString = getName() + " / Raw bytes sent";         break;
-            case EmetconProtocol::PutConfig_TSync:                      resultString = getName() + " / Time sync sent";         break;
-            case EmetconProtocol::PutConfig_Intervals:                  resultString = getName() + " / Intervals sent";         break;
-            case EmetconProtocol::PutConfig_DemandInterval:             resultString = getName() + " / Demand interval sent";   break;
-            case EmetconProtocol::PutConfig_LoadProfileInterval:        resultString = getName() + " / Load profile interval sent"; break;
-            case EmetconProtocol::PutConfig_OutageThreshold:            resultString = getName() + " / Outage threshold sent";  break;
-            case EmetconProtocol::PutConfig_ChannelSetup:               resultString = getName() + " / Channel config sent";    break;
-            case EmetconProtocol::PutConfig_IEDClass:                   resultString = getName() + " / IED class info sent";    break;
-            case EmetconProtocol::PutConfig_IEDScan:                    resultString = getName() + " / IED scan rate sent";     break;
-            case EmetconProtocol::PutConfig_Disconnect:                 resultString = getName() + " / Disconnect config sent"; break;
-            case EmetconProtocol::PutConfig_TOU:                        resultString = getName() + " / TOU config sent";        break;
-            case EmetconProtocol::PutConfig_TimeZoneOffset:             resultString = getName() + " / Time zone sent";         break;
-            case EmetconProtocol::PutConfig_Holiday:                    resultString = getName() + " / Holiday dates sent";     break;
-            case EmetconProtocol::PutConfig_TOUEnable:                  resultString = getName() + " / TOU enable sent";        break;
-            case EmetconProtocol::PutConfig_TOUDisable:                 resultString = getName() + " / TOU disable sent";       break;
-
-            case EmetconProtocol::PutConfig_AlarmMask:                  resultString = getName() + " / Alarm Event Mask sent";           break;
-            case EmetconProtocol::PutConfig_Options:                    resultString = getName() + " / options sent";           break;
-            case EmetconProtocol::PutConfig_PhaseDetectClear:           resultString = getName() + " / Phase Detect flag clear sent";       break;
-            case EmetconProtocol::PutConfig_PhaseDetect:                resultString = getName() + " / Phase Detect test settings sent";    break;
-            case EmetconProtocol::PutConfig_AutoReconnect:              resultString = getName() + " / Autoreconnect settings sent";    break;
-
-            case EmetconProtocol::PutConfig_Install:
+            if( DSt.Message[0] == 36 )
             {
-                int sspec;
-                bool sspecValid;
+                sspec = DSt.Message[0];
+            }
+            else
+            {
+                sspec = DSt.Message[0] + (DSt.Message[4] << 8);
+            }
 
-                //  LMT-2 sspec - it only has 1 sspec byte...
-                //    make sure any additional sspec rev numbers do not have 36 as their least-significant byte,
-                //    or this will have to change.
-                //
-                //  36, 292, 548, 804, 1060, 1316, 1572, 1828, 2084, 2340, 2596, 2852, 3108, 3364, 3620, 3876, ...
-
-                if( DSt.Message[0] == 36 )
+            //  if it's an invalid sspec or if the option bits aren't set properly
+            if( !sspecIsValid(sspec) )
+            {
+                resultString = getName( ) + " / sspec \'" + CtiNumStr(sspec) + "\' not valid - looks like an \'" + sspecIsFrom( sspec ) + "\'." + "\n" +
+                               getName( ) + " / install command aborted";
+            }
+            else if( (getType() == TYPEMCT310ID || getType() == TYPEMCT310IDL) && (sspec == 1007 || sspec == 153) && !(DSt.Message[2] & 0x40) )
+            {
+                //  if the disconnect option bit is not set
+                resultString = getName( ) + " / option bits not valid - looks like a 310I";
+            }
+            else
+            {
+                if( getType( ) == TYPEMCT310    ||
+                    getType( ) == TYPEMCT310ID  ||
+                    getType( ) == TYPEMCT310IDL ||
+                    getType( ) == TYPEMCT310IL )
                 {
-                    sspec = DSt.Message[0];
-                }
-                else
-                {
-                    sspec = DSt.Message[0] + (DSt.Message[4] << 8);
-                }
-
-                //  if it's an invalid sspec or if the option bits aren't set properly
-                if( !sspecIsValid(sspec) )
-                {
-                    resultString = getName( ) + " / sspec \'" + CtiNumStr(sspec) + "\' not valid - looks like an \'" + sspecIsFrom( sspec ) + "\'." + "\n" +
-                                   getName( ) + " / install command aborted";
-                }
-                else if( (getType() == TYPEMCT310ID || getType() == TYPEMCT310IDL) && (sspec == 1007 || sspec == 153) && !(DSt.Message[2] & 0x40) )
-                {
-                    //  if the disconnect option bit is not set
-                    resultString = getName( ) + " / option bits not valid - looks like a 310I";
-                }
-                else
-                {
-                    if( getType( ) == TYPEMCT310    ||
-                        getType( ) == TYPEMCT310ID  ||
-                        getType( ) == TYPEMCT310IDL ||
-                        getType( ) == TYPEMCT310IL )
+                    if( !(DSt.Message[2] & 0x01) )
                     {
-                        if( !(DSt.Message[2] & 0x01) )
-                        {
-                            resultString = getName() + " / Error:  Metering channel 1 not enabled" + "\n";
-                        }
+                        resultString = getName() + " / Error:  Metering channel 1 not enabled" + "\n";
+                    }
+                }
+
+                OutTemplate = CTIDBG_new OUTMESS;
+
+                InEchoToOut( *InMessage, OutTemplate );
+
+                //  reset the meter
+                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+
+                if( pReq != NULL )
+                {
+                    if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                    {
+                        pReq->setCommandString(pReq->CommandString() + " noqueue");
                     }
 
-                    OutTemplate = CTIDBG_new OUTMESS;
+                    CtiCommandParser parse(pReq->CommandString());
+                    beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
 
-                    InEchoToOut( *InMessage, OutTemplate );
+                    delete pReq;
+                }
 
-                    //  reset the meter
-                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putstatus reset", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+                //  enable group addressing
+                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon group enable", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+
+                if( pReq != NULL )
+                {
+                    if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                    {
+                        pReq->setCommandString(pReq->CommandString() + " noqueue");
+                    }
+
+                    CtiCommandParser parse(pReq->CommandString());
+                    beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
+
+                    delete pReq;
+                }
+
+                //  put the load profile interval if it's a lp device
+                if( isLoadProfile(getType()) )
+                {
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
 
                     if( pReq != NULL )
                     {
@@ -3460,9 +3461,12 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
 
                         delete pReq;
                     }
+                }
 
-                    //  enable group addressing
-                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon group enable", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+                //  put the demand interval
+                if( hasVariableDemandRate(getType(), sspec) )
+                {
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
 
                     if( pReq != NULL )
                     {
@@ -3473,53 +3477,78 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
 
                         CtiCommandParser parse(pReq->CommandString());
                         beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
+                        delete pReq;
+                    }
+                }
 
+                //  We've already checked for the validity of this config in the setConfigData call, so it's safe to just forge ahead
+                if( _configType == Config2XX )
+                {
+                    if( _mpkh[0] > 0 )
+                    {
+                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz 1 " + CtiNumStr(_mpkh[0]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+
+                        if( pReq != NULL )
+                        {
+                            if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                            {
+                                pReq->setCommandString(pReq->CommandString() + " noqueue");
+                            }
+
+                            CtiCommandParser parse(pReq->CommandString());
+                            beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
+                            delete pReq;
+                        }
+
+                        resultString += getName() + " / Sent config to MCT\n";
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[0] << "\" to meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                }
+                else if( _configType == Config3XX )
+                {
+                    unsigned char config_byte = 0xc0;
+                    int num_channels = 3;
+
+                    if( getType() == TYPEMCT310    ||
+                        getType() == TYPEMCT310ID  ||
+                        getType() == TYPEMCT310IDL ||
+                        getType() == TYPEMCT310IL )
+                    {
+                        num_channels = 1;
+                    }
+
+                    if( _peakMode == PeakModeOnPeakOffPeak )    config_byte |= 0x04;
+
+                    //  negative logic so we default to three-wire
+                    if( _wireConfig[0] != WireConfigTwoWire )   config_byte |= 0x08;
+                    if( _wireConfig[1] != WireConfigTwoWire )   config_byte |= 0x10;
+                    if( _wireConfig[2] != WireConfigTwoWire )   config_byte |= 0x20;
+
+                    pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon raw start=0x03 " + CtiNumStr(config_byte).xhex().zpad(2), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+
+                    if( pReq != NULL )
+                    {
+                        if( strstr(InMessage->Return.CommandStr, "noqueue") )
+                        {
+                            pReq->setCommandString(pReq->CommandString() + " noqueue");
+                        }
+
+                        CtiCommandParser parse(pReq->CommandString());
+                        beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
                         delete pReq;
                     }
 
-                    //  put the load profile interval if it's a lp device
-                    if( isLoadProfile(getType()) )
+                    for( int i = 0; i < num_channels; i++ )
                     {
-                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval lp", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
-
-                        if( pReq != NULL )
+                        if( _mpkh[i] > 0 )
                         {
-                            if( strstr(InMessage->Return.CommandStr, "noqueue") )
-                            {
-                                pReq->setCommandString(pReq->CommandString() + " noqueue");
-                            }
-
-                            CtiCommandParser parse(pReq->CommandString());
-                            beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
-
-                            delete pReq;
-                        }
-                    }
-
-                    //  put the demand interval
-                    if( hasVariableDemandRate(getType(), sspec) )
-                    {
-                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon interval li", InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
-
-                        if( pReq != NULL )
-                        {
-                            if( strstr(InMessage->Return.CommandStr, "noqueue") )
-                            {
-                                pReq->setCommandString(pReq->CommandString() + " noqueue");
-                            }
-
-                            CtiCommandParser parse(pReq->CommandString());
-                            beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
-                            delete pReq;
-                        }
-                    }
-
-                    //  We've already checked for the validity of this config in the setConfigData call, so it's safe to just forge ahead
-                    if( _configType == Config2XX )
-                    {
-                        if( _mpkh[0] > 0 )
-                        {
-                            pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz 1 " + CtiNumStr(_mpkh[0]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
+                            pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + string(" ") + CtiNumStr(_mpkh[i]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
 
                             if( pReq != NULL )
                             {
@@ -3532,112 +3561,49 @@ INT MctDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageLi
                                 beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
                                 delete pReq;
                             }
-
-                            resultString += getName() + " / Sent config to MCT\n";
                         }
                         else
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[0] << "\" to meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[i] << "\" to channel " << i+1 << " on meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
                     }
-                    else if( _configType == Config3XX )
-                    {
-                        unsigned char config_byte = 0xc0;
-                        int num_channels = 3;
 
-                        if( getType() == TYPEMCT310    ||
-                            getType() == TYPEMCT310ID  ||
-                            getType() == TYPEMCT310IDL ||
-                            getType() == TYPEMCT310IL )
-                        {
-                            num_channels = 1;
-                        }
-
-                        if( _peakMode == PeakModeOnPeakOffPeak )    config_byte |= 0x04;
-
-                        //  negative logic so we default to three-wire
-                        if( _wireConfig[0] != WireConfigTwoWire )   config_byte |= 0x08;
-                        if( _wireConfig[1] != WireConfigTwoWire )   config_byte |= 0x10;
-                        if( _wireConfig[2] != WireConfigTwoWire )   config_byte |= 0x20;
-
-                        pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon raw start=0x03 " + CtiNumStr(config_byte).xhex().zpad(2), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
-
-                        if( pReq != NULL )
-                        {
-                            if( strstr(InMessage->Return.CommandStr, "noqueue") )
-                            {
-                                pReq->setCommandString(pReq->CommandString() + " noqueue");
-                            }
-
-                            CtiCommandParser parse(pReq->CommandString());
-                            beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
-                            delete pReq;
-                        }
-
-                        for( int i = 0; i < num_channels; i++ )
-                        {
-                            if( _mpkh[i] > 0 )
-                            {
-                                pReq = CTIDBG_new CtiRequestMsg(InMessage->TargetID, "putconfig emetcon mult kyz " + CtiNumStr(i+1) + string(" ") + CtiNumStr(_mpkh[i]), InMessage->Return.UserID, InMessage->Return.GrpMsgID, InMessage->Return.RouteID, selectInitialMacroRouteOffset(InMessage->Return.RouteID), InMessage->Return.Attempt);
-
-                                if( pReq != NULL )
-                                {
-                                    if( strstr(InMessage->Return.CommandStr, "noqueue") )
-                                    {
-                                        pReq->setCommandString(pReq->CommandString() + " noqueue");
-                                    }
-
-                                    CtiCommandParser parse(pReq->CommandString());
-                                    beginExecuteRequestFromTemplate(pReq, parse, vgList, retList, outList, OutTemplate);
-                                    delete pReq;
-                                }
-                            }
-                            else
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[i] << "\" to channel " << i+1 << " on meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-                            }
-                        }
-
-                        resultString += getName() + " / Sent config to MCT \"" + getName() + "\"\n";
-                    }
-
-                    if( OutTemplate != NULL )
-                    {
-                        delete OutTemplate;
-                    }
-
-                    resultString += getName( ) + " / sspec verified as \'" + sspecIsFrom( sspec ) + "\'.";
+                    resultString += getName() + " / Sent config to MCT \"" + getName() + "\"\n";
                 }
 
-                break;
+                if( OutTemplate != NULL )
+                {
+                    delete OutTemplate;
+                }
+
+                resultString += getName( ) + " / sspec verified as \'" + sspecIsFrom( sspec ) + "\'.";
             }
 
-            default:
-            {
-                resultString = getName( ) + " / command complete";
-
-                break;
-            }
+            break;
         }
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString( resultString );
-
-        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-
-        if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+        default:
         {
-            ReturnMsg->setExpectMore(true);
-        }
+            resultString = getName( ) + " / command complete";
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+            break;
+        }
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString( resultString );
+
+    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+
+    if( InMessage->MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection)!=0 )
+    {
+        ReturnMsg->setExpectMore(true);
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

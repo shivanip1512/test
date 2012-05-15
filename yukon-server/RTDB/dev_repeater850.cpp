@@ -92,50 +92,44 @@ INT Repeater850Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow,
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
+    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg      *pData = NULL;
 
-    if( !(status = decodeCheckErrorReturn(InMessage, retList, outList)) )
+    if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL )
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg      *pData = NULL;
-
-        if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        int  sspec, rev;
-        string modelStr;
-
-        sspec  = DSt->Message[1] << 8;
-        sspec |= DSt->Message[2];
-        rev    = DSt->Message[3];
-
-        modelStr = getName() + " / sspec: " + CtiNumStr(sspec);
-
-        //  convert 10 to 1.0, 24 to 2.4
-        modelStr += " rev " + CtiNumStr(((double)rev) / 10.0, 1);
-
-        //  valid/released versions are 1.0 - 24.9
-        if( rev <= SspecRev_BetaLo ||
-            rev >= SspecRev_BetaHi )
-        {
-            modelStr += " [possible development revision]";
-        }
-
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RPT_SSpec,         (long)sspec);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RPT_SSpecRevision, (long)rev);
-
-        ReturnMsg->setResultString( modelStr );
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    int  sspec, rev;
+    string modelStr;
+
+    sspec  = DSt->Message[1] << 8;
+    sspec |= DSt->Message[2];
+    rev    = DSt->Message[3];
+
+    modelStr = getName() + " / sspec: " + CtiNumStr(sspec);
+
+    //  convert 10 to 1.0, 24 to 2.4
+    modelStr += " rev " + CtiNumStr(((double)rev) / 10.0, 1);
+
+    //  valid/released versions are 1.0 - 24.9
+    if( rev <= SspecRev_BetaLo ||
+        rev >= SspecRev_BetaHi )
+    {
+        modelStr += " [possible development revision]";
+    }
+
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RPT_SSpec,         (long)sspec);
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RPT_SSpecRevision, (long)rev);
+
+    ReturnMsg->setResultString( modelStr );
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

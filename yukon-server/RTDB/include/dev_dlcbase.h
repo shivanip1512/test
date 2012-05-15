@@ -98,7 +98,9 @@ protected:
     virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::list<OUTMESS *> &outList);
 
     INT retMsgHandler( std::string commandStr, int status, CtiReturnMsg *retMsg, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, bool expectMore = false ) const;
-    INT decodeCheckErrorReturn(INMESS *InMessage, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
+
+
+    //INT decodeCheckErrorReturn(INMESS *InMessage, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
     class CommandStore
     {

@@ -399,12 +399,6 @@ string Mct420Device::decodeDisconnectStatus(const DSTRUCT &DSt)
 
 int Mct420Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    if( int status = decodeCheckErrorReturn(InMessage, retList, outList) )
-    {
-        return status;
-    }
-
-    // No error occured, we must do a real decode!
 
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
@@ -439,11 +433,6 @@ int Mct420Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &Tim
 
 int Mct420Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
-    if( int status = decodeCheckErrorReturn(InMessage, retList, outList) )
-    {
-        return status;
-    }
-
     DSTRUCT &DSt = InMessage->Buffer.DSt;
 
     const unsigned revision = DSt.Message[0];

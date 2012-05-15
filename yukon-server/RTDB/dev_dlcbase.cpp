@@ -397,7 +397,7 @@ INT DlcBaseDevice::retMsgHandler( string commandStr, int status, CtiReturnMsg *r
 }
 
 
-
+#if 0
 INT DlcBaseDevice::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
@@ -548,7 +548,7 @@ INT DlcBaseDevice::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* >
 
     return ErrReturn;
 }
-
+#endif
 
 int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {

@@ -108,61 +108,55 @@ INT Repeater800Device::decodeGetValuePFCount(INMESS *InMessage, CtiTime &TimeNow
 
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
+    INT   j;
+    ULONG pfCount = 0;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg      *pData = NULL;
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        INT   j;
-        ULONG pfCount = 0;
-
-        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg      *pData = NULL;
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        for(j = 0; j < 2; j++)
-        {
-            pfCount = (pfCount << 8) + InMessage->Buffer.DSt.Message[j];
-        }
-
-        {
-            string resultString, pointString;
-            double value;
-
-            CtiLockGuard<CtiMutex> guard(_classMutex);               // Lock the MCT device!
-            CtiPointSPtr pPoint;
-
-            if( pPoint = getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType) )
-            {
-                value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pfCount);
-
-                pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(value, 0);  //  boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-
-                if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, NormalQuality, PulseAccumulatorPointType, pointString) )
-                {
-                    ReturnMsg->PointData().push_back(pData);
-                    pData = NULL;  // We just put it on the list...
-                }
-            }
-            else
-            {
-                resultString += getName() + " / Blink Counter = " + CtiNumStr(pfCount) + "\n";
-
-                ReturnMsg->setResultString(resultString);
-            }
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    for(j = 0; j < 2; j++)
+    {
+        pfCount = (pfCount << 8) + InMessage->Buffer.DSt.Message[j];
+    }
+
+    {
+        string resultString, pointString;
+        double value;
+
+        CtiLockGuard<CtiMutex> guard(_classMutex);               // Lock the MCT device!
+        CtiPointSPtr pPoint;
+
+        if( pPoint = getDevicePointOffsetTypeEqual(20, PulseAccumulatorPointType) )
+        {
+            value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(pfCount);
+
+            pointString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(value, 0);  //  boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
+
+            if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getID(), value, NormalQuality, PulseAccumulatorPointType, pointString) )
+            {
+                ReturnMsg->PointData().push_back(pData);
+                pData = NULL;  // We just put it on the list...
+            }
+        }
+        else
+        {
+            resultString += getName() + " / Blink Counter = " + CtiNumStr(pfCount) + "\n";
+
+            ReturnMsg->setResultString(resultString);
+        }
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

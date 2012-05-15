@@ -3695,112 +3695,107 @@ INT Mct470Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
         setScanFlag(ScanRateAccum, false);
     }
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    CtiTime pointTime;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    const unsigned char *freeze_counter = 0;
+
+    if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
     {
-        // No error occured, we must do a real decode!
+        freeze_counter = DSt->Message + 3;
 
-        CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+        string freeze_error;
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        CtiTime pointTime;
-        DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-        const unsigned char *freeze_counter = 0;
-
-        if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
+        if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
         {
-            freeze_counter = DSt->Message + 3;
-
-            string freeze_error;
-
-            if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
-            {
-                ReturnMsg->setResultString(freeze_error);
-            }
-            else
-            {
-                pointTime  = getLastFreezeTimestamp(TimeNow);
-                pointTime -= pointTime.seconds() % 60;
-            }
+            ReturnMsg->setResultString(freeze_error);
         }
         else
         {
-            pointTime -= pointTime.seconds() % 300;
+            pointTime  = getLastFreezeTimestamp(TimeNow);
+            pointTime -= pointTime.seconds() % 60;
         }
-
-        if( !status )
-        {
-            std::bitset<ChannelCount> points;
-
-            for( int i = 0; i < ChannelCount; i++ )
-            {
-                if( getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
-                {
-                    points.set(i);
-                }
-            }
-
-            for( int i = 0; i < ChannelCount; i++ )
-            {
-                int offset = (i * 3);
-
-                //  if we have a point for this offset OR it's the first index and we have no points defined
-                if( points.test(i) || (i == 0 && points.none()) )
-                {
-                    point_info pi;
-
-                    if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
-                        InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
-                    {
-                        //  normal KWH read, nothing too special
-                        pi = getAccumulatorData(DSt->Message + offset, 3, 0);
-                    }
-                    else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
-                    {
-                        //  this is where the action is - frozen decode
-                        if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
-
-                        pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
-
-                        if( pi.freeze_bit != getExpectedFreezeParity() )
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
-                                                    ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
-                                                    "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
-                            pi.description  = "Freeze parity does not match (";
-                            pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
-                            pi.description += "/" + CtiNumStr(getExpectedFreezeCounter()) + ")";
-                            pi.quality = InvalidQuality;
-                            pi.value = 0;
-
-                            ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
-                            status = ErrorInvalidFrozenReadingParity;
-                        }
-                    }
-
-                    string point_name;
-
-                    if( i == 0 )  point_name = "KYZ 1";
-
-                    insertPointDataReport(PulseAccumulatorPointType, i + 1,
-                                          ReturnMsg, pi, point_name, pointTime, 1.0, TAG_POINT_MUST_ARCHIVE);
-
-                    //  if the quality's invalid, throw the status to abnormal
-                    if( pi.quality == InvalidQuality && !status )
-                    {
-                        status = ErrorInvalidData;
-                    }
-                }
-            }
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
+    else
+    {
+        pointTime -= pointTime.seconds() % 300;
+    }
+
+    if( !status )
+    {
+        std::bitset<ChannelCount> points;
+
+        for( int i = 0; i < ChannelCount; i++ )
+        {
+            if( getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
+            {
+                points.set(i);
+            }
+        }
+
+        for( int i = 0; i < ChannelCount; i++ )
+        {
+            int offset = (i * 3);
+
+            //  if we have a point for this offset OR it's the first index and we have no points defined
+            if( points.test(i) || (i == 0 && points.none()) )
+            {
+                point_info pi;
+
+                if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
+                    InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
+                {
+                    //  normal KWH read, nothing too special
+                    pi = getAccumulatorData(DSt->Message + offset, 3, 0);
+                }
+                else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
+                {
+                    //  this is where the action is - frozen decode
+                    if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
+
+                    pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
+
+                    if( pi.freeze_bit != getExpectedFreezeParity() )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
+                                                ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
+                                                "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+
+                        pi.description  = "Freeze parity does not match (";
+                        pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
+                        pi.description += "/" + CtiNumStr(getExpectedFreezeCounter()) + ")";
+                        pi.quality = InvalidQuality;
+                        pi.value = 0;
+
+                        ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
+                        status = ErrorInvalidFrozenReadingParity;
+                    }
+                }
+
+                string point_name;
+
+                if( i == 0 )  point_name = "KYZ 1";
+
+                insertPointDataReport(PulseAccumulatorPointType, i + 1,
+                                      ReturnMsg, pi, point_name, pointTime, 1.0, TAG_POINT_MUST_ARCHIVE);
+
+                //  if the quality's invalid, throw the status to abnormal
+                if( pi.quality == InvalidQuality && !status )
+                {
+                    status = ErrorInvalidData;
+                }
+            }
+        }
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3826,70 +3821,65 @@ INT Mct470Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, CtiM
     setScanFlag(ScanRateGeneral, false);
     setScanFlag(ScanRateIntegrity, false);
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        for( i = 0; i < 8; i++ )
-        {
-            pi.value   = (DSt->Message[0] >> i) & 0x01;
-            pi.quality = NormalQuality;
-
-            insertPointDataReport(StatusPointType, i + 1,
-                                  ReturnMsg, pi);
-        }
-
-        //  check to see if there are any demand points defined
-        for( i = 0; !demand_defined && i < 4; i++ )
-        {
-            if( getDevicePointOffsetTypeEqual(i + 1, DemandAccumulatorPointType) )
-            {
-                demand_defined = true;
-            }
-        }
-
-        CtiTime demand_time;
-        demand_time -= demand_time.seconds() % getDemandInterval();
-
-        for( i = 0; i < 4; i++ )
-        {
-            pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_PulseDemand);
-
-            //  turn raw pulses into a demand reading
-            pi.value *= double(3600 / getDemandInterval());
-
-            //  if there's no other demand defined, we need to at least send point 1
-            if( !i && !demand_defined )
-            {
-                insertPointDataReport(DemandAccumulatorPointType, i + 1,
-                                      ReturnMsg, pi, "Channel 1 Demand", demand_time);
-            }
-            else
-            {
-                insertPointDataReport(DemandAccumulatorPointType, i + 1,
-                                      ReturnMsg, pi, "", demand_time);
-            }
-        }
-
-        pi = Mct4xxDevice::getData(DSt->Message + 9, 2, ValueType_Raw);
-
-        insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail,
-                              ReturnMsg, pi, "Blink Counter");
-
-        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ));
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    for( i = 0; i < 8; i++ )
+    {
+        pi.value   = (DSt->Message[0] >> i) & 0x01;
+        pi.quality = NormalQuality;
+
+        insertPointDataReport(StatusPointType, i + 1,
+                              ReturnMsg, pi);
+    }
+
+    //  check to see if there are any demand points defined
+    for( i = 0; !demand_defined && i < 4; i++ )
+    {
+        if( getDevicePointOffsetTypeEqual(i + 1, DemandAccumulatorPointType) )
+        {
+            demand_defined = true;
+        }
+    }
+
+    CtiTime demand_time;
+    demand_time -= demand_time.seconds() % getDemandInterval();
+
+    for( i = 0; i < 4; i++ )
+    {
+        pi = getData(DSt->Message + (i * 2) + 1, 2, ValueType_PulseDemand);
+
+        //  turn raw pulses into a demand reading
+        pi.value *= double(3600 / getDemandInterval());
+
+        //  if there's no other demand defined, we need to at least send point 1
+        if( !i && !demand_defined )
+        {
+            insertPointDataReport(DemandAccumulatorPointType, i + 1,
+                                  ReturnMsg, pi, "Channel 1 Demand", demand_time);
+        }
+        else
+        {
+            insertPointDataReport(DemandAccumulatorPointType, i + 1,
+                                  ReturnMsg, pi, "", demand_time);
+        }
+    }
+
+    pi = Mct4xxDevice::getData(DSt->Message + 9, 2, ValueType_Raw);
+
+    insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail,
+                          ReturnMsg, pi, "Blink Counter");
+
+    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection ));
 
     return status;
 }
@@ -3914,85 +3904,80 @@ INT Mct470Device::decodeGetValueMinMaxDemand(INMESS *InMessage, CtiTime &TimeNow
         dout << CtiTime() << " **** Min/Max Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    base_offset = parse.getOffset();
+
+    if( base_offset < 1 || base_offset > 4 )
+    {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
+            dout << CtiTime() << " **** Checkpoint - offset = " << base_offset << " - resetting to 1 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        base_offset = parse.getOffset();
-
-        if( base_offset < 1 || base_offset > 4 )
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - offset = " << base_offset << " - resetting to 1 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            base_offset = 1;
-        }
-
-        pi      = getData(DSt->Message + 0, 2, ValueType_PulseDemand);
-        pi_time = Mct4xxDevice::getData(DSt->Message + 2, 4, ValueType_Raw);
-
-        //  turn raw pulses into a demand reading
-        pi.value *= double(3600 / getDemandInterval());
-
-        pointTime = CtiTime(pi_time.value);
-
-        //  we can do a rudimentary frozen peak time check here with the dynamicInfo stuff - we can't
-        //    do much more, since we don't get the freeze count back with the frozen demand, so we have to
-        //    take the device's word for it
-
-        string pointname;
-
-        pointname = "Channel " + CtiNumStr(base_offset) + " Max Demand";
-
-        insertPointDataReport(DemandAccumulatorPointType, base_offset + PointOffset_MaxOffset,
-                              ReturnMsg, pi, pointname, pointTime);
-
-        pi      = getData(DSt->Message + 6, 2, ValueType_PulseDemand);
-        pi_time = Mct4xxDevice::getData(DSt->Message + 8, 4, ValueType_Raw);
-
-        //  turn raw pulses into a demand reading
-        pi.value *= double(3600 / getDemandInterval());
-
-        pointTime = CtiTime(pi_time.value);
-
-        pointname = "Channel " + CtiNumStr(base_offset) + " Min Demand";
-
-        //  if the min point doesn't exist...
-        if( !getDevicePointOffsetTypeEqual(base_offset + PointOffset_MinOffset, DemandAccumulatorPointType) )
-        {
-            //  first look for the max point
-            CtiPointNumericSPtr p = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(base_offset + PointOffset_MaxOffset, DemandAccumulatorPointType));
-
-            //  if that doesn't exist, go after the normal demand point
-            if( !p )
-            {
-                p = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(base_offset, DemandAccumulatorPointType));
-            }
-
-            //  if we found a stand-in point, compute the multiplier before we send it off
-            if( p )
-            {
-                pi.value = p->computeValueForUOM(pi.value);
-            }
-        }
-
-        insertPointDataReport(DemandAccumulatorPointType, base_offset + PointOffset_MinOffset,
-                              ReturnMsg, pi, pointname, pointTime);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        base_offset = 1;
     }
+
+    pi      = getData(DSt->Message + 0, 2, ValueType_PulseDemand);
+    pi_time = Mct4xxDevice::getData(DSt->Message + 2, 4, ValueType_Raw);
+
+    //  turn raw pulses into a demand reading
+    pi.value *= double(3600 / getDemandInterval());
+
+    pointTime = CtiTime(pi_time.value);
+
+    //  we can do a rudimentary frozen peak time check here with the dynamicInfo stuff - we can't
+    //    do much more, since we don't get the freeze count back with the frozen demand, so we have to
+    //    take the device's word for it
+
+    string pointname;
+
+    pointname = "Channel " + CtiNumStr(base_offset) + " Max Demand";
+
+    insertPointDataReport(DemandAccumulatorPointType, base_offset + PointOffset_MaxOffset,
+                          ReturnMsg, pi, pointname, pointTime);
+
+    pi      = getData(DSt->Message + 6, 2, ValueType_PulseDemand);
+    pi_time = Mct4xxDevice::getData(DSt->Message + 8, 4, ValueType_Raw);
+
+    //  turn raw pulses into a demand reading
+    pi.value *= double(3600 / getDemandInterval());
+
+    pointTime = CtiTime(pi_time.value);
+
+    pointname = "Channel " + CtiNumStr(base_offset) + " Min Demand";
+
+    //  if the min point doesn't exist...
+    if( !getDevicePointOffsetTypeEqual(base_offset + PointOffset_MinOffset, DemandAccumulatorPointType) )
+    {
+        //  first look for the max point
+        CtiPointNumericSPtr p = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(base_offset + PointOffset_MaxOffset, DemandAccumulatorPointType));
+
+        //  if that doesn't exist, go after the normal demand point
+        if( !p )
+        {
+            p = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(base_offset, DemandAccumulatorPointType));
+        }
+
+        //  if we found a stand-in point, compute the multiplier before we send it off
+        if( p )
+        {
+            pi.value = p->computeValueForUOM(pi.value);
+        }
+    }
+
+    insertPointDataReport(DemandAccumulatorPointType, base_offset + PointOffset_MinOffset,
+                          ReturnMsg, pi, pointname, pointTime);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4035,612 +4020,607 @@ INT Mct470Device::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, CtiMess
     setScanFlag(ScanRateGeneral, false);
     setScanFlag(ScanRateIntegrity, false);
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    bool dataInvalid = true;
+    int  ied_data_end;
+
+    if( parse.getFlags() & CMD_FLAG_GV_DEMAND && !(parse.getFlags() & CMD_FLAG_GV_PEAK) )
+    {
+        //  Reads 0xd5-0xd9 have 12 bytes of IED data, then the status byte at the end
+        //    Read 0xd4 has only 9 bytes of actual data, so when we do that read, it'll need to accomodate that
+        //  Ideally, I'd like to do this check directly based on where the read is coming from, instead of
+        //    what command we resolve it to
+        ied_data_end = 12;
+    }
+    else
+    {
+        ied_data_end = 13;
+    }
+
+    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_IED_ErrorPadding )
+    {
+        for( int i = 0; i < ied_data_end; i++)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
+            if( (i && DSt->Message[i] != DSt->Message[i-1]) ||
+                DSt->Message[i] != 0xFF &&
+                DSt->Message[i] != 0xFE &&
+                DSt->Message[i] != 0xFD &&
+                DSt->Message[i] != 0xFC )
+            {
+                //  we need to handle the case where the collected data is all 0xfe - means its quality is bad
+                dataInvalid = false;
+                break;
+            }
         }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        bool dataInvalid = true;
-        int  ied_data_end;
-
-        if( parse.getFlags() & CMD_FLAG_GV_DEMAND && !(parse.getFlags() & CMD_FLAG_GV_PEAK) )
+    }
+    else
+    {
+        for( int i = 0; i < ied_data_end; i++)
         {
-            //  Reads 0xd5-0xd9 have 12 bytes of IED data, then the status byte at the end
-            //    Read 0xd4 has only 9 bytes of actual data, so when we do that read, it'll need to accomodate that
-            //  Ideally, I'd like to do this check directly based on where the read is coming from, instead of
-            //    what command we resolve it to
-            ied_data_end = 12;
+            if( DSt->Message[i] != 0 )
+            {
+                dataInvalid = false;
+                break;
+            }
+        }
+    }
+
+    //  If this rev is before the SSPEC fix and the timestamp is at least 10 minutes old
+    if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin
+        && (CtiTime::now().seconds() > (_iedTime.seconds() + MaxIEDReadAge)) )
+    {
+        dataInvalid = true;
+    }
+
+    //  this must be before CMD_FLAG_GV_DEMAND, since we are looking for peak demand
+    if( parse.getFlags() & CMD_FLAG_GV_PEAK )
+    {
+        if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+        {
+            resultString += getName() + " / IED peak kW/kM reads require SSPEC rev 4.2 or higher; execute \"getconfig model\" to verify";
+            status = ErrorVerifySSPEC;
+        }
+        else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_Precanned11 )
+        {
+            resultString += getName() + " / IED peak kW/kM reads require SSPEC rev 4.2 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1);
+            status = ErrorInvalidSSPEC;
+        }
+        else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+        {
+            resultString += "Did not retrieve the IED type";
+            status = NoConfigData;
+        }
+        else if( !isPrecannedTableCurrent() )
+        {
+            resultString += "Did not retrieve the precanned table type";
+            status = NoConfigData;
+        }
+        else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) != 11 )
+        {
+            resultString += getName() + " / IED peak kW/kM reads require Precanned Table 11; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType));
+            status = NoMethod;
+        }
+        else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) != IED_Type_LG_S4 )
+        {
+            resultString += getName() + " / IED peak kW/kM reads require an S4; MCT reports " + resolveIEDName(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4);
+            status = NoMethod;
         }
         else
         {
-            ied_data_end = 13;
-        }
-
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_IED_ErrorPadding )
-        {
-            for( int i = 0; i < ied_data_end; i++)
-            {
-                if( (i && DSt->Message[i] != DSt->Message[i-1]) ||
-                    DSt->Message[i] != 0xFF &&
-                    DSt->Message[i] != 0xFE &&
-                    DSt->Message[i] != 0xFD &&
-                    DSt->Message[i] != 0xFC )
-                {
-                    //  we need to handle the case where the collected data is all 0xfe - means its quality is bad
-                    dataInvalid = false;
-                    break;
-                }
-            }
-        }
-        else
-        {
-            for( int i = 0; i < ied_data_end; i++)
-            {
-                if( DSt->Message[i] != 0 )
-                {
-                    dataInvalid = false;
-                    break;
-                }
-            }
-        }
-
-        //  If this rev is before the SSPEC fix and the timestamp is at least 10 minutes old
-        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin
-            && (CtiTime::now().seconds() > (_iedTime.seconds() + MaxIEDReadAge)) )
-        {
-            dataInvalid = true;
-        }
-
-        //  this must be before CMD_FLAG_GV_DEMAND, since we are looking for peak demand
-        if( parse.getFlags() & CMD_FLAG_GV_PEAK )
-        {
-            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
-            {
-                resultString += getName() + " / IED peak kW/kM reads require SSPEC rev 4.2 or higher; execute \"getconfig model\" to verify";
-                status = ErrorVerifySSPEC;
-            }
-            else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_Precanned11 )
-            {
-                resultString += getName() + " / IED peak kW/kM reads require SSPEC rev 4.2 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1);
-                status = ErrorInvalidSSPEC;
-            }
-            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
-            {
-                resultString += "Did not retrieve the IED type";
-                status = NoConfigData;
-            }
-            else if( !isPrecannedTableCurrent() )
-            {
-                resultString += "Did not retrieve the precanned table type";
-                status = NoConfigData;
-            }
-            else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) != 11 )
-            {
-                resultString += getName() + " / IED peak kW/kM reads require Precanned Table 11; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType));
-                status = NoMethod;
-            }
-            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) != IED_Type_LG_S4 )
-            {
-                resultString += getName() + " / IED peak kW/kM reads require an S4; MCT reports " + resolveIEDName(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4);
-                status = NoMethod;
-            }
-            else
-            {
-                if( dataInvalid )
-                {
-                    //  If we are here, we believe the data is incorrect!
-                    resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
-                    status = ALPHABUFFERERROR;
-
-                    if( parse.getCommandStr().find(" kva") != string::npos )
-                    {
-                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKM,  AnalogPointType);
-                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
-                    }
-                    else
-                    {
-                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKW,  AnalogPointType);
-                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
-                    }
-                }
-                else
-                {
-                    unsigned demand_offset, consumption_offset;
-                    string   demand_name,   consumption_name;
-
-                    if( parse.getCommandStr().find(" kva") != string::npos )
-                    {
-                        demand_offset      = PointOffset_PeakKM;
-                        demand_name        = "Peak kM";
-                        consumption_offset = PointOffset_TotalKMH;
-                        consumption_name   = "kMh total";
-                    }
-                    else
-                    {
-                        demand_offset      = PointOffset_PeakKW;
-                        demand_name        = "Peak kW";
-                        consumption_offset = PointOffset_TotalKWH;
-                        consumption_name   = "kWh total";
-                    }
-
-                    status = decodeGetValueIEDPrecannedTable11Peak(parse, *DSt, TimeNow, demand_offset, demand_name, consumption_offset, consumption_name, ReturnMsg);
-                }
-            }
-        }
-        else if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
-        {
-            bool has_volts = true;
-
-            if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
-            {
-                switch( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4 )
-                {
-                    case IED_Type_LG_S4:
-                    case IED_Type_Alpha_A3:
-                    case IED_Type_GE_kV:
-                    case IED_Type_GE_kV2:
-                    case IED_Type_GE_kV2c:
-                    case IED_Type_Sentinel:
-                    {
-                        has_volts = true;
-                        break;
-                    }
-
-                    default:
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" is reporting an invalid IED type (" << (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) << ") for getvalue ied demand **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    case IED_Type_Alpha_PP:
-                    {
-                        has_volts = false;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                has_volts = getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseA, AnalogPointType) ||
-                            getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseB, AnalogPointType) ||
-                            getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseC, AnalogPointType);
-            }
-
             if( dataInvalid )
             {
                 //  If we are here, we believe the data is incorrect!
                 resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
                 status = ALPHABUFFERERROR;
 
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW,     AnalogPointType);
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM,     AnalogPointType);
-
-                if( has_volts )
+                if( parse.getCommandStr().find(" kva") != string::npos )
                 {
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKM,  AnalogPointType);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
                 }
                 else
                 {
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
-                }
-            }
-            else
-            {
-                //  get demand
-                pi = getData(DSt->Message, 3, ValueType_IED);
-
-                reportPointData(AnalogPointType, PointOffset_TotalKW, *ReturnMsg, *InMessage, pi, "current kW");
-
-                //  get selectable metric (kM, kVAR, etc)
-                pi = getData(DSt->Message + 3, 3, ValueType_IED);
-
-                reportPointData(AnalogPointType, PointOffset_TotalKM, *ReturnMsg, *InMessage, pi, "current kM");
-
-                if( has_volts )
-                {
-                    pi = getData(DSt->Message + 6, 2, ValueType_IED);
-                    pi.value /= 100.0;
-
-                    reportPointData(AnalogPointType, PointOffset_VoltsPhaseA, *ReturnMsg, *InMessage, pi, "Phase A Volts");
-
-                    pi = getData(DSt->Message + 8, 2, ValueType_IED);
-                    pi.value /= 100.0;
-
-                    reportPointData(AnalogPointType, PointOffset_VoltsPhaseB, *ReturnMsg, *InMessage, pi, "Phase B Volts");
-
-                    pi = getData(DSt->Message + 10, 2, ValueType_IED);
-                    pi.value /= 100.0;
-
-                    reportPointData(AnalogPointType, PointOffset_VoltsPhaseC, *ReturnMsg, *InMessage, pi, "Phase C Volts");
-                }
-                else
-                {
-                    pi = getData(DSt->Message + 6, 2, ValueType_IED);
-
-                    reportPointData(AnalogPointType, PointOffset_OutageCount, *ReturnMsg, *InMessage, pi, "Outage Count");
-                }
-            }
-        }
-        else if( parse.getFlags() & CMD_FLAG_GV_RATET )
-        {
-            if( dataInvalid )
-            {
-                //If we are here, we believe the data is incorrect!
-                resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
-                status = ALPHABUFFERERROR;
-
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
-            }
-            else
-            {
-                pi = getData(DSt->Message, 5, ValueType_IED);
-
-                insertPointDataReport(AnalogPointType, PointOffset_TotalKWH,
-                                      ReturnMsg, pi, "kWh total", CtiTime(), 1.0, TAG_POINT_MUST_ARCHIVE);
-
-                if( pi.quality == InvalidQuality )
-                {
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_PeakKW,  AnalogPointType);
                     insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
                 }
+            }
+            else
+            {
+                unsigned demand_offset, consumption_offset;
+                string   demand_name,   consumption_name;
 
-                pi = getData(DSt->Message + 5, 5, ValueType_IED);
-
-                insertPointDataReport(AnalogPointType, PointOffset_TotalKMH,
-                                      ReturnMsg, pi, "kMh total");
-
-                if( pi.quality == InvalidQuality )
+                if( parse.getCommandStr().find(" kva") != string::npos )
                 {
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+                    demand_offset      = PointOffset_PeakKM;
+                    demand_name        = "Peak kM";
+                    consumption_offset = PointOffset_TotalKMH;
+                    consumption_name   = "kMh total";
+                }
+                else
+                {
+                    demand_offset      = PointOffset_PeakKW;
+                    demand_name        = "Peak kW";
+                    consumption_offset = PointOffset_TotalKWH;
+                    consumption_name   = "kWh total";
                 }
 
-                pi = getData(DSt->Message + 10, 2, ValueType_IED);
-
-                insertPointDataReport(AnalogPointType, PointOffset_AveragePowerFactor,
-                                      ReturnMsg, pi, "Average power factor since last freeze");
-
-                if( pi.quality == InvalidQuality )
-                {
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
-                }
+                status = decodeGetValueIEDPrecannedTable11Peak(parse, *DSt, TimeNow, demand_offset, demand_name, consumption_offset, consumption_name, ReturnMsg);
             }
         }
-        else if( parse.isKeyValid("ied_dnp") )
+    }
+    else if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
+    {
+        bool has_volts = true;
+
+        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
         {
-            int i = 0;
-            int dnp_status = DSt->Message[12];  //  Applies only to precanned table reads.
-
-            if( (i = parse.getiValue("collectionnumber")) != INT_MIN )
+            switch( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4 )
             {
-                decodeDNPRealTimeRead(DSt->Message, i, resultString, ReturnMsg, InMessage);
-            }
-            else if( (i = parse.getiValue("analognumber")) != INT_MIN )
-            {
-                if( dnp_status == 0 )
+                case IED_Type_LG_S4:
+                case IED_Type_Alpha_A3:
+                case IED_Type_GE_kV:
+                case IED_Type_GE_kV2:
+                case IED_Type_GE_kV2c:
+                case IED_Type_Sentinel:
                 {
-                    for( int byte = 0; byte < 6; byte++ )
-                    {
-                        int pointoffset = PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6;
-
-                        string pointname;
-                        pointname  = "Analog point ";
-                        pointname += CtiNumStr(pointoffset);
-
-                        pi = Mct4xxDevice::getData(DSt->Message + byte*2, 2, ValueType_Raw);
-
-                        insertPointDataReport(AnalogPointType, pointoffset,
-                                              ReturnMsg, pi, pointname);
-                    }
+                    has_volts = true;
+                    break;
                 }
-                else
+
+                default:
                 {
-                    resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(status);
-
-                    for( int byte = 0; byte < 6; byte++ )
-                    {
-                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType);
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" is reporting an invalid IED type (" << (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) << ") for getvalue ied demand **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
-            }
-            else if( (i = parse.getiValue("accumulatornumber")) != INT_MIN )
-            {
-                if( dnp_status == 0 )
+                case IED_Type_Alpha_PP:
                 {
-                    for( int byte = 0; byte < 6; byte++ )
-                    {
-                        int pointoffset = PointOffset_DNPCounter_Precanned1+byte+(i-1)*6;
-
-                        string pointname;
-                        pointname  = "Pulse Accumulator point ";
-                        pointname += CtiNumStr(pointoffset);
-
-                        pi = Mct4xxDevice::getData(DSt->Message + byte*2, 2, ValueType_Raw);
-
-                        insertPointDataReport(PulseAccumulatorPointType, pointoffset,
-                                              ReturnMsg, pi, pointname);
-                    }
+                    has_volts = false;
+                    break;
                 }
-                else
-                {
-                    resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(dnp_status);
-
-                    for( int byte = 0; byte < 6; byte++ )
-                    {
-                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, AnalogPointType);
-                    }
-                }
-            }
-            else if( (i = parse.getiValue("statusnumber")) != INT_MIN )
-            {
-                if( dnp_status == 0 )
-                {
-                    pi.quality = NormalQuality;
-
-                    for( int byte = 0; byte < 12; byte++ )
-                    {
-                        for( int bit = 0; bit < 8; bit++ )
-                        {
-                            pi.value = (DSt->Message[byte] >> bit) & 0x01;
-
-                            insertPointDataReport(StatusPointType, PointOffset_DNPStatus_PrecannedStart+byte*8+bit,
-                                                  ReturnMsg, pi);
-                        }
-
-                        resultString += getName() + " / Binary Data Byte " + CtiNumStr(byte) + " = " + CtiNumStr(DSt->Message[byte]) + "\n";
-                    }
-                }
-                else
-                {
-                    resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(dnp_status);
-
-                    for( int byte = 0; byte < 12; byte++ )
-                    {
-                        for( int bit = 0; bit < 8; bit++ )
-                        {
-                            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPStatus_PrecannedStart+(byte*8)+bit, StatusPointType);
-                        }
-                    }
-                }
-            }
-            else if( parse.isKeyValid("dnp_crc") )
-            {
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC, InMessage->Buffer.DSt.Message[0]);
-                resultString += "CRCs Returned: " + CtiNumStr(InMessage->Buffer.DSt.Message[0]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC, InMessage->Buffer.DSt.Message[1]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[1]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC, InMessage->Buffer.DSt.Message[2]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[2]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, InMessage->Buffer.DSt.Message[3]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[3]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, InMessage->Buffer.DSt.Message[4]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[4]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, InMessage->Buffer.DSt.Message[5]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[5]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, InMessage->Buffer.DSt.Message[6]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[6]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, InMessage->Buffer.DSt.Message[7]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[7]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, InMessage->Buffer.DSt.Message[8]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[8]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, InMessage->Buffer.DSt.Message[9]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[9]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, InMessage->Buffer.DSt.Message[10]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[10]);
-
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, InMessage->Buffer.DSt.Message[11]);
-                resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[11]);
             }
         }
         else
         {
-            if( dataInvalid )
+            has_volts = getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseA, AnalogPointType) ||
+                        getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseB, AnalogPointType) ||
+                        getDevicePointOffsetTypeEqual(PointOffset_VoltsPhaseC, AnalogPointType);
+        }
+
+        if( dataInvalid )
+        {
+            //  If we are here, we believe the data is incorrect!
+            resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
+            status = ALPHABUFFERERROR;
+
+            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKW,     AnalogPointType);
+            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKM,     AnalogPointType);
+
+            if( has_volts )
             {
-                //If we are here, we believe the data is incorrect!
-                resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
-                status = ALPHABUFFERERROR;
-
-                if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
-                {
-                    offset = PointOffset_TOU_KMBase;
-                }
-                else
-                {
-                    offset = PointOffset_TOU_KWBase;
-                }
-
-                if(      parse.getFlags() & CMD_FLAG_GV_RATEA )   rate = 0;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATEB )   rate = 1;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATEC )   rate = 2;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATED )   rate = 3;
-
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2 + 1), AnalogPointType);
-                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2), AnalogPointType);
-                if( parse.getFlags() & CMD_FLAG_FROZEN && (offset + rate * 2) == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
-                {
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset), AnalogPointType);
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase +     PointOffset_FrozenPointOffset), AnalogPointType);
-                }
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseA, AnalogPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseB, AnalogPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_VoltsPhaseC, AnalogPointType);
             }
-            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+            else
             {
-                resultString += getName() + " / Did not retrieve SSPEC revision";
-                status = ErrorVerifySSPEC;
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
             }
-            else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+        }
+        else
+        {
+            //  get demand
+            pi = getData(DSt->Message, 3, ValueType_IED);
+
+            reportPointData(AnalogPointType, PointOffset_TotalKW, *ReturnMsg, *InMessage, pi, "current kW");
+
+            //  get selectable metric (kM, kVAR, etc)
+            pi = getData(DSt->Message + 3, 3, ValueType_IED);
+
+            reportPointData(AnalogPointType, PointOffset_TotalKM, *ReturnMsg, *InMessage, pi, "current kM");
+
+            if( has_volts )
             {
-                resultString += "Did not retrieve the IED type";
-                status = NoConfigData;
+                pi = getData(DSt->Message + 6, 2, ValueType_IED);
+                pi.value /= 100.0;
+
+                reportPointData(AnalogPointType, PointOffset_VoltsPhaseA, *ReturnMsg, *InMessage, pi, "Phase A Volts");
+
+                pi = getData(DSt->Message + 8, 2, ValueType_IED);
+                pi.value /= 100.0;
+
+                reportPointData(AnalogPointType, PointOffset_VoltsPhaseB, *ReturnMsg, *InMessage, pi, "Phase B Volts");
+
+                pi = getData(DSt->Message + 10, 2, ValueType_IED);
+                pi.value /= 100.0;
+
+                reportPointData(AnalogPointType, PointOffset_VoltsPhaseC, *ReturnMsg, *InMessage, pi, "Phase C Volts");
             }
-            else if( !isPrecannedTableCurrent() )
+            else
             {
-                resultString += "Did not retrieve the precanned table type";
-                status = NoConfigData;
+                pi = getData(DSt->Message + 6, 2, ValueType_IED);
+
+                reportPointData(AnalogPointType, PointOffset_OutageCount, *ReturnMsg, *InMessage, pi, "Outage Count");
             }
-            else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_IED_Precanned11)
-                     && (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) == 11)
-                     && ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) == IED_Type_LG_S4) )
+        }
+    }
+    else if( parse.getFlags() & CMD_FLAG_GV_RATET )
+    {
+        if( dataInvalid )
+        {
+            //If we are here, we believe the data is incorrect!
+            resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
+            status = ALPHABUFFERERROR;
+
+            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
+            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+        }
+        else
+        {
+            pi = getData(DSt->Message, 5, ValueType_IED);
+
+            insertPointDataReport(AnalogPointType, PointOffset_TotalKWH,
+                                  ReturnMsg, pi, "kWh total", CtiTime(), 1.0, TAG_POINT_MUST_ARCHIVE);
+
+            if( pi.quality == InvalidQuality )
             {
-                if( parse.getFlags() & CMD_FLAG_GV_RATED )
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKWH, AnalogPointType);
+            }
+
+            pi = getData(DSt->Message + 5, 5, ValueType_IED);
+
+            insertPointDataReport(AnalogPointType, PointOffset_TotalKMH,
+                                  ReturnMsg, pi, "kMh total");
+
+            if( pi.quality == InvalidQuality )
+            {
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+            }
+
+            pi = getData(DSt->Message + 10, 2, ValueType_IED);
+
+            insertPointDataReport(AnalogPointType, PointOffset_AveragePowerFactor,
+                                  ReturnMsg, pi, "Average power factor since last freeze");
+
+            if( pi.quality == InvalidQuality )
+            {
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+            }
+        }
+    }
+    else if( parse.isKeyValid("ied_dnp") )
+    {
+        int i = 0;
+        int dnp_status = DSt->Message[12];  //  Applies only to precanned table reads.
+
+        if( (i = parse.getiValue("collectionnumber")) != INT_MIN )
+        {
+            decodeDNPRealTimeRead(DSt->Message, i, resultString, ReturnMsg, InMessage);
+        }
+        else if( (i = parse.getiValue("analognumber")) != INT_MIN )
+        {
+            if( dnp_status == 0 )
+            {
+                for( int byte = 0; byte < 6; byte++ )
                 {
-                    status = NoMethod;
-                    resultString = "Rate D not supported for Precanned Table 11";
-                }
-                else
-                {
-                    if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
-                    else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
-                    else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
+                    int pointoffset = PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6;
 
-                    unsigned demand_offset, consumption_offset;
-                    string   demand_name,   consumption_name;
+                    string pointname;
+                    pointname  = "Analog point ";
+                    pointname += CtiNumStr(pointoffset);
 
-                    if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
-                    {
-                        demand_offset      = PointOffset_TOU_KMBase;
-                        demand_name        = "kM rate ";
-                        consumption_offset = PointOffset_TOU_KMBase + 1;
-                        consumption_name   = "kMh rate ";
-                    }
-                    else
-                    {
-                        demand_offset      = PointOffset_TOU_KWBase;
-                        demand_name        = "kW rate ";
-                        consumption_offset = PointOffset_TOU_KWBase + 1;
-                        consumption_name   = "kWh rate ";
-                    }
+                    pi = Mct4xxDevice::getData(DSt->Message + byte*2, 2, ValueType_Raw);
 
-                    consumption_name += string(1, (char)('A' + rate));
-                    consumption_name += " total";
-                    consumption_offset += rate * 2;
-
-                    demand_name += string(1, (char)('A' + rate));
-                    demand_name += " peak";
-                    demand_offset += rate * 2;
-
-                    status = decodeGetValueIEDPrecannedTable11Peak(parse, *DSt, TimeNow, demand_offset, demand_name, consumption_offset, consumption_name, ReturnMsg);
+                    insertPointDataReport(AnalogPointType, pointoffset,
+                                          ReturnMsg, pi, pointname);
                 }
             }
             else
             {
-                point_info time_info;
-                string pointname;
-                int tags = 0;
+                resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(status);
 
-                if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+                for( int byte = 0; byte < 6; byte++ )
                 {
-                    offset = PointOffset_TOU_KMBase;
-                    pointname  = "kMH rate ";
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPAnalog_Precanned1+byte+(i-1)*6, AnalogPointType);
                 }
-                else
+            }
+        }
+        else if( (i = parse.getiValue("accumulatornumber")) != INT_MIN )
+        {
+            if( dnp_status == 0 )
+            {
+                for( int byte = 0; byte < 6; byte++ )
                 {
-                    offset = PointOffset_TOU_KWBase;
-                    pointname  = "kWH rate ";
-                    tags = TAG_POINT_MUST_ARCHIVE;
+                    int pointoffset = PointOffset_DNPCounter_Precanned1+byte+(i-1)*6;
+
+                    string pointname;
+                    pointname  = "Pulse Accumulator point ";
+                    pointname += CtiNumStr(pointoffset);
+
+                    pi = Mct4xxDevice::getData(DSt->Message + byte*2, 2, ValueType_Raw);
+
+                    insertPointDataReport(PulseAccumulatorPointType, pointoffset,
+                                          ReturnMsg, pi, pointname);
                 }
+            }
+            else
+            {
+                resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(dnp_status);
 
-                if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate = 3;
-
-                pi = Mct470Device::getData(DSt->Message, 5, ValueType_IED);
-
-                pointname += string(1, (char)('A' + rate));
-                pointname += " total";
-
-                unsigned int pointOffset = offset + rate * 2 + 1;
-
-                insertPointDataReport(AnalogPointType, pointOffset,
-                                      ReturnMsg, pi, pointname, CtiTime(), 1.0, tags);
-                if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase + 1 ) //Currently we only support frozen rate A
+                for( int byte = 0; byte < 6; byte++ )
                 {
-                    insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset,
-                                      ReturnMsg, pi, "Frozen " + pointname, CtiTime(), 1.0, tags);
+                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPCounter_Precanned1+byte+(i-1)*6, AnalogPointType);
                 }
+            }
+        }
+        else if( (i = parse.getiValue("statusnumber")) != INT_MIN )
+        {
+            if( dnp_status == 0 )
+            {
+                pi.quality = NormalQuality;
 
-                pi        = getData(DSt->Message + 5, 3, ValueType_IED);
-                time_info = Mct4xxDevice::getData(DSt->Message + 8, 4, ValueType_Raw);
-
-                CtiTime peak_time = CtiTime::fromLocalSeconds(time_info.value);
-
-                pointname  = "kW rate ";
-                pointname += string(1, (char)('A' + rate));
-                pointname += " peak";
-
-                if( !is_valid_time(peak_time) )
+                for( int byte = 0; byte < 12; byte++ )
                 {
-                    pi.quality = InvalidQuality;
-                    pi.description = "Bad peak kW timestamp";
-
+                    for( int bit = 0; bit < 8; bit++ )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - invalid time (" << std::hex << peak_time << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        pi.value = (DSt->Message[byte] >> bit) & 0x01;
+
+                        insertPointDataReport(StatusPointType, PointOffset_DNPStatus_PrecannedStart+byte*8+bit,
+                                              ReturnMsg, pi);
                     }
+
+                    resultString += getName() + " / Binary Data Byte " + CtiNumStr(byte) + " = " + CtiNumStr(DSt->Message[byte]) + "\n";
                 }
-                if( (peak_time.seconds() >= (DawnOfTime_UtcSeconds - 86400) && peak_time.seconds() <= (DawnOfTime_UtcSeconds + 86400) ) ||
-                     (peak_time.seconds() <= 86400) )
+            }
+            else
+            {
+                resultString += "DNP status returned " + CtiNumStr(dnp_status) + ": " + resolveDNPStatus(dnp_status);
+
+                for( int byte = 0; byte < 12; byte++ )
                 {
-                    // Don't insert a point, just send the message.
-                    const string noPeak = ": " + CtiNumStr(pi.value) + " [No peak occurred]\n";
-                    pointOffset = offset + rate * 2;
-                    CtiPointSPtr p;
-                    if( p = getDevicePointOffsetTypeEqual(pointOffset, AnalogPointType) )
+                    for( int bit = 0; bit < 8; bit++ )
                     {
-                        pointname = p->getName();
-                    }
-                    resultString += "\n" + getName() + " / " + pointname + noPeak;
-                    if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
-                    {
-                        if( p = getDevicePointOffsetTypeEqual(PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset, AnalogPointType) )
-                        {
-                            pointname = p->getName();
-                        }
-                        else
-                        {
-                            pointname = "Frozen " + pointname;
-                        }
-                        resultString += "\n" + getName() + " / " + pointname + noPeak;
-                    }
-                }
-                else
-                {
-                    pointOffset = offset + rate * 2;
-                    insertPointDataReport(AnalogPointType, pointOffset,
-                                          ReturnMsg, pi, pointname, peak_time);
-                    if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
-                    {
-                        insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset,
-                                          ReturnMsg, pi, "Frozen " + pointname, peak_time);
+                        insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_DNPStatus_PrecannedStart+(byte*8)+bit, StatusPointType);
                     }
                 }
             }
         }
+        else if( parse.isKeyValid("dnp_crc") )
+        {
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime1CRC, InMessage->Buffer.DSt.Message[0]);
+            resultString += "CRCs Returned: " + CtiNumStr(InMessage->Buffer.DSt.Message[0]);
 
-        ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
-        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_RealTime2CRC, InMessage->Buffer.DSt.Message[1]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[1]);
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) );
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_BinaryCRC, InMessage->Buffer.DSt.Message[2]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[2]);
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC1, InMessage->Buffer.DSt.Message[3]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[3]);
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC2, InMessage->Buffer.DSt.Message[4]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[4]);
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC3, InMessage->Buffer.DSt.Message[5]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[5]);
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC4, InMessage->Buffer.DSt.Message[6]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[6]);
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AnalogCRC5, InMessage->Buffer.DSt.Message[7]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[7]);
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC1, InMessage->Buffer.DSt.Message[8]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[8]);
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC2, InMessage->Buffer.DSt.Message[9]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[9]);
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC3, InMessage->Buffer.DSt.Message[10]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[10]);
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DNP_AccumulatorCRC4, InMessage->Buffer.DSt.Message[11]);
+            resultString += ", " + CtiNumStr(InMessage->Buffer.DSt.Message[11]);
+        }
     }
+    else
+    {
+        if( dataInvalid )
+        {
+            //If we are here, we believe the data is incorrect!
+            resultString += "Device: " + getName() + "\nData buffer is bad, retry command" ;
+            status = ALPHABUFFERERROR;
+
+            if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+            {
+                offset = PointOffset_TOU_KMBase;
+            }
+            else
+            {
+                offset = PointOffset_TOU_KWBase;
+            }
+
+            if(      parse.getFlags() & CMD_FLAG_GV_RATEA )   rate = 0;
+            else if( parse.getFlags() & CMD_FLAG_GV_RATEB )   rate = 1;
+            else if( parse.getFlags() & CMD_FLAG_GV_RATEC )   rate = 2;
+            else if( parse.getFlags() & CMD_FLAG_GV_RATED )   rate = 3;
+
+            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2 + 1), AnalogPointType);
+            insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (offset + rate * 2), AnalogPointType);
+            if( parse.getFlags() & CMD_FLAG_FROZEN && (offset + rate * 2) == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
+            {
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset), AnalogPointType);
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, (PointOffset_TOU_KWBase +     PointOffset_FrozenPointOffset), AnalogPointType);
+            }
+        }
+        else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+        {
+            resultString += getName() + " / Did not retrieve SSPEC revision";
+            status = ErrorVerifySSPEC;
+        }
+        else if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+        {
+            resultString += "Did not retrieve the IED type";
+            status = NoConfigData;
+        }
+        else if( !isPrecannedTableCurrent() )
+        {
+            resultString += "Did not retrieve the precanned table type";
+            status = NoConfigData;
+        }
+        else if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_IED_Precanned11)
+                 && (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_PrecannedTableType) == 11)
+                 && ((getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) == IED_Type_LG_S4) )
+        {
+            if( parse.getFlags() & CMD_FLAG_GV_RATED )
+            {
+                status = NoMethod;
+                resultString = "Rate D not supported for Precanned Table 11";
+            }
+            else
+            {
+                if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
+                else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
+
+                unsigned demand_offset, consumption_offset;
+                string   demand_name,   consumption_name;
+
+                if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+                {
+                    demand_offset      = PointOffset_TOU_KMBase;
+                    demand_name        = "kM rate ";
+                    consumption_offset = PointOffset_TOU_KMBase + 1;
+                    consumption_name   = "kMh rate ";
+                }
+                else
+                {
+                    demand_offset      = PointOffset_TOU_KWBase;
+                    demand_name        = "kW rate ";
+                    consumption_offset = PointOffset_TOU_KWBase + 1;
+                    consumption_name   = "kWh rate ";
+                }
+
+                consumption_name += string(1, (char)('A' + rate));
+                consumption_name += " total";
+                consumption_offset += rate * 2;
+
+                demand_name += string(1, (char)('A' + rate));
+                demand_name += " peak";
+                demand_offset += rate * 2;
+
+                status = decodeGetValueIEDPrecannedTable11Peak(parse, *DSt, TimeNow, demand_offset, demand_name, consumption_offset, consumption_name, ReturnMsg);
+            }
+        }
+        else
+        {
+            point_info time_info;
+            string pointname;
+            int tags = 0;
+
+            if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+            {
+                offset = PointOffset_TOU_KMBase;
+                pointname  = "kMH rate ";
+            }
+            else
+            {
+                offset = PointOffset_TOU_KWBase;
+                pointname  = "kWH rate ";
+                tags = TAG_POINT_MUST_ARCHIVE;
+            }
+
+            if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate = 0;
+            else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate = 1;
+            else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate = 2;
+            else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate = 3;
+
+            pi = Mct470Device::getData(DSt->Message, 5, ValueType_IED);
+
+            pointname += string(1, (char)('A' + rate));
+            pointname += " total";
+
+            unsigned int pointOffset = offset + rate * 2 + 1;
+
+            insertPointDataReport(AnalogPointType, pointOffset,
+                                  ReturnMsg, pi, pointname, CtiTime(), 1.0, tags);
+            if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase + 1 ) //Currently we only support frozen rate A
+            {
+                insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset,
+                                  ReturnMsg, pi, "Frozen " + pointname, CtiTime(), 1.0, tags);
+            }
+
+            pi        = getData(DSt->Message + 5, 3, ValueType_IED);
+            time_info = Mct4xxDevice::getData(DSt->Message + 8, 4, ValueType_Raw);
+
+            CtiTime peak_time = CtiTime::fromLocalSeconds(time_info.value);
+
+            pointname  = "kW rate ";
+            pointname += string(1, (char)('A' + rate));
+            pointname += " peak";
+
+            if( !is_valid_time(peak_time) )
+            {
+                pi.quality = InvalidQuality;
+                pi.description = "Bad peak kW timestamp";
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - invalid time (" << std::hex << peak_time << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+            if( (peak_time.seconds() >= (DawnOfTime_UtcSeconds - 86400) && peak_time.seconds() <= (DawnOfTime_UtcSeconds + 86400) ) ||
+                 (peak_time.seconds() <= 86400) )
+            {
+                // Don't insert a point, just send the message.
+                const string noPeak = ": " + CtiNumStr(pi.value) + " [No peak occurred]\n";
+                pointOffset = offset + rate * 2;
+                CtiPointSPtr p;
+                if( p = getDevicePointOffsetTypeEqual(pointOffset, AnalogPointType) )
+                {
+                    pointname = p->getName();
+                }
+                resultString += "\n" + getName() + " / " + pointname + noPeak;
+                if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
+                {
+                    if( p = getDevicePointOffsetTypeEqual(PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset, AnalogPointType) )
+                    {
+                        pointname = p->getName();
+                    }
+                    else
+                    {
+                        pointname = "Frozen " + pointname;
+                    }
+                    resultString += "\n" + getName() + " / " + pointname + noPeak;
+                }
+            }
+            else
+            {
+                pointOffset = offset + rate * 2;
+                insertPointDataReport(AnalogPointType, pointOffset,
+                                      ReturnMsg, pi, pointname, peak_time);
+                if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
+                {
+                    insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset,
+                                      ReturnMsg, pi, "Frozen " + pointname, peak_time);
+                }
+            }
+        }
+    }
+
+    ReturnMsg->setResultString(ReturnMsg->ResultString() + resultString);
+    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) );
 
     return status;
 }
@@ -4770,206 +4750,201 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    switch( InMessage->Sequence )
+    {
+        case EmetconProtocol::GetConfig_IEDTime:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            point_info  pi_time  = Mct470Device::getData(DSt->Message, 4, ValueType_IED);
 
-            return MEMORY;
-        }
+            _iedTime = CtiTime::fromLocalSeconds(pi_time.value);
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+            resultString += getName() + " / current time: " + printable_time(_iedTime.seconds()) + "\n";
 
-        switch( InMessage->Sequence )
-        {
-            case EmetconProtocol::GetConfig_IEDTime:
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
             {
-                point_info  pi_time  = Mct470Device::getData(DSt->Message, 4, ValueType_IED);
+                resultString += getName() + " / configuration byte not read, cannot decode IED TOU rate\n";
+            }
+            else
+            {
+                point_info  pi_rate  = Mct470Device::getData(DSt->Message + 4, 1, ValueType_IED);
 
-                _iedTime = CtiTime::fromLocalSeconds(pi_time.value);
+                int rate = pi_rate.value;
 
-                resultString += getName() + " / current time: " + printable_time(_iedTime.seconds()) + "\n";
-
-                if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+                if( pi_rate.quality == InvalidQuality )
                 {
-                    resultString += getName() + " / configuration byte not read, cannot decode IED TOU rate\n";
+                    resultString += getName() + " / current TOU rate: (invalid data)\n";
                 }
                 else
                 {
-                    point_info  pi_rate  = Mct470Device::getData(DSt->Message + 4, 1, ValueType_IED);
-
-                    int rate = pi_rate.value;
-
-                    if( pi_rate.quality == InvalidQuality )
+                    switch( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) & 0xf0) >> 4 )
                     {
-                        resultString += getName() + " / current TOU rate: (invalid data)\n";
-                    }
-                    else
-                    {
-                        switch( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) & 0xf0) >> 4 )
+                        case IED_Type_LG_S4:
                         {
-                            case IED_Type_LG_S4:
-                            {
-                                rate = rate & 0x0f;
+                            rate = rate & 0x0f;
 
-                                resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
+                            resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
 
-                                break;
-                            }
+                            break;
+                        }
 
-                            case IED_Type_Alpha_A3:
-                            {
-                                rate = rate & 0x07;
+                        case IED_Type_Alpha_A3:
+                        {
+                            rate = rate & 0x07;
 
-                                resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
+                            resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
 
-                                break;
-                            }
+                            break;
+                        }
 
-                            case IED_Type_Alpha_PP:
-                            {
-                                rate = (rate >> 2) & 0x03;
+                        case IED_Type_Alpha_PP:
+                        {
+                            rate = (rate >> 2) & 0x03;
 
-                                resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
+                            resultString += getName() + " / current TOU rate: " + string(1, 'A' + rate) + "\n";
 
-                                break;
-                            }
+                            break;
+                        }
 
-                            case IED_Type_GE_kV2c:
-                            {
-                                rate = rate & 0x07;
+                        case IED_Type_GE_kV2c:
+                        {
+                            rate = rate & 0x07;
 
-                                resultString += getName() + " / current TOU rate: ";
+                            resultString += getName() + " / current TOU rate: ";
 
-                                if( rate )  resultString += string(1, 'A' + rate - 1) + "\n";
-                                else        resultString += "demand only\n";
+                            if( rate )  resultString += string(1, 'A' + rate - 1) + "\n";
+                            else        resultString += "demand only\n";
 
-                                break;
-                            }
+                            break;
+                        }
 
-                            case IED_Type_Sentinel:
-                            {
-                                //  doesn't support TOU rate reporting
-                                break;
-                            }
+                        case IED_Type_Sentinel:
+                        {
+                            //  doesn't support TOU rate reporting
+                            break;
+                        }
 
-                            default:
-                            {
-                                resultString += getName() + " / current TOU rate: (unhandled IED type (" + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) + "), cannot decode)\n";
-                                break;
-                            }
+                        default:
+                        {
+                            resultString += getName() + " / current TOU rate: (unhandled IED type (" + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) + "), cannot decode)\n";
+                            break;
                         }
                     }
                 }
-
-                //  as soon as we know what type of IED this is, we can do all of the fancy IED-specific stuff
-                /*
-
-                Byte 4 for the Alpha is the current TOU rate
-
-                Byte 4 for the S4 contains:
-                0..2
-                Binary
-                0 for rate bin A
-                1 for rate bin B
-                2 for rate bin C
-                3 for rate bin D
-                4 for rate bin E (RX Only)
-                3
-                Binary
-                Frequency of line voltage
-                0 for 60Hz, 1 for 50Hz
-                (used for DX and RX 3.00 and greater;
-                not used in RX prior to 3.00)
-                4..5
-                Binary
-                Active season,
-                0 for season 1
-                1 for season 2
-                2 for season 3
-                3 for season 4
-                6 Binary Active holiday type
-                Zero if type 1, one if type 2
-
-                */
-
-                /*
-                resultString = getName() + " / phase A: " + (DSt->Message[] & 0x02)?"present":"not present" + "\n";
-                resultString = getName() + " / phase B: " + (DSt->Message[] & 0x04)?"present":"not present" + "\n";
-                resultString = getName() + " / phase C: " + (DSt->Message[] & 0x08)?"present":"not present" + "\n";
-                */
-
-                pi = Mct470Device::getData(DSt->Message + 5, 2, ValueType_IED);
-
-                pi_time  = Mct470Device::getData(DSt->Message + 7, 4, ValueType_IED);
-
-                CtiTime lastReset = CtiTime::fromLocalSeconds(pi_time.value);
-
-                insertPointDataReport(AnalogPointType, PointOffset_DemandResetCount,
-                                      ReturnMsg, pi, "Demand Reset Count", lastReset);
-
-                resultString += "\n" + getName() + " / time of last reset: " + printable_time(lastReset.seconds()) + "\n";
-
-                pi = Mct470Device::getData(DSt->Message + 11, 2, ValueType_IED);
-
-                insertPointDataReport(AnalogPointType, PointOffset_OutageCount,
-                                      ReturnMsg, pi, "Outage Count");
-
-                if( pi.quality == InvalidQuality )
-                {
-                    insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
-                }
-
-                break;
             }
 
-            case EmetconProtocol::GetConfig_IEDDNP:
+            //  as soon as we know what type of IED this is, we can do all of the fancy IED-specific stuff
+            /*
+
+            Byte 4 for the Alpha is the current TOU rate
+
+            Byte 4 for the S4 contains:
+            0..2
+            Binary
+            0 for rate bin A
+            1 for rate bin B
+            2 for rate bin C
+            3 for rate bin D
+            4 for rate bin E (RX Only)
+            3
+            Binary
+            Frequency of line voltage
+            0 for 60Hz, 1 for 50Hz
+            (used for DX and RX 3.00 and greater;
+            not used in RX prior to 3.00)
+            4..5
+            Binary
+            Active season,
+            0 for season 1
+            1 for season 2
+            2 for season 3
+            3 for season 4
+            6 Binary Active holiday type
+            Zero if type 1, one if type 2
+
+            */
+
+            /*
+            resultString = getName() + " / phase A: " + (DSt->Message[] & 0x02)?"present":"not present" + "\n";
+            resultString = getName() + " / phase B: " + (DSt->Message[] & 0x04)?"present":"not present" + "\n";
+            resultString = getName() + " / phase C: " + (DSt->Message[] & 0x08)?"present":"not present" + "\n";
+            */
+
+            pi = Mct470Device::getData(DSt->Message + 5, 2, ValueType_IED);
+
+            pi_time  = Mct470Device::getData(DSt->Message + 7, 4, ValueType_IED);
+
+            CtiTime lastReset = CtiTime::fromLocalSeconds(pi_time.value);
+
+            insertPointDataReport(AnalogPointType, PointOffset_DemandResetCount,
+                                  ReturnMsg, pi, "Demand Reset Count", lastReset);
+
+            resultString += "\n" + getName() + " / time of last reset: " + printable_time(lastReset.seconds()) + "\n";
+
+            pi = Mct470Device::getData(DSt->Message + 11, 2, ValueType_IED);
+
+            insertPointDataReport(AnalogPointType, PointOffset_OutageCount,
+                                  ReturnMsg, pi, "Outage Count");
+
+            if( pi.quality == InvalidQuality )
             {
-                int mctPoint = DSt->Message[0];
-                for( int i = 0; i < 6; i++ )
-                {
-                    pi = Mct4xxDevice::getData(DSt->Message + 1 + 2*i, 2, ValueType_Raw);
-                    if( mctPoint + i < MCT470_DNP_MCTPoint_RealTimeAnalog )
-                    {
-                        resultString += "Yukon Binary Point: " + CtiNumStr(mctPoint + i + PointOffset_DNPStatus_RealTime1) + " set to DNP point " + CtiNumStr(pi.value-1) + (pi.value <= 0 ? " (disabled) " : "") + "\n";
-                    }
-                    else if( mctPoint + i  < MCT470_DNP_MCTPoint_RealTimeAccumulator )
-                    {
-                        resultString += "Yukon Analog Point: " + CtiNumStr(mctPoint + i + PointOffset_DNPAnalog_RealTime1 - MCT470_DNP_MCTPoint_RealTimeAnalog) + " set to DNP point " + CtiNumStr(pi.value-1) + (pi.value <= 0 ? " (disabled) " : "") + "\n";
-                    }
-                    else if( mctPoint + i  >= MCT470_DNP_MCTPoint_RealTimeAccumulator )
-                    {
-                        resultString += "Yukon Accumulator Point: " + CtiNumStr(mctPoint + i + PointOffset_DNPCounter_RealTime1 - MCT470_DNP_MCTPoint_RealTimeAccumulator) + " set to DNP point " + CtiNumStr(pi.value-1) + (pi.value <= 0 ? " (disabled) " : "") + "\n";
-                    }
-                }
-                resultString += "For this read, the MCT point in the 470 was: " + CtiNumStr(mctPoint) + ". DNP points are real DNP point id's (0 based).\n";
-
-                break;
+                insertPointFail(*InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
             }
 
-            case EmetconProtocol::GetConfig_IEDScan:
-            {
-                resultString += getName() + " / function not implemented yet\n";
-
-                break;
-            }
+            break;
         }
 
-        if( !ReturnMsg->ResultString().empty() )
+        case EmetconProtocol::GetConfig_IEDDNP:
         {
-            resultString = ReturnMsg->ResultString() + "\n" + resultString;
+            int mctPoint = DSt->Message[0];
+            for( int i = 0; i < 6; i++ )
+            {
+                pi = Mct4xxDevice::getData(DSt->Message + 1 + 2*i, 2, ValueType_Raw);
+                if( mctPoint + i < MCT470_DNP_MCTPoint_RealTimeAnalog )
+                {
+                    resultString += "Yukon Binary Point: " + CtiNumStr(mctPoint + i + PointOffset_DNPStatus_RealTime1) + " set to DNP point " + CtiNumStr(pi.value-1) + (pi.value <= 0 ? " (disabled) " : "") + "\n";
+                }
+                else if( mctPoint + i  < MCT470_DNP_MCTPoint_RealTimeAccumulator )
+                {
+                    resultString += "Yukon Analog Point: " + CtiNumStr(mctPoint + i + PointOffset_DNPAnalog_RealTime1 - MCT470_DNP_MCTPoint_RealTimeAnalog) + " set to DNP point " + CtiNumStr(pi.value-1) + (pi.value <= 0 ? " (disabled) " : "") + "\n";
+                }
+                else if( mctPoint + i  >= MCT470_DNP_MCTPoint_RealTimeAccumulator )
+                {
+                    resultString += "Yukon Accumulator Point: " + CtiNumStr(mctPoint + i + PointOffset_DNPCounter_RealTime1 - MCT470_DNP_MCTPoint_RealTimeAccumulator) + " set to DNP point " + CtiNumStr(pi.value-1) + (pi.value <= 0 ? " (disabled) " : "") + "\n";
+                }
+            }
+            resultString += "For this read, the MCT point in the 470 was: " + CtiNumStr(mctPoint) + ". DNP points are real DNP point id's (0 based).\n";
+
+            break;
         }
 
-        ReturnMsg->setResultString(resultString);
+        case EmetconProtocol::GetConfig_IEDScan:
+        {
+            resultString += getName() + " / function not implemented yet\n";
 
-        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) );
+            break;
+        }
     }
+
+    if( !ReturnMsg->ResultString().empty() )
+    {
+        resultString = ReturnMsg->ResultString() + "\n" + resultString;
+    }
+
+    ReturnMsg->setResultString(resultString);
+
+    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, getGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection) );
 
     return status;
 }
@@ -4982,86 +4957,81 @@ INT Mct470Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     unsigned char *geneBuf = InMessage->Buffer.DSt.Message;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    string resultString;
+
+    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        string resultString;
+        return MEMORY;
+    }
 
-        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    resultString += getName() + " / Internal Status:\n";
+
+    //  Point offset 10
+    resultString += (InMessage->Buffer.DSt.Message[1] & 0x01)?"Power fail occurred\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[1] & 0x02)?"Electronic meter communication error\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[1] & 0x04)?"Stack overflow\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[1] & 0x08)?"Power fail carryover\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[1] & 0x10)?"RTC adjusted\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[1] & 0x20)?"Holiday Event occurred\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[1] & 0x40)?"DST Change occurred\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[1] & 0x80)?"Negative time sync occurred\n":"";
+
+    //  Point offset 20
+    resultString += (InMessage->Buffer.DSt.Message[2] & 0x01)?"Zero usage on channel 1 for 24 hours\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[2] & 0x02)?"Zero usage on channel 2 for 24 hours\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[2] & 0x04)?"Zero usage on channel 3 for 24 hours\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[2] & 0x08)?"Zero usage on channel 4 for 24 hours\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[2] & 0x10)?"Address corruption\n":"";
+    //  0x20-0x80 aren't used yet
+
+    //  Point offset 30
+    resultString += (InMessage->Buffer.DSt.Message[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
+    //  0x02 is not used yet
+    resultString += (InMessage->Buffer.DSt.Message[0] & 0x04)?"DST active\n":"DST inactive\n";
+    resultString += (InMessage->Buffer.DSt.Message[0] & 0x08)?"Holiday active\n":"";
+    resultString += (InMessage->Buffer.DSt.Message[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
+    resultString += (InMessage->Buffer.DSt.Message[0] & 0x20)?"Time sync needed\n":"In time sync\n";
+    resultString += (InMessage->Buffer.DSt.Message[0] & 0x40)?"Critical peak active\n":"Critical peak inactive\n";
+    //  0x80 is used internally
+
+    ReturnMsg->setResultString(resultString);
+
+    for( int i = 0; i < 3; i++ )
+    {
+        int offset;
+        boost::shared_ptr<CtiPointStatus> point;
+        CtiPointDataMsg *pData;
+        string pointResult;
+
+        if( i == 0 )  offset = 30;
+        if( i == 1 )  offset = 10;
+        if( i == 2 )  offset = 20;
+
+        for( int j = 0; j < 8; j++ )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        resultString += getName() + " / Internal Status:\n";
-
-        //  Point offset 10
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x01)?"Power fail occurred\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x02)?"Electronic meter communication error\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x04)?"Stack overflow\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x08)?"Power fail carryover\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x10)?"RTC adjusted\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x20)?"Holiday Event occurred\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x40)?"DST Change occurred\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[1] & 0x80)?"Negative time sync occurred\n":"";
-
-        //  Point offset 20
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x01)?"Zero usage on channel 1 for 24 hours\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x02)?"Zero usage on channel 2 for 24 hours\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x04)?"Zero usage on channel 3 for 24 hours\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x08)?"Zero usage on channel 4 for 24 hours\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[2] & 0x10)?"Address corruption\n":"";
-        //  0x20-0x80 aren't used yet
-
-        //  Point offset 30
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x01)?"Group addressing disabled\n":"Group addressing enabled\n";
-        //  0x02 is not used yet
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x04)?"DST active\n":"DST inactive\n";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x08)?"Holiday active\n":"";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x10)?"TOU disabled\n":"TOU enabled\n";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x20)?"Time sync needed\n":"In time sync\n";
-        resultString += (InMessage->Buffer.DSt.Message[0] & 0x40)?"Critical peak active\n":"Critical peak inactive\n";
-        //  0x80 is used internally
-
-        ReturnMsg->setResultString(resultString);
-
-        for( int i = 0; i < 3; i++ )
-        {
-            int offset;
-            boost::shared_ptr<CtiPointStatus> point;
-            CtiPointDataMsg *pData;
-            string pointResult;
-
-            if( i == 0 )  offset = 30;
-            if( i == 1 )  offset = 10;
-            if( i == 2 )  offset = 20;
-
-            for( int j = 0; j < 8; j++ )
+            //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
+            if( (offset + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( offset + j, StatusPointType ))) )
             {
-                //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
-                if( (offset + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( offset + j, StatusPointType ))) )
+                double value = (InMessage->Buffer.DSt.Message[i] >> j) & 0x01;
+
+                pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName((point)->getStateGroupID(), value);
+
+                if( pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), value, NormalQuality, StatusPointType, pointResult) )
                 {
-                    double value = (InMessage->Buffer.DSt.Message[i] >> j) & 0x01;
-
-                    pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName((point)->getStateGroupID(), value);
-
-                    if( pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), value, NormalQuality, StatusPointType, pointResult) )
-                    {
-                        ReturnMsg->PointData().push_back(pData);
-                    }
+                    ReturnMsg->PointData().push_back(pData);
                 }
             }
         }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -5077,56 +5047,51 @@ INT Mct470Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNo
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    lp_channel = (parse.getiValue("loadprofile_offset") < 3)?1:3;
+
+    string resultString;
+    unsigned long lpTime;
+
+    CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg  *pData = NULL;
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        lp_channel = (parse.getiValue("loadprofile_offset") < 3)?1:3;
-
-        string resultString;
-        unsigned long lpTime;
-
-        CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg  *pData = NULL;
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        resultString += getName() + " / Load Profile Channel " + CtiNumStr(lp_channel) + " Status:\n";
-
-        lpTime = DSt->Message[0] << 24 |
-                 DSt->Message[1] << 16 |
-                 DSt->Message[2] <<  8 |
-                 DSt->Message[3];
-
-        resultString += "Current Interval Time: " + printable_time(lpTime) + "\n";
-        resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[4]) + string("\n");
-
-        resultString += "\n";
-
-        resultString += getName() + " / Load Profile Channel " + CtiNumStr(lp_channel + 1) + string(" Status:\n");
-
-        lpTime = DSt->Message[5] << 24 |
-                 DSt->Message[6] << 16 |
-                 DSt->Message[7] <<  8 |
-                 DSt->Message[8];
-
-        resultString += "Current Interval Time: " + printable_time(lpTime) + "\n";
-        resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[9]) + string("\n");
-
-        resultString += "\n";
-
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    resultString += getName() + " / Load Profile Channel " + CtiNumStr(lp_channel) + " Status:\n";
+
+    lpTime = DSt->Message[0] << 24 |
+             DSt->Message[1] << 16 |
+             DSt->Message[2] <<  8 |
+             DSt->Message[3];
+
+    resultString += "Current Interval Time: " + printable_time(lpTime) + "\n";
+    resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[4]) + string("\n");
+
+    resultString += "\n";
+
+    resultString += getName() + " / Load Profile Channel " + CtiNumStr(lp_channel + 1) + string(" Status:\n");
+
+    lpTime = DSt->Message[5] << 24 |
+             DSt->Message[6] << 16 |
+             DSt->Message[7] <<  8 |
+             DSt->Message[8];
+
+    resultString += "Current Interval Time: " + printable_time(lpTime) + "\n";
+    resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[9]) + string("\n");
+
+    resultString += "\n";
+
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -5142,121 +5107,112 @@ INT Mct470Device::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, CtiMe
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiString resultString;
+    CtiTime errTime;
+
+    CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg  *pData = NULL;
+
+    if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL )
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        CtiString resultString;
-        CtiTime errTime;
-
-        CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg  *pData = NULL;
-
-        if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        int dnpStatus          = DSt->Message[0];
-        int mctPoint           = DSt->Message[1];
-        int dnpPoint           = DSt->Message[2] << 8 |
-                                 DSt->Message[3];
-        int commandStatus      = DSt->Message[4];
-        unsigned long ied_time = DSt->Message[5]  << 24 |
-                                 DSt->Message[6]  << 16 |
-                                 DSt->Message[7]  <<  8 |
-                                 DSt->Message[8];
-
-        resultString += getName() + " / DNP status returned: " + resolveDNPStatus(dnpStatus) + "(" + CtiNumStr(dnpStatus) + ")" + "\n";
-
-        if( mctPoint <= 40 )
-        {
-            resultString += "Point Type: Status Point\n";
-        }
-        else if( mctPoint <= 102 )
-        {
-            resultString += "Point Type: Analog Point\n";
-        }
-        else if( mctPoint <= 148 )
-        {
-            resultString += "Point Type: Accumulator Point\n";
-        }
-        resultString += "DNP point: " + CtiNumStr(dnpPoint) + "\n";
-        resultString += "Command status: " + resolveDNPStatus(commandStatus) + "(" + CtiNumStr(commandStatus) + ")" + "\n";
-        resultString += "Last Successful Read: " + printable_time(ied_time) + "(" + CtiNumStr(ied_time) + ")" + "\n";
-
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    int dnpStatus          = DSt->Message[0];
+    int mctPoint           = DSt->Message[1];
+    int dnpPoint           = DSt->Message[2] << 8 |
+                             DSt->Message[3];
+    int commandStatus      = DSt->Message[4];
+    unsigned long ied_time = DSt->Message[5]  << 24 |
+                             DSt->Message[6]  << 16 |
+                             DSt->Message[7]  <<  8 |
+                             DSt->Message[8];
+
+    resultString += getName() + " / DNP status returned: " + resolveDNPStatus(dnpStatus) + "(" + CtiNumStr(dnpStatus) + ")" + "\n";
+
+    if( mctPoint <= 40 )
+    {
+        resultString += "Point Type: Status Point\n";
+    }
+    else if( mctPoint <= 102 )
+    {
+        resultString += "Point Type: Analog Point\n";
+    }
+    else if( mctPoint <= 148 )
+    {
+        resultString += "Point Type: Accumulator Point\n";
+    }
+    resultString += "DNP point: " + CtiNumStr(dnpPoint) + "\n";
+    resultString += "Command status: " + resolveDNPStatus(commandStatus) + "(" + CtiNumStr(commandStatus) + ")" + "\n";
+    resultString += "Last Successful Read: " + printable_time(ied_time) + "(" + CtiNumStr(ied_time) + ")" + "\n";
+
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
- INT Mct470Device::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
- {
+INT Mct470Device::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+{
      INT status = NORMAL;
 
      INT ErrReturn  = InMessage->EventCode & 0x3fff;
      DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+     string resultString;
+     unsigned long tmpTime;
+     CtiTime lpTime;
+
+     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+     CtiPointDataMsg      *pData = NULL;
+
+     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
      {
-         // No error occured, we must do a real decode!
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-         string resultString;
-         unsigned long tmpTime;
-         CtiTime lpTime;
-
-         CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-         CtiPointDataMsg      *pData = NULL;
-
-         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-         {
-             CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-             return MEMORY;
-         }
-
-         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-         resultString += getName() + " / Freeze status:\n";
-
-         tmpTime = DSt->Message[0] << 24 |
-                   DSt->Message[1] << 16 |
-                   DSt->Message[2] <<  8 |
-                   DSt->Message[3];
-
-         updateFreezeInfo(DSt->Message[4], tmpTime);
-
-         CtiTime lastFreeze(tmpTime);
-         if( lastFreeze.isValid() )
-         {
-             resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
-         }
-         else
-         {
-             resultString += "Last freeze timestamp: (no freeze recorded)\n";
-         }
-
-         resultString += "Freeze counter: " + CtiNumStr(getCurrentFreezeCounter()) + "\n";
-         resultString += "Next freeze expected: freeze ";
-         resultString += ((getCurrentFreezeCounter() % 2)?("two"):("one"));
-         resultString += "\n";
-
-         ReturnMsg->setResultString(resultString);
-
-         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+         return MEMORY;
      }
 
+     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+     resultString += getName() + " / Freeze status:\n";
+
+     tmpTime = DSt->Message[0] << 24 |
+               DSt->Message[1] << 16 |
+               DSt->Message[2] <<  8 |
+               DSt->Message[3];
+
+     updateFreezeInfo(DSt->Message[4], tmpTime);
+
+     CtiTime lastFreeze(tmpTime);
+     if( lastFreeze.isValid() )
+     {
+         resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
+     }
+     else
+     {
+         resultString += "Last freeze timestamp: (no freeze recorded)\n";
+     }
+
+     resultString += "Freeze counter: " + CtiNumStr(getCurrentFreezeCounter()) + "\n";
+     resultString += "Next freeze expected: freeze ";
+     resultString += ((getCurrentFreezeCounter() % 2)?("two"):("one"));
+     resultString += "\n";
+
+     ReturnMsg->setResultString(resultString);
+
+     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+
      return status;
- }
+}
 
 INT Mct470Device::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
@@ -5265,45 +5221,40 @@ INT Mct470Device::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
+
+    resultString += getName() + " / Demand Interval: ";
+
+    if( DSt->Message[0] )
     {
-        // No error occured, we must do a real decode!
-
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        string resultString;
-
-        resultString += getName() + " / Demand Interval: ";
-
-        if( DSt->Message[0] )
-        {
-            resultString += CtiNumStr(DSt->Message[0]) + " minutes\n";
-        }
-        else
-        {
-            resultString += "disabled\n";
-        }
-
-        resultString += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[1]) + " minutes\n";
-        resultString += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[2]) + " minutes\n";
-
-        resultString += getName() + " / Table Read Interval: " + CtiNumStr(DSt->Message[3] * 15) + " seconds\n";
-
-        resultString += getName() + " / Precanned Meter Number: " + CtiNumStr(DSt->Message[4]) + "\n";
-        resultString += getName() + " / Precanned Table Type: "   + CtiNumStr(DSt->Message[5]) + "\n";
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        resultString += CtiNumStr(DSt->Message[0]) + " minutes\n";
     }
+    else
+    {
+        resultString += "disabled\n";
+    }
+
+    resultString += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[1]) + " minutes\n";
+    resultString += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[2]) + " minutes\n";
+
+    resultString += getName() + " / Table Read Interval: " + CtiNumStr(DSt->Message[3] * 15) + " seconds\n";
+
+    resultString += getName() + " / Precanned Meter Number: " + CtiNumStr(DSt->Message[4]) + "\n";
+    resultString += getName() + " / Precanned Table Type: "   + CtiNumStr(DSt->Message[5]) + "\n";
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -5316,28 +5267,23 @@ INT Mct470Device::decodeGetConfigIedDnpAddress(INMESS *InMessage, CtiTime &TimeN
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
 
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        string resultString;
+    unsigned long master     = DSt->Message[0] << 8 | DSt->Message[1];
+    unsigned long outstation = DSt->Message[2] << 8 | DSt->Message[3];
 
-        unsigned long master     = DSt->Message[0] << 8 | DSt->Message[1];
-        unsigned long outstation = DSt->Message[2] << 8 | DSt->Message[3];
+    resultString += getName() + " / IED DNP addresses:\n";
 
-        resultString += getName() + " / IED DNP addresses:\n";
+    resultString += getName() + " / IED DNP master address: " + CtiNumStr(master) + " (" + CtiNumStr(master).xhex(4) + ")\n";
+    resultString += getName() + " / IED DNP outstation address: " + CtiNumStr(outstation) + " (" + CtiNumStr(outstation).xhex(4) + ")\n";
 
-        resultString += getName() + " / IED DNP master address: " + CtiNumStr(master) + " (" + CtiNumStr(master).xhex(4) + ")\n";
-        resultString += getName() + " / IED DNP outstation address: " + CtiNumStr(outstation) + " (" + CtiNumStr(outstation).xhex(4) + ")\n";
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
-        ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -5422,37 +5368,32 @@ INT Mct470Device::decodeGetConfigChannelSetup(INMESS *InMessage, CtiTime &TimeNo
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string result_string, dynamic_info;
+
+    result_string += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[4]) + " minutes\n";
+    result_string += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[5]) + " minutes\n";
+    result_string += getName() + " / Electronic Meter Load Profile Interval: " + CtiNumStr(DSt->Message[6]) + " minutes\n";
+
+    for( int i = 0; i < ChannelCount; i++ )
     {
-        // No error occured, we must do a real decode!
+        result_string += getName() + " / LP Channel " + CtiNumStr(i+1) + " config: ";
 
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        string result_string, dynamic_info;
-
-        result_string += getName() + " / Load Profile Interval 1: " + CtiNumStr(DSt->Message[4]) + " minutes\n";
-        result_string += getName() + " / Load Profile Interval 2: " + CtiNumStr(DSt->Message[5]) + " minutes\n";
-        result_string += getName() + " / Electronic Meter Load Profile Interval: " + CtiNumStr(DSt->Message[6]) + " minutes\n";
-
-        for( int i = 0; i < ChannelCount; i++ )
-        {
-            result_string += getName() + " / LP Channel " + CtiNumStr(i+1) + " config: ";
-
-            result_string += describeChannel(DSt->Message[i]) + "\n";
-        }
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(result_string.c_str());
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        result_string += describeChannel(DSt->Message[i]) + "\n";
     }
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(result_string.c_str());
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -5465,59 +5406,54 @@ INT Mct470Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, CtiM
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    string sspec;
+    string options;
+    int ssp, rev;
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+
+    ssp  = InMessage->Buffer.DSt.Message[0];
+    ssp |= InMessage->Buffer.DSt.Message[4] << 8;
+
+    rev  = (unsigned)InMessage->Buffer.DSt.Message[1];
+
+    //  convert 10 to 1.0, 24 to 2.4
+    sspec  = "Software Specification " + CtiNumStr(ssp) + "  Rom Revision " + CtiNumStr(((double)rev) / 10.0, 1);
+
+    //  valid/released versions are 1.0 - 24.9
+    if( rev <= SspecRev_BetaLo ||
+        rev >= SspecRev_BetaHi )
     {
-        // No error occured, we must do a real decode!
-
-        string sspec;
-        string options;
-        int ssp, rev;
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-
-        ssp  = InMessage->Buffer.DSt.Message[0];
-        ssp |= InMessage->Buffer.DSt.Message[4] << 8;
-
-        rev  = (unsigned)InMessage->Buffer.DSt.Message[1];
-
-        //  convert 10 to 1.0, 24 to 2.4
-        sspec  = "Software Specification " + CtiNumStr(ssp) + "  Rom Revision " + CtiNumStr(((double)rev) / 10.0, 1);
-
-        //  valid/released versions are 1.0 - 24.9
-        if( rev <= SspecRev_BetaLo ||
-            rev >= SspecRev_BetaHi )
-        {
-            sspec += " [possible development revision]\n";
-        }
-        else
-        {
-            sspec += "\n";
-        }
-
-        options += "Connected Meter: " + resolveIEDName(DSt->Message[3] >> 4) + "\n";
-
-        if( InMessage->Buffer.DSt.Message[3] & 0x04 )
-        {
-            options += "Multiple electronic meters attached\n";
-        }
-
-        options += "DST ";
-        options += (InMessage->Buffer.DSt.Message[3] & 0x01)?"enabled\n":"disabled\n";
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString( sspec + options );
-
-        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        sspec += " [possible development revision]\n";
     }
+    else
+    {
+        sspec += "\n";
+    }
+
+    options += "Connected Meter: " + resolveIEDName(DSt->Message[3] >> 4) + "\n";
+
+    if( InMessage->Buffer.DSt.Message[3] & 0x04 )
+    {
+        options += "Multiple electronic meters attached\n";
+    }
+
+    options += "DST ";
+    options += (InMessage->Buffer.DSt.Message[3] & 0x01)?"enabled\n":"disabled\n";
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString( sspec + options );
+
+    decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -5533,47 +5469,42 @@ INT Mct470Device::decodeGetConfigMultiplier(INMESS *InMessage, CtiTime &TimeNow,
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT &DSt   = InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    int channel = parse.getiValue("multchannel");
+
+    //  make sure it starts with 1 or 3
+    channel -= (channel - 1) % 2;
+
+    for( int i = 0; i < 2; i++ )
     {
-        // No error occured, we must do a real decode!
+        int offset = i * 5;
 
-        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+        descriptor += getName() + " / channel " + CtiNumStr(channel + i).toString() + " configuration:\n";
 
-        int channel = parse.getiValue("multchannel");
+        descriptor += describeChannel(DSt.Message[offset]) + "\n";
 
-        //  make sure it starts with 1 or 3
-        channel -= (channel - 1) % 2;
-
-        for( int i = 0; i < 2; i++ )
+        //  is it a pulse input?
+        if( DSt.Message[offset] & 0x02 )
         {
-            int offset = i * 5;
+            int meter_ratio, k;
 
-            descriptor += getName() + " / channel " + CtiNumStr(channel + i).toString() + " configuration:\n";
+            meter_ratio = DSt.Message[offset+1] << 8 | DSt.Message[offset+2];
+            k           = DSt.Message[offset+3] << 8 | DSt.Message[offset+4];
 
-            descriptor += describeChannel(DSt.Message[offset]) + "\n";
+            descriptor += "Meter ratio / K: " + CtiNumStr(meter_ratio) + " / " + CtiNumStr(k) + "\n";
 
-            //  is it a pulse input?
-            if( DSt.Message[offset] & 0x02 )
+            if( k )
             {
-                int meter_ratio, k;
-
-                meter_ratio = DSt.Message[offset+1] << 8 | DSt.Message[offset+2];
-                k           = DSt.Message[offset+3] << 8 | DSt.Message[offset+4];
-
-                descriptor += "Meter ratio / K: " + CtiNumStr(meter_ratio) + " / " + CtiNumStr(k) + "\n";
-
-                if( k )
-                {
-                    descriptor += "Effective multiplier: " + CtiNumStr((double)meter_ratio / (double)k, 4).toString() + "\n";
-                }
+                descriptor += "Effective multiplier: " + CtiNumStr((double)meter_ratio / (double)k, 4).toString() + "\n";
             }
         }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(descriptor);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(descriptor);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -5686,45 +5617,40 @@ INT Mct470Device::decodeGetValuePhaseCurrent(INMESS *InMessage, CtiTime &TimeNow
 
     DSTRUCT &DSt   = InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
+    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
-        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    point_info  pi;
+    pi = getData(DSt.Message, 2, ValueType_IED);
+    //  current is reported back from MCT in tens of mA.
+    //  converting to Amps.
+    pi.value /= 100;
+    insertPointDataReport(AnalogPointType, PointOffset_CurrentNeutral,
+                          ReturnMsg, pi, "Neutral Current");
 
-        point_info  pi;
-        pi = getData(DSt.Message, 2, ValueType_IED);
-        //  current is reported back from MCT in tens of mA.
-        //  converting to Amps.
-        pi.value /= 100;
-        insertPointDataReport(AnalogPointType, PointOffset_CurrentNeutral,
-                              ReturnMsg, pi, "Neutral Current");
+    pi = getData(DSt.Message + 2, 2, ValueType_IED);
+    //  current is reported back from MCT in tens of mA.
+    //  converting to Amps.
+    pi.value /= 100;
+    insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseA,
+                          ReturnMsg, pi, "Phase A Current");
 
-        pi = getData(DSt.Message + 2, 2, ValueType_IED);
-        //  current is reported back from MCT in tens of mA.
-        //  converting to Amps.
-        pi.value /= 100;
-        insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseA,
-                              ReturnMsg, pi, "Phase A Current");
+    pi = getData(DSt.Message + 4, 2, ValueType_IED);
+    //  current is reported back from MCT in tens of mA.
+    //  converting to Amps.
+    pi.value /= 100;
+    insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseB,
+                          ReturnMsg, pi, "Phase B Current");
 
-        pi = getData(DSt.Message + 4, 2, ValueType_IED);
-        //  current is reported back from MCT in tens of mA.
-        //  converting to Amps.
-        pi.value /= 100;
-        insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseB,
-                              ReturnMsg, pi, "Phase B Current");
+    pi = getData(DSt.Message + 6, 2, ValueType_IED);
+    //  current is reported back from MCT in tens of mA.
+    //  converting to Amps.
+    pi.value /= 100;
+    insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseC,
+                          ReturnMsg, pi, "Phase C Current");
 
-        pi = getData(DSt.Message + 6, 2, ValueType_IED);
-        //  current is reported back from MCT in tens of mA.
-        //  converting to Amps.
-        pi.value /= 100;
-        insertPointDataReport(AnalogPointType, PointOffset_CurrentPhaseC,
-                              ReturnMsg, pi, "Phase C Current");
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

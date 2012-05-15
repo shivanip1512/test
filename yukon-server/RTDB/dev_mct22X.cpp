@@ -124,77 +124,73 @@ INT Mct22xDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list
 
     setScanFlag(ScanRateIntegrity, false);    //    resetScanFlag(ScanPending);
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    INT    j;
+    ULONG  curead, prevrd;
+    double Value;
+    string resultString;
+
+    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg *pData     = NULL;
+    CtiPointSPtr    pPoint;
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
-        INT    j;
-        ULONG  curead, prevrd;
-        double Value;
-        string resultString;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg *pData     = NULL;
-        CtiPointSPtr    pPoint;
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        curead = (DSt->Message[3] << 16) |
-                 (DSt->Message[4] <<  8) |
-                  DSt->Message[5];
-        prevrd = (DSt->Message[0] << 16) |
-                 (DSt->Message[1] <<  8) |
-                  DSt->Message[2];
-
-        if( curead < prevrd )
-        {
-            //  account for rollover
-            curead += 10000000;
-        }
-
-        //  figure out the difference between current and previous readings
-        Value  = curead - prevrd;
-        //  turn raw pulses into a demand reading
-        Value *= 12;
-
-        //  look for first defined DEMAND accumulator
-        pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType );
-
-        if(pPoint)
-        {
-            CtiTime pointTime;
-
-            Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(Value);
-
-            resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
-                                                                                     boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
-
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
-            //  correct to beginning of interval
-
-            if(pData != NULL)
-            {
-                pointTime -= pointTime.seconds() % getDemandInterval();
-                pData->setTime( pointTime );
-                ReturnMsg->PointData().push_back(pData);
-                pData = NULL;  // We just put it on the list...
-            }
-        }
-        else
-        {
-            resultString = getName() + " / Demand = " + CtiNumStr((int)Value) + "  --  POINT UNDEFINED IN DB";
-            ReturnMsg->setResultString(resultString);
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    curead = (DSt->Message[3] << 16) |
+             (DSt->Message[4] <<  8) |
+              DSt->Message[5];
+    prevrd = (DSt->Message[0] << 16) |
+             (DSt->Message[1] <<  8) |
+              DSt->Message[2];
+
+    if( curead < prevrd )
+    {
+        //  account for rollover
+        curead += 10000000;
+    }
+
+    //  figure out the difference between current and previous readings
+    Value  = curead - prevrd;
+    //  turn raw pulses into a demand reading
+    Value *= 12;
+
+    //  look for first defined DEMAND accumulator
+    pPoint = getDevicePointOffsetTypeEqual( 1, DemandAccumulatorPointType );
+
+    if(pPoint)
+    {
+        CtiTime pointTime;
+
+        Value = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(Value);
+
+        resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
+                                                                                 boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
+
+        pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
+        //  correct to beginning of interval
+
+        if(pData != NULL)
+        {
+            pointTime -= pointTime.seconds() % getDemandInterval();
+            pData->setTime( pointTime );
+            ReturnMsg->PointData().push_back(pData);
+            pData = NULL;  // We just put it on the list...
+        }
+    }
+    else
+    {
+        resultString = getName() + " / Demand = " + CtiNumStr((int)Value) + "  --  POINT UNDEFINED IN DB";
+        ReturnMsg->setResultString(resultString);
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
    return status;
 }

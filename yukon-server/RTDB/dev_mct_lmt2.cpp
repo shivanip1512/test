@@ -347,167 +347,162 @@ INT Lmt2Device::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list<
         dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        return MEMORY;
+    }
+
+    return_msg->setUserMessageId(InMessage->Return.UserID);
+
+    if( (retrieved_block_num = parse.getiValue("scan_loadprofile_block",   0)) )
+    {
+        if( isDebugLudicrous() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
+            dout << CtiTime() << " **** Checkpoint - retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        return_msg->setUserMessageId(InMessage->Return.UserID);
+        retrieved_block_num--;
 
-        if( (retrieved_block_num = parse.getiValue("scan_loadprofile_block",   0)) )
+        demand_rate = getLoadProfile()->getLoadProfileDemandRate();
+        block_size  = demand_rate * 6;
+
+        //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
+        if( demand_rate == 3600 )
         {
-            if( isDebugLudicrous() )
+            max_blocks = 4;
+        }
+        else
+        {
+            max_blocks = 8;
+        }
+
+        point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( 1 + PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
+
+        if( point )
+        {
+            //  figure out current seconds from midnight
+            midnight_offset  = TimeNow.hour() * 3600;
+            midnight_offset += TimeNow.minute() * 60;
+            midnight_offset += TimeNow.second();
+
+            //  make sure the alignment is correct
+            current_block_start  = TimeNow.seconds();
+            current_block_start -= midnight_offset % block_size;
+            midnight_offset     -= midnight_offset % block_size;
+
+            current_block_num    = midnight_offset / block_size;
+            current_block_num   %= max_blocks;
+
+            //  work backwards to find the retrieved block
+            retrieved_block_start  = current_block_start;
+            retrieved_block_start -= ((current_block_num + max_blocks - retrieved_block_num) % max_blocks) * block_size;
+
+            if( current_block_num == retrieved_block_num )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                if( getMCTDebugLevel(DebugLevel_LoadProfile) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << InMessage->Return.CommandStr << endl;
+                }
+
+                result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
             }
-
-            retrieved_block_num--;
-
-            demand_rate = getLoadProfile()->getLoadProfileDemandRate();
-            block_size  = demand_rate * 6;
-
-            //  if we collect hour data, we only keep a day;  anything less, we keep 48 intervals
-            if( demand_rate == 3600 )
+            else if( retrieved_block_start < getLastLPTime() )
             {
-                max_blocks = 4;
+                if( getMCTDebugLevel(DebugLevel_LoadProfile) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << InMessage->Return.CommandStr << endl;
+                    dout << "retrieved_block_num = " << retrieved_block_num << endl;
+                    dout << "retrieved_block_start = " << retrieved_block_start << endl;
+                    dout << "lastLPTime = " << getLastLPTime()  << endl;
+                }
+
+                result_string  = "Block < lastLPTime for device \"" + getName() + "\" - aborting decode";
             }
             else
             {
-                max_blocks = 8;
-            }
-
-            point = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual( 1 + PointOffset_LoadProfileOffset, DemandAccumulatorPointType ));
-
-            if( point )
-            {
-                //  figure out current seconds from midnight
-                midnight_offset  = TimeNow.hour() * 3600;
-                midnight_offset += TimeNow.minute() * 60;
-                midnight_offset += TimeNow.second();
-
-                //  make sure the alignment is correct
-                current_block_start  = TimeNow.seconds();
-                current_block_start -= midnight_offset % block_size;
-                midnight_offset     -= midnight_offset % block_size;
-
-                current_block_num    = midnight_offset / block_size;
-                current_block_num   %= max_blocks;
-
-                //  work backwards to find the retrieved block
-                retrieved_block_start  = current_block_start;
-                retrieved_block_start -= ((current_block_num + max_blocks - retrieved_block_num) % max_blocks) * block_size;
-
-                if( current_block_num == retrieved_block_num )
+                for( int interval_offset = 0; interval_offset < 6; interval_offset++ )
                 {
-                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
+                    //  error code in the top 5 bits - parsed by checkLoadProfileQuality
+                    pulses   = DSt->Message[interval_offset*2];
+                    pulses <<= 8;
+                    pulses  |= DSt->Message[interval_offset*2 + 1];
+
+                    if( bad_data )  //  load survey was halted - the rest of the data is bad
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << InMessage->Return.CommandStr << endl;
+                        quality = DeviceFillerQuality;
+                        value = 0.0;
+                    }
+                    else if( checkDemandQuality( pulses, quality, bad_data ) )
+                    {
+                        value = 0.0;
+                    }
+                    else
+                    {
+                        //  if no fatal problems with the quality,
+                        //    adjust for the demand interval
+                        value = pulses * (3600 / demand_rate);
+                        //    and the UOM
+                        value = point->computeValueForUOM(value);
                     }
 
-                    result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
-                }
-                else if( retrieved_block_start < getLastLPTime() )
-                {
-                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
+                    point_data = CTIDBG_new CtiPointDataMsg(point->getPointID(),
+                                                            value,
+                                                            quality,
+                                                            DemandAccumulatorPointType,
+                                                            "",
+                                                            TAG_POINT_LOAD_PROFILE_DATA );
+
+                    //  this is where the block started...
+                    timestamp  = retrieved_block_start + (demand_rate * interval_offset);
+
+                    //  but we want interval *ending* times, so add on one more interval
+                    timestamp += demand_rate;
+
+                    if( isDebugLudicrous() )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << InMessage->Return.CommandStr << endl;
-                        dout << "retrieved_block_num = " << retrieved_block_num << endl;
-                        dout << "retrieved_block_start = " << retrieved_block_start << endl;
-                        dout << "lastLPTime = " << getLastLPTime()  << endl;
+                        dout << "value = " << value << endl;
+                        dout << "interval_offset = " << interval_offset << endl;
+                        dout << "timestamp = " << CtiTime(timestamp) << endl;
                     }
 
-                    result_string  = "Block < lastLPTime for device \"" + getName() + "\" - aborting decode";
+                    point_data->setTime(timestamp);
+
+                    return_msg->insert(point_data);
                 }
-                else
-                {
-                    for( int interval_offset = 0; interval_offset < 6; interval_offset++ )
-                    {
-                        //  error code in the top 5 bits - parsed by checkLoadProfileQuality
-                        pulses   = DSt->Message[interval_offset*2];
-                        pulses <<= 8;
-                        pulses  |= DSt->Message[interval_offset*2 + 1];
 
-                        if( bad_data )  //  load survey was halted - the rest of the data is bad
-                        {
-                            quality = DeviceFillerQuality;
-                            value = 0.0;
-                        }
-                        else if( checkDemandQuality( pulses, quality, bad_data ) )
-                        {
-                            value = 0.0;
-                        }
-                        else
-                        {
-                            //  if no fatal problems with the quality,
-                            //    adjust for the demand interval
-                            value = pulses * (3600 / demand_rate);
-                            //    and the UOM
-                            value = point->computeValueForUOM(value);
-                        }
-
-                        point_data = CTIDBG_new CtiPointDataMsg(point->getPointID(),
-                                                                value,
-                                                                quality,
-                                                                DemandAccumulatorPointType,
-                                                                "",
-                                                                TAG_POINT_LOAD_PROFILE_DATA );
-
-                        //  this is where the block started...
-                        timestamp  = retrieved_block_start + (demand_rate * interval_offset);
-
-                        //  but we want interval *ending* times, so add on one more interval
-                        timestamp += demand_rate;
-
-                        if( isDebugLudicrous() )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "value = " << value << endl;
-                            dout << "interval_offset = " << interval_offset << endl;
-                            dout << "timestamp = " << CtiTime(timestamp) << endl;
-                        }
-
-                        point_data->setTime(timestamp);
-
-                        return_msg->insert(point_data);
-                    }
-
-                    setLastLPTime(timestamp);
-                }
-            }
-            else
-            {
-                result_string = "No load profile point defined for '" + getName() + "'";
+                setLastLPTime(timestamp);
             }
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage->Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            result_string  = "scan_loadprofile tokens not found in command string \"";
-            result_string += InMessage->Return.CommandStr;
-            result_string += "\" - cannot proceed with decode, aborting";
+            result_string = "No load profile point defined for '" + getName() + "'";
+        }
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage->Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        return_msg->setResultString(result_string);
-
-        retMsgHandler(InMessage->Return.CommandStr, status, return_msg, vgList, retList);
+        result_string  = "scan_loadprofile tokens not found in command string \"";
+        result_string += InMessage->Return.CommandStr;
+        result_string += "\" - cannot proceed with decode, aborting";
     }
+
+    return_msg->setResultString(result_string);
+
+    retMsgHandler(InMessage->Return.CommandStr, status, return_msg, vgList, retList);
 
     return status;
 }
@@ -526,52 +521,47 @@ INT Lmt2Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, li
     ULONG pulseCount = 0;
     string resultString;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        resultString  = getName() + " / Internal Status:\n";
-
-        if( geneBuf[4] )        resultString += "  Remote Override in effect\n";
-
-        if( geneBuf[2] )        resultString += "  Waiting for Time Sync\n";
-        else                    resultString += "  In Time Sync\n";
-
-        if( geneBuf[5] )        resultString += "  Load Survey Active\n";
-        else                    resultString += "  Load Survey Halted\n";
-
-        if( geneBuf[6] & 0x01 ) resultString += "  Reading Overflow\n";
-        if( geneBuf[6] & 0x02 ) resultString += "  Long Power Fail\n";
-        if( geneBuf[6] & 0x04 ) resultString += "  Short Power Fail/Reset\n";
-        if( geneBuf[6] & 0x08 ) resultString += "  Tamper latched\n";
-        if( geneBuf[6] & 0x10 ) resultString += "  Self Test Error\n";
-
-        if( geneBuf[7] & 0x01 ) resultString += "  NovRam Fault\n";
-        if( geneBuf[7] & 0x02 ) resultString += "  \n";
-        if( geneBuf[7] & 0x04 ) resultString += "  Bad opcode\n";
-        if( geneBuf[7] & 0x08 ) resultString += "  Power Fail Detected By Hardware\n";
-        if( geneBuf[7] & 0x10 ) resultString += "  Deadman/Watchdog Reset\n";
-        if( geneBuf[7] & 0x20 ) resultString += "  Software Interrupt (malfunction)\n";
-        if( geneBuf[7] & 0x40 ) resultString += "  NM1 Interrupt (malfunction)\n";
-        if( geneBuf[7] & 0x80 ) resultString += "  \n";
-
-        if( geneBuf[8] & 0x40 ) resultString += "  Cold Load Flag\n";
-        if( geneBuf[8] & 0x80 ) resultString += "  Frequency Fault\n";
-
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    resultString  = getName() + " / Internal Status:\n";
+
+    if( geneBuf[4] )        resultString += "  Remote Override in effect\n";
+
+    if( geneBuf[2] )        resultString += "  Waiting for Time Sync\n";
+    else                    resultString += "  In Time Sync\n";
+
+    if( geneBuf[5] )        resultString += "  Load Survey Active\n";
+    else                    resultString += "  Load Survey Halted\n";
+
+    if( geneBuf[6] & 0x01 ) resultString += "  Reading Overflow\n";
+    if( geneBuf[6] & 0x02 ) resultString += "  Long Power Fail\n";
+    if( geneBuf[6] & 0x04 ) resultString += "  Short Power Fail/Reset\n";
+    if( geneBuf[6] & 0x08 ) resultString += "  Tamper latched\n";
+    if( geneBuf[6] & 0x10 ) resultString += "  Self Test Error\n";
+
+    if( geneBuf[7] & 0x01 ) resultString += "  NovRam Fault\n";
+    if( geneBuf[7] & 0x02 ) resultString += "  \n";
+    if( geneBuf[7] & 0x04 ) resultString += "  Bad opcode\n";
+    if( geneBuf[7] & 0x08 ) resultString += "  Power Fail Detected By Hardware\n";
+    if( geneBuf[7] & 0x10 ) resultString += "  Deadman/Watchdog Reset\n";
+    if( geneBuf[7] & 0x20 ) resultString += "  Software Interrupt (malfunction)\n";
+    if( geneBuf[7] & 0x40 ) resultString += "  NM1 Interrupt (malfunction)\n";
+    if( geneBuf[7] & 0x80 ) resultString += "  \n";
+
+    if( geneBuf[8] & 0x40 ) resultString += "  Cold Load Flag\n";
+    if( geneBuf[8] & 0x80 ) resultString += "  Frequency Fault\n";
+
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -586,29 +576,24 @@ INT Lmt2Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow,
 
     DSTRUCT *DSt = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        resultString  = getName() + " / Load Survey Control Parameters:\n";
-        resultString += "Demand Interval : " + CtiNumStr((int)(DSt->Message[2] * 5)) + string("\n");
-        resultString += "Current Interval: " + CtiNumStr((int)((DSt->Message[4] / 2) + 1)) + string("\n");
-        resultString += "Current Value   : " + CtiNumStr((int)((DSt->Message[0] << 8) + DSt->Message[1])) + string("\n");
-
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    resultString  = getName() + " / Load Survey Control Parameters:\n";
+    resultString += "Demand Interval : " + CtiNumStr((int)(DSt->Message[2] * 5)) + string("\n");
+    resultString += "Current Interval: " + CtiNumStr((int)((DSt->Message[4] / 2) + 1)) + string("\n");
+    resultString += "Current Value   : " + CtiNumStr((int)((DSt->Message[0] << 8) + DSt->Message[1])) + string("\n");
+
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -621,56 +606,51 @@ INT Lmt2Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< 
    INT ErrReturn  = InMessage->EventCode & 0x3fff;
    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-   if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-   {
-      // No error occured, we must do a real decode!
+  INT ssp;
+  char rev;
 
-      INT ssp;
-      char rev;
+  string sspec;
+  string options("Options:\n");
 
-      string sspec;
-      string options("Options:\n");
+  CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-      CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+  ssp = InMessage->Buffer.DSt.Message[0];
+  rev = 64 + InMessage->Buffer.DSt.Message[1];
 
-      ssp = InMessage->Buffer.DSt.Message[0];
-      rev = 64 + InMessage->Buffer.DSt.Message[1];
+  sspec = "\nSoftware Specification " + CtiNumStr(ssp) + string("  Rom Revision ") + rev + "\n";
 
-      sspec = "\nSoftware Specification " + CtiNumStr(ssp) + string("  Rom Revision ") + rev + "\n";
+  if(InMessage->Buffer.DSt.Message[2] & 0x01)
+  {
+     options+= string("  Latched relay\n");
+  }
+  else
+  {
+     options+= string("  No latched relay\n");
+  }
 
-      if(InMessage->Buffer.DSt.Message[2] & 0x01)
-      {
-         options+= string("  Latched relay\n");
-      }
-      else
-      {
-         options+= string("  No latched relay\n");
-      }
+  if(InMessage->Buffer.DSt.Message[2] & 0x04)
+  {
+     options+= string("  No encoding meter\n");
+  }
+  else
+  {
+     options+= string("  Encoding meter\n");
+  }
 
-      if(InMessage->Buffer.DSt.Message[2] & 0x04)
-      {
-         options+= string("  No encoding meter\n");
-      }
-      else
-      {
-         options+= string("  Encoding meter\n");
-      }
+  if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+  {
+     {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+     }
 
-      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-      {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-         }
+     return MEMORY;
+  }
 
-         return MEMORY;
-      }
+  ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+  ReturnMsg->setResultString( sspec + options );
 
-      ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-      ReturnMsg->setResultString( sspec + options );
-
-      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-   }
+  retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
    return status;
 }

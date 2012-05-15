@@ -2799,167 +2799,48 @@ INT Mct410Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
         setScanFlag(ScanRateAccum, false);
     }
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        unsigned char *freeze_counter = 0;
-
-        if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
-        {
-            string freeze_error;
-
-            freeze_counter = DSt->Message + 3;
-
-            if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
-            {
-                ReturnMsg->setResultString(freeze_error);
-            }
-        }
-
-        if( !status )
-        {
-            int channels = ChannelCount;
-
-            //  cheaper than looking for parse.getFlags() & CMD_FLAG_GV_KWH
-            if( stringContainsIgnoreCase(InMessage->Return.CommandStr, " kwh") )
-            {
-                channels = 1;
-            }
-
-            for( int i = 0; i < channels; i++ )
-            {
-                int offset = (i * 3);
-
-                if( !i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
-                {
-                    if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
-                        InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
-                    {
-                        //  normal KWH read, nothing too special
-                        tags = TAG_POINT_MUST_ARCHIVE;
-
-                        pi = getAccumulatorData(DSt->Message + offset, 3, 0);
-
-                        pointTime -= pointTime.seconds() % 60;
-                    }
-                    else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
-                    {
-                        //  but this is where the action is - frozen decode
-                        tags = 0;
-
-                        if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
-
-                        pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
-
-                        if( pi.freeze_bit != getExpectedFreezeParity() )
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
-                                                    ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
-                                                    "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
-                            pi.description  = "Freeze parity does not match (";
-                            pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
-                            pi.description += "/" + CtiNumStr(getExpectedFreezeCounter()) + ")";
-                            pi.quality = InvalidQuality;
-                            pi.value = 0;
-
-                            ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
-                            status = ErrorInvalidFrozenReadingParity;
-                        }
-                        else
-                        {
-                            pointTime  = getLastFreezeTimestamp(TimeNow);
-                            pointTime -= pointTime.seconds() % 60;
-                        }
-                    }
-
-                    string point_name;
-                    bool reported = false;
-
-                    if( !i )    point_name = "Meter Reading";
-
-                    //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
-                    insertPointDataReport(PulseAccumulatorPointType, i + 1,
-                                          ReturnMsg, pi, point_name, pointTime, 0.1, tags);
-
-                    //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
-                    if( pi.quality == InvalidQuality && !status && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
-                    {
-                        ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(i + 1) + "\n" + ReturnMsg->ResultString());
-                        status = ErrorInvalidData;
-                    }
-                }
-            }
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
 
-    return status;
-}
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
+    unsigned char *freeze_counter = 0;
 
-INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
-{
-    INT status = NORMAL;
-    INT tags = 0;
-    CtiTime pointTime;
-
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
-    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
-
-    point_info pi, pi_freezecount;
-
-    CtiPointSPtr   pPoint;
-    CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
     {
-        // No error occured, we must do a real decode!
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        string freeze_error;
 
-            return MEMORY;
+        freeze_counter = DSt->Message + 3;
+
+        if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
+        {
+            ReturnMsg->setResultString(freeze_error);
+        }
+    }
+
+    if( !status )
+    {
+        int channels = ChannelCount;
+
+        //  cheaper than looking for parse.getFlags() & CMD_FLAG_GV_KWH
+        if( stringContainsIgnoreCase(InMessage->Return.CommandStr, " kwh") )
+        {
+            channels = 1;
         }
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        unsigned char *freeze_counter = 0;
-
-        if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenTOUkWh )
+        for( int i = 0; i < channels; i++ )
         {
-            string freeze_error;
+            int offset = (i * 3);
 
-            freeze_counter = DSt->Message + 12;
-
-            if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
+            if( !i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
             {
-                ReturnMsg->setResultString(freeze_error);
-            }
-        }
-
-        if( !status )
-        {
-            for( int i = 0; i < 4; i++ )
-            {
-                int offset = (i * 3);
-
-                if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_TOUkWh )
+                if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
+                    InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
                 {
                     //  normal KWH read, nothing too special
                     tags = TAG_POINT_MUST_ARCHIVE;
@@ -2968,10 +2849,12 @@ INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, CtiM
 
                     pointTime -= pointTime.seconds() % 60;
                 }
-                else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenTOUkWh )
+                else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
                 {
                     //  but this is where the action is - frozen decode
                     tags = 0;
+
+                    if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
 
                     pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
 
@@ -3000,21 +2883,130 @@ INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, CtiM
                     }
                 }
 
-                //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
-                insertPointDataReport(PulseAccumulatorPointType, 1 + PointOffset_TOUBase + i * PointOffset_RateOffset,
-                                      ReturnMsg, pi, string("TOU rate ") + (char)('A' + i) + " kWh", pointTime, 0.1, tags);
+                string point_name;
+                bool reported = false;
 
-                //  if the quality's invalid, throw the status to abnormal if there's a point defined
-                if( pi.quality == InvalidQuality && !status && getDevicePointOffsetTypeEqual(1 + PointOffset_TOUBase + i * PointOffset_RateOffset, PulseAccumulatorPointType) )
+                if( !i )    point_name = "Meter Reading";
+
+                //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
+                insertPointDataReport(PulseAccumulatorPointType, i + 1,
+                                      ReturnMsg, pi, point_name, pointTime, 0.1, tags);
+
+                //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
+                if( pi.quality == InvalidQuality && !status && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
                 {
-                    ReturnMsg->setResultString("Invalid data returned\n" + ReturnMsg->ResultString());
+                    ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(i + 1) + "\n" + ReturnMsg->ResultString());
                     status = ErrorInvalidData;
                 }
             }
         }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
+    return status;
+}
+
+
+INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+{
+    INT status = NORMAL;
+    INT tags = 0;
+    CtiTime pointTime;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    point_info pi, pi_freezecount;
+
+    CtiPointSPtr   pPoint;
+    CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    unsigned char *freeze_counter = 0;
+
+    if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenTOUkWh )
+    {
+        string freeze_error;
+
+        freeze_counter = DSt->Message + 12;
+
+        if( status = checkFreezeLogic(TimeNow, *freeze_counter, freeze_error) )
+        {
+            ReturnMsg->setResultString(freeze_error);
+        }
+    }
+
+    if( !status )
+    {
+        for( int i = 0; i < 4; i++ )
+        {
+            int offset = (i * 3);
+
+            if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_TOUkWh )
+            {
+                //  normal KWH read, nothing too special
+                tags = TAG_POINT_MUST_ARCHIVE;
+
+                pi = getAccumulatorData(DSt->Message + offset, 3, 0);
+
+                pointTime -= pointTime.seconds() % 60;
+            }
+            else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenTOUkWh )
+            {
+                //  but this is where the action is - frozen decode
+                tags = 0;
+
+                pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
+
+                if( pi.freeze_bit != getExpectedFreezeParity() )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
+                                            ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
+                                            "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    pi.description  = "Freeze parity does not match (";
+                    pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
+                    pi.description += "/" + CtiNumStr(getExpectedFreezeCounter()) + ")";
+                    pi.quality = InvalidQuality;
+                    pi.value = 0;
+
+                    ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString());
+                    status = ErrorInvalidFrozenReadingParity;
+                }
+                else
+                {
+                    pointTime  = getLastFreezeTimestamp(TimeNow);
+                    pointTime -= pointTime.seconds() % 60;
+                }
+            }
+
+            //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
+            insertPointDataReport(PulseAccumulatorPointType, 1 + PointOffset_TOUBase + i * PointOffset_RateOffset,
+                                  ReturnMsg, pi, string("TOU rate ") + (char)('A' + i) + " kWh", pointTime, 0.1, tags);
+
+            //  if the quality's invalid, throw the status to abnormal if there's a point defined
+            if( pi.quality == InvalidQuality && !status && getDevicePointOffsetTypeEqual(1 + PointOffset_TOUBase + i * PointOffset_RateOffset, PulseAccumulatorPointType) )
+            {
+                ReturnMsg->setResultString("Invalid data returned\n" + ReturnMsg->ResultString());
+                status = ErrorInvalidData;
+            }
+        }
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3042,53 +3034,48 @@ INT Mct410Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, CtiM
     setScanFlag(ScanRateGeneral, false);
     setScanFlag(ScanRateIntegrity, false);
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        for( int i = 1; i <= 3; i++ )
-        {
-            int offset = (i > 1)?(i * 2 + 2):(0);  //  0, 6, 8
-
-            pi = getData(DSt->Message + offset, 2, ValueType_DynamicDemand);
-
-            //  turn raw pulses into a demand reading
-            pi.value *= double(3600 / getDemandInterval());
-
-            CtiTime pointTime;
-
-            pointTime -= pointTime.seconds() % getDemandInterval();
-
-            string point_name;
-
-            if( i == 1 )    point_name = "Demand";
-
-            insertPointDataReport(DemandAccumulatorPointType, i,
-                                  ReturnMsg, pi, point_name, pointTime);
-        }
-
-        pi = getData(DSt->Message + 2, 2, ValueType_Voltage);
-
-        insertPointDataReport(DemandAccumulatorPointType, PointOffset_Voltage,
-                              ReturnMsg, pi, "Voltage", CtiTime(), 0.1);
-
-        pi = Mct4xxDevice::getData(DSt->Message + 4, 2, ValueType_Raw);
-
-        insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail,
-                              ReturnMsg, pi, "Blink Counter");
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    for( int i = 1; i <= 3; i++ )
+    {
+        int offset = (i > 1)?(i * 2 + 2):(0);  //  0, 6, 8
+
+        pi = getData(DSt->Message + offset, 2, ValueType_DynamicDemand);
+
+        //  turn raw pulses into a demand reading
+        pi.value *= double(3600 / getDemandInterval());
+
+        CtiTime pointTime;
+
+        pointTime -= pointTime.seconds() % getDemandInterval();
+
+        string point_name;
+
+        if( i == 1 )    point_name = "Demand";
+
+        insertPointDataReport(DemandAccumulatorPointType, i,
+                              ReturnMsg, pi, point_name, pointTime);
+    }
+
+    pi = getData(DSt->Message + 2, 2, ValueType_Voltage);
+
+    insertPointDataReport(DemandAccumulatorPointType, PointOffset_Voltage,
+                          ReturnMsg, pi, "Voltage", CtiTime(), 0.1);
+
+    pi = Mct4xxDevice::getData(DSt->Message + 4, 2, ValueType_Raw);
+
+    insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail,
+                          ReturnMsg, pi, "Blink Counter");
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3103,52 +3090,47 @@ INT Mct410Device::decodeGetValueVoltage( INMESS *InMessage, CtiTime &TimeNow, Ct
 
     point_info pi, max_volt_info, min_volt_info;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiTime minTime, maxTime;
+
+    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        CtiTime minTime, maxTime;
-
-        CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        max_volt_info = getData(DSt->Message, 2, ValueType_Voltage);
-        pi = Mct4xxDevice::getData(DSt->Message + 2, 4, ValueType_Raw);
-        maxTime = CtiTime((unsigned long)pi.value);
-
-
-        min_volt_info = getData(DSt->Message + 6, 2, ValueType_Voltage);
-        pi = Mct4xxDevice::getData(DSt->Message + 8, 4, ValueType_Raw);
-        minTime = CtiTime((unsigned long)pi.value);
-
-        if( InMessage->Sequence == EmetconProtocol::GetValue_FrozenVoltage )
-        {
-            insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMax,
-                                  ReturnMsg, max_volt_info, "Frozen Maximum Voltage", maxTime, 0.1);
-
-            insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMin,
-                                  ReturnMsg, min_volt_info, "Frozen Minimum Voltage", minTime, 0.1);
-        }
-        else
-        {
-            insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMax,
-                                  ReturnMsg, max_volt_info, "Maximum Voltage", maxTime, 0.1);
-
-            insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMin,
-                                  ReturnMsg, min_volt_info, "Minimum Voltage", minTime, 0.1);
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    max_volt_info = getData(DSt->Message, 2, ValueType_Voltage);
+    pi = Mct4xxDevice::getData(DSt->Message + 2, 4, ValueType_Raw);
+    maxTime = CtiTime((unsigned long)pi.value);
+
+
+    min_volt_info = getData(DSt->Message + 6, 2, ValueType_Voltage);
+    pi = Mct4xxDevice::getData(DSt->Message + 8, 4, ValueType_Raw);
+    minTime = CtiTime((unsigned long)pi.value);
+
+    if( InMessage->Sequence == EmetconProtocol::GetValue_FrozenVoltage )
+    {
+        insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMax,
+                              ReturnMsg, max_volt_info, "Frozen Maximum Voltage", maxTime, 0.1);
+
+        insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMin,
+                              ReturnMsg, min_volt_info, "Frozen Minimum Voltage", minTime, 0.1);
+    }
+    else
+    {
+        insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMax,
+                              ReturnMsg, max_volt_info, "Maximum Voltage", maxTime, 0.1);
+
+        insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMin,
+                              ReturnMsg, min_volt_info, "Minimum Voltage", minTime, 0.1);
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3160,169 +3142,161 @@ INT Mct410Device::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, Cti
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    INT ErrReturn =  InMessage->EventCode & 0x3fff;
+    unsigned char   *msgbuf = InMessage->Buffer.DSt.Message;
+    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointSPtr    pPoint;
+    CtiPointDataMsg *pData = NULL;
+    double value;
+
+    int outagenum, multiplier = 0;
+    unsigned long  timestamp;
+    unsigned short duration;
+    string pointString, resultString, timeString;
+    CtiTime outageTime;
+
+    ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
     {
-        //  no error, time for decode
-        INT ErrReturn =  InMessage->EventCode & 0x3fff;
-        unsigned char   *msgbuf = InMessage->Buffer.DSt.Message;
-        CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointSPtr    pPoint;
-        CtiPointDataMsg *pData = NULL;
-        double value;
+        outagenum = parse.getiValue("outage");
 
-        int outagenum, multiplier = 0;
-        unsigned long  timestamp;
-        unsigned short duration;
-        string pointString, resultString, timeString;
-        CtiTime outageTime;
-
-        ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) )
+        if( (outagenum % 2) == 0 )
         {
-            outagenum = parse.getiValue("outage");
+            //  if they specified an even number, start with the corresponding odd number
+            outagenum--;
+        }
 
-            if( (outagenum % 2) == 0 )
+        for( int i = 0; i < 2; i++ )
+        {
+            int cycles;
+
+            timestamp  = msgbuf[(i*6)+0] << 24;
+            timestamp |= msgbuf[(i*6)+1] << 16;
+            timestamp |= msgbuf[(i*6)+2] <<  8;
+            timestamp |= msgbuf[(i*6)+3];
+
+            duration   = msgbuf[(i*6)+4] <<  8;
+            duration  |= msgbuf[(i*6)+5];
+
+            outageTime = CtiTime(timestamp);
+
+            if( is_valid_time(timestamp) )
             {
-                //  if they specified an even number, start with the corresponding odd number
-                outagenum--;
+                timeString = outageTime.asString();
+            }
+            else
+            {
+                timeString = "(invalid time)";
             }
 
-            for( int i = 0; i < 2; i++ )
+            pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
+
+            if( sspecAtLeast(SspecRev_NewOutage_Min) )
             {
-                int cycles;
+                /*
+                Units of outage:
+                Bits 0-1 Units of outage (-2) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
+                Bits 2-3 Unused
+                Bits 4-5 Units of outage (-1) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
+                Bits 6-7 Unused
+                */
 
-                timestamp  = msgbuf[(i*6)+0] << 24;
-                timestamp |= msgbuf[(i*6)+1] << 16;
-                timestamp |= msgbuf[(i*6)+2] <<  8;
-                timestamp |= msgbuf[(i*6)+3];
+                cycles = duration;
 
-                duration   = msgbuf[(i*6)+4] <<  8;
-                duration  |= msgbuf[(i*6)+5];
-
-                outageTime = CtiTime(timestamp);
-
-                if( is_valid_time(timestamp) )
+                if( i == 0 )
                 {
-                    timeString = outageTime.asString();
+                    multiplier = (msgbuf[12] >> 4) & 0x03;
                 }
                 else
                 {
-                    timeString = "(invalid time)";
+                    multiplier =  msgbuf[12] & 0x03;
                 }
 
-                pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
-
-                if( sspecAtLeast(SspecRev_NewOutage_Min) )
+                if( multiplier == 2 && cycles == 0xffff )
                 {
-                    /*
-                    Units of outage:
-                    Bits 0-1 Units of outage (-2) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
-                    Bits 2-3 Unused
-                    Bits 4-5 Units of outage (-1) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
-                    Bits 6-7 Unused
-                    */
+                    pointString += "(outage greater than 45 days)";
+                }
+                else
+                {
+                    switch( multiplier )
+                    {
+                        case 2: cycles *= 60;  //  minutes falls through to...
+                        case 1: cycles *= 60;  //  seconds, which falls through to...
+                        case 0: break;         //  cycles, which does nothing
 
+                        case 3: cycles = -1;   //  waiting time sync - don't report a value
+                    }
+
+                    if( cycles < 0 )
+                    {
+                        pointString += "(waiting for time sync to calculate outage duration)";
+                    }
+                }
+            }
+            else
+            {
+                if( duration & 0x8000 )
+                {
+                    cycles = (duration & 0x7fff) * 60;
+                }
+                else
+                {
                     cycles = duration;
-
-                    if( i == 0 )
-                    {
-                        multiplier = (msgbuf[12] >> 4) & 0x03;
-                    }
-                    else
-                    {
-                        multiplier =  msgbuf[12] & 0x03;
-                    }
-
-                    if( multiplier == 2 && cycles == 0xffff )
-                    {
-                        pointString += "(outage greater than 45 days)";
-                    }
-                    else
-                    {
-                        switch( multiplier )
-                        {
-                            case 2: cycles *= 60;  //  minutes falls through to...
-                            case 1: cycles *= 60;  //  seconds, which falls through to...
-                            case 0: break;         //  cycles, which does nothing
-
-                            case 3: cycles = -1;   //  waiting time sync - don't report a value
-                        }
-
-                        if( cycles < 0 )
-                        {
-                            pointString += "(waiting for time sync to calculate outage duration)";
-                        }
-                    }
                 }
-                else
+            }
+
+            if( cycles >= 0 )
+            {
+                if( multiplier != 2 || cycles != 0xffff )
                 {
-                    if( duration & 0x8000 )
+                    int ss = cycles / 60;
+                    int mm = ss / 60;
+                    int hh = mm / 60;
+                    int dd = hh / 24;
+
+                    ss %= 60;
+                    mm %= 60;
+                    hh %= 24;
+
+                    if( dd == 1 )
                     {
-                        cycles = (duration & 0x7fff) * 60;
+                        pointString += CtiNumStr(dd) + " day, ";
                     }
-                    else
+                    else if( dd > 1 )
                     {
-                        cycles = duration;
+                        pointString += CtiNumStr(dd) + " days, ";
+                    }
+
+                    pointString += CtiNumStr(hh).zpad(2) + string(":") +
+                                   CtiNumStr(mm).zpad(2) + ":" +
+                                   CtiNumStr(ss).zpad(2);
+
+                    if( cycles % 60 )
+                    {
+                        int millis = (cycles % 60) * 1000;
+                        millis /= 60;
+
+                        pointString += "." + CtiNumStr(millis).zpad(3);
                     }
                 }
 
-                if( cycles >= 0 )
+                if( (pPoint = getDevicePointOffsetTypeEqual(PointOffset_Analog_Outage, AnalogPointType))
+                    && is_valid_time(outageTime) )
                 {
-                    if( multiplier != 2 || cycles != 0xffff )
+                    value  = cycles;
+                    value /= 60.0;
+                    value  = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(value);
+
+                    //  need to do this the old way so that we can set the point data message manually
+                    if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), value, NormalQuality, AnalogPointType, pointString) )
                     {
-                        int ss = cycles / 60;
-                        int mm = ss / 60;
-                        int hh = mm / 60;
-                        int dd = hh / 24;
+                        pData->setTime( outageTime );
 
-                        ss %= 60;
-                        mm %= 60;
-                        hh %= 24;
-
-                        if( dd == 1 )
-                        {
-                            pointString += CtiNumStr(dd) + " day, ";
-                        }
-                        else if( dd > 1 )
-                        {
-                            pointString += CtiNumStr(dd) + " days, ";
-                        }
-
-                        pointString += CtiNumStr(hh).zpad(2) + string(":") +
-                                       CtiNumStr(mm).zpad(2) + ":" +
-                                       CtiNumStr(ss).zpad(2);
-
-                        if( cycles % 60 )
-                        {
-                            int millis = (cycles % 60) * 1000;
-                            millis /= 60;
-
-                            pointString += "." + CtiNumStr(millis).zpad(3);
-                        }
-                    }
-
-                    if( (pPoint = getDevicePointOffsetTypeEqual(PointOffset_Analog_Outage, AnalogPointType))
-                        && is_valid_time(outageTime) )
-                    {
-                        value  = cycles;
-                        value /= 60.0;
-                        value  = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(value);
-
-                        //  need to do this the old way so that we can set the point data message manually
-                        if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), value, NormalQuality, AnalogPointType, pointString) )
-                        {
-                            pData->setTime( outageTime );
-
-                            ReturnMsg->PointData().push_back(pData);
-                            pData = 0;
-                        }
-                    }
-                    else
-                    {
-                        resultString += pointString + "\n";
+                        ReturnMsg->PointData().push_back(pData);
+                        pData = 0;
                     }
                 }
                 else
@@ -3330,16 +3304,20 @@ INT Mct410Device::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, Cti
                     resultString += pointString + "\n";
                 }
             }
-
-            ReturnMsg->setResultString(resultString);
-        }
-        else
-        {
-            ReturnMsg->setResultString(getName() + " / Sspec not stored, could not reliably decode outages; try read again");
+            else
+            {
+                resultString += pointString + "\n";
+            }
         }
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        ReturnMsg->setResultString(resultString);
     }
+    else
+    {
+        ReturnMsg->setResultString(getName() + " / Sspec not stored, could not reliably decode outages; try read again");
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3349,21 +3327,17 @@ INT Mct410Device::decodeGetValueFreezeCounter( INMESS *InMessage, CtiTime &TimeN
 {
     INT status = NORMAL;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        //  no error, time for decode
-        INT ErrReturn =  InMessage->EventCode & 0x3fff;
-        unsigned char   *msgbuf = InMessage->Buffer.DSt.Message;
-        CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    INT ErrReturn =  InMessage->EventCode & 0x3fff;
+    unsigned char   *msgbuf = InMessage->Buffer.DSt.Message;
+    CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-        ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        ReturnMsg->setResultString(getName() + " / Freeze counter: " + CtiNumStr(msgbuf[0]));
+    ReturnMsg->setResultString(getName() + " / Freeze counter: " + CtiNumStr(msgbuf[0]));
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3383,108 +3357,103 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
 
     CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        return MEMORY;
+    }
+
+    pulses = DSt->Message[0] << 16 |
+             DSt->Message[1] <<  8 |
+             DSt->Message[2];
+
+    if( _llpPeakInterest.command == FuncRead_LLPPeakDayPos )
+    {
+        //  daily usage is in 0.1 kWH units
+        max_usage = (double)pulses / 10;
+    }
+    else  //  everything else is in 0.1 WH units
+    {
+        max_usage = (double)pulses / 10000;
+    }
+
+    max_demand_timestamp =  DSt->Message[3] << 24 |
+                            DSt->Message[4] << 16 |
+                            DSt->Message[5] <<  8 |
+                            DSt->Message[6];
+
+    pulses = DSt->Message[7] << 16 |
+             DSt->Message[8] <<  8 |
+             DSt->Message[9];
+
+    avg_daily = (double)pulses / 10;
+
+    pulses = DSt->Message[10] << 16 |
+             DSt->Message[11] <<  8 |
+             DSt->Message[12];
+
+    total_usage = (double)pulses / 10;
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    result_string  = getName() + " / Channel " + CtiNumStr(_llpPeakInterest.channel + 1) + string(" Load Profile Report\n");
+    result_string += "Report range: " + CtiTime(_llpPeakInterest.time - (_llpPeakInterest.period * 86400)).asString() + " - " +
+                                        CtiTime(_llpPeakInterest.time).asString() + "\n";
+
+    if( max_demand_timestamp > _llpPeakInterest.time ||
+        max_demand_timestamp < (_llpPeakInterest.time - _llpPeakInterest.period * 86400) )
+    {
+        result_string = "Peak timestamp (" + CtiTime(max_demand_timestamp).asString() + ") outside of requested range - retry report";
+        _llpPeakInterest.time = 0;
+        _llpPeakInterest.period = 0;
+        status = ErrorInvalidTimestamp;
+        InMessage->Return.MacroOffset = 0;  //  stop the retries!
+    }
+    else
+    {
+        switch( _llpPeakInterest.command )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        pulses = DSt->Message[0] << 16 |
-                 DSt->Message[1] <<  8 |
-                 DSt->Message[2];
-
-        if( _llpPeakInterest.command == FuncRead_LLPPeakDayPos )
-        {
-            //  daily usage is in 0.1 kWH units
-            max_usage = (double)pulses / 10;
-        }
-        else  //  everything else is in 0.1 WH units
-        {
-            max_usage = (double)pulses / 10000;
-        }
-
-        max_demand_timestamp =  DSt->Message[3] << 24 |
-                                DSt->Message[4] << 16 |
-                                DSt->Message[5] <<  8 |
-                                DSt->Message[6];
-
-        pulses = DSt->Message[7] << 16 |
-                 DSt->Message[8] <<  8 |
-                 DSt->Message[9];
-
-        avg_daily = (double)pulses / 10;
-
-        pulses = DSt->Message[10] << 16 |
-                 DSt->Message[11] <<  8 |
-                 DSt->Message[12];
-
-        total_usage = (double)pulses / 10;
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        result_string  = getName() + " / Channel " + CtiNumStr(_llpPeakInterest.channel + 1) + string(" Load Profile Report\n");
-        result_string += "Report range: " + CtiTime(_llpPeakInterest.time - (_llpPeakInterest.period * 86400)).asString() + " - " +
-                                            CtiTime(_llpPeakInterest.time).asString() + "\n";
-
-        if( max_demand_timestamp > _llpPeakInterest.time ||
-            max_demand_timestamp < (_llpPeakInterest.time - _llpPeakInterest.period * 86400) )
-        {
-            result_string = "Peak timestamp (" + CtiTime(max_demand_timestamp).asString() + ") outside of requested range - retry report";
-            _llpPeakInterest.time = 0;
-            _llpPeakInterest.period = 0;
-            status = ErrorInvalidTimestamp;
-            InMessage->Return.MacroOffset = 0;  //  stop the retries!
-        }
-        else
-        {
-            switch( _llpPeakInterest.command )
+            case FuncRead_LLPPeakDayPos:
             {
-                case FuncRead_LLPPeakDayPos:
-                {
-                    result_string += "Peak day: " + CtiDate(CtiTime(max_demand_timestamp)).asStringUSFormat() + "\n";
-                    result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
-                    result_string += "Demand: " + CtiNumStr(max_usage / 24, 2) + string(" kW\n");
-                    result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
-                    result_string += "Total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
+                result_string += "Peak day: " + CtiDate(CtiTime(max_demand_timestamp)).asStringUSFormat() + "\n";
+                result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
+                result_string += "Demand: " + CtiNumStr(max_usage / 24, 2) + string(" kW\n");
+                result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
+                result_string += "Total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
 
-                    break;
-                }
-                case FuncRead_LLPPeakHourPos:
-                {
-                    result_string += "Peak hour: " + CtiTime(max_demand_timestamp).asString() + "\n";
-                    result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
-                    result_string += "Demand: " + CtiNumStr(max_usage, 1) + string(" kW\n");
-                    result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
-                    result_string += "Total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
+                break;
+            }
+            case FuncRead_LLPPeakHourPos:
+            {
+                result_string += "Peak hour: " + CtiTime(max_demand_timestamp).asString() + "\n";
+                result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
+                result_string += "Demand: " + CtiNumStr(max_usage, 1) + string(" kW\n");
+                result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
+                result_string += "Total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
 
-                    break;
-                }
-                case FuncRead_LLPPeakIntervalPos:
-                {
-                    int intervals_per_hour = 3600 / getLoadProfile()->getLoadProfileDemandRate();
+                break;
+            }
+            case FuncRead_LLPPeakIntervalPos:
+            {
+                int intervals_per_hour = 3600 / getLoadProfile()->getLoadProfileDemandRate();
 
-                    result_string += "Peak interval: " + CtiTime(max_demand_timestamp).asString() + "\n";
-                    result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
-                    result_string += "Demand: " + CtiNumStr(max_usage * intervals_per_hour, 1) + string(" kW\n");
-                    result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
-                    result_string += "Total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
+                result_string += "Peak interval: " + CtiTime(max_demand_timestamp).asString() + "\n";
+                result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
+                result_string += "Demand: " + CtiNumStr(max_usage * intervals_per_hour, 1) + string(" kW\n");
+                result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
+                result_string += "Total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
 
-                    break;
-                }
+                break;
             }
         }
-
-        ReturnMsg->setResultString(result_string);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-        InterlockedExchange(&_llpPeakInterest.in_progress, false);
     }
+
+    ReturnMsg->setResultString(result_string);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    InterlockedExchange(&_llpPeakInterest.in_progress, false);
 
     return status;
 }
@@ -3494,48 +3463,43 @@ INT Mct410Device::decodeGetConfigDailyReadInterest(INMESS *InMessage, CtiTime &T
 {
     INT status = NORMAL;
 
-    if( !(status = decodeCheckErrorReturn(InMessage, retList, outList)) )
+    const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
+    CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    string resultString;
+
+    unsigned interest_day     =   DSt->Message[0] & 0x1f;
+    unsigned interest_month   =  (DSt->Message[1] & 0x0f) + 1;
+    unsigned interest_channel = ((DSt->Message[1] & 0x30) >> 4) + 1;
+
+    resultString  = getName() + " / Daily read interest channel: " + CtiNumStr(interest_channel) + "\n";
+    resultString += getName() + " / Daily read interest month: "   + CtiNumStr(interest_month) + "\n";
+    resultString += getName() + " / Daily read interest day: "     + CtiNumStr(interest_day) + "\n";
+
+    const CtiDate DateNow(TimeNow);
+
+    unsigned interest_year = DateNow.year();
+
+    if( DateNow.month() < interest_month )
     {
-        // No error occured, we must do a real decode!
-
-        const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
-        CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        string resultString;
-
-        unsigned interest_day     =   DSt->Message[0] & 0x1f;
-        unsigned interest_month   =  (DSt->Message[1] & 0x0f) + 1;
-        unsigned interest_channel = ((DSt->Message[1] & 0x30) >> 4) + 1;
-
-        resultString  = getName() + " / Daily read interest channel: " + CtiNumStr(interest_channel) + "\n";
-        resultString += getName() + " / Daily read interest month: "   + CtiNumStr(interest_month) + "\n";
-        resultString += getName() + " / Daily read interest day: "     + CtiNumStr(interest_day) + "\n";
-
-        const CtiDate DateNow(TimeNow);
-
-        unsigned interest_year = DateNow.year();
-
-        if( DateNow.month() < interest_month )
-        {
-            //  interest month is greater than the current month - must've been last year
-            interest_year--;
-        }
-
-        const CtiDate interest_date(interest_day, interest_month, interest_year);
-
-        if( interest_date == _daily_read_info.interest.date )
-        {
-            _daily_read_info.interest.needs_verification = false;
-        }
-
-        ReturnMsg->setResultString(resultString);
-
-        const bool expectMore = true;
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
+        //  interest month is greater than the current month - must've been last year
+        interest_year--;
     }
+
+    const CtiDate interest_date(interest_day, interest_month, interest_year);
+
+    if( interest_date == _daily_read_info.interest.date )
+    {
+        _daily_read_info.interest.needs_verification = false;
+    }
+
+    ReturnMsg->setResultString(resultString);
+
+    const bool expectMore = true;
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
 
     return status;
 }
@@ -3545,312 +3509,307 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
 {
     INT status = NORMAL;
 
-    if( !(status = decodeCheckErrorReturn(InMessage, retList, outList)) )
+    string resultString;
+    bool expectMore = false;
+
+    const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
+
+    CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
     {
-        // No error occured, we must do a real decode!
+        resultString = getName() + " / Daily read requires SSPEC rev 2.1 or higher, command could not automatically retrieve SSPEC; retry command or execute \"getconfig model\" to verify SSPEC";
+        status = ErrorVerifySSPEC;
+    }
+    else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
+    {
+        resultString = getName() + " / Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1);
+        status = ErrorInvalidSSPEC;
+        InMessage->Return.MacroOffset = 0;  //  stop the retries!
+    }
+    else
+    {
+        string demand_pointname, consumption_pointname;
 
-        string resultString;
-        bool expectMore = false;
-
-        const DSTRUCT * const DSt  = &InMessage->Buffer.DSt;
-
-        CtiReturnMsg    *ReturnMsg = new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+        if( _daily_read_info.request.channel == 1 )
         {
-            resultString = getName() + " / Daily read requires SSPEC rev 2.1 or higher, command could not automatically retrieve SSPEC; retry command or execute \"getconfig model\" to verify SSPEC";
-            status = ErrorVerifySSPEC;
-        }
-        else if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
-        {
-            resultString = getName() + " / Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1);
-            status = ErrorInvalidSSPEC;
-            InMessage->Return.MacroOffset = 0;  //  stop the retries!
+            demand_pointname      = "kW";
+            consumption_pointname = "kWh";
         }
         else
         {
-            string demand_pointname, consumption_pointname;
+            demand_pointname      = "Channel " + CtiNumStr(_daily_read_info.request.channel) + " demand";
+            consumption_pointname = "Channel " + CtiNumStr(_daily_read_info.request.channel) + " consumption";
+        }
 
-            if( _daily_read_info.request.channel == 1 )
+        if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
+        {
+            boost::optional<point_info> kwh;
+            unsigned channel = 0;
+
+            //  I have to process the readings newest-to-oldest, but I want to send them oldest-to-newest
+            std::stack<point_info> daily_readings;
+
+            for( unsigned day = 0; day < 6; ++day )
             {
-                demand_pointname      = "kW";
-                consumption_pointname = "kWh";
-            }
-            else
-            {
-                demand_pointname      = "Channel " + CtiNumStr(_daily_read_info.request.channel) + " demand";
-                consumption_pointname = "Channel " + CtiNumStr(_daily_read_info.request.channel) + " consumption";
-            }
+                const unsigned char * const pos = DSt->Message + (day * 2) + (kwh ? 1 : 0);
 
-            if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
-            {
-                boost::optional<point_info> kwh;
-                unsigned channel = 0;
+                bool bad_delta = ((pos[0] & 0x3f == 0x3f) && pos[1] == 0xfa);
 
-                //  I have to process the readings newest-to-oldest, but I want to send them oldest-to-newest
-                std::stack<point_info> daily_readings;
-
-                for( unsigned day = 0; day < 6; ++day )
+                if( kwh || bad_delta )
                 {
-                    const unsigned char * const pos = DSt->Message + (day * 2) + (kwh ? 1 : 0);
-
-                    bool bad_delta = ((pos[0] & 0x3f == 0x3f) && pos[1] == 0xfa);
-
-                    if( kwh || bad_delta )
+                    //  Read the channel out of the high bits of the delta if we haven't already
+                    if( !channel )
                     {
-                        //  Read the channel out of the high bits of the delta if we haven't already
-                        if( !channel )
-                        {
-                            channel = 1 + ((*pos & 0xc0) >> 6);
+                        channel = 1 + ((*pos & 0xc0) >> 6);
 
-                            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
-                        }
+                        setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
+                    }
 
-                        point_info delta = getData(pos, 2, ValueType_AccumulatorDelta);
+                    point_info delta = getData(pos, 2, ValueType_AccumulatorDelta);
 
-                        if( ! kwh || delta.quality != NormalQuality )
-                        {
-                            //  This is a bad delta - put it on the list unmodified
-                            daily_readings.push(delta);
-                        }
-                        else
-                        {
-                            if( kwh->quality == NormalQuality )
-                            {
-                                if( kwh->value < delta.value  )
-                                {
-                                    kwh->value = 0;
-                                    kwh->quality = OverflowQuality;
-                                    kwh->description = "Underflow";
-                                }
-                                else
-                                {
-                                    kwh->value -= delta.value;
-                                }
-                            }
-
-                            daily_readings.push(*kwh);
-                        }
+                    if( ! kwh || delta.quality != NormalQuality )
+                    {
+                        //  This is a bad delta - put it on the list unmodified
+                        daily_readings.push(delta);
                     }
                     else
                     {
-                        //  get the un-rounded data, we'll round it when we send the pointdata
-                        kwh = Mct4xxDevice::decodePulseAccumulator(pos, 3, 0);
+                        if( kwh->quality == NormalQuality )
+                        {
+                            if( kwh->value < delta.value  )
+                            {
+                                kwh->value = 0;
+                                kwh->quality = OverflowQuality;
+                                kwh->description = "Underflow";
+                            }
+                            else
+                            {
+                                kwh->value -= delta.value;
+                            }
+                        }
 
                         daily_readings.push(*kwh);
                     }
                 }
-
-                if( channel != _daily_read_info.request.channel )
-                {
-                    resultString  = getName() + " / Invalid channel returned by daily read ";
-                    resultString += "(" + CtiNumStr(channel) + ", expecting " + CtiNumStr(_daily_read_info.request.channel) + ")";
-
-                    status = ErrorInvalidChannel;
-                }
                 else
                 {
-                    //  we reset the retry count any time there's a success
-                    _daily_read_info.request.multi_day_retries = -1;
+                    //  get the un-rounded data, we'll round it when we send the pointdata
+                    kwh = Mct4xxDevice::decodePulseAccumulator(pos, 3, 0);
 
-                    while( !daily_readings.empty() )
-                    {
-                        point_info pi = daily_readings.top();
-
-                        if( isMct410(getType()) )
-                        {
-                            //  round down to make this match the MCT-410's normal kWh readings
-                            pi.value -= static_cast<long>(pi.value) % 2;
-                        }
-
-                        insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.request.channel, ReturnMsg,
-                                              pi, consumption_pointname, CtiTime(_daily_read_info.request.begin + 1),  //  add on 24 hours - end of day
-                                              0.1, TAG_POINT_MUST_ARCHIVE);
-
-                        ++_daily_read_info.request.begin;
-
-                        daily_readings.pop();
-                    }
-
-                    if( _daily_read_info.request.begin < _daily_read_info.request.end )
-                    {
-                        string request_str = "getvalue daily read ";
-
-                        request_str += "channel " + CtiNumStr(_daily_read_info.request.channel)
-                                            + " " + printable_date(_daily_read_info.request.begin + 1)
-                                            + " " + printable_date(_daily_read_info.request.end);
-
-                        if( strstr(InMessage->Return.CommandStr, " noqueue") )  request_str += " noqueue";
-
-                        expectMore = true;
-                        CtiRequestMsg newReq(getID(),
-                                             request_str,
-                                             InMessage->Return.UserID,
-                                             InMessage->Return.GrpMsgID,
-                                             InMessage->Return.RouteID,
-                                             selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                             0,
-                                             0,
-                                             InMessage->Priority);
-
-                        newReq.setConnectionHandle((void *)InMessage->Return.Connection);
-
-                        //  same UserMessageID, no need to reset the in_progress flag
-                        beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
-                    }
-                    else
-                    {
-                        resultString += "Multi-day daily read request complete\n";
-
-                        InterlockedExchange(&_daily_read_info.request.in_progress, false);
-                    }
+                    daily_readings.push(*kwh);
                 }
+            }
+
+            if( channel != _daily_read_info.request.channel )
+            {
+                resultString  = getName() + " / Invalid channel returned by daily read ";
+                resultString += "(" + CtiNumStr(channel) + ", expecting " + CtiNumStr(_daily_read_info.request.channel) + ")";
+
+                status = ErrorInvalidChannel;
             }
             else
             {
-                int day, month, channel;
+                //  we reset the retry count any time there's a success
+                _daily_read_info.request.multi_day_retries = -1;
 
-                if( _daily_read_info.request.channel == 1 &&
-                    _daily_read_info.request.type == daily_read_info_t::Request_SingleDay )
+                while( !daily_readings.empty() )
                 {
-                    channel = 1;
-                    month   =  (DSt->Message[8] & 0xc0) >> 6;  //  2 bits
-                    day     =  (DSt->Message[8] & 0x3e) >> 1;  //  5 bits
+                    point_info pi = daily_readings.top();
+
+                    if( isMct410(getType()) )
+                    {
+                        //  round down to make this match the MCT-410's normal kWh readings
+                        pi.value -= static_cast<long>(pi.value) % 2;
+                    }
+
+                    insertPointDataReport(PulseAccumulatorPointType, _daily_read_info.request.channel, ReturnMsg,
+                                          pi, consumption_pointname, CtiTime(_daily_read_info.request.begin + 1),  //  add on 24 hours - end of day
+                                          0.1, TAG_POINT_MUST_ARCHIVE);
+
+                    ++_daily_read_info.request.begin;
+
+                    daily_readings.pop();
+                }
+
+                if( _daily_read_info.request.begin < _daily_read_info.request.end )
+                {
+                    string request_str = "getvalue daily read ";
+
+                    request_str += "channel " + CtiNumStr(_daily_read_info.request.channel)
+                                        + " " + printable_date(_daily_read_info.request.begin + 1)
+                                        + " " + printable_date(_daily_read_info.request.end);
+
+                    if( strstr(InMessage->Return.CommandStr, " noqueue") )  request_str += " noqueue";
+
+                    expectMore = true;
+                    CtiRequestMsg newReq(getID(),
+                                         request_str,
+                                         InMessage->Return.UserID,
+                                         InMessage->Return.GrpMsgID,
+                                         InMessage->Return.RouteID,
+                                         selectInitialMacroRouteOffset(InMessage->Return.RouteID),
+                                         0,
+                                         0,
+                                         InMessage->Priority);
+
+                    newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+
+                    //  same UserMessageID, no need to reset the in_progress flag
+                    beginExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
                 }
                 else
                 {
-                    channel = ((DSt->Message[10] & 0x30) >> 4) + 1;
-                    month   =   DSt->Message[10] & 0x0f;
-                    day     =   DSt->Message[9];
-
-                    setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
-                }
-
-                if( channel != _daily_read_info.request.channel )
-                {
-                    resultString  = getName() + " / Invalid channel returned by daily read ";
-                    resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(_daily_read_info.request.channel) + ")";
-
-                    status = ErrorInvalidChannel;
-                }
-                else if( _daily_read_info.interest.needs_verification )
-                {
-                    resultString  = getName() + " / Daily read period of interest date was not verified, try read again";
-
-                    //  when they try the read again, it'll re-read the period of interest from the meter
-
-                    status = ErrorInvalidTimestamp;
-                }
-                else if(  day        !=   _daily_read_info.request.begin.dayOfMonth() ||
-                         (month % 4) != ((_daily_read_info.request.begin.month() - 1) % 4) )
-                {
-                    resultString  = getName() + " / Invalid day/month returned by daily read ";
-                    resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(((_daily_read_info.request.begin.month() - 1) % 4) + 1) + ")";
-
-                    _daily_read_info.interest.date = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
-
-                    status = ErrorInvalidTimestamp;
-                }
-                else
-                {
-                    int time_peak;
-
-                    if( _daily_read_info.request.channel == 1 &&
-                        _daily_read_info.request.type == daily_read_info_t::Request_SingleDay )
-                    {
-                        time_peak        = ((DSt->Message[8]  & 0x01) << 10) |  //  1 bit
-                                           ((DSt->Message[9]  & 0xff) <<  2) |  //  8 bits
-                                           ((DSt->Message[10] & 0xc0) >>  6);   //  2 bits
-
-                        int time_voltage_max = ((DSt->Message[10] & 0x3f) <<  5) |  //  6 bits
-                                               ((DSt->Message[11] & 0xf8) >>  3);   //  5 bits
-
-                        int time_voltage_min = ((DSt->Message[11] & 0x07) <<  8) |  //  3 bits
-                                               ((DSt->Message[12] & 0xff) <<  0);   //  8 bits
-
-                        point_info voltage;
-
-                        voltage.value = DSt->Message[7] | ((DSt->Message[6] & 0x0f) << 8);
-
-                        if( voltage.value == 0x7fa )
-                        {
-                            voltage.value   = 0;
-                            voltage.quality = InvalidQuality;
-                            voltage.description = "Requested interval outside of valid range";
-                        }
-                        else
-                        {
-                            voltage.quality = NormalQuality;
-                        }
-
-                        insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMin, ReturnMsg,
-                                              voltage, "Minimum Voltage", CtiTime(_daily_read_info.request.begin) + (time_voltage_min * 60), 0.1);
-
-                        voltage.value = ((DSt->Message[6] & 0xf0) >> 4) | (DSt->Message[5] << 4);
-
-                        if( voltage.value == 0x7fa )
-                        {
-                            voltage.value   = 0;
-                            voltage.quality = InvalidQuality;
-                            voltage.description = "Requested interval outside of valid range";
-                        }
-                        else
-                        {
-                            voltage.quality = NormalQuality;
-                        }
-
-                        insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMax, ReturnMsg,
-                                              voltage, "Maximum Voltage", CtiTime(_daily_read_info.request.begin) + (time_voltage_max * 60), 0.1);
-                    }
-                    else
-                    {
-                        time_peak = (DSt->Message[5] << 8) | DSt->Message[6];
-
-                        point_info outage_count = getData(DSt->Message + 7, 2, ValueType_OutageCount);
-
-                        insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail, ReturnMsg,
-                                              outage_count, "Blink Counter",  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
-                    }
-
-                    point_info reading = getAccumulatorData(DSt->Message + 0, 3, 0);
-
-                    point_info peak = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
-
-                    //  adjust for the demand interval
-                    peak.value *= 3600 / getDemandInterval();
-
-                    if( channel > 1
-                        && !getDevicePointOffsetTypeEqual(channel, PulseAccumulatorPointType)
-                        && !getDevicePointOffsetTypeEqual(channel, DemandAccumulatorPointType) )
-                    {
-                        resultString += "No points defined for channel " + CtiNumStr(channel);
-                    }
-                    else
-                    {
-                        insertPointDataReport(PulseAccumulatorPointType, channel, ReturnMsg,
-                                              reading, consumption_pointname,  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
-
-                        insertPointDataReport(DemandAccumulatorPointType, channel, ReturnMsg,
-                                              peak, demand_pointname,  CtiTime(_daily_read_info.request.begin) + (time_peak * 60));
-                    }
+                    resultString += "Multi-day daily read request complete\n";
 
                     InterlockedExchange(&_daily_read_info.request.in_progress, false);
                 }
             }
         }
-
-        //  this is gross
-        if( !ReturnMsg->ResultString().empty() )
+        else
         {
-            resultString = ReturnMsg->ResultString() + "\n" + resultString;
+            int day, month, channel;
+
+            if( _daily_read_info.request.channel == 1 &&
+                _daily_read_info.request.type == daily_read_info_t::Request_SingleDay )
+            {
+                channel = 1;
+                month   =  (DSt->Message[8] & 0xc0) >> 6;  //  2 bits
+                day     =  (DSt->Message[8] & 0x3e) >> 1;  //  5 bits
+            }
+            else
+            {
+                channel = ((DSt->Message[10] & 0x30) >> 4) + 1;
+                month   =   DSt->Message[10] & 0x0f;
+                day     =   DSt->Message[9];
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
+            }
+
+            if( channel != _daily_read_info.request.channel )
+            {
+                resultString  = getName() + " / Invalid channel returned by daily read ";
+                resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(_daily_read_info.request.channel) + ")";
+
+                status = ErrorInvalidChannel;
+            }
+            else if( _daily_read_info.interest.needs_verification )
+            {
+                resultString  = getName() + " / Daily read period of interest date was not verified, try read again";
+
+                //  when they try the read again, it'll re-read the period of interest from the meter
+
+                status = ErrorInvalidTimestamp;
+            }
+            else if(  day        !=   _daily_read_info.request.begin.dayOfMonth() ||
+                     (month % 4) != ((_daily_read_info.request.begin.month() - 1) % 4) )
+            {
+                resultString  = getName() + " / Invalid day/month returned by daily read ";
+                resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(((_daily_read_info.request.begin.month() - 1) % 4) + 1) + ")";
+
+                _daily_read_info.interest.date = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
+
+                status = ErrorInvalidTimestamp;
+            }
+            else
+            {
+                int time_peak;
+
+                if( _daily_read_info.request.channel == 1 &&
+                    _daily_read_info.request.type == daily_read_info_t::Request_SingleDay )
+                {
+                    time_peak        = ((DSt->Message[8]  & 0x01) << 10) |  //  1 bit
+                                       ((DSt->Message[9]  & 0xff) <<  2) |  //  8 bits
+                                       ((DSt->Message[10] & 0xc0) >>  6);   //  2 bits
+
+                    int time_voltage_max = ((DSt->Message[10] & 0x3f) <<  5) |  //  6 bits
+                                           ((DSt->Message[11] & 0xf8) >>  3);   //  5 bits
+
+                    int time_voltage_min = ((DSt->Message[11] & 0x07) <<  8) |  //  3 bits
+                                           ((DSt->Message[12] & 0xff) <<  0);   //  8 bits
+
+                    point_info voltage;
+
+                    voltage.value = DSt->Message[7] | ((DSt->Message[6] & 0x0f) << 8);
+
+                    if( voltage.value == 0x7fa )
+                    {
+                        voltage.value   = 0;
+                        voltage.quality = InvalidQuality;
+                        voltage.description = "Requested interval outside of valid range";
+                    }
+                    else
+                    {
+                        voltage.quality = NormalQuality;
+                    }
+
+                    insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMin, ReturnMsg,
+                                          voltage, "Minimum Voltage", CtiTime(_daily_read_info.request.begin) + (time_voltage_min * 60), 0.1);
+
+                    voltage.value = ((DSt->Message[6] & 0xf0) >> 4) | (DSt->Message[5] << 4);
+
+                    if( voltage.value == 0x7fa )
+                    {
+                        voltage.value   = 0;
+                        voltage.quality = InvalidQuality;
+                        voltage.description = "Requested interval outside of valid range";
+                    }
+                    else
+                    {
+                        voltage.quality = NormalQuality;
+                    }
+
+                    insertPointDataReport(DemandAccumulatorPointType, PointOffset_VoltageMax, ReturnMsg,
+                                          voltage, "Maximum Voltage", CtiTime(_daily_read_info.request.begin) + (time_voltage_max * 60), 0.1);
+                }
+                else
+                {
+                    time_peak = (DSt->Message[5] << 8) | DSt->Message[6];
+
+                    point_info outage_count = getData(DSt->Message + 7, 2, ValueType_OutageCount);
+
+                    insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail, ReturnMsg,
+                                          outage_count, "Blink Counter",  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
+                }
+
+                point_info reading = getAccumulatorData(DSt->Message + 0, 3, 0);
+
+                point_info peak = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
+
+                //  adjust for the demand interval
+                peak.value *= 3600 / getDemandInterval();
+
+                if( channel > 1
+                    && !getDevicePointOffsetTypeEqual(channel, PulseAccumulatorPointType)
+                    && !getDevicePointOffsetTypeEqual(channel, DemandAccumulatorPointType) )
+                {
+                    resultString += "No points defined for channel " + CtiNumStr(channel);
+                }
+                else
+                {
+                    insertPointDataReport(PulseAccumulatorPointType, channel, ReturnMsg,
+                                          reading, consumption_pointname,  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
+
+                    insertPointDataReport(DemandAccumulatorPointType, channel, ReturnMsg,
+                                          peak, demand_pointname,  CtiTime(_daily_read_info.request.begin) + (time_peak * 60));
+                }
+
+                InterlockedExchange(&_daily_read_info.request.in_progress, false);
+            }
         }
-
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
     }
+
+    //  this is gross
+    if( !ReturnMsg->ResultString().empty() )
+    {
+        resultString = ReturnMsg->ResultString() + "\n" + resultString;
+    }
+
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
 
     return status;
 }
@@ -3901,85 +3860,80 @@ INT Mct410Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT &DSt = InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    string resultString;
+
+    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        string resultString;
+        return MEMORY;
+    }
 
-        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    resultString  = getName() + " / Internal Status:\n";
+
+    //  point offsets 10-39
+    resultString += describeStatusAndEvents(DSt.Message);
+
+    //  Eventually, we should exclude the iCon-specific bits from the Centron result
+
+    //  point offset 40
+    resultString += (DSt.Message[3] & 0x01)?"Soft kWh Error, Data OK\n":"";
+    resultString += (DSt.Message[3] & 0x02)?"Low AC Volts\n":"";
+    resultString += (DSt.Message[3] & 0x04)?"Current Too High\n":"";
+    resultString += (DSt.Message[3] & 0x08)?"Power Failure\n":"";
+    resultString += (DSt.Message[3] & 0x10)?"Hard EEPROM Error\n":"";
+    resultString += (DSt.Message[3] & 0x20)?"Hard kWh Error, Data Lost\n":"";
+    resultString += (DSt.Message[3] & 0x40)?"Configuration Error\n":"";
+    resultString += (DSt.Message[3] & 0x80)?"Reverse Power\n":"";
+
+    //  point offset 50
+    resultString += (DSt.Message[4] & 0x01)?"7759 Calibration Error\n":"";
+    resultString += (DSt.Message[4] & 0x02)?"7759 Register Check Error\n":"";
+    resultString += (DSt.Message[4] & 0x04)?"7759 Reset Error\n":"";
+    resultString += (DSt.Message[4] & 0x08)?"RAM Bit Error\n":"";
+    resultString += (DSt.Message[4] & 0x10)?"General CRC Error\n":"";
+    resultString += (DSt.Message[4] & 0x20)?"Soft EEPROM Error\n":"";
+    resultString += (DSt.Message[4] & 0x40)?"Watchdog Restart\n":"";
+    resultString += (DSt.Message[4] & 0x80)?"7759 Bit Checksum Error\n":"";
+
+    ReturnMsg->setResultString(resultString);
+
+    for( int i = 0; i < 5; i++ )
+    {
+        int offset;
+        boost::shared_ptr<CtiPointStatus> point;
+        CtiPointDataMsg *pData;
+        string pointResult;
+
+        if( i == 0 )  offset = 30;
+        if( i == 1 )  offset = 10;
+        if( i == 2 )  offset = 20;
+        if( i == 3 )  offset = 40;
+        if( i == 4 )  offset = 50;
+
+        for( int j = 0; j < 8; j++ )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        resultString  = getName() + " / Internal Status:\n";
-
-        //  point offsets 10-39
-        resultString += describeStatusAndEvents(DSt.Message);
-
-        //  Eventually, we should exclude the iCon-specific bits from the Centron result
-
-        //  point offset 40
-        resultString += (DSt.Message[3] & 0x01)?"Soft kWh Error, Data OK\n":"";
-        resultString += (DSt.Message[3] & 0x02)?"Low AC Volts\n":"";
-        resultString += (DSt.Message[3] & 0x04)?"Current Too High\n":"";
-        resultString += (DSt.Message[3] & 0x08)?"Power Failure\n":"";
-        resultString += (DSt.Message[3] & 0x10)?"Hard EEPROM Error\n":"";
-        resultString += (DSt.Message[3] & 0x20)?"Hard kWh Error, Data Lost\n":"";
-        resultString += (DSt.Message[3] & 0x40)?"Configuration Error\n":"";
-        resultString += (DSt.Message[3] & 0x80)?"Reverse Power\n":"";
-
-        //  point offset 50
-        resultString += (DSt.Message[4] & 0x01)?"7759 Calibration Error\n":"";
-        resultString += (DSt.Message[4] & 0x02)?"7759 Register Check Error\n":"";
-        resultString += (DSt.Message[4] & 0x04)?"7759 Reset Error\n":"";
-        resultString += (DSt.Message[4] & 0x08)?"RAM Bit Error\n":"";
-        resultString += (DSt.Message[4] & 0x10)?"General CRC Error\n":"";
-        resultString += (DSt.Message[4] & 0x20)?"Soft EEPROM Error\n":"";
-        resultString += (DSt.Message[4] & 0x40)?"Watchdog Restart\n":"";
-        resultString += (DSt.Message[4] & 0x80)?"7759 Bit Checksum Error\n":"";
-
-        ReturnMsg->setResultString(resultString);
-
-        for( int i = 0; i < 5; i++ )
-        {
-            int offset;
-            boost::shared_ptr<CtiPointStatus> point;
-            CtiPointDataMsg *pData;
-            string pointResult;
-
-            if( i == 0 )  offset = 30;
-            if( i == 1 )  offset = 10;
-            if( i == 2 )  offset = 20;
-            if( i == 3 )  offset = 40;
-            if( i == 4 )  offset = 50;
-
-            for( int j = 0; j < 8; j++ )
+            //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
+            if( (offset + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( offset + j, StatusPointType ))) )
             {
-                //  Don't send the powerfail status again - it's being sent by dev_mct in ResultDecode()
-                if( (offset + j != 10) && (point = boost::static_pointer_cast<CtiPointStatus>(getDevicePointOffsetTypeEqual( offset + j, StatusPointType ))) )
+                double value = (DSt.Message[i] >> j) & 0x01;
+
+                pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName((point)->getStateGroupID(), value);
+
+                if( pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), value, NormalQuality, StatusPointType, pointResult) )
                 {
-                    double value = (DSt.Message[i] >> j) & 0x01;
-
-                    pointResult = getName() + " / " + point->getName() + ": " + ResolveStateName((point)->getStateGroupID(), value);
-
-                    if( pData = CTIDBG_new CtiPointDataMsg(point->getPointID(), value, NormalQuality, StatusPointType, pointResult) )
-                    {
-                        ReturnMsg->PointData().push_back(pData);
-                    }
+                    ReturnMsg->PointData().push_back(pData);
                 }
             }
         }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -3992,151 +3946,141 @@ INT Mct410Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNo
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    string resultString;
+    unsigned long tmpTime;
+    CtiTime lpTime;
+
+    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    CtiPointDataMsg      *pData = NULL;
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        string resultString;
-        unsigned long tmpTime;
-        CtiTime lpTime;
-
-        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        CtiPointDataMsg      *pData = NULL;
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        resultString += getName() + " / Demand Load Profile Status:\n";
-
-        tmpTime = DSt->Message[0] << 24 |
-                  DSt->Message[1] << 16 |
-                  DSt->Message[2] <<  8 |
-                  DSt->Message[3];
-
-        lpTime = CtiTime(tmpTime);
-
-        resultString += "Current Interval Time: " + lpTime.asString() + "\n";
-        //resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[4]) + string("\n");
-        resultString += (DSt->Message[5] & 0x01)?"Boundary Error\n":"";
-        resultString += (DSt->Message[5] & 0x02)?"Power Fail\n":"";
-        resultString += (DSt->Message[5] & 0x80)?"Channel 1 Overflow\n":"";
-        resultString += (DSt->Message[5] & 0x40)?"Channel 2 Overflow\n":"";
-        resultString += (DSt->Message[5] & 0x20)?"Channel 3 Overflow\n":"";
-
-        resultString += "\n";
-
-        resultString += getName() + " / Voltage Profile Status:\n";
-
-        tmpTime = DSt->Message[6] << 24 |
-                  DSt->Message[7] << 16 |
-                  DSt->Message[8] <<  8 |
-                  DSt->Message[9];
-
-        lpTime = CtiTime(tmpTime);
-
-        resultString += "Current Interval Time: " + lpTime.asString() + "\n";
-        //resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[10]) + string("\n");
-        resultString += (DSt->Message[11] & 0x01)?"Boundary Error\n":"";
-        resultString += (DSt->Message[11] & 0x02)?"Power Fail\n":"";
-
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    resultString += getName() + " / Demand Load Profile Status:\n";
+
+    tmpTime = DSt->Message[0] << 24 |
+              DSt->Message[1] << 16 |
+              DSt->Message[2] <<  8 |
+              DSt->Message[3];
+
+    lpTime = CtiTime(tmpTime);
+
+    resultString += "Current Interval Time: " + lpTime.asString() + "\n";
+    //resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[4]) + string("\n");
+    resultString += (DSt->Message[5] & 0x01)?"Boundary Error\n":"";
+    resultString += (DSt->Message[5] & 0x02)?"Power Fail\n":"";
+    resultString += (DSt->Message[5] & 0x80)?"Channel 1 Overflow\n":"";
+    resultString += (DSt->Message[5] & 0x40)?"Channel 2 Overflow\n":"";
+    resultString += (DSt->Message[5] & 0x20)?"Channel 3 Overflow\n":"";
+
+    resultString += "\n";
+
+    resultString += getName() + " / Voltage Profile Status:\n";
+
+    tmpTime = DSt->Message[6] << 24 |
+              DSt->Message[7] << 16 |
+              DSt->Message[8] <<  8 |
+              DSt->Message[9];
+
+    lpTime = CtiTime(tmpTime);
+
+    resultString += "Current Interval Time: " + lpTime.asString() + "\n";
+    //resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[10]) + string("\n");
+    resultString += (DSt->Message[11] & 0x01)?"Boundary Error\n":"";
+    resultString += (DSt->Message[11] & 0x02)?"Power Fail\n":"";
+
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
- INT Mct410Device::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
- {
+INT Mct410Device::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList )
+{
      INT status = NORMAL;
 
      INT ErrReturn  = InMessage->EventCode & 0x3fff;
      DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-     if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+     string resultString;
+     unsigned long tmpTime;
+     CtiTime lpTime;
+
+     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+     CtiPointDataMsg      *pData = NULL;
+
+     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
      {
-         // No error occured, we must do a real decode!
+         CtiLockGuard<CtiLogger> doubt_guard(dout);
+         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-         string resultString;
-         unsigned long tmpTime;
-         CtiTime lpTime;
-
-         CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-         CtiPointDataMsg      *pData = NULL;
-
-         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-         {
-             CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-             return MEMORY;
-         }
-
-         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-         resultString += getName() + " / Freeze status:\n";
-
-         tmpTime = DSt->Message[0] << 24 |
-                   DSt->Message[1] << 16 |
-                   DSt->Message[2] <<  8 |
-                   DSt->Message[3];
-
-         updateFreezeInfo(DSt->Message[4], tmpTime);
-
-         CtiTime lastFreeze(tmpTime);
-         if( lastFreeze.isValid() )
-         {
-             resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
-         }
-         else
-         {
-             resultString += "Last freeze timestamp: (no freeze recorded)\n";
-         }
-
-         resultString += "Freeze counter: " + CtiNumStr(getCurrentFreezeCounter()) + "\n";
-         resultString += "Next freeze expected: freeze ";
-         resultString += ((getCurrentFreezeCounter() % 2)?("two"):("one"));
-         resultString += "\n";
-
-         tmpTime = DSt->Message[5] << 24 |
-                   DSt->Message[6] << 16 |
-                   DSt->Message[7] <<  8 |
-                   DSt->Message[8];
-
-         //  we should eventually save the voltage freeze info as well
-
-         CtiTime lastVoltageFreeze(tmpTime);
-         if( lastVoltageFreeze.isValid() )
-         {
-             resultString += "Last voltage freeze timestamp: " + lastVoltageFreeze.asString() + "\n";
-         }
-         else
-         {
-             resultString += "Last voltage freeze timestamp: (no freeze recorded)\n";
-         }
-
-         resultString += "Voltage freeze counter: " + CtiNumStr(static_cast<unsigned>(DSt->Message[9])) + "\n";
-         resultString += "Next voltage freeze expected: freeze ";
-         resultString += ((DSt->Message[9] % 2)?("two"):("one"));
-         resultString += "\n";
-
-         resultString += "\n";
-
-         ReturnMsg->setResultString(resultString);
-
-         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+         return MEMORY;
      }
 
+     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+     resultString += getName() + " / Freeze status:\n";
+
+     tmpTime = DSt->Message[0] << 24 |
+               DSt->Message[1] << 16 |
+               DSt->Message[2] <<  8 |
+               DSt->Message[3];
+
+     updateFreezeInfo(DSt->Message[4], tmpTime);
+
+     CtiTime lastFreeze(tmpTime);
+     if( lastFreeze.isValid() )
+     {
+         resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
+     }
+     else
+     {
+         resultString += "Last freeze timestamp: (no freeze recorded)\n";
+     }
+
+     resultString += "Freeze counter: " + CtiNumStr(getCurrentFreezeCounter()) + "\n";
+     resultString += "Next freeze expected: freeze ";
+     resultString += ((getCurrentFreezeCounter() % 2)?("two"):("one"));
+     resultString += "\n";
+
+     tmpTime = DSt->Message[5] << 24 |
+               DSt->Message[6] << 16 |
+               DSt->Message[7] <<  8 |
+               DSt->Message[8];
+
+     //  we should eventually save the voltage freeze info as well
+
+     CtiTime lastVoltageFreeze(tmpTime);
+     if( lastVoltageFreeze.isValid() )
+     {
+         resultString += "Last voltage freeze timestamp: " + lastVoltageFreeze.asString() + "\n";
+     }
+     else
+     {
+         resultString += "Last voltage freeze timestamp: (no freeze recorded)\n";
+     }
+
+     resultString += "Voltage freeze counter: " + CtiNumStr(static_cast<unsigned>(DSt->Message[9])) + "\n";
+     resultString += "Next voltage freeze expected: freeze ";
+     resultString += ((DSt->Message[9] % 2)?("two"):("one"));
+     resultString += "\n";
+
+     resultString += "\n";
+
+     ReturnMsg->setResultString(resultString);
+
+     retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+
      return status;
- }
+}
 
 INT Mct410Device::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
@@ -4145,41 +4089,36 @@ INT Mct410Device::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNow, 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
+
+    resultString  = getName() + " / Demand Interval:       " + CtiNumStr(DSt->Message[0]) + string(" minutes\n");
+    resultString += getName() + " / Load Profile Interval: " + CtiNumStr(DSt->Message[1]) + string(" minutes\n");
+    resultString += getName() + " / Voltage Demand Interval:       ";
+    if( DSt->Message[2] / 4 > 0 )
     {
-        // No error occured, we must do a real decode!
-
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        string resultString;
-
-        resultString  = getName() + " / Demand Interval:       " + CtiNumStr(DSt->Message[0]) + string(" minutes\n");
-        resultString += getName() + " / Load Profile Interval: " + CtiNumStr(DSt->Message[1]) + string(" minutes\n");
-        resultString += getName() + " / Voltage Demand Interval:       ";
-        if( DSt->Message[2] / 4 > 0 )
-        {
-            resultString += CtiNumStr(DSt->Message[2] / 4) + " minutes";
-        }
-        if( DSt->Message[2] % 4 > 0 )
-        {
-            resultString += CtiNumStr((DSt->Message[2] % 4) * 15) + " seconds";
-        }
-        resultString += "\n";
-
-        resultString += getName() + " / Voltage Profile Interval: " + CtiNumStr(DSt->Message[3]) + string(" minutes\n");
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        resultString += CtiNumStr(DSt->Message[2] / 4) + " minutes";
     }
+    if( DSt->Message[2] % 4 > 0 )
+    {
+        resultString += CtiNumStr((DSt->Message[2] % 4) * 15) + " seconds";
+    }
+    resultString += "\n";
+
+    resultString += getName() + " / Voltage Profile Interval: " + CtiNumStr(DSt->Message[3]) + string(" minutes\n");
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4191,44 +4130,39 @@ INT Mct410Device::decodeGetConfigThresholds(INMESS *InMessage, CtiTime &TimeNow,
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
+
+    float ov = (DSt->Message[0]) << 8 | DSt->Message[1],
+          uv = (DSt->Message[2]) << 8 | DSt->Message[3];
+
+    ov /= 10.0;
+    uv /= 10.0;
+
+    resultString  = getName() + " / Over Voltage Threshold: " + CtiNumStr(ov, 1) + string(" volts\n");
+    resultString += getName() + " / Under Voltage Threshold: " + CtiNumStr(uv, 1) + string(" volts\n");
+
+    if( DSt->Message[4] )
     {
-        // No error occured, we must do a real decode!
-
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        string resultString;
-
-        float ov = (DSt->Message[0]) << 8 | DSt->Message[1],
-              uv = (DSt->Message[2]) << 8 | DSt->Message[3];
-
-        ov /= 10.0;
-        uv /= 10.0;
-
-        resultString  = getName() + " / Over Voltage Threshold: " + CtiNumStr(ov, 1) + string(" volts\n");
-        resultString += getName() + " / Under Voltage Threshold: " + CtiNumStr(uv, 1) + string(" volts\n");
-
-        if( DSt->Message[4] )
-        {
-            resultString += getName() + " / Outage threshold: " + CtiNumStr(DSt->Message[4]) + " cycles\n";
-        }
-        else
-        {
-            resultString += getName() + " / Outage threshold: disabled\n";
-        }
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        resultString += getName() + " / Outage threshold: " + CtiNumStr(DSt->Message[4]) + " cycles\n";
     }
+    else
+    {
+        resultString += getName() + " / Outage threshold: disabled\n";
+    }
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4240,40 +4174,35 @@ INT Mct410Device::decodeGetConfigFreeze(INMESS *InMessage, CtiTime &TimeNow, Cti
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
+    unsigned day = DSt->Message[0];
+
+    if( day > 31 )
     {
-        // No error occured, we must do a real decode!
-
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        string resultString;
-        unsigned day = DSt->Message[0];
-
-        if( day > 31 )
-        {
-            resultString  = getName() + " / Scheduled day of freeze: (last day of month)\n";
-        }
-        else if( day )
-        {
-            resultString  = getName() + " / Scheduled day of freeze: " + CtiNumStr(day) + string("\n");
-        }
-        else
-        {
-            resultString  = getName() + " / Scheduled day of freeze: (disabled)\n";
-        }
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        resultString  = getName() + " / Scheduled day of freeze: (last day of month)\n";
     }
+    else if( day )
+    {
+        resultString  = getName() + " / Scheduled day of freeze: " + CtiNumStr(day) + string("\n");
+    }
+    else
+    {
+        resultString  = getName() + " / Scheduled day of freeze: (disabled)\n";
+    }
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4285,69 +4214,64 @@ INT Mct410Device::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &Tim
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+    string resultString;
+    int transformer_ratio = -1;
+
+    if( InMessage->Sequence == EmetconProtocol::GetConfig_MeterParameters )
     {
-        // No error occured, we must do a real decode!
+        resultString = getName() + " / Meter Parameters:\n";
 
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-        string resultString;
-        int transformer_ratio = -1;
-
-        if( InMessage->Sequence == EmetconProtocol::GetConfig_MeterParameters )
+        switch( DSt->Message[0] & 0x03 )
         {
-            resultString = getName() + " / Meter Parameters:\n";
-
-            switch( DSt->Message[0] & 0x03 )
-            {
-                case 0x0:   resultString += "5x1 display (5 digits, 1kWHr resolution)\n";   break;
-                case 0x1:   resultString += "4x1 display (4 digits, 1kWHr resolution)\n";   break;
-                case 0x2:   resultString += "4x10 display (4 digits, 10kWHr resolution)\n"; break;
-                case 0x3:   resultString += "6x1 display (6 digits, 1kWHr resolution)\n";   break;
-            }
-
-            resultString += "LCD segment test ";
-
-            if( DSt->Message[0] & 0x04 )
-            {
-                resultString += (DSt->Message[0] & 0x08)?("required, seven seconds\n"):("required, one second\n");
-            }
-            else
-            {
-                resultString += "not required\n";
-            }
-
-            resultString += "LCD error display ";
-            resultString += (DSt->Message[0] & 0x10)?("enabled\n"):("disabled\n");
-
-            //  they did the long read, so assign the multiplier
-            if( DSt->Length >= 11 )
-            {
-                transformer_ratio = DSt->Message[10];
-            }
-        }
-        else if( InMessage->Sequence == EmetconProtocol::GetConfig_Multiplier )
-        {
-            transformer_ratio = DSt->Message[0];
+            case 0x0:   resultString += "5x1 display (5 digits, 1kWHr resolution)\n";   break;
+            case 0x1:   resultString += "4x1 display (4 digits, 1kWHr resolution)\n";   break;
+            case 0x2:   resultString += "4x10 display (4 digits, 10kWHr resolution)\n"; break;
+            case 0x3:   resultString += "6x1 display (6 digits, 1kWHr resolution)\n";   break;
         }
 
-        if( transformer_ratio >= 0 )
+        resultString += "LCD segment test ";
+
+        if( DSt->Message[0] & 0x04 )
         {
-            resultString += getName() + " / Transformer ratio: " + CtiNumStr(transformer_ratio);
+            resultString += (DSt->Message[0] & 0x08)?("required, seven seconds\n"):("required, one second\n");
+        }
+        else
+        {
+            resultString += "not required\n";
         }
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        resultString += "LCD error display ";
+        resultString += (DSt->Message[0] & 0x10)?("enabled\n"):("disabled\n");
+
+        //  they did the long read, so assign the multiplier
+        if( DSt->Length >= 11 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
+            transformer_ratio = DSt->Message[10];
         }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
     }
+    else if( InMessage->Sequence == EmetconProtocol::GetConfig_Multiplier )
+    {
+        transformer_ratio = DSt->Message[0];
+    }
+
+    if( transformer_ratio >= 0 )
+    {
+        resultString += getName() + " / Transformer ratio: " + CtiNumStr(transformer_ratio);
+    }
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4363,40 +4287,35 @@ INT Mct410Device::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeNow,
 
     string resultStr;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+    switch( DSt->Message[0] & 0x03 )
     {
-        // No error occured, we must do a real decode!
-
-        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
-        switch( DSt->Message[0] & 0x03 )
-        {
-            case RawStatus_Connected:               state = StateGroup_Connected;      break;
-            case RawStatus_ConnectArmed:            state = StateGroup_ConnectArmed;   break;
-            case RawStatus_DisconnectedUnconfirmed: state = StateGroup_DisconnectedUnconfirmed; break;
-            case RawStatus_DisconnectedConfirmed:   state = StateGroup_DisconnectedConfirmed;   break;
-        }
-
-        point_info pi_disconnect;
-        pi_disconnect.value   = state;
-        pi_disconnect.quality = NormalQuality;
-
-        insertPointDataReport(StatusPointType, 1, ReturnMsg, pi_disconnect, "Disconnect status", CtiTime(), 1.0, TAG_POINT_MUST_ARCHIVE);
-
-        resultStr  = getName() + " / Disconnect Info:\n";
-
-        resultStr += decodeDisconnectStatus(*DSt);
-
-        resultStr += getName() + " / Disconnect Config:\n";
-
-        resultStr += decodeDisconnectConfig(*DSt);
-
-        ReturnMsg->setResultString(resultStr);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        case RawStatus_Connected:               state = StateGroup_Connected;      break;
+        case RawStatus_ConnectArmed:            state = StateGroup_ConnectArmed;   break;
+        case RawStatus_DisconnectedUnconfirmed: state = StateGroup_DisconnectedUnconfirmed; break;
+        case RawStatus_DisconnectedConfirmed:   state = StateGroup_DisconnectedConfirmed;   break;
     }
+
+    point_info pi_disconnect;
+    pi_disconnect.value   = state;
+    pi_disconnect.quality = NormalQuality;
+
+    insertPointDataReport(StatusPointType, 1, ReturnMsg, pi_disconnect, "Disconnect status", CtiTime(), 1.0, TAG_POINT_MUST_ARCHIVE);
+
+    resultStr  = getName() + " / Disconnect Info:\n";
+
+    resultStr += decodeDisconnectStatus(*DSt);
+
+    resultStr += getName() + " / Disconnect Config:\n";
+
+    resultStr += decodeDisconnectConfig(*DSt);
+
+    ReturnMsg->setResultString(resultStr);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4561,32 +4480,27 @@ INT Mct410Device::decodeGetConfigAddress(INMESS *InMessage, CtiTime &TimeNow, Ct
 
     string resultStr;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    long address = DSt->Message[0] << 16 |
+                   DSt->Message[1] <<  8 |
+                   DSt->Message[2];
+
+    resultStr  = getName() + " / Unique address: " + CtiNumStr(address);
+
+    if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr))
     {
-        // No error occured, we must do a real decode!
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultStr);
 
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        long address = DSt->Message[0] << 16 |
-                       DSt->Message[1] <<  8 |
-                       DSt->Message[2];
-
-        resultStr  = getName() + " / Unique address: " + CtiNumStr(address);
-
-        if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr))
-        {
-            ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-            ReturnMsg->setResultString(resultStr);
-
-            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            status = MEMORY;
-        }
+        status = MEMORY;
     }
 
     return status;
@@ -4609,78 +4523,72 @@ INT Mct410Device::decodeGetConfigPhaseDetect(INMESS *InMessage, CtiTime &TimeNow
     unsigned long volt_timestamp;
     float first_interval_voltage, last_interval_voltage;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-
- //       Binary Values: 00 - Phase Unknown (default)
- //                      01 - Phase A
- //                      10 - Phase B
- //                      11 - Phase C
- //                      Other - Invalid
-        int phase = DSt->Message[0] & 0xFF;
-        point_info pi_phase;
-        pi_phase.quality = NormalQuality;
-        pi_phase.value = phase;
-        switch( phase )
-        {
-            case 1:
-            {
-                phaseStr = "A";
-                break;
-            }
-            case 2:
-            {
-                phaseStr = "B";
-                break;
-            }
-            case 3:
-            {
-                phaseStr = "C";
-                break;
-            }
-            case 0:
-            default:
-            {
-                phaseStr = "Unknown";
-                break;
-            }
-        }
-
-        volt_timestamp =  DSt->Message[1] << 24 |
-                          DSt->Message[2] << 16 |
-                          DSt->Message[3] <<  8 |
-                          DSt->Message[4];
-        first_interval_voltage = (DSt->Message[5] <<  8 |
-                                  DSt->Message[6] ) * 0.1;
-        last_interval_voltage =  (DSt->Message[7] <<  8 |
-                                  DSt->Message[8] ) * 0.1;
-
-        if (InMessage->Sequence == EmetconProtocol::GetConfig_PhaseDetectArchive)
-        {
-            insertPointDataReport(StatusPointType, PointOffset_Status_PhaseDetect, ReturnMsg, pi_phase, "Phase", CtiTime(volt_timestamp), 1.0, TAG_POINT_MUST_ARCHIVE);
-        }
-        resultStr  = getName() + " / Phase = " + phaseStr ;
-        resultStr += " @ " + CtiTime(volt_timestamp).asString();
-        resultStr  +="\nFirst Interval Voltage: " + CtiNumStr(first_interval_voltage, 1);
-        resultStr  += " / Last Interval Voltage: " + CtiNumStr(last_interval_voltage, 1);
-
-        ReturnMsg->setResultString(resultStr);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-
+        return MEMORY;
     }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+//       Binary Values: 00 - Phase Unknown (default)
+//                      01 - Phase A
+//                      10 - Phase B
+//                      11 - Phase C
+//                      Other - Invalid
+    int phase = DSt->Message[0] & 0xFF;
+    point_info pi_phase;
+    pi_phase.quality = NormalQuality;
+    pi_phase.value = phase;
+    switch( phase )
+    {
+        case 1:
+        {
+            phaseStr = "A";
+            break;
+        }
+        case 2:
+        {
+            phaseStr = "B";
+            break;
+        }
+        case 3:
+        {
+            phaseStr = "C";
+            break;
+        }
+        case 0:
+        default:
+        {
+            phaseStr = "Unknown";
+            break;
+        }
+    }
+
+    volt_timestamp =  DSt->Message[1] << 24 |
+                      DSt->Message[2] << 16 |
+                      DSt->Message[3] <<  8 |
+                      DSt->Message[4];
+    first_interval_voltage = (DSt->Message[5] <<  8 |
+                              DSt->Message[6] ) * 0.1;
+    last_interval_voltage =  (DSt->Message[7] <<  8 |
+                              DSt->Message[8] ) * 0.1;
+
+    if (InMessage->Sequence == EmetconProtocol::GetConfig_PhaseDetectArchive)
+    {
+        insertPointDataReport(StatusPointType, PointOffset_Status_PhaseDetect, ReturnMsg, pi_phase, "Phase", CtiTime(volt_timestamp), 1.0, TAG_POINT_MUST_ARCHIVE);
+    }
+    resultStr  = getName() + " / Phase = " + phaseStr ;
+    resultStr += " @ " + CtiTime(volt_timestamp).asString();
+    resultStr  +="\nFirst Interval Voltage: " + CtiNumStr(first_interval_voltage, 1);
+    resultStr  += " / Last Interval Voltage: " + CtiNumStr(last_interval_voltage, 1);
+
+    ReturnMsg->setResultString(resultStr);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4691,99 +4599,95 @@ INT Mct410Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, CtiM
 
     DSTRUCT &DSt = InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    string descriptor;
+
+    int ssp, rev;
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    ssp  = DSt.Message[0];
+    ssp |= DSt.Message[4] << 8;
+
+    rev  = (unsigned)DSt.Message[1];
+
+    descriptor += getName() + " / Model information:\n";
+    descriptor += "Software Specification " + CtiNumStr(ssp) + " rev ";
+
+    //  convert 10 to 1.0, 24 to 2.4
+    descriptor += CtiNumStr(((double)rev) / 10.0, 1);
+
+    //  valid/released versions are 1.0 - 24.9
+    if( rev <= SspecRev_BetaLo ||
+        rev >= SspecRev_BetaHi )
     {
-        // No error occured, we must do a real decode!
-        string descriptor;
-
-        int ssp, rev;
-        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-
-        ssp  = DSt.Message[0];
-        ssp |= DSt.Message[4] << 8;
-
-        rev  = (unsigned)DSt.Message[1];
-
-        descriptor += getName() + " / Model information:\n";
-        descriptor += "Software Specification " + CtiNumStr(ssp) + " rev ";
-
-        //  convert 10 to 1.0, 24 to 2.4
-        descriptor += CtiNumStr(((double)rev) / 10.0, 1);
-
-        //  valid/released versions are 1.0 - 24.9
-        if( rev <= SspecRev_BetaLo ||
-            rev >= SspecRev_BetaHi )
-        {
-            descriptor += " [possible development revision]";
-        }
-
-        descriptor += "\n";
-
-        descriptor += getName() + " / Physical meter configuration:\n";
-        descriptor += "Base meter: ";
-
-        switch( DSt.Message[2] & 0x03 )
-        {
-            case 0x00:  descriptor += "Sensus iCON";    break;
-            case 0x01:  descriptor += "Itron Centron";  break;
-            case 0x02:  descriptor += "L&G Focus";      break;
-            case 0x03:  descriptor += "GE I-210";       break;
-        }
-
-        descriptor += "\n";
-
-        if( DSt.Message[2] & 0x1c )
-        {
-            descriptor += "Channel 2: ";
-
-            if( (DSt.Message[2] & 0x1c) == 0x1c )   descriptor += "Net metering mode";
-            else                                    descriptor += "Water meter";
-
-            descriptor += "\n";
-        }
-
-        if( DSt.Message[2] & 0xe0 )
-        {
-            descriptor += "Channel 3: Water meter\n";
-        }
-
-        if( DSt.Message[3] &  0x3f )
-        {
-            descriptor += getName() + " / Active options:\n";
-
-            if( DSt.Message[3] & 0x01 )      descriptor += "DST observance enabled\n";
-            if( DSt.Message[3] & 0x02 )      descriptor += "LED test enabled\n";
-            if( DSt.Message[3] & 0x04 )      descriptor += "Autoreconnect enabled\n";
-
-            if(      DSt.Message[3] & 0x08 ) descriptor += "Demand limit mode active\n";
-            else if( DSt.Message[3] & 0x10 ) descriptor += "Disconnect cycling mode active\n";
-
-            if( DSt.Message[3] & 0x20 )      descriptor += "Role code enabled\n";
-        }
-
-        descriptor += getName() + " / Status and events:\n";
-
-        descriptor += describeStatusAndEvents(DSt.Message + 5);
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(descriptor);
-
-        //  this is hackish, and should be handled in a more centralized manner...  retMsgHandler, for example
-        if( InMessage->MessageFlags & MessageFlag_ExpectMore )
-        {
-            ReturnMsg->setExpectMore(true);
-        }
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        descriptor += " [possible development revision]";
     }
+
+    descriptor += "\n";
+
+    descriptor += getName() + " / Physical meter configuration:\n";
+    descriptor += "Base meter: ";
+
+    switch( DSt.Message[2] & 0x03 )
+    {
+        case 0x00:  descriptor += "Sensus iCON";    break;
+        case 0x01:  descriptor += "Itron Centron";  break;
+        case 0x02:  descriptor += "L&G Focus";      break;
+        case 0x03:  descriptor += "GE I-210";       break;
+    }
+
+    descriptor += "\n";
+
+    if( DSt.Message[2] & 0x1c )
+    {
+        descriptor += "Channel 2: ";
+
+        if( (DSt.Message[2] & 0x1c) == 0x1c )   descriptor += "Net metering mode";
+        else                                    descriptor += "Water meter";
+
+        descriptor += "\n";
+    }
+
+    if( DSt.Message[2] & 0xe0 )
+    {
+        descriptor += "Channel 3: Water meter\n";
+    }
+
+    if( DSt.Message[3] &  0x3f )
+    {
+        descriptor += getName() + " / Active options:\n";
+
+        if( DSt.Message[3] & 0x01 )      descriptor += "DST observance enabled\n";
+        if( DSt.Message[3] & 0x02 )      descriptor += "LED test enabled\n";
+        if( DSt.Message[3] & 0x04 )      descriptor += "Autoreconnect enabled\n";
+
+        if(      DSt.Message[3] & 0x08 ) descriptor += "Demand limit mode active\n";
+        else if( DSt.Message[3] & 0x10 ) descriptor += "Disconnect cycling mode active\n";
+
+        if( DSt.Message[3] & 0x20 )      descriptor += "Role code enabled\n";
+    }
+
+    descriptor += getName() + " / Status and events:\n";
+
+    descriptor += describeStatusAndEvents(DSt.Message + 5);
+
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+        return MEMORY;
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(descriptor);
+
+    //  this is hackish, and should be handled in a more centralized manner...  retMsgHandler, for example
+    if( InMessage->MessageFlags & MessageFlag_ExpectMore )
+    {
+        ReturnMsg->setExpectMore(true);
+    }
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4853,55 +4757,50 @@ INT Mct410Device::decodeGetConfigWaterMeterReadInterval( INMESS *InMessage, CtiT
 
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    unsigned duration = DSt->Message[0];
+
+    std::string resultString( getName() + " / Water Meter Read Interval: " );
+
+    int minutes = ( duration & 0x7f );
+
+    if ( minutes == 0 )
     {
-        // No error occured, we must do a real decode!
-
-        unsigned duration = DSt->Message[0];
-
-        std::string resultString( getName() + " / Water Meter Read Interval: " );
-
-        int minutes = ( duration & 0x7f );
-
-        if ( minutes == 0 )
-        {
-            minutes = ( 12 * 60 );      // 12 hours by default
-        }
-        else if ( duration & 0x80 )     // 15 minute granularity
-        {
-            minutes *= 15;
-        }
-        else                            // 5 minute granularity
-        {
-            minutes *= 5;
-        }
-
-        int hours = minutes / 60;
-        minutes %= 60;
-
-        if ( hours )
-        {
-            resultString += CtiNumStr(hours) + " hour";
-            if ( hours > 1 )
-            {
-                resultString += "s";
-            }
-        }
-
-        if ( minutes )
-        {
-            resultString +=  " " + CtiNumStr(minutes) + " minutes";
-        }
-        resultString += "\n";
-
-
-        CtiReturnMsg * ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        minutes = ( 12 * 60 );      // 12 hours by default
     }
+    else if ( duration & 0x80 )     // 15 minute granularity
+    {
+        minutes *= 15;
+    }
+    else                            // 5 minute granularity
+    {
+        minutes *= 5;
+    }
+
+    int hours = minutes / 60;
+    minutes %= 60;
+
+    if ( hours )
+    {
+        resultString += CtiNumStr(hours) + " hour";
+        if ( hours > 1 )
+        {
+            resultString += "s";
+        }
+    }
+
+    if ( minutes )
+    {
+        resultString +=  " " + CtiNumStr(minutes) + " minutes";
+    }
+    resultString += "\n";
+
+
+    CtiReturnMsg * ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4912,25 +4811,20 @@ INT Mct410Device::decodeGetConfigLongLoadProfileStorageDays( INMESS *InMessage, 
 
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
+    std::string resultString( getName() + " / Long Load Profile Allocation:\n" );
 
-        std::string resultString( getName() + " / Long Load Profile Allocation:\n" );
-
-        resultString += "Channel 1: " + CtiNumStr(DSt->Message[4]) + " days at 15 minute allocation\n";
-        resultString += "Channel 2: " + CtiNumStr(DSt->Message[5]) + " days at 15 minute allocation\n";
-        resultString += "Channel 3: " + CtiNumStr(DSt->Message[6]) + " days at 15 minute allocation\n";
-        resultString += "Channel 4: " + CtiNumStr(DSt->Message[7]) + " days at 15 minute allocation\n";
+    resultString += "Channel 1: " + CtiNumStr(DSt->Message[4]) + " days at 15 minute allocation\n";
+    resultString += "Channel 2: " + CtiNumStr(DSt->Message[5]) + " days at 15 minute allocation\n";
+    resultString += "Channel 3: " + CtiNumStr(DSt->Message[6]) + " days at 15 minute allocation\n";
+    resultString += "Channel 4: " + CtiNumStr(DSt->Message[7]) + " days at 15 minute allocation\n";
 
 
-        CtiReturnMsg * ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
+    CtiReturnMsg * ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr);
 
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString(resultString);
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString(resultString);
 
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }

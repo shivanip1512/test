@@ -568,27 +568,22 @@ INT Repeater900Device::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, list<
 
    resetScanFlag(ScanRateGeneral);
 
-   if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-   {
-      // No error occured, we must do a real decode!
+  CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+  CtiPointDataMsg      *pData = NULL;
 
-      CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-      CtiPointDataMsg      *pData = NULL;
+  if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+  {
+     CtiLockGuard<CtiLogger> doubt_guard(dout);
+     dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+     return MEMORY;
+  }
 
-         return MEMORY;
-      }
+  ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-      ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+  ReturnMsg->setResultString( getName() + " / successful ping" );
 
-      ReturnMsg->setResultString( getName() + " / successful ping" );
-
-      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-   }
+  retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
    return status;
 }
@@ -603,44 +598,38 @@ INT Repeater900Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow,
 
    CtiCommandParser parse(InMessage->Return.CommandStr);
 
+   CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+   CtiPointDataMsg      *pData = NULL;
 
-   if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-   {
-      // No error occured, we must do a real decode!
+  if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+  {
+     CtiLockGuard<CtiLogger> doubt_guard(dout);
+     dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-      CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-      CtiPointDataMsg      *pData = NULL;
+     return MEMORY;
+  }
 
-      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-         return MEMORY;
-      }
+    int  sspec;
+    char revision;
+    string modelStr;
 
-      ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    sspec  = DSt->Message[0] << 8;
+    sspec |= DSt->Message[1];
 
-      int  sspec;
-      char revision;
-      string modelStr;
+    revision = DSt->Message[2] + '@';  //  '@' is just before 'A' - thus 1 represents 'A', as intended
 
-      sspec  = DSt->Message[0] << 8;
-      sspec |= DSt->Message[1];
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RPT_SSpec,         (long)sspec);
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_RPT_SSpecRevision, (long)DSt->Message[2]);
 
-      revision = DSt->Message[2] + '@';  //  '@' is just before 'A' - thus 1 represents 'A', as intended
+    modelStr = getName() + " / sspec: " + CtiNumStr(sspec) + revision;
 
-      setDynamicInfo(CtiTableDynamicPaoInfo::Key_RPT_SSpec,         (long)sspec);
-      setDynamicInfo(CtiTableDynamicPaoInfo::Key_RPT_SSpecRevision, (long)DSt->Message[2]);
+    ReturnMsg->setResultString( modelStr );
 
-      modelStr = getName() + " / sspec: " + CtiNumStr(sspec) + revision;
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
-      ReturnMsg->setResultString( modelStr );
-
-      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-   }
-
-   return status;
+    return status;
 }
 
 
@@ -653,48 +642,42 @@ INT Repeater900Device::decodeGetConfigRole(INMESS *InMessage, CtiTime &TimeNow, 
 
    CtiCommandParser parse(InMessage->Return.CommandStr);
 
+  int   rolenum;
+  unsigned char *buf;
+  string roleStr, tmpStr;
 
-   if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-   {
-      // No error occured, we must do a real decode!
+  CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+  CtiPointDataMsg      *pData = NULL;
 
-      int   rolenum;
-      unsigned char *buf;
-      string roleStr, tmpStr;
+  if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+  {
+     CtiLockGuard<CtiLogger> doubt_guard(dout);
+     dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-      CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-      CtiPointDataMsg      *pData = NULL;
+     return MEMORY;
+  }
 
-      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-         return MEMORY;
-      }
-
-      ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+  ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
 
-      rolenum = parse.getiValue( "rolenum" );
-      rolenum -= (rolenum - 1) % 6;
-      buf = InMessage->Buffer.DSt.Message;
+  rolenum = parse.getiValue( "rolenum" );
+  rolenum -= (rolenum - 1) % 6;
+  buf = InMessage->Buffer.DSt.Message;
 
-      for( int i = 0; i < 6; i++ )
-      {
-          tmpStr = getName() + " / role " + CtiNumStr(i+rolenum).spad(2) + ": ";
-          tmpStr += "F = " + CtiNumStr((int)(buf[(i*2)+0] & 0x1F)).spad(2)        + string(", ") +
-                    "I = " + CtiNumStr((int)((buf[(i*2)+0] & 0xE0) >> 5)).spad(2) + ", " +
-                    "O = " + CtiNumStr((int)((buf[(i*2)+1] & 0xE0) >> 5)).spad(2) + ", " +
-                    "S = " + CtiNumStr((int)((buf[(i*2)+1] & 0x1E) >> 1)).spad(2) + "\n";
+  for( int i = 0; i < 6; i++ )
+  {
+      tmpStr = getName() + " / role " + CtiNumStr(i+rolenum).spad(2) + ": ";
+      tmpStr += "F = " + CtiNumStr((int)(buf[(i*2)+0] & 0x1F)).spad(2)        + string(", ") +
+                "I = " + CtiNumStr((int)((buf[(i*2)+0] & 0xE0) >> 5)).spad(2) + ", " +
+                "O = " + CtiNumStr((int)((buf[(i*2)+1] & 0xE0) >> 5)).spad(2) + ", " +
+                "S = " + CtiNumStr((int)((buf[(i*2)+1] & 0x1E) >> 1)).spad(2) + "\n";
 
-          roleStr += tmpStr;
-      }
+      roleStr += tmpStr;
+  }
 
-      ReturnMsg->setResultString( roleStr );
+  ReturnMsg->setResultString( roleStr );
 
-      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-   }
+  retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
    return status;
 }
@@ -707,67 +690,63 @@ INT Repeater900Device::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNow, 
    INT ErrReturn  = InMessage->EventCode & 0x3fff;
    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
+  INT   j;
+  ULONG pfCount = 0;
+  string resultString, tempString;
+  bool expectMore = false;
 
-   if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-   {
-      INT   j;
-      ULONG pfCount = 0;
-      string resultString, tempString;
-      bool expectMore = false;
+  CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-      CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+  if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+  {
+     CtiLockGuard<CtiLogger> doubt_guard(dout);
+     dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-      if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+     return MEMORY;
+  }
+
+  ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+  CtiString cmdStr = InMessage->Return.CommandStr;
+  //This should look like "putconfig emetcon mrole 1 2 3 4.... : 6 3 4 5 5 .... : 12 3 4 1 4...
+  //We want to grab the numbers after the leading : then remove the leading :
+
+  if( cmdStr.contains(": ") )
+  {
+      cmdStr.replace("( [0-9]+)+ *:", "");
+      if( !(tempString = cmdStr.contains("( [0-9]+)+")).empty() )
       {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+          //We stripped one, another still exists. We need to re-submit this.
+          CtiRequestMsg *newReq = new CtiRequestMsg( getID(),
+                                                     cmdStr,
+                                                     InMessage->Return.UserID,
+                                                     InMessage->Return.GrpMsgID,
+                                                     InMessage->Return.RouteID,
+                                                     selectInitialMacroRouteOffset(InMessage->Return.RouteID),
+                                                     0,
+                                                     0,
+                                                     InMessage->Priority);
 
-         return MEMORY;
+          newReq->setMessageTime(CtiTime::now().seconds() + 5);
+          newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+          retList.push_back(newReq);
+          expectMore = true;
+
       }
+  }
 
-      ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+  if( expectMore )
+  {
+      resultString = getName() + " / command continuing";
+  }
+  else
+  {
+      resultString = getName() + " / command complete";
+  }
 
-      CtiString cmdStr = InMessage->Return.CommandStr;
-      //This should look like "putconfig emetcon mrole 1 2 3 4.... : 6 3 4 5 5 .... : 12 3 4 1 4...
-      //We want to grab the numbers after the leading : then remove the leading :
+  ReturnMsg->setResultString( resultString );
 
-      if( cmdStr.contains(": ") )
-      {
-          cmdStr.replace("( [0-9]+)+ *:", "");
-          if( !(tempString = cmdStr.contains("( [0-9]+)+")).empty() )
-          {
-              //We stripped one, another still exists. We need to re-submit this.
-              CtiRequestMsg *newReq = new CtiRequestMsg( getID(),
-                                                         cmdStr,
-                                                         InMessage->Return.UserID,
-                                                         InMessage->Return.GrpMsgID,
-                                                         InMessage->Return.RouteID,
-                                                         selectInitialMacroRouteOffset(InMessage->Return.RouteID),
-                                                         0,
-                                                         0,
-                                                         InMessage->Priority);
-
-              newReq->setMessageTime(CtiTime::now().seconds() + 5);
-              newReq->setConnectionHandle((void *)InMessage->Return.Connection);
-              retList.push_back(newReq);
-              expectMore = true;
-
-          }
-      }
-
-      if( expectMore )
-      {
-          resultString = getName() + " / command continuing";
-      }
-      else
-      {
-          resultString = getName() + " / command complete";
-      }
-
-      ReturnMsg->setResultString( resultString );
-
-      retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
-   }
+  retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList, expectMore );
 
    return status;
 }
@@ -781,53 +760,48 @@ INT Repeater900Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, 
 
     CtiCommandParser parse(InMessage->Return.CommandStr);
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        string results;
-
-        int rawloc = parse.getiValue("rawloc");
-
-        int rawlen = parse.isKeyValid("rawlen")
-            ? std::min(parse.getiValue("rawlen"), 13)       // max 13 bytes...
-            : DSt->Length;
-
-        if( parse.isKeyValid("rawfunc") )
-        {
-            for( int i = 0; i < rawlen; i++ )
-            {
-                results += getName()
-                        + " / FR " + CtiNumStr(rawloc).xhex().zpad(2)
-                        + " byte " + CtiNumStr(i).zpad(2)
-                        + " : "    + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
-                        + "\n";
-            }
-        }
-        else
-        {
-            for( int i = 0; i < rawlen; i++ )
-            {
-                results += getName()
-                        + " / byte " + CtiNumStr(rawloc + i).xhex().zpad(2)
-                        + " : "      + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
-                        + "\n";
-            }
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString( results );
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    string results;
+
+    int rawloc = parse.getiValue("rawloc");
+
+    int rawlen = parse.isKeyValid("rawlen")
+        ? std::min(parse.getiValue("rawlen"), 13)       // max 13 bytes...
+        : DSt->Length;
+
+    if( parse.isKeyValid("rawfunc") )
+    {
+        for( int i = 0; i < rawlen; i++ )
+        {
+            results += getName()
+                    + " / FR " + CtiNumStr(rawloc).xhex().zpad(2)
+                    + " byte " + CtiNumStr(i).zpad(2)
+                    + " : "    + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                    + "\n";
+        }
+    }
+    else
+    {
+        for( int i = 0; i < rawlen; i++ )
+        {
+            results += getName()
+                    + " / byte " + CtiNumStr(rawloc + i).xhex().zpad(2)
+                    + " : "      + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                    + "\n";
+        }
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString( results );
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -839,42 +813,36 @@ INT Repeater900Device::decodePutConfigRaw( INMESS *InMessage, CtiTime &TimeNow, 
     DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
     {
-        // No error occured, we must do a real decode!
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        string results;
-
-        switch( InMessage->Sequence )
-        {
-            case EmetconProtocol::PutConfig_Raw:
-            {
-                results = getName() + " / Raw bytes sent";
-                break;
-            }
-            default:
-            {
-
-            }
-        }
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString( results );
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        return MEMORY;
     }
+
+    string results;
+
+    switch( InMessage->Sequence )
+    {
+        case EmetconProtocol::PutConfig_Raw:
+        {
+            results = getName() + " / Raw bytes sent";
+            break;
+        }
+        default:
+        {
+
+        }
+    }
+
+    ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+    ReturnMsg->setResultString( results );
+
+    retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
 
 }
 }
-
