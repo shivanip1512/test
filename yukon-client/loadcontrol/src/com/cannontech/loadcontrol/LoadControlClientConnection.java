@@ -214,8 +214,10 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     
     /**
      * Returns an ImmutableSet of all LMProgramBase objects. Throws ConnectionException if the connection is not valid.
+     *
+     * @throws ConnectionException
      */
-    public Set<LMProgramBase> getAllProgramsSet() {
+    public Set<LMProgramBase> getAllProgramsSet() throws ConnectionException {
         
         if(!isValid()) {
             throw new ConnectionException("The Load Management server connection is not valid.");
