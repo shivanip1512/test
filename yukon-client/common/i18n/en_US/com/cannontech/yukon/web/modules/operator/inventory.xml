@@ -259,7 +259,7 @@
     <entry key="yukon.web.modules.operator.resendConfig.pageName">Resend Configuration</entry>
     <entry key="yukon.web.modules.operator.resendConfig.resendConfigContainer.title">Resend Configuration For ZigBee Devices</entry>
     <entry key="yukon.web.modules.operator.resendConfig.disclaimerLabel">Note</entry>
-    <entry key="yukon.web.modules.operator.resendConfig.disclaimer">This task with send load management configuration messages to all ZigBee devices in the collection.</entry>
+    <entry key="yukon.web.modules.operator.resendConfig.disclaimer">This task will send load management configuration messages to all ZigBee devices in the collection.</entry>
     <entry key="yukon.web.modules.operator.resendConfig.progress.title">Resend Configuration Task Status</entry>
     <entry key="yukon.web.modules.operator.resendConfig.progress">Progress</entry>
     <entry key="yukon.web.modules.operator.resendConfig.successful">Successful</entry>
