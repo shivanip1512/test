@@ -16,6 +16,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessage;
@@ -67,11 +68,9 @@ public class FlashScopeMessagesTag extends YukonTagSupport {
 					for (MessageSourceResolvable messageSourceResolvable : flashScopeMessage.getMessages()) {
 						String resolvedMessage = resolveMessage(messageSourceResolvable);
 						String className = "";
-					    if(messageSourceResolvable instanceof YukonMessageSourceResolvable){
+					    if(messageSourceResolvable instanceof WebMessageSourceResolvable){
 					        YukonMessageSourceResolvable yukonMessageSourceResolvable = (YukonMessageSourceResolvable)messageSourceResolvable;
-					        if(StringUtils.isNotEmpty(yukonMessageSourceResolvable.getClassName())){
-					            className = yukonMessageSourceResolvable.getClassName();
-					        }
+					        className = ((WebMessageSourceResolvable)yukonMessageSourceResolvable).getClassName();
 					    }
 						if(StringUtils.isEmpty(className)){
 							out.println("<li>" + resolvedMessage + "</li>");

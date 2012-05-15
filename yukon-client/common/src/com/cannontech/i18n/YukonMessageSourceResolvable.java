@@ -12,12 +12,7 @@ import com.google.common.collect.ObjectArrays;
  * Yukon extension of DefaultMessageSourceResolvable with convenience
  * constructor
  */
-public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable { 
-    
-	/* specifies a style for an element
-	 * example: <li class=\"" + className + "\">" + resolvedMessage + "</li>"*/
-    private String className;
-
+public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable {
     private static final long serialVersionUID = 3775006143046764578L;
 
     public YukonMessageSourceResolvable(MessageSourceResolvable resolvable) {
@@ -43,14 +38,9 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
     public YukonMessageSourceResolvable(String[] codes) {
         super(codes);
     }
-        
+    
     public YukonMessageSourceResolvable(String code, Object... args) {
         super(new String[] { code }, args);
-    }
-    
-    public YukonMessageSourceResolvable(String code, String className, Object... args) {
-        this(code, args);
-        this.className = className;
     }
 
     public static MessageSourceResolvable createSingleCode(String code) {
@@ -72,6 +62,8 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
     public static MessageSourceResolvable createDefault(String code, String defaultMessage) {
         return new YukonMessageSourceResolvable(new String[] { code }, new Object[]{}, defaultMessage);
     }
+
+
 
     public static MessageSourceResolvable createDefaultWithoutCode(String defaultMessage) {
         return new YukonMessageSourceResolvable(null, new Object[]{}, defaultMessage);
@@ -119,14 +111,5 @@ public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable
             return getCodes()[0] +"!";
         }
         return getCodes()[0] + "+";
-    }
-
-    /**
-     * Gets the class name (style of an element).
-     *
-     * @return the class name
-     */
-    public String getClassName() {
-        return className;
     }
 }

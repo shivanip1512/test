@@ -47,6 +47,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.hardware.Warehouse;
+import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -215,7 +216,8 @@ public class InventoryController {
                 for (Map<String, String> keyValue : fieldList){
                     String field = keyValue.keySet().iterator().next();
                     String fieldValue = keyValue.get(field);
-                    MessageSourceResolvable noResultsForFilterItem = new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.noResultsForFilterItem","bullet", field, fieldValue);
+                    WebMessageSourceResolvable noResultsForFilterItem = new WebMessageSourceResolvable("yukon.web.modules.operator.inventory.noResultsForFilterItem", field, fieldValue);
+                    noResultsForFilterItem.setClassName("bullet");
                     messages.add(noResultsForFilterItem);
                 }
                 flashScope.setWarning(messages);
