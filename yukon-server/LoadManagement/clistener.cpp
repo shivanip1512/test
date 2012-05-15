@@ -133,20 +133,20 @@ void CtiLMClientListener::stop()
     }
 }
 
-void CtiLMClientListener::sendMessageToClient(CtiMessage *msg)
+void CtiLMClientListener::sendMessageToClient(std::auto_ptr<CtiMessage> msg)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
 
     try
     {
-        for( int i = 0; i < _connections.size(); i++ )
+        for each( CtiLMConnectionPtr conn in _connections )
         {
             // replicate message makes a deep copy
-            if( _connections[i].get() == msg->getConnectionHandle() && _connections[i]->valid() )
+            if( conn.get() == msg->getConnectionHandle() && conn->valid() )
             {
-                _connections[i]->WriteConnQue(msg);
-                msg = NULL;
-                break;
+                conn->WriteConnQue(msg.get());
+                msg.release();
+                return;
             }
         }
     }
@@ -155,11 +155,6 @@ void CtiLMClientListener::sendMessageToClient(CtiMessage *msg)
         CtiLockGuard< CtiLogger > g(dout);
         dout << CtiTime() << __FILE__ << " (" << __LINE__ <<
              ")  An unknown exception has occurred." << endl;
-    }
-    if( msg != NULL )
-    {
-        delete msg;
-        msg = NULL;
     }
 }
 
@@ -248,9 +243,6 @@ void CtiLMClientListener::_listen()
             exit(-1);
         }
 
-        /* Up this threads priority a notch over the other procs */
-        CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_BELOW_NORMAL);
-
         do
         {
             try
@@ -334,8 +326,6 @@ void CtiLMClientListener::_listen()
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " Client Listener Thread shutting down " << endl;
     }
-
-    return;
 }
 
 

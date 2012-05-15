@@ -2588,13 +2588,12 @@ void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
         _insertDynamicDataFlag = FALSE;
     }
 
-    for( int i=0;i<_lmcontrolareatriggers.size();i++ )
+    for each( CtiLMControlAreaTrigger *currentTrigger in _lmcontrolareatriggers )
     {
-        CtiLMControlAreaTrigger* currentTrigger = (CtiLMControlAreaTrigger*)_lmcontrolareatriggers.at(i);
         currentTrigger->dumpDynamicData();
     }
 
-    resetDirty();
+    resetDirty(); // setDirty inserts into the changed group list and we do not want to do that here.
 }
 
 /*-------------------------------------------------------------------------

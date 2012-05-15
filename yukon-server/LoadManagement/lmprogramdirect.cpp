@@ -5633,7 +5633,7 @@ void CtiLMProgramDirect::dumpDynamicData(Cti::Database::DatabaseConnection& conn
     }
 
     _dynamictimestamp = currentDateTime;
-    resetDirty();
+    resetDirty(); // setDirty inserts into the changed group list and we do not want to do that here.
 }
 
 /*

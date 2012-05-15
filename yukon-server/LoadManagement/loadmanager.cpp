@@ -168,7 +168,7 @@ void CtiLoadManager::stop()
         {
             _dispatchConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         }
-        delete _dispatchConnection;
+        delete _dispatchConnection; // Note this delete will block for the message above to go out.
         _dispatchConnection = NULL;
     }
     catch( ... )

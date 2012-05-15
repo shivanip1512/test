@@ -505,7 +505,8 @@ void CtiLMCommandExecutor::SendAllControlAreas()
     if( _command->getConnectionHandle() != NULL )
     {
         msg->setConnectionHandle(_command->getConnectionHandle());
-        CtiLMClientListener::getInstance()->sendMessageToClient(msg);
+        std::auto_ptr<CtiMessage> tmp_msg(msg);
+        CtiLMClientListener::getInstance()->sendMessageToClient(tmp_msg);
     }
     else
     {
@@ -1453,7 +1454,8 @@ void CtiLMManualControlRequestExecutor::Execute()
         if( _controlMsg->getConnectionHandle() != NULL )
         {
             response->setConnectionHandle(_controlMsg->getConnectionHandle());
-            CtiLMClientListener::getInstance()->sendMessageToClient(response);
+            std::auto_ptr<CtiMessage> tmp_msg(response);
+            CtiLMClientListener::getInstance()->sendMessageToClient(tmp_msg);
         }
         else
         {

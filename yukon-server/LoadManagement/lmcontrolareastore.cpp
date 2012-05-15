@@ -96,6 +96,8 @@ CtiLMControlAreaStore::~CtiLMControlAreaStore()
 {
     if( _resetthr.isValid() )
     {
+        // 30 seconds seems to be the standard across Yukon. If you do not wait for the cancellation, 
+        // bad things can happen in some cases.
         _resetthr.requestCancellation(30000);
         _resetthr.join(30000);
     }

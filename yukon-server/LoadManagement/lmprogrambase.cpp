@@ -1063,7 +1063,7 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
         inserter.execute();
     }
 
-    resetDirty(false);
+    resetDirty(); // setDirty inserts into the changed group list and we do not want to do that here.
 }
 
 /*---------------------------------------------------------------------------
