@@ -24,7 +24,7 @@ public class LoadControlCommandServiceImpl implements LoadControlCommandService 
         LMManualControlResponse lmResponse = (LMManualControlResponse)response.getPayload();
         
         if (response.getStatus() != ServerResponseMsg.STATUS_OK) {
-            throw new BadServerResponseException();
+            throw new BadServerResponseException("Invalid response received from Load Management.");
         }
         return new ConstraintViolations(LCUtils.convertViolationsToContainers(lmResponse.getConstraintViolations()));
     }

@@ -27,7 +27,7 @@ public class ServerRequestHelper {
         }
 
         if (result == null) {
-            throw new BadServerResponseException();
+            throw new BadServerResponseException("Invalid response received");
         }
         return result;
     }
