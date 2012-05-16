@@ -9,24 +9,8 @@
 <cti:msg var="importConfig" key="yukon.web.modules.support.databaseMigration.importConfig"/>
 <cti:msg var="cancel" key="yukon.web.modules.support.databaseMigration.cancel"/>
 
-<cti:standardPage title="${pageTitle}" module="support">
+<cti:standardPage module="support" page="databaseMigration">
 
-    <cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/spring/support/" title="Support" />
-	    <cti:crumbLink>${pageTitle}</cti:crumbLink>
-	</cti:breadCrumbs>
-	
-	<cti:standardMenu menuSelection="database|migration"/>
-
-    <h2>${pageTitle}</h2>
-    <br>
-
-    <style>
-    	div.migrationSection {width:80%;}
-    	a.exportComponentLabel {}
-    </style>
-    
     <tags:simpleDialog id="sharedPopupDialog"/>
     
     <cti:tabbedContentSelector>

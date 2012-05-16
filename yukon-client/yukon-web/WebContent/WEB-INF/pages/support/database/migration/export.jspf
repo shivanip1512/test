@@ -30,7 +30,7 @@
     </tags:nameValueContainer>
     <br><br>
 
-	<tags:sectionContainer title="${componentToBeExport}" styleClass="migrationSection">
+	<tags:sectionContainer title="${componentToBeExport}">
 
 			<c:forEach var="displayableExportType" items="${exportTypeList}">
       

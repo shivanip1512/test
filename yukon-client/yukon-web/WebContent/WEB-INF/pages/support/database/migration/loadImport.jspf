@@ -7,9 +7,6 @@
 <cti:msg var="currentSchemaUsername" key="yukon.web.modules.support.databaseMigration.currentSchemaUser"/>
 <cti:msg var="noteLabel" key="yukon.web.modules.support.databaseMigration.loadImport.noteLabel"/>
 <cti:msg var="noteText" key="yukon.web.modules.support.databaseMigration.loadImport.noteText"/>
-<cti:msg var="loadFile" key="yukon.web.modules.support.databaseMigration.loadImport.loadFile"/>
-
-
 
 <%-- CURRENT DB --%>
 <tags:nameValueContainer>
@@ -23,13 +20,12 @@
 <span style="font-size:11px;">${noteText}</span>
 <br><br>
 
-
 <tags:nameValueContainer>
 	
 	<tags:nameValue name="Local File" nameColumnWidth="100px">
 		<form id="loadLocalFileForm" action="/spring/support/database/migration/loadLocalFile" method="post" enctype="multipart/form-data">
 			<input type="file" name="dataFile" size="30px">
-			<tags:slowInput myFormId="loadLocalFileForm" label="${loadFile}" />
+            <cti:button nameKey="load" type="submit"/>
 		</form>
 	</tags:nameValue>
 	
@@ -43,10 +39,10 @@
 				</c:forEach>
 			</select>
             <c:if test="${empty serverFiles}">
-			    <tags:slowInput myFormId="loadServerFileForm" label="${loadFile}" disabled="true"/>
+                <cti:button nameKey="load" disabled="true"/>
             </c:if>
             <c:if test="${not empty serverFiles}">
-                <tags:slowInput myFormId="loadServerFileForm" label="${loadFile}" />
+                <cti:button nameKey="load" type="submit"/>
             </c:if>
 		</form>
 	</tags:nameValue>

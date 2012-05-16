@@ -10,6 +10,7 @@
     <entry key="yukon.web.modules.support.databaseMigration.label.LOGIN_GROUP">Login Group</entry>
 
 	<!-- Home home.jsp -->
+	<entry key="yukon.web.modules.support.databaseMigration.pageName">Database Migration</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.pageTitle">Database Migration</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.currentEnvironment">Current Environment</entry>
 	<entry key="yukon.web.modules.support.databaseMigration.currentSchemaUser">Current Schema User</entry>

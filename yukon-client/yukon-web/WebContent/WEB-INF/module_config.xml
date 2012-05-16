@@ -1171,6 +1171,10 @@
                         </page>
                     </pages>
                 </page>
+                <page name="databaseMigration" type="BASIC">
+                	<requireRoleProperty value="ADMIN_DATABASE_MIGRATION"/>
+                    <menu>database|migration</menu>
+                </page>
                 <page name="webServices.eimTest" type="BASIC">
                     <menu>webServices|eimTest</menu>
                 </page>

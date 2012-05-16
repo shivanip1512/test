@@ -161,6 +161,8 @@
     
     <entry key="yukon.web.components.button.ok.label">OK</entry>
     
+    <entry key="yukon.web.components.button.load.label">Load</entry>
+    
     <entry key="yukon.web.components.button.save.label">Save</entry>
     
     <entry key="yukon.web.components.button.update.label">Update</entry>
