@@ -11,10 +11,10 @@ public enum CMEPUnitEnum {
     KVARHREG(null), // Meter dial or register readings for printing on monthly bill. 
     GASREG(null), // Meter dial or register readings for printing on monthly bill. 
     PULSE(null), // Direct meter pulse readings. 
-    KW(BuiltInAttribute.LOAD_PROFILE), // Kilowatt demand, usually expressed as peak value in time interval. 
+    KW(null), // Kilowatt demand, usually expressed as peak value in time interval. 
     KVA(null), // Kilovolt-ampere demand, usually expressed as peak value in time interval. 
     KVAR(null), // Kilovolt-Ampere-Reactive demand, usually expressed as peak value in time interval. Values may be positive or negative depending upon power factor. Values are positive for VARs produced by customer or negative for VARs consumed by customer. Induction motors consume watts and VARs. A condenser bank produces VARs. An over-excited generator produces watts and VARs. An under-excited generator produces watts and consumes VARs. 
-    KWH(null), // Kilowatt hours used. 
+    KWH(BuiltInAttribute.LOAD_PROFILE), // Kilowatt hours used. 
     KVAH(null), // Kilovolt-ampere hours. 
     KVARH(null), // Kilovolt-Ampere-Reactive hours. Values may be positive or negative depending upon power factor. See KVAR above for further notes. 
     GKW(null), // Kilowatt generation, received from customer, usually expressed as peak value in time interval. Used when customer is generating power. 
@@ -26,7 +26,7 @@ public enum CMEPUnitEnum {
     VOLTS(null), // Volts. 
     BTU(null), // British Thermal Units. 
     THERM(null), // Therms. 
-    GAL(null), // Gallons. 
+    GAL(BuiltInAttribute.USAGE_WATER), // Gallons. 
     CF(null), // Cubic Feet. 
     CCF(null), // Hundreds of Cubic Feet. 
     MCF(null), // Thousands of Cubic Feet. 

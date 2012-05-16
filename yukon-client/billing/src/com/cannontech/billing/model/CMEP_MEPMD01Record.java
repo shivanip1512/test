@@ -27,7 +27,7 @@ public class CMEP_MEPMD01Record implements BillingRecordBase {
     private static final CMEPPurposeEnum PURPOSE = CMEPPurposeEnum.OK;
     private CMEPCommodityEnum commodity;
     private CMEPUnitEnum units;
-    private int calculationConstant = 1;
+    private float calculationConstant = 1;
     private String interval = "";
     private int count = 1; // This is set to one for the time being.  If we decide to print out multiple lines in a row we'll want to change this.
     
@@ -127,10 +127,10 @@ public class CMEP_MEPMD01Record implements BillingRecordBase {
         this.units = units;
     }
 
-    public int getCalculationConstant() {
+    public float getCalculationConstant() {
         return calculationConstant;
     }
-    public void setCalculationConstant(int calculationConstant) {
+    public void setCalculationConstant(float calculationConstant) {
         this.calculationConstant = calculationConstant;
     }
 

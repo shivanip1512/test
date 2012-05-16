@@ -1,5 +1,7 @@
 package com.cannontech.billing;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -33,6 +36,8 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.base.Function;
 import com.google.common.collect.ListMultimap;
@@ -41,12 +46,13 @@ import com.google.common.collect.Maps;
 
 public class CMEP_MEPMD01Format extends FileFormatBase  {
 
+	private Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
     private ConfigurationSource configurationSource = YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
     private DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
     private MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
     private PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
-    private RawPointHistoryDao rawPointHistoryDao = YukonSpringHook.getBean("rphDao", RawPointHistoryDao.class);
     private PersistedSystemValueDao persistedSystemValueDao = YukonSpringHook.getBean("persistedSystemValueDaoImpl", PersistedSystemValueDao.class);
+    private RawPointHistoryDao rawPointHistoryDao = YukonSpringHook.getBean("rphDao", RawPointHistoryDao.class);
 
     @Override
 	public boolean retrieveBillingData() {	
@@ -88,7 +94,7 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
                     billingRow.setMeterId(deviceIdToMeterMap.get(paoIdentifier.getPaoId()).getMeterNumber());
                     billingRow.setCommodity(commodity);
                     billingRow.setUnits(cmepUnit);
-                    billingRow.setCalculationConstant(1);
+                    billingRow.setCalculationConstant(getCalculationConstant(paoIdentifier, cmepUnit));
     
                     DataEntry dataEntry = billingRow.new DataEntry();
                     dataEntry.setReadingTimstamp(new Instant(pointValueHolder.getPointDataTimeStamp()));
@@ -169,5 +175,29 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
             }
         });
         return billingDeviceGroups;
+    }
+
+    /**
+     * This method gets the calculation constant for the given device and cmepUnit. 
+     * 
+     * Example:  
+     *     LoadProfileDemandRate is 900 seconds (15 mins)
+     *     This method would return .25 since 15 mins is a quarter of an hour.
+     */
+    private float getCalculationConstant(PaoIdentifier paoIdentifier, CMEPUnitEnum cmepUnit) {
+        float calculationConstraint = 1;
+        
+        if (cmepUnit == CMEPUnitEnum.KWH) {
+            try {
+                DeviceLoadProfile deviceLoadProfile = new DeviceLoadProfile();
+                deviceLoadProfile.setDbConnection(connection);
+                deviceLoadProfile.setDeviceID(paoIdentifier.getPaoId());
+                deviceLoadProfile.retrieve();
+    
+                calculationConstraint = deviceLoadProfile.getLoadProfileDemandRate() / 3600f; // An hour in seconds
+                
+            } catch (SQLException e) {/* It probably doesn't exist which is fine. */}
+        }
+        return calculationConstraint;
     }
 }
