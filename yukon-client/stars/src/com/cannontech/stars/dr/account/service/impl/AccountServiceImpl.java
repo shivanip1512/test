@@ -415,7 +415,7 @@ public class AccountServiceImpl implements AccountService {
         customerInfo.setCustomer(liteCustomer);
         LiteAddress billingAddress = addressDao.getByAddressId(account.getBillingAddressId());
         LiteContact primaryContact = customerDao.getPrimaryContact(account.getCustomerId());
-        LiteStarsEnergyCompany starsEnergyCompany = ecMappingDao.getContactEC(primaryContact.getContactID());
+        LiteStarsEnergyCompany starsEnergyCompany = ecMappingDao.getCustomerAccountEC(account.getAccountId());
         Integer userId = primaryContact.getLoginID();
         
         /*
