@@ -54,7 +54,7 @@ function doChangeState(itemId, stateId) {
     jQuery.ajax({
         url: '/spring/capcontrol/command/manualStateChange',
 		type: 'POST',
-        data: {'bankId' : itemId, 'rawStateId' : stateId},
+        data: {'paoId' : itemId, 'rawStateId' : stateId},
         success: function(response) {
         	showMessage(response);
         }

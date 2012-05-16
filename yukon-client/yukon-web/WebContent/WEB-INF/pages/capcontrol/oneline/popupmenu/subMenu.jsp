@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:url var="url" value="/spring/capcontrol/commandexecutor?action=executeCommandOneLine" />
+<cti:url var="url" value="/spring/capcontrol/command/commandOneLine"/>
 
 <div>
     <table>
@@ -25,7 +25,7 @@
     	<tr>
 	       	<td colspan="2">
                 <span style="color: gray;">Sub-Level CBC Commands:</span>
-                <select id="selectId" style="background-color=gray;">
+                <select id="subLevelCommand" style="background-color=gray;">
     				<option value="" style="color: white"></option>
 	       			<option value="${openAllSub}" style="color:white;">Open All CapBanks</option>
 			     	<option value="${closeAllSub}" style="color:white;">Close All CapBanks</option>
@@ -54,7 +54,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <input type="button" value="Execute" onclick="submitOnelineCommand($('selectId').options[$(selectId).selectedIndex].value);"/>
+                <input type="button" value="Execute" onclick="submitOnelineCommand(jQuery('#subLevelCommand').val());"/>
                 <input type="button" value="Cancel" onclick="closePopupWindow();"/>
                 <br>
             </td>

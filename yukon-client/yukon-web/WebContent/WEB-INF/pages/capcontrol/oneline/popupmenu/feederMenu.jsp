@@ -1,8 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:url var="manualUrl" value="/spring/capcontrol/commandexecutor?action=executeManualStateChange" />
-<cti:url var="url" value="/spring/capcontrol/commandexecutor?action=executeCommandOneLine" />
+<cti:url var="manualUrl" value="/spring/capcontrol/command/manualStateChange" />
+<cti:url var="url" value="/spring/capcontrol/command/commandOneLine"/>
 
 <div>
     <table>
@@ -26,7 +26,7 @@
         <tr>
             <td style="color: gray;">Fdr-Level CBC Commands:</td>
             <td>
-                <select id="selectId" style="background-color=gray;">
+                <select id="feederLevelCommand" style="background-color=gray;">
 				    <option value="" style="color: white"></option>
 				    <option value="${confirmFdr}" style="color:white;">Confirm Feeder</option>
 				    <option value="${openAllFdr}" style="color:white;">Open All CapBanks</option>
@@ -43,7 +43,7 @@
         </tr>
     	<tr>
             <td>
-                <input type=button value="Execute" onclick="submitOnelineCommand($('selectId').options[$(selectId).selectedIndex].value);"/>
+                <input type=button value="Execute" onclick="submitOnelineCommand(jQuery('#feederLevelCommand').val());"/>
                 <input type="button" value="Cancel" onclick="closePopupWindow();"/>
             </td>
             <td/>

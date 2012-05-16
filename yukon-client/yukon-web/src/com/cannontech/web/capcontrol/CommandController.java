@@ -59,14 +59,15 @@ import com.google.common.collect.ImmutableMap.Builder;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class CommandController {
     
-    private CapControlCommentDao commentDao;
-    private CapControlCache cache;
-    private RolePropertyDao rolePropertyDao;
-    private CapControlCommandExecutor executor;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private PaoDao paoDao;
+    @Autowired private CapControlCommentDao commentDao;
+    @Autowired private CapControlCache cache;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private CapControlCommandExecutor executor;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private PaoDao paoDao;
+    @Autowired private CapControlCommentService capControlCommentService;
+    
     private static final Logger log = YukonLogManager.getLogger(CommandController.class);
-    private CapControlCommentService capControlCommentService;
 
     private static ImmutableMap<CapControlType, YukonRoleProperty> permissions;
     
@@ -232,6 +233,7 @@ public class CommandController {
                            LiteYukonUser user,
                            FlashScope flash,
                            int substationId,
+                           boolean oneline,
                            String tempMove,
                            @ModelAttribute("bankMoveBean") BankMoveBean bankMoveBean) {
         
@@ -241,9 +243,15 @@ public class CommandController {
         
         CapBankDevice bank = cache.getCapBankDevice(bankMoveBean.getBankId());
         
-        if(bankMoveBean.getNewFeederId() == 0) {
+        if (bankMoveBean.getNewFeederId() == 0) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.noFeederSelected", bank.getCcName()));
-            return "redirect:/spring/capcontrol/tier/feeders";
+            if (oneline) {
+                model.addAttribute("bankid", bank.getCcId());
+                model.addAttribute("oneline", oneline);
+                return "redirect:/spring/capcontrol/move/bankMove";
+            } else {
+                return "redirect:/spring/capcontrol/tier/feeders";
+            }
         }
         
         Feeder newFeeder = cache.getFeeder(bankMoveBean.getNewFeederId());
@@ -282,7 +290,13 @@ public class CommandController {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.bankMoveSuccess", bank.getCcName(), newFeeder.getCcName()));
         }
         
-        return "redirect:/spring/capcontrol/tier/feeders";
+        if (oneline) {
+            model.addAttribute("bankid", bank.getCcId());
+            model.addAttribute("oneline", oneline);
+            return "redirect:/spring/capcontrol/move/bankMove";
+        } else {
+            return "redirect:/spring/capcontrol/tier/feeders";
+        }
     }
     
     @RequestMapping
@@ -349,19 +363,19 @@ public class CommandController {
 	public String manualStateChange(HttpServletResponse response, 
 	                                       ModelMap model, 
 	                                       YukonUserContext context, 
-	                                       int bankId, 
+	                                       int paoId, 
 	                                       int rawStateId) {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         LiteYukonUser user = context.getYukonUser();
-        String bankName = cache.getCapBankDevice(bankId).getCcName();
+        String bankName = cache.getCapBankDevice(paoId).getCcName();
         
         if (!rolePropertyDao.checkProperty(permissions.get(CapControlType.CAPBANK), user)){
             return sendNotAuthorizedResponse(response, accessor, model, user, CommandType.CHANGE_OP_STATE);
         }
         
-	    int pointId = cache.getCapBankDevice(bankId).getStatusPointID();
-	    PointData command = CommandHelper.buildManualStateChange(user, pointId, bankId, rawStateId);
+	    int pointId = cache.getCapBankDevice(paoId).getStatusPointID();
+	    PointData command = CommandHelper.buildManualStateChange(user, pointId, paoId, rawStateId);
 	    boolean success = true;
 	    try {
 	        executor.execute(command);
@@ -372,7 +386,20 @@ public class CommandController {
 	    return sendStatusResponse(response, accessor, CommandType.MANUAL_ENTRY, bankName, model, success);
 	}
     
-    @RequestMapping//TODO FIX ONELINE TO USE NORMAL MSG DIV
+    @RequestMapping
+    public void commandOneLine(HttpServletResponse response, YukonUserContext context, int paoId, int cmdId) {
+        LiteYukonUser user = context.getYukonUser();
+        ItemCommand command = CommandHelper.buildItemCommand(cmdId, paoId, user);
+        
+        try {
+            executor.execute(command);
+            response.setStatus(HttpServletResponse.SC_OK);
+        } catch (CommandExecutionException e) {
+            response.setStatus(HttpServletResponse.SC_CONFLICT); // 409
+        }
+    }
+    
+    @RequestMapping
     public String commandOneLineTag(HttpServletRequest request,
                                            HttpServletResponse response,
                                            ModelMap model,
@@ -383,11 +410,11 @@ public class CommandController {
         LiteYukonUser user = context.getYukonUser();
         
         boolean disableChange = ServletRequestUtils.getBooleanParameter(request, "disableChange", false);
-        boolean disableOVUVChange = ServletRequestUtils.getBooleanParameter(request, "disableOVUVChange", false);
+        boolean disableOVUVChange = ServletRequestUtils.getBooleanParameter(request, "disableOvUvChange", false);
         boolean operationalStateChange = ServletRequestUtils.getBooleanParameter(request, "operationalStateChange", false);
         
         boolean disableValue = ServletRequestUtils.getBooleanParameter(request, "disableValue", false);
-        boolean disableOVUVValue = ServletRequestUtils.getBooleanParameter(request, "disableOVUVValue", false);
+        boolean disableOVUVValue = ServletRequestUtils.getBooleanParameter(request, "disableOvUvValue", false);
         boolean success = true;
         
         if (disableChange) {
@@ -395,7 +422,7 @@ public class CommandController {
             if (disableValue) {
                 commandId = ServletRequestUtils.getRequiredIntParameter(request, "disableCommandId");
             } else {
-                commandId = ServletRequestUtils.getRequiredIntParameter(request, "enabledCommandId");
+                commandId = ServletRequestUtils.getRequiredIntParameter(request, "enableCommandId");
             }
             CommandType commandType = CommandType.getForId(commandId);
 
@@ -420,7 +447,7 @@ public class CommandController {
             if (disableOVUVValue) {
                 commandId = ServletRequestUtils.getRequiredIntParameter(request, "disableOvUvCommandId");
             } else {
-                commandId = ServletRequestUtils.getRequiredIntParameter(request, "enabledOvUvCommandId");
+                commandId = ServletRequestUtils.getRequiredIntParameter(request, "enableOvUvCommandId");
             }
             CommandType commandType = CommandType.getForId(commandId);
 
@@ -434,7 +461,7 @@ public class CommandController {
             }
             
             if (disableOvUvSuccess && disableOVUVValue) {
-                String reason = ServletRequestUtils.getStringParameter(request, "disableOVUVReason", "");
+                String reason = ServletRequestUtils.getStringParameter(request, "disableOvUvReason", "");
                 if (StringUtils.isBlank(reason)) reason = generateUpdateComment(commandType, paoId, user, accessor);
                 insertComment(paoId, commandType, user, reason);
             }
@@ -598,41 +625,6 @@ public class CommandController {
         comment.setAction(action.toString());
         
         commentDao.add(comment);
-    }
-    
-    @Autowired
-    public void setCommentDao(CapControlCommentDao commentDao) {
-        this.commentDao = commentDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setCapControlCache(CapControlCache capControlCache) {
-        this.cache = capControlCache;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setCapControlCommandExecutor(CapControlCommandExecutor executor) {
-        this.executor = executor;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setCapControlCommentService(CapControlCommentService capControlCommentService) {
-        this.capControlCommentService = capControlCommentService;
     }
     
 }

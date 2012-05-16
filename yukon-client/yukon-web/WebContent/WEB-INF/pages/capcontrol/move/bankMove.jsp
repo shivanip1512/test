@@ -25,6 +25,7 @@ selectFeeder = function (fid) {
 
 <div style="padding: 5px;">
     <form:form commandName="bankMoveBean" action="/spring/capcontrol/command/bankMove">
+        <input type="hidden" name="oneline" value="${oneline}">
         <input type="hidden" name="substationId" value="${substationId}">
         <input type="hidden" name="selectedFeeder" value="${oldFeederId}" id="selectedFeeder">
         <form:hidden path="bankId"/>

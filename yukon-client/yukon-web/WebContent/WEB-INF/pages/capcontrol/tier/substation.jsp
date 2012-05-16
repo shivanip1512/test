@@ -103,22 +103,6 @@ function applyCapBankFilter(feederIds) {
         }
     });
 }
-
-// BANK MOVE JS
-function toggleLi(event) {
-    var li = event.findElement('li');
-    var childUl = li.down('ul');
-    if (childUl) {
-        if (childUl.toggle().visible()) {
-            li.addClassName('minus');
-            li.removeClassName('plus');
-        } else {
-            li.addClassName('plus');
-            li.removeClassName('minus');
-        }
-    }
-}
-YEvent.observeSelectorClick('li.toggle', toggleLi);
 </script>
 
 <i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton" styleClass="mediumSimplePopup">

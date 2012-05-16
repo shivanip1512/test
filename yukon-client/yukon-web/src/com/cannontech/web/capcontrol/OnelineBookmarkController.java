@@ -1,4 +1,4 @@
-package com.cannontech.web.editor;
+package com.cannontech.web.capcontrol;
 
 import java.io.IOException;
 
@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 
-@Controller("/onelineBookmark/*")
+@Controller
+@RequestMapping("/onelineBookmark/*")
 public class OnelineBookmarkController {
 
     @RequestMapping
-    public void bookmark(HttpServletRequest request, HttpServletResponse response, Integer itemid) throws IOException {
+    public void mark(HttpServletRequest request, HttpServletResponse response, Integer itemid) throws IOException {
         if (itemid != null) {
             String url = OnelineUtil.createEditLink(itemid);
 

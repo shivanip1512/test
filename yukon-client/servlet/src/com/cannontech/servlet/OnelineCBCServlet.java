@@ -84,8 +84,7 @@ public class OnelineCBCServlet extends HttpServlet {
                 break;
             } catch (RuntimeException e) {
                 if (count < MAX_RETRY) {
-                    CTILogger.warn("Failure generating OneLine drawing: " + e.getClass());
-                    CTILogger.debug(e.getStackTrace());
+                    CTILogger.warn("Failure generating OneLine drawing", e);
                     continue; 
                 }
                 throw e;

@@ -1,6 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-
 <div>
     <table>
         <tr>
@@ -12,11 +11,9 @@
         <tr>
             <td colspan="2">
                 <hr style="color: gray;"/>
-                <a href="/capcontrol/standardPageWrapper.jsp?title=Temp CapBank Move&page=/spring/capcontrol/move/bankMove.jsp&bankid=${paoId}&oneline=true" 
-                style="color: white">Move Bank</a>
+                <a href="javascript:void(0);" style="color: white;" onclick="showMoveBankPage(${paoId})">Move Bank</a>
             </td>
         </tr>
 
     </table>
-    <input type="hidden" id="paoId" value="${paoId}" />
 </div>    

@@ -22,13 +22,14 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @Controller("/oneline/legend/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class OnelineLegendController {
+    
     private StateDao stateDao;
     private YukonImageDao yukonImageDao;
     private String[] excludeStateList = {"Verify All", "Verify Stop"};
 
     @SuppressWarnings("unchecked")
     @RequestMapping
-    public String legend(ModelMap model) {
+    public String view(ModelMap model) {
         LiteStateGroup capBankState = stateDao.getLiteStateGroup(CapControlConst.CAPBANKSTATUS_STATEGROUP_ID);
         List<LiteState> capBankStateList = capBankState.getStatesList();
         

@@ -23,7 +23,7 @@
     			       <span class="normalBoldLabel"><i:inline key='.cbcImportFile'/></span>
     			    </td>
     				<td width="70%" style="padding-right:20px;">
-    					<form method="post" action="/spring/capcontrol/tools/importCbcFile" enctype="multipart/form-data">
+    					<form method="post" action="/spring/capcontrol/import/cbcFile" enctype="multipart/form-data">
     						<%-- file select --%>
     			            <input type="file" name="dataFile" size="30px">
                             <cti:button nameKey="import" type="submit" styleClass="f_blocker"/>
@@ -35,7 +35,7 @@
     			       <span class="normalBoldLabel"><i:inline key='.hierarchyImportFile'/></span>
     			    </td>
     				<td width="70%" style="padding-right:20px;">
-    					<form method="post" action="/spring/capcontrol/tools/importHierarchyFile" enctype="multipart/form-data">
+    					<form method="post" action="/spring/capcontrol/import/hierarchyFile" enctype="multipart/form-data">
     						<%-- file select --%>
     			            <input type="file" name="dataFile" size="30px">
     			            <cti:button nameKey="import" type="submit" styleClass="f_blocker"/>

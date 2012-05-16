@@ -1,8 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:url var="manualUrl" value="/spring/capcontrol/commandexecutor?action=executeManualStateChange" />
-<cti:url var="url" value="/spring/capcontrol/commandexecutor?action=executeCommandOneLine" />
+<cti:url var="manualUrl" value="/spring/capcontrol/command/manualStateChange" />
+<cti:url var="url" value="/spring/capcontrol/command/commandOneLine"/>
 
 <div>
     <table>
@@ -25,7 +25,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <select style="background-color=gray" onchange="submitOnelineManualCommand(this.options[this.selectedIndex].value);">
+                <select id="changeBankState" style="background-color=gray" onchange="submitOnelineManualCommand(jQuery('#changeBankState').val());">
                     <option value="" style="color: white;"></option>
                     <c:forEach var="state" items="${states}">
                         <option style="color:white;" value="${state.stateRawState}">${state.stateText}</option>

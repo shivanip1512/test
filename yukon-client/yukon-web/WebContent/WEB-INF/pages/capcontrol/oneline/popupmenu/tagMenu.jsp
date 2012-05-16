@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:url var="url" value="/spring/capcontrol/commandexecutor?action=executeCommandOneLineTag" />
+<cti:url var="url" value="/spring/capcontrol/command/commandOneLineTag" />
 <cti:url var="commentsUrl" value="/spring/capcontrol/comments/paoCommentsForOneline">
     <cti:param name="paoId" value="${paoId}"/>
 </cti:url>
@@ -32,8 +32,8 @@
                     <div style="color: white;">
                         <input type="checkbox" id="disableCheckBox" onclick="toggleReason(this, 'disableReasonId');" <c:if test="${isDisabled}">checked</c:if> />
                         <input type="hidden" id="disableCheckBox_orig" value="${isDisabled}"/>
-                        <input type="hidden" name="disableCommandId" value="${disableCommandId}">
-                        <input type="hidden" name="enableCommandId" value="${enableCommandId}">
+                        <input type="hidden" id="disableCommandId" name="disableCommandId" value="${disableCommandId}">
+                        <input type="hidden" id="enableCommandId" name="enableCommandId" value="${enableCommandId}">
                         <span>Disable</span>
                     </div>
                     <div id="disableReasonId" <c:if test="${!isDisabled}">style="display:none;"</c:if>>
@@ -45,8 +45,8 @@
                     <div style="color: white;"> 
                         <input type="checkbox" id="disableOvUvCheckBox" onclick="toggleReason(this, 'disableOvUvReasonId');" <c:if test="${isDisabledOvUv}">checked</c:if> />
                         <input type="hidden" id="disableOvUvCheckBox_orig" value="${isDisabledOvUv}"/>
-                        <input type="hidden" name="disableOvUvCommandId" value="${disableOvUvCommandId}">
-                        <input type="hidden" name="enableOvUvCommandId" value="${enableOvUvCommandId}">
+                        <input type="hidden" id="disableOvUvCommandId" name="disableOvUvCommandId" value="${disableOvUvCommandId}">
+                        <input type="hidden" id="enableOvUvCommandId" name="enableOvUvCommandId" value="${enableOvUvCommandId}">
                          <span>Disable OV/UV</span>
                     </div>     
                     <div id="disableOvUvReasonId" <c:if test="${!isDisabledOvUv}">style="display:none;"</c:if>>

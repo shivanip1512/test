@@ -196,3 +196,19 @@ function showMessage(message) {
 function hideAlertMessage() {
 	jQuery('#alertMessageContainer').hide("fade", {}, 3000);
 }
+
+//BANK MOVE JS
+function toggleLi(event) {
+ var li = event.findElement('li');
+ var childUl = li.down('ul');
+ if (childUl) {
+     if (childUl.toggle().visible()) {
+         li.addClassName('minus');
+         li.removeClassName('plus');
+     } else {
+         li.addClassName('plus');
+         li.removeClassName('minus');
+     }
+ }
+}
+YEvent.observeSelectorClick('li.toggle', toggleLi);

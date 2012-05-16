@@ -90,7 +90,11 @@ public class BankMoveController {
         bankMoveBean.setOldFeederId(capBank.getParentID());
         model.addAttribute("bankMoveBean", bankMoveBean);
         
-        return "move/bankMove.jsp";
+        if (oneline) {
+            return "move/onelineBankMove.jsp";
+        } else {
+            return "move/bankMove.jsp";
+        }
     }
     
     @RequestMapping

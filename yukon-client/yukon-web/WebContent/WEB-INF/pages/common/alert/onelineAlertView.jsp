@@ -1,6 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<cti:msgScope paths="yukon.web.alerts.types">
 <div id="alertView" >
     <table id="alertTable" cellspacing="0">
            <tr>
@@ -25,8 +27,8 @@
 
         <c:forEach var="alert" items="${alerts}">
         		<tr id="alertTableRow_${alert.id}" style="color: #9FBBAC;">
-                <td width="20%">${alert.type.value}</td>
-                <td>${alert.message}</td>
+                <td width="20%"><i:inline key="${alert.type}"/></td>
+                <td><i:inline key="${alert.message}"/></td>
                 <td><cti:formatDate type="BOTH" value="${alert.date}"/></td>
                 <td>
                     <input type="hidden" name="alertId" value="${alert.id}">
@@ -38,3 +40,4 @@
         </c:forEach>
     </table>
 </div>
+</cti:msgScope>

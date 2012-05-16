@@ -731,79 +731,60 @@
             <option name="area">
               <link>/editor/cbcWizBase.jsf?type=4002</link>
             </option>
-            <option name="specialarea">
-              <link>/editor/cbcWizBase.jsf?type=4003</link>
-            </option>
-            <option name="substation">
-              <link>/editor/cbcWizBase.jsf?type=4004</link>
-            </option>
-            <option name="substationbus">
-              <link>/editor/cbcWizBase.jsf?type=4000</link>
-            </option>
-            <option name="feeder">
-              <link>/editor/cbcWizBase.jsf?type=4001</link>
-            </option>
-            <option name="capbank">
-              <link>/editor/cbcWizBase.jsf?type=1050</link>
-            </option>
-            <option name="cbc">
-              <link>/editor/cbcWizBase.jsf?type=1051</link>
-            </option>
-            <option name="schedule">
-              <link>/editor/cbcWizBase.jsf?type=4005</link>
-            </option>
-            <option name="strategy">
-              <link>/editor/cbcWizBase.jsf?type=4006</link>
-            </option>
-            <option name="voltageregulator">
-              <link>/editor/cbcWizBase.jsf?type=4007</link>
-            </option>
-          </options>
-        </option>
-        <option name="view">
-          <options>
-            <option name="schedules">
-              <link>/spring/capcontrol/schedule/schedules</link>
-            </option>
-            <option name="strategies">
-              <link>/spring/capcontrol/strategy/strategies</link>
+
+            <option name="view">
+                <options>
+                    <option name="schedules">
+                        <link>/spring/capcontrol/schedule/schedules</link>
+                    </option>
+                    <option name="strategies">
+                        <link>/spring/capcontrol/strategy/strategies</link>
+                    </option>
+
+                    <option name="scheduleassignment">
+                        <link>/spring/capcontrol/schedule/scheduleAssignments</link>
+                    </option>
+                    <option name="recentcapbankmoves">
+                        <link>/spring/capcontrol/move/movedCapBanks</link>
+                    </option>
+                    <option name="specialareas">
+                        <link>/spring/capcontrol/tier/areas?isSpecialArea=true</link>
+                    </option>
+                </options>
             </option>
 
-            <option name="scheduleassignment">
-              <link>/spring/capcontrol/schedule/scheduleAssignments</link>
+            <option name="orphans">
+                <options>
+                    <option name="orphanedsubstations">
+                        <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__
+                        </link>
+                    </option>
+                    <option name="orphanedsubstationbuses">
+                        <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__
+                        </link>
+                    </option>
+                    <option name="orphanedfeeders">
+                        <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__
+                        </link>
+                    </option>
+                    <option name="orphanedcapbanks">
+                        <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__
+                        </link>
+                    </option>
+                    <option name="orphanedcbcs">
+                        <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__
+                        </link>
+                    </option>
+                    <option name="orphanedregulators">
+                        <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__
+                        </link>
+                    </option>
+                </options>
             </option>
-            <option name="recentcapbankmoves">
-              <link>/spring/capcontrol/move/movedCapBanks</link>
+            <option name="import">
+                <link>/spring/capcontrol/import/view</link>
             </option>
-            <option name="specialareas">
-              <link>/spring/capcontrol/tier/areas?isSpecialArea=true</link>
-            </option>
-
-          </options>
-        </option>
-        <option name="orphans">
-          <options>
-            <option name="orphanedsubstations">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
-            </option>
-            <option name="orphanedsubstationbuses">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__</link>
-            </option>
-            <option name="orphanedfeeders">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__</link>
-            </option>
-            <option name="orphanedcapbanks">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__</link>
-            </option>
-            <option name="orphanedcbcs">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__</link>
-            </option>
-            <option name="orphanedregulators">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__</link>
-            </option>
-          </options>
-        </option>
-      </options>
+        </options>
     </menu>
     
     <search bean="capControlSearchProducer" />
@@ -1170,10 +1151,6 @@
                             </pages>
                         </page>
                     </pages>
-                </page>
-                <page name="databaseMigration" type="BASIC">
-                	<requireRoleProperty value="ADMIN_DATABASE_MIGRATION"/>
-                    <menu>database|migration</menu>
                 </page>
                 <page name="webServices.eimTest" type="BASIC">
                     <menu>webServices|eimTest</menu>

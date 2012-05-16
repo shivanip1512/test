@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:url var="url" value="/spring/capcontrol/commandexecutor?action=executeTempMoveBack" />
+<cti:url var="url" value="/spring/capcontrol/command/commandOneLine"/>
 
 <div>
     <table>

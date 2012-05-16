@@ -8,6 +8,7 @@ import java.io.Writer;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.util.HTMLGenerator;
+import com.cannontech.web.taglib.JsLibrary;
 
 public class OnelineHTMLGenerator extends HTMLGenerator {
     private static final String NEW_LINE = "\n";
@@ -21,7 +22,8 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
             "AnchorPosition.js",
             "PopupWindow.js", 
             "prototype150.js",
-            "lib/scriptaculous/1.6.1/scriptaculous.js",
+            JsLibrary.JQUERY.getPath(),
+            JsLibrary.JQUERY_UI.getPath(),
             "cc.js",
             "cconelinepopup.js",
             "GreyBox/AmiJS.js",
@@ -47,10 +49,6 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
         sb.append("GreyBox.preloadGreyBoxImages();");
         sb.append("var x;" + NEW_LINE);
         sb.append("var y;" + NEW_LINE);
-        sb.append("Event.observe(document, 'mousemove', function(event) {" + NEW_LINE);
-        sb.append("    x = Event.pointerX(event);" + NEW_LINE);
-        sb.append("    y = Event.pointerY(event);" + NEW_LINE);
-        sb.append("});" + NEW_LINE);
         sb.append(NEW_LINE);
         sb.append("var printableView = false;" + NEW_LINE);
         sb.append("function togglePrintableView() {" + NEW_LINE);

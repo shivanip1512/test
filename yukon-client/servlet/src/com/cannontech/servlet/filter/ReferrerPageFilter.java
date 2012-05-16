@@ -34,7 +34,7 @@ public class ReferrerPageFilter implements Filter {
                          "/capcontrol/standardPageWrapper.jsp",
                          "/spring/capcontrol/move/bankMove",
                          "/spring/capcontrol/capAddInfo",
-                         "/spring/capcontrol/oneline/popupmenu");
+                         "/spring/capcontrol/oneline/popupmenu/*");
     
     public void init(FilterConfig fc) throws ServletException {
         config = fc;

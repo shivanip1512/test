@@ -144,6 +144,7 @@
 <entry key="yukon.web.menu.config.capcontrol.orphans.orphanedcapbanks">Cap Banks</entry>
 <entry key="yukon.web.menu.config.capcontrol.orphans.orphanedcbcs">CBCs</entry>
 <entry key="yukon.web.menu.config.capcontrol.orphans.orphanedregulators">Regulators</entry>
+<entry key="yukon.web.menu.config.capcontrol.import">Import</entry>
 
 <!-- Commercial Curtailment Module -->
 <entry key="yukon.web.menu.config.commercialcurtailment.ccurt_events">Events</entry>

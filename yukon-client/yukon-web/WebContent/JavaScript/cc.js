@@ -1,3 +1,10 @@
+/*
+ * CapContol functions
+ * 
+ * Prerequisites: 	jQuery 1.6+
+ * 					jQueryUI 1.8+ (for effects)
+ */
+
 
 var UPDATE_EVERY = 5000;
 
@@ -216,7 +223,7 @@ function updateDynamicLineElements(lnType, xml) {
 function display_status(msg, color) {
 	var msg_div = document.getElementById('cmdMessageDiv');
 	msg_div.innerHTML =  '<font color="white">' + msg + '</font>';
-	msg_div.style.visibility = "visible";	
+	msg_div.style.visibility = "visible";
 	msg_div.style.width = "100";	
 	msg_div.style.height = "40";	
 	msg_div.style.top= 20;
@@ -224,18 +231,17 @@ function display_status(msg, color) {
 	msg_div.style.backgroundColor = color;
 	var timeout = 0;
 	if (color == "red") {
-		Effect.Pulsate('cmdMessageDiv', {duration: 8});
-		timeout = 8000;
-		}
-	 else {
-	 	Effect.Appear('cmdMessageDiv');
-		timeout = 2000;
-		}
-		setTimeout ('hideMsgDiv()', timeout);	
+		timeout = 5000;
+	} else {
+	 	jQuery("#cmdMessageDiv").fadeIn();
+		timeout = 3000;
+	}
+	jQuery("#cmdMessageDiv").show();
+	setTimeout ('hideMsgDiv()', timeout);	
 }
 
 function hideMsgDiv() {
-	Effect.Fade('cmdMessageDiv');
+	jQuery("#cmdMessageDiv").fadeOut();
 }
 
 

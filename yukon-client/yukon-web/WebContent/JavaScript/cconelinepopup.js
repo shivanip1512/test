@@ -37,64 +37,61 @@ function resetCapOpCount(element, cmdId) {
 }
 
 function submitToCapControlCommandController(url, params) {
-    new Ajax.Request(url, {
+    jQuery.ajax({
+        url: url,
         method: 'POST',
-        onSuccess: function(transport) {
-            display_status("Command sent successfully", "green");    
-        },
-        onFailure: function(transport) {
-            display_status("Command submission failed", "red");
-        },
-        onException: function(transport) {
-            display_status("Command submission failed", "red");
-        },
-        parameters:params
+        data: params,
+        success: function(data) {
+            display_status("Command sent successfully", "green");
+         },
+         error: function() {
+             display_status("Command submission failed", "red");
+         }
     });
 }
 	
 function submitOnelineManualCommand(rawStateId) {
     var params = {};
-    params['paoId'] = $('paoId').value;
-    params['controlType'] = $('controlType').value;
+    params['paoId'] = jQuery('#paoId').val();
+    params['controlType'] = jQuery('#controlType').val();
     params['rawStateId'] = rawStateId;
     
-    var url = $('manualUrl').value;
+    var url = jQuery('#manualUrl').val();
     submitToCapControlCommandController(url, params);
     closePopupWindow();        
 }
 
 function submitOnelineCommand(cmdId, params) {
     if (params == null) params = {};
-    params['paoId'] = $('paoId').value;
-    params['controlType'] = $('controlType').value;
+    params['paoId'] = jQuery('#paoId').val();
+    params['controlType'] = jQuery('#controlType').val();
     params['cmdId'] = cmdId;
     
-    var url = $('url').value;
+    var url = jQuery('#url').val();
     submitToCapControlCommandController(url, params);
     closePopupWindow();        
 }
 
 function submitTagMenu(isCapBank) {
 
-    var disableChange = $("disableCheckBox").checked != eval($("disableCheckBox_orig").value);
+    var disableChange = jQuery('#disableCheckBox').is(':checked') != eval(jQuery('#disableCheckBox_orig').val());
     var disableOvUvChange = false;
     var disableOvUvValue = false;
-    var disableOvUvCheckBox = $("disableOvUvCheckBox");
-    if(disableOvUvCheckBox != null){
-        disableOvUvChange = $("disableOvUvCheckBox").checked != eval($("disableOvUvCheckBox_orig").value);
-        disableOvUvValue = $("disableOvUvCheckBox").checked; 
+    var disableOvUvCheckBox = jQuery('#disableOvUvCheckBox');
+    if (disableOvUvCheckBox != null) {
+        disableOvUvChange = jQuery('#disableOvUvCheckBox').is(':checked') != eval(jQuery('#disableOvUvCheckBox_orig').val());
+        disableOvUvValue = jQuery('#disableOvUvCheckBox').is(':checked'); 
     }
     var disableOvUvReasonValue = "";
-    var disableOvUvReason = $('disableOvUvReason');
-    if(disableOvUvReason != null){
-        disableOvUvReasonValue = disableOvUvReason.value;
+    var disableOvUvReason = jQuery('#disableOvUvReason');
+    if (disableOvUvReason != null) {
+        disableOvUvReasonValue = disableOvUvReason.val();
     }
     var operationalStateChange = false;
 
     if (isCapBank) {
-        var index = $("operationalStateValue").selectedIndex;
-        var state = $("operationalStateValue").options[index].value;
-        var origState = $('operationalStateValue_orig').value;
+        var state = jQuery('#operationalStateValue').val();
+        var origState = jQuery('#operationalStateValue_orig').val();
         operationalStateChange = state != origState;
     }
     
@@ -104,20 +101,28 @@ function submitTagMenu(isCapBank) {
     }
         
     params = {};
-    params['paoId'] = $('paoId').value;
-    params['controlType'] = $('controlType').value;
+    params['paoId'] = jQuery('#paoId').val();
+    params['controlType'] = jQuery('#controlType').val();
+    
+    params['disableCommandId'] = jQuery('#disableCommandId').val();
+    params['enableCommandId'] = jQuery('#enableCommandId').val();
+    params['disableOvUvCommandId'] = jQuery('#disableOvUvCommandId').val();
+    params['enableOvUvCommandId'] = jQuery('#enableOvUvCommandId').val();
+    
         
-    params['disableValue'] = $('disableCheckBox').checked;
+    params['disableValue'] = jQuery('#disableCheckBox').is(':checked');
     params['disableOvUvValue'] = disableOvUvValue;
-    if (isCapBank) params['operationalStateValue'] = $('operationalStateValue').options[$('operationalStateValue').selectedIndex].value;
+    if (isCapBank) {
+        params['operationalStateValue'] = jQuery("#operationalStateValue").val();
+    }
         
     params['disableChange'] = disableChange;
     params['disableOvUvChange'] = disableOvUvChange;
     params['operationalStateChange'] = operationalStateChange;
         
-    params['disableReason'] = $('disableReason').value;
+    params['disableReason'] = jQuery('#disableReason').val();
     params['disableOvUvReason'] = disableOvUvReasonValue;
-    if (isCapBank) params['operationalStateReason'] = $('operationalStateReason').value;
+    if (isCapBank) params['operationalStateReason'] = jQuery('#operationalStateReason').val();
         
     var confirmMessage = '';
     if (disableChange) confirmMessage += 'Enable/Disable State Change\n';
@@ -126,29 +131,38 @@ function submitTagMenu(isCapBank) {
         
     if (!confirm(confirmMessage)) return false;
         
-    var url = $('url').value;
+    var url = jQuery('#url').val();
     submitToCapControlCommandController(url, params);
     closePopupWindow(); 
 }
 
 function toggleReason(element, reasonElementId) {
 	if (element.tagName == 'INPUT') {
-		if(element.checked) {
-            $(reasonElementId).show();
-			var textareaArray = $(reasonElementId).getElementsBySelector('TEXTAREA');
-            textareaArray.invoke('enable');
+		if (element.checked) {
+		    jQuery('#' + reasonElementId).show();
+			var textareaArray = jQuery('#' + reasonElementId + ' TEXTAREA');
+            textareaArray.attr('disabled', false);
 	    } else {
-            $(reasonElementId).hide();
+            jQuery('#' + reasonElementId).hide();
         }
 	}
 	
-    if(element.tagName == 'SELECT') {
-        var textareaArray = $(reasonElementId).getElementsBySelector('TEXTAREA');
-        textareaArray.invoke('enable');
+    if (element.tagName == 'SELECT') {
+        var textareaArray = jQuery('#' + reasonElementId + ' TEXTAREA');
+        textareaArray.attr('disabled', false);
 	}
 }
 	
 function openPopupWin(elem, compositeIdType) {
+    try {
+        // svg elements
+        x = elem.getBBox().x;
+        y = elem.getBBox().y;
+    } catch (error) {
+        // html elements
+        x = jQuery(elem).offset().left;
+        y = jQuery(elem).offset().top;
+    }
 	currentPopup = new PopupWindow("controlrequest");
 	currentPopup.offsetX = x;
 	currentPopup.offsetY = y;
@@ -162,88 +176,68 @@ function openPopupWin(elem, compositeIdType) {
     
     if (type == ALL_POPUP_TYPES.subCommand) {
 		menuName = 'subMenu';
-	}
-	else if (type == ALL_POPUP_TYPES.feederCommand) {
+	} else if (type == ALL_POPUP_TYPES.feederCommand) {
 		menuName = 'feederMenu';
-	}
-	else if (type == ALL_POPUP_TYPES.capCommand) {
+	} else if (type == ALL_POPUP_TYPES.capCommand) {
         menuName = 'capBankMenu';
-        currentPopup.offsetX = x - 250;
-	}
-	else if (type == ALL_POPUP_TYPES.subTag) {
+	} else if (type == ALL_POPUP_TYPES.subTag) {
         menuName = 'subTagMenu';
-	}
-	else if (type == ALL_POPUP_TYPES.feederTag) {
+	} else if (type == ALL_POPUP_TYPES.feederTag) {
         menuName = 'feederTagMenu';
-	}
-	else if (type == ALL_POPUP_TYPES.capTag) {
+	} else if (type == ALL_POPUP_TYPES.capTag) {
         menuName = 'capTagMenu';
-        currentPopup.offsetX = x - 300;
-	}
-	else if (type == ALL_POPUP_TYPES.capInfo) {
+	} else if (type == ALL_POPUP_TYPES.capInfo) {
         menuName = 'capInfoMenu';
-	}
-	else if (type == ALL_POPUP_TYPES.childCapMaint) {
+	} else if (type == ALL_POPUP_TYPES.childCapMaint) {
         menuName = 'capBankMaint';
-	}
-	else if (type == ALL_POPUP_TYPES.childCapDBChange) {
+	} else if (type == ALL_POPUP_TYPES.childCapDBChange) {
         menuName = 'capBankDBChange';
-	}
-	else if (type == ALL_POPUP_TYPES.cbcPointTimestamp) {
+	} else if (type == ALL_POPUP_TYPES.cbcPointTimestamp) {
         showPointTimestamps(id);
 		return;
-	}
-	else if (type == ALL_POPUP_TYPES.varChangePopup) {
+	} else if (type == ALL_POPUP_TYPES.varChangePopup) {
         menuName ='varChangePopup';
-        currentPopup.offsetX = x - 300;
-    }
-    else if (type == ALL_POPUP_TYPES.bankMoveBack) {
+    } else if (type == ALL_POPUP_TYPES.bankMoveBack) {
     	menuName ='moveBankBackPopup';
-    }
-    else if (type == ALL_POPUP_TYPES.bankMove) {
+    } else if (type == ALL_POPUP_TYPES.bankMove) {
     	menuName ='moveBankPopup';
-    }
-    else if (type == ALL_POPUP_TYPES.warningPopup) {
+    } else if (type == ALL_POPUP_TYPES.warningPopup) {
     	menuName = 'warningInfoPopop';
-    }
-    else if (type == ALL_POPUP_TYPES.alertsPopup) {
-        var alertUrl = '/spring/common/alert/view?style=onelineAlertView';
-        new Ajax.Request(alertUrl, {
+    } else if (type == ALL_POPUP_TYPES.alertsPopup) {
+        jQuery.ajax({
+            url: '/spring/common/alert/view?style=onelineAlertView',
             method: 'post',
-            onSuccess: function(transport) {
-                var html = transport.responseText;
-                showPopup(html);
+            success: function(data) {
+                showPopup(data);
             }
         });
+        
         return;
-    }
-    else if (type == ALL_POPUP_TYPES.legend) {
-        var legendUrl = '/spring/capcontrol/oneline/legend';
-        new Ajax.Request(legendUrl, {
-            method: 'post',
-            onSuccess: function(transport) {
+    } else if (type == ALL_POPUP_TYPES.legend) {
+        jQuery.ajax({
+            url: '/spring/capcontrol/oneline/legend/view',
+            method: 'get',
+            success: function(data) {
                 currentPopup.offsetX = window.innerWidth/2;
                 currentPopup.offsetY = 0;
-                
-                var html = transport.responseText;
-                showPopup(html);
+                showPopup(data);
             }
         });
         return;
     }
 
-    var url = '/spring/capcontrol/oneline/popupmenu?menu=' + menuName + '&id=' + id + '&returnUrl=' + window.location;
+    var url = '/spring/capcontrol/oneline/popupmenu/' + menuName + '?id=' + id + '&returnUrl=' + window.location;
     getFromURL(url);
 }
 
 function getFromURL(url) {
-    new Ajax.Request(url, {
-        method: 'POST',
-        onSuccess: function(transport) {
-            var html = transport.responseText;
-            showPopup(html);
+    jQuery.ajax({
+        url: url,
+        method: 'post',
+        success: function(data) {
+            showPopup(data);
         }
-    });    
+    });
 }
 
 function showPopup(html) {
@@ -270,7 +264,7 @@ function closePopupWindow() {
 
 function showPointTimestamps (cbcID) {
 	
-	var url = '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=';
+	var url = '/spring/capcontrol/oneline/popupmenu/pointTimestamp?cbcID=';
 	url += cbcID;
 
 	return GB_show('', url, 520, 700);
@@ -329,6 +323,10 @@ function PopupWindow_showPopup (anchorname) {
 		}
 }
 
+function showMoveBankPage(paoId) {
+    window.location = '/spring/capcontrol/move/bankMove?bankid=' + paoId + '&oneline=true';
+}
+
 /**
  * Show a flyover popup using the overlib popup 
  * with the supplied html.
@@ -338,4 +336,3 @@ function PopupWindow_showPopup (anchorname) {
 function showFlyoverPopup(html) {
 	overlib( html, BGCOLOR, '#FFFFFF', FGCOLOR, '#404040', TEXTCOLOR, '#FFFFFF', LEFT);
 }
-

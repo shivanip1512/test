@@ -31,7 +31,6 @@ import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
 import com.cannontech.capcontrol.creation.service.CapControlImportService;
 import com.cannontech.capcontrol.dao.CapControlImporterFileDao;
-import com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl;
 import com.cannontech.capcontrol.exception.CapControlCbcFileImportException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterException;
 import com.cannontech.clientutils.YukonLogManager;
@@ -48,13 +47,13 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 @Controller
-@RequestMapping("/*")
+@RequestMapping("/import/*")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class CapControlImportController {
 	private static Logger log = YukonLogManager.getLogger(CapControlImportController.class);
 
-	private CapControlImportService capControlImportService;
-	private CapControlImporterFileDao capControlFileImporterDao;
+	@Autowired private CapControlImportService capControlImportService;
+	@Autowired private CapControlImporterFileDao capControlFileImporterDao;
 	
 	private Cache<String, List<CapControlImportResolvable>> resultsLookup = CacheBuilder.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
 	
@@ -67,6 +66,7 @@ public class CapControlImportController {
     };
 	
 	public static class CapControlImportResolvable {
+	    
 	    private final YukonMessageSourceResolvable message;
 	    private final boolean success;
 	    
@@ -85,7 +85,7 @@ public class CapControlImportController {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public String importer(String hierarchyKey, String cbcKey, LiteYukonUser user, ModelMap model) throws ExecutionException {
+	public String view(String hierarchyKey, String cbcKey, LiteYukonUser user, ModelMap model) throws ExecutionException {
 		List<CapControlImportResolvable> results = Lists.newArrayList();
 		
 		List<CapControlImportResolvable> hierarchyResults = null;
@@ -107,7 +107,7 @@ public class CapControlImportController {
 		
 		model.addAttribute("results", results);
 		
-		return "tools/capcontrolImport.jsp";
+		return "import/capcontrolImport.jsp";
 	}
 	
 	private void processCbcImport(List<CbcImportData> cbcImportData, List<CbcImportResult> cbcResults) {
@@ -171,7 +171,7 @@ public class CapControlImportController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	public String importCbcFile(HttpServletRequest request, LiteYukonUser user, ModelMap model, FlashScope flash) throws IOException {
+	public String cbcFile(HttpServletRequest request, LiteYukonUser user, ModelMap model, FlashScope flash) throws IOException {
 		List<CbcImportResult> results = new ArrayList<CbcImportResult>();
 		
 		MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)request;
@@ -192,15 +192,15 @@ public class CapControlImportController {
         		Iterable<String> colNames = Iterables.transform(e.getColumns(), colNameOfField);
                 String columnString = StringUtils.join(colNames.iterator(), ", ");
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.missingRequiredColumn", columnString));
-        		return "tools/capcontrolImport.jsp";
+        		return "import/capcontrolImport.jsp";
         	} catch (IllegalArgumentException e) {
         		log.error("Invalid column name found in import file: " + e.getMessage());
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.invalidColumns", e.getMessage()));
-        		return "tools/capcontrolImport.jsp";
+        		return "import/capcontrolImport.jsp";
         	} catch (RuntimeException e) { 
         	    flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.errorProcessingFile", e.getMessage()));
                 log.error(e.getMessage());
-                return "tools/capcontrolImport.jsp";
+                return "import/capcontrolImport.jsp";
             } finally {
         		inputStream.close();
         	}
@@ -226,7 +226,7 @@ public class CapControlImportController {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
-	public String importHierarchyFile(HttpServletRequest request, LiteYukonUser user, ModelMap model, FlashScope flash) throws IOException {
+	public String hierarchyFile(HttpServletRequest request, LiteYukonUser user, ModelMap model, FlashScope flash) throws IOException {
 		List<HierarchyImportResult> results = Lists.newArrayList();
 		
 		MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest)request;
@@ -245,11 +245,11 @@ public class CapControlImportController {
         	} catch (CapControlHierarchyFileImporterException e) {
         		log.error(e.getMessage());
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.missingRequiredColumn", e.getColumns()));
-        		return "tools/capcontrolImport.jsp";
+        		return "import/capcontrolImport.jsp";
         	} catch (IllegalArgumentException e) {
         		log.error("Invalid column name found in import file: " + e.getMessage());
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.invalidColumns", e.getMessage()));
-        		return "tools/capcontrolImport.jsp";
+        		return "import/capcontrolImport.jsp";
         	} finally {
                 inputStream.close();
         	}
@@ -302,14 +302,5 @@ public class CapControlImportController {
 		
 		return resolvables;
 	}
-	
-	@Autowired
-	public void setCapControlImportService(CapControlImportService capControlImportService) {
-		this.capControlImportService = capControlImportService;
-	}
-	
-	@Autowired
-	public void setCapControlFileImporterDao(CapControlImporterFileDaoImpl capControlFileImporterDao) {
-		this.capControlFileImporterDao = capControlFileImporterDao;
-	}
+
 }
