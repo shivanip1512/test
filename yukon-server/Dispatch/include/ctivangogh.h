@@ -98,7 +98,6 @@ private:
     UINT writeRawPointHistory(bool justdoit, int maxrowstowrite);
 
     int checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
-    void checkNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
     void checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig );
     INT getNumericLimitFromHighLow(int alarmOffset, int alarm);
 

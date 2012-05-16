@@ -604,12 +604,8 @@ CtiPointBase* PointFactory(Cti::RowReader &rdr)
     static const string pointtype = "pointtype";
     static const string pseudoflag = "pseudoflag";
 
-    INT    PtType;
-    INT    PseudoPt = FALSE;
     string rwsType;
     string rwsPseudo;
-
-    CtiPointBase *Point = NULL;
 
     rdr[pointtype]  >> rwsType;
     rdr[pseudoflag] >> rwsPseudo;
@@ -618,15 +614,16 @@ CtiPointBase* PointFactory(Cti::RowReader &rdr)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Creating a Point of type " << rwsType << endl;
     }
-    PtType = resolvePointType(rwsType);
+    const CtiPointType_t PtType = resolvePointType(rwsType);
 
     if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "  Is point a pseudo point? " << rwsPseudo << endl;
     }
-    std::transform(rwsPseudo.begin(), rwsPseudo.end(), rwsPseudo.begin(), tolower);
 
-    PseudoPt = (rwsPseudo == "y" ? TRUE : FALSE );
+    const bool PseudoPt = ciStringEqual(rwsPseudo, "y");
+
+    CtiPointBase *Point = NULL;
 
     switch(PtType)
     {

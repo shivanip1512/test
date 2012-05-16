@@ -83,8 +83,6 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
                 analog->setPointOffset(offset);
                 analog->setDeviceID(reinterpret_cast<long>(&points));
                 analog->setID(point_count);
-                analog->setMultiplier(1);
-                analog->setDataOffset(0);
                 point.reset(analog);
             }
             break;
@@ -96,8 +94,6 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
                 accumulator->setPointOffset(offset);
                 accumulator->setDeviceID(reinterpret_cast<long>(&points));
                 accumulator->setID(point_count);
-                accumulator->setMultiplier(1);
-                accumulator->setDataOffset(0);
                 point.reset(accumulator);
             }
             break;

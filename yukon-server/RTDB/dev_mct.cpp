@@ -1553,7 +1553,7 @@ INT MctDevice::executePutValue(CtiRequestMsg *pReq,
 
             CtiPointSPtr tmpPoint = getDevicePointOffsetTypeEqual(parse.getiValue("kyz_offset"), PulseAccumulatorPointType);
 
-            if( tmpPoint && tmpPoint->isA() == PulseAccumulatorPointType)
+            if( tmpPoint && tmpPoint->getType() == PulseAccumulatorPointType)
             {
                 rawPulses = (int)(reading / boost::static_pointer_cast<CtiPointAccumulator>(tmpPoint)->getMultiplier());
             }
@@ -2699,7 +2699,7 @@ INT MctDevice::executeControl(CtiRequestMsg *pReq,
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         outList.push_back( OutMessage );
-        
+
         OutMessage = NULL;
     }
 

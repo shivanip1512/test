@@ -11,12 +11,12 @@
 #include "queue.h"
 #include "rtdb.h"
 #include "tbl_rawpthistory.h"
+#include "tbl_pt_property.h"
 
 // Forward Declarations
 class CtiSignalMsg;
 class CtiConnectionManager;
 class CtiPointRegistrationMsg;
-
 
 class IM_EX_CTIVANGOGH CtiPointClientManager : public CtiPointManager
 {

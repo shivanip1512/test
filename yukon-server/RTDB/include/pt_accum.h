@@ -27,12 +27,6 @@ public:
    _pointHistory(NULL)
    {}
 
-   CtiPointAccumulator(const CtiPointAccumulator& aRef) :
-   _pointHistory(NULL)
-   {
-      *this = aRef;
-   }
-
    virtual ~CtiPointAccumulator()
    {
       if(_pointHistory != NULL && _pointHistory->isDirty())
@@ -41,13 +35,10 @@ public:
          {
             if( ! _pointHistory->Insert() )     // Maybe it doesn't exist... Try this then bail
             {
-
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-                  dout << "**** ERROR **** Unable to insert dynamic accumulator data for " << getName() << std::endl;
-                  dout << "     ERROR **** " << FO(__FILE__) << " (" << __LINE__ << ")" <<std::endl;
-               }
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+               dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+               dout << "**** ERROR **** Unable to insert dynamic accumulator data for " << getName() << std::endl;
+               dout << "     ERROR **** " << FO(__FILE__) << " (" << __LINE__ << ")" <<std::endl;
             }
          }
       }
@@ -59,26 +50,7 @@ public:
 
    }
 
-
-   CtiPointAccumulator& operator=(const CtiPointAccumulator& aRef)
-   {
-      if(this != &aRef)
-      {
-         Inherited::operator=(aRef);
-         _pointAccumulator = aRef.getPointAccum();
-
-         if(_pointHistory != NULL)
-         {
-            delete _pointHistory;
-         }
-         _pointHistory = NULL;
-      }
-
-      return *this;
-   }
-
-   CtiTablePointAccumulator  getPointAccum() const       { return _pointAccumulator;}
-   CtiTablePointAccumulator& getPointAccum()             { return _pointAccumulator;}
+   const CtiTablePointAccumulator &getPointAccum() const  { return _pointAccumulator; }
 
    CtiTablePointAccumulatorHistory& getPointHistory()
    {
@@ -88,9 +60,6 @@ public:
 
    virtual DOUBLE       getMultiplier() const         { return _pointAccumulator.getMultiplier();}
    virtual DOUBLE       getDataOffset() const         { return _pointAccumulator.getDataOffset();}
-
-   virtual void         setMultiplier(DOUBLE d)       { _pointAccumulator.setMultiplier(d);}
-   virtual void         setDataOffset(DOUBLE d)       { _pointAccumulator.setDataOffset(d);}
 
    static std::string getSQLCoreStatement()
    {
@@ -107,32 +76,15 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
    {
-       //if(isA(rdr))
+      Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+       if(getDebugLevel() & DEBUGLEVEL_DATABASE)
        {
-          Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
-          if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-          {
-             CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-          }
-
-          _pointAccumulator.DecodeDatabaseReader(rdr);
+          CtiLockGuard<CtiLogger> doubt_guard(dout);
+          dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
        }
-       /*else
-       {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " cannot decode this rdr " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
-       }*/
-   }
 
-   virtual void DumpData()
-   {
-      Inherited::DumpData();       // get the base class handled
-      _pointAccumulator.dump();
+       _pointAccumulator.DecodeDatabaseReader(rdr);
    }
-
 
    void validatePointHistory()
    {
@@ -159,9 +111,8 @@ public:
 };
 
 
-class IM_EX_PNTDB Test_CtiPointAccumulator : public CtiPointAccumulator
+struct IM_EX_PNTDB Test_CtiPointAccumulator : public CtiPointAccumulator
 {
-public:
     void setPointOffset( int  offset   )  {  _pointBase.setPointOffset(offset);   }
     void setID         ( long id       )  {  _pointBase.setID(id);                }
     void setDeviceID   ( long deviceid )  {  _pointBase.setPAObjectID(deviceid);  }

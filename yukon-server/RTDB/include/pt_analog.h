@@ -24,28 +24,11 @@ public:
 
    CtiPointAnalog() {}
 
-   CtiPointAnalog(const CtiPointAnalog& aRef)
-   {
-      *this = aRef;
-   }
-
-   CtiPointAnalog& operator=(const CtiPointAnalog& aRef)
-   {
-      if(this != &aRef)
-      {
-         Inherited::operator=(aRef);
-         _pointAnalog      = aRef.getPointAnalog();
-      }
-
-      return *this;
-   }
-
-   CtiTablePointAnalog     getPointAnalog() const      { return _pointAnalog; }
-   CtiTablePointAnalog&    getPointAnalog()            { return _pointAnalog; }
+   const CtiTablePointAnalog &getPointAnalog() const  { return _pointAnalog; }
 
    static std::string getSQLCoreStatement()
    {
-      static const std::string sql =  
+      static const std::string sql =
          "SELECT PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, "
             "PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, "
             "PT.archiveinterval, UNT.uomid, UNT.decimalplaces, UNT.decimaldigits, UM.calctype, "
@@ -74,26 +57,15 @@ public:
       return Inherited::adjustStaticTags(tag);
    }
 
-   virtual void DumpData()
-   {
-      Inherited::DumpData();       // get the base class handled
-      _pointAnalog.dump();
-   }
-
    DOUBLE               getDeadband() const           { return _pointAnalog.getDeadband(); }
 
    virtual DOUBLE       getMultiplier() const         { return _pointAnalog.getMultiplier(); }
    virtual DOUBLE       getDataOffset() const         { return _pointAnalog.getDataOffset(); }
-
-   virtual void         setMultiplier(DOUBLE d)       { _pointAnalog.setMultiplier(d); }
-   virtual void         setDataOffset(DOUBLE d)       { _pointAnalog.setDataOffset(d); }
-
 };
 
 
-class IM_EX_PNTDB Test_CtiPointAnalog : public CtiPointAnalog
+struct IM_EX_PNTDB Test_CtiPointAnalog : public CtiPointAnalog
 {
-public:
     void setPointOffset( int  offset   )  {  _pointBase.setPointOffset(offset);   }
     void setID         ( long id       )  {  _pointBase.setID(id);                }
     void setDeviceID   ( long deviceid )  {  _pointBase.setPAObjectID(deviceid);  }

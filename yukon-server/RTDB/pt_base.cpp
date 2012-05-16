@@ -6,92 +6,31 @@
 
 using std::string;
 
-CtiPointBase::~CtiPointBase()
-{
-}
-
 bool CtiPointBase::isNumeric() const
 {
-    bool bNumeric = false;
-
     switch(getType())
     {
-    case AnalogPointType:
-    case PulseAccumulatorPointType:
-    case DemandAccumulatorPointType:
-    case CalculatedPointType:
-    case AnalogOutputPointType:
+        case AnalogPointType:
+        case PulseAccumulatorPointType:
+        case DemandAccumulatorPointType:
+        case CalculatedPointType:
+        case AnalogOutputPointType:
         {
-            bNumeric = true;
-            break;
-        }
-    case SystemPointType:
-    case StatusOutputPointType:
-    case StatusPointType:
-    case CalculatedStatusPointType:
-    case InvalidPointType:               // Place Holder - allows point type looping.
-    default:
-        {
-            break;
+            return true;
         }
     }
 
-    return bNumeric;
+    return false;
 }
 
 bool CtiPointBase::isStatus() const
 {
-    bool bStatus = false;
-
-    switch(getType())
-    {
-    case AnalogPointType:
-    case PulseAccumulatorPointType:
-    case DemandAccumulatorPointType:
-    case CalculatedPointType:
-    case AnalogOutputPointType:
-        {
-            break;
-        }
-    case SystemPointType:
-    case StatusOutputPointType:
-    case StatusPointType:
-    case CalculatedStatusPointType:
-    case InvalidPointType:               // Place Holder - allows point type looping.
-    default:
-        {
-            bStatus = true;
-            break;
-        }
-    }
-
-    return bStatus;
+    return ! isNumeric();
 }
 
 CtiPointBase::CtiPointBase(LONG pid) :
     _pointBase(pid)
 {}
-
-// Copy constructor.....
-CtiPointBase::CtiPointBase(const CtiPointBase& aRef) :
-    _pointBase(-1)
-{
-    *this = aRef;
-}
-
-
-CtiPointBase& CtiPointBase::operator=(const CtiPointBase& aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        {
-            _pointBase = aRef._pointBase;
-        }
-    }
-
-    return *this;
-}
 
 string CtiPointBase::getSQLCoreStatement()
 {
@@ -104,11 +43,6 @@ void CtiPointBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     setUpdatedFlag();
     setValid();
-}
-
-void CtiPointBase::DumpData()
-{
-    _pointBase.dump();
 }
 
 
@@ -129,24 +63,11 @@ BOOL              CtiPointBase::isAlarmDisabled() const          { return _point
 
 BOOL              CtiPointBase::isPseudoPoint() const            { return _pointBase.getPseudoTag();}
 
-BOOL              CtiPointBase::isArchivePending() const         { return _pointBase.getArchivePending();}
-
 CtiPointType_t    CtiPointBase::getType() const                  { return _pointBase.getType();}
-CtiPointType_t    CtiPointBase::isA() const                      { return _pointBase.getType();}
-
 
 void CtiPointBase::setType(CtiPointType_t type)
 {
     _pointBase.setType(type);
-}
-
-void CtiPointBase::setArchivePending(BOOL b)
-{
-    _pointBase.setArchivePending(b);
-}
-void CtiPointBase::resetArchivePending(BOOL b)
-{
-    _pointBase.setArchivePending(b);
 }
 
 UINT CtiPointBase::adjustStaticTags(UINT &tag) const
@@ -159,17 +80,7 @@ UINT CtiPointBase::getStaticTags()
     return _pointBase.getStaticTags();
 }
 
-bool CtiPointBase::isAbnormal( double value )
-{
-    return false;
-}
-
 double CtiPointBase::getDefaultValue( ) const
-{
-    return 0.0;
-}
-
-double CtiPointBase::getInitialValue( ) const
 {
     return 0.0;
 }
@@ -177,21 +88,5 @@ double CtiPointBase::getInitialValue( ) const
 int CtiPointBase::getControlExpirationTime() const
 {
     return 300;
-}
-
-/*
- * This method makes certain this object should be able to decode with this reader.
- */
-bool CtiPointBase::isA(Cti::RowReader &rdr) const
-{
-    bool I_is = false;
-    int pttype;
-    string rwsType = "(none)";
-
-    rdr["pointtype"]  >> rwsType;
-    pttype = resolvePointType(rwsType);
-    if(pttype == getType()) I_is = true;
-
-    return I_is;
 }
 

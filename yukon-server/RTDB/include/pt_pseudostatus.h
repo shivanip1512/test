@@ -51,10 +51,4 @@ public:
       }
       _pointStatus.DecodeDatabaseReader(rdr);
    }
-
-   virtual void DumpData()
-   {
-      Inherited::DumpData();       // get the base class handled
-      _pointStatus.dump();
-   }
 };

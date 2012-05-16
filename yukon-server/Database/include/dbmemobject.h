@@ -1,5 +1,7 @@
 #pragma once
 
+#include <windef.h>
+
 class CtiMemDBObject
 {
 protected:

@@ -4171,11 +4171,6 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
 
                 switch(alarm)
                 {
-                case (CtiTablePointAlarming::rateOfChange):
-                    {
-                        checkNumericRateOfChange( alarm, pData, aWrap, pNumeric, pDyn, pSig );
-                        break;
-                    }
                 case (CtiTablePointAlarming::limit0):
                 case (CtiTablePointAlarming::limit1):
                 case (CtiTablePointAlarming::limitLow0):
@@ -4196,6 +4191,7 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
                 case (CtiTablePointAlarming::highReasonability):    // These conditions must be evaluated prior to the for loop.  The may modify pData.
                 case (CtiTablePointAlarming::lowReasonability):     // These conditions must be evaluated prior to the for loop.  The may modify pData.
                 case (CtiTablePointAlarming::staleNumeric): //This is haneled externally, look for processStalePoint(...)
+                case (CtiTablePointAlarming::rateOfChange):
                 default:
                     {
                         break;
@@ -6322,68 +6318,6 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
 
 
     return alarm;
-}
-
-void CtiVanGogh::checkNumericRateOfChange(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig )
-{
-    bool balarm = false;
-
-    if(pDyn && pointNumeric->getRateOfChange() >= 0)
-    {
-        double curval = pDyn->getDispatch().getValue();
-        double delta = curval * (double) pointNumeric->getRateOfChange() / 100.0;
-
-        char tstr[80];
-
-        if( pData->getValue() < curval - delta )
-        {
-            // We've lost too much too fast.
-            _snprintf(tstr, sizeof(tstr), "ROC - Value decreased > %d%% from %.3f", pointNumeric->getRateOfChange(), curval);
-            balarm = true;
-        }
-        else if( pData->getValue() > curval + delta )
-        {
-            // We've gained too much too fast.
-            _snprintf(tstr, sizeof(tstr), "ROC - Value increased > %d%% from %.3f", pointNumeric->getRateOfChange(), curval);
-            balarm = true;
-        }
-
-        if(balarm)
-        {
-            if(!_signalManager.isAlarmed(pointNumeric->getID(), alarm) && !pDyn->isConditionActive(alarm))
-            {
-                if(gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** RATE OF CHANGE Violation **** Point: " << pointNumeric->getID() << " " << tstr << endl;
-                }
-
-                const CtiTablePointAlarming &alarming = PointMgr.getAlarming(pointNumeric);
-
-                // OK, we have an actual alarm condition to gripe about!
-                pSig = CTIDBG_new CtiSignalMsg(pointNumeric->getID(), pData->getSOE(), tstr, getAlarmStateName( alarming.getAlarmCategory(alarm) ), GeneralLogType, alarming.getAlarmCategory(alarm), pData->getUser());
-                pSig->setPointValue(pData->getValue());
-
-                if(pSig)
-                {
-                    tagSignalAsAlarm(pointNumeric, pSig, alarm, pData);
-                    updateDynTagsForSignalMsg(pointNumeric,pSig,alarm,true);
-                    aWrap.getMulti()->insert( pSig );
-                    pSig = 0;
-                }
-            }
-            else if(!_signalManager.isAlarmActive(pointNumeric->getID(), alarm))
-            {
-                activatePointAlarm(alarm, aWrap, pointNumeric, pDyn, true);
-            }
-        }
-        else
-        {
-            activatePointAlarm(alarm,aWrap,pointNumeric,pDyn,false);
-        }
-    }
-
-    return;
 }
 
 void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiWrapper &aWrap, CtiPointNumericSPtr pointNumeric, CtiDynamicPointDispatchSPtr &pDyn, CtiSignalMsg *&pSig )

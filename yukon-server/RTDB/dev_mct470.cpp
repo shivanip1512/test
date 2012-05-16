@@ -2715,7 +2715,7 @@ INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
 
                         CtiPointSPtr tmpPoint = getDevicePointOffsetTypeEqual(offset, PulseAccumulatorPointType);
 
-                        if( tmpPoint && tmpPoint->isA() == PulseAccumulatorPointType)
+                        if( tmpPoint && tmpPoint->getType() == PulseAccumulatorPointType)
                         {
                             pulses = (long)(dial / (boost::static_pointer_cast<CtiPointAccumulator>(tmpPoint)->getMultiplier()));
                         }

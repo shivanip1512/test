@@ -611,7 +611,6 @@ tbl_pt_base.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h dsm2err.h \
 		words.h optional.h dbmemobject.h dbaccess.h desolvers.h \
 		pointdefs.h
-tbl_pt_calc.obj:	precompiled.h tbl_pt_calc.h
 tbl_pt_control.obj:	precompiled.h tbl_pt_control.h row_reader.h \
 		ctitime.h dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
