@@ -36,7 +36,7 @@
                         <div><cti:deviceName device="${device}"/></div>
                     </td>
                     <td>
-                        ${error.description}, ${error.porter}
+                        ${error.description} ${error.porter}
                     </td>
                     <td>
                         (${error.errorCode})

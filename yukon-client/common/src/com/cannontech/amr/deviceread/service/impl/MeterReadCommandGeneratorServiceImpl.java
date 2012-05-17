@@ -40,20 +40,22 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	    
 	    for (PaoMultiPointIdentifier pao : pointsToRead) {
 	        Set<CommandWrapper> minimalCommands = getMinimalCommandSet(pao.getPao(), pao.getPointIdentifiers());
-	        for (CommandWrapper wrapper : minimalCommands) {
-	            List<String> commandStringList = wrapper.getCommandDefinition().getCommandStringList();
-	            for (String commandStr : commandStringList) {
-	                
-	                CommandCallback commandCallback = callbackCache.get(commandStr);
-	                if (commandCallback == null) {
-	                    commandCallback = new PorterCommandCallback(commandStr);
-	                }
-	                
-	                CommandRequestDevice request = new CommandRequestDevice();
-	                request.setCommandCallback(commandCallback);
-	                request.setDevice(new SimpleDevice(pao.getPao()));
-	                result.add(request);
-	            }
+	        if(minimalCommands != null){
+				for (CommandWrapper wrapper : minimalCommands) {
+					List<String> commandStringList = wrapper.getCommandDefinition().getCommandStringList();
+					for (String commandStr : commandStringList) {
+
+						CommandCallback commandCallback = callbackCache.get(commandStr);
+						if (commandCallback == null) {
+							commandCallback = new PorterCommandCallback(commandStr);
+						}
+
+						CommandRequestDevice request = new CommandRequestDevice();
+						request.setCommandCallback(commandCallback);
+						request.setDevice(new SimpleDevice(pao.getPao()));
+						result.add(request);
+					}
+				}
 	        }
 	    }
 

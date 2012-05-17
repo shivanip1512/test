@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.annotation.Resource;
@@ -24,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.analysis.tablemodel.GroupCommanderFailureResultsModel;
 import com.cannontech.analysis.tablemodel.GroupCommanderSuccessResultsModel;
 import com.cannontech.clientutils.YukonLogManager;
@@ -36,8 +40,10 @@ import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.ResultResultExpiredException;
@@ -84,6 +90,8 @@ public class GroupCommanderController implements InitializingBean {
     private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private PaoCommandAuthorizationService commandAuthorizationService;
+    
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
     // available meter commands
     private List<LiteCommand> meterCommands;
@@ -341,8 +349,20 @@ public class GroupCommanderController implements InitializingBean {
     
     @RequestMapping({"errorsList", "successList"})
     public void results(String resultKey, ModelMap map) {
-        GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
-        
+        GroupCommandResult result = groupCommandExecutor.getResult(resultKey);  
+		
+        Map<SimpleDevice, SpecificDeviceErrorDescription> errors = result
+				.getCallback().getErrors();
+		if (!errors.isEmpty()) {
+			for (SimpleDevice device : errors.keySet()) {
+				if (device.getDeviceType().getPaoClass() == PaoClass.RFMESH && errors.get(device).getErrorCode() != 2000) {
+					DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(2000);
+					SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(error, null);
+					errors.put(device, deviceError);
+				}
+			}
+		}
+		
         map.addAttribute("result", result);
     }
 
