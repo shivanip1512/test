@@ -141,11 +141,9 @@ void CtiLMClientListener::sendMessageToClient(std::auto_ptr<CtiMessage> msg)
     {
         for each( CtiLMConnectionPtr conn in _connections )
         {
-            // replicate message makes a deep copy
             if( conn.get() == msg->getConnectionHandle() && conn->valid() )
             {
-                conn->WriteConnQue(msg.get());
-                msg.release();
+                conn->WriteConnQue(msg.release());
                 return;
             }
         }
