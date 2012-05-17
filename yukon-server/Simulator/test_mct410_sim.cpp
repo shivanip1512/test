@@ -21,14 +21,6 @@ struct testMct410Sim : Mct410Sim
     using Mct410Sim::DawnOfTime;
 };
 
-struct ConsumptionTestCase
-{
-    unsigned address;
-    CtiTime  startTime;
-    unsigned duration;
-    double   output;
-};
-
 struct ConsumptionValue
 {
     double value;
@@ -52,30 +44,6 @@ std::ostream& operator<<(std::ostream& out, const ConsumptionValue &v)
     out << v.value;
     return out;
 }
-
-struct HectoWattTestCase
-{
-    unsigned address;
-    CtiTime time;
-    unsigned value;
-};
-
-struct TablePointerTestCase
-{
-    CtiTime  time;
-    unsigned intervalSeconds;
-    unsigned output;
-};
-
-struct FrozenChannelOneTestCase
-{
-    unsigned address;
-    short peakDemand;
-    unsigned long frozenTime;
-    unsigned long frozenRead;
-    unsigned freezeCounter;
-    bytes output;
-};
 
 BOOST_AUTO_TEST_CASE( mct_consumption_multiplier )
 {
@@ -108,6 +76,14 @@ BOOST_AUTO_TEST_CASE( mct_consumption_multiplier )
 
 BOOST_AUTO_TEST_CASE( test_make_value_consumption )
 {
+    struct ConsumptionTestCase
+    {
+        unsigned address;
+        CtiTime  startTime;
+        unsigned duration;
+        double   output;
+    };
+
     const ConsumptionTestCase consumption_test_cases[] =
     {
         {   0, CtiTime(CtiDate(4, 4, 2012), 8, 0, 0), 3600,     6111679.02 },
@@ -137,6 +113,13 @@ BOOST_AUTO_TEST_CASE( test_make_value_consumption )
 
 BOOST_AUTO_TEST_CASE( test_get_hectowatt_hours )
 {
+    struct HectoWattTestCase
+    {
+        unsigned address;
+        CtiTime time;
+        unsigned value;
+    };
+
     const HectoWattTestCase hectoWatt_test_cases[] =
     {
         {   0, CtiTime(CtiDate(4, 4, 2012), 8, 0, 0),  753685 },
@@ -157,6 +140,13 @@ BOOST_AUTO_TEST_CASE( test_get_hectowatt_hours )
 
 BOOST_AUTO_TEST_CASE( test_get_table_pointer )
 {
+    struct TablePointerTestCase
+    {
+        CtiTime  time;
+        unsigned intervalSeconds;
+        unsigned output;
+    };
+
     const TablePointerTestCase table_pointer_test_cases[] =
     {
         { CtiTime(CtiDate(4, 4, 2012), 8, 0, 0), 3600, 62 },

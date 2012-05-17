@@ -619,7 +619,7 @@ void Mct410Sim::setLpInterval(unsigned interval_minutes)
 
 void Mct410Sim::setDemandInterval(unsigned interval_minutes)
 {
-    if( interval_minutes >= 0 && interval_minutes <= 60 )
+    if( interval_minutes <= 60 )
     {
         _memory.writeValueToMemoryMap(MM_DemandInterval, interval_minutes);
     }
@@ -627,7 +627,7 @@ void Mct410Sim::setDemandInterval(unsigned interval_minutes)
 
 void Mct410Sim::setVoltageDemandInterval(unsigned interval_minutes)
 {
-    if( interval_minutes >= 0 && interval_minutes <= 255 )
+    if( interval_minutes <= 255 )
     {
         _memory.writeValueToMemoryMap(MM_VoltageDemandInterval, interval_minutes);
     }
@@ -680,19 +680,15 @@ bytes Mct410Sim::getFrozenKwh()
     return formatFrozenKwh(frozenData, freezeCounter);
 }
 
+/**
+ * Precondition: frozenData must be exactly three bytes of data.
+ */
 bytes Mct410Sim::formatFrozenKwh(const bytes &frozenData, unsigned freezeCounter)
 {
     bytes data;
 
-    if (frozenData.size() == 3)
-    {
-        // Bytes 0-2:  Frozen Meter Read 1
-        data.insert(data.begin(), frozenData.begin(), frozenData.end());
-    }
-    else
-    {
-        data.insert(data.begin(), 3, 0x00);
-    }
+    // Bytes 0-2:  Frozen Meter Read 1
+    data.insert(data.begin(), frozenData.begin(), frozenData.end());
 
     // Byte 3: Freeze Counter
     data.insert(data.end(), freezeCounter);
@@ -847,13 +843,47 @@ bytes Mct410Sim::getAllRecentDemandReadings()
 
     int dynamicDemand = getDynamicDemand(_address, demandInterval, nowSeconds);
 
-    if( dynamicDemand > peakDemand )
-    {
-        // New peak demand value and timestamp
-        writeNewPeakDemand(dynamicDemand, nowSeconds);
-    }
+    // Check if we have a new peak demand...
+    const unsigned lastFreezeTimestamp = _memory.getValueFromMemoryMapLocation(MM_LastFreezeTimestamp, MML_LastFreezeTimestamp);
+
+    checkForNewPeakDemand(_address, demandInterval, lastFreezeTimestamp, peakDemand);
 
     return formatAllRecentDemandReadings(dynamicDemand);
+}
+
+void Mct410Sim::checkForNewPeakDemand(const unsigned address, const unsigned demandInterval, const unsigned lastFreezeTimestamp,
+                                      const short peakDemand) 
+{
+    double maxIntervalConsumption = 0;
+    unsigned maxIntervalTimestamp = 0;
+
+    // Align it to its following interval.
+    unsigned firstIntervalStart = lastFreezeTimestamp - (lastFreezeTimestamp % demandInterval) + demandInterval;
+    CtiTime now;
+
+    CtiTime intervalBegin(firstIntervalStart);
+
+    for( ; (intervalBegin.seconds() + demandInterval) < now.seconds() ; intervalBegin.addSeconds(demandInterval) )
+    {
+        // Calculate the consumption from the start point of the interval.
+        double intervalConsumption = makeValueConsumption(address, intervalBegin, demandInterval);
+
+        if( intervalConsumption > maxIntervalConsumption )
+        {
+            maxIntervalConsumption = intervalConsumption;
+
+            // Timestamp for the peak is the end of the interval.
+            maxIntervalTimestamp = intervalBegin.seconds() + demandInterval;
+        }
+    }
+
+    int peakDemandSinceFreeze = getDynamicDemand(address, demandInterval, maxIntervalTimestamp);
+
+    if( peakDemandSinceFreeze > peakDemand )
+    {
+        // New peak demand value and timestamp
+        writeNewPeakDemand(peakDemandSinceFreeze, maxIntervalTimestamp);
+    }
 }
 
 bytes Mct410Sim::formatAllRecentDemandReadings(const int dynamicDemand)
@@ -929,14 +959,14 @@ double Mct410Sim::getConsumptionMultiplier(const unsigned address)
 }
 
 //  The consumption value is constructed using the current time and meter address.
-double Mct410Sim::makeValueConsumption(const unsigned address, const CtiTime time, const unsigned duration)
+double Mct410Sim::makeValueConsumption(const unsigned address, const CtiTime consumptionTime, const unsigned duration)
 {
     if( duration == 0 )  return 0;
 
     const double consumption_multiplier = getConsumptionMultiplier(address);
 
-    const unsigned begin_seconds = time.seconds();
-    const unsigned end_seconds   = time.seconds() + duration;
+    const unsigned begin_seconds = consumptionTime.seconds();
+    const unsigned end_seconds   = consumptionTime.seconds() + duration;
 
     const double year_period = 2.0 * Pi / static_cast<double>(SecondsPerYear);
     const double day_period  = 2.0 * Pi / static_cast<double>(SecondsPerDay);
@@ -953,7 +983,7 @@ double Mct410Sim::makeValueConsumption(const unsigned address, const CtiTime tim
 
 //  TODO-P3: move all value computation into policy classes
     return (amp_year * (duration + year_period_reciprocal * (sin(begin_seconds * year_period) - sin(end_seconds * year_period))) +
-           amp_day  * (duration + day_period_reciprocal  * (sin(begin_seconds * day_period)  - sin(end_seconds * day_period)))) * consumption_multiplier;
+            amp_day  * (duration + day_period_reciprocal  * (sin(begin_seconds * day_period)  - sin(end_seconds * day_period)))) * consumption_multiplier;
 }
 
 //  Generate output using two cosine waves - 1 year period and 1 day period.
@@ -990,7 +1020,7 @@ bytes Mct410Sim::getLongLoadProfile(const unsigned offset)
 {
     unsigned lpIntervalSeconds = getLpIntervalSeconds();
 
-    return formatLongLoadProfile(offset, _address, _llp_interest.time, _llp_interest.channel, lpIntervalSeconds);
+    return formatLongLoadProfile(offset, _address, _llp_interest.c_time, _llp_interest.channel, lpIntervalSeconds);
 }
 
 bytes Mct410Sim::formatLongLoadProfile(const unsigned offset, const unsigned address, const CtiTime periodOfInterest,
@@ -1103,7 +1133,7 @@ void Mct410Sim::putPointOfInterest(const bytes &payload)
     tmp_time |= payload[4] <<  8;
     tmp_time |= payload[5];
 
-    _llp_interest.time = tmp_time;
+    _llp_interest.c_time = tmp_time;
 }
 
 bytes Mct410Sim::getValueVectorFromMemory(unsigned pos, unsigned length)
@@ -1117,10 +1147,10 @@ void Mct410Sim::clearEventFlags()
     _memory.writeValueToMemoryMap(MM_MeterAlarms1, 0x00);
 }
 
-unsigned Mct410Sim::getTablePointer(const CtiTime time, unsigned intervalSeconds)
+unsigned Mct410Sim::getTablePointer(const CtiTime c_time, unsigned intervalSeconds)
 {
     //  LP table pointer, see SSPEC-S01029 MCT-410.doc, 8.12.1, page 82
-    return ((time.seconds() / intervalSeconds) % 96) + 1;
+    return ((c_time.seconds() / intervalSeconds) % 96) + 1;
 }
 
 }

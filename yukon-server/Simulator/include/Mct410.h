@@ -64,7 +64,7 @@ private:
     {
         llp_interest_t() : channel(1) { };
 
-        CtiTime time;
+        CtiTime c_time;
         unsigned channel;
 
     } _llp_interest;
@@ -99,6 +99,8 @@ private:
     void setVoltageLpInterval(unsigned interval_minutes);
 
     unsigned getLpIntervalSeconds();
+    void checkForNewPeakDemand(const unsigned address, const unsigned demandInterval, const unsigned lastFreezeTimestamp, 
+                               const short peakDemand);
 
     bytes getFrozenKwh();
     bytes getAllFrozenChannel1Readings();
@@ -119,7 +121,7 @@ private:
 
     enum Numerics
     {
-        SecondsPerMinute =     60,
+        SecondsPerMinute =       60,
         SecondsPerHour   =     3600,
         SecondsPerDay    =    86400,
         SecondsPerYear   = 31556926,
@@ -235,7 +237,7 @@ private:
     bytes processRead (bool function, unsigned function_code, Logger &logger);
     bool  processWrite(bool function, unsigned function_code, bytes data);
 
-    static unsigned int mctGetValue(int mctAddress, CtiTime time);
+    static unsigned int mctGetValue(int mctAddress, CtiTime c_time);
     unsigned char *getLongLoadProfileData(int function, int bytesToReturn);
 
 public:
@@ -251,11 +253,11 @@ public:
 protected:
     static const CtiTime DawnOfTime;
 
-    static unsigned getTablePointer(const CtiTime time, unsigned intervalSeconds);
+    static unsigned getTablePointer(const CtiTime c_time, unsigned intervalSeconds);
 
     // Moved to protected for unit testing.
     static double getConsumptionMultiplier(const unsigned address);
-    static double makeValueConsumption    (const unsigned address, const CtiTime time, const unsigned duration);
+    static double makeValueConsumption    (const unsigned address, const CtiTime consumptionTime, const unsigned duration);
 
     static unsigned getHectoWattHours(const unsigned address, const CtiTime c_time);
 
