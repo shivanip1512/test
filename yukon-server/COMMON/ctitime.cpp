@@ -6,6 +6,7 @@
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <utility>
 #include <rw/rwtime.h>
+#include <locale>
 
 #include "ctidate.h"
 #include "ctitime.h"
@@ -388,7 +389,7 @@ unsigned long CtiTime::toRwSeconds() const
 }
 
 
-string CtiTime::asString()  const
+string CtiTime::asString(timeFormat type)  const
 {
     if(!isValid()){
         return string("not-a-time");
@@ -398,46 +399,68 @@ string CtiTime::asString()  const
         return string("pos-infinity");
     }
 
+    tm * time;
+    if(type == LOCAL_TIMEZONE)
+    {
+        time = localtime(&_seconds); 
+    } else
+    {
+        time = gmtime(&_seconds);
+    }
+
     //  date format "mm/dd/yyyy HH:MM:SS" - 19 chars needed, plus null
     char time_str[20];
 
-    strftime(time_str, 20, "%m/%d/%Y %H:%M:%S", localtime(&_seconds));
+    strftime(time_str, 20, "%m/%d/%Y %H:%M:%S", time);
     time_str[19] = 0;
+    string timeString = string(time_str);
+    
+    if(type == LOCAL_TIMEZONE)
+    {
+        std::wstring wideTimeZoneName;
+        string timeZoneName;
 
-#if 0
-    std::stringstream ss;
-    ss.imbue(std::locale::classic());
-    ss << s;
-    return ss.str();
-#else
-    return string(time_str);
-#endif
+        _TIME_ZONE_INFORMATION tzinfo;
+        GetTimeZoneInformation(&tzinfo);
+        
+        if(time->tm_isdst)
+        {
+            wideTimeZoneName = tzinfo.DaylightName;
+        }else{
+            wideTimeZoneName = tzinfo.StandardName;
+        }
+
+        //Convert std::wstring to std::string
+        std::locale locale = std::locale("");
+        std::string strBuffer(wideTimeZoneName.size() *4 +1, 0);
+        std::use_facet<std::ctype<wchar_t> >(locale).narrow(&wideTimeZoneName[0], &wideTimeZoneName[0] + wideTimeZoneName.size(), '?', &strBuffer[0]);
+        timeZoneName = std::string(&strBuffer[0]);
+
+        //Convert "Central Standard Time" to "CDT" 
+        remove_if(timeZoneName.begin(), timeZoneName.end(), islower);
+        remove_if(timeZoneName.begin(), timeZoneName.end(), isspace);
+        int len = timeZoneName.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+        timeZoneName.resize(len);
+
+        timeString = timeString + " " + timeZoneName;
+    }
+
+    if(type == GMT_TIMEZONE)
+    {
+        timeString = timeString + " GMT";
+    }
+
+    return timeString;
 }
 
-string CtiTime::asGMTString()  const
+string CtiTime::asString() const
 {
-    if(!isValid()){
-        return string("not-a-time");
-    } else if(is_neg_infinity()){
-        return string("neg-infinity");
-    } else if(is_pos_infinity()){
-        return string("pos-infinity");
-    }
+    return asString(LOCAL_TIMEZONE);
+}
 
-    //  date format "mm/dd/yyyy HH:MM:SS" - 19 chars needed, plus null
-    char time_str[20];
-
-    strftime(time_str, 20, "%m/%d/%Y %H:%M:%S", gmtime(&_seconds));
-    time_str[19] = 0;
-
-#if 0
-    std::stringstream ss;
-    ss.imbue(std::locale::classic());
-    ss << s;
-    return ss.str();
-#else
-    return string(time_str);
-#endif
+string CtiTime::asGMTString() const
+{
+    return asString(GMT_TIMEZONE);
 }
 
 struct tm* CtiTime::gmtime_r(const time_t *tod){
@@ -477,14 +500,6 @@ CtiTime CtiTime::endDST(unsigned int year)
     boost::gregorian::date d = us_dst_rules::local_dst_end_day(year);
     boost::posix_time::time_duration td = us_dst_rules::dst_offset();
     return CtiTime(CtiDate(d.day(), d.month(), d.year()), td.hours(), td.minutes(), td.seconds()) - SECONDS_PER_MINUTE*MINUTES_PER_HOUR;
-}
-
-
-long CtiTime::findTZ()
-{
-    char *tz;
-    tz = getenv( "TZ" );
-    return timezone;
 }
 
 

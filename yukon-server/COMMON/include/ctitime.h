@@ -13,9 +13,10 @@ typedef time_t ctitime_t;
 
 class IM_EX_CTIBASE CtiTime{
 private:
+    enum timeFormat{LOCAL_TIMEZONE, GMT_TIMEZONE};
     ctitime_t maketm(const CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
     ctitime_t _seconds;
-
+    std::string asString(timeFormat type) const;
 
     //boost::mutex _secs_mutex;
 public:
@@ -71,7 +72,6 @@ public:
     void resetToNow();
     static CtiTime beginDST(unsigned year);
     static CtiTime endDST(unsigned int builyear);
-    static long findTZ();
     static struct tm* gmtime_r(const time_t *tod);
     static struct tm* localtime_r(const time_t *tod);
 
