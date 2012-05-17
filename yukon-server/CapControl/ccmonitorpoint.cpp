@@ -25,7 +25,10 @@
 #include "database_writer.h"
 
 using namespace std;
+
 extern unsigned long _CC_DEBUG;
+
+using Cti::CapControl::setVariableIfDifferent;
 
 RWDEFINE_COLLECTABLE( CtiCCMonitorPoint, CTICCMONITORPOINT_ID )
 
@@ -191,13 +194,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setDeviceId(long devId)
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setValue(double value)
 {
-    if (_value != value)
-    {
-        _dirty = true;
-    }
-    _value = value;
-
-    //do not notify observers of this !
+    _dirty |= setVariableIfDifferent(_value, value);
     return *this;
 }
 
@@ -208,13 +205,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setValue(double value)
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setDisplayOrder(long displayOrder)
 {
-    if (_displayOrder != displayOrder)
-    {
-        _dirty = true;
-    }
-    _displayOrder = displayOrder;
-
-    //do not notify observers of this !
+    _dirty |= setVariableIfDifferent(_displayOrder, displayOrder);
     return *this;
 }
 
@@ -225,13 +216,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setDisplayOrder(long displayOrder)
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setScannable(bool flag)
 {
-    if (_scannable != flag)
-    {
-        _dirty = true;
-    }
-    _scannable = flag;
-
-    //do not notify observers of this !
+    _dirty |= setVariableIfDifferent(_scannable, flag);
     return *this;
 }
 
@@ -242,13 +227,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setScannable(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setNInAvg(long n)
 {
-    if (_nInAvg != n)
-    {
-        _dirty = true;
-    }
-    _nInAvg = n;
-
-    //do not notify observers of this !
+    _dirty |= setVariableIfDifferent(_nInAvg, n);
     return *this;
 }
 
@@ -259,13 +238,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setNInAvg(long n)
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setUpperBandwidth(double upperBW)
 {
-    if (_upperBW != upperBW)
-    {
-        _dirty = true;
-    }
-    _upperBW = upperBW;
-
-    //do not notify observers of this !
+    _dirty |= setVariableIfDifferent(_upperBW, upperBW);
     return *this;
 }
 
@@ -276,13 +249,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setUpperBandwidth(double upperBW)
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setLowerBandwidth(double lowerBW)
 {
-    if (_lowerBW != lowerBW)
-    {
-        _dirty = true;
-    }
-    _lowerBW = lowerBW;
-
-    //do not notify observers of this !
+    _dirty |= setVariableIfDifferent(_lowerBW, lowerBW);
     return *this;
 }
 
@@ -293,12 +260,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setLowerBandwidth(double lowerBW)
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setTimeStamp(CtiTime timeStamp)
 {
-    if (_timeStamp != timeStamp)
-    {
-        _dirty = true;
-    }
-    _timeStamp = timeStamp;
-    //do not notify observers of this !
+    _dirty |= setVariableIfDifferent(_timeStamp, timeStamp);
     return *this;
 }
 
@@ -309,13 +271,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::setTimeStamp(CtiTime timeStamp)
 ---------------------------------------------------------------------------*/
 CtiCCMonitorPoint& CtiCCMonitorPoint::setScanInProgress(bool flag)
 {
-    if (_scanInProgress != flag)
-    {
-        _dirty = true;
-    }
-    _scanInProgress = flag;
-
-    //do not notify observers of this !
+    _dirty |= setVariableIfDifferent(_scanInProgress, flag);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -438,10 +394,6 @@ void CtiCCMonitorPoint::restore(Cti::RowReader& rdr)
     _timeStamp = CtiTime();
     _scanInProgress = false;
     _insertDynamicDataFlag = true;
-    /*{
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }*/
     _dirty = true;
 
 }
@@ -589,12 +541,7 @@ Cti::CapControl::Phase  CtiCCMonitorPoint::getPhase() const
 
 CtiCCMonitorPoint &  CtiCCMonitorPoint::setPhase( const Cti::CapControl::Phase & phase )
 {
-    if ( _phase != phase )
-    {
-        _phase = phase;
-        _dirty = true;
-    }
-
+    _dirty |= setVariableIfDifferent(_phase, phase);
     return *this;
 }
 

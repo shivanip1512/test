@@ -28,6 +28,7 @@
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointResponseManager;
 using Cti::CapControl::createPorterRequestMsg;
+using Cti::CapControl::setVariableIfDifferent;
 using std::endl;
 
 extern unsigned long _CC_DEBUG;
@@ -888,11 +889,8 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointId(long currentvarid)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointValue(double currentvarval, CtiTime timestamp)
 {
-    if( _currentvarloadpointvalue != currentvarval )
-    {
-        _dirty = true;
-    }
-    _currentvarloadpointvalue = currentvarval;
+    _dirty |= setVariableIfDifferent(_currentvarloadpointvalue, currentvarval);
+
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() ){
         regression.appendWithoutFill(std::make_pair((double)timestamp.seconds(),currentvarval));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
@@ -922,15 +920,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointId(long currentwattid)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentWattLoadPointValue(double currentwattval)
 {
-    if( _currentwattloadpointvalue != currentwattval )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentwattloadpointvalue = currentwattval;
+    _dirty |= setVariableIfDifferent(_currentwattloadpointvalue, currentwattval);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -951,15 +941,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVoltLoadPointId(long currentvoltid)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentVoltLoadPointValue(double currentvoltval)
 {
-    if( _currentvoltloadpointvalue != currentvoltval )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentvoltloadpointvalue = currentvoltval;
+    _dirty |= setVariableIfDifferent(_currentvoltloadpointvalue, currentvoltval);
     return *this;
 }
 
@@ -993,15 +975,7 @@ CtiCCFeeder& CtiCCFeeder::setDisplayOrder(float order)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setNewPointDataReceivedFlag(bool newpointdatareceived)
 {
-    if( _newpointdatareceivedflag != newpointdatareceived )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _newpointdatareceivedflag = newpointdatareceived;
+    _dirty |= setVariableIfDifferent(_newpointdatareceivedflag, newpointdatareceived);
     return *this;
 }
 
@@ -1012,15 +986,7 @@ CtiCCFeeder& CtiCCFeeder::setNewPointDataReceivedFlag(bool newpointdatareceived)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
 {
-    if( _lastcurrentvarpointupdatetime != lastpointupdate )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastcurrentvarpointupdatetime = lastpointupdate;
+    _dirty |= setVariableIfDifferent(_lastcurrentvarpointupdatetime, lastpointupdate);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1030,15 +996,7 @@ CtiCCFeeder& CtiCCFeeder::setLastCurrentVarPointUpdateTime(const CtiTime& lastpo
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setLastWattPointTime(const CtiTime& lastpointupdate)
 {
-    if( _lastWattPointTime != lastpointupdate )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastWattPointTime = lastpointupdate;
+    _dirty |= setVariableIfDifferent(_lastWattPointTime, lastpointupdate);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1048,15 +1006,7 @@ CtiCCFeeder& CtiCCFeeder::setLastWattPointTime(const CtiTime& lastpointupdate)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setLastVoltPointTime(const CtiTime& lastpointupdate)
 {
-    if( _lastVoltPointTime != lastpointupdate )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastVoltPointTime = lastpointupdate;
+    _dirty |= setVariableIfDifferent(_lastVoltPointTime, lastpointupdate);
     return *this;
 }
 
@@ -1079,15 +1029,7 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointId(long estimatedvarid)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setEstimatedVarLoadPointValue(double estimatedvarval)
 {
-    if( _estimatedvarloadpointvalue != estimatedvarval )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _estimatedvarloadpointvalue = estimatedvarval;
+    _dirty |= setVariableIfDifferent(_estimatedvarloadpointvalue, estimatedvarval);
     return *this;
 }
 
@@ -1137,10 +1079,6 @@ CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperationsAndSendMsg(long operations, C
         {
             pointChanges.push_back(new CtiPointDataMsg(getDailyOperationsAnalogPointId(),operations,NormalQuality,AnalogPointType));
         }
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = true;
     }
     _currentdailyoperations = operations;
@@ -1154,16 +1092,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperationsAndSendMsg(long operations, C
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperations(long operations)
 {
-    if( _currentdailyoperations != operations )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentdailyoperations = operations;
-
+    _dirty |= setVariableIfDifferent(_currentdailyoperations, operations);
     return *this;
 }
 
@@ -1175,15 +1104,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentDailyOperations(long operations)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setRecentlyControlledFlag(bool recentlycontrolled)
 {
-    if( _recentlycontrolledflag != recentlycontrolled )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _recentlycontrolledflag = recentlycontrolled;
+    _dirty |= setVariableIfDifferent(_recentlycontrolledflag, recentlycontrolled);
     return *this;
 }
 
@@ -1194,15 +1115,7 @@ CtiCCFeeder& CtiCCFeeder::setRecentlyControlledFlag(bool recentlycontrolled)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setLastOperationTime(const CtiTime& lastoperation)
 {
-    if( _lastoperationtime != lastoperation )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastoperationtime = lastoperation;
+    _dirty |= setVariableIfDifferent(_lastoperationtime,lastoperation);
     return *this;
 }
 
@@ -1213,15 +1126,7 @@ CtiCCFeeder& CtiCCFeeder::setLastOperationTime(const CtiTime& lastoperation)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setVarValueBeforeControl(double oldvarval)
 {
-    if( _varvaluebeforecontrol != oldvarval )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _varvaluebeforecontrol = oldvarval;
+    _dirty |= setVariableIfDifferent(_varvaluebeforecontrol, oldvarval);
 
     setPhaseAValueBeforeControl(getPhaseAValue());
     setPhaseBValueBeforeControl(getPhaseBValue());
@@ -1237,15 +1142,7 @@ CtiCCFeeder& CtiCCFeeder::setVarValueBeforeControl(double oldvarval)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setLastCapBankControlledDeviceId(long lastcapbank)
 {
-    if( _lastcapbankcontrolleddeviceid != lastcapbank )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastcapbankcontrolleddeviceid = lastcapbank;
+    _dirty |= setVariableIfDifferent(_lastcapbankcontrolleddeviceid, lastcapbank);
     return *this;
 }
 
@@ -1256,15 +1153,7 @@ CtiCCFeeder& CtiCCFeeder::setLastCapBankControlledDeviceId(long lastcapbank)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPowerFactorValue(double pfval)
 {
-    if( _powerfactorvalue != pfval )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _powerfactorvalue = pfval;
+    _dirty |= setVariableIfDifferent(_powerfactorvalue, pfval);
     return *this;
 }
 
@@ -1275,15 +1164,7 @@ CtiCCFeeder& CtiCCFeeder::setPowerFactorValue(double pfval)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setKVARSolution(double solution)
 {
-    if( _kvarsolution != solution )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _kvarsolution = solution;
+    _dirty |= setVariableIfDifferent(_kvarsolution, solution);
     return *this;
 }
 
@@ -1294,15 +1175,7 @@ CtiCCFeeder& CtiCCFeeder::setKVARSolution(double solution)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setEstimatedPowerFactorValue(double epfval)
 {
-    if( _estimatedpowerfactorvalue != epfval )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _estimatedpowerfactorvalue = epfval;
+    _dirty |= setVariableIfDifferent(_estimatedpowerfactorvalue, epfval);
     return *this;
 }
 
@@ -1313,15 +1186,7 @@ CtiCCFeeder& CtiCCFeeder::setEstimatedPowerFactorValue(double epfval)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentVarPointQuality(long cvpq)
 {
-    if( _currentvarpointquality != cvpq )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentvarpointquality = cvpq;
+    _dirty |= setVariableIfDifferent(_currentvarpointquality, cvpq);
     return *this;
 }
 
@@ -1332,15 +1197,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarPointQuality(long cvpq)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentWattPointQuality(long cwpq)
 {
-    if( _currentwattpointquality != cwpq )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentwattpointquality = cwpq;
+    _dirty |= setVariableIfDifferent(_currentwattpointquality, cwpq);
     return *this;
 }
 
@@ -1351,15 +1208,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentWattPointQuality(long cwpq)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setCurrentVoltPointQuality(long cvpq)
 {
-    if( _currentvoltpointquality != cvpq )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentvoltpointquality = cvpq;
+    _dirty |= setVariableIfDifferent(_currentvoltpointquality, cvpq);
     return *this;
 }
 
@@ -1370,15 +1219,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVoltPointQuality(long cvpq)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setWaiveControlFlag(bool waive)
 {
-    if( _waivecontrolflag != waive )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _waivecontrolflag = waive;
+    _dirty |= setVariableIfDifferent(_waivecontrolflag, waive);
     return *this;
 }
 
@@ -1389,11 +1230,7 @@ CtiCCFeeder& CtiCCFeeder::setWaiveControlFlag(bool waive)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setParentControlUnits(const string& parentControlUnits)
 {
-    if (_parentControlUnits != parentControlUnits)
-    {
-        _dirty = true;
-    }
-    _parentControlUnits = parentControlUnits;
+    _dirty |= setVariableIfDifferent(_parentControlUnits, parentControlUnits);
     return *this;
 }
 
@@ -1404,11 +1241,7 @@ CtiCCFeeder& CtiCCFeeder::setParentControlUnits(const string& parentControlUnits
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setParentName(const string& parentName)
 {
-    if (_parentName != parentName)
-    {
-        _dirty = true;
-    }
-    _parentName = parentName;
+    _dirty |= setVariableIfDifferent(_parentName, parentName);
     return *this;
 }
 
@@ -1420,11 +1253,7 @@ CtiCCFeeder& CtiCCFeeder::setParentName(const string& parentName)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setDecimalPlaces(long decimalPlaces)
 {
-    if (_decimalPlaces != decimalPlaces)
-    {
-        _dirty = true;
-    }
-    _decimalPlaces = decimalPlaces;
+    _dirty |= setVariableIfDifferent(_decimalPlaces, decimalPlaces);
     return *this;
 }
 
@@ -1435,41 +1264,25 @@ CtiCCFeeder& CtiCCFeeder::setDecimalPlaces(long decimalPlaces)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPeakTimeFlag(bool peakTimeFlag)
 {
-    if (_peakTimeFlag != peakTimeFlag)
-    {
-        _dirty = true;
-    }
-    _peakTimeFlag = peakTimeFlag;
+    _dirty |= setVariableIfDifferent(_peakTimeFlag, peakTimeFlag);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setPorterRetFailFlag(bool flag)
 {
-    if (_porterRetFailFlag != flag)
-    {
-        _dirty = true;
-    }
-    _porterRetFailFlag = flag;
+    _dirty |= setVariableIfDifferent(_porterRetFailFlag, flag);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setEventSequence(long eventSeq)
 {
-    if (_eventSeq != eventSeq)
-    {
-        _dirty = true;
-    }
-    _eventSeq = eventSeq;
+    _dirty |= setVariableIfDifferent(_eventSeq, eventSeq);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setMultiMonitorFlag(bool flag)
 {
-    if (_multiMonitorFlag != flag)
-    {
-        _dirty = true;
-    }
-    _multiMonitorFlag = flag;
+    _dirty |= setVariableIfDifferent(_multiMonitorFlag, flag);
     return *this;
 }
 
@@ -4907,60 +4720,43 @@ bool CtiCCFeeder::checkForAndPerformVerificationSendRetry(const CtiTime& current
    return returnBoolean;
 }
 
-
 CtiCCFeeder& CtiCCFeeder::setVerificationFlag(bool verificationFlag)
 {
     if( verificationFlag )
     {
         setVerificationDoneFlag(false);
     }
-    if (_verificationFlag != verificationFlag)
-        _dirty = true;
-    _verificationFlag = verificationFlag;
 
+    _dirty |= setVariableIfDifferent(_verificationFlag, verificationFlag);
     return *this;
 }
+
 CtiCCFeeder& CtiCCFeeder::setPerformingVerificationFlag(bool performingVerificationFlag)
 {
-    if (_performingVerificationFlag != performingVerificationFlag)
-        _dirty = true;
-    _performingVerificationFlag = performingVerificationFlag;
-
+    _dirty |= setVariableIfDifferent(_performingVerificationFlag, performingVerificationFlag);
     return *this;
 }
 CtiCCFeeder& CtiCCFeeder::setVerificationDoneFlag(bool verificationDoneFlag)
 {
-    if (_verificationDoneFlag != verificationDoneFlag)
-        _dirty = true;
-    _verificationDoneFlag = verificationDoneFlag;
-
+    _dirty |= setVariableIfDifferent(_verificationDoneFlag, verificationDoneFlag);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setPreOperationMonitorPointScanFlag( bool flag)
 {
-    if (_preOperationMonitorPointScanFlag != flag)
-        _dirty = true;
-    _preOperationMonitorPointScanFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_preOperationMonitorPointScanFlag, flag);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setOperationSentWaitFlag( bool flag)
 {
-    if (_operationSentWaitFlag != flag)
-        _dirty = true;
-    _operationSentWaitFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_operationSentWaitFlag, flag);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setPostOperationMonitorPointScanFlag( bool flag)
 {
-    if (_postOperationMonitorPointScanFlag != flag)
-        _dirty = true;
-    _postOperationMonitorPointScanFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_postOperationMonitorPointScanFlag, flag);
     return *this;
 }
 
@@ -4968,117 +4764,60 @@ CtiCCFeeder& CtiCCFeeder::setPostOperationMonitorPointScanFlag( bool flag)
 
 CtiCCFeeder& CtiCCFeeder::setWaitForReCloseDelayFlag(bool flag)
 {
-    if (_waitForReCloseDelayFlag != flag)
-        _dirty = true;
-    _waitForReCloseDelayFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_waitForReCloseDelayFlag, flag);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setMaxDailyOpsHitFlag(bool flag)
 {
-    if (_maxDailyOpsHitFlag != flag)
-        _dirty = true;
-    _maxDailyOpsHitFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_maxDailyOpsHitFlag, flag);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setOvUvDisabledFlag(bool flag)
 {
-    if (_ovUvDisabledFlag != flag)
-        _dirty = true;
-    _ovUvDisabledFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, flag);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setCorrectionNeededNoBankAvailFlag(bool flag)
 {
-    if (_correctionNeededNoBankAvailFlag != flag)
-        _dirty = true;
-    _correctionNeededNoBankAvailFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_correctionNeededNoBankAvailFlag, flag);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setLikeDayControlFlag(bool flag)
 {
-    if (_likeDayControlFlag != flag)
-        _dirty = true;
-    _likeDayControlFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_likeDayControlFlag, flag);
     return *this;
 }
 CtiCCFeeder& CtiCCFeeder::setLastVerificationMsgSentSuccessfulFlag(bool flag)
 {
-    if (_lastVerificationMsgSentSuccessful != flag)
-        _dirty = true;
-    _lastVerificationMsgSentSuccessful = flag;
-
+    _dirty |= setVariableIfDifferent(_lastVerificationMsgSentSuccessful, flag);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setCurrentVerificationCapBankId(long capBankId)
 {
-    if( _currentVerificationCapBankId != capBankId )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-
-    _currentVerificationCapBankId = capBankId;
-
+    _dirty |= setVariableIfDifferent(_currentVerificationCapBankId, capBankId);
     return *this;
 }
 CtiCCFeeder& CtiCCFeeder::setCurrentVerificationCapBankState(long status)
 {
-    if( _currentCapBankToVerifyAssumedOrigState != status )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-
-    _currentCapBankToVerifyAssumedOrigState = status;
-
+    _dirty |= setVariableIfDifferent(_currentCapBankToVerifyAssumedOrigState, status);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setTargetVarValue(double value)
 {
-    if( _targetvarvalue != value )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-
-    _targetvarvalue = value;
-
+    _dirty |= setVariableIfDifferent(_targetvarvalue, value);
     return *this;
 }
 
 CtiCCFeeder& CtiCCFeeder::setSolution(const string &text)
 {
-    if( _solution != text )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-
-    _solution = text;
-
+    string temp = text;
+    _dirty |= setVariableIfDifferent(_solution, temp);
     return *this;
 }
 
@@ -5089,15 +4828,7 @@ CtiCCFeeder& CtiCCFeeder::setSolution(const string &text)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIVControlTot(double value)
 {
-    if( _iVControlTot != value )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _iVControlTot = value;
+    _dirty |= setVariableIfDifferent(_iVControlTot, value);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -5107,15 +4838,7 @@ CtiCCFeeder& CtiCCFeeder::setIVControlTot(double value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIVCount(long value)
 {
-    if( _iVCount != value )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _iVCount = value;
+    _dirty |= setVariableIfDifferent(_iVCount, value);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -5125,15 +4848,7 @@ CtiCCFeeder& CtiCCFeeder::setIVCount(long value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIWControlTot(double value)
 {
-    if( _iWControlTot != value )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _iWControlTot = value;
+    _dirty |= setVariableIfDifferent(_iWControlTot, value);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -5143,15 +4858,7 @@ CtiCCFeeder& CtiCCFeeder::setIWControlTot(double value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIWCount(long value)
 {
-    if( _iWCount != value )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _iWCount = value;
+    _dirty |= setVariableIfDifferent(_iWCount, value);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -5161,16 +4868,7 @@ CtiCCFeeder& CtiCCFeeder::setIWCount(long value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIVControl(double value)
 {
-
-    if( _iVControl != value )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _iVControl = value;
+    _dirty |= setVariableIfDifferent(_iVControl, value);
     return *this;
 }/*---------------------------------------------------------------------------
     setIWControl
@@ -5179,15 +4877,7 @@ CtiCCFeeder& CtiCCFeeder::setIVControl(double value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIWControl(double value)
 {
-    if( _iWControl != value )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _iWControl = value;
+    _dirty |= setVariableIfDifferent(_iWControl, value);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -5242,11 +4932,8 @@ CtiCCFeeder& CtiCCFeeder::setTotalizedControlFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPhaseAValue(double value, CtiTime timestamp)
 {
-    if( _phaseAvalue != value )
-    {
-        _dirty = true;
-    }
-    _phaseAvalue = value;
+    _dirty |= setVariableIfDifferent(_phaseAvalue, value);
+
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
         regressionA.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
@@ -5265,11 +4952,8 @@ CtiCCFeeder& CtiCCFeeder::setPhaseAValue(double value, CtiTime timestamp)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPhaseBValue(double value, CtiTime timestamp)
 {
-    if( _phaseBvalue != value )
-    {
-        _dirty = true;
-    }
-    _phaseBvalue = value;
+    _dirty |= setVariableIfDifferent(_phaseBvalue, value);
+
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
         regressionB.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
@@ -5288,11 +4972,8 @@ CtiCCFeeder& CtiCCFeeder::setPhaseBValue(double value, CtiTime timestamp)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPhaseCValue(double value, CtiTime timestamp)
 {
-    if( _phaseCvalue != value )
-    {
-        _dirty = true;
-    }
-    _phaseCvalue = value;
+    _dirty |= setVariableIfDifferent(_phaseCvalue, value);
+
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
         regressionC.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
@@ -5338,11 +5019,7 @@ CtiCCFeeder& CtiCCFeeder::setPhaseCValueBeforeControl(double value)
 
 CtiCCFeeder& CtiCCFeeder::setRetryIndex(long value)
 {
-    if (_retryIndex != value)
-    {
-        _dirty = true;
-    }
-    _retryIndex = value;
+    _dirty |= setVariableIfDifferent(_retryIndex, value);
     return *this;
 }
 

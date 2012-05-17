@@ -15,6 +15,7 @@
 #include "precompiled.h"
 #include "ccoriginalparent.h"
 #include "ccid.h"
+#include "ccutil.h"
 #include "row_reader.h"
 #include "database_writer.h"
 
@@ -22,6 +23,8 @@ using std::endl;
 using std::string;
 
 extern unsigned long _CC_DEBUG;
+
+using Cti::CapControl::setVariableIfDifferent;
 
 
 CtiCCOriginalParent::CtiCCOriginalParent()
@@ -96,48 +99,28 @@ float CtiCCOriginalParent::getOriginalTripOrder() const
 
 void CtiCCOriginalParent::setPAOId(long paoId)
 {
-    if( _paoId != paoId )
-    {
-        _dirty = true;
-    }
-    _paoId = paoId;
+    _dirty |= setVariableIfDifferent(_paoId, paoId);
 }
 
 void CtiCCOriginalParent::setOriginalParentId(long parentId)
 {
-    if( _originalParentId != parentId )
-    {
-        _dirty = true;
-    }
-    _originalParentId = parentId;
+    _dirty |= setVariableIfDifferent(_originalParentId, parentId);
 }
 
 
 void CtiCCOriginalParent::setOriginalSwitchingOrder(float order)
 {
-    if( _originalSwitchingOrder != order )
-    {
-        _dirty = true;
-    }
-    _originalSwitchingOrder = order;
+    _dirty |= setVariableIfDifferent(_originalSwitchingOrder, order);
 }
 
 void CtiCCOriginalParent::setOriginalCloseOrder(float order)
 {
-    if( _originalCloseOrder != order )
-    {
-        _dirty = true;
-    }
-    _originalCloseOrder = order;
+    _dirty |= setVariableIfDifferent(_originalCloseOrder, order);
 }
 
 void CtiCCOriginalParent::setOriginalTripOrder(float order)
 {
-    if( _originalTripOrder != order )
-    {
-        _dirty = true;
-    }
-    _originalTripOrder = order;
+    _dirty |= setVariableIfDifferent(_originalTripOrder, order);
 }
 
 

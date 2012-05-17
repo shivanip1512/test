@@ -30,7 +30,7 @@ using Cti::CapControl::PointResponsePtr;
 using Cti::CapControl::PointIdVector;
 using Cti::CapControl::PointResponseKey;
 using Cti::CapControl::ConvertIntToVerificationStrategy;
-
+using Cti::CapControl::setVariableIfDifferent;
 using std::endl;
 using std::set;
 using std::make_pair;
@@ -1191,11 +1191,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setParentId(long parentId)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setParentControlUnits(const string& parentControlUnits)
 {
-    if (_parentControlUnits != parentControlUnits)
-    {
-        _dirty = true;
-    }
-    _parentControlUnits = parentControlUnits;
+    _dirty |= setVariableIfDifferent(_parentControlUnits, parentControlUnits);
     return *this;
 }
 
@@ -1206,11 +1202,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setParentControlUnits(const string& pare
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setParentName(const string& parentName)
 {
-    if (_parentName != parentName)
-    {
-        _dirty = true;
-    }
-    _parentName = parentName;
+    _dirty |= setVariableIfDifferent(_parentName, parentName);
     return *this;
 }
 
@@ -1231,12 +1223,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDisplayOrder(long displayOrder)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setIVControlTot(double value)
 {
-    if ( _iVControlTot != value)
-    {
-        _dirty = true;
-    }
-
-    _iVControlTot = value;
+    _dirty |= setVariableIfDifferent(_iVControlTot, value);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1246,11 +1233,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setIVControlTot(double value)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setIVCount(long value)
 {
-    if (_iVCount != value)
-    {
-        _dirty = true;
-    }
-    _iVCount = value;
+    _dirty |= setVariableIfDifferent(_iVCount, value);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1260,12 +1243,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setIVCount(long value)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setIWControlTot(double value)
 {
-    if (_iWControlTot != value)
-    {
-        _dirty = true;
-    }
-
-    _iWControlTot = value;
+    _dirty |= setVariableIfDifferent(_iWControlTot, value);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1350,11 +1328,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::setTotalizedControlFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(double value, CtiTime timestamp)
 {
-    if (_phaseAvalue != value)
-    {
-        _dirty = true;
-    }
-    _phaseAvalue = value;
+    _dirty |= setVariableIfDifferent(_phaseAvalue, value);
+
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
         regressionA.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
@@ -1374,11 +1349,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(double value, CtiTime tim
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(double value, CtiTime timestamp)
 {
-    if (_phaseBvalue != value)
-    {
-        _dirty = true;
-    }
-    _phaseBvalue = value;
+    _dirty |= setVariableIfDifferent(_phaseBvalue, value);
+
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
         regressionB.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
@@ -1400,11 +1372,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(double value, CtiTime tim
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValue(double value, CtiTime timestamp)
 {
-    if (_phaseCvalue != value)
-    {
-        _dirty = true;
-    }
-    _phaseCvalue = value;
+    _dirty |= setVariableIfDifferent(_phaseCvalue, value);
+
     if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
     {
         regressionC.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
@@ -1470,11 +1439,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointId(long currentvar
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(double value, CtiTime timestamp)
 {
-    if( _currentvarloadpointvalue != value )
-    {
-        _dirty = true;
-    }
-    _currentvarloadpointvalue = value;
+    _dirty |= setVariableIfDifferent(_currentvarloadpointvalue, value);
+ 
     if(_RATE_OF_CHANGE && !getRecentlyControlledFlag())
     {
         regression.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
@@ -1505,11 +1471,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointId(long currentwa
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointValue(double currentwattval)
 {
-    if( _currentwattloadpointvalue != currentwattval )
-    {
-        _dirty = true;
-    }
-    _currentwattloadpointvalue = currentwattval;
+    _dirty |= setVariableIfDifferent(_currentwattloadpointvalue, currentwattval);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1530,11 +1492,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltLoadPointId(long currentvo
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltLoadPointValue(double currentvoltval)
 {
-    if( _currentvoltloadpointvalue != currentvoltval )
-    {
-        _dirty = true;
-    }
-    _currentvoltloadpointvalue = currentvoltval;
+    _dirty |= setVariableIfDifferent(_currentvoltloadpointvalue, currentvoltval);
     return *this;
 }
 
@@ -1689,10 +1647,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
             long tempsum = (currenttime.seconds()-(currenttime.seconds()%getStrategy()->getControlInterval()))+getStrategy()->getControlInterval();
             _nextchecktime = CtiTime(CtiTime(tempsum));
         }
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = true;
     }
     else
@@ -1737,15 +1691,7 @@ double CtiCCSubstationBus::getSetPoint()
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setNewPointDataReceivedFlag(bool newpointdatareceived)
 {
-    if( _newpointdatareceivedflag != newpointdatareceived )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _newpointdatareceivedflag = newpointdatareceived;
+    _dirty |= setVariableIfDifferent(_newpointdatareceivedflag, newpointdatareceived);
     return *this;
 }
 
@@ -1756,14 +1702,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setNewPointDataReceivedFlag(bool newpoin
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setBusUpdatedFlag(bool busupdated)
 {
-    /*if( _busupdatedflag != busupdated )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        _dirty = true;
-    }*/
     _busupdatedflag = busupdated;
     return *this;
 }
@@ -1775,15 +1713,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setBusUpdatedFlag(bool busupdated)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const CtiTime& lastpointupdate)
 {
-    if( _lastcurrentvarpointupdatetime != lastpointupdate )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastcurrentvarpointupdatetime = lastpointupdate;
+    _dirty |= setVariableIfDifferent(_lastcurrentvarpointupdatetime, lastpointupdate);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1793,15 +1723,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const C
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setLastWattPointTime(const CtiTime& lastpointupdate)
 {
-    if( _lastWattPointTime != lastpointupdate )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastWattPointTime = lastpointupdate;
+    _dirty |= setVariableIfDifferent(_lastWattPointTime, lastpointupdate);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1811,15 +1733,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastWattPointTime(const CtiTime& last
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setLastVoltPointTime(const CtiTime& lastpointupdate)
 {
-    if( _lastVoltPointTime != lastpointupdate )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastVoltPointTime = lastpointupdate;
+    _dirty |= setVariableIfDifferent(_lastVoltPointTime, lastpointupdate);
     return *this;
 }
 
@@ -1841,16 +1755,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointId(long estimate
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(double estimatedvarval)
 {
-    if( _estimatedvarloadpointvalue != estimatedvarval )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _busupdatedflag = true;
-        _dirty = true;
-    }
-    _estimatedvarloadpointvalue = estimatedvarval;
+    bool temp = setVariableIfDifferent(_estimatedvarloadpointvalue, estimatedvarval);
+    _busupdatedflag |= temp;
+    _dirty |= temp;
+
     return *this;
 }
 
@@ -1901,10 +1809,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperationsAndSendMsg(long
         {
             pointChanges.push_back(new CtiPointDataMsg(getDailyOperationsAnalogPointId(),operations,NormalQuality,AnalogPointType));
         }
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = true;
     }
     _currentdailyoperations = operations;
@@ -1920,15 +1824,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperationsAndSendMsg(long
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperations(long operations)
 {
-    if( _currentdailyoperations != operations )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentdailyoperations = operations;
+    _dirty |= setVariableIfDifferent(_currentdailyoperations, operations);
     return *this;
 }
 
@@ -1939,15 +1835,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperations(long operation
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPeakTimeFlag(bool peaktime)
 {
-    if( _peaktimeflag != peaktime )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _peaktimeflag = peaktime;
+    _dirty |= setVariableIfDifferent(_peaktimeflag, peaktime);
     return *this;
 }
 
@@ -1958,15 +1846,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPeakTimeFlag(bool peaktime)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setRecentlyControlledFlag(bool recentlycontrolled)
 {
-    if( _recentlycontrolledflag != recentlycontrolled )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _recentlycontrolledflag = recentlycontrolled;
+    _dirty |= setVariableIfDifferent(_recentlycontrolledflag, recentlycontrolled);
     return *this;
 }
 
@@ -2023,15 +1903,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkAndUpdateRecentlyControlledFlag()
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setLastOperationTime(const CtiTime& lastoperation)
 {
-    if( _lastoperationtime != lastoperation )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastoperationtime = lastoperation;
+    _dirty |= setVariableIfDifferent(_lastoperationtime, lastoperation);
     return *this;
 }
 
@@ -2048,15 +1920,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastVerificationCheck(const CtiTime& 
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(double oldvarval, long originalParentId)
 {
-    if( _varvaluebeforecontrol != oldvarval )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _varvaluebeforecontrol = oldvarval;
+    _dirty |= setVariableIfDifferent(_varvaluebeforecontrol, oldvarval);
 
     setPhaseAValueBeforeControl(getPhaseAValue());
     setPhaseBValueBeforeControl(getPhaseBValue());
@@ -2072,15 +1936,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(double oldvarva
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPAOId(long lastfeederpao)
 {
-    if( _lastfeedercontrolledpaoid != lastfeederpao )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastfeedercontrolledpaoid = lastfeederpao;
+    _dirty |= setVariableIfDifferent(_lastfeedercontrolledpaoid, lastfeederpao);
     return *this;
 }
 
@@ -2110,15 +1966,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlled(long lastfeederp
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPosition(long lastfeederposition)
 {
-    if( _lastfeedercontrolledposition != lastfeederposition )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _lastfeedercontrolledposition = lastfeederposition;
+    _dirty |= setVariableIfDifferent(_lastfeedercontrolledposition, lastfeederposition);
     return *this;
 }
 
@@ -2129,15 +1977,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastFeederControlledPosition(long las
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPowerFactorValue(double pfval)
 {
-    if( _powerfactorvalue != pfval )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _powerfactorvalue = pfval;
+    _dirty |= setVariableIfDifferent(_powerfactorvalue, pfval);
     return *this;
 }
 
@@ -2169,15 +2009,7 @@ void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setKVARSolution(double solution)
 {
-    if( _kvarsolution != solution )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _kvarsolution = solution;
+    _dirty |= setVariableIfDifferent(_kvarsolution, solution);
     return *this;
 }
 
@@ -2188,15 +2020,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setKVARSolution(double solution)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorValue(double epfval)
 {
-    if( _estimatedpowerfactorvalue != epfval )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _estimatedpowerfactorvalue = epfval;
+    _dirty |= setVariableIfDifferent(_estimatedpowerfactorvalue, epfval);
     return *this;
 }
 
@@ -2207,15 +2031,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorValue(double epfv
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarPointQuality(long cvpq)
 {
-    if( _currentvarpointquality != cvpq )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentvarpointquality = cvpq;
+    _dirty |= setVariableIfDifferent(_currentvarpointquality, cvpq);
     return *this;
 }
 
@@ -2227,15 +2043,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarPointQuality(long cvpq)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattPointQuality(long cwpq)
 {
-    if( _currentwattpointquality != cwpq )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentwattpointquality = cwpq;
+    _dirty |= setVariableIfDifferent(_currentwattpointquality, cwpq);
     return *this;
 }
 
@@ -2247,15 +2055,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattPointQuality(long cwpq)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltPointQuality(long cvpq)
 {
-    if( _currentvoltpointquality != cvpq )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentvoltpointquality = cvpq;
+    _dirty |= setVariableIfDifferent(_currentvoltpointquality, cvpq);
     return *this;
 }
 
@@ -2266,34 +2066,18 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltPointQuality(long cvpq)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setWaiveControlFlag(bool waive)
 {
-    if( _waivecontrolflag != waive )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _waivecontrolflag = waive;
+    _dirty |= setVariableIfDifferent(_waivecontrolflag, waive);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setAltDualSubId(long altDualSubId)
 {
-    if (_altDualSubId != altDualSubId)
-    {
-        _dirty = true;
-    }
-    _altDualSubId = altDualSubId;
+    _dirty |= setVariableIfDifferent(_altDualSubId, altDualSubId);
     return *this;
 }
 CtiCCSubstationBus& CtiCCSubstationBus::setAltSubControlValue(double controlValue)
 {
-    if (_altSubControlValue != controlValue)
-    {
-        _dirty = true;
-    }
-    _altSubControlValue = controlValue;
+    _dirty |= setVariableIfDifferent(_altSubControlValue, controlValue);
     return *this;
 }
 CtiCCSubstationBus& CtiCCSubstationBus::setAllAltSubValues(double volt, double var, double watt)
@@ -2308,68 +2092,40 @@ CtiCCSubstationBus& CtiCCSubstationBus::setAllAltSubValues(double volt, double v
 
 CtiCCSubstationBus& CtiCCSubstationBus::setSwitchOverPointId(long pointId)
 {
-    if (_switchOverPointId != pointId)
-    {
-        _dirty = true;
-    }
-    _switchOverPointId = pointId;
+    _dirty |= setVariableIfDifferent(_switchOverPointId, pointId);
     return *this;
 }
 CtiCCSubstationBus& CtiCCSubstationBus::setSwitchOverStatus(bool status)
 {
-    if (_switchOverStatus != status)
-    {
-        _dirty = true;
-    }
-    _switchOverStatus = status;
+    _dirty |= setVariableIfDifferent(_switchOverStatus, status);
     return *this;
 }
 CtiCCSubstationBus& CtiCCSubstationBus::setPrimaryBusFlag(bool status)
 {
-    if (_primaryBusFlag != status)
-    {
-        _dirty = true;
-    }
-    _primaryBusFlag = status;
+    _dirty |= setVariableIfDifferent(_primaryBusFlag, status);
     return *this;
 }
 CtiCCSubstationBus& CtiCCSubstationBus::setDualBusEnable(bool flag)
 {
-    if (_dualBusEnable != flag)
-    {
-        _dirty = true;
-    }
-    _dualBusEnable = flag;
+    _dirty |= setVariableIfDifferent(_dualBusEnable, flag);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setEventSequence(long eventSeq)
 {
-    if (_eventSeq != eventSeq)
-    {
-        _dirty = true;
-    }
-    _eventSeq = eventSeq;
+    _dirty |= setVariableIfDifferent(_eventSeq, eventSeq);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setReEnableBusFlag(bool flag)
 {
-    if (_reEnableBusFlag != flag)
-    {
-        _dirty = true;
-    }
-    _reEnableBusFlag = flag;
+    _dirty |= setVariableIfDifferent(_reEnableBusFlag, flag);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setMultiMonitorFlag(bool flag)
 {
-    if (_multiMonitorFlag != flag)
-    {
-        _dirty = true;
-    }
-    _multiMonitorFlag = flag;
+    _dirty |= setVariableIfDifferent(_multiMonitorFlag, flag);
     return *this;
 }
 
@@ -5571,148 +5327,78 @@ CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify(CtiMultiMsg_vec& 
 
 CtiCCSubstationBus& CtiCCSubstationBus::setVerificationFlag(bool verificationFlag)
 {
-
-    if( _verificationFlag != verificationFlag )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _verificationFlag = verificationFlag;
+    _dirty |= setVariableIfDifferent(_verificationFlag, verificationFlag);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setPerformingVerificationFlag(bool performingVerificationFlag)
 {
-    if( _performingVerificationFlag != performingVerificationFlag )
-    {
-        _dirty = true;
-    }
-
-    _performingVerificationFlag = performingVerificationFlag;
-
+    _dirty |= setVariableIfDifferent(_performingVerificationFlag, performingVerificationFlag);
     return *this;
 }
 CtiCCSubstationBus& CtiCCSubstationBus::setVerificationDoneFlag(bool verificationDoneFlag)
 {
-    if( _verificationDoneFlag != verificationDoneFlag )
-    {
-        _dirty = true;
-    }
-
-    _verificationDoneFlag = verificationDoneFlag;
-
+    _dirty |= setVariableIfDifferent(_verificationDoneFlag, verificationDoneFlag);
     return *this;
 }
 
 
 CtiCCSubstationBus& CtiCCSubstationBus::setOverlappingVerificationFlag(bool overlapFlag)
 {
-    if( _overlappingSchedulesVerificationFlag != overlapFlag )
-    {
-        _dirty = true;
-    }
-
-    _overlappingSchedulesVerificationFlag = overlapFlag;
-
+    _dirty |= setVariableIfDifferent(_overlappingSchedulesVerificationFlag, overlapFlag);
     return *this;
 }
 
 
 CtiCCSubstationBus& CtiCCSubstationBus::setPreOperationMonitorPointScanFlag( bool flag)
 {
-    if( _preOperationMonitorPointScanFlag != flag )
-    {
-        _dirty = true;
-    }
-
-    _preOperationMonitorPointScanFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_preOperationMonitorPointScanFlag, flag);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setOperationSentWaitFlag( bool flag)
 {
-    if( _operationSentWaitFlag != flag )
-    {
-        _dirty = true;
-    }
-
-    _operationSentWaitFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_operationSentWaitFlag, flag);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setPostOperationMonitorPointScanFlag( bool flag)
 {
-    if( _postOperationMonitorPointScanFlag != flag )
-    {
-        _dirty = true;
-    }
-
-    _postOperationMonitorPointScanFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_postOperationMonitorPointScanFlag, flag);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setWaitForReCloseDelayFlag(bool flag)
 {
-    if (_waitForReCloseDelayFlag != flag)
-    {
-        _dirty = true;
-    }
-    _waitForReCloseDelayFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_waitForReCloseDelayFlag, flag);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setWaitToFinishRegularControlFlag(bool flag)
 {
-    if (_waitToFinishRegularControlFlag != flag)
-    {
-        _dirty = true;
-    }
-    _waitToFinishRegularControlFlag = flag;
+    _dirty |= setVariableIfDifferent(_waitToFinishRegularControlFlag, flag);
     return *this;
 }
 CtiCCSubstationBus& CtiCCSubstationBus::setMaxDailyOpsHitFlag(bool flag)
 {
-    if (_maxDailyOpsHitFlag != flag)
-    {
-        _dirty = true;
-    }
-    _maxDailyOpsHitFlag = flag;
+    _dirty |= setVariableIfDifferent(_maxDailyOpsHitFlag, flag);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setOvUvDisabledFlag(bool flag)
 {
-    if (_ovUvDisabledFlag != flag)
-    {
-        _dirty = true;
-    }
-    _ovUvDisabledFlag = flag;
+    _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, flag);
     return *this;
 }
 CtiCCSubstationBus& CtiCCSubstationBus::setCorrectionNeededNoBankAvailFlag(bool flag)
 {
-    if (_correctionNeededNoBankAvailFlag != flag)
-    {
-        _dirty = true;
-    }
-    _correctionNeededNoBankAvailFlag = flag;
+    _dirty |= setVariableIfDifferent(_correctionNeededNoBankAvailFlag, flag);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setLikeDayControlFlag(bool flag)
 {
-    if (_likeDayControlFlag != flag)
-    {
-        _dirty = true;
-    }
-    _likeDayControlFlag = flag;
+    _dirty |= setVariableIfDifferent(_likeDayControlFlag, flag);
     return *this;
 }
 
@@ -5730,21 +5416,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDisableBusPointId(long pointid)
 
 CtiCCSubstationBus& CtiCCSubstationBus::setVoltReductionFlag(bool flag)
 {
-    if (_voltReductionFlag != flag)
-    {
-        _dirty = true;
-    }
-    _voltReductionFlag = flag;
+    _dirty |= setVariableIfDifferent(_voltReductionFlag, flag);
     return *this;
 }
 
 CtiCCSubstationBus& CtiCCSubstationBus::setSendMoreTimeControlledCommandsFlag(bool flag)
 {
-    if (_sendMoreTimeControlledCommandsFlag != flag)
-    {
-        _dirty = true;
-    }
-    _sendMoreTimeControlledCommandsFlag = flag;
+    _dirty |= setVariableIfDifferent(_sendMoreTimeControlledCommandsFlag, flag);
     return *this;
 }
 
@@ -5752,49 +5430,19 @@ CtiCCSubstationBus& CtiCCSubstationBus::setSendMoreTimeControlledCommandsFlag(bo
 
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationFeederId(long feederId)
 {
-    if( _currentVerificationFeederId != feederId )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-
-    _currentVerificationFeederId = feederId;
-
+    _dirty |= setVariableIfDifferent(_currentVerificationFeederId, feederId);
     return *this;
 }
 
 
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankId(long capBankId)
 {
-    if( _currentVerificationCapBankId != capBankId )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-
-    _currentVerificationCapBankId = capBankId;
-
+    _dirty |= setVariableIfDifferent(_currentVerificationCapBankId, capBankId);
     return *this;
 }
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationCapBankState(long status)
 {
-    if( _currentCapBankToVerifyAssumedOrigState != status )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-
-    _currentCapBankToVerifyAssumedOrigState = status;
-
+    _dirty |= setVariableIfDifferent(_currentCapBankToVerifyAssumedOrigState, status);
     return *this;
 }
 
@@ -6782,10 +6430,6 @@ void CtiCCSubstationBus::dumpDynamicData(Cti::Database::DatabaseConnection& conn
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = true;
                 {
                     string loggedSQLstring = dbInserter.asString();
@@ -6947,15 +6591,7 @@ bool CtiCCSubstationBus::areThereMoreCapBanksToVerify(CtiMultiMsg_vec& ccEvents)
 
 void CtiCCSubstationBus::setVerificationStrategy(CtiPAOScheduleManager::VerificationStrategy verificationStrategy)
 {
-    if( _verificationStrategy != verificationStrategy )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _verificationStrategy = verificationStrategy;
+    _dirty |= setVariableIfDifferent(_verificationStrategy, verificationStrategy);
 }
 
 CtiPAOScheduleManager::VerificationStrategy CtiCCSubstationBus::getVerificationStrategy(void) const
@@ -6965,15 +6601,7 @@ CtiPAOScheduleManager::VerificationStrategy CtiCCSubstationBus::getVerificationS
 
 void CtiCCSubstationBus::setVerificationDisableOvUvFlag(bool flag)
 {
-    if( _disableOvUvVerificationFlag != flag )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _disableOvUvVerificationFlag = flag;
+    _dirty |= setVariableIfDifferent(_disableOvUvVerificationFlag, flag);
 }
 
 bool CtiCCSubstationBus::getVerificationDisableOvUvFlag(void) const
@@ -6984,15 +6612,7 @@ bool CtiCCSubstationBus::getVerificationDisableOvUvFlag(void) const
 
 void CtiCCSubstationBus::setCapBankInactivityTime(long capBankToVerifyInactivityTime)
 {
-    if( _capBankToVerifyInactivityTime != capBankToVerifyInactivityTime )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _capBankToVerifyInactivityTime = capBankToVerifyInactivityTime;
+    _dirty |= setVariableIfDifferent(_capBankToVerifyInactivityTime, capBankToVerifyInactivityTime);
 }
 
 long CtiCCSubstationBus::getCapBankInactivityTime(void) const

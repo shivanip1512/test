@@ -22,6 +22,7 @@ using std::endl;
 extern unsigned long _CC_DEBUG;
 
 using Cti::CapControl::PaoIdVector;
+using Cti::CapControl::setVariableIfDifferent;
 
 RWDEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 
@@ -430,11 +431,7 @@ bool CtiCCSubstation::isDirty() const
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setOvUvDisabledFlag(bool flag)
 {
-    if (_ovUvDisabledFlag != flag)
-    {
-        _dirty = true;
-    }
-    _ovUvDisabledFlag = flag;
+    _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, flag);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -444,11 +441,7 @@ CtiCCSubstation& CtiCCSubstation::setOvUvDisabledFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setVoltReductionFlag(bool flag)
 {
-    if (_voltReductionFlag != flag)
-    {
-        _dirty = true;
-    }
-    _voltReductionFlag = flag;
+    _dirty |= setVariableIfDifferent(_voltReductionFlag, flag);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -458,12 +451,9 @@ CtiCCSubstation& CtiCCSubstation::setVoltReductionFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setChildVoltReductionFlag(bool flag)
 {
-    if (_childVoltReductionFlag != flag)
-    {
-        _stationUpdatedFlag = true;
-        _dirty = true;
-    }
-    _childVoltReductionFlag = flag;
+    bool temp = setVariableIfDifferent(_childVoltReductionFlag, flag);
+    _dirty |= temp;
+    _stationUpdatedFlag |= temp;
     return *this;
 }
 
@@ -498,11 +488,7 @@ CtiCCSubstation& CtiCCSubstation::setParentId(long parentId)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setParentName(const string& parentName)
 {
-    if (_parentName != parentName)
-    {
-        _dirty = true;
-    }
-    _parentName = parentName;
+    _dirty |= setVariableIfDifferent(_parentName, parentName);
     return *this;
 }
 
@@ -523,13 +509,7 @@ CtiCCSubstation& CtiCCSubstation::setDisplayOrder(long displayOrder)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setPFactor(double pfactor)
 {
-
-    if (_pfactor != pfactor)
-    {
-        setStationUpdatedFlag(true);
-        _dirty = true;
-        _pfactor = pfactor;
-    }
+    _dirty |= setVariableIfDifferent(_pfactor, pfactor);
     return *this;
 }
 
@@ -557,11 +537,7 @@ CtiCCSubstation& CtiCCSubstation::setEstPFactor(double estpfactor)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setSaEnabledFlag(bool flag)
 {
-    if (_saEnabledFlag != flag)
-    {
-        _dirty = true;
-    }
-    _saEnabledFlag = flag;
+    _dirty |= setVariableIfDifferent(_saEnabledFlag, flag);
     return *this;
 }
 
@@ -572,12 +548,9 @@ CtiCCSubstation& CtiCCSubstation::setSaEnabledFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setRecentlyControlledFlag(bool flag)
 {
-    if (_recentlyControlledFlag != flag)
-    {
-        _dirty = true;
-        _stationUpdatedFlag = true;
-    }
-    _recentlyControlledFlag = flag;
+    bool temp = setVariableIfDifferent(_recentlyControlledFlag, flag);
+    _dirty |= temp;
+    _stationUpdatedFlag |= temp;
     return *this;
 }
 
@@ -588,11 +561,7 @@ CtiCCSubstation& CtiCCSubstation::setRecentlyControlledFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setStationUpdatedFlag(bool flag)
 {
-    if (_stationUpdatedFlag != flag)
-    {
-        _dirty = true;
-    }
-    _stationUpdatedFlag = flag;
+    _dirty |= setVariableIfDifferent(_stationUpdatedFlag, flag);
     return *this;
 }
 
@@ -604,12 +573,7 @@ CtiCCSubstation& CtiCCSubstation::setStationUpdatedFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setSaEnabledId(long saId)
 {
-    if (_saEnabledId != saId)
-    {
-        _dirty = true;
-    }
-
-    _saEnabledId = saId;
+    _dirty |= setVariableIfDifferent(_saEnabledId, saId);
     return *this;
 }
 

@@ -61,6 +61,17 @@ bool isQualityOk(unsigned quality);
 static const std::set<int> ClosedStates = initClosedStates();
 static const std::set<int> OpenStates = initOpenStates();
 
+template<class T>
+static bool setVariableIfDifferent(T &original, const T &updated)
+{
+    if (original != updated)
+    {
+        original = updated;
+        return true;
+    }
+    return false;
+}
+
 CtiPAOScheduleManager::VerificationStrategy ConvertIntToVerificationStrategy(int verifyId);
 
 class MissingPointAttribute : public std::exception

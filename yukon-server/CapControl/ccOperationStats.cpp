@@ -22,6 +22,7 @@
 #include "logger.h"
 #include "resolvers.h"
 #include "ccid.h"
+#include "ccutil.h"
 #include "ccoperationstats.h"
 #include "database_writer.h"
 
@@ -30,6 +31,8 @@ using std::string;
 using std::endl;
 
 extern unsigned long _CC_DEBUG;
+
+using Cti::CapControl::setVariableIfDifferent;
 
 //RWDEFINE_COLLECTABLE( CtiCCOperationStats, CtiCCOperationStats_ID )
 
@@ -167,161 +170,97 @@ CtiCCOperationStats& CtiCCOperationStats::setPAOId(long paoId)
 
 CtiCCOperationStats& CtiCCOperationStats::setUserDefOpCount(long value)
 {
-    if (_userDefOpCount != value)
-    {
-        _dirty = true;
-    }
-    _userDefOpCount = value;
+    _dirty |= setVariableIfDifferent(_userDefOpCount, value);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setUserDefConfFail(long value)
 {
-    if (_userDefConfFail != value)
-    {
-        _dirty = true;
-    }
-    _userDefConfFail = value;
+    _dirty |= setVariableIfDifferent(_userDefConfFail, value);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setDailyOpCount(long value)
 {
-    if (_dailyOpCount != value)
-    {
-        _dirty = true;
-    }
-    _dailyOpCount = value;
+    _dirty |= setVariableIfDifferent(_dailyOpCount, value);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setDailyConfFail(long value)
 {
-    if (_dailyConfFail != value)
-    {
-        _dirty = true;
-    }
-    _dailyConfFail = value;
+    _dirty |= setVariableIfDifferent(_dailyConfFail, value);
     return *this;
 }
 
 
 CtiCCOperationStats& CtiCCOperationStats::setWeeklyOpCount(long value)
 {
-    if (_weeklyOpCount != value)
-    {
-        _dirty = true;
-    }
-    _weeklyOpCount = value;
+    _dirty |= setVariableIfDifferent(_weeklyOpCount, value);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setWeeklyConfFail(long value)
 {
-    if (_weeklyConfFail != value)
-    {
-        _dirty = true;
-    }
-    _weeklyConfFail = value;
+    _dirty |= setVariableIfDifferent(_weeklyConfFail, value);
     return *this;
 }
 
 
 CtiCCOperationStats& CtiCCOperationStats::setMonthlyOpCount(long value)
 {
-    if (_monthlyOpCount != value)
-    {
-        _dirty = true;
-    }
-    _monthlyOpCount = value;
+    _dirty |= setVariableIfDifferent(_monthlyOpCount, value);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setMonthlyConfFail(long value)
 {
-    if (_monthlyConfFail != value)
-    {
-        _dirty = true;
-    }
-    _monthlyConfFail = value;
+    _dirty |= setVariableIfDifferent(_monthlyConfFail, value);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setUserDefOpSuccessPercentId(long pointId)
 {
-    if (_userDefOpSuccessPercentId != pointId)
-    {
-        _dirty = true;
-    }
-    _userDefOpSuccessPercentId = pointId;
+    _dirty |= setVariableIfDifferent(_userDefOpSuccessPercentId, pointId);
     return *this;
 }
 CtiCCOperationStats& CtiCCOperationStats::setUserDefOpSuccessPercent(double value)
 {
-    if (_userDefOpSuccessPercent != value)
-    {
-        _dirty = true;
-    }
-    _userDefOpSuccessPercent= value;
+    _dirty |= setVariableIfDifferent(_userDefOpSuccessPercent, value);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setDailyOpSuccessPercentId(long pointId)
 {
-    if (_dailyOpSuccessPercentId != pointId)
-    {
-        _dirty = true;
-    }
-    _dailyOpSuccessPercentId = pointId;
+    _dirty |= setVariableIfDifferent(_dailyOpSuccessPercentId, pointId);
     return *this;
 }
 CtiCCOperationStats& CtiCCOperationStats::setDailyOpSuccessPercent(double  value)
 {
-    if (_dailyOpSuccessPercent != value)
-    {
-        _dirty = true;
-    }
-    _dailyOpSuccessPercent = value;
+    _dirty |= setVariableIfDifferent(_dailyOpSuccessPercent, value);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setWeeklyOpSuccessPercentId(long pointId)
 {
-    if (_weeklyOpSuccessPercentId != pointId)
-    {
-        _dirty = true;
-    }
-    _weeklyOpSuccessPercentId = pointId;
+    _dirty |= setVariableIfDifferent(_weeklyOpSuccessPercentId, pointId);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setWeeklyOpSuccessPercent(double value)
 {
-    if (_weeklyOpSuccessPercent != value)
-    {
-        _dirty = true;
-    }
-    _weeklyOpSuccessPercent = value;
+    _dirty |= setVariableIfDifferent(_weeklyOpSuccessPercent, value);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setMonthlyOpSuccessPercentId(long pointId)
 {
-    if (_monthlyOpSuccessPercentId != pointId)
-    {
-        _dirty = true;
-    }
-    _monthlyOpSuccessPercentId = pointId;
+    _dirty |= setVariableIfDifferent(_monthlyOpSuccessPercentId, pointId);
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::setMonthlyOpSuccessPercent(double value)
 {
-    if (_monthlyOpSuccessPercent != value)
-    {
-        _dirty = true;
-    }
-    _monthlyOpSuccessPercent = value;
+    _dirty |= setVariableIfDifferent(_monthlyOpSuccessPercent, value);
     return *this;
 }
 

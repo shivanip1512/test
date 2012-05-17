@@ -739,15 +739,7 @@ CtiCCCapBank& CtiCCCapBank::setMaxDailyOperation(long maxdailyops)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setCurrentDailyOperations(long operations)
 {
-    if( _currentdailyoperations != operations )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _currentdailyoperations = operations;
+    _dirty |= setVariableIfDifferent(_currentdailyoperations, operations);
     return *this;
 }
 
@@ -954,11 +946,7 @@ CtiCCCapBank& CtiCCCapBank::setVerificationFlag(bool verificationFlag)
         setVCtrlIndex(0);
     }
 
-    if (_verificationFlag != verificationFlag)
-    {
-        _dirty = true;
-    }
-    _verificationFlag = verificationFlag;
+    _dirty |= setVariableIfDifferent(_verificationFlag,verificationFlag);
 
     return *this;
 }
@@ -977,37 +965,23 @@ bool CtiCCCapBank::isSelectedForVerification( ) const
 
 CtiCCCapBank& CtiCCCapBank::setPerformingVerificationFlag(bool performingVerificationFlag)
 {
-    if (_performingVerificationFlag != performingVerificationFlag)
-        _dirty = true;
-    _performingVerificationFlag = performingVerificationFlag;
-
+    _dirty |= setVariableIfDifferent(_performingVerificationFlag, performingVerificationFlag);
     return *this;
 }
 CtiCCCapBank& CtiCCCapBank::setVerificationDoneFlag(bool verificationDoneFlag)
 {
-    if(_verificationDoneFlag != verificationDoneFlag)
-        _dirty = true;
-    _verificationDoneFlag = verificationDoneFlag;
-
+    _dirty |= setVariableIfDifferent(_verificationDoneFlag,verificationDoneFlag);
     return *this;
 }
 
 CtiCCCapBank& CtiCCCapBank::setPorterRetFailFlag(bool flag)
 {
-    if (_porterRetFailFlag != flag)
-    {
-        _dirty = true;
-    }
-    _porterRetFailFlag = flag;
+    _dirty |= setVariableIfDifferent(_porterRetFailFlag, flag);
     return *this;
 }
 CtiCCCapBank& CtiCCCapBank::setUnsolicitedPendingFlag(bool flag)
 {
-    if (_unsolicitedPendingFlag != flag)
-    {
-        _dirty = true;
-    }
-    _unsolicitedPendingFlag = flag;
+    _dirty |= setVariableIfDifferent(_unsolicitedPendingFlag, flag);
     return *this;
 }
 
@@ -1018,13 +992,7 @@ CtiCCCapBank& CtiCCCapBank::setUnsolicitedPendingFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setRetryOpenFailedFlag(bool retryOpenFailedFlag)
 {
-
-    if (_retryOpenFailedFlag != retryOpenFailedFlag)
-    {
-        _dirty = true;
-    }
-    _retryOpenFailedFlag = retryOpenFailedFlag;
-
+    _dirty |= setVariableIfDifferent(_retryOpenFailedFlag, retryOpenFailedFlag);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1034,13 +1002,7 @@ CtiCCCapBank& CtiCCCapBank::setRetryOpenFailedFlag(bool retryOpenFailedFlag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(bool retryCloseFailedFlag)
 {
-
-    if (_retryCloseFailedFlag != retryCloseFailedFlag)
-    {
-        _dirty = true;
-    }
-    _retryCloseFailedFlag = retryCloseFailedFlag;
-
+    _dirty |= setVariableIfDifferent(_retryCloseFailedFlag, retryCloseFailedFlag);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1050,13 +1012,7 @@ CtiCCCapBank& CtiCCCapBank::setRetryCloseFailedFlag(bool retryCloseFailedFlag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(bool ovUvDisabledFlag)
 {
-
-    if (_ovUvDisabledFlag != ovUvDisabledFlag)
-    {
-        _dirty = true;
-    }
-    _ovUvDisabledFlag = ovUvDisabledFlag;
-
+    _dirty |= setVariableIfDifferent(_ovUvDisabledFlag, ovUvDisabledFlag);
     return *this;
 }
 
@@ -1067,13 +1023,7 @@ CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(bool ovUvDisabledFlag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setLocalControlFlag(bool localControlFlag)
 {
-
-    if (_localControlFlag != localControlFlag)
-    {
-        _dirty = true;
-    }
-    _localControlFlag = localControlFlag;
-
+    _dirty |= setVariableIfDifferent(_localControlFlag, localControlFlag);
     return *this;
 }
 
@@ -1084,13 +1034,7 @@ CtiCCCapBank& CtiCCCapBank::setLocalControlFlag(bool localControlFlag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setOvUvSituationFlag(bool ovUvSituationFlag)
 {
-
-    if (_ovuvSituationFlag != ovUvSituationFlag)
-    {
-        _dirty = true;
-    }
-    _ovuvSituationFlag = ovUvSituationFlag;
-
+    _dirty |= setVariableIfDifferent(_ovuvSituationFlag, ovUvSituationFlag);
     return *this;
 }
 
@@ -1101,13 +1045,7 @@ CtiCCCapBank& CtiCCCapBank::setOvUvSituationFlag(bool ovUvSituationFlag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setMaxDailyOpsHitFlag(bool flag)
 {
-
-    if (_maxDailyOpsHitFlag != flag)
-    {
-        _dirty = true;
-    }
-    _maxDailyOpsHitFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_maxDailyOpsHitFlag, flag);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1117,13 +1055,7 @@ CtiCCCapBank& CtiCCCapBank::setMaxDailyOpsHitFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusPartialFlag(bool flag)
 {
-
-    if (_controlStatusPartialFlag != flag)
-    {
-        _dirty = true;
-    }
-    _controlStatusPartialFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_controlStatusPartialFlag, flag);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1133,13 +1065,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusPartialFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusSignificantFlag(bool flag)
 {
-
-    if (_controlStatusSignificantFlag != flag)
-    {
-        _dirty = true;
-    }
-    _controlStatusSignificantFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_controlStatusSignificantFlag, flag);
     return *this;
 }
 
@@ -1150,13 +1076,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusSignificantFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusAbnQualityFlag(bool flag)
 {
-
-    if (_controlStatusAbnQualityFlag != flag)
-    {
-        _dirty = true;
-    }
-    _controlStatusAbnQualityFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_controlStatusAbnQualityFlag, flag);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1166,13 +1086,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusAbnQualityFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusFailFlag(bool flag)
 {
-
-    if (_controlStatusFailFlag != flag)
-    {
-        _dirty = true;
-    }
-    _controlStatusFailFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_controlStatusFailFlag, flag);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1182,13 +1096,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusFailFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusCommFailFlag(bool flag)
 {
-
-    if (_controlStatusCommFailFlag != flag)
-    {
-        _dirty = true;
-    }
-    _controlStatusCommFailFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_controlStatusCommFailFlag, flag);
     return *this;
 }
 /*---------------------------------------------------------------------------
@@ -1198,13 +1106,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusCommFailFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(bool flag)
 {
-
-    if (_controlStatusNoControlFlag != flag)
-    {
-        _dirty = true;
-    }
-    _controlStatusNoControlFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_controlStatusNoControlFlag, flag);
     return *this;
 }
 
@@ -1215,13 +1117,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(bool flag)
 {
-
-    if (_controlStatusUnSolicitedFlag != flag)
-    {
-        _dirty = true;
-    }
-    _controlStatusUnSolicitedFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_controlStatusUnSolicitedFlag, flag);
     return *this;
 }
 
@@ -1232,13 +1128,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setReEnableOvUvFlag(bool flag)
 {
-
-    if (_reEnableOvUvFlag != flag)
-    {
-        _dirty = true;
-    }
-    _reEnableOvUvFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_reEnableOvUvFlag, flag);
     return *this;
 }
 
@@ -1461,85 +1351,45 @@ CtiCCCapBank& CtiCCCapBank::setIpAddress(unsigned long value)
 }
 CtiCCCapBank& CtiCCCapBank::setUDPPort(long value)
 {
-    if (_udpPortNumber != value)
-    {
-        _dirty = true;
-    }
-    _udpPortNumber = value;
-
+    _dirty |= setVariableIfDifferent(_udpPortNumber, value);
     return *this;
-
 }
 
 CtiCCCapBank& CtiCCCapBank::setReportedCBCLastControlReason(long value)
 {
-    if (_reportedCBCLastControlReason != value)
-    {
-        _dirty = true;
-    }
-    _reportedCBCLastControlReason = value;
-
+    _dirty |= setVariableIfDifferent(_reportedCBCLastControlReason, value);
     return *this;
-
 }
 
 CtiCCCapBank& CtiCCCapBank::setPartialPhaseInfo(const string& info)
 {
-    if (ciStringEqual(_partialPhaseInfo,info))
-    {
-        _dirty = true;
-    }
-    _partialPhaseInfo = info;
-
+    _dirty |= setVariableIfDifferent(_partialPhaseInfo, info);
     return *this;
 
 }
 CtiCCCapBank& CtiCCCapBank::setReportedCBCState(long value)
 {
-    if (_reportedCBCState != value)
-    {
-        _dirty = true;
-    }
-    _reportedCBCState = value;
-
+    _dirty |= setVariableIfDifferent(_reportedCBCState, value);
     return *this;
-
 }
 
 CtiCCCapBank& CtiCCCapBank::setReportedCBCStateTime(const CtiTime& timestamp)
 {
-    if (_reportedCBCStateTime != timestamp)
-    {
-        _dirty = true;
-    }
-    _reportedCBCStateTime = timestamp;
-
+    _dirty |= setVariableIfDifferent(_reportedCBCStateTime, timestamp);
     return *this;
 
 }
 
 CtiCCCapBank& CtiCCCapBank::setIgnoreFlag(bool flag)
 {
-    if (_ignoreFlag != flag)
-    {
-        _dirty = true;
-    }
-    _ignoreFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_ignoreFlag, flag);
     return *this;
-
 }
 
 CtiCCCapBank& CtiCCCapBank::setIgnoredReason(long value)
 {
-    if (_ignoreReason != value)
-    {
-        _dirty = true;
-    }
-    _ignoreReason = value;
-
+    _dirty |= setVariableIfDifferent(_ignoreReason, value);
     return *this;
-
 }
 CtiCCCapBank& CtiCCCapBank::setIgnoreReasonTimeUpdated(const CtiTime& timestamp)
 {
@@ -1559,37 +1409,25 @@ CtiCCCapBank& CtiCCCapBank::setUnsolicitedChangeTimeUpdated(const CtiTime& times
 
 CtiCCCapBank& CtiCCCapBank::setBeforeVarsString(const string& before)
 {
-    if (_sBeforeVars != before)
-    {
-        _dirty = true;
-    }
-    _sBeforeVars = before;
+    _dirty |= setVariableIfDifferent(_sBeforeVars, before);
     return *this;
 }
 
 CtiCCCapBank& CtiCCCapBank::setAfterVarsString(const string& after)
 {
-    if (_sAfterVars != after)
-    {
-        _dirty = true;
-    }
-    _sAfterVars = after;
+    _dirty |= setVariableIfDifferent(_sAfterVars, after);
     return *this;
 }
 
 CtiCCCapBank& CtiCCCapBank::setPercentChangeString(const string& percent)
 {
-    if (_sPercentChange != percent)
-    {
-        _dirty = true;
-    }
-    _sPercentChange = percent;
+    _dirty |= setVariableIfDifferent(_sPercentChange, percent);
     return *this;
 }
 
 CtiCCCapBank& CtiCCCapBank::setActionId(long actionId)
 {
-    _actionId = actionId;
+    _dirty |= setVariableIfDifferent(_actionId, actionId);
     return *this;
 }
 
@@ -1739,31 +1577,18 @@ bool CtiCCCapBank::updateVerificationState(void)
 
 CtiCCCapBank& CtiCCCapBank::setVCtrlIndex(int vCtrlIndex)
 {
-    if (vCtrlIndex != _vCtrlIndex)
-    {
-        _dirty = true;
-    }
-    _vCtrlIndex = vCtrlIndex;
+    _dirty |= setVariableIfDifferent(_vCtrlIndex, vCtrlIndex);
     return *this;
 }
 
 CtiCCCapBank& CtiCCCapBank::setPreviousVerificationControlStatus(long status)
 {
-    if (status != _prevVerificationControlStatus)
-    {
-        _dirty = true;
-    }
-    _prevVerificationControlStatus = status;
+    _dirty |= setVariableIfDifferent(_prevVerificationControlStatus, status);
     return *this;
-
 }
 CtiCCCapBank& CtiCCCapBank::setAssumedOrigVerificationState(int assumedOrigCapBankPos)
 {
-    if (assumedOrigCapBankPos != _assumedOrigCapBankPos)
-    {
-        _dirty = true;
-    }
-    _assumedOrigCapBankPos = assumedOrigCapBankPos;
+    _dirty |= setVariableIfDifferent(_assumedOrigCapBankPos,assumedOrigCapBankPos);
     return *this;
 }
 
@@ -1808,29 +1633,13 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(long status)
 
     if (_verificationFlag)
     {
-        if( _verificationControlStatus != status )
-        {
-            /*{
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }*/
-            _dirty = true;
-        }
-        _verificationControlStatus = status;
+        _dirty |= setVariableIfDifferent(_verificationControlStatus, status);
         _controlstatus = status;       //temporarily here!!!
 
     }
     else
     {
-        if( _controlstatus != status )
-        {
-            /*{
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }*/
-            _dirty = true;
-        }
-        _controlstatus = status;
+        _dirty |= setVariableIfDifferent(_controlstatus, status);
     }
 
     return *this;
@@ -1838,12 +1647,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatus(long status)
 
 CtiCCCapBank& CtiCCCapBank::setControlRecentlySentFlag(bool flag)
 {
-    if (_controlRecentlySentFlag != flag)
-    {
-        _dirty = true;
-    }
-    _controlRecentlySentFlag = flag;
-
+    _dirty |= setVariableIfDifferent(_controlRecentlySentFlag, flag);
     return *this;
 }
 
@@ -1867,14 +1671,7 @@ CtiCCCapBank& CtiCCCapBank::setOperationAnalogPointId(long operationpointid)
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setTotalOperations(long operations)
 {
-    if( _totaloperations != operations )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
+    _dirty |= setVariableIfDifferent(_totaloperations, operations);
     _totaloperations = operations;
     return *this;
 }
@@ -1893,10 +1690,6 @@ CtiCCCapBank& CtiCCCapBank::setTotalOperationsAndSendMsg(long operations, CtiMul
         {
             pointChanges.push_back(new CtiPointDataMsg(getOperationAnalogPointId(),operations,NormalQuality,AnalogPointType));
         }
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = true;
     }
     _totaloperations = operations;
@@ -1911,15 +1704,7 @@ CtiCCCapBank& CtiCCCapBank::setTotalOperationsAndSendMsg(long operations, CtiMul
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const CtiTime& laststatuschangetime)
 {
-    if( _laststatuschangetime != laststatuschangetime )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _laststatuschangetime = laststatuschangetime;
+    _dirty |= setVariableIfDifferent(_laststatuschangetime, laststatuschangetime);
     return *this;
 }
 
@@ -1930,15 +1715,7 @@ CtiCCCapBank& CtiCCCapBank::setLastStatusChangeTime(const CtiTime& laststatuscha
 ---------------------------------------------------------------------------*/
 CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(long tags)
 {
-    if( _tagscontrolstatus != tags )
-    {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = true  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
-        _dirty = true;
-    }
-    _tagscontrolstatus = tags;
+    _dirty |= setVariableIfDifferent(_tagscontrolstatus, tags);
     return *this;
 }
 

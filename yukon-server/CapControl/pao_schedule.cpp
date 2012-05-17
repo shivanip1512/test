@@ -20,6 +20,7 @@
 #include "pao_schedule.h"
 
 using std::endl;
+using Cti::CapControl::setVariableIfDifferent;
 
 /*---------------------------------------------------------------------------
     Constructor
@@ -107,57 +108,27 @@ bool CtiPAOSchedule::isDisabled()
 
 void CtiPAOSchedule::setScheduleId( long schedId )
 {
-    if (_scheduleId != schedId)
-    {
-        _dirty = true;
-    }
-    _scheduleId = schedId;
-    return;
+    _dirty |= setVariableIfDifferent(_scheduleId, schedId);
 }
 void CtiPAOSchedule::setScheduleName(const string& schedName)
 {
-    if (_scheduleName != schedName)
-    {
-        _dirty = true;
-    }
-    _scheduleName = schedName;
-    return;
+    _dirty |= setVariableIfDifferent(_scheduleName, schedName);
 }
 void CtiPAOSchedule::setNextRunTime(const CtiTime& nextTime)
 {
-    if (_nextRunTime != nextTime)
-    {
-        _dirty = true;
-    }
-    _nextRunTime = nextTime;
-    return;
+    _dirty |= setVariableIfDifferent(_nextRunTime, nextTime);
 }
 void CtiPAOSchedule::setLastRunTime(const CtiTime& lastTime)
 {
-    if (_lastRunTime != lastTime)
-    {
-        _dirty = true;
-    }
-    _lastRunTime = lastTime;
-    return;
+    _dirty |= setVariableIfDifferent(_lastRunTime, lastTime);
 }
 void CtiPAOSchedule::setIntervalRate(long intervalRate)
 {
-    if (_intervalRate != intervalRate)
-    {
-        _dirty = true;
-    }
-    _intervalRate = intervalRate;
-    return;
+    _dirty |= setVariableIfDifferent(_intervalRate, intervalRate);
 }
 void CtiPAOSchedule::setDisabledFlag(bool disabledFlag)
 {
-    if (_disabledFlag != disabledFlag)
-    {
-        _dirty = true;
-    }
-    _disabledFlag = disabledFlag;
-    return;
+    _dirty |= setVariableIfDifferent(_disabledFlag, disabledFlag);
 }
 
 bool CtiPAOSchedule::isDirty()

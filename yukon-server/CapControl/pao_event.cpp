@@ -17,6 +17,8 @@
 #include "capcontroller.h"
 #include "pao_schedule.h"
 
+using Cti::CapControl::setVariableIfDifferent;
+
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
@@ -112,48 +114,23 @@ bool CtiPAOEvent::getDisableOvUvFlag() const
 
 void CtiPAOEvent::setEventId(long eventId)
 {
-    if (_eventId != eventId)
-    {
-        _dirty = true;
-    }
-    _eventId = eventId;
-    return;
+    _dirty |= setVariableIfDifferent(_eventId, eventId);
 }
 void CtiPAOEvent::setScheduleId(long schedId)
 {
-    if (_scheduleId != schedId)
-    {
-        _dirty = true;
-    }
-    _scheduleId = schedId;
-    return;
+    _dirty |= setVariableIfDifferent(_scheduleId, schedId);
 }
 void CtiPAOEvent::setPAOId(long paoId)
 {
-    if (_paoId != paoId)
-    {
-        _dirty = true;
-    }
-    _paoId = paoId;
-    return;
+    _dirty |= setVariableIfDifferent(_paoId, paoId);
 }
 void CtiPAOEvent::setEventCommand(const string& eventCommand)
 {
-    if (_eventCommand != eventCommand)
-    {
-        _dirty = true;
-    }
-    _eventCommand = eventCommand;
-    return;
+    _dirty |= setVariableIfDifferent(_eventCommand, eventCommand);
 }
 void CtiPAOEvent::setDisableOvUvFlag(bool flag)
 {
-    if (_disableOvUvFlag != flag)
-    {
-        _dirty = true;
-    }
-    _disableOvUvFlag = flag;
-    return;
+    _dirty |= setVariableIfDifferent(_disableOvUvFlag, flag);
 }
 
 bool CtiPAOEvent::isDirty()
