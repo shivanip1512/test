@@ -15,9 +15,8 @@
 
 #include "pointtypes.h"
 
-class IM_EX_CTIYUKONDB CtiTablePointStatus : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTablePointStatus : public CtiMemDBObject, boost::noncopyable
 {
-
 protected:
    /* Data Elements from Table PointStatus */
 
@@ -32,15 +31,10 @@ protected:
    std::string       *_stateOneControl;
    INT               _commandTimeout;
 
-private:
-
 public:
 
    CtiTablePointStatus();
-   CtiTablePointStatus(const CtiTablePointStatus& aRef);
    virtual ~CtiTablePointStatus();
-
-   CtiTablePointStatus& operator=(const CtiTablePointStatus& aRef);
 
    LONG getPointID();
    INT getInitialState() const;
@@ -55,16 +49,10 @@ public:
 
    BOOL isControlInhibited() const;
 
-   CtiTablePointStatus& setPointID( const LONG ptid );
-   CtiTablePointStatus& setInitialState(INT i);
-   CtiTablePointStatus& setControlInhibit(const BOOL b = TRUE);
-   CtiTablePointStatus& setControlType(CtiControlType_t t);
-   CtiTablePointStatus& setControlOffset(INT i);
-   CtiTablePointStatus& setCloseTime1(INT i);
-   CtiTablePointStatus& setCloseTime2(INT i);
-   CtiTablePointStatus& setStateZeroControl(const std::string& zero);
-   CtiTablePointStatus& setStateOneControl(const std::string& one);
-   CtiTablePointStatus& setCommandTimeout(INT i);
+   void setControlType(CtiControlType_t t);
+   void setControlOffset(INT i);
+   void setStateZeroControl(const std::string& zero);
+   void setStateOneControl(const std::string& one);
 
    static std::string getTableName();
 
