@@ -160,6 +160,7 @@ public class ForgottenPasswordController {
 
         // Update the user's password to their new supplied password.
         authenticationService.setPassword(passwordResetUser, loginBackingBean.getPassword1());
+        keyToUserMap.invalidate(UUID.fromString(k));
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.login.passwordChange.successful"));
         return "redirect:/login.jsp";
     }
