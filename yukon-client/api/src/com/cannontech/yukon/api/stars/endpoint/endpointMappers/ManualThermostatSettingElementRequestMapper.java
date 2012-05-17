@@ -22,7 +22,7 @@ public class ManualThermostatSettingElementRequestMapper implements ObjectMapper
         manualThermostatSetting.setSerialNumbers(Sets.newHashSet(yukonTemplate.evaluateAsStringList("//y:serialNumber")));
         manualThermostatSetting.setThermostatMode(ThermostatMode.valueOf(yukonTemplate.evaluateAsString("//y:mode").toUpperCase()));
         manualThermostatSetting.setFanState(ThermostatFanState.valueOf(yukonTemplate.evaluateAsString("//y:fanState").toUpperCase()));
-        manualThermostatSetting.setHoldTemperature(yukonTemplate.evaluateAsBoolean("//y:holdTemperature", false));
+        manualThermostatSetting.setHoldTemperature(yukonTemplate.evaluateAsBoolean("//y:holdTemperature"));
         manualThermostatSetting.setHeatTemperature(yukonTemplate.evaluateAsTemperature("//y:heatTemperature"));
         manualThermostatSetting.setCoolTemperature(yukonTemplate.evaluateAsTemperature("//y:coolTemperature"));
 

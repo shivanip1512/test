@@ -116,8 +116,8 @@ public class CapControlXmlUtils {
             cbcImportData.setCapBankName(capBankName);
         }
         
-        Boolean scanEnabled = cbcTemplate.evaluateAsBoolean("y:scanEnabled");
-        if (scanEnabled != null && scanEnabled) {
+        boolean scanEnabled = cbcTemplate.evaluateAsBoolean("y:scanEnabled");
+        if (scanEnabled) {
             cbcImportData.setScanEnabled(true);
             
             Integer scanInterval = cbcTemplate.evaluateAsInt("y:scanInterval");

@@ -17,7 +17,7 @@ public class AllBetweenParser extends ValueParser {
             throw new RuntimeException("from cannot be after to for allBetween");
         }
 
-        Boolean fromInclusive = template.evaluateAsBoolean("@fromInclusive", false);
+        Boolean fromInclusive = template.evaluateAsBoolean("@fromInclusive");
         Boolean toInclusive = template.evaluateAsBoolean("@toInclusive", true);
         Clusivity clusivity = Clusivity.getClusivity(fromInclusive, toInclusive);
 

@@ -13,7 +13,7 @@ public class AfterParser extends ValueParser {
         Instant startDate = template.evaluateAsInstant("@date");
         int valueCount = template.evaluateAsInt("@index", 1);
 
-        Boolean inclusive = template.evaluateAsBoolean("@inclusive", false);
+        Boolean inclusive = template.evaluateAsBoolean("@inclusive");
         Clusivity clusivity = Clusivity.getClusivity(inclusive, true);
 
         Order order = Order.FORWARD;

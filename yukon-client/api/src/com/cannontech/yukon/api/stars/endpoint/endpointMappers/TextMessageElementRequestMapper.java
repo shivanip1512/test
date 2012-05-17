@@ -22,7 +22,7 @@ public class TextMessageElementRequestMapper implements ObjectMapper<Element, De
         deviceTextMessage.setMessageId(template.evaluateAsLong("//y:messageId"));
         deviceTextMessage.setSerialNumbers(Sets.newHashSet(template.evaluateAsStringList("//y:serialNumber")));
         deviceTextMessage.setMessage(template.evaluateAsString("//y:message"));
-        deviceTextMessage.setConfirmationRequired(template.evaluateAsBoolean("//y:confirmationRequired", false));
+        deviceTextMessage.setConfirmationRequired(template.evaluateAsBoolean("//y:confirmationRequired"));
         deviceTextMessage.setDisplayDuration(Duration.standardMinutes(template.evaluateAsLong("//y:displayDurationInMinutes", 1l)));
         deviceTextMessage.setStartTime(template.evaluateAsInstant("//y:startTime", new Instant()));
         

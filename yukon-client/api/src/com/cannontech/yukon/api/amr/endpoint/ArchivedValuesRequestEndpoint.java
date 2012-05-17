@@ -101,8 +101,7 @@ public class ArchivedValuesRequestEndpoint {
             Map<PaoIdentifier, PaoData> paoDataByPaoIdentifier =
                 paoSelectionService.selectPaoIdentifiersAndGetData(paosNode, requestedPaoFields);
             responseData.setPaoDataByPaoIdentifier(paoDataByPaoIdentifier);
-            boolean flatten =
-                requestTemplate.evaluateAsBoolean("/y:archivedValuesRequest/y:response/@flatten", false);
+            boolean flatten = requestTemplate.evaluateAsBoolean("/y:archivedValuesRequest/y:response/@flatten");
             responseData.setFlatten(flatten);
 
             log.debug("building PAO Elements");

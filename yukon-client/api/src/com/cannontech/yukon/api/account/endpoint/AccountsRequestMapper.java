@@ -27,7 +27,7 @@ public class AccountsRequestMapper implements ObjectMapper<Element, UpdatableAcc
         dto.setFirstName(template.evaluateAsString("//y:firstName"));
         dto.setLastName(template.evaluateAsString("//y:lastName"));
         dto.setCompanyName(template.evaluateAsString("//y:companyName"));
-        dto.setIsCommercial(template.evaluateAsBoolean("//y:isCommercial") == null ? false : template.evaluateAsBoolean("//y:isCommercial")); // Default to residential.
+        dto.setIsCommercial(template.evaluateAsBoolean("//y:isCommercial")); // Default to residential.
         dto.setHomePhone(template.evaluateAsString("//y:homePhone"));
         dto.setWorkPhone(template.evaluateAsString("//y:workPhone"));
         dto.setEmailAddress(template.evaluateAsString("//y:email"));

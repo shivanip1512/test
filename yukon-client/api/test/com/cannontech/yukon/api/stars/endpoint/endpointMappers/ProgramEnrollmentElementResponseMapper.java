@@ -19,7 +19,7 @@ public class ProgramEnrollmentElementResponseMapper implements ObjectMapper<Elem
         enrollmentResponse.setSerialNumber(template.evaluateAsString("//y:serialNumber"));
         enrollmentResponse.setLoadProgramName(template.evaluateAsString("//y:loadProgramName"));
         enrollmentResponse.setLoadGroupName(template.evaluateAsString("//y:loadGroupName"));
-        enrollmentResponse.setSuccess(template.evaluateAsBoolean("//y:success", false));
+        enrollmentResponse.setSuccess(template.evaluateAsBoolean("//y:success"));
         enrollmentResponse.setFailureErrorCode(template.evaluateAsString("//y:failure/y:errorCode"));
         enrollmentResponse.setFailureErrorDescription(template.evaluateAsString("//y:failure/y:errorDescription"));
         enrollmentResponse.setFailureErrorReference(template.evaluateAsString("//y:failure/y:errorReference"));

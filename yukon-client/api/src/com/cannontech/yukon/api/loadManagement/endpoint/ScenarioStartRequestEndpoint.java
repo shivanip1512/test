@@ -58,7 +58,7 @@ public class ScenarioStartRequestEndpoint {
         String scenarioName = requestTemplate.evaluateAsString(scenarioNameExpressionStr);
         Date startTime = requestTemplate.evaluateAsDate(startTimeExpressionStr);
         Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
-        Boolean waitForResponse = requestTemplate.evaluateAsBoolean(waitForResponseExpressionStr, false);
+        Boolean waitForResponse = requestTemplate.evaluateAsBoolean(waitForResponseExpressionStr);
 
         // init response
         Element resp = new Element("scenarioStartResponse", ns);
