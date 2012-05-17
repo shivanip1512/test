@@ -27,7 +27,7 @@ public class ServerRequestHelper {
         }
 
         if (result == null) {
-            throw new BadServerResponseException("Invalid response received");
+            throw new BadServerResponseException("Invalid response received from " + conn.getName());
         }
         return result;
     }
