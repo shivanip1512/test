@@ -261,7 +261,12 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
 	 * @throws NumberFormatException
 	 */
 	private Double evaluateNumber(String expression) throws NumberFormatException {
-		
+
+	    // Check to see if it is empty.  If it is return null.
+	    if (StringUtils.isBlank(evaluateAsString(expression))) {
+	        return null;
+	    }
+	    
 		Double num = (Double) evaluate(expression, XPathConstants.NUMBER);
     	if (num.equals(Double.NaN)) {
     		throw new NumberFormatException();
