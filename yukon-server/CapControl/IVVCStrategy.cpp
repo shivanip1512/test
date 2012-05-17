@@ -326,11 +326,32 @@ void IVVCStrategy::unregisterControllable(const long paoid)
 
         if (iter->second.first == 0)    // if noone refers to me
         {
-            _paoStateMap.erase(iter);   // remove from map
+//            _paoStateMap.erase(iter);   // remove from map
         }
     }
 }
 
+/*
+        This whole mess needs to be revisited at some point.  The commented out erase() call above and
+    the map copy below are a band-aid on some deeper architectural issues.  The issue is that during a
+    database reload, we first dump all the ccmaps - this calls the destructor on them, which in turn
+    calls unregisterControllable() above.  This deletes the state for that particular object (bus, feeder).
+    Then we finally go to reload the strategies - we backup the existing ones and reload new ones
+    from the db, but the state in the backups was already destroyed during the ccmap clearing - so no
+    state is actually backed up.  Hence - no state restored.  This band-aid removes the deletion of
+    the state when the associated object is destroyed - it also just does a brute force copy of the saved
+    states into the new strategies.  Drawbacks - the register/unregisterControllable parallelism is
+    broken (new without corresponding erase()/delete) and the bulk copy may maintain states that are no
+    longer active or assigned.
+ 
+    Additional notes:
+    Q. Why is there a reference count with the states.  Each object should have its own state that is not
+        shared with any other object.
+    Q. An IVVC strategy is a bus level strategy - but during the cascade we assign it to feeders too - this
+        creates state objects for the feeders too - this is undesirable since you can't run IVVC on the
+        feeder level.  Wasting space...
+    Q. ???
+*/
 
 void IVVCStrategy::restoreStates(const ControlStrategy * backup)
 {
@@ -338,16 +359,9 @@ void IVVCStrategy::restoreStates(const ControlStrategy * backup)
 
     if (p)
     {
-        for (PaoToStateMap::iterator b = _paoStateMap.begin(), e = _paoStateMap.end(); b != e; ++b)
-        {
-            PaoToStateMap::const_iterator target = p->_paoStateMap.find( b->first );
+        // brute force copy from p to local map --
 
-            if ( target != p->_paoStateMap.end() )
-            {
-                target->second.second->setFirstPass(true);
-                b->second.second = target->second.second;
-            }
-        }
+        _paoStateMap = p->_paoStateMap;
     }
 }
 
@@ -373,7 +387,7 @@ void IVVCStrategy::execute()
             }
             else
             {
-                //Warning bad things attached to this strategy
+                //Warning bad things attached to this strategy  -- like a feeder!
             }
         }
     }
