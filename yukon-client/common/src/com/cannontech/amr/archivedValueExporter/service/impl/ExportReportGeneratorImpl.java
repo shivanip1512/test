@@ -171,6 +171,11 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
     private Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> getAttributeData(List<Meter> meters,
                                                                                                 ExportFormat format,
                                                                                                 DateTime stopDate) {
+    	
+        /*Adding one day to the stop date so the end date is “inclusive” of the entire end date selected.
+        (including the “midnight” value for the day selected)*/
+       stopDate = stopDate.plusDays(1);
+       
         Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData =
             new HashMap<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>>();
         for (ExportField field : format.getFields()) {
@@ -198,9 +203,6 @@ public class ExportReportGeneratorImpl implements ExportReportGeneratorService {
                     break;
                 }
                 DateTime startDate = getStartDate(field.getAttribute(), stopDate);
-                /*Adding one day to the stop date so the end date is “inclusive” of the entire end date selected.
-                 (including the “midnight” value for the day selected)*/
-                stopDate = stopDate.plusDays(1);
                 
                 ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeDataValues =
                     rawPointHistoryDao.getLimitedAttributeData(meters,
