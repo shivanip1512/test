@@ -8139,22 +8139,44 @@ bool CtiCCSubstationBusStore::handleAreaDBChange(long reloadId, BYTE reloadActio
     return forceFullReload;
 }
 
+unsigned long CtiCCSubstationBusStore::handleModifiedSubBus(long busId, CtiMultiMsg_set &modifiedSubsSet, bool doReload)
+{
+
+    if (doReload)
+    {
+        reloadSubBusFromDatabase(busId, &_paobject_subbus_map,
+                                        &_paobject_substation_map, &_pointid_subbus_map,
+                                        &_altsub_sub_idmap, &_subbus_substation_map, _ccSubstationBuses);
+    }
+    if (CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(busId))
+    {
+        modifiedSubsSet.insert(tempSub);
+        return CtiCCSubstationBusMsg::SubBusModified;
+    }
+    return 0;
+}
+
 void CtiCCSubstationBusStore::handleCapBankDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                                  CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages )
 {
 
     if (reloadAction == ChangeTypeUpdate)
      {
-         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-         {
-              CtiLockGuard<CtiLogger> logger_guard(dout);
-              dout << CtiTime() << " Reload Cap "<< reloadId<<" because of ChangeTypeUpdate message " << endl;
-         }
-         reloadCapBankFromDatabase(reloadId, &_paobject_capbank_map, &_paobject_feeder_map,
+        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+        {
+          CtiLockGuard<CtiLogger> logger_guard(dout);
+          dout << CtiTime() << " Reload Cap "<< reloadId<<" because of ChangeTypeUpdate message " << endl;
+        }
+        if (long oldBusId = findSubBusIDbyCapBankID(reloadId))
+        {
+            msgBitMask |= handleModifiedSubBus(oldBusId, modifiedSubsSet, true);
+            
+        }
+        reloadCapBankFromDatabase(reloadId, &_paobject_capbank_map, &_paobject_feeder_map,
                                    &_paobject_subbus_map, &_pointid_capbank_map, &_capbank_subbus_map,
                                    &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
-         long busId = findSubBusIDbyCapBankID(reloadId);
-         if (busId != NULL)
+         
+         if (long busId = findSubBusIDbyCapBankID(reloadId))
          {
              reloadMonitorPointsFromDatabase(busId, &_paobject_capbank_map, &_paobject_feeder_map,
                                        &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
@@ -8167,30 +8189,9 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(long reloadId, BYTE reloadAc
          if (cap != NULL)
          {
              //This finds the subId if a capbank is on a substation.
-             long subId = NULL;
-             long feederId = cap->getParentId();
-             CtiCCFeederPtr feeder = findFeederByPAObjectID(feederId);
-             if( feeder != NULL )
-                 subId = feeder->getParentId();
-             if (subId != NULL)
+             if (long subId = findSubBusIDbyCapBankID(reloadId))
              {
-                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                 {
-                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << CtiTime() << " Update Cap was found on sub " << endl;
-                 }
-                 CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(subId);
-                 if (tempSub != NULL)
-                 {
-                     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                     {
-                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                         dout << CtiTime() << " Sub " <<tempSub->getPaoName()<<" modified "<< endl;
-                     }
-                     modifiedSubsSet.insert(tempSub);
-                     msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
-                     msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
-                 }
+                 msgBitMask |= handleModifiedSubBus(subId, modifiedSubsSet);
              }
              else
              {
@@ -8204,26 +8205,21 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(long reloadId, BYTE reloadAc
      }
      else if (reloadAction == ChangeTypeDelete)
      {
-         long subId = findSubBusIDbyCapBankID(reloadId);
-         if (subId != NULL)
+         if (long subId = findSubBusIDbyCapBankID(reloadId))
          {
              if( _CC_DEBUG & CC_DEBUG_EXTENDED )
              {
                   CtiLockGuard<CtiLogger> logger_guard(dout);
                   dout << CtiTime() << " Delete Cap "<<reloadId <<" was found on sub " << endl;
              }
-             CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(subId);
-             if (tempSub != NULL)
+             if (CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(subId))
              {
                  if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                  {
                       CtiLockGuard<CtiLogger> logger_guard(dout);
                       dout << CtiTime() << " Sub " <<tempSub->getPaoName()<<" modified "<< endl;
                  }
-                 modifiedSubsSet.insert(tempSub);
-                 msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
-                 msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
-
+                 msgBitMask |= handleModifiedSubBus(subId, modifiedSubsSet);
              }
          }
          else
@@ -8341,35 +8337,24 @@ void CtiCCSubstationBusStore::handleFeederDBChange(long reloadId, BYTE reloadAct
 
     if (reloadAction == ChangeTypeUpdate)
     {
-        CtiCCFeederPtr tempFeed = findFeederByPAObjectID(reloadId);
-        if (tempFeed != NULL)
+        if (CtiCCFeederPtr tempFeed = findFeederByPAObjectID(reloadId))
         {
-            if (tempFeed->getParentId() > 0)
+            long oldBusId = tempFeed->getParentId();
+            if (oldBusId > 0)
             {
-                reloadSubBusFromDatabase(tempFeed->getParentId(), &_paobject_subbus_map,
-                                    &_paobject_substation_map, &_pointid_subbus_map,
-                                    &_altsub_sub_idmap, &_subbus_substation_map, _ccSubstationBuses);
+                msgBitMask |= handleModifiedSubBus(oldBusId, modifiedSubsSet, true);
             }
         }
-        else
-        {
-            reloadFeederFromDatabase(reloadId, &_paobject_feeder_map,
+        reloadFeederFromDatabase(reloadId, &_paobject_feeder_map,
                                   &_paobject_subbus_map, &_pointid_feeder_map, &_feeder_subbus_map );
 
-        }
         if(isFeederOrphan(reloadId))
               removeFromOrphanList(reloadId);
     }
-    long subId = findSubBusIDbyFeederID(reloadId);
-    if (subId != NULL)
+    if (long subId = findSubBusIDbyFeederID(reloadId))
     {
-        CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(subId);
-        if (tempSub != NULL)
-        {
-            modifiedSubsSet.insert(tempSub);
-            msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
-            msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
-        }
+        msgBitMask |= handleModifiedSubBus(subId, modifiedSubsSet);
+
     }
 
     if (reloadAction == ChangeTypeDelete)

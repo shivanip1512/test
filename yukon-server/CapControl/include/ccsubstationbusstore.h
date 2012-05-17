@@ -384,6 +384,7 @@ public:
 
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
+    unsigned long handleModifiedSubBus(long busId, CtiMultiMsg_set &modifiedSubsSet, bool doReload=false);
     bool handleAreaDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                            CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
     void handleCapBankDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
