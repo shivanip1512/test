@@ -986,11 +986,11 @@ private void deleteDBPersistent( DBPersistent deletable )
 	}
 	catch (com.cannontech.database.TransactionException e)
 	{
-		log.error( e.getMessage(), e );
+		log.error(e.getCause(), e);
 		fireMessage(
 			new MessageEvent(
 				this,
-				"Error deleting " + deletable + " from the database.  Error received:  " + e.getMessage(),
+				"Error deleting " + deletable + " from the database.  Error received:  " + e.getCause(),
 				MessageEvent.ERROR_MESSAGE));
 	}
 
