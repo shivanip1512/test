@@ -4,7 +4,6 @@ import junit.framework.Assert;
 
 import org.jdom.Element;
 import org.junit.Test;
-import org.springframework.test.annotation.ExpectedException;
 
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.temperature.TemperatureUnit;
@@ -13,16 +12,17 @@ public class YukonXPathTemplateTest {
     
     /**
      * <testElement>
-     *      <temperatureElement unit="F"></temperatureElement>
+     *      <temperatureElement unit="F">abc</temperatureElement>
      * </testElement>
      */
     @Test(expected=NumberFormatException.class)
     public void testEvaluateAsTemperature_unitF_withoutTemperature() {
         Element testElement = new Element("testElement");
 
-        Element booleanElement = new Element("temperatureElement");
-        booleanElement.setAttribute("unit", "F");
-        testElement.addContent(booleanElement);
+        Element temperatureElement = new Element("temperatureElement");
+        temperatureElement.setAttribute("unit", "F");
+        temperatureElement.addContent("abc");
+        testElement.addContent(temperatureElement);
 
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         yukonTemplate.evaluateAsTemperature("/testElement/temperatureElement");
@@ -38,10 +38,10 @@ public class YukonXPathTemplateTest {
     public void testEvaluateAsTemperature_unitF_withTemperature() {
         Element testElement = new Element("testElement");
 
-        Element booleanElement = new Element("temperatureElement");
-        booleanElement.setAttribute("unit", "F");
-        booleanElement.addContent("85");
-        testElement.addContent(booleanElement);
+        Element temperatureElement = new Element("temperatureElement");
+        temperatureElement.setAttribute("unit", "F");
+        temperatureElement.addContent("85");
+        testElement.addContent(temperatureElement);
 
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         Temperature temperatureValue = yukonTemplate.evaluateAsTemperature("/testElement/temperatureElement");
@@ -60,10 +60,10 @@ public class YukonXPathTemplateTest {
     public void testEvaluateAsTemperature_unitC_withTemperature() {
         Element testElement = new Element("testElement");
 
-        Element booleanElement = new Element("temperatureElement");
-        booleanElement.setAttribute("unit", "C");
-        booleanElement.addContent("26");
-        testElement.addContent(booleanElement);
+        Element temperatureElement = new Element("temperatureElement");
+        temperatureElement.setAttribute("unit", "C");
+        temperatureElement.addContent("26");
+        testElement.addContent(temperatureElement);
 
         YukonXPathTemplate yukonTemplate = YukonXml.getXPathTemplateForElement(testElement);
         Temperature temperatureValue = yukonTemplate.evaluateAsTemperature("/testElement/temperatureElement");
