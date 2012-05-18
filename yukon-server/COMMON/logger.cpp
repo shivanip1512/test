@@ -419,7 +419,7 @@ ostream& CtiLogger::operator<<(long double n)   {  initStream();  *_current_stre
 ostream& CtiLogger::operator<<(void * n)        {  initStream();  *_current_stream << n;  return *_current_stream;  }
 ostream& CtiLogger::operator<<(const string& s) {  initStream();  *_current_stream << s;  return *_current_stream;  }
 
-ostream& CtiLogger::operator<<(const CtiTime &r){  return operator<<(r.asString());  }
+ostream& CtiLogger::operator<<(const CtiTime &r){  return operator<<(r.asStringTimeZone());  }
 
 char CtiLogger::fill(char cfill)
 {

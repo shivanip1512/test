@@ -13,7 +13,7 @@ typedef time_t ctitime_t;
 
 class IM_EX_CTIBASE CtiTime{
 private:
-    enum timeFormat{LOCAL_TIMEZONE, GMT_TIMEZONE};
+    enum timeFormat{LOCAL_TIMEZONE, LOCAL_NO_TIMEZONE, GMT_TIMEZONE, GMT_NO_TIMEZONE};
     ctitime_t maketm(const CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
     ctitime_t _seconds;
     std::string asString(timeFormat type) const;
@@ -64,6 +64,7 @@ public:
     long secondOffsetToGMT() const;
 
     std::string asString() const;
+    std::string asStringTimeZone() const;
     std::string asGMTString() const;
 
     CtiTime addDays(const int days, bool DSTflag = true);

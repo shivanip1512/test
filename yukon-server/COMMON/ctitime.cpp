@@ -7,11 +7,13 @@
 #include <utility>
 #include <rw/rwtime.h>
 #include <locale>
-
+#include <sstream>
+#include <map>
 #include "ctidate.h"
 #include "ctitime.h"
 
 using std::string;
+using namespace std;
 
 const int SECONDS_PER_MINUTE = 60;
 const int MINUTES_PER_HOUR = 60;
@@ -400,7 +402,7 @@ string CtiTime::asString(timeFormat type)  const
     }
 
     tm * time;
-    if(type == LOCAL_TIMEZONE)
+    if(type == LOCAL_TIMEZONE || type == LOCAL_NO_TIMEZONE)
     {
         time = localtime(&_seconds); 
     } else
@@ -418,36 +420,73 @@ string CtiTime::asString(timeFormat type)  const
     if(type == LOCAL_TIMEZONE)
     {
         std::wstring wideTimeZoneName;
-        string timeZoneName;
+        std::string timeZoneName;
+        std::string biasTime;
+        long bias;
+        std::map<std::wstring, std::string> nameMap;
+        nameMap[L"Central Standard Time"]="CST";
+        nameMap[L"Central Daylight Time"]="CDT";
+        nameMap[L"Eastern Standard Time"]="EST";
+        nameMap[L"Eastern Daylight Time"]="EDT";
+        nameMap[L"Pacific Standard Time"]="PST";
+        nameMap[L"Pacific Daylight Time"]="PDT";
+        nameMap[L"Mountain Standard Time"]="MST";
+        nameMap[L"Mountain Daylight Time"]="MDT";
+
+        
 
         _TIME_ZONE_INFORMATION tzinfo;
         GetTimeZoneInformation(&tzinfo);
         
+        bias = - tzinfo.Bias;
+
         if(time->tm_isdst)
         {
             wideTimeZoneName = tzinfo.DaylightName;
+            bias -= tzinfo.DaylightBias;
         }else{
             wideTimeZoneName = tzinfo.StandardName;
+            bias -= tzinfo.StandardBias;
         }
 
-        //Convert std::wstring to std::string
-        std::locale locale = std::locale("");
-        std::string strBuffer(wideTimeZoneName.size() *4 +1, 0);
-        std::use_facet<std::ctype<wchar_t> >(locale).narrow(&wideTimeZoneName[0], &wideTimeZoneName[0] + wideTimeZoneName.size(), '?', &strBuffer[0]);
-        timeZoneName = std::string(&strBuffer[0]);
+        std::map<std::wstring, std::string>::iterator found = nameMap.find(wideTimeZoneName);
+        if(found != nameMap.end())
+        {
+            timeZoneName = found -> second;
+        } else {
 
-        //Convert "Central Standard Time" to "CDT" 
-        remove_if(timeZoneName.begin(), timeZoneName.end(), islower);
-        remove_if(timeZoneName.begin(), timeZoneName.end(), isspace);
-        int len = timeZoneName.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        timeZoneName.resize(len);
+            //Convert std::wstring to std::string
+            std::locale locale = std::locale("");
+            std::string strBuffer(wideTimeZoneName.size() *4 +1, 0);
+            std::use_facet<std::ctype<wchar_t> >(locale).narrow(&wideTimeZoneName[0], &wideTimeZoneName[0] + wideTimeZoneName.size(), '?', &strBuffer[0]);
 
-        timeString = timeString + " " + timeZoneName;
+
+            timeZoneName = std::string(&strBuffer[0]);
+        }
+
+        int biasHours = bias / MINUTES_PER_HOUR;
+        int biasMinutes = bias % MINUTES_PER_HOUR;
+
+        if (bias <0 && biasMinutes !=0)
+        {
+            biasHours -= 1;
+            biasMinutes = MINUTES_PER_HOUR + biasMinutes;
+        }
+
+        //puts the bias into +H:MM
+        ostringstream convert;
+        convert << showpos << biasHours << ":" << noshowpos 
+            << setw(2) 
+        << setfill('0') 
+        << biasMinutes;
+        biasTime = convert.str();
+
+        timeString = timeString + "(UTC" + biasTime + " " + timeZoneName + ")";
     }
 
     if(type == GMT_TIMEZONE)
     {
-        timeString = timeString + " GMT";
+        timeString = timeString + " (UTC+0:00 GMT)";
     }
 
     return timeString;
@@ -455,12 +494,17 @@ string CtiTime::asString(timeFormat type)  const
 
 string CtiTime::asString() const
 {
+    return asString(LOCAL_NO_TIMEZONE);
+}
+
+string CtiTime::asStringTimeZone() const
+{
     return asString(LOCAL_TIMEZONE);
 }
 
 string CtiTime::asGMTString() const
 {
-    return asString(GMT_TIMEZONE);
+    return asString(GMT_NO_TIMEZONE);
 }
 
 struct tm* CtiTime::gmtime_r(const time_t *tod){
