@@ -124,7 +124,7 @@ bool PaoStatistics::freshenRecord(const CtiTime freshen_time, PaoStatisticsRecor
 {
     if( statistics_record )
     {
-        if( freshen_time < statistics_record->endTime() )
+        if( ! statistics_record->isStale(freshen_time) )
         {
             return false;
         }

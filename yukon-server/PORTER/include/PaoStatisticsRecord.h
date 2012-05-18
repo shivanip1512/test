@@ -18,11 +18,9 @@ class PaoStatisticsRecord
 {
 public:
 
-    PaoStatisticsRecord *makeNewRecord(const CtiTime record_time);
-
     bool writeRecord(Database::DatabaseWriter &writer);
 
-    CtiTime endTime() const;
+    bool isStale(CtiTime timeNow) const;
     bool isDirty() const;
 
     void incrementRequests();
@@ -68,12 +66,10 @@ private:
     bool TryUpdateSum(Database::DatabaseWriter &writer);
 
     long _row_id;
-
     long _pao_id;
 
-    StatisticTypes _type;
-
-    CtiTime _interval_start;
+    const StatisticTypes _type;
+    const CtiTime _interval_start;
 
     int _requests;
     int _attempts;

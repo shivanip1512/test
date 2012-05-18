@@ -13,9 +13,12 @@ namespace Cti {
 namespace Porter {
 namespace Statistics {
 
+static const CtiDate LifetimeIntervalStart = CtiDate(1, 1, 2000);
+
 PaoStatisticsRecord::PaoStatisticsRecord(long pao_id, StatisticTypes type, const CtiTime record_time) :
     _pao_id(pao_id),
     _type(type),
+    _interval_start(calcIntervalStart(type, record_time)),
     _row_id(0),
     _requests(0),
     _attempts(0),
@@ -25,7 +28,6 @@ PaoStatisticsRecord::PaoStatisticsRecord(long pao_id, StatisticTypes type, const
     _system_errors(0),
     _dirty(false)
 {
-    _interval_start = calcIntervalStart(type, record_time);
 }
 
 
@@ -35,6 +37,7 @@ PaoStatisticsRecord::PaoStatisticsRecord(long pao_id, StatisticTypes type, const
     unsigned protocol_errors, unsigned comm_errors, unsigned system_errors) :
     _pao_id(pao_id),
     _type(type),
+    _interval_start(calcIntervalStart(type, record_time)),
     _row_id(row_id),
     _requests(requests),
     _attempts(attempts),
@@ -44,7 +47,6 @@ PaoStatisticsRecord::PaoStatisticsRecord(long pao_id, StatisticTypes type, const
     _system_errors(system_errors),
     _dirty(false)
 {
-    _interval_start = calcIntervalStart(type, record_time);
 }
 
 
@@ -58,13 +60,13 @@ CtiTime PaoStatisticsRecord::calcIntervalStart(StatisticTypes type, const CtiTim
 
         //  default to time of creation, which is fine
         default:
-        case Lifetime:  return interval_time;
+        case Lifetime:  return LifetimeIntervalStart;
     }
 }
 
 CtiTime PaoStatisticsRecord::hourStart(const CtiTime t)
 {
-    return CtiTime(t.hour(), 0, 0);
+    return CtiTime(t.date(), t.hour(), 0, 0);
 }
 
 CtiTime PaoStatisticsRecord::dayStart(const CtiTime t)
@@ -80,28 +82,34 @@ CtiTime PaoStatisticsRecord::monthStart(const CtiTime t)
 }
 
 
-CtiTime PaoStatisticsRecord::endTime() const
+bool PaoStatisticsRecord::isStale(const CtiTime timeNow) const
 {
     switch( _type )
     {
-        case Hourly:    return _interval_start + 3600;
-        case Daily:     return _interval_start.date() + 1;
+        case Hourly:
+        {
+            return timeNow >= (_interval_start + 3600);
+        }
+        case Daily:
+        {
+            return timeNow >= (_interval_start.date() + 1);
+        }
         case Monthly:
         {
             CtiDate d = _interval_start.date();
 
             if( d.month() == 12 )
             {
-                return CtiDate(1, 1, d.year() + 1);
+                return timeNow >= CtiDate(1, 1, d.year() + 1);
             }
             else
             {
-                return CtiDate(1, d.month() + 1, d.year());
+                return timeNow >= CtiDate(1, d.month() + 1, d.year());
             }
         }
 
         default:
-        case Lifetime:  return YUKONEOT;
+        case Lifetime:  return false;
     }
 }
 
@@ -109,12 +117,6 @@ CtiTime PaoStatisticsRecord::endTime() const
 bool PaoStatisticsRecord::isDirty() const
 {
     return _dirty;
-}
-
-
-PaoStatisticsRecord *PaoStatisticsRecord::makeNewRecord(const CtiTime record_time)
-{
-    return new PaoStatisticsRecord(_pao_id, _type, record_time);
 }
 
 
@@ -306,7 +308,7 @@ bool PaoStatisticsRecord::Update(Database::DatabaseWriter &writer)
 
 bool PaoStatisticsRecord::TryUpdateSum(Database::DatabaseWriter &writer)
 {
-    std::string sql =
+    static const std::string sql =
         "update DynamicPaoStatistics "
         "set "
             "requests = requests + ?, "
@@ -317,12 +319,8 @@ bool PaoStatisticsRecord::TryUpdateSum(Database::DatabaseWriter &writer)
             "systemerrors = systemerrors + ? "
         "where "
             "PAObjectId = ? and "
-            "StatisticType = ?";
-
-    if( _type != Lifetime )
-    {
-        sql += " and StartDateTime = ?";
-    }
+            "StatisticType = ? and "
+            "StartDateTime = ?";
 
     writer.setCommandText(sql);
 
@@ -338,12 +336,8 @@ bool PaoStatisticsRecord::TryUpdateSum(Database::DatabaseWriter &writer)
     // where
     writer
         << _pao_id
-        << getStatisticTypeString(_type);
-
-    if( _type != Lifetime )
-    {
-        writer << _interval_start;
-    }
+        << getStatisticTypeString(_type)
+        << _interval_start;
 
     return executeUpdater(writer);
 }
