@@ -26,7 +26,8 @@ public enum CMEPUnitEnum {
     VOLTS(null), // Volts. 
     BTU(null), // British Thermal Units. 
     THERM(null), // Therms. 
-    GAL(BuiltInAttribute.USAGE_WATER), // Gallons. 
+    GALREG(BuiltInAttribute.USAGE_WATER), // Gallons. 
+    GAL(null), // Gallons. 
     CF(null), // Cubic Feet. 
     CCF(null), // Hundreds of Cubic Feet. 
     MCF(null), // Thousands of Cubic Feet. 
