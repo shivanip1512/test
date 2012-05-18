@@ -62,7 +62,7 @@ static const std::set<int> ClosedStates = initClosedStates();
 static const std::set<int> OpenStates = initOpenStates();
 
 template<class T>
-static bool setVariableIfDifferent(T &original, const T &updated)
+bool setVariableIfDifferent(T &original, const T &updated)
 {
     if (original != updated)
     {
