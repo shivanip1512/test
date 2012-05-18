@@ -235,24 +235,15 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             bool invalidData            = ! hasValidData( request, timeNow, subbus );
             bool hasAutoModeRegulator   = ! allRegulatorsInRemoteMode(subbusId);
 
-            if ( invalidData || hasAutoModeRegulator )
+            if ( invalidData )
             {
                 //Not starting a new scan here. There should be retrys happening already.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
-                    if ( invalidData )
-                    {
-                        dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
-                             << "  Analysis Interval: Invalid Data." << std::endl;
-                    }
-
-                    if ( hasAutoModeRegulator )
-                    {
-                        dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
-                             << "  Analysis Interval: One or more Voltage Regulators are in 'Auto' mode." << std::endl;
-                    }
+                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
+                         << "  Analysis Interval: Invalid Data." << std::endl;
                 }
 
                 state->setCommsRetryCount(state->getCommsRetryCount() + 1);
@@ -270,37 +261,23 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                         handleCommsLost( state, subbus );
 
-                        if ( hasAutoModeRegulator )
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - IVVC Analysis Suspended for bus: " << subbus->getPaoName()
-                                 << ". One or more Voltage Regulators are in 'Auto' mode." << std::endl;
-                        }
-
                         if (_CC_DEBUG & CC_DEBUG_IVVC)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << std::endl;
                         }
                     }
-                    request->reportStatusToLog();
                 }
+                request->reportStatusToLog();
                 break;
             }
             else
             {
-                if (_CC_DEBUG & CC_DEBUG_IVVC)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Data OK, moving on to Analyze." << std::endl;
-                }
-                request->reportStatusToLog();
-                state->setState(IVVCState::IVVC_ANALYZE_DATA);
-
-                state->setCommsRetryCount(0);
-
                 if ( state->isCommsLost() )
                 {
+                    state->setState(IVVCState::IVVC_WAIT);
+                    state->setCommsRetryCount(0);
+
                     state->setCommsLost(false);     // Write to the event log...
 
                     dispatchConnection->WriteConnQue(
@@ -330,6 +307,57 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - IVVC Analysis Resuming for bus: " << subbus->getPaoName() << std::endl;
+                    }
+                    break;
+                }
+                else
+                {
+                    if ( hasAutoModeRegulator )
+                    {
+
+                        if (_CC_DEBUG & CC_DEBUG_IVVC)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                            dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
+                                 << "  Analysis Interval: One or more Voltage Regulators are in 'Auto' mode." << std::endl;
+                        }
+
+                        state->setCommsRetryCount(state->getCommsRetryCount() + 1);
+                        if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
+                        {
+                            if ( ! state->isCommsLost() )
+                            {
+                                state->setCommsLost(true);
+
+                                state->setState(IVVCState::IVVC_WAIT);
+                                state->setCommsRetryCount(0);
+
+                                dispatchConnection->WriteConnQue(
+                                    new CtiPointDataMsg( subbus->getCommsStatePointId(), 1.0 ) ); // NormalQuality, StatusPointType
+
+                                handleCommsLost( state, subbus );
+
+                                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << std::endl;
+                                }
+                            }
+                        }
+                        request->reportStatusToLog();
+                        break;
+                    }
+                    else
+                    {
+                        state->setState(IVVCState::IVVC_ANALYZE_DATA);
+                        state->setCommsRetryCount(0);
+
+                        if (_CC_DEBUG & CC_DEBUG_IVVC)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Data OK, moving on to Analyze." << std::endl;
+                        }
                     }
                 }
             }
