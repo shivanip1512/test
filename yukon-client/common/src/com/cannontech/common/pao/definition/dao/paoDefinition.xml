@@ -3851,7 +3851,7 @@
             </tag>
         </tags>
     </pao>
-    <pao id="REPEATER_801" inherits="SIGNAL_TRANSMITTER_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
+    <pao id="REPEATER_801" inherits="REPEATER_BASE">
         <displayName>REPEATER 801</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
@@ -3863,7 +3863,7 @@
             </tag>
         </tags>
     </pao>
-    <pao id="REPEATER_921" inherits="SIGNAL_TRANSMITTER_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
+    <pao id="REPEATER_921" inherits="REPEATER_BASE">
         <displayName>REPEATER 921</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE_ENFORCE">
