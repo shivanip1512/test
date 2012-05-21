@@ -15,7 +15,7 @@ import com.cannontech.common.requests.runnable.YukonJob;
 import com.cannontech.common.requests.service.CapControlImportJob;
 import com.cannontech.core.dao.NotFoundException;
 
-public class CapControlRunnableFactory {
+public class CapControlJobFactory {
     @Autowired
     private CapControlImportService capControlImportService;
 

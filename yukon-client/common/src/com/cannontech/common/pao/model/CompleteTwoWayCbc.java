@@ -22,7 +22,7 @@ public class CompleteTwoWayCbc extends CompleteCbcBase {
     public void setScanEnabled(boolean scanEnabled) {
         if (scanEnabled) {
             // Check for already existing data to ensure we aren't stomping over previous data.
-            if (completeDeviceScanRate != null) {
+            if (completeDeviceScanRate == null) {
                 completeDeviceScanRate = new CompleteDeviceScanRate();
             }
         } else {

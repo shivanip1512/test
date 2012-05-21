@@ -304,5 +304,5 @@
     <bean class="com.cannontech.spring.MasterConfigInterceptor"/>
     
     <bean class="com.cannontech.common.requests.service.impl.JobManagementServiceImpl"/>
-    <bean class="com.cannontech.common.requests.runnable.capcontrol.CapControlRunnableFactory"/>
+    <bean class="com.cannontech.common.requests.runnable.capcontrol.CapControlJobFactory"/>
 </beans>
