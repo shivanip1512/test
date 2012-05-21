@@ -17,6 +17,7 @@ import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.profileCollection.service.ProfileCollectionService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.token.DeviceTokenStatus;
 import com.cannontech.common.token.Token;
 import com.cannontech.common.token.TokenStatus;
 import com.cannontech.common.token.TokenType;
@@ -54,7 +55,7 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
         Map<PaoIdentifier, SpecificDeviceErrorDescription> errors = Maps.newHashMap();
         List<PaoIdentifier> canceledItems = Lists.newArrayList();
 
-        TokenStatus tokenStatus = new TokenStatus() {
+        TokenStatus tokenStatus = new DeviceTokenStatus() {
             @Override
             public boolean isFinished() {
                 return workLeft.isEmpty();

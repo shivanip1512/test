@@ -12,6 +12,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.service.PaoSelectionUtil;
+import com.cannontech.common.token.DeviceTokenStatus;
 import com.cannontech.common.token.Token;
 import com.cannontech.common.token.TokenStatus;
 import com.cannontech.common.token.TokenType;
@@ -48,23 +49,25 @@ public class TokenStatusRequestEndpoint {
             responseElem.addContent(errorElem);
         } else if (status.isFinished()) {
             Element mainElem = new Element("complete", ns);
-            mainElem.setAttribute("numSuccesses", Integer.toString(status.getSuccesses().size()));
-
-            Map<PaoIdentifier, SpecificDeviceErrorDescription> errors = status.getErrors();
-            mainElem.setAttribute("numErrors", Integer.toString(errors.size()));
-            List<Element> errorElems = PaoSelectionUtil.makePaoErrorElements(errors);
-            mainElem.addContent(errorElems);
-
-            List<PaoIdentifier> canceledItems = status.getCanceledItems();
-            mainElem.setAttribute("numCanceled", Integer.toString(canceledItems.size()));
-            if (!canceledItems.isEmpty()) {
-                Element canceledElem = new Element("canceled", ns);
-                for (PaoIdentifier paoIdentifier : canceledItems) {
-                    canceledElem.addContent(PaoSelectionUtil.makePaoElement(paoIdentifier));
+            if (token.getType() == TokenType.PROFILE_COLLECTION) {
+                DeviceTokenStatus deviceTokenStatus = (DeviceTokenStatus) status;
+                mainElem.setAttribute("numSuccesses", Integer.toString(deviceTokenStatus.getSuccesses().size()));
+        
+                Map<PaoIdentifier, SpecificDeviceErrorDescription> errors = deviceTokenStatus.getErrors();
+                mainElem.setAttribute("numErrors", Integer.toString(errors.size()));
+                List<Element> errorElems = PaoSelectionUtil.makePaoErrorElements(errors);
+                mainElem.addContent(errorElems);
+        
+                List<PaoIdentifier> canceledItems = deviceTokenStatus.getCanceledItems();
+                mainElem.setAttribute("numCanceled", Integer.toString(canceledItems.size()));
+                if (!canceledItems.isEmpty()) {
+                    Element canceledElem = new Element("canceled", ns);
+                    for (PaoIdentifier paoIdentifier : canceledItems) {
+                        canceledElem.addContent(PaoSelectionUtil.makePaoElement(paoIdentifier));
+                    }
+                    mainElem.addContent(canceledElem);
                 }
-                mainElem.addContent(canceledElem);
             }
-
             responseElem.addContent(mainElem);
         } else {
             responseElem.addContent(new Element("started", ns));

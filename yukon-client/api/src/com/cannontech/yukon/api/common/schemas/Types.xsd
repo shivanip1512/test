@@ -34,10 +34,6 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:complexType name="Token">
-        <xsd:attribute name="value" use="required" type="xsd:string"/>
-    </xsd:complexType>
-
     <xsd:simpleType name="ThermostatMode">
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="Auto"/>
@@ -96,4 +92,15 @@
             <xsd:minInclusive value="0"/>
         </xsd:restriction>
     </xsd:simpleType>
+        
+    <xsd:complexType name="NamedElement">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This type is used as a base class for any complex type that requires a name element.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
 </xsd:schema>

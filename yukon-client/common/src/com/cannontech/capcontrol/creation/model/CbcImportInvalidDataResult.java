@@ -42,7 +42,7 @@ public class CbcImportInvalidDataResult implements CbcImportResult {
         response.addContent(resultTypeElement);
 
         Element detailElement = new Element("resultDetail", ns);
-        String detail = "Cbc Import failed because it has invalid data in field " + invalidField.getColumnName();
+        String detail = "CBC Import failed because it has invalid data in field " + invalidField.getColumnName();
         detailElement.addContent(detail);
 
         response.addContent(detailElement);

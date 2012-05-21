@@ -11,12 +11,12 @@
 		<xsd:complexContent>
 			<xsd:extension base="yukon:ImportBase">
 				<xsd:sequence>
-					<xsd:element name="parent" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-					<xsd:element name="description" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-					<xsd:element name="disabled" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-					<xsd:element name="mapLocationId" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-                    <xsd:element name="operationalState" minOccurs="0" maxOccurs="1" type="yukon:CapBankOperationalState"/>
-                    <xsd:element name="capBankSize" minOccurs="0" maxOccurs="1" type="xsd:integer"/>
+					<xsd:element name="parent" minOccurs="0" type="xsd:string"/>
+					<xsd:element name="description" minOccurs="0" type="xsd:string"/>
+					<xsd:element name="disabled" minOccurs="0" type="xsd:string"/>
+					<xsd:element name="mapLocationId" minOccurs="0" type="xsd:string"/>
+                    <xsd:element name="operationalState" minOccurs="0" type="yukon:CapBankOperationalState"/>
+                    <xsd:element name="capBankSize" minOccurs="0" type="yukon:nonNegativeInt"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -43,8 +43,8 @@
 		<xsd:complexContent>
 			<xsd:extension base="yukon:YukonMessage">
 				<xsd:sequence>
-					<xsd:element name="hierarchyList" minOccurs="0" maxOccurs="1" type="yukon:HierarchyList"/>
-					<xsd:element name="cbcList" minOccurs="0" maxOccurs="1" type="yukon:CbcList"/>
+					<xsd:element name="hierarchyList" minOccurs="0" type="yukon:HierarchyList"/>
+					<xsd:element name="cbcList" minOccurs="0" type="yukon:CbcList"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

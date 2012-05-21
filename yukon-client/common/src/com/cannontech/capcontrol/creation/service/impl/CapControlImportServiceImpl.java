@@ -38,7 +38,6 @@ import com.cannontech.common.pao.model.CompleteCapControlSpecialArea;
 import com.cannontech.common.pao.model.CompleteCapControlSubstation;
 import com.cannontech.common.pao.model.CompleteCapControlSubstationBus;
 import com.cannontech.common.pao.model.CompleteCbcBase;
-import com.cannontech.common.pao.model.CompleteDeviceScanRate;
 import com.cannontech.common.pao.model.CompleteOneWayCbc;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
 import com.cannontech.common.pao.model.CompleteYukonPao;
@@ -179,7 +178,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             cbc.setMasterAddress(cbcImportData.getMasterAddress());
             cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
             if (cbcImportData.isScanEnabled()) {
-                cbc.setCompleteDeviceScanRate(new CompleteDeviceScanRate());
+                cbc.setScanEnabled(true);
                 if (cbcImportData.getAltInterval() != null) {
                     cbc.setAlternateRate(cbcImportData.getAltInterval());
                 }
@@ -264,7 +263,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             }
             
             if (cbcImportData.isScanEnabled()) {
-                cbc.setCompleteDeviceScanRate(new CompleteDeviceScanRate());
+                cbc.setScanEnabled(true);
                 if (cbcImportData.getAltInterval() != null) {
                     cbc.setAlternateRate(cbcImportData.getAltInterval());
                 }
@@ -272,8 +271,8 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                     cbc.setIntervalRate(cbcImportData.getScanInterval());
                 }
             } else {
-                // The template may have had scan enabled, but the import says no, so null it out!
-                cbc.setCompleteDeviceScanRate(null);
+                // The template may have had scan enabled, but the import says no!
+                cbc.setScanEnabled(false);
             }
         } else {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_PARENT));
@@ -325,7 +324,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                 cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
             }
             if (cbcImportData.isScanEnabled()) {
-                cbc.setCompleteDeviceScanRate(new CompleteDeviceScanRate());
+                cbc.setScanEnabled(true);
                 if (cbcImportData.getAltInterval() != null) {
                     cbc.setAlternateRate(cbcImportData.getAltInterval());
                 }
@@ -333,8 +332,8 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                     cbc.setIntervalRate(cbcImportData.getScanInterval());
                 }
             } else {
-                // Null this guy out, the import says scan should be disabled.
-                cbc.setCompleteDeviceScanRate(null);
+                // The import says scan should be disabled.
+                cbc.setScanEnabled(false);
             }
             
             if (cbcImportData.getCommChannel() != null) {

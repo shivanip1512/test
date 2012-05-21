@@ -30,7 +30,7 @@ import com.cannontech.capcontrol.exception.CapControlHierarchyImportException;
 import com.cannontech.capcontrol.exception.ImporterCbcMissingDataException;
 import com.cannontech.capcontrol.exception.ImporterHierarchyMissingDataException;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.requests.util.CapControlXmlUtils;
+import com.cannontech.common.requests.service.CapControlImportXmlHelper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
@@ -63,13 +63,13 @@ public class CapControlImportRequestEndpoint {
     		
     		if (!hierarchyResults.isEmpty()) {
     		    Element hierarchyList = new Element("hierarchyResponseList", ns);
-    		    CapControlXmlUtils.populateHierarchyResponseElement(hierarchyResults, hierarchyList);
+    		    CapControlImportXmlHelper.populateHierarchyResponseElement(hierarchyResults, hierarchyList);
     		    response.addContent(hierarchyList);
     		}
     		
     		if (!cbcResults.isEmpty()) {
     		    Element cbcList = new Element("cbcResponseList", ns);
-    		    CapControlXmlUtils.populateCbcResponseElement(cbcResults, cbcList);
+    		    CapControlImportXmlHelper.populateCbcResponseElement(cbcResults, cbcList);
     		    response.addContent(cbcList);
     		}
 	    } catch (XmlValidationException xmle) {
@@ -113,7 +113,7 @@ public class CapControlImportRequestEndpoint {
 			CbcImportData data = null;
 			
 			try {
-				data = CapControlXmlUtils.parseCbcImportData(node);
+				data = CapControlImportXmlHelper.parseCbcImportData(node);
 				
 				switch(data.getImportAction()) {
                     case ADD:
@@ -164,12 +164,12 @@ public class CapControlImportRequestEndpoint {
 			     *  Separate parsing into two steps so we can catch structural problems separately
 			     *  from data integrity problems.
 			     */
-				data = CapControlXmlUtils.parseHierarchyImportData(hierarchyNode);
+				data = CapControlImportXmlHelper.parseHierarchyImportData(hierarchyNode);
 				
 				if (data.getImportAction() == ImportAction.REMOVE) {
 				    capControlImportService.removeHierarchyObject(data, hierarchyResults);
 				} else {
-				    CapControlXmlUtils.populateHierarchyImportData(hierarchyNode, data);
+				    CapControlImportXmlHelper.populateHierarchyImportData(hierarchyNode, data);
     				
     				if (data.getImportAction() == ImportAction.ADD) {
                         capControlImportService.createHierarchyObject(data, hierarchyResults);

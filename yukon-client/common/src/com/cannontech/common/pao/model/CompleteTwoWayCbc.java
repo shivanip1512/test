@@ -15,8 +15,19 @@ public class CompleteTwoWayCbc extends CompleteCbcBase {
     private CompleteDeviceDirectCommSettings completeDeviceDirectCommSettings = new CompleteDeviceDirectCommSettings();
     private CompleteDeviceAddress completeDeviceAddress = new CompleteDeviceAddress();
 
-    public boolean isScannable() {
+    public boolean isScanEnabled() {
         return completeDeviceScanRate != null;
+    }
+    
+    public void setScanEnabled(boolean scanEnabled) {
+        if (scanEnabled) {
+            // Check for already existing data to ensure we aren't stomping over previous data.
+            if (completeDeviceScanRate != null) {
+                completeDeviceScanRate = new CompleteDeviceScanRate();
+            }
+        } else {
+            completeDeviceScanRate = null;
+        }
     }
     
     @YukonPaoField

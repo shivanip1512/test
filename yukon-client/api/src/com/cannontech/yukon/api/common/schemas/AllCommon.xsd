@@ -10,4 +10,7 @@
 
     <xsd:include schemaLocation="TokenStatusRequest.xsd"/>
     <xsd:include schemaLocation="TokenStatusResponse.xsd"/>
+    
+    <xsd:include schemaLocation="JobStatusRequest.xsd"/>
+    <xsd:include schemaLocation="JobStatusResponse.xsd"/>
 </xsd:schema>

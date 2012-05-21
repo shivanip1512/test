@@ -7,13 +7,12 @@
     <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
     <xsd:include schemaLocation="../../common/schemas/Types.xsd" />
     
-    <xsd:complexType name="NamedElement">
-        <xsd:sequence>
-            <xsd:element name="name" minOccurs="1" maxOccurs="1" type="xsd:string"/>
-        </xsd:sequence>
-    </xsd:complexType>
-    
     <xsd:complexType name="ImportBase">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This is the base class for objects imported using the CapControlImportRequest message.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="yukon:NamedElement">
                 <xsd:attribute name="action" use="required" type="yukon:ImportAction"/>
@@ -22,99 +21,138 @@
     </xsd:complexType>
     
     <xsd:complexType name="HierarchyImportBase">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This type is used as the base hierarchy class for the Cap Control job importers.
+            This class is used as the representation object of the Area and Special Area classes.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="yukon:NamedElement">
                 <xsd:sequence>
-                    <xsd:element name="description" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-                    <xsd:element name="disabled" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+                    <xsd:element name="description" minOccurs="0" type="xsd:string"/>
+                    <xsd:element name="disabled" minOccurs="0" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     
     <xsd:complexType name="HierarchyExtendedBase">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This type is used as an extension of the HierarchyImportBase object to add additional
+            optional information for cap control hierarchy objects. This class is used as the 
+            representation object of the Substation, Substation Bus, and Feeder classes.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="yukon:HierarchyImportBase">
                 <xsd:sequence>
-                    <xsd:element name="parent" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-                    <xsd:element name="mapLocationId" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+                    <xsd:element name="parent" minOccurs="0" type="xsd:string"/>
+                    <xsd:element name="mapLocationId" minOccurs="0" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     
     <xsd:complexType name="CapBankImportBase">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This type is used as an extension of the HierarchyExtendedBase object to add additional
+            cap bank optional information. It is used to represent the cap bank class.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="yukon:HierarchyExtendedBase">
                 <xsd:sequence>
-                    <xsd:element name="operationalState" minOccurs="0" maxOccurs="1" type="yukon:CapBankOperationalState"/>
-                    <xsd:element name="capBankSize" minOccurs="0" maxOccurs="1" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="operationalState" minOccurs="0" type="yukon:CapBankOperationalState"/>
+                    <xsd:element name="capBankSize" minOccurs="0" type="yukon:nonNegativeInt"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     
     <xsd:complexType name="CbcJobOptionalBase">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This type is used to hold the optional data for CBC objects. It is used as the base
+            class for both the CbcJobAddData and CbcJobUpdateData.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="yukon:NamedElement">
                 <xsd:sequence>
-                    <xsd:element name="capBankName" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-                    <xsd:element name="scanEnabled" minOccurs="0" maxOccurs="1" type="xsd:boolean"/>
-                    <xsd:element name="scanInterval" minOccurs="0" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="altInterval" minOccurs="0" maxOccurs="1" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="capBankName" minOccurs="0" type="xsd:string"/>
+                    <xsd:element name="scanEnabled" minOccurs="0" type="xsd:boolean"/>
+                    <xsd:element name="scanInterval" minOccurs="0" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="altInterval" minOccurs="0" type="yukon:nonNegativeInt"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
 
     <xsd:complexType name="CbcImportData">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This is the representation of the CBC object for the CapControlImportRequest message.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="yukon:ImportBase">
                 <xsd:sequence>
-                    <xsd:element name="templateName" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-                    <xsd:element name="type" minOccurs="1" maxOccurs="1" type="yukon:CbcTypes"/>
-                    <xsd:element name="serialNumber" minOccurs="1" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="capBankName" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-                    <xsd:element name="masterAddress" minOccurs="1" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="slaveAddress" minOccurs="1" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="commChannel" minOccurs="1" maxOccurs="1" type="xsd:string"/>
-                    <xsd:element name="scanEnabled" minOccurs="0" maxOccurs="1" type="xsd:boolean"/>
-                    <xsd:element name="scanInterval" minOccurs="0" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="altInterval" minOccurs="0" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                </xsd:sequence>
-            </xsd:extension>
-        </xsd:complexContent>
-    </xsd:complexType>
-    
-    <xsd:complexType name="TokenMessage">
-        <xsd:complexContent>
-            <xsd:extension base="yukon:YukonMessage">
-                <xsd:sequence>
-                    <xsd:element name="token" minOccurs="1" maxOccurs="1" type="yukon:Token"/>
+                    <xsd:element name="templateName" minOccurs="0" type="xsd:string"/>
+                    <xsd:element name="type" type="yukon:CbcTypes"/>
+                    <xsd:element name="serialNumber" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="capBankName" minOccurs="0" type="xsd:string"/>
+                    <xsd:element name="masterAddress" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="slaveAddress" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="commChannel" type="xsd:string"/>
+                    <xsd:element name="scanEnabled" minOccurs="0" type="xsd:boolean"/>
+                    <xsd:element name="scanInterval" minOccurs="0" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="altInterval" minOccurs="0" type="yukon:nonNegativeInt"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
     
     <xsd:complexType name="CbcImportResponse">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This type is used to represent the outcome of a CBC import request for all of the Cap
+            Control import responses.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="cbcImportResultType" minOccurs="0" maxOccurs="1" type="yukon:CbcImportResultType"/>
-            <xsd:element name="resultDetail" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+            <xsd:element name="cbcImportResultType" minOccurs="0" type="yukon:CbcImportResultType"/>
+            <xsd:element name="resultDetail" minOccurs="0" type="xsd:string"/>
         </xsd:sequence>
         <xsd:attribute name="success" use="required" type="xsd:boolean"/>
-        <xsd:attribute name="errorCode" use="required" type="xsd:int"/>
+        <xsd:attribute name="errorCode" use="required" type="yukon:nonNegativeInt"/>
     </xsd:complexType>
     
     <xsd:complexType name="HierarchyImportResponse">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This type is used to represent the outcome of a hierarchy import request for all of the
+            Cap Control import responses.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="hierarchyImportResultType" minOccurs="0" maxOccurs="1" type="yukon:HierarchyImportResultType"/>
-            <xsd:element name="resultDetail" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+            <xsd:element name="hierarchyImportResultType" minOccurs="0" type="yukon:HierarchyImportResultType"/>
+            <xsd:element name="resultDetail" minOccurs="0" type="xsd:string"/>
         </xsd:sequence>
         <xsd:attribute name="success" use="required" type="xsd:boolean"/>
-        <xsd:attribute name="errorCode" use="required" type="xsd:int"/>
+        <xsd:attribute name="errorCode" use="required" type="yukon:nonNegativeInt"/>
     </xsd:complexType>
     
     <xsd:simpleType name="CbcImportResultType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            The result types allowable for the failed outcome of a CBC import. These values must
+            match the dbString value of the CbcImportResultType enums except for the Success entry,
+            which is handled differently and is omitted from the enumeration below.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="Missing Data"/>
             <xsd:enumeration value="Invalid Parent Name"/>
@@ -129,6 +167,13 @@
     </xsd:simpleType>
     
     <xsd:simpleType name="HierarchyImportResultType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            The result types allowable for the failed outcome of a hierarchy import. These values 
+            must match the dbString value of the HierarchyImportResultType enums except for the 
+            Success entry, which is handled differently and is omitted from the enumeration below.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="Invalid Parent Name"/>
             <xsd:enumeration value="Invalid Type"/>
@@ -142,6 +187,12 @@
     </xsd:simpleType>
                 
     <xsd:simpleType name="ImportAction">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            The import actions allowable for the CapControlImportRequest objects. These values must
+            match the dbString values in the ImportAction enum.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="Add"/>
             <xsd:enumeration value="Update"/>
@@ -150,6 +201,12 @@
     </xsd:simpleType>
     
     <xsd:simpleType name="CbcTypes">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            The CBC types allowable for the CapControlImportRequest objects. These values must
+            match the dbString values in the PaoType enum.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="CBC 7010"/>
             <xsd:enumeration value="CBC 7020"/>
@@ -168,6 +225,12 @@
     </xsd:simpleType>
     
     <xsd:simpleType name="CapBankOperationalState">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            The operational states allowable for a cap bank import. These values must match the
+            dbString values of the BankOpState enum.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:restriction base="xsd:string">
             <xsd:enumeration value="Fixed"/>
             <xsd:enumeration value="Switched"/>

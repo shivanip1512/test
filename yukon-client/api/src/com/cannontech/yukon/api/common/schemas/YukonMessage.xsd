@@ -43,4 +43,23 @@
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
+
+    <xsd:complexType name="Token">
+        <xsd:attribute name="value" use="required" type="xsd:string"/>
+    </xsd:complexType>
+    
+    <xsd:complexType name="TokenMessage">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This type is used as the parent for all Yukon Messages that contain a token element.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:sequence>
+                    <xsd:element name="token" type="yukon:Token"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
 </xsd:schema>

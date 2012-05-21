@@ -588,71 +588,73 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
             throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         PropertyDescriptor propertyDescriptor = paoMetaData.getPropertyDescriptor();
         
-        if (propertyDescriptor != null) {
-            Method getter = propertyDescriptor.getReadMethod();
-            Method setter = propertyDescriptor.getWriteMethod();
+        if (propertyDescriptor == null) {
+            return;
+        }
+    
+        Method getter = propertyDescriptor.getReadMethod();
+        Method setter = propertyDescriptor.getWriteMethod();
+        
+        Object obj = (getter == null) ? null : getter.invoke(pao);
+        
+        if (obj == null) {
+            // This is PROBABLY a nullable object; it better have a setter if it is!
+            if (setter == null) {
+                throw new RuntimeException(paoMetaData.getDbTableName() + " does not have a " +
+                                           "setter method and its value is null!");
+            }
             
-            Object obj = (getter == null) ? null : getter.invoke(pao);
+            /* 
+             * We need to "check" if a delete is necessary. Since blindly executing
+             * a delete doesn't hurt anything, we can just execute the query without
+             * any worries.
+             */
+            SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+            deleteSql.append("DELETE FROM").append(paoMetaData.getDbTableName());
+            deleteSql.append("WHERE").append(paoMetaData.getDbIdColumnName()).eq(pao.getPaObjectId());
             
-            if (obj == null) {
-                // This is PROBABLY a nullable object; it better have a setter if it is!
-                if (setter == null) {
-                    throw new RuntimeException(paoMetaData.getDbTableName() + " does not have a " +
-                                               "setter method and its value is null!");
-                }
-                
-                /* 
-                 * We need to "check" if a delete is necessary. Since blindly executing
-                 * a delete doesn't hurt anything, we can just execute the query without
-                 * any worries.
-                 */
-                SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-                deleteSql.append("DELETE FROM").append(paoMetaData.getDbTableName());
-                deleteSql.append("WHERE").append(paoMetaData.getDbIdColumnName()).eq(pao.getPaObjectId());
-                
-                jdbcTemplate.update(deleteSql);
-            } else {
-                if (setter != null) {
-                    /*
-                     * This object has a setter, so it's nullable. We need to check to see if
-                     * an insert is necessary.
-                     */                    
-                    final AtomicBoolean rowExists = new AtomicBoolean(false);
+            jdbcTemplate.update(deleteSql);
+        } else {
+            if (setter != null) {
+                /*
+                 * This object has a setter, so it's nullable. We need to check to see if
+                 * an insert is necessary.
+                 */                    
+                final AtomicBoolean rowExists = new AtomicBoolean(false);
+                 
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT").append(paoMetaData.getDbIdColumnName());
+                sql.append("FROM").append(paoMetaData.getDbTableName());
+                sql.append("WHERE").append(paoMetaData.getDbIdColumnName()).eq(pao.getPaObjectId());
+                 
+                jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+                    @Override
+                    public void processRow(YukonResultSet rs) throws SQLException {
+                        rowExists.set(true);
+                    } 
+                });
+                 
+                if (!rowExists.get()) {
+                    // No entry, time to insert!
+                    SqlStatementBuilder insertSql = new SqlStatementBuilder();
+                    SqlParameterSink params = insertSql.insertInto(paoMetaData.getDbTableName());
+                    params.addValue(paoMetaData.getDbIdColumnName(), pao.getPaObjectId());
                      
-                    SqlStatementBuilder sql = new SqlStatementBuilder();
-                    sql.append("SELECT").append(paoMetaData.getDbIdColumnName());
-                    sql.append("FROM").append(paoMetaData.getDbTableName());
-                    sql.append("WHERE").append(paoMetaData.getDbIdColumnName()).eq(pao.getPaObjectId());
-                     
-                    jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-                        @Override
-                        public void processRow(YukonResultSet rs) throws SQLException {
-                            rowExists.set(true);
-                        } 
-                    });
-                     
-                    if (!rowExists.get()) {
-                        // No entry, time to insert!
-                        SqlStatementBuilder insertSql = new SqlStatementBuilder();
-                        SqlParameterSink params = insertSql.insertInto(paoMetaData.getDbTableName());
-                        params.addValue(paoMetaData.getDbIdColumnName(), pao.getPaObjectId());
+                    for (PaoFieldMetaData dbFieldMapping : paoMetaData.getFields()) {
+                        Method fieldGetter = dbFieldMapping.getPropertyDescriptor().getReadMethod();
+                        Object field = fieldGetter.invoke(obj);
                          
-                        for (PaoFieldMetaData dbFieldMapping : paoMetaData.getFields()) {
-                            Method fieldGetter = dbFieldMapping.getPropertyDescriptor().getReadMethod();
-                            Object field = fieldGetter.invoke(obj);
-                             
-                            if (field instanceof Boolean || field.getClass() == Boolean.TYPE) {
-                                field = YNBoolean.valueOf((Boolean)field);
-                            } else if (field instanceof String) {
-                                field = SqlUtils.convertStringToDbValue((String) field);
-                            }
-                            params.addValue(dbFieldMapping.getDbColumnName(), field);
+                        if (field instanceof Boolean || field.getClass() == Boolean.TYPE) {
+                            field = YNBoolean.valueOf((Boolean)field);
+                        } else if (field instanceof String) {
+                            field = SqlUtils.convertStringToDbValue((String) field);
                         }
-                         
-                        jdbcTemplate.update(insertSql);
-                         
-                        System.out.println(insertSql.getSql());
+                        params.addValue(dbFieldMapping.getDbColumnName(), field);
                     }
+                     
+                    jdbcTemplate.update(insertSql);
+                     
+                    System.out.println(insertSql.getSql());
                 }
             }
         }

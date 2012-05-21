@@ -26,15 +26,14 @@ import com.cannontech.capcontrol.exception.CapControlHierarchyImportException;
 import com.cannontech.capcontrol.exception.ImporterCbcMissingDataException;
 import com.cannontech.capcontrol.exception.ImporterHierarchyMissingDataException;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.requests.runnable.YukonJobRunnable;
-import com.cannontech.common.requests.util.CapControlXmlUtils;
+import com.cannontech.common.requests.runnable.YukonJob;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.Lists;
 
-public abstract class CapControlXmlParser implements YukonJobRunnable {
-    protected static final Logger log = YukonLogManager.getLogger(CapControlXmlParser.class);
+public abstract class CapControlImportJob implements YukonJob {
+    protected static final Logger log = YukonLogManager.getLogger(CapControlImportJob.class);
     
     protected final Element elem;
     protected final List<Node> requestNodes;
@@ -44,7 +43,7 @@ public abstract class CapControlXmlParser implements YukonJobRunnable {
     protected final List<HierarchyImportResult> hierarchyImportResults = Lists.newArrayList();
     protected final ImportAction importAction;
     
-    protected CapControlXmlParser(Element elem, ImportAction importAction) {
+    protected CapControlImportJob(Element elem, ImportAction importAction) {
         this.elem = elem;
         this.importAction = importAction;
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(elem);
@@ -53,34 +52,29 @@ public abstract class CapControlXmlParser implements YukonJobRunnable {
     }
     
     private enum HierarchyOrder {
-        area(0),
-        specialArea(0),
-        substation(1),
-        substationBus(2),
-        feeder(3),
-        capBank(4),
-        cbc(5)
+        area,
+        specialArea,
+        substation,
+        substationBus,
+        feeder,
+        capBank,
+        cbc
         ;
-        
-        private final int order;
-        
-        HierarchyOrder(int order) {
-            this.order = order;
-        }
-        
-        public int getOrder() {
-            return order;
-        }
     }
     
     protected void parseImportData() {
+        /*
+         * Sort the collection in top-down hierarchy order so that if the import is unordered
+         * and has parent requirements internal to the import, they can be addressed without
+         * fear of a failed import.
+         */
         Collections.sort(requestNodes, new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
-                int o1Order = HierarchyOrder.valueOf(o1.getLocalName()).getOrder();
-                int o2Order = HierarchyOrder.valueOf(o2.getLocalName()).getOrder();
+                int o1Order = HierarchyOrder.valueOf(o1.getLocalName()).ordinal();
+                int o2Order = HierarchyOrder.valueOf(o2.getLocalName()).ordinal();
 
-                return (o1Order == o2Order) ? 0 : ((o1Order < o2Order) ? 1 : -1);
+                return o1Order - o2Order;
             }
         });
         
@@ -91,7 +85,7 @@ public abstract class CapControlXmlParser implements YukonJobRunnable {
                 CbcImportData cbcImportData = null;
                 try {
                     // This is a CBC. Parse the CBC data and toss it onto the cbcImportList.
-                    cbcImportData = CapControlXmlUtils.parseCbcJobData(node, importAction);
+                    cbcImportData = CapControlImportXmlHelper.parseCbcJobData(node, importAction);
                     cbcImportList.add(cbcImportData);
                 } catch (CapControlCbcImportException c) {
                     log.debug(c);
@@ -112,9 +106,9 @@ public abstract class CapControlXmlParser implements YukonJobRunnable {
                 
                 try {
                     // We got ourselves a hierarchy node! Let's parse the data and put it onto the hierarchyImportList!
-                    hierarchyImportData = CapControlXmlUtils.parseHierarchyJobData(node, importAction);
+                    hierarchyImportData = CapControlImportXmlHelper.parseHierarchyJobData(node, importAction);
                     if (importAction != ImportAction.REMOVE) {
-                        CapControlXmlUtils.populateHierarchyImportData(node, hierarchyImportData);
+                        CapControlImportXmlHelper.populateHierarchyImportData(node, hierarchyImportData);
                     }
                     hierarchyImportList.add(hierarchyImportData);
                 } catch (CapControlHierarchyImportException e) {
@@ -156,20 +150,22 @@ public abstract class CapControlXmlParser implements YukonJobRunnable {
         }
         
         if (!hierarchyImportResults.isEmpty()) {
-            CapControlXmlUtils.populateHierarchyResponseElement(hierarchyImportResults, element);
+            CapControlImportXmlHelper.populateHierarchyResponseElement(hierarchyImportResults, element);
         }
         
         if (!cbcImportResults.isEmpty()) {
-            CapControlXmlUtils.populateCbcResponseElement(cbcImportResults, element);
+            CapControlImportXmlHelper.populateCbcResponseElement(cbcImportResults, element);
         }
     }
     
     @Override
-    public double getProgress() {
-        synchronized (this) {
-            double complete = cbcImportResults.size() + hierarchyImportResults.size();
-            
-            return ((complete / requestNodes.size()) * 100.0);
-        }
+    synchronized public double getProgress() {
+        double complete = cbcImportResults.size() + hierarchyImportResults.size();
+        
+        // We want this to have only two decimal places.
+        double result = (complete / requestNodes.size()) * 10000.0;
+        long rounded = Math.round(result);
+        
+        return (rounded / 100.0);
     }
 }

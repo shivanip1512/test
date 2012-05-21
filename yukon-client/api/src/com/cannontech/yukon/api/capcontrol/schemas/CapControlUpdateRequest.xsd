@@ -8,14 +8,21 @@
     <xsd:include schemaLocation="./CapControlTypes.xsd"/>
     
     <xsd:complexType name="CbcJobUpdateData">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+            This type is used for updating a CBC's information in the database. Note that the CBC
+            type is required in order to distinguish between one-way and two-way CBCs, and is NOT 
+            used to change a CBC's type. 
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:complexContent>
             <xsd:extension base="yukon:CbcJobOptionalBase">
                 <xsd:sequence>
-                    <xsd:element name="type" minOccurs="1" maxOccurs="1" type="yukon:CbcTypes"/>
-                    <xsd:element name="serialNumber" minOccurs="0" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="masterAddress" minOccurs="0" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="slaveAddress" minOccurs="0" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="commChannel" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+                    <xsd:element name="type" type="yukon:CbcTypes"/>
+                    <xsd:element name="serialNumber" minOccurs="0" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="masterAddress" minOccurs="0" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="slaveAddress" minOccurs="0" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="commChannel" minOccurs="0" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
@@ -24,7 +31,7 @@
 	<xsd:complexType name="CapControlUpdateRequest">
 		<xsd:complexContent>
 			<xsd:extension base="yukon:YukonMessage">
-				<xsd:choice minOccurs="1" maxOccurs="unbounded">
+				<xsd:choice maxOccurs="unbounded">
 					<xsd:element name="area" type="yukon:HierarchyImportBase"/>
                     <xsd:element name="specialArea" type="yukon:HierarchyImportBase"/>
                     <xsd:element name="substation" type="yukon:HierarchyExtendedBase"/>

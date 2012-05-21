@@ -23,8 +23,8 @@
 		<xsd:complexContent>
 			<xsd:extension base="yukon:YukonMessage">
 				<xsd:sequence>
-					<xsd:element name="hierarchyResponseList" minOccurs="0" maxOccurs="1" type="yukon:HierarchyResponseList"/>
-					<xsd:element name="cbcResponseList" minOccurs="0" maxOccurs="1" type="yukon:CbcResponseList"/>
+					<xsd:element name="hierarchyResponseList" minOccurs="0" type="yukon:HierarchyResponseList"/>
+					<xsd:element name="cbcResponseList" minOccurs="0" type="yukon:CbcResponseList"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

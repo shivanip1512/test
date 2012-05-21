@@ -16,7 +16,5 @@
     <xsd:include schemaLocation="CapControlRemoveResponse.xsd"/>
     <xsd:include schemaLocation="CapControlReportRequest.xsd"/>
     <xsd:include schemaLocation="CapControlReportResponse.xsd"/>
-    <xsd:include schemaLocation="CapControlStatusRequest.xsd"/>
-    <xsd:include schemaLocation="CapControlStatusResponse.xsd"/>
     <xsd:include schemaLocation="CapControlTypes.xsd"/>
 </xsd:schema>

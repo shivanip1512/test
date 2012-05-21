@@ -3,8 +3,23 @@
 <capControlRemoveRequest xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlRemoveRequest.xsd" version="1.0">
 
+    <area>
+        <name>Test Area 1</name>
+    </area>
+    <substation>
+        <name>Test Substation 1</name>
+    </substation>
+    <substationBus>
+        <name>Test Substation Bus 1</name>
+    </substationBus>
+    <feeder>
+        <name>Test Feeder 1</name>
+    </feeder>
     <capBank>
         <name>Test Bank 1</name>
     </capBank>
+    <cbc>
+        <name>Test Cbc 1</name>
+    </cbc>
     
 </capControlRemoveRequest>

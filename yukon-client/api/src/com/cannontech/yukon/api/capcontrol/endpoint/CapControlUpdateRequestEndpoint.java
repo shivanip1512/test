@@ -9,7 +9,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.requests.runnable.YukonJobRunnable;
+import com.cannontech.common.requests.runnable.YukonJob;
 import com.cannontech.common.requests.runnable.capcontrol.CapControlRunnableFactory;
 import com.cannontech.common.requests.service.JobManagementService;
 import com.cannontech.common.token.Token;
@@ -35,10 +35,9 @@ public class CapControlUpdateRequestEndpoint {
         Element response = new Element("capControlUpdateResponse", ns);
         response.setAttribute("version", XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
-        YukonJobRunnable runnable = capControlRunnableFactory.createRunnable(ImportAction.UPDATE, capControlUpdateRequest);
+        YukonJob runnable = capControlRunnableFactory.createRunnable(ImportAction.UPDATE, capControlUpdateRequest);
         
-        // We're all parsed, time to schedule a job!
-        Token token = jobManagementService.createJob(TokenType.CAP_CONTROL_IMPORT, runnable);
+        Token token = jobManagementService.createJob(TokenType.YUKON_JOB, runnable);
         
         Element tokenElem = new Element("token", ns);
         tokenElem.setAttribute("value", token.getString());

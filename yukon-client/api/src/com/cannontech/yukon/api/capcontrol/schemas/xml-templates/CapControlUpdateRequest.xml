@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<capControlUpdateRequest xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlUpdateRequest.xsd"
+           version="1.0">
+    
+    <area>
+        <name>ImportArea</name>
+        <description>West</description>
+        <disabled>Y</disabled>
+    </area>
+    
+    <substation>
+        <name>ImportSub</name>
+        <parent>A Different Area</parent>
+        <mapLocationId>N1W60</mapLocationId>
+    </substation>
+    
+    <substationBus>
+        <name>ImportSubBus</name>
+        <disabled>Y</disabled>
+    </substationBus>
+    
+    <feeder>
+        <name>ImportFeeder</name>
+        <mapLocationId>S4E14</mapLocationId>
+    </feeder>
+    
+    <capBank>
+        <name>ImportCapBank</name>
+        <capBankSize>1400</capBankSize>
+    </capBank>
+
+    <cbc>
+        <name>CBC Import 1</name>
+        <capBankName>testCapBank2</capBankName>
+        <scanEnabled>false</scanEnabled>
+        <type>CBC 7020</type>
+    </cbc>
+
+    <cbc>
+        <name>CBC Import 2</name>
+        <type>CBC 7020</type>
+        <commChannel>Cart A 710 Comm</commChannel>
+    </cbc>
+    
+</capControlUpdateRequest>

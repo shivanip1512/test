@@ -10,7 +10,7 @@
 	<xsd:complexType name="CapControlRemoveRequest">
 		<xsd:complexContent>
 			<xsd:extension base="yukon:YukonMessage">
-				<xsd:choice minOccurs="1" maxOccurs="unbounded">
+				<xsd:choice maxOccurs="unbounded">
 					<xsd:element name="area" type="yukon:NamedElement"/>
                     <xsd:element name="specialArea" type="yukon:NamedElement"/>
                     <xsd:element name="substation" type="yukon:NamedElement"/>

@@ -11,16 +11,16 @@ import com.cannontech.capcontrol.creation.model.HierarchyImportData;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
 import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.capcontrol.creation.service.CapControlImportService;
-import com.cannontech.common.requests.runnable.YukonJobRunnable;
-import com.cannontech.common.requests.service.CapControlXmlParser;
+import com.cannontech.common.requests.runnable.YukonJob;
+import com.cannontech.common.requests.service.CapControlImportJob;
 import com.cannontech.core.dao.NotFoundException;
 
 public class CapControlRunnableFactory {
     @Autowired
     private CapControlImportService capControlImportService;
 
-    public class CapControlAddRunnable extends CapControlXmlParser {
-        public CapControlAddRunnable(Element elem) {
+    public class CapControlAddJob extends CapControlImportJob {
+        public CapControlAddJob(Element elem) {
             super(elem, ImportAction.ADD);
         }
 
@@ -52,8 +52,8 @@ public class CapControlRunnableFactory {
         }
     }
 
-    public class CapControlUpdateRunnable extends CapControlXmlParser {
-        public CapControlUpdateRunnable(Element elem) {
+    public class CapControlUpdateJob extends CapControlImportJob {
+        public CapControlUpdateJob(Element elem) {
             super(elem, ImportAction.UPDATE);
         }
 
@@ -71,8 +71,8 @@ public class CapControlRunnableFactory {
         }
     }
 
-    public class CapControlRemoveRunnable extends CapControlXmlParser {
-        public CapControlRemoveRunnable(Element elem) {
+    public class CapControlRemoveJob extends CapControlImportJob {
+        public CapControlRemoveJob(Element elem) {
             super(elem, ImportAction.REMOVE);
         }
 
@@ -90,14 +90,14 @@ public class CapControlRunnableFactory {
         }
     }
 
-    public YukonJobRunnable createRunnable(ImportAction importAction, Element elem) {
+    public YukonJob createRunnable(ImportAction importAction, Element elem) {
         switch (importAction) {
         case ADD:
-            return new CapControlAddRunnable(elem);
+            return new CapControlAddJob(elem);
         case UPDATE:
-            return new CapControlUpdateRunnable(elem);
+            return new CapControlUpdateJob(elem);
         case REMOVE:
-            return new CapControlRemoveRunnable(elem);
+            return new CapControlRemoveJob(elem);
         default:
             return null;
         }

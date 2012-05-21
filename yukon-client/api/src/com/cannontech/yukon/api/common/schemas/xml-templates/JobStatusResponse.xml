@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<jobStatusResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../JobStatusResponse.xsd"
+           version="1.0">
+           
+    <inProgress percentComplete="71.4">
+        <description>Job CCI:1337097803-0 is 71.4% complete</description>
+    </inProgress>
+           
+</jobStatusResponse>

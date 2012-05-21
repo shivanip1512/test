@@ -11,12 +11,12 @@
         <xsd:complexContent>
             <xsd:extension base="yukon:CbcJobOptionalBase">
                 <xsd:sequence>
-                    <xsd:element name="type" minOccurs="1" maxOccurs="1" type="yukon:CbcTypes"/>
-                    <xsd:element name="serialNumber" minOccurs="1" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="masterAddress" minOccurs="1" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="slaveAddress" minOccurs="1" maxOccurs="1" type="yukon:nonNegativeInt"/>
-                    <xsd:element name="commChannel" minOccurs="1" maxOccurs="1" type="xsd:string"/>
-                    <xsd:element name="templateName" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+                    <xsd:element name="type" type="yukon:CbcTypes"/>
+                    <xsd:element name="serialNumber" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="masterAddress" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="slaveAddress" type="yukon:nonNegativeInt"/>
+                    <xsd:element name="commChannel" type="xsd:string"/>
+                    <xsd:element name="templateName" minOccurs="0" type="xsd:string"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
@@ -25,7 +25,7 @@
 	<xsd:complexType name="CapControlAddRequest">
 		<xsd:complexContent>
 			<xsd:extension base="yukon:YukonMessage">
-				<xsd:choice minOccurs="1" maxOccurs="unbounded">
+				<xsd:choice maxOccurs="unbounded">
 					<xsd:element name="area" type="yukon:HierarchyImportBase"/>
                     <xsd:element name="specialArea" type="yukon:HierarchyImportBase"/>
                     <xsd:element name="substation" type="yukon:HierarchyExtendedBase"/>

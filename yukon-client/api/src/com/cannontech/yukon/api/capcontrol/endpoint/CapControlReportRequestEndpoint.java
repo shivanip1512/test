@@ -8,7 +8,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.requests.runnable.YukonJobRunnable;
+import com.cannontech.common.requests.runnable.YukonJob;
 import com.cannontech.common.requests.service.JobManagementService;
 import com.cannontech.common.token.Token;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -38,7 +38,7 @@ public class CapControlReportRequestEndpoint {
         
         Token token = new Token(tokenStr);
         
-        YukonJobRunnable runnable = jobManagementService.findJob(token);
+        YukonJob runnable = jobManagementService.findJob(token);
         
         if (runnable == null) {
             // Unknown token.

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<capControlReportResponse xmlns="http://yukon.cannontech.com/api"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlReportResponse.xsd"
+           version="1.0">
+       
+    <cbcImportResponse success="false" errorCode="6">
+        <cbcImportResultType>Missing Data</cbcImportResultType>
+        <resultDetail>CBC Import failed because it was missing required field(s): CBC Name</resultDetail>
+    </cbcImportResponse>
+    <cbcImportResponse success="false" errorCode="6">
+        <cbcImportResultType>Missing Data</cbcImportResultType>
+        <resultDetail>CBC Import failed because it was missing required field(s): CBC Type</resultDetail>
+    </cbcImportResponse>
+    <cbcImportResponse success="false" errorCode="6">
+        <cbcImportResultType>Missing Data</cbcImportResultType>
+        <resultDetail>CBC Import failed because it was missing required field(s): CBC Serial Number</resultDetail>
+    </cbcImportResponse>
+    <cbcImportResponse success="false" errorCode="6">
+        <cbcImportResultType>Missing Data</cbcImportResultType>
+        <resultDetail>CBC Import failed because it was missing required field(s): Master Address</resultDetail>
+    </cbcImportResponse>
+    <cbcImportResponse success="false" errorCode="6">
+        <cbcImportResultType>Missing Data</cbcImportResultType>
+        <resultDetail>CBC Import failed because it was missing required field(s): Slave Address</resultDetail>
+    </cbcImportResponse>
+    <cbcImportResponse success="false" errorCode="6">
+        <cbcImportResultType>Missing Data</cbcImportResultType>
+        <resultDetail>CBC Import failed because it was missing required field(s): Comm Channel</resultDetail>
+    </cbcImportResponse>
+
+</capControlReportResponse>
