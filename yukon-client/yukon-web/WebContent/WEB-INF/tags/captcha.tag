@@ -19,23 +19,4 @@
     </script> 
     
     <script type="text/javascript" src="http://www.google.com/recaptcha/api/challenge?k=${captchaPublicKey}"></script>
-    <script type="text/javascript">
-        jQuery(function(){
-    	   hideTheButton();
-    	});
-
-    	var TRIES = 0;
-    	function hideTheButton(){
-    	  var elems = jQuery(".recaptcha_only_if_image");
-    	  if(elems.length > 0){
-    	    jQuery(".recaptcha_only_if_image").hide();
-    	  }else{
-    	   //give the script 3 seconds to load and render the captcha
-    	   if(TRIES++ < 30){
-    	      //check again in 100ms
-    	      setTimeout('hideTheButton()', 100);
-    	   }
-    	  } 
-    	}
-	</script>
 </c:if>
