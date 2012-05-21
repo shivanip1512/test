@@ -31,6 +31,11 @@
                 <arg value="localhost:8081"/>
                 <arg value="${env.TARGET_IP_PORT}"/>
     	    </exec>
+            <exec executable="${FindReplaceIP}">
+                <arg value=".\integration-tests\*.xml"/>
+                <arg value="127.0.0.1:8081"/>
+                <arg value="${env.TARGET_IP_PORT}"/>
+            </exec>
         	<for param="file">
     	        <path> 
     	            <fileset dir="integration-tests" casesensitive="yes" includes="*.xml"/>
