@@ -232,7 +232,7 @@
 									</c:forEach>
 								</select> <input type="text" name="searchValue" id="invSearchValue"
 									value="" size="15"> <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>"
-									alt="search" onClick="$('invSearchForm').submit();"
+									alt="search" onClick="$('invSearchForm').submit();">
 							</div>
 						</form>
 					</div>

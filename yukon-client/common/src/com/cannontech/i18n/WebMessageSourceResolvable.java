@@ -2,6 +2,9 @@ package com.cannontech.i18n;
 
 import org.springframework.context.MessageSourceResolvable;
 
+/* Extension of YukonMessageSourceResolvable which adds web-specific 
+ * formatting information.  This is currently used to add a class name to flash scope messages
+ */
 public class WebMessageSourceResolvable extends YukonMessageSourceResolvable{
 
 	private static final long serialVersionUID = 1L;
