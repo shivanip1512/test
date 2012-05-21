@@ -126,6 +126,7 @@ bool PaoStatistics::freshenRecord(const CtiTime freshen_time, PaoStatisticsRecor
     {
         if( ! statistics_record->isStale(freshen_time) )
         {
+            //  The existing record is not stale, so we don't need to freshen this record
             return false;
         }
 
