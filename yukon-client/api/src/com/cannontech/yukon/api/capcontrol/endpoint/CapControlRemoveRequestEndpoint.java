@@ -10,7 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.requests.runnable.YukonJob;
-import com.cannontech.common.requests.runnable.capcontrol.CapControlRunnableFactory;
+import com.cannontech.common.requests.runnable.capcontrol.CapControlJobFactory;
 import com.cannontech.common.requests.service.JobManagementService;
 import com.cannontech.common.token.Token;
 import com.cannontech.common.token.TokenType;
@@ -25,7 +25,7 @@ public class CapControlRemoveRequestEndpoint {
     private final static Namespace ns = YukonXml.getYukonNamespace();
     
     @Autowired private JobManagementService jobManagementService;
-    @Autowired private CapControlRunnableFactory capControlRunnableFactory;
+    @Autowired private CapControlJobFactory capControlRunnableFactory;
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="capControlRemoveRequest")
     public Element invoke(Element capControlRemoveRequest, LiteYukonUser user) {
