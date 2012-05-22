@@ -37,13 +37,13 @@ public class FileUploadCollectionHelper {
             InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
             modelMap.addAllAttributes(yukonCollection.getCollectionParameters());
         } catch (CollectionCreationException e) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventoryOperations." + e.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.home." + e.getMessage()));
             
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
             modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
             
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String title = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventoryOperations.fileUploadTitle");
+            String title = messageSourceAccessor.getMessage("yukon.web.modules.operator.inventory.home.fileUploadTitle");
             modelMap.addAttribute("fileUploadTitle", title);
             
             return "operator/inventory/home.jsp";
