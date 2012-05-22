@@ -396,159 +396,25 @@ INT DlcBaseDevice::retMsgHandler( string commandStr, int status, CtiReturnMsg *r
     return retVal;
 }
 
-
-#if 0
-INT DlcBaseDevice::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+bool DlcBaseDevice::dlcAddressMismatch(const DSTRUCT dst, const CtiDeviceBase & temDevice)
 {
-    INT ErrReturn = InMessage->EventCode & 0x3fff;
-
-    CtiReturnMsg    *retMsg;
-
-    CtiCommandMsg   *pMsg;
-
-
-    if(!ErrReturn)
+    if( dst.Length && //  make sure it's not just an ACK
+        temDevice.getAddress() != MctDevice::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
+        temDevice.getAddress() != MctDevice::TestAddress2 &&  //    since it'll return its native address and not the test address
+        (temDevice.getAddress() & 0x1fff) != (dst.Address & 0x1fff) )
     {
-        //  verify we heard back from the correct device (only if we heard it)
-        //
-        //    Note:  The returned address from the device is only the lower 13 bits,
-        //           which means we would not have to mask of the Dst address, but for some
-        //           reason when the reading is queued into the CCU711 we get the whole address
-        //           returned.  So by comparing only 13 bit for both it will not break in
-        //           either case.
+        //  Seems this should percolate to the device level, although setting status here kills the decode
 
-        if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
-            getAddress() != MctDevice::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
-            getAddress() != MctDevice::TestAddress2 &&  //    since it'll return its native address and not the test address
-            (getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
         {
-            //  Address did not match, so it's a comm error
-            ErrReturn = WRONGADDRESS;
-            InMessage->EventCode = WRONGADDRESS;
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << getName() << "\" ";
-                dout << "(" << getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << temDevice.getName() << "\" ";
+            dout << "(" << temDevice.getAddress() << ") != (" << dst.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
+        return true;
     }
-
-    //  ACH: update performace stats for device and route... ?
-
-    //  check for communication failure
-    if(ErrReturn)
-    {
-        retMsg = CTIDBG_new CtiReturnMsg(getID(),
-                                         string(InMessage->Return.CommandStr),
-                                         string(),
-                                         ErrReturn,
-                                         InMessage->Return.RouteID,
-                                         InMessage->Return.MacroOffset,
-                                         InMessage->Return.Attempt,
-                                         InMessage->Return.GrpMsgID,
-                                         InMessage->Return.UserID);
-
-        if( retMsg != NULL )
-        {
-            //  send a Device Failed/Point Failed message to dispatch, if applicable
-            pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
-
-            if( pMsg != NULL )
-            {
-                switch( InMessage->Sequence )
-                {
-                    case EmetconProtocol::Scan_General:
-                    {
-                        pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
-                        pMsg->insert(CtiCommandMsg::OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-                        pMsg->insert(getID());          //  The id (device or point which failed)
-                        pMsg->insert(ScanRateGeneral);  //  defined in yukon.h
-                        pMsg->insert(InMessage->EventCode);
-
-                        break;
-                    }
-
-                    case EmetconProtocol::Scan_Accum:
-                    {
-                        pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
-                        pMsg->insert(CtiCommandMsg::OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-                        pMsg->insert(getID());          //  The id (device or point which failed)
-                        pMsg->insert(ScanRateAccum);
-                        pMsg->insert(InMessage->EventCode);
-
-                        break;
-                    }
-
-                    case EmetconProtocol::Scan_Integrity:
-                    {
-                        pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
-                        pMsg->insert(CtiCommandMsg::OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-                        pMsg->insert(getID());          //  The id (device or point which failed)
-                        pMsg->insert(ScanRateIntegrity);
-                        pMsg->insert(InMessage->EventCode);
-
-                        break;
-                    }
-
-                    default:
-                    {
-                        delete pMsg;
-                        pMsg = NULL;
-
-                        break;
-                    }
-                }
-
-                if( pMsg != NULL )
-                {
-                    retMsg->insert(pMsg);
-                }
-            }
-
-            char error_str[80];
-
-            GetErrorString(ErrReturn, error_str);
-
-            string resultString = getName() + " / operation failed \"" + error_str + "\" (" + string(CtiNumStr(ErrReturn).xhex().zpad(2)) + ")";
-
-            retMsg->setResultString(resultString);
-
-            retList.push_back(retMsg);
-        }
-
-        //  Find the next route and resubmit request to porter
-        //    ACH:  if no more routes exist, plug the value points... ?
-
-        if( InMessage->Return.MacroOffset > 0 )
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " MacroOffset specified, generating a request for the next macro. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            OUTMESS *NewOutMessage = CTIDBG_new OUTMESS;
-
-            if(NewOutMessage)
-            {
-                InEchoToOut(*InMessage, NewOutMessage);
-                NewOutMessage->Port = InMessage->Port;
-                NewOutMessage->DeviceID = InMessage->DeviceID;
-                NewOutMessage->TargetID = InMessage->TargetID;
-                NewOutMessage->Request.BuildIt = TRUE;
-
-                outList.push_back( NewOutMessage );
-            }
-        }
-    }
-    else
-    {
-        //  ACH:  Log the communication success on this route... ?
-    }
-
-    return ErrReturn;
+    return false;    
 }
-#endif
+
 
 int DlcBaseDevice::decodeCommand(const INMESS &InMessage, CtiTime TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {

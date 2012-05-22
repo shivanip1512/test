@@ -772,7 +772,6 @@ INT Mct24xDevice::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list
 
     sspec = "\nSoftware Specification " + CtiNumStr(ssp) + string("  Rom Revision ") + rev + "\n";
 
-    /* I wonder if switch statement is better here...*/
     if( InMessage->Buffer.DSt.Message[2] & 0x01 )
     {
         options+= string("  Latched loads\n");

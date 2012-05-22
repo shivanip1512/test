@@ -67,6 +67,7 @@ test_cmd_lcr3102_tamperRead.obj \
 test_cmd_lcr3102_DemandResponseSummary.obj \
 test_cmd_lcr3102_hourlyDataLog.obj \
 test_dev_cbc8020.obj \
+test_dev_dlcbase.obj \
 test_dev_grp.obj \
 test_dev_ccu721.obj \
 test_dev_mct.obj \

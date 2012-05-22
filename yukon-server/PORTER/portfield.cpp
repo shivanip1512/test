@@ -34,10 +34,12 @@
 #include "ctilocalconnect.h"
 
 #include "portfield.h"
+#include "dev_dlcbase.h"
 
 using namespace std;
 
 using Cti::Porter::PorterStatisticsManager;
+using Cti::Devices::DlcBaseDevice;
 
 extern CtiPorterVerification PorterVerificationThread;
 extern CtiRouteManager RouteManager;
@@ -1308,6 +1310,16 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
                                 if( om && im )
                                 {
+                                    CtiDeviceSPtr temDevice;
+                                    if( !status && (temDevice = DeviceManager.getDeviceByID(InMessage ->TargetID))  )
+                                    {
+                                        if( DlcBaseDevice::dlcAddressMismatch(im->Buffer.DSt, *(DeviceManager.getDeviceByID(im->TargetID)) ))
+                                        {
+                                            status = WRONGADDRESS;
+                                            im->EventCode = WRONGADDRESS;
+                                        }
+                                    }
+
                                     if( im->EventCode == EWORDRCV && im->Buffer.RepeaterError.ESt )
                                     {
                                         im->Buffer.RepeaterError.Details =
@@ -2892,24 +2904,12 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     (OutMessage->Buffer.BSt.IO & EmetconProtocol::IO_Read ) )
                 {
                     CtiDeviceSPtr temDevice;
-                    if( !CommResult && (temDevice = DeviceManager.getDeviceByID(InMessage->TargetID)) )
+                    if( !CommResult && !status && (temDevice = DeviceManager.getDeviceByID(InMessage ->TargetID))  )
                     {
-                        if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
-                            temDevice->getAddress() != MctDevice::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
-                            temDevice->getAddress() != MctDevice::TestAddress2 &&  //    since it'll return its native address and not the test address
-                            (temDevice->getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
+                        if( DlcBaseDevice::dlcAddressMismatch(InMessage->Buffer.DSt, *(DeviceManager.getDeviceByID(InMessage->TargetID)) ))
                         {
-                            //  Seems this should percolate to the device level, although setting status here kills the decode
-
-                            //  Address did not match, so it's a comm error
                             status = CommResult = WRONGADDRESS;
                             InMessage->EventCode = WRONGADDRESS;
-
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << temDevice->getName() << "\" ";
-                                dout << "(" << temDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
                         }
                     }
 
@@ -3068,26 +3068,12 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     }
 
                     CtiDeviceSPtr temDevice;
-                    if( !CommResult && !status && (temDevice = DeviceManager.getDeviceByID(InMessage->TargetID)) )
+                    if( !CommResult && !status && (temDevice = DeviceManager.getDeviceByID(InMessage ->TargetID) )  )
                     {
-                        //  note that if D_Words() had an error, we'll never get here...
-
-                        if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
-                            temDevice->getAddress() != MctDevice::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
-                            temDevice->getAddress() != MctDevice::TestAddress2 &&  //    since it'll return its native address and not the test address
-                            (temDevice->getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
+                        if( DlcBaseDevice::dlcAddressMismatch(InMessage->Buffer.DSt, *(DeviceManager.getDeviceByID(InMessage->TargetID)) ))
                         {
-                            //  Seems this should percolate to the device level, although setting status here kills the decode
-
-                            //  Address did not match, so it's a comm error
                             status = CommResult = WRONGADDRESS;
                             InMessage->EventCode = WRONGADDRESS;
-
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << temDevice->getName() << "\" ";
-                                dout << "(" << temDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
                         }
                     }
                 }

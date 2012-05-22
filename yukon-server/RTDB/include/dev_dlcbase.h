@@ -20,6 +20,7 @@ public:
 
     typedef boost::shared_ptr<Devices::Commands::DlcCommand> DlcCommandSPtr;
     typedef boost::weak_ptr  <Devices::Commands::DlcCommand> DlcCommandWPtr;
+    static bool dlcAddressMismatch(const DSTRUCT Dst, const CtiDeviceBase & temDevice);
 
 private:
 
