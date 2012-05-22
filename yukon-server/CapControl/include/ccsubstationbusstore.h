@@ -419,7 +419,7 @@ public:
     void registerForAdditionalPoints(PaoIdSet &modifiedBusIdsSet);
     void initializeAllPeakTimeFlagsAndMonitorPoints(bool setTargetVarFlag = false);
     void createAndSendClientMessages( unsigned long &msgBitMask, unsigned long &msgSubsBitMask, PaoIdSet &modifiedBusIdsSet,
-                                      PaoIdSet&modifiedStationIdsSet, CtiMultiMsg_vec &capMessages);
+                                      PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages);
     CtiCCSubstationBus_set getAllSubBusesByIds(PaoIdSet modifiedBusIdsSet);
     void updateSubstationObjectSet(long substationId, CtiMultiMsg_set &modifiedStationsSet);
     void updateAreaObjectSet(long areaId, CtiMultiMsg_set &modifiedAreasSet);
