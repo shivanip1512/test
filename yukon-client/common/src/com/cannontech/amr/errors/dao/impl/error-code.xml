@@ -1071,7 +1071,7 @@
 
     <error code="2000">
         <category>Yukon System</category>
-        <porter></porter>
+        <porter>Invalid Action for Device Type.</porter>
         <description>This action cannot be performed on this device type.</description>
         <troubleshooting>For more information, please contact Technical Support at 1-800-815-2258
         </troubleshooting>

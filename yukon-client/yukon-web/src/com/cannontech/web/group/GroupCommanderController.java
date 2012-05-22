@@ -351,6 +351,9 @@ public class GroupCommanderController implements InitializingBean {
     public void results(String resultKey, ModelMap map) {
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);  
 		
+        /*
+         *  RFN devices do not use porter. Replacing the porter error with the error from error-code.xml - Invalid Action for Device Type.
+         */
         Map<SimpleDevice, SpecificDeviceErrorDescription> errors = result
 				.getCallback().getErrors();
 		if (!errors.isEmpty()) {
