@@ -29,12 +29,22 @@
 
 typedef std::set<RWCollectable*> CtiMultiMsg_set;
 
-struct CC_DBRELOAD_INFO
+struct CcDbReloadInfo
 {
    long objectId;
    unsigned char action:2;
    unsigned char objecttype:4;
    unsigned char filler:2;
+
+   CcDbReloadInfo(long objectId, long action, long objectType) :
+       objectId(objectId), action(action), objecttype(objectType)
+   {};
+
+   bool operator==(const CcDbReloadInfo& r) const
+   {
+      return this->objectId == r.objectId;
+   }
+
 };
 
 class MaxKvarObject
@@ -108,6 +118,8 @@ typedef std::multimap< long, long > ChildToParentMultiMap;
 typedef std::map     < long, MaxKvarObject > CapBankIdToKvarMap;
 
 typedef std::multimap< long, long > PaoIdToPointIdMultiMap;
+
+typedef std::set<long> PaoIdSet;
 
 class CtiCCSubstationBusStore : public PointDataListener
 {
@@ -377,40 +389,38 @@ public:
     void removeFromOrphanList(long ccId);
 
 
-    std::list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
+    std::list <CcDbReloadInfo> getDBReloadList() { return _reloadList; };
     CapBankList getUnsolicitedCapBankList() {return _unsolicitedCapBanks;};
     CapBankList getUnexpecteedUnsolicitedList() {return _unexpectedUnsolicited;};
     CapBankList getRejectedControlCapBankList() {return _rejectedCapBanks;};
 
-    void insertDBReloadList(CC_DBRELOAD_INFO x);
+    void insertDBReloadList(CcDbReloadInfo x);
     void checkDBReloadList();
-    unsigned long handleModifiedSubBus(long busId, CtiMultiMsg_set &modifiedSubsSet, bool doReload=false);
     bool handleAreaDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
-                           CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
+                           PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages );
     void handleCapBankDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
-                               CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
+                               PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages );
     void handleFeederDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
-                               CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
+                               PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages );
     void handleSubBusDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
-                               CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
+                               PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages );
     void handleSubstationDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
-                               CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
+                               PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages );
     bool handleSpecialAreaDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
-                               CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
+                               PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages );
     void handleStrategyDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
-                               CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
+                               PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages );
     void handleZoneDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
-                               CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
+                               PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages );
     void handleVoltageRegulatorDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
-                               CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages );
+                               PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages );
     void updateModifiedStationsAndBusesSets(Cti::CapControl::PaoIdVector stationIdList, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
-                               CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet);
-    void registerForAdditionalPoints(CtiMultiMsg_set &modifiedSubsSet,  CtiMultiMsg_set &modifiedStationsSet);
+                               PaoIdSet &modifiedSubsSet,  PaoIdSet &modifiedStationIdsSet);
+    void registerForAdditionalPoints(PaoIdSet &modifiedBusIdsSet);
     void initializeAllPeakTimeFlagsAndMonitorPoints(bool setTargetVarFlag = false);
-    void createAndSendClientMessages( unsigned long &msgBitMask, unsigned long &msgSubsBitMask, CtiMultiMsg_set &modifiedSubsSet,
-                                      CtiMultiMsg_set &modifiedStationsSet, CtiMultiMsg_vec &capMessages);
-    void addSubstationObjectsToSet(Cti::CapControl::PaoIdVector subBusIds, CtiMultiMsg_set &modifiedSubsSet);
-    void addSubBusObjectsToSet(Cti::CapControl::PaoIdVector subBusIds, CtiMultiMsg_set &modifiedSubsSet);
+    void createAndSendClientMessages( unsigned long &msgBitMask, unsigned long &msgSubsBitMask, PaoIdSet &modifiedBusIdsSet,
+                                      PaoIdSet&modifiedStationIdsSet, CtiMultiMsg_vec &capMessages);
+    CtiCCSubstationBus_set getAllSubBusesByIds(PaoIdSet modifiedBusIdsSet);
     void updateSubstationObjectSet(long substationId, CtiMultiMsg_set &modifiedStationsSet);
     void updateAreaObjectSet(long areaId, CtiMultiMsg_set &modifiedAreasSet);
     void clearDBReloadList();
@@ -630,7 +640,7 @@ private:
     CapBankList _unexpectedUnsolicited;
     CapBankList _rejectedCapBanks;
 
-    std::list <CC_DBRELOAD_INFO> _reloadList;
+    std::list <CcDbReloadInfo> _reloadList;
     Cti::CapControl::PaoIdVector   _orphanedCapBanks;
     Cti::CapControl::PaoIdVector   _orphanedFeeders;
 

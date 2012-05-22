@@ -2271,7 +2271,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                              dout << CtiTime() << "            changeType: "<<dbChange->getTypeOfChange() << endl;
                              dout << CtiTime() << "               objType: "<<objType << endl;
                         }
-                        CC_DBRELOAD_INFO reloadInfo = {changeId, dbChange->getTypeOfChange(), objType};
+                        CcDbReloadInfo reloadInfo(changeId, dbChange->getTypeOfChange(), objType);
 
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
                     }
@@ -2283,7 +2283,7 @@ void CtiCapController::parseMessage(RWCollectable *message)
                             dout << CtiTime() << " IVVC - Zone Change received. Reloading All Zones." << endl;
                         }
 
-                        CC_DBRELOAD_INFO reloadInfo = {dbChange->getId(), dbChange->getTypeOfChange(), Cti::CapControl::ZoneType};
+                        CcDbReloadInfo reloadInfo(dbChange->getId(), dbChange->getTypeOfChange(), Cti::CapControl::ZoneType);
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
                     }
                 }
