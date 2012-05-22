@@ -14,7 +14,8 @@ public enum CMEPUnitEnum {
     KW(null), // Kilowatt demand, usually expressed as peak value in time interval. 
     KVA(null), // Kilovolt-ampere demand, usually expressed as peak value in time interval. 
     KVAR(null), // Kilovolt-Ampere-Reactive demand, usually expressed as peak value in time interval. Values may be positive or negative depending upon power factor. Values are positive for VARs produced by customer or negative for VARs consumed by customer. Induction motors consume watts and VARs. A condenser bank produces VARs. An over-excited generator produces watts and VARs. An under-excited generator produces watts and consumes VARs. 
-    KWH(BuiltInAttribute.LOAD_PROFILE), // Kilowatt hours used. 
+    KWH(BuiltInAttribute.LOAD_PROFILE), // Kilowatt hours used.  // Using LOAD_PROFILE for this value is a little unusual, 
+                                                             // but since we are using this in correlation with the calculation constraint value it creates a KWH value.
     KVAH(null), // Kilovolt-ampere hours. 
     KVARH(null), // Kilovolt-Ampere-Reactive hours. Values may be positive or negative depending upon power factor. See KVAR above for further notes. 
     GKW(null), // Kilowatt generation, received from customer, usually expressed as peak value in time interval. Used when customer is generating power. 

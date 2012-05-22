@@ -1,7 +1,5 @@
 package com.cannontech.billing;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,16 +26,15 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.db.device.DeviceLoadProfile;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.base.Function;
 import com.google.common.collect.ListMultimap;
@@ -46,13 +43,13 @@ import com.google.common.collect.Maps;
 
 public class CMEP_MEPMD01Format extends FileFormatBase  {
 
-	private Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
     private ConfigurationSource configurationSource = YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
     private DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
     private MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
     private PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
     private PersistedSystemValueDao persistedSystemValueDao = YukonSpringHook.getBean("persistedSystemValueDaoImpl", PersistedSystemValueDao.class);
     private RawPointHistoryDao rawPointHistoryDao = YukonSpringHook.getBean("rphDao", RawPointHistoryDao.class);
+    private YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
 
     @Override
 	public boolean retrieveBillingData() {	
@@ -185,19 +182,19 @@ public class CMEP_MEPMD01Format extends FileFormatBase  {
      *     This method would return .25 since 15 mins is a quarter of an hour.
      */
     private float getCalculationConstant(PaoIdentifier paoIdentifier, CMEPUnitEnum cmepUnit) {
-        float calculationConstraint = 1;
-        
+
         if (cmepUnit == CMEPUnitEnum.KWH) {
-            try {
-                DeviceLoadProfile deviceLoadProfile = new DeviceLoadProfile();
-                deviceLoadProfile.setDbConnection(connection);
-                deviceLoadProfile.setDeviceID(paoIdentifier.getPaoId());
-                deviceLoadProfile.retrieve();
-    
-                calculationConstraint = deviceLoadProfile.getLoadProfileDemandRate() / 3600f; // An hour in seconds
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT LoadProfileDemandRate");
+            sql.append("FROM DeviceLoadProfile");
+            sql.append("WHERE DeviceId").eq(paoIdentifier.getPaoId());
                 
-            } catch (SQLException e) {/* It probably doesn't exist which is fine. */}
+            int deviceLoadProfile = yukonJdbcTemplate.queryForInt(sql);
+            if (deviceLoadProfile != 0) {
+                return deviceLoadProfile/ 3600f; // An hour in seconds
+            }
         }
-        return calculationConstraint;
+
+        return 1f;
     }
 }
