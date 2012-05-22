@@ -329,7 +329,7 @@
                 <modifier>Min</modifier>
             </modifiers>
         </point>
-        <point name="Min  Volts Phase B">
+        <point name="Min Volts Phase B">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
@@ -354,7 +354,7 @@
                 <modifier>Avg</modifier>
             </modifiers>
         </point>
-        <point name="Avg  Volts Phase B">
+        <point name="Avg Volts Phase B">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
