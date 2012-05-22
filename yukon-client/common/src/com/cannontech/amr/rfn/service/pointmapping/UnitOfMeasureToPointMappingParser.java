@@ -230,7 +230,10 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
                                                 baseUnitOfMeasure, 
                                                 baseUnitOfMeasureModifiers);
 
-        CachedPointValue value = computingCache.getIfPresent(key);
+        // Attepts to get the value, or load it if necessary.  getUnchecked is only appropriate since
+        // the cache loader is not expected to throw a checked exception, getUnchecked will actually 
+        // handle checked exceptions and re-throw them as unchecked exceptions.
+        CachedPointValue value = computingCache.getUnchecked(key);
 
         if (value == nullCachedPointValue) {
             return null;
