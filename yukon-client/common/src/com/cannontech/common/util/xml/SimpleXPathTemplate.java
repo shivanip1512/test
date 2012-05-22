@@ -370,7 +370,7 @@ public class SimpleXPathTemplate extends TransformerObjectSupport {
         
         String dateStr = evaluateAsString(expression);
         
-        if (StringUtils.isNotEmpty(dateStr)) {
+        if (StringUtils.isNotBlank(dateStr)) {
             Date date = null;
             try {
                 date = Iso8601DateUtil.parseIso8601Date(dateStr.trim());
