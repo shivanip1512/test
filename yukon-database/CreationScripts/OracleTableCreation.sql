@@ -516,7 +516,7 @@ INSERT INTO BillingFileFormats VALUES(-23, 'Big Rivers Elec Coop',1);
 INSERT INTO BillingFileFormats VALUES(-24, 'INCODE (Extended TOU)',1);
 INSERT INTO BillingFileFormats VALUES(-25, 'Itron Register Readings Export',1);
 INSERT INTO BillingFileFormats VALUES(-26, 'SIMPLE_TOU_DeviceName',1);
-INSERT INTO BillingFileFormats VALUES(-27, 'CMEP', 1);
+INSERT INTO BillingFileFormats VALUES(-27, 'CMEP-MDM1', 1);
 INSERT INTO BillingFileFormats VALUES( 31, 'STANDARD',1);
 INSERT INTO BillingFileFormats VALUES(-32, 'NISC TOU (kVarH) Rates Only',1);
 INSERT INTO BillingFileFormats VALUES( 33, 'NISC Interval Readings', 1);
