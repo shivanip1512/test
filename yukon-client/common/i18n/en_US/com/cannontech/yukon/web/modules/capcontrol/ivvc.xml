@@ -234,7 +234,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.indicator.selectionAlpha"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.indicator.xBalloonEnabled"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.indicator.xBalloonTextColor"></entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloon.onlyOne">true</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloon.onlyOne">false</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloon.onOff"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloon.color">#FFCC00</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloon.alpha">70</entry>

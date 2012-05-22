@@ -153,9 +153,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         innerSql.append("    WHEN (strat1u.StrategyId IS not NULL) THEN strat1u.StrategyId");
         innerSql.append("    ELSE -1");
         innerSql.append("  END StrategyId");
-        innerSql.append("  FROM CcMonitorBankList ccmb");
-        innerSql.append("  JOIN YukonPaObject ypo ON ccmb.deviceid = ypo.paObjectId");
-        innerSql.append("  JOIN Point p ON ccmb.PointId = p.PointId");
+        getInitialCcMonitorBankListJoins(innerSql);
         innerSql.append("  JOIN CCFeederBankList fb ON fb.DeviceID = ccmb.deviceid");
         innerSql.append("  JOIN CCFeederSubAssignment fsa ON fsa.FeederID = fb.FeederID");
         innerSql.append("  JOIN CCSubstationSubBusList ssb ON ssb.SubStationBusID = fsa.SubStationBusID");
@@ -180,11 +178,9 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         innerSql.append("    WHEN (strat1u.StrategyId IS not NULL) THEN strat1u.StrategyId");
         innerSql.append("    ELSE -1");
         innerSql.append("  END StrategyId");
-        innerSql.append("  FROM ccmonitorbanklist ccmb");
-        innerSql.append("  JOIN YukonPaObject ypo ON ccmb.deviceid = ypo.paObjectId");
-        innerSql.append("  JOIN Point p ON ccmb.PointId = p.PointId");
-        innerSql.append("  JOIN regulatortozonemapping rtz on rtz.RegulatorId = ccmb.deviceid");
-        innerSql.append("  join Zone z on z.ZoneId = rtz.ZoneId");
+        getInitialCcMonitorBankListJoins(innerSql);
+        innerSql.append("  JOIN regulatortozonemapping zm on zm.RegulatorId = ccmb.deviceid");
+        innerSql.append("  join Zone z on z.ZoneId = zm.ZoneId");
         innerSql.append("  JOIN CCSubstationSubBusList ssb ON ssb.SubStationBusID = z.SubStationBusID");
         innerSql.append("  JOIN CCSubAreaAssignment sa ON sa.SubstationBusID = ssb.SubStationID");
         innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat1 ON sa.AreaID = seasStrat1.PAObjectId");
@@ -204,11 +200,9 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         innerSql.append("    WHEN (strat1u.StrategyId IS not NULL) THEN strat1u.StrategyId");
         innerSql.append("    ELSE -1");
         innerSql.append("  END StrategyId");
-        innerSql.append("  FROM ccmonitorbanklist ccmb");
-        innerSql.append("  JOIN YukonPaObject ypo ON ccmb.deviceid = ypo.paObjectId");
-        innerSql.append("  join POINT p on p.PAObjectID = ccmb.deviceid");
-        innerSql.append("  JOIN PointToZoneMapping ptz on ptz.PointId = p.pointid");
-        innerSql.append("  join Zone z on z.ZoneId = ptz.ZoneId");
+        getInitialCcMonitorBankListJoins(innerSql);
+        innerSql.append("  JOIN PointToZoneMapping zm on zm.PointId = p.pointid");
+        innerSql.append("  join Zone z on z.ZoneId = zm.ZoneId");
         innerSql.append("  JOIN CCSubstationSubBusList ssb ON ssb.SubStationBusID = z.SubStationBusID");
         innerSql.append("  JOIN CCSubAreaAssignment sa ON sa.SubstationBusID = ssb.SubStationID");
         innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat1 ON sa.AreaID = seasStrat1.PAObjectId");
@@ -219,6 +213,12 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2l ON strat2l.StrategyId = seasStrat2.StrategyId AND strat2l.SettingName = 'Lower Volt Limit' AND strat2l.SettingType = 'PEAK'");
         
         return getDeviceInfosFromStrategyId(innerSql, strategyId);
+    }
+
+    private void getInitialCcMonitorBankListJoins(SqlStatementBuilder innerSql) {
+        innerSql.append("  FROM ccmonitorbanklist ccmb");
+        innerSql.append("  JOIN YukonPaObject ypo ON ccmb.deviceid = ypo.paObjectId");
+        innerSql.append("  JOIN POINT p on p.PAObjectID = ccmb.DeviceId AND ccmb.PointId = p.PointId");
     }
 
     private List<VoltageLimitedDeviceInfo> getDeviceInfosFromStrategyId(SqlStatementBuilder inner, int strategyId) {

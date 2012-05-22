@@ -178,7 +178,8 @@ public class ZoneDetailController {
                 voltagePoint.setUpperLimit(upperLimit);
             }
 
-            ccMonitorBankListDao.updateDeviceInfo(zoneVoltagePointsHolder.getPoints());
+            AbstractZone abstractZone = zoneDtoHelper.getAbstractZoneFromZone(zone, context.getYukonUser());
+            zoneService.saveVoltagePointInfo(abstractZone, zoneVoltagePointsHolder.getPoints());
             MessageSourceResolvable successMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.voltagePoints.updateSuccess");
             flashScope.setConfirm(successMessage);

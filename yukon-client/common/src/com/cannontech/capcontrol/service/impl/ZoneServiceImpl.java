@@ -3,6 +3,7 @@ package com.cannontech.capcontrol.service.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.jfree.util.Log;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
+import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneAssignmentPointRow;
@@ -96,6 +98,32 @@ public class ZoneServiceImpl implements ZoneService {
         zoneDao.delete(zoneId);
         sendZoneChangeDbMessage(zoneId, DbChangeType.DELETE);
         return true;
+    }
+    
+    @Override
+    public boolean saveVoltagePointInfo(AbstractZone abstractZone, List<VoltageLimitedDeviceInfo> deviceInfos) {
+        List<PointToZoneMapping> pointToZoneMappings = getPointToZoneMappingByDto(abstractZone);
+        for (PointToZoneMapping mapping : pointToZoneMappings) {
+            VoltageLimitedDeviceInfo deviceInfo = findDeviceInfoWithPointId(deviceInfos, mapping.getPointId());
+            if (deviceInfo == null) {
+                Log.error("couldn't find device in VoltageLimistedDeviceInfo list");
+            } else {
+                mapping.setPhase(deviceInfo.getPhase());
+            }
+        }
+
+        zoneDao.updatePointToZoneMapping(abstractZone, pointToZoneMappings);
+        ccMonitorBankListDao.updateDeviceInfo(deviceInfos);
+        return false;
+    }
+
+    private VoltageLimitedDeviceInfo findDeviceInfoWithPointId(List<VoltageLimitedDeviceInfo> deviceInfos, int pointId) {
+        for (VoltageLimitedDeviceInfo deviceInfo : deviceInfos) {
+            if (deviceInfo.getPointId() == pointId) {
+                return deviceInfo;
+            }
+        }
+        return null;
     }
     
     private List<CapBankToZoneMapping> getCapBankToZoneMappingByDto(AbstractZone abstractZone) {

@@ -10,6 +10,7 @@ import com.cannontech.capcontrol.PointToZoneMapping;
 import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
+import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.enums.Phase;
@@ -26,6 +27,12 @@ public interface ZoneService {
      */
     public boolean saveZone(AbstractZone zoneDto);
     public boolean deleteZone(int zoneId);
+    
+    /**
+     * Use this method to save a zone's VoltageLimitedDeviceInfo (voltage points). This method is currently only being used to save our 
+     * from the voltage points edit page (on save).
+     */
+    public boolean saveVoltagePointInfo(AbstractZone abstractZone, List<VoltageLimitedDeviceInfo> deviceInfos);
     
     public List<Zone> getZonesBySubBusId(int subbusId);
 
