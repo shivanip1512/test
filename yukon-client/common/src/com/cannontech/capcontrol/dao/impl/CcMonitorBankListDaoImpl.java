@@ -288,6 +288,10 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Override
     public int addRegulatorPoint(int regulatorId) {
         ZonePointPhaseHolder zonePointPhase = getZonePointPhaseByRegulatorId(regulatorId);
+        if(zonePointPhase == null) {
+            return 0; //no rows affected
+        }
+                
         LimitsHolder limits = getLimitsFromStrategyByZoneId(zonePointPhase.zoneId);
         
         //paoType here may not be technically correct, but it will never actually be used. Only the id is necessary.
@@ -303,7 +307,12 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getPointIdSql.append("FROM ExtraPaoPointAssignment");
         getPointIdSql.append("WHERE PaObjectId").eq(regulatorId);
         getPointIdSql.append("AND Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
-        int pointId = yukonJdbcTemplate.queryForInt(getPointIdSql);
+        
+        List<Integer> pointIdHolder = yukonJdbcTemplate.query(getPointIdSql, new IntegerRowMapper(true));
+        if(pointIdHolder.size() == 0) {
+            return 0; //no rows affected
+        }
+        Integer pointId = pointIdHolder.get(0);
         
         LimitsHolder limits = getLimitsFromStrategyBySubbusId(substationBusId);
         
@@ -325,6 +334,9 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Override
     public void updateRegulatorPoint(int regulatorId) {
         ZonePointPhaseHolder zonePointPhase = getZonePointPhaseByRegulatorId(regulatorId);
+        if(zonePointPhase == null) {
+            return;
+        }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE CcMonitorBankList");
@@ -412,7 +424,11 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getZoneInfoSql.append("WHERE RegulatorId").eq(regulatorId);
         getZoneInfoSql.append("AND Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
         
-        return yukonJdbcTemplate.queryForObject(getZoneInfoSql, regulatorPointRowMapper);
+        List<ZonePointPhaseHolder> zpphList = yukonJdbcTemplate.query(getZoneInfoSql, regulatorPointRowMapper);
+        if(zpphList.size() == 0) {
+            return null;
+        }
+        return zpphList.get(0);
     }
     
     private LimitsHolder getLimitsFromStrategyByZoneId(int zoneId) {
