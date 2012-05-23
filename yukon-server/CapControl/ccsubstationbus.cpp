@@ -8232,6 +8232,20 @@ int CtiCCSubstationBus::getNumOfBanksInState(set<int> setOfStates)
     return currentNum;
 }
 
+CtiCCCapBankPtr CtiCCSubstationBus::getPendingCapBank( )
+{
+    for each (CtiCCFeederPtr currentFeeder in _ccfeeders)
+    {
+         for each (CtiCCCapBankPtr currentBank in currentFeeder->getAllCapBanks( ))
+         {
+             if (currentBank->isPendingStatus())
+             {
+                 return currentBank;
+             }
+         }
+    }
+    return NULL;
+}
 std::vector<CtiCCCapBankPtr> CtiCCSubstationBus::getAllCapBanks( )
 {
     std::vector<CtiCCCapBankPtr> banks;

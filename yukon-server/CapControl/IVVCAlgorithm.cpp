@@ -121,10 +121,18 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
     state->setShowNoRegulatorAttachedMsg(true);
 
-    // subbus is disabled - reset the algorithm and bail
-
-    if ( subbus->getDisableFlag() && !subbus->getVerificationFlag())
+    if ( subbus->getRecentlyControlledFlag() )
     {
+        state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
+        if (CtiCCCapBankPtr pendingBank = subbus->getPendingCapBank())
+        {
+            state->setControlledBankId(pendingBank->getPaoId());
+            state->setTimeStamp(subbus->getLastOperationTime());
+        }
+    }
+    else if ( subbus->getDisableFlag() && !subbus->getVerificationFlag())
+    {
+        // subbus is disabled - reset the algorithm and bail
         if (state->isShowBusDisableMsg())
         {
             {

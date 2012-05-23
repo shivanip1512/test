@@ -279,6 +279,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
 
     int getNumOfBanksInState(std::set<int> s);
+    CtiCCCapBankPtr CtiCCSubstationBus::getPendingCapBank( );
     std::vector<CtiCCCapBankPtr> getAllCapBanks( );
     std::vector<CtiCCCapBankPtr> getAllSwitchedCapBanks( );
     CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
