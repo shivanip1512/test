@@ -106,7 +106,7 @@ public class ZoneServiceImpl implements ZoneService {
         for (PointToZoneMapping mapping : pointToZoneMappings) {
             VoltageLimitedDeviceInfo deviceInfo = findDeviceInfoWithPointId(deviceInfos, mapping.getPointId());
             if (deviceInfo == null) {
-                Log.error("couldn't find device in VoltageLimistedDeviceInfo list");
+                Log.error("couldn't find device in VoltageLimitedDeviceInfo list");
             } else {
                 mapping.setPhase(deviceInfo.getPhase());
             }

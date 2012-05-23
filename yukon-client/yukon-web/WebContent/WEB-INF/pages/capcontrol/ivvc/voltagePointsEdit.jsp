@@ -86,6 +86,7 @@
 									</form:select>
 								</c:when>
 								<c:otherwise>
+								    <form:hidden path="points[${status.index}].phase"/>
 									<i:inline key="yukon.common.phase.phase${voltagePoint.phase}"/>
 								</c:otherwise>
 							</c:choose>
