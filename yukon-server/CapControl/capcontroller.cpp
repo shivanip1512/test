@@ -2091,6 +2091,145 @@ bool CtiCapController::isCbcDbChange(const CtiDBChangeMsg *dbChange)
     }
 }
 
+CcDbReloadInfo CtiCapController::resolveCapControlType(CtiDBChangeMsg *dbChange)
+{
+
+    CcDbReloadInfo reloadInfo(dbChange->getId(), dbChange->getTypeOfChange(), Cti::CapControl::Undefined);
+    int paoType = resolvePAOType(dbChange->getCategory(),dbChange->getObjectType());  
+
+    switch (paoType)
+    {
+        case TYPE_CC_SPECIALAREA:
+            {
+                reloadInfo.objecttype = Cti::CapControl::SpecialArea;
+
+                CtiPAOScheduleManager::getInstance()->setValid(false);
+                break;
+            }
+        case TYPE_CC_AREA:
+            {
+                reloadInfo.objecttype = Cti::CapControl::Area;
+
+                CtiPAOScheduleManager::getInstance()->setValid(false);
+                break;
+            }
+        case TYPE_CC_SUBSTATION:
+            {
+                reloadInfo.objecttype = Cti::CapControl::Substation;
+
+                CtiPAOScheduleManager::getInstance()->setValid(false);
+                break;
+            }
+        case TYPE_CC_SUBSTATION_BUS:
+            {
+                reloadInfo.objecttype = Cti::CapControl::SubBus;
+
+                CtiPAOScheduleManager::getInstance()->setValid(false);
+                break;
+            }
+        case TYPE_CC_FEEDER:
+            {
+                reloadInfo.objecttype = Cti::CapControl::Feeder;
+                break;
+            }
+        case TYPE_CC_VOLTAGEREGULATOR:
+            {
+                reloadInfo.objecttype = Cti::CapControl::VoltageRegulatorType;
+
+                CtiPAOScheduleManager::getInstance()->setValid(false);
+                break;
+            }
+        case TYPE_VIRTUAL_SYSTEM: 
+            break;
+        default: 
+            {
+                reloadInfo = resolveCapControlTypeByDataBase(dbChange);
+                break;
+            }
+    }
+
+
+    if (reloadInfo.objecttype == Cti::CapControl::Undefined)
+    {
+        CtiCCSubstationBusStore::getInstance()->setValid(false);
+        CtiPAOScheduleManager::getInstance()->setValid(false);
+    }
+    return reloadInfo;
+}
+
+CcDbReloadInfo CtiCapController::resolveCapControlTypeByDataBase(CtiDBChangeMsg *dbChange)
+{
+    CcDbReloadInfo reloadInfo(dbChange->getId(), dbChange->getTypeOfChange(), Cti::CapControl::Undefined);
+    if (dbChange->getDatabase() == ChangeCBCStrategyDb)
+    {
+        reloadInfo.objecttype = Cti::CapControl::Strategy;
+    }
+    else if (dbChange->getDatabase() == ChangePAODb && ciStringEqual(dbChange->getObjectType(),"cap bank"))
+    {
+        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+        {
+             CtiLockGuard<CtiLogger> logger_guard(dout);
+             dout << CtiTime() << " capBank DB change message received for Cap: "<<dbChange->getId() << endl;
+        }
+        reloadInfo.objecttype = Cti::CapControl::CapBank;
+    }
+    else if (dbChange->getDatabase() == ChangePointDb)
+    {
+        PointIdToSubBusMultiMap::iterator      subBusBegin,  subBusEnd;
+        PointIdToFeederMultiMap::iterator      feederBegin,  feederEnd;
+        PointIdToCapBankMultiMap::iterator     capBankBegin, capBankEnd;
+        PointIdToAreaMultiMap::iterator        areaBegin,    areaEnd;
+        PointIdToSpecialAreaMultiMap::iterator sAreaBegin,   sAreaEnd;
+        if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subBusBegin, subBusEnd))
+        {
+            CtiCCSubstationBusPtr sub = subBusBegin->second;
+            reloadInfo = CcDbReloadInfo(sub->getPaoId(), ChangeTypeUpdate, Cti::CapControl::SubBus);
+        }
+        else if (CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), feederBegin, feederEnd))
+        {
+            CtiCCFeederPtr feed = feederBegin->second;
+            reloadInfo = CcDbReloadInfo(feed->getPaoId(), ChangeTypeUpdate, Cti::CapControl::Feeder);
+        }
+        else if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capBankBegin, capBankEnd))
+        {
+            CtiCCCapBankPtr cap = capBankBegin->second;
+            reloadInfo = CcDbReloadInfo(cap->getPaoId(), ChangeTypeUpdate, Cti::CapControl::CapBank);
+        }
+        else if (CtiCCSubstationBusStore::getInstance()->findAreaByPointID(dbChange->getId(), areaBegin, areaEnd))
+        {
+            CtiCCAreaPtr area = areaBegin->second;
+            reloadInfo = CcDbReloadInfo(area->getPaoId(), ChangeTypeUpdate, Cti::CapControl::Area);
+        }
+        else if (CtiCCSubstationBusStore::getInstance()->findSpecialAreaByPointID(dbChange->getId(), sAreaBegin, sAreaEnd))
+        {
+            CtiCCSpecialPtr specialArea = sAreaBegin->second;
+            reloadInfo = CcDbReloadInfo(specialArea->getPaoId(), ChangeTypeUpdate, Cti::CapControl::SpecialArea);
+
+        }
+    }
+    else if ( isCbcDbChange(dbChange) )
+    {
+        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+        {
+             CtiLockGuard<CtiLogger> logger_guard(dout);
+             dout << CtiTime() << " CBC DB change message received: "<<dbChange->getId() << endl;
+        }
+        long capBankId = CtiCCSubstationBusStore::getInstance()->findCapBankIDbyCbcID(dbChange->getId());
+        if (capBankId != NULL)
+        {
+            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+            {
+                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                 dout << CtiTime() << " CBC attached to CapBank: "<<capBankId << endl;
+            }
+
+            CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPAObjectID(capBankId);
+            reloadInfo = CcDbReloadInfo(cap->getPaoId(), ChangeTypeUpdate, Cti::CapControl::CapBank);
+        }
+    }
+    return reloadInfo;
+}
+
 /*---------------------------------------------------------------------------
     parseMessage
 
@@ -2136,142 +2275,16 @@ void CtiCapController::parseMessage(RWCollectable *message)
                             CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(true);
                         }
 
-                        Cti::CapControl::CapControlType objType = Cti::CapControl::Undefined;
-                        long changeId = dbChange->getId();
-                        if (dbChange->getDatabase() == ChangeCBCStrategyDb)
-                        {
-                            objType = Cti::CapControl::Strategy;
-                        }
-                        else if (dbChange->getDatabase() == ChangePAODb && ciStringEqual(dbChange->getObjectType(),"cap bank"))
-                        {
-                            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                            {
-                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                 dout << CtiTime() << " capBank DB change message received for Cap: "<<dbChange->getId() << endl;
-                            }
-                            objType = Cti::CapControl::CapBank;
-                        }
-                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_VIRTUAL_SYSTEM)
-                        {
-                            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                            {
-                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                 dout << CtiTime() << " VIRTUAL SYSTEM Device Change "<<dbChange->getId() << endl;
-                            }
-                        }
-                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SPECIALAREA)
-                        {
-                            objType = Cti::CapControl::SpecialArea;
-
-                            CtiPAOScheduleManager::getInstance()->setValid(false);
-                        }
-                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA)
-                        {
-                            objType = Cti::CapControl::Area;
-
-                            CtiPAOScheduleManager::getInstance()->setValid(false);
-                        }
-                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION)
-                        {
-                            objType = Cti::CapControl::Substation;
-
-                            CtiPAOScheduleManager::getInstance()->setValid(false);
-                        }
-                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS)
-                        {
-                            objType = Cti::CapControl::SubBus;
-
-                            CtiPAOScheduleManager::getInstance()->setValid(false);
-                        }
-                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_FEEDER)
-                        {
-                            objType =  Cti::CapControl::Feeder;
-                        }
-                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_VOLTAGEREGULATOR)
-                        {
-                            objType =  Cti::CapControl::VoltageRegulatorType;
-                        }
-                        else if (dbChange->getDatabase() == ChangePAOScheduleDB)
-                        {
-                            CtiPAOScheduleManager::getInstance()->setValid(false);
-                        }
-                        else if (dbChange->getDatabase() == ChangePointDb)
-                        {
-                            PointIdToSubBusMultiMap::iterator      subBusBegin,  subBusEnd;
-                            PointIdToFeederMultiMap::iterator      feederBegin,  feederEnd;
-                            PointIdToCapBankMultiMap::iterator     capBankBegin, capBankEnd;
-                            PointIdToAreaMultiMap::iterator        areaBegin,    areaEnd;
-                            PointIdToSpecialAreaMultiMap::iterator sAreaBegin,   sAreaEnd;
-                            if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subBusBegin, subBusEnd))
-                            {
-                                CtiCCSubstationBusPtr sub = subBusBegin->second;
-                                objType = Cti::CapControl::SubBus;
-                                changeId = sub->getPaoId();
-                            }
-                            else if (CtiCCSubstationBusStore::getInstance()->findFeederByPointID(dbChange->getId(), feederBegin, feederEnd))
-                            {
-                                CtiCCFeederPtr feed = feederBegin->second;
-                                objType = Cti::CapControl::Feeder;
-                                changeId = feed->getPaoId();
-                            }
-                            else if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capBankBegin, capBankEnd))
-                            {
-                                CtiCCCapBankPtr cap = capBankBegin->second;
-                                objType = Cti::CapControl::CapBank;
-                                changeId = cap->getPaoId();
-                            }
-                            else if (CtiCCSubstationBusStore::getInstance()->findAreaByPointID(dbChange->getId(), areaBegin, areaEnd))
-                            {
-                                CtiCCAreaPtr area = areaBegin->second;
-                                objType = Cti::CapControl::Area;
-                                changeId = area->getPaoId();
-                            }
-                            else if (CtiCCSubstationBusStore::getInstance()->findSpecialAreaByPointID(dbChange->getId(), sAreaBegin, sAreaEnd))
-                            {
-                                CtiCCSpecialPtr specialArea = sAreaBegin->second;
-                                objType = Cti::CapControl::SpecialArea;
-                                changeId = specialArea->getPaoId();
-                            }
-                        }
-                        else if ( isCbcDbChange(dbChange) )
-                        {
-                            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                            {
-                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                 dout << CtiTime() << " cbc DB change message received for cbc: "<<dbChange->getId() << endl;
-                            }
-                            long capBankId = CtiCCSubstationBusStore::getInstance()->findCapBankIDbyCbcID(dbChange->getId());
-                            if (capBankId != NULL)
-                            {
-                                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                                {
-                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                     dout << CtiTime() << " cbc attached to cap: "<<capBankId << endl;
-                                }
-
-                                CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPAObjectID(capBankId);
-                                objType = Cti::CapControl::CapBank;
-                                changeId = cap->getPaoId();
-                                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                                {
-                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                     dout << CtiTime() << " Cap "<<cap->getPaoName() <<" was found on sub " << endl;
-                                }
-                            }
-                        }
-                        else if (objType == Cti::CapControl::Undefined)
-                        {
-                            CtiCCSubstationBusStore::getInstance()->setValid(false);
-                            CtiPAOScheduleManager::getInstance()->setValid(false);
-                        }
+                        CcDbReloadInfo reloadInfo = resolveCapControlType(dbChange);
+                        
                         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                         {
                              CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " RELOAD INFO: changeID: "<<changeId << endl;
-                             dout << CtiTime() << "            changeType: "<<dbChange->getTypeOfChange() << endl;
-                             dout << CtiTime() << "               objType: "<<objType << endl;
+                             dout << CtiTime() << " RELOAD INFO: changeID: "<<reloadInfo.objectId << endl;
+                             dout << CtiTime() << "            changeType: "<<reloadInfo.typeOfAction() << endl;
+                             dout << CtiTime() << "               objType: "<<reloadInfo.objecttype << endl;
                         }
-                        CcDbReloadInfo reloadInfo(changeId, dbChange->getTypeOfChange(), objType);
+                        
 
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
                     }

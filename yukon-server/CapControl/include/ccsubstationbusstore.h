@@ -44,6 +44,20 @@ struct CcDbReloadInfo
    {
       return this->objectId == r.objectId;
    }
+   string typeOfAction() {
+       if (action == 0)
+       {
+           return "Add";
+       }
+       else if (action == 1)
+       {
+           return "Delete";
+       }
+       else
+       {
+           return "Update";
+       }
+   }
 
 };
 

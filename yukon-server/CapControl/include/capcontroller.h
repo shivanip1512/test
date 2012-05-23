@@ -105,6 +105,8 @@ class CtiCapController : public MessageListener
         void checkDisablePaoPoint(CapControlPao* pao, long pointID, bool disable, long enableCommand, long disableCommand);
 
         bool isCbcDbChange(const CtiDBChangeMsg* dbChange);
+        CcDbReloadInfo resolveCapControlType(CtiDBChangeMsg *dbChange);
+        CcDbReloadInfo resolveCapControlTypeByDataBase(CtiDBChangeMsg *dbChange);
 
         static CtiCapController* _instance;
         RWThread _substationBusThread;
