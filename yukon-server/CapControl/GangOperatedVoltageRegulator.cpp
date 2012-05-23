@@ -135,12 +135,22 @@ void GangOperatedVoltageRegulator::executeIntegrityScan()
 void GangOperatedVoltageRegulator::executeEnableKeepAlive()
 {
     executeKeepAliveHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig );
+
+    if ( isTimeToSendKeepAlive() )      // update the keep alive timer
+    {
+        _nextKeepAliveSendTime = ( CtiTime::now() + _keepAliveTimer );
+    }
 }
 
 
 void GangOperatedVoltageRegulator::executeDisableKeepAlive()
 {
     executeKeepAliveHelper( getPointByAttribute( PointAttribute::KeepAlive ), 0);
+
+    if ( isTimeToSendKeepAlive() )      // update the keep alive timer
+    {
+        _nextKeepAliveSendTime = ( CtiTime::now() + _keepAliveTimer );
+    }
 }
 
 

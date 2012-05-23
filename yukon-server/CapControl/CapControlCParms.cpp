@@ -53,6 +53,8 @@ double  _IVVC_DEFAULT_DELTA;
 bool    _LIMIT_ONE_WAY_COMMANDS;
 bool    _IVVC_STATIC_DELTA_VOLTAGES;
 bool    _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS;
+unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
+
 
 void refreshGlobalCParms()
 {
@@ -646,6 +648,13 @@ void refreshGlobalCParms()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CAP_CONTROL_IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS: " << _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS << endl;
+    }
+
+    _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_REGULATOR_AUTO_MODE_MSG_DELAY", 2);    // seconds
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_IVVC_REGULATOR_AUTO_MODE_MSG_DELAY: " << _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY << " seconds." << endl;
     }
 }
 

@@ -300,11 +300,6 @@ void VoltageRegulator::executeKeepAliveHelper( const LitePoint & point, const in
     request->setSOE(5);
 
     CtiCapController::getInstance()->manualCapBankControl( request );
-
-    if ( isTimeToSendKeepAlive() )      // update the keep alive timer
-    {
-        _nextKeepAliveSendTime = ( CtiTime::now() + _keepAliveTimer );
-    }
 }
 
 

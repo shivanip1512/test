@@ -6,6 +6,8 @@
 #include "ccutil.h"
 #include "ccmessage.h"
 
+extern unsigned long _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
+
 
 namespace Cti           {
 namespace CapControl    {
@@ -164,39 +166,39 @@ void PhaseOperatedVoltageRegulator::executeIntegrityScan()
 */
 void PhaseOperatedVoltageRegulator::executeEnableKeepAlive()
 {
-    bool needsAutoBlockEnable = ( getOperatingMode() != RemoteMode );
-
-    // 1. read in 'activate' value
-    // 2. increment it [ 0 -- 32767, 0 ... ]
+    OperatingMode   mode = getOperatingMode();
 
     double    value = -1.0;
-    LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
 
-    if ( getPointValue( point.getPointId(), value ) )
+    _keepAliveConfig = 0;   // default to 0 if no point updates
+    if ( getPointValue( getPointByAttribute( PointAttribute::KeepAlive ).getPointId(), value ) )
     {
         _keepAliveConfig = ( static_cast<long>(value) + 1 ) % 32768;     // limit range and handle rollover.
-    }
-    else
-    {
-        // If we haven't received any point updates yet we assume 0 -- gotta start somewhere...
-
-        _keepAliveConfig = 0;
     }
 
     executeKeepAliveHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig );
 
-    if ( needsAutoBlockEnable )
+    long delay = _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY;
+
+    if ( mode == RemoteMode )
     {
-        // get next sequence number
+        bool needsAutoBlock = false;
+        if ( getPointValue( getPointByAttribute( PointAttribute::AutoBlockEnable ).getPointId(), value ) )
+        {
+            needsAutoBlock = ( value == 0.0 );  // false
+        }
 
-        _keepAliveConfig = ( _keepAliveConfig + 1 ) % 32768;  // limit range and handle rollover.
-
-        // send additional messages
-
-        executeKeepAliveHelper( getPointByAttribute( PointAttribute::KeepAlive ), _keepAliveConfig );
-
-        executeDigitalOutputHelper( getPointByAttribute( PointAttribute::AutoBlockEnable ), "Auto Block Enable" );
+        if ( needsAutoBlock )
+        {
+            executeDigitalOutputHelper( getPointByAttribute( PointAttribute::AutoBlockEnable ), "Auto Block Enable" );
+        }
+        else
+        {
+            delay = _keepAliveTimer;
+        }
     }
+
+    _nextKeepAliveSendTime = ( CtiTime::now() + delay );
 }
 
 
