@@ -1755,7 +1755,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointId(long estimate
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(double estimatedvarval)
 {
-    bool varChanged = setVariableIfDifferent(_estimatedvarloadpointvalue, estimatedvarval);
+    const bool varChanged = setVariableIfDifferent(_estimatedvarloadpointvalue, estimatedvarval);
     _busupdatedflag |= varChanged;
     _dirty |= varChanged;
 

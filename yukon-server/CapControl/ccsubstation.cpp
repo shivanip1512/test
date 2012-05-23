@@ -451,7 +451,7 @@ CtiCCSubstation& CtiCCSubstation::setVoltReductionFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setChildVoltReductionFlag(bool flag)
 {
-    bool flagChanged = setVariableIfDifferent(_childVoltReductionFlag, flag);
+    const bool flagChanged = setVariableIfDifferent(_childVoltReductionFlag, flag);
     _dirty |= flagChanged;
     _stationUpdatedFlag |= flagChanged;
     return *this;
@@ -548,7 +548,7 @@ CtiCCSubstation& CtiCCSubstation::setSaEnabledFlag(bool flag)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setRecentlyControlledFlag(bool flag)
 {
-    bool flagChanged = setVariableIfDifferent(_recentlyControlledFlag, flag);
+    const bool flagChanged = setVariableIfDifferent(_recentlyControlledFlag, flag);
     _dirty |= flagChanged;
     _stationUpdatedFlag |= flagChanged;
     return *this;
