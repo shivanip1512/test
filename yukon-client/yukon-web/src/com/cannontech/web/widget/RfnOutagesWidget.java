@@ -83,8 +83,8 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
         Iterable<RfnOutageLog> logs = Iterables.transform(data.get(meter.getPaoIdentifier()), new Function<PointValueQualityHolder, RfnOutageLog>() {
             @Override
             public RfnOutageLog apply(PointValueQualityHolder input) {
-                Instant start = new Instant(input.getPointDataTimeStamp());
-                Instant end = new Instant(input.getPointDataTimeStamp()).plus(Duration.standardSeconds((long) input.getValue()));
+                Instant end = new Instant(input.getPointDataTimeStamp());
+                Instant start = new Instant(input.getPointDataTimeStamp()).minus(Duration.standardSeconds((long) input.getValue()));
                 boolean isInvalid = input.getValue() == RfnInvalidValues.OUTAGE_DURATION.getValue();
                 return new RfnOutageLog(start, end, isInvalid);
             }

@@ -39,9 +39,9 @@ jQuery(document).ready(flashYellow(jQuery('#reloadedAt')[0], 2));
 		                        <td><cti:formatDuration type="DHMS_REDUCED" startDate="${log.start}" endDate="${log.end}"/></td>
 	                        </c:when>
 	                        <c:otherwise>
-			                    <td class="subtleGray" colspan="3">
-			                        <i:inline key=".invalidOutageLog"/>
-			                    </td>
+                                <td><i:inline key=".unknown"/></td>
+                                <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
+                                <td><i:inline key=".unknown"/></td>
 	                        </c:otherwise>
                         </c:choose>
                     </tr>
