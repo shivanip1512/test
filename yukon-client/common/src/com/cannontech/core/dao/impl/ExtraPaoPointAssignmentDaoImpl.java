@@ -26,8 +26,8 @@ import com.cannontech.enums.RegulatorPointMapping;
 public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDao {
     
     @Autowired private PointDao pointDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
-    private YukonJdbcTemplate yukonJdbcTemplate;
     private ParameterizedRowMapper<PaoPointIdentifier> paoPointIdentifierRowMapper = new ParameterizedRowMapper<PaoPointIdentifier>() {
 
         @Override
@@ -93,11 +93,6 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
         SqlStatementBuilder sql = new SqlStatementBuilder("delete from ExtraPaoPointAssignment where paobjectId = ");
         sql.appendArgument(pao.getPaoIdentifier().getPaoId());
         yukonJdbcTemplate.update(sql);
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     @Override
