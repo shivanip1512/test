@@ -6,14 +6,15 @@
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <utility>
 #include <rw/rwtime.h>
-#include <locale>
 #include <sstream>
 #include <map>
 #include "ctidate.h"
 #include "ctitime.h"
+#include "boost/assign.hpp"
 
 using std::string;
 using namespace std;
+using namespace boost::assign;
 
 const int SECONDS_PER_MINUTE = 60;
 const int MINUTES_PER_HOUR = 60;
@@ -423,17 +424,6 @@ string CtiTime::asString(timeFormat type)  const
         std::string timeZoneName;
         std::string biasTime;
         long bias;
-        std::map<std::wstring, std::string> nameMap;
-        nameMap[L"Central Standard Time"]="CST";
-        nameMap[L"Central Daylight Time"]="CDT";
-        nameMap[L"Eastern Standard Time"]="EST";
-        nameMap[L"Eastern Daylight Time"]="EDT";
-        nameMap[L"Pacific Standard Time"]="PST";
-        nameMap[L"Pacific Daylight Time"]="PDT";
-        nameMap[L"Mountain Standard Time"]="MST";
-        nameMap[L"Mountain Daylight Time"]="MDT";
-
-        
 
         _TIME_ZONE_INFORMATION tzinfo;
         GetTimeZoneInformation(&tzinfo);
@@ -449,26 +439,65 @@ string CtiTime::asString(timeFormat type)  const
             bias -= tzinfo.StandardBias;
         }
 
-        std::map<std::wstring, std::string>::iterator found = nameMap.find(wideTimeZoneName);
-        if(found != nameMap.end())
+        //This map is not exhaustive. It is designed to supplement the UTC offset, which is the time zone.
+        static const std::map<std::wstring, std::string> timeZoneAbbrevMap = map_list_of
+        (L"Hawaiian Standard Time", "HST") 
+        (L"Pacific Standard Time" , "PST")
+        (L"Pacific Daylight Time" , "PDT")
+        (L"US Mountain Standard Time", "MST")
+        (L"US Mountain Daylight Time", "MDT")
+        (L"Mountain Standard Time", "MST")
+        (L"Mountain Daylight Time", "MDT")
+        (L"Mountain Standard Time (Mexico)", "MST")
+        (L"Mountain Daylight Time (Mexico)", "MDT")
+        (L"Central Standard Time" , "CST")
+        (L"Central Daylight Time" , "CDT")
+        (L"Central Standard Time (Mexico)" , "CST")
+        (L"Central Daylight Time (Mexico)" , "CDT")
+        (L"Central America Standard Time" , "CST")
+        (L"Central America Daylight Time" , "CDT")
+        (L"Canada Central Standard Time" , "CST")
+        (L"Canada Central Daylight Time" , "CDT")
+        (L"Eastern Standard Time" , "EST")
+        (L"Eastern Daylight Time" , "EDT")
+        (L"US Eastern Standard Time" , "EST")
+        (L"US Eastern Daylight Time" , "EDT")
+        (L"Atlantic Standard Time" , "AST")
+        (L"Atlantic Daylight Time" , "ADT")
+        (L"Newfoundland Standard Time" , "NT")
+        (L"Newfoundland Daylight Time" , "NDT")
+        (L"E. South America Standard Time" , "BRT")
+        (L"E. South America Daylight Time" , "BRST")
+        (L"GMT Standard Time" , "GMT")
+        (L"Coordinated Universal Time" , "GMT")
+        (L"Greenwich Standard Time" , "GMT")
+        (L"Argentina Standard Time" , "ART")
+        (L"W. Europe Standard Time" , "WET")
+        (L"W. Europe Daylight Time" , "WEST")
+        (L"Central Europe Standard Time" , "CET")
+        (L"Central Europe Daylight Time" , "CEST")
+        (L"Central European Standard Time" , "CET")
+        (L"Central European Daylight Time" , "CEST")
+        (L"Romance Standard Time" , "CET")
+        (L"Romance Daylight Time" , "CEST")
+        (L"Romance Standard Time" , "CET")
+        (L"Romance Daylight Time" , "CEST")
+        (L"Russian Standard Time" , "MSK")
+        (L"Russian Daylight Time" , "MSD")
+        ;
+
+        std::map<std::wstring, std::string>::const_iterator found = timeZoneAbbrevMap.find(wideTimeZoneName);
+        if(found != timeZoneAbbrevMap.end())
         {
             timeZoneName = found -> second;
-        } else {
-
-            //Convert std::wstring to std::string
-            std::locale locale = std::locale("");
-            std::string strBuffer(wideTimeZoneName.size() *4 +1, 0);
-            std::use_facet<std::ctype<wchar_t> >(locale).narrow(&wideTimeZoneName[0], &wideTimeZoneName[0] + wideTimeZoneName.size(), '?', &strBuffer[0]);
-
-
-            timeZoneName = std::string(&strBuffer[0]);
-        }
+        }    
 
         int biasHours = bias / MINUTES_PER_HOUR;
         int biasMinutes = bias % MINUTES_PER_HOUR;
 
         if (bias <0 && biasMinutes !=0)
         {
+            //Negative biases that are not an integer number of hours need to be adjusted
             biasHours -= 1;
             biasMinutes = MINUTES_PER_HOUR + biasMinutes;
         }
