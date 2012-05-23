@@ -134,13 +134,7 @@ public class SupportBundleServiceImpl implements SupportBundleService {
         // sorting by date modified
         Arrays.sort(allFiles, new Comparator<File>() {
             public int compare(File f1, File f2) {
-                if (f1.lastModified() < f2.lastModified()) {
-                    return 1;
-                } else if (f1.lastModified() > f2.lastModified()) {
-                    return -1;
-                } else {
-                    return 0;
-                }
+                return new Long(f2.lastModified()).compareTo(f1.lastModified());
             }
         });
 
