@@ -79,6 +79,14 @@
 				<tags:inputNameValue nameKey=".dataType.UOM" path="uom" />
 				<tags:inputNameValue nameKey=".dataType.UOM_MODIFIERS" path="uomModifiers" />
 			</tags:nameValueContainer2>
+			<br>
+			<div>Outage Start Time helper info:</div>
+			<ul>
+	            <li>-Leaving this field blank above will default it to 60 seconds from now</li>
+	            <li>-Enter a value of -1 to simulate a RESTORE event from a meter with "old" firmware (doesn't include this meta-data)</li>
+	            <li>-The current (<cti:formatDate type="TIME" value="${event.timestamp}"/>) time in milliseconds: ${event.timestampAsMillis}</li>
+	            <li>-60 seconds less than this is: ${event.timestampAsMillis - 60000}</li>
+			</ul>
 
 			<div class="pageActionArea">
                 <cti:button nameKey="send" styleClass="f_blocker f_sendEventArchive"/>

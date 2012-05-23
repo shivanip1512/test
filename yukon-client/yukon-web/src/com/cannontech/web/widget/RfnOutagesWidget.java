@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -84,7 +85,11 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
             public RfnOutageLog apply(PointValueQualityHolder input) {
                 Instant start = new Instant(input.getPointDataTimeStamp());
                 Instant end = new Instant(input.getPointDataTimeStamp()).plus(Duration.standardSeconds((long) input.getValue()));
-                return new RfnOutageLog(start, end);
+                boolean isInvalid = false;
+                if (input.getValue() == RfnInvalidValues.OUTAGE_DURATION.getValue()) {
+                    isInvalid = true;
+                }
+                return new RfnOutageLog(start, end, isInvalid);
             }
         });
         if (!Iterables.isEmpty(logs)) {
@@ -99,12 +104,14 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
      * MUST BE PUBLIC FOR c:forEach TAG
      */
     public static class RfnOutageLog {
-        public RfnOutageLog(Instant start, Instant end) {
-            this.start = start;
-            this.end = end;
-        }
         private Instant start;
         private Instant end;
+        private boolean invalid;
+        public RfnOutageLog(Instant start, Instant end, boolean invalid) {
+            this.start = start;
+            this.end = end;
+            this.invalid = invalid;
+        }
         public Instant getStart() {
             return start;
         }
@@ -116,6 +123,12 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
         }
         public void setEnd(Instant end) {
             this.end = end;
+        }
+        public boolean isInvalid() {
+            return invalid;
+        }
+        public void setInvalid(boolean invalid) {
+            this.invalid = invalid;
         }
     }
     

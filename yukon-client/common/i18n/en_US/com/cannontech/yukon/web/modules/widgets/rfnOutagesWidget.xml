@@ -12,5 +12,6 @@
 <entry key="yukon.web.widgets.rfnOutagesWidget.read.labelBusy">Reading</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget.outageLog">RFN Outages Log Since</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget.noLogs">No Outage Logs</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.invalidOutageLog">Invalid Data (caused by out-of-date firmware)</entry>
 
 </properties>

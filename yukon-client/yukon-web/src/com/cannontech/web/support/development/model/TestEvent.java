@@ -119,5 +119,8 @@ public class TestEvent {
     public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
+    public Long getTimestampAsMillis() {
+        return timestamp.getMillis();
+    }
 
 }

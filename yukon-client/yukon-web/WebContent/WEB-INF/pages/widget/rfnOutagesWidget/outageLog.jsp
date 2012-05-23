@@ -32,9 +32,18 @@ jQuery(document).ready(flashYellow(jQuery('#reloadedAt')[0], 2));
             <c:otherwise>
                 <c:forEach items="${logs}" var="log">
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td><cti:formatDate value="${log.start}" type="BOTH"/></td>
-                        <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
-                        <td><cti:formatDuration type="DHMS_REDUCED" startDate="${log.start}" endDate="${log.end}"/></td>
+                        <c:choose>
+	                        <c:when test="${!log.invalid}">
+		                        <td><cti:formatDate value="${log.start}" type="BOTH"/></td>
+		                        <td><cti:formatDate value="${log.end}" type="BOTH"/></td>
+		                        <td><cti:formatDuration type="DHMS_REDUCED" startDate="${log.start}" endDate="${log.end}"/></td>
+	                        </c:when>
+	                        <c:otherwise>
+			                    <td class="subtleGray" colspan="3">
+			                        <i:inline key=".invalidOutageLog"/>
+			                    </td>
+	                        </c:otherwise>
+                        </c:choose>
                     </tr>
                 </c:forEach>
             </c:otherwise>

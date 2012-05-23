@@ -5,6 +5,8 @@ import java.util.List;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
+import com.cannontech.amr.rfn.model.InvalidEventMessageException;
+import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessorBase;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -17,10 +19,15 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
     @Override
     public <T extends RfnEvent> void process(RfnMeter meter, T event, List<? super PointData> pointDatas) {
         rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.OUTAGE_STATUS, event.getTimeStamp(), OutageStatus.GOOD.getRawState());
-        
-        Long start = (Long) getEventDataWithType(event, RfnConditionDataType.OUTAGE_START_TIME);
-        Long end = event.getTimeStamp();
-        Long durationInSeconds = (end - start) / 1000;
+
+        Long durationInSeconds = RfnInvalidValues.OUTAGE_DURATION.getValue();
+        try {
+            Long start = (Long) getEventDataWithType(event, RfnConditionDataType.OUTAGE_START_TIME);
+            Long end = event.getTimeStamp();
+            durationInSeconds = (end - start) / 1000;
+        } catch (InvalidEventMessageException e) {
+            // Old firmware doesn't include the OUTAGE_START_TIME meta-data, so just use the invalid value set above for the duration if we get here
+        }
         rfnMeterEventService.processAttributePointData(meter, pointDatas, BuiltInAttribute.OUTAGE_LOG, event.getTimeStamp(), durationInSeconds);
 
         Long count = (Long) getEventDataWithType(event, RfnConditionDataType.COUNT);

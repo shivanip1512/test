@@ -33,6 +33,7 @@ import com.cannontech.amr.rfn.message.read.ChannelData;
 import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
+import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -192,12 +193,21 @@ public class RfnMeterArchiveTestController {
         }
         rfnEvent.setTimeStamp(timestamp);
         
-        testEvent.setOutageStartTime(timestamp - 60000); // 60 seconds ago
+        if (testEvent.getOutageStartTime() == null) {
+            testEvent.setOutageStartTime(timestamp - 60000); // 60 seconds ago
+        } else if (testEvent.getOutageStartTime() == RfnInvalidValues.OUTAGE_DURATION.getValue()) {
+            testEvent.setOutageStartTime(null);
+        }
+
         Map<RfnConditionDataType, Object> testEventMap = Maps.newHashMap();
         copyDataTypesToMap(testEvent, testEventMap);
         
-        // clear timestamp
-        testEvent.setOutageStartTime(null);
+        // reset OutageStartTime value
+        if (testEvent.getOutageStartTime() == null) {
+            testEvent.setOutageStartTime(RfnInvalidValues.OUTAGE_DURATION.getValue());
+        } else {
+            testEvent.setOutageStartTime(null);
+        }
         
         rfnEvent.setEventData(testEventMap);
         return rfnEvent;
