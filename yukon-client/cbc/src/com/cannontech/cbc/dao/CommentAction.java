@@ -63,6 +63,7 @@ public enum CommentAction {
         builder.put(CommandType.STOP_VERIFICATION, VERIFY_CONTROL);
         builder.put(CommandType.EMERGENCY_VERIFICATION_STOP, VERIFY_CONTROL);
         builder.put(CommandType.VERIFY_SA_BANKS, VERIFY_CONTROL);
+        builder.put(CommandType.VERIFY_SELECTED_BANK, VERIFY_CONTROL);
         
         builder.put(CommandType.SEND_SYNC_CBC_CAPBANK_STATE, SYNC_CAPBANK_STATE);
         
