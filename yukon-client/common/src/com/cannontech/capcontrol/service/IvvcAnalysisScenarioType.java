@@ -19,7 +19,10 @@ public enum IvvcAnalysisScenarioType {
     EXECUTED_NO_TAP_NEEDED(IvvcAnalysisFormatType.SUBBUS_ID),
     EXECUTED_CAPBANK_OP_CLOSE(IvvcAnalysisFormatType.SUBBUS_ID_CC_PAO_ID),
     EXECUTED_CAPBANK_OP_OPEN(IvvcAnalysisFormatType.SUBBUS_ID_CC_PAO_ID),
-    EXECUTED_CAPBANK_OP_ABANDONED_EXCEEDED_MAX_KVAR(IvvcAnalysisFormatType.INT_CC_ID);
+    EXECUTED_CAPBANK_OP_ABANDONED_EXCEEDED_MAX_KVAR(IvvcAnalysisFormatType.INT_CC_ID),
+    ABORTED_REGULATOR_IN_AUTOMODE(IvvcAnalysisFormatType.SUBBUS_ID),
+    STATUS_SUBBUS_DISABLED(IvvcAnalysisFormatType.SUBBUS_ID),
+    STATUS_SUBBUS_ENABLED(IvvcAnalysisFormatType.SUBBUS_ID);
     
     private IvvcAnalysisFormatType formatType;
     
@@ -42,6 +45,9 @@ public enum IvvcAnalysisScenarioType {
         builder.put(13, EXECUTED_CAPBANK_OP_CLOSE);
         builder.put(14, EXECUTED_CAPBANK_OP_OPEN);
         builder.put(15, EXECUTED_CAPBANK_OP_ABANDONED_EXCEEDED_MAX_KVAR);
+        builder.put(17, ABORTED_REGULATOR_IN_AUTOMODE);
+        builder.put(18, STATUS_SUBBUS_DISABLED);
+        builder.put(19, STATUS_SUBBUS_ENABLED);
         
         scenarioIdMap = builder.build();
     }

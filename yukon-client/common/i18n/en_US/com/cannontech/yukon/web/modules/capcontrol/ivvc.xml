@@ -116,7 +116,10 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario13">{0} - IVVC Algorithm: {1} - Operating CapBank: {2}. Close Sent.</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario14">{0} - IVVC Algorithm: {1} - Operating CapBank: {2}. Open Sent.</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario15">{0} - IVVC Algorithm: Exceeded Max kVar of {1}, not doing control on bank: {2}.</entry>
-	
+	<entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario17">{0} - IVVC Algorithm: A Regulator is in Auto Mode on SubBus {1}, not doing control.</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario18">{0} - IVVC Algorithm: Has been disabled on SubBus {1}.</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.busView.analysisScenario19">{0} - IVVC Algorithm: Has been enabled on SubBus {1}.</entry>
+    
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.title">Zone Wizard</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.creation.title">Zone Creation Wizard</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.zoneWizard.editor.title">Zone Editor</entry>
