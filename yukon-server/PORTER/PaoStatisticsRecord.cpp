@@ -98,7 +98,7 @@ bool PaoStatisticsRecord::isStale(const CtiTime timeNow) const
         {
             CtiDate d = _interval_start.date();
 
-            return timeNow >= (d + CtiDate::daysInMonthYear(d.month(), d.year());
+            return timeNow >= (d + CtiDate::daysInMonthYear(d.month(), d.year()));
         }
 
         default:
