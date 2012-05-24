@@ -8253,7 +8253,7 @@ void CtiCCSubstationBusStore::handleSubstationDBChange(long reloadId, BYTE reloa
         CtiCCSubstation *station = findSubstationByPAObjectID(reloadId);
         if (station != NULL)
         {
-            modifiedBusIdsSet.insert(station->getCCSubIds().begin(), station->getCCSubIds().begin());
+            std::copy( station->getCCSubIds().begin(), station->getCCSubIds().end(), std::inserter( modifiedBusIdsSet, modifiedBusIdsSet.end() ) );
             modifiedStationIdsSet.insert(reloadId);
             if (station->getDisableFlag())
                 station->checkForAndStopVerificationOnChildSubBuses(capMessages);
@@ -8363,12 +8363,11 @@ void CtiCCSubstationBusStore::updateModifiedStationsAndBusesSets(PaoIdVector sta
         CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
         if (station != NULL)
         {
-            modifiedBusIdsSet.insert(station->getCCSubIds().begin(), station->getCCSubIds().end());
+            std::copy( station->getCCSubIds().begin(), station->getCCSubIds().end(), std::inserter( modifiedBusIdsSet, modifiedBusIdsSet.end() ) );
             msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
         }
     }
-
-    modifiedStationIdsSet.insert(stationIdList.begin(), stationIdList.end());
+    std::copy( stationIdList.begin(), stationIdList.end(), std::inserter( modifiedStationIdsSet, modifiedStationIdsSet.end() ) );
     msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
     return;
 }
@@ -8386,7 +8385,7 @@ void CtiCCSubstationBusStore::handleStrategyDBChange(long reloadId, BYTE reloadA
             CtiCCSpecialPtr spArea = (CtiCCSpecialPtr)(*_ccSpecialAreas)[i];
             if (!spArea->getDisableFlag() && spArea->getStrategy()->getStrategyId() == reloadId)
             {
-                modifiedBusIdsSet.insert(spArea->getSubstationIds().begin(), spArea->getSubstationIds().end());
+                std::copy( spArea->getSubstationIds().begin(), spArea->getSubstationIds().end(), std::inserter( modifiedStationIdsSet, modifiedStationIdsSet.end() ) );
             }
         }
         for(i=0;i<_ccGeoAreas->size();i++)
@@ -8394,7 +8393,7 @@ void CtiCCSubstationBusStore::handleStrategyDBChange(long reloadId, BYTE reloadA
             CtiCCArea* area = (CtiCCAreaPtr)(*_ccGeoAreas)[i];
             if (!area->getDisableFlag() && area->getStrategy()->getStrategyId() == reloadId)
             {
-                modifiedBusIdsSet.insert(area->getSubstationIds().begin(), area->getSubstationIds().end());
+                std::copy( area->getSubstationIds().begin(), area->getSubstationIds().end(), std::inserter( modifiedStationIdsSet, modifiedStationIdsSet.end() ) );
             }
         }
         for(i=0;i<_ccSubstationBuses->size();i++)
