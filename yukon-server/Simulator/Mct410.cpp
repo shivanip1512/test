@@ -846,24 +846,29 @@ bytes Mct410Sim::getAllRecentDemandReadings()
     // Check if we have a new peak demand...
     const unsigned lastFreezeTimestamp = _memory.getValueFromMemoryMapLocation(MM_LastFreezeTimestamp, MML_LastFreezeTimestamp);
 
-    checkForNewPeakDemand(_address, demandInterval, lastFreezeTimestamp, peakDemand);
+    peak_demand_t peakDemandSinceFreeze = checkForNewPeakDemand(_address, demandInterval, lastFreezeTimestamp, CtiTime::now());
+
+    if( peakDemandSinceFreeze.peakDemand > peakDemand )
+    {
+        // New peak demand value and timestamp
+        writeNewPeakDemand(peakDemandSinceFreeze.peakDemand, peakDemandSinceFreeze.peakTimestamp);
+    }
 
     return formatAllRecentDemandReadings(dynamicDemand);
 }
 
-void Mct410Sim::checkForNewPeakDemand(const unsigned address, const unsigned demandInterval, const unsigned lastFreezeTimestamp,
-                                      const short peakDemand) 
+Mct410Sim::peak_demand_t Mct410Sim::checkForNewPeakDemand(const unsigned address, const unsigned demandInterval, 
+                                               const unsigned lastFreezeTimestamp, const CtiTime c_time) 
 {
     double maxIntervalConsumption = 0;
     unsigned maxIntervalTimestamp = 0;
 
     // Align it to its following interval.
     unsigned firstIntervalStart = lastFreezeTimestamp - (lastFreezeTimestamp % demandInterval) + demandInterval;
-    CtiTime now;
 
     CtiTime intervalBegin(firstIntervalStart);
 
-    for( ; (intervalBegin.seconds() + demandInterval) < now.seconds() ; intervalBegin.addSeconds(demandInterval) )
+    for( ; (intervalBegin.seconds() + demandInterval) < c_time.seconds() ; intervalBegin.addSeconds(demandInterval) )
     {
         // Calculate the consumption from the start point of the interval.
         double intervalConsumption = makeValueConsumption(address, intervalBegin, demandInterval);
@@ -877,13 +882,11 @@ void Mct410Sim::checkForNewPeakDemand(const unsigned address, const unsigned dem
         }
     }
 
-    int peakDemandSinceFreeze = getDynamicDemand(address, demandInterval, maxIntervalTimestamp);
+    short peakDemand = getDynamicDemand(address, demandInterval, maxIntervalTimestamp);
 
-    if( peakDemandSinceFreeze > peakDemand )
-    {
-        // New peak demand value and timestamp
-        writeNewPeakDemand(peakDemandSinceFreeze, maxIntervalTimestamp);
-    }
+    peak_demand_t result = { peakDemand, maxIntervalTimestamp };
+
+    return result;
 }
 
 bytes Mct410Sim::formatAllRecentDemandReadings(const int dynamicDemand)

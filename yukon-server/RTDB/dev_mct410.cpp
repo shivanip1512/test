@@ -195,7 +195,7 @@ int Mct410Device::makeDynamicDemand(double input)
     /*
     Bits   Resolution            Range
     13-12
-    00     100   WHr   40,100.0 WHr - 400,000.0 WHr
+    00     100   WHr   40,100.0 WHr - 400,000.0  WHr
     01      10   WHr    4,010.0 WHr -  40,000.0  WHr
     10       1   WHr      401.0 WHr -   4,000.0  WHr
     11       0.1 WHr        0.0 WHr -     400.0  WHr

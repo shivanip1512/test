@@ -18,7 +18,16 @@ struct testMct410Sim : Mct410Sim
     using Mct410Sim::getHectoWattHours;
     using Mct410Sim::fillLoadProfile;
     using Mct410Sim::getTablePointer;
+    using Mct410Sim::checkForNewPeakDemand;
+    using Mct410Sim::peak_demand_t;
     using Mct410Sim::DawnOfTime;
+
+    struct test_peak_demand_t : peak_demand_t
+    {
+        test_peak_demand_t(peak_demand_t t) :
+            peak_demand_t(t)
+        {}
+    };
 };
 
 struct ConsumptionValue
@@ -42,6 +51,17 @@ struct ConsumptionValue
 std::ostream& operator<<(std::ostream& out, const ConsumptionValue &v)
 {
     out << v.value;
+    return out;
+}
+
+bool operator!=(const testMct410Sim::peak_demand_t &lhs, const testMct410Sim::peak_demand_t &rhs)
+{
+    return boost::tie(lhs.peakDemand, lhs.peakTimestamp) != boost::tie(rhs.peakDemand, rhs.peakTimestamp);
+}
+
+std::ostream& operator<<(std::ostream& out, const testMct410Sim::peak_demand_t &v)
+{
+    out << v.peakDemand << " " << v.peakTimestamp;
     return out;
 }
 
@@ -82,9 +102,8 @@ BOOST_AUTO_TEST_CASE( test_make_value_consumption )
         CtiTime  startTime;
         unsigned duration;
         double   output;
-    };
-
-    const ConsumptionTestCase consumption_test_cases[] =
+    }
+    const consumption_test_cases[] =
     {
         {   0, CtiTime(CtiDate(4, 4, 2012), 8, 0, 0), 3600,     6111679.02 },
         {   0, CtiTime(CtiDate(4, 4, 2012), 8, 0, 0),    0,           0.00 },
@@ -118,9 +137,8 @@ BOOST_AUTO_TEST_CASE( test_get_hectowatt_hours )
         unsigned address;
         CtiTime time;
         unsigned value;
-    };
-
-    const HectoWattTestCase hectoWatt_test_cases[] =
+    }
+    const hectoWatt_test_cases[] =
     {
         {   0, CtiTime(CtiDate(4, 4, 2012), 8, 0, 0),  753685 },
         {   0, CtiTime(CtiDate(8, 1, 2011), 2, 0, 0),  631940 },
@@ -145,9 +163,8 @@ BOOST_AUTO_TEST_CASE( test_get_table_pointer )
         CtiTime  time;
         unsigned intervalSeconds;
         unsigned output;
-    };
-
-    const TablePointerTestCase table_pointer_test_cases[] =
+    }
+    const table_pointer_test_cases[] =
     {
         { CtiTime(CtiDate(4, 4, 2012), 8, 0, 0), 3600, 62 },
         { CtiTime(CtiDate(4, 4, 2012), 8, 0, 0),  900, 53 },
@@ -180,6 +197,46 @@ BOOST_AUTO_TEST_CASE( test_fill_load_profile )
     testMct410Sim::fillLoadProfile(address, blockStart, 3600, result_oitr);
 
     BOOST_CHECK_EQUAL_COLLECTIONS(resultBytes.begin(), resultBytes.end(), expected.begin(), expected.end());
+}
+
+BOOST_AUTO_TEST_CASE( test_peak_demand )
+{
+    CtiTime lastFreeze(CtiDate(6, 5, 2012), 10, 0, 0);
+    CtiTime nowTime(CtiDate(28, 5, 2012), 2, 0, 0);
+    struct PeakDemandTestCase
+    {
+        unsigned address;
+        unsigned demandInterval; // seconds
+        unsigned lastFreezeTimestamp;
+        CtiTime c_time;
+        testMct410Sim::peak_demand_t result;
+    }
+    const peak_demand_test_cases[] = 
+    {
+        {   0,  300, lastFreeze.seconds(), nowTime, { 14288, 1338120300 } },
+        {   0,  900, lastFreeze.seconds(), nowTime, {  8692, 1338120900 } },
+        {   0, 3600, lastFreeze.seconds(), nowTime, { 10392, 1338123600 } },
+        {  42,  300, lastFreeze.seconds(), nowTime, { 14288, 1338120300 } },
+        {  42,  900, lastFreeze.seconds(), nowTime, {  8692, 1338120900 } },
+        {  42, 3600, lastFreeze.seconds(), nowTime, { 10392, 1338123600 } },
+        { 999,  300, lastFreeze.seconds(), nowTime, { 11992, 1338120300 } },
+        { 999,  900, lastFreeze.seconds(), nowTime, {  5236, 1338120900 } },
+        { 999, 3600, lastFreeze.seconds(), nowTime, { 65535, 1338123600 } },
+    };
+
+    std::vector<testMct410Sim::test_peak_demand_t> result, expected;
+    for each(const PeakDemandTestCase &testCase in peak_demand_test_cases)
+    {
+        expected.push_back(testCase.result);
+        result.push_back(
+            testMct410Sim::checkForNewPeakDemand(
+                testCase.address, 
+                testCase.demandInterval, 
+                testCase.lastFreezeTimestamp,
+                testCase.c_time));
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(result.begin(), result.end(), expected.begin(), expected.end());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

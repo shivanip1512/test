@@ -10,6 +10,8 @@
 #include "MctBehavior.h"
 
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
@@ -78,7 +80,7 @@ private:
     static double makeValue_instantaneousDemand(const unsigned address, const CtiTime &c_time);
     static double makeValue_averageDemand      (const unsigned address, const CtiTime &begin_time, const unsigned duration);
 
-    int getDynamicDemand(const unsigned address, const unsigned demandIntervalSeconds, unsigned nowSeconds); 
+    static int getDynamicDemand(const unsigned address, const unsigned demandIntervalSeconds, unsigned nowSeconds); 
 
     void writeNewPeakDemand(const int dynamicDemand, const unsigned seconds);
 
@@ -99,8 +101,6 @@ private:
     void setVoltageLpInterval(unsigned interval_minutes);
 
     unsigned getLpIntervalSeconds();
-    void checkForNewPeakDemand(const unsigned address, const unsigned demandInterval, const unsigned lastFreezeTimestamp, 
-                               const short peakDemand);
 
     bytes getFrozenKwh();
     bytes getAllFrozenChannel1Readings();
@@ -251,6 +251,13 @@ public:
     bool write(const words_t &request_words);
 
 protected:
+
+    struct peak_demand_t
+    {
+        unsigned short peakDemand;
+        unsigned peakTimestamp;
+    };
+
     static const CtiTime DawnOfTime;
 
     static unsigned getTablePointer(const CtiTime c_time, unsigned intervalSeconds);
@@ -277,6 +284,9 @@ protected:
 
     static bytes formatLoadProfile(const unsigned offset, const unsigned channel, const unsigned address, 
                                    const CtiTime readTime, const unsigned lpIntervalSeconds);
+
+    static peak_demand_t checkForNewPeakDemand(const unsigned address, const unsigned demandInterval, 
+                                               const unsigned lastFreezeTimestamp, const CtiTime c_time);
 };
 
 }
