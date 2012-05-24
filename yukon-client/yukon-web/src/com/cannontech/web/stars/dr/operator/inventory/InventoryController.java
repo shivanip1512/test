@@ -131,7 +131,7 @@ public class InventoryController {
         boolean showActions = hasAddRange || hasCreate;
         model.addAttribute("showActions", showActions);
         
-        SerialNumberValidation snv = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, user);
+        SerialNumberValidation snv = ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.SERIAL_NUMBER_VALIDATION, SerialNumberValidation.class, energyCompany);
         model.addAttribute("showAddByRange", snv == SerialNumberValidation.NUMERIC && hasAddRange);
         
         model.addAttribute("inventorySearch", new InventorySearch());
