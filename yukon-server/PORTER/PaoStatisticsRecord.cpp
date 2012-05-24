@@ -98,14 +98,7 @@ bool PaoStatisticsRecord::isStale(const CtiTime timeNow) const
         {
             CtiDate d = _interval_start.date();
 
-            if( d.month() == 12 )
-            {
-                return timeNow >= CtiDate(1, 1, d.year() + 1);
-            }
-            else
-            {
-                return timeNow >= CtiDate(1, d.month() + 1, d.year());
-            }
+            return timeNow >= (d + CtiDate::daysInMonthYear(d.month(), d.year());
         }
 
         default:
