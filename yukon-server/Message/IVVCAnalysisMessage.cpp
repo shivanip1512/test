@@ -94,6 +94,29 @@ IVVCAnalysisMessage * IVVCAnalysisMessage::createExceedMaxKVarMessage( const int
     return message;
 }
 
+IVVCAnalysisMessage * IVVCAnalysisMessage::createRegulatorAutoModeMessage( const int       subbusId,
+                                                                           const CtiTime & timestamp)
+{
+    IVVCAnalysisMessage * message = new IVVCAnalysisMessage( subbusId, Scenario_RegulatorAutoMode, timestamp );
+
+    return message;
+}
+
+IVVCAnalysisMessage * IVVCAnalysisMessage::createSubbusDisabledMessage( const int       subbusId,
+                                                                        const CtiTime & timestamp)
+{
+    IVVCAnalysisMessage * message = new IVVCAnalysisMessage( subbusId, Scenario_SubbusDisabled, timestamp );
+
+    return message;
+}
+
+IVVCAnalysisMessage * IVVCAnalysisMessage::createSubbusEnabledMessage( const int       subbusId,
+                                                                       const CtiTime & timestamp)
+{
+    IVVCAnalysisMessage * message = new IVVCAnalysisMessage( subbusId, Scenario_SubbusEnabled, timestamp );
+
+    return message;
+}
 
 void IVVCAnalysisMessage::streamInto( cms::StreamMessage & message ) const
 {

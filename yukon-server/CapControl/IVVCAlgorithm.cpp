@@ -23,6 +23,8 @@ using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::Zone;
 using Cti::CapControl::ZoneManager;
 
+using namespace Cti::Messaging::CapControl;
+
 extern unsigned long _SCAN_WAIT_EXPIRE;
 extern unsigned long _POINT_AGE;
 extern unsigned long _POST_CONTROL_WAIT;
@@ -141,6 +143,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". The bus is disabled." << std::endl;
             }
             sendDisableRemoteControl( subbus );
+            sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusDisabledMessage(subbus->getPaoId(), timeNow));
         }
         state->setShowBusDisableMsg(false);
         state->setState(IVVCState::IVVC_WAIT);
@@ -148,6 +151,10 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         return;
     }
 
+    if (!state->isShowBusDisableMsg())
+    {
+        sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusEnabledMessage(subbus->getPaoId(), timeNow));
+    }
     state->setShowBusDisableMsg(true);
 
     // subbus is enabled
@@ -330,6 +337,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
                                  << "  Analysis Interval: One or more Voltage Regulators are in 'Auto' mode." << std::endl;
                         }
+
+                        sendIVVCAnalysisMessage(IVVCAnalysisMessage::createRegulatorAutoModeMessage(subbus->getPaoId(), timeNow));
 
                         state->setCommsRetryCount(state->getCommsRetryCount() + 1);
                         if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
@@ -618,8 +627,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     {
                         if ( tapOpCount != 0 )
                         {
-                            using namespace Cti::Messaging::CapControl;
-
                             VoltageRegulatorManager::SharedPtr  regulator
                                 = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );
 
@@ -698,8 +705,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 */
 bool IVVCAlgorithm::hasValidData( const PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus )
 {
-    using namespace Cti::Messaging::CapControl;
-
     const long subbusId = subbus->getPaoId();
 
     bool validData = true;
@@ -1104,8 +1109,6 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
                 //Check for a retry
             }
 
-            using namespace Cti::Messaging::CapControl;
-
             CtiTime timestamp;
 
             if (request != NULL)
@@ -1116,7 +1119,7 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 
                 sendIVVCAnalysisMessage(
                     IVVCAnalysisMessage::createCapbankOperationMessage( subbus->getPaoId(),
-                                                                        isCapBankOpen 
+                                                                        isCapBankOpen
                                                                             ? IVVCAnalysisMessage::Scenario_CapbankCloseOperation
                                                                             : IVVCAnalysisMessage::Scenario_CapbankOpenOperation,
                                                                         timestamp,
@@ -1758,8 +1761,6 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy,
                                  const PointValueMap & pointValues)
 {
-    using namespace Cti::Messaging::CapControl;
-
     state->setState(IVVCState::IVVC_WAIT);
 
     CtiTime now;

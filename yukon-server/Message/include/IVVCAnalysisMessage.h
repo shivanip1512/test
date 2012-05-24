@@ -29,13 +29,16 @@ public:
         Scenario_VoltageMonitorCommsIncomplete,
         Scenario_RequiredPointCommsIncomplete,
         Scenario_TapRaiseOperation,
-        Scenario_TapLowerOperation,
+        Scenario_TapLowerOperation, //10
         Scenario_NoTapOperationMinTapPeriod,
         Scenario_NoTapOperationNeeded,
         Scenario_CapbankCloseOperation,
         Scenario_CapbankOpenOperation,
         Scenario_ExceededMaxKVar,
-        Scenario_CapbankExceedDailyOpCount      // unimplemented -- ivvc doesn't support this functionality (yet...)
+        Scenario_CapbankExceedDailyOpCount,      // unimplemented -- ivvc doesn't support this functionality (yet...)
+        Scenario_RegulatorAutoMode,
+        Scenario_SubbusDisabled,
+        Scenario_SubbusEnabled
     };
 
     static IVVCAnalysisMessage * createCommsRatioMessage( const int       subbusId,
@@ -65,6 +68,15 @@ public:
                                                              const CtiTime & timestamp,
                                                              const int       capbankId,
                                                              const int       maxKVar );
+
+    static IVVCAnalysisMessage * createRegulatorAutoModeMessage( const int       subbusId,
+                                                                 const CtiTime & timestamp);
+
+    static IVVCAnalysisMessage * createSubbusDisabledMessage( const int       subbusId,
+                                                              const CtiTime & timestamp);
+
+    static IVVCAnalysisMessage * createSubbusEnabledMessage( const int       subbusId,
+                                                             const CtiTime & timestamp);
 
     virtual void streamInto( cms::StreamMessage & message ) const;
 
