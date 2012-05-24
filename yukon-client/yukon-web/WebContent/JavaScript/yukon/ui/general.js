@@ -466,4 +466,7 @@ jQuery.fn.toggleDisabled = function() {
 // initialize the lib
 jQuery(document).ready(function(){
     Yukon.ui.init();
+
+    //turn off ajax caching application-wide by default
+    jQuery.ajaxSetup({cache: false});
 });
