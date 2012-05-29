@@ -244,14 +244,14 @@
 			<cti:tabbedContentSelector>
 				<cti:msg2 var="tabName" key=".voltageProfile.title" />
 				<cti:tabbedContentSelectorContent selectorName="${tabName}">
-                    <%@ include file="aboveGraph.jspf" %>
+					<%@ include file="aboveGraph.jspf"%>
 
-				    <c:set var="chartId" value="subBus_${subBusId}_IVVCGraph" />
-				    <input type="hidden" value="${chartId}" id="ivvcChartIdValue"/>
-			        <c:url var="amChartFile" scope="page" value="/spring/capcontrol/ivvc/bus/chart">
-			        	<cti:param name="subBusId" value="${subBusId}"/>
-			        </c:url>
-				    <tags:amchart chartType="amline" settingsUrl="${amChartFile}" chartId="${chartId}" cssClass="ivvcGraphContainer"/>
+					<c:set var="chartId" value="subBus_${subBusId}_IVVCGraph" />
+					<input type="hidden" value="${chartId}" id="ivvcChartIdValue" />
+					<c:url var="amChartFile" scope="page" value="/spring/capcontrol/ivvc/bus/chart">
+						<cti:param name="subBusId" value="${subBusId}" />
+					</c:url>
+					<tags:amchart chartType="amline" settingsUrl="${amChartFile}" chartId="${chartId}" cssClass="ivvcGraphContainer"/>
 	                <cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" largestTime="CAPCONTROL/${subBusId}/IVVC_LARGEST_GRAPH_TIME_FOR_SUBBUS"/>
 				</cti:tabbedContentSelectorContent>
 				<cti:msg2 var="voltagePointsTab" key=".voltagePoints.title" />

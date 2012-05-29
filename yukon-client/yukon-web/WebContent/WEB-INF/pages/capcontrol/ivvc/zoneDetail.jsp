@@ -400,16 +400,16 @@
 			<cti:tabbedContentSelector>
 				<cti:msg2 var="tabName" key=".voltageProfile.title" />
 				<cti:tabbedContentSelectorContent selectorName="${tabName}">
-                    <%@ include file="aboveGraph.jspf" %>
+					<%@ include file="aboveGraph.jspf"%>
 
-				    <c:set var="chartId" value="zone_${subBusId}_IVVCGraph" />
-				    <input type="hidden" value="${chartId}" id="ivvcChartIdValue"/>
-			        <c:url var="amChartFile" value="/spring/capcontrol/ivvc/zone/chart">
-			        	<cti:param name="zoneId" value="${zoneId}"/>
-			        </c:url>
-                    <tags:amchart chartType="amline" settingsUrl="${amChartFile}" chartId="${chartId}" cssClass="ivvcGraphContainer"/>
+					<c:set var="chartId" value="zone_${subBusId}_IVVCGraph" />
+					<input type="hidden" value="${chartId}" id="ivvcChartIdValue" />
+					<c:url var="amChartFile" value="/spring/capcontrol/ivvc/zone/chart">
+						<cti:param name="zoneId" value="${zoneId}" />
+					</c:url>
+					<tags:amchart chartType="amline" settingsUrl="${amChartFile}" chartId="${chartId}" cssClass="ivvcGraphContainer" />
 
-	                <cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" 
+					<cti:dataUpdaterCallback function="checkGraphExpired('${chartId}')" initialize="true" 
 	                    largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>
 	                
 				</cti:tabbedContentSelectorContent>
