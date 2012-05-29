@@ -154,6 +154,11 @@ table.ivvcGridLayout tr {
     font-size: 12px;
 }
 
+.graph_message_container {
+	height: 10px;
+	font-size: 10px;
+}
+
 form#deltaForm tr {
 	height: 25px;
 }

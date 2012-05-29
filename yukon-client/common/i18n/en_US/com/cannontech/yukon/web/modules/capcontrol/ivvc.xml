@@ -214,8 +214,8 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.plotArea.borderAlpha"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.x.color"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.x.textSize"></entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.min">-5</entry>
-    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.max">5</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.min">-3</entry>
+    <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.max">3</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.color"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.textSize"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.values.yLeft.unit"></entry>
@@ -280,7 +280,7 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.graphs.dataLabelsTextColor"></entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltProfileGraph.graphs.dataLabelsTextSize"></entry>
 
-	<!-- Voltage Points table used on both bus & zone detail views -->
+	<!-- Shared Keys for bus & zone detail views -->
 	<entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.pageName">Voltage Points</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.pageDescription">Voltage Points</entry>
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.title">Voltage Points</entry>
@@ -302,6 +302,11 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.updateFailure">Update Failure</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.editPoints">Edit Points</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.editStrategy">Edit Strategy</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.graph.updatingPaused">Graph updating paused</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.graph.resumingIn">Resuming live updates in</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.graph.resumingInPeriod">seconds</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.graph.resumeNow">resume now</entry>
+	<entry key="yukon.web.modules.capcontrol.ivvc.graph.pauseSeconds">10</entry>
     
     <!-- Last Operation Widget Tooltips -->
     <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.raiseTap.notRecent.notWarning">Tap Up</entry>

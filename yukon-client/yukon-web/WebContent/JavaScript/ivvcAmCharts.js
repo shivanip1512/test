@@ -6,6 +6,10 @@ function amChart_reloadAll(chart_Id) {
     }
 }
 
+var can_update_chart = {};
+function amChartInited(chart_Id) {
+	can_update_chart[chart_Id] = true;
+}
 
 // FIND OUT WHICH GRAPH WAS HIDDEN ///////////////////////////////////////////////////////
 // amGraphHide(chart_id, index, title)
@@ -71,10 +75,52 @@ function checkGraphExpired(chart_Id) {
     return function(data) {
         var newLargestTime = data.get('largestTime');
         
-        if (mostRecentPointTime > 0 && newLargestTime > mostRecentPointTime) {
+        if (mostRecentPointTime === 0) mostRecentPointTime = newLargestTime;
+        if (can_update_chart[chart_Id] && mostRecentPointTime > 0 && newLargestTime > mostRecentPointTime) {
             amChart_reloadAll(chart_Id);
+            mostRecentPointTime = newLargestTime;
         }
 
-        mostRecentPointTime = newLargestTime;
     }
+}
+
+var chart_timer = {};
+jQuery(function() {
+    jQuery(".ivvcGraphContainer").mouseenter(function() {
+    	jQuery('#hideMsg').hide();
+        jQuery("#updatesPaused").show();
+        can_update_chart[getChartId()] = false;
+    }).mouseout(function() {
+    	var chart_Id = getChartId();
+    	clearInterval(chart_timer[chart_Id]);
+        jQuery("#updatesPaused").hide();
+        jQuery('#hideMsg span').text(getChartPauseSeconds());
+        jQuery('#hideMsg').show();
+        var sec = jQuery('#hideMsg span').text() || 0;
+        chart_timer[chart_Id] = setInterval(function() {
+			jQuery('#hideMsg span').text(--sec);
+			if (sec == 0) {
+				timeoutEnd();
+			}
+    	}, 1000);
+    });
+    
+    jQuery("#hideMsg a").click(function() {
+    	timeoutEnd();
+    });
+});
+
+function timeoutEnd() {
+	jQuery('#hideMsg').fadeOut('fast');
+	var chart_Id = getChartId();
+	can_update_chart[chart_Id] = true;
+	clearInterval(chart_timer[chart_Id]);
+}
+
+function getChartId() {
+	return jQuery("input#ivvcChartIdValue").val();
+}
+
+function getChartPauseSeconds() {
+	return jQuery("input#ivvcChartPauseValue").val();
 }
