@@ -1869,7 +1869,7 @@
         <columnList>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>ScheduleID</i__columnName>
+            <i__columnName>ScheduleId</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -2178,16 +2178,16 @@
             <i__foreignKeyName>FK_McSchCstLst_MCSched</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ScheduleID</i__columnName>
-            <i__foreignColumnName>ScheduleID</i__foreignColumnName>
+            <i__foreignColumnName>ScheduleId</i__foreignColumnName>
             <i__foreignTableName>MACSchedule</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_MACSIMPLE_MACSCHED_ID</i__foreignKeyName>
+            <i__foreignKeyName>FK_MACSimpSch_MACSch</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ScheduleID</i__columnName>
-            <i__foreignColumnName>ScheduleID</i__foreignColumnName>
+            <i__foreignColumnName>ScheduleId</i__foreignColumnName>
             <i__foreignTableName>MACSchedule</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
@@ -2201,7 +2201,7 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>MACSchedule</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>ScheduleID</i__columnName>
+                  <i__columnName>ScheduleId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
@@ -36851,7 +36851,7 @@
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>1</i__nullable>
+            <i__nullable>0</i__nullable>
             <i__nullableDiffers>false</i__nullableDiffers>
             <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
             <i__ordinalPosition>2</i__ordinalPosition>
@@ -49592,7 +49592,7 @@
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
             <i__decimalDigits>0</i__decimalDigits>
             <i__decimalDigitsDiffers>false</i__decimalDigitsDiffers>
-            <i__nullable>1</i__nullable>
+            <i__nullable>0</i__nullable>
             <i__nullableDiffers>false</i__nullableDiffers>
             <i__columnDefaultDiffers>false</i__columnDefaultDiffers>
             <i__ordinalPosition>2</i__ordinalPosition>
@@ -53530,7 +53530,7 @@
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_SchdID_PAOID</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>ScheduleID</i__columnName>
+            <i__columnName>ScheduleId</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
             <i__foreignTableName>YukonPAObject</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
