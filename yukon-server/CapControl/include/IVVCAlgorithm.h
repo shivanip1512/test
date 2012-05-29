@@ -76,6 +76,8 @@ class IVVCAlgorithm
 
         bool hasTapOpsRemaining(const IVVCState::TapOperationZoneMap & tapOp) const;
 
+        void updateCommsState( const long busCommsPointId, const bool isCommsLost ) const;
+
         PointDataRequestFactoryPtr _requestFactory;
 };
 

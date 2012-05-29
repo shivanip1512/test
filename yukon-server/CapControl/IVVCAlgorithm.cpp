@@ -247,10 +247,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             PointDataRequestPtr request = state->getGroupRequest();
 
-            bool invalidData            = ! hasValidData( request, timeNow, subbus );
-            bool hasAutoModeRegulator   = ! allRegulatorsInRemoteMode(subbusId);
-
-            if ( invalidData )
+            if ( ! hasValidData( request, timeNow, subbus ) )   // invalid data
             {
                 //Not starting a new scan here. There should be retrys happening already.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
@@ -271,8 +268,76 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     {
                         state->setCommsLost(true);
 
-                        dispatchConnection->WriteConnQue(
-                            new CtiPointDataMsg( subbus->getCommsStatePointId(), 1.0 ) ); // NormalQuality, StatusPointType
+                        handleCommsLost( state, subbus );
+
+                        if (_CC_DEBUG & CC_DEBUG_IVVC)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << std::endl;
+                        }
+                    }
+                }
+
+                updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
+                request->reportStatusToLog();
+                break;
+            }
+            else if ( state->isCommsLost() )    // Currently good data but previously were comms lost
+            {
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - IVVC Analysis Resuming for bus: " << subbus->getPaoName() << std::endl;
+                }
+
+                state->setState(IVVCState::IVVC_WAIT);
+                state->setCommsRetryCount(0);
+
+                state->setCommsLost(false);     // Write to the event log...
+
+                long stationId, areaId, spAreaId;
+                store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
+
+                CtiMultiMsg* ccEvents = new CtiMultiMsg();
+                ccEvents->insert(
+                    new CtiCCEventLogMsg(
+                            0,
+                            SYS_PID_CAPCONTROL,
+                            spAreaId,
+                            areaId,
+                            stationId,
+                            subbus->getPaoId(),
+                            0,
+                            capControlIvvcCommStatus,
+                            0,
+                            1,
+                            "IVVC Comms Restored",
+                            "cap control") );
+
+                updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
+                sendEvents(dispatchConnection, ccEvents);
+                break;
+            }
+            else if ( ! allRegulatorsInRemoteMode(subbusId) )   // At least one regulator in 'Auto' mode
+            {
+                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
+                         << "  Analysis Interval: One or more Voltage Regulators are in 'Auto' mode." << std::endl;
+                }
+
+                sendIVVCAnalysisMessage(IVVCAnalysisMessage::createRegulatorAutoModeMessage(subbus->getPaoId(), timeNow));
+
+                state->setCommsRetryCount(state->getCommsRetryCount() + 1);
+                if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
+                {
+                    if ( ! state->isCommsLost() )
+                    {
+                        state->setCommsLost(true);
+
+                        state->setState(IVVCState::IVVC_WAIT);
+                        state->setCommsRetryCount(0);
 
                         handleCommsLost( state, subbus );
 
@@ -283,99 +348,22 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         }
                     }
                 }
+
+                updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
                 request->reportStatusToLog();
                 break;
             }
-            else
+            else    // all good...
             {
-                if ( state->isCommsLost() )
+                state->setState(IVVCState::IVVC_ANALYZE_DATA);
+                state->setCommsRetryCount(0);
+
+                updateCommsState( subbus->getCommsStatePointId(), state->isCommsLost() );
+
+                if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    state->setState(IVVCState::IVVC_WAIT);
-                    state->setCommsRetryCount(0);
-
-                    state->setCommsLost(false);     // Write to the event log...
-
-                    dispatchConnection->WriteConnQue(
-                        new CtiPointDataMsg( subbus->getCommsStatePointId(), 0.0 ) ); // NormalQuality, StatusPointType
-
-                    long stationId, areaId, spAreaId;
-                    store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
-
-                    CtiMultiMsg* ccEvents = new CtiMultiMsg();
-                    ccEvents->insert(
-                        new CtiCCEventLogMsg(
-                                0,
-                                SYS_PID_CAPCONTROL,
-                                spAreaId,
-                                areaId,
-                                stationId,
-                                subbus->getPaoId(),
-                                0,
-                                capControlIvvcCommStatus,
-                                0,
-                                1,
-                                "IVVC Comms Restored",
-                                "cap control") );
-
-                    sendEvents(dispatchConnection, ccEvents);
-
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Analysis Resuming for bus: " << subbus->getPaoName() << std::endl;
-                    }
-                    break;
-                }
-                else
-                {
-                    if ( hasAutoModeRegulator )
-                    {
-
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                            dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
-                                 << "  Analysis Interval: One or more Voltage Regulators are in 'Auto' mode." << std::endl;
-                        }
-
-                        sendIVVCAnalysisMessage(IVVCAnalysisMessage::createRegulatorAutoModeMessage(subbus->getPaoId(), timeNow));
-
-                        state->setCommsRetryCount(state->getCommsRetryCount() + 1);
-                        if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
-                        {
-                            if ( ! state->isCommsLost() )
-                            {
-                                state->setCommsLost(true);
-
-                                state->setState(IVVCState::IVVC_WAIT);
-                                state->setCommsRetryCount(0);
-
-                                dispatchConnection->WriteConnQue(
-                                    new CtiPointDataMsg( subbus->getCommsStatePointId(), 1.0 ) ); // NormalQuality, StatusPointType
-
-                                handleCommsLost( state, subbus );
-
-                                if (_CC_DEBUG & CC_DEBUG_IVVC)
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << std::endl;
-                                }
-                            }
-                        }
-                        request->reportStatusToLog();
-                        break;
-                    }
-                    else
-                    {
-                        state->setState(IVVCState::IVVC_ANALYZE_DATA);
-                        state->setCommsRetryCount(0);
-
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Data OK, moving on to Analyze." << std::endl;
-                        }
-                    }
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Data OK, moving on to Analyze." << std::endl;
                 }
             }
         }
@@ -2273,5 +2261,14 @@ void IVVCAlgorithm::sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAna
 
     std::auto_ptr<StreamableMessage> msg( message );
     gActiveMQConnection.enqueueMessage( ActiveMQConnectionManager::Queue_IvvcAnalysisMessage, msg );
+}
+
+
+void IVVCAlgorithm::updateCommsState( const long busCommsPointId, const bool isCommsLost ) const
+{
+    DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
+
+    dispatchConnection->WriteConnQue(
+        new CtiPointDataMsg( busCommsPointId, isCommsLost ? 1.0 : 0.0 ) ); // NormalQuality, StatusPointType
 }
 
