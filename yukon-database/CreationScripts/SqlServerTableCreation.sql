@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/24/2012 4:50:34 PM                         */
+/* Created on:     5/24/2012 3:21:40 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -6367,7 +6367,7 @@ go
 /* Table: MACSchedule                                           */
 /*==============================================================*/
 create table MACSchedule (
-   ScheduleID           numeric              not null,
+   ScheduleId           numeric              not null,
    CategoryName         varchar(50)          not null,
    HolidayScheduleID    numeric              null,
    CommandFile          varchar(180)         null,
@@ -6386,7 +6386,7 @@ create table MACSchedule (
    ManualStartTime      datetime             null,
    ManualStopTime       datetime             null,
    Template             numeric              null,
-   constraint PK_MACSCHEDULE primary key (ScheduleID)
+   constraint PK_MACSCHEDULE primary key (ScheduleId)
 )
 go
 
@@ -6395,7 +6395,7 @@ go
 /*==============================================================*/
 create table MACSimpleSchedule (
    ScheduleID           numeric              not null,
-   TargetPAObjectId     numeric              null,
+   TargetPAObjectId     numeric              not null,
    StartCommand         varchar(120)         null,
    StopCommand          varchar(120)         null,
    RepeatInterval       numeric              null,
@@ -7188,7 +7188,7 @@ go
 /*==============================================================*/
 create table PorterResponseMonitorErrorCode (
    ErrorCodeId          numeric              not null,
-   RuleId               numeric              null,
+   RuleId               numeric              not null,
    ErrorCode            numeric              not null,
    constraint PK_PortRespMonErrorCodeId primary key nonclustered (ErrorCodeId)
 )
@@ -12601,7 +12601,7 @@ go
 
 alter table LMMacsScheduleCustomerList
    add constraint FK_McSchCstLst_MCSched foreign key (ScheduleID)
-      references MACSchedule (ScheduleID)
+      references MACSchedule (ScheduleId)
 go
 
 alter table LMMacsScheduleCustomerList
@@ -12768,7 +12768,7 @@ alter table MACSchedule
 go
 
 alter table MACSchedule
-   add constraint FK_SchdID_PAOID foreign key (ScheduleID)
+   add constraint FK_SchdID_PAOID foreign key (ScheduleId)
       references YukonPAObject (PAObjectID)
 go
 
@@ -12779,8 +12779,8 @@ alter table MACSimpleSchedule
 go
 
 alter table MACSimpleSchedule
-   add constraint FK_MACSIMPLE_MACSCHED_ID foreign key (ScheduleID)
-      references MACSchedule (ScheduleID)
+   add constraint FK_MACSimpSch_MACSch foreign key (ScheduleID)
+      references MACSchedule (ScheduleId)
 go
 
 alter table MCTBroadCastMapping

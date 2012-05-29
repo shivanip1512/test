@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/24/2012 4:53:07 PM                         */
+/* Created on:     5/24/2012 3:20:32 PM                         */
 /*==============================================================*/
 
 
@@ -6016,7 +6016,7 @@ create table MACROROUTE  (
 /* Table: MACSchedule                                           */
 /*==============================================================*/
 create table MACSchedule  (
-   ScheduleID           NUMBER                          not null,
+   ScheduleId           NUMBER                          not null,
    CategoryName         VARCHAR2(50)                    not null,
    HolidayScheduleID    NUMBER,
    CommandFile          VARCHAR2(180),
@@ -6035,7 +6035,7 @@ create table MACSchedule  (
    ManualStartTime      DATE,
    ManualStopTime       DATE,
    Template             NUMBER,
-   constraint PK_MACSCHEDULE primary key (ScheduleID)
+   constraint PK_MACSCHEDULE primary key (ScheduleId)
 );
 
 /*==============================================================*/
@@ -6043,7 +6043,7 @@ create table MACSchedule  (
 /*==============================================================*/
 create table MACSimpleSchedule  (
    ScheduleID           NUMBER                          not null,
-   TargetPAObjectId     NUMBER,
+   TargetPAObjectId     NUMBER                          not null,
    StartCommand         VARCHAR2(120),
    StopCommand          VARCHAR2(120),
    RepeatInterval       NUMBER,
@@ -6773,7 +6773,7 @@ create unique index Indx_PortRespMon_Name_UNQ on PorterResponseMonitor (
 /*==============================================================*/
 create table PorterResponseMonitorErrorCode  (
    ErrorCodeId          NUMBER                          not null,
-   RuleId               NUMBER,
+   RuleId               NUMBER                          not null,
    ErrorCode            NUMBER                          not null,
    constraint PK_PortRespMonErrorCodeId primary key (ErrorCodeId)
 );
@@ -11675,7 +11675,7 @@ alter table LMHardwareToMeterMapping
 
 alter table LMMacsScheduleCustomerList
    add constraint FK_McSchCstLst_MCSched foreign key (ScheduleID)
-      references MACSchedule (ScheduleID);
+      references MACSchedule (ScheduleId);
 
 alter table LMMacsScheduleCustomerList
    add constraint FK_McsSchdCusLst_CICBs foreign key (LMCustomerDeviceID)
@@ -11809,7 +11809,7 @@ alter table MACSchedule
       references HolidaySchedule (HolidayScheduleID);
 
 alter table MACSchedule
-   add constraint FK_SchdID_PAOID foreign key (ScheduleID)
+   add constraint FK_SchdID_PAOID foreign key (ScheduleId)
       references YukonPAObject (PAObjectID);
 
 alter table MACSimpleSchedule
@@ -11818,8 +11818,8 @@ alter table MACSimpleSchedule
       on delete cascade;
 
 alter table MACSimpleSchedule
-   add constraint FK_MACSIMPLE_MACSCHED_ID foreign key (ScheduleID)
-      references MACSchedule (ScheduleID);
+   add constraint FK_MACSimpSch_MACSch foreign key (ScheduleID)
+      references MACSchedule (ScheduleId);
 
 alter table MCTBroadCastMapping
    add constraint FK_MCTBCM_Device_MCTId foreign key (MctID)
