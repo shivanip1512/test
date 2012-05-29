@@ -10,8 +10,6 @@
 #include "MctBehavior.h"
 
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 

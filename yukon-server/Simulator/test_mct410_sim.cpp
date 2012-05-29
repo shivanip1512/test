@@ -4,6 +4,8 @@
 #include "ctidate.h"
 
 #include <boost/assign/list_of.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
 
 #include <cmath>
 
@@ -213,15 +215,15 @@ BOOST_AUTO_TEST_CASE( test_peak_demand )
     }
     const peak_demand_test_cases[] = 
     {
-        {   0,  300, lastFreeze.seconds(), nowTime, { 14288, 1338120300 } },
-        {   0,  900, lastFreeze.seconds(), nowTime, {  8692, 1338120900 } },
-        {   0, 3600, lastFreeze.seconds(), nowTime, { 10392, 1338123600 } },
-        {  42,  300, lastFreeze.seconds(), nowTime, { 14288, 1338120300 } },
-        {  42,  900, lastFreeze.seconds(), nowTime, {  8692, 1338120900 } },
-        {  42, 3600, lastFreeze.seconds(), nowTime, { 10392, 1338123600 } },
-        { 999,  300, lastFreeze.seconds(), nowTime, { 11992, 1338120300 } },
-        { 999,  900, lastFreeze.seconds(), nowTime, {  5236, 1338120900 } },
-        { 999, 3600, lastFreeze.seconds(), nowTime, { 65535, 1338123600 } },
+        {   0,  300, lastFreeze.seconds(), nowTime, { 0x3000 | 2000, 1338120300 } },
+        {   0,  900, lastFreeze.seconds(), nowTime, { 0x2000 |  500, 1338120900 } },
+        {   0, 3600, lastFreeze.seconds(), nowTime, { 0x2000 | 2200, 1338123600 } },
+        {  42,  300, lastFreeze.seconds(), nowTime, { 0x3000 | 2000, 1338120300 } },
+        {  42,  900, lastFreeze.seconds(), nowTime, { 0x2000 |  500, 1338120900 } },
+        {  42, 3600, lastFreeze.seconds(), nowTime, { 0x2000 | 2200, 1338123600 } },
+        { 999,  300, lastFreeze.seconds(), nowTime, { 0x2000 | 3800, 1338120300 } },
+        { 999,  900, lastFreeze.seconds(), nowTime, { 0x1000 | 1140, 1338120900 } },
+        { 999, 3600, lastFreeze.seconds(), nowTime, {        0xffff, 1338123600 } },
     };
 
     std::vector<testMct410Sim::test_peak_demand_t> result, expected;
