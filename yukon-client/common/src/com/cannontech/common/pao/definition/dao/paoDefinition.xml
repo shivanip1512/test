@@ -233,7 +233,8 @@
 	</pao>
     
     <!-- MCT 470 -->
-    <pao id="MCT470" inherits="MCT_BASE, MCT_4XX_POLYPHASE_BASE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PLC_DEMAND_RESET_TAG">
+    <!-- MCT_430_VOLTAGE valid for all 470 EXCEPT Elster (Alpha) Power Plus -->
+    <pao id="MCT470" inherits="MCT_BASE, MCT_4XX_POLYPHASE_BASE, MCT_430_VOLTAGE, SUPPORTS_TOU_TAG, SUPPORTS_OUTAGE_TAG, SUPPORTS_LOAD_PROFILE_TAG, SUPPORTS_PLC_DEMAND_RESET_TAG">
         <displayName>MCT-470</displayName>
         <points>
             <point type="PulseAccumulator" offset="1">
