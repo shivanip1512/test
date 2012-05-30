@@ -86,6 +86,19 @@ public class RfnMeterEventService {
         int rawEventStatusState = clearedStateMap.get(cleared);
         return rawEventStatusState;
     }
+    
+    /**
+     * Creates a point for the passed in Attribute if one doesn't exist, then gets that point
+     * so we can properly build up a pointData object, which then gets assigned to our
+     * passed in List of pointDatas. This method uses a PointQuality of Normal
+     */
+    public void processAttributePointData(RfnMeter rfnMeter,
+                                          List<? super PointData> pointDatas,
+                                          BuiltInAttribute attr,
+                                          long timestamp,
+                                          double pointValue) {
+        processAttributePointData(rfnMeter, pointDatas, attr, timestamp, pointValue, PointQuality.Normal);
+    }
 
     /**
      * Creates a point for the passed in Attribute if one doesn't exist, then gets that point
@@ -96,7 +109,8 @@ public class RfnMeterEventService {
                                           List<? super PointData> pointDatas,
                                           BuiltInAttribute attr,
                                           long timestamp,
-                                          double pointValue) {
+                                          double pointValue,
+                                          PointQuality quality) {
         // create our attribute point if it doesn't exist yet
         attributeService.createPointForAttribute(rfnMeter, attr);
 
@@ -105,7 +119,7 @@ public class RfnMeterEventService {
         PointData pointData = new PointData();
         pointData.setId(litePoint.getPointID());
         pointData.setTime(new Date(timestamp));
-        pointData.setPointQuality(PointQuality.Normal);
+        pointData.setPointQuality(quality);
         pointData.setType(litePoint.getPointTypeEnum().getPointTypeId());
         pointData.setValue(pointValue);
         pointData.setTagsPointMustArchive(true);
