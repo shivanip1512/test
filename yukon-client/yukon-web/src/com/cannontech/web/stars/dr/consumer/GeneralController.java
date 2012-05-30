@@ -19,6 +19,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -38,6 +39,7 @@ public class GeneralController extends AbstractConsumerController {
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private OptOutStatusService optOutStatusService;
+    @Autowired private RolePropertyDao rolePropertyDao;
 
     @RequestMapping(value = "/consumer/general", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
@@ -55,7 +57,7 @@ public class GeneralController extends AbstractConsumerController {
         
         OptOutEnabled optOutEnabled = optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser());
 
-        if(optOutEnabled != OptOutEnabled.DISABLED_BY_ROLE_PROP){
+        if(rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT, yukonUserContext.getYukonUser())){
 	        if(!optOutEnabled.isOptOutEnabled() || !optOutEnabled.isCommunicationEnabled()){
 	            if(!optOutEnabled.isCommunicationEnabled()){
 	                map.addAttribute("optOutDisabledKey", "optOutsAndCommuncationDisabledWarning");
@@ -63,6 +65,8 @@ public class GeneralController extends AbstractConsumerController {
 	                map.addAttribute("optOutDisabledKey", "optOutsDisabledWarning");
 	            }
 	        }
+        }else if(!optOutEnabled.isCommunicationEnabled()){
+        	map.addAttribute("optOutDisabledKey", "communcationDisabledWarning");
         }
         
         if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
