@@ -14,7 +14,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.DeviceRequestType;
@@ -39,7 +39,7 @@ import com.google.common.collect.ListMultimap;
 
 public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
 
-    @Autowired private RfnMeterDao rfnMeterDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private AttributeReadingWidgetHelper widgetHelper;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private AttributeService attributeService;
@@ -56,7 +56,7 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     @RequestMapping
     public String render(ModelMap model, HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, NotFoundException {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        RfnMeter meter = rfnMeterDao.getForId(deviceId);
+        RfnMeter meter = rfnDeviceDao.getMeterForId(deviceId);
         model.addAttribute("meter", meter);
         model.addAttribute("deviceId", deviceId);
         

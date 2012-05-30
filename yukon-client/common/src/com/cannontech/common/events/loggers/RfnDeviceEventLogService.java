@@ -4,17 +4,16 @@ import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 
-public interface RfnMeteringEventLogService {
+public interface RfnDeviceEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.rfn")
-    public void createdNewMeterAutomatically(@Arg(ArgEnum.paoId) long paoId, String rfnIdentifier, String templateName, String meterNumber);
+    public void createdNewDeviceAutomatically(@Arg(ArgEnum.paoId) long paoId, String rfnIdentifier, String templateName, String deviceName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rfn")
-    public void receivedDataForUnkownMeterTemplate(String templateName);
+    public void receivedDataForUnkownDeviceTemplate(String templateName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.ASYNCHRONOUS, category="system.rfn")
-    public void unableToCreateMeterFromTemplate(String templateName, String sensorManufacturer,
+    public void unableToCreateDeviceFromTemplate(String templateName, String sensorManufacturer,
             String sensorModel, String sensorSerialNumber);
     
-
 }

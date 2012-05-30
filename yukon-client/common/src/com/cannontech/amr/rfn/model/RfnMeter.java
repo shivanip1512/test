@@ -5,18 +5,25 @@ import java.io.Serializable;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.YukonRfn;
 
-public class RfnMeter extends YukonMeter implements DisplayablePao, Serializable {
-    private static final long serialVersionUID = 1L;
+public class RfnMeter extends YukonMeter implements YukonRfn, DisplayablePao, Serializable {
+    private static final long serialVersionUID = 2L;
 
-    private RfnMeterIdentifier meterIdentifier;
+    private RfnIdentifier meterIdentifier;
 
-    public RfnMeter(YukonPao pao, RfnMeterIdentifier meterIdentifier) {
+    public RfnMeter(YukonPao pao, RfnIdentifier meterIdentifier) {
         super.setPaoIdentifier(pao.getPaoIdentifier());
         this.meterIdentifier = meterIdentifier;
     }
 
-    public RfnMeterIdentifier getMeterIdentifier() {
+    public RfnIdentifier getMeterIdentifier() {
+        return meterIdentifier;
+    }
+    
+    @Override
+    public RfnIdentifier getRfnIdentifier() {
         return meterIdentifier;
     }
     

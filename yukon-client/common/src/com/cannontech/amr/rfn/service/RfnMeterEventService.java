@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
-import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessorBase;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.message.dispatch.message.PointData;
@@ -48,20 +48,20 @@ public class RfnMeterEventService {
      * Process our event/alarm by first adding pointdata for our event type (i.e. the corresponding "Event Status"
      * status point), then continue on to our more specific processor
      */
-    public <T extends RfnEvent> void processEvent(RfnMeter meter, T event, List<? super PointData> pointDatas) {
-        log.debug("Event Recieved - event: " + event + " Meter: " + meter);
+    public <T extends RfnEvent> void processEvent(RfnDevice device, T event, List<? super PointData> pointDatas) {
+        log.debug("Event Recieved - event: " + event + " Meter: " + device);
 
-        boolean handledStatusEvent = handleRfnEventStatusEvents(meter, event, pointDatas);
+        boolean handledStatusEvent = handleRfnEventStatusEvents(device, event, pointDatas);
         RfnArchiveRequestProcessorBase processor = processorsMap.get(event.getType());
         if (processor != null) {
-            processor.process(meter, event, pointDatas);
+            processor.process(device, event, pointDatas);
         } else if (handledStatusEvent == false){
             String className = event.getClass().getSimpleName();
             log.debug(className + " of type " + event.getType() + " is not currently supported");
         }
     }
     
-    private <T extends RfnEvent> boolean handleRfnEventStatusEvents(RfnMeter meter, T event,
+    private <T extends RfnEvent> boolean handleRfnEventStatusEvents(RfnDevice meter, T event,
                                                                  List<? super PointData> pointDatas) {
         try {
             BuiltInAttribute eventAttr = BuiltInAttribute.valueOf(event.getType().name());
@@ -92,12 +92,12 @@ public class RfnMeterEventService {
      * so we can properly build up a pointData object, which then gets assigned to our
      * passed in List of pointDatas. This method uses a PointQuality of Normal
      */
-    public void processAttributePointData(RfnMeter rfnMeter,
+    public void processAttributePointData(RfnDevice rfnDevice,
                                           List<? super PointData> pointDatas,
                                           BuiltInAttribute attr,
                                           long timestamp,
                                           double pointValue) {
-        processAttributePointData(rfnMeter, pointDatas, attr, timestamp, pointValue, PointQuality.Normal);
+        processAttributePointData(rfnDevice, pointDatas, attr, timestamp, pointValue, PointQuality.Normal);
     }
 
     /**
@@ -105,16 +105,16 @@ public class RfnMeterEventService {
      * so we can properly build up a pointData object, which then gets assigned to our
      * passed in List of pointDatas.
      */
-    public void processAttributePointData(RfnMeter rfnMeter,
+    public void processAttributePointData(RfnDevice rfnDevice,
                                           List<? super PointData> pointDatas,
                                           BuiltInAttribute attr,
                                           long timestamp,
                                           double pointValue,
                                           PointQuality quality) {
         // create our attribute point if it doesn't exist yet
-        attributeService.createPointForAttribute(rfnMeter, attr);
+        attributeService.createPointForAttribute(rfnDevice, attr);
 
-        LitePoint litePoint = attributeService.getPointForAttribute(rfnMeter, attr);
+        LitePoint litePoint = attributeService.getPointForAttribute(rfnDevice, attr);
 
         PointData pointData = new PointData();
         pointData.setId(litePoint.getPointID());

@@ -17,4 +17,5 @@ public class RfnMeterPlusReadingData {
     public RfnMeterReadingData getRfnMeterReadingData() {
         return rfnMeterReadingData;
     }
+    
 }

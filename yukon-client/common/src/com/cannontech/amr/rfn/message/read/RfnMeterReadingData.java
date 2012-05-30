@@ -3,15 +3,15 @@ package com.cannontech.amr.rfn.message.read;
 import java.io.Serializable;
 import java.util.List;
 
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 
 public class RfnMeterReadingData implements Serializable {
 
-    private static final long serialVersionUID = 3L;
+    private static final long serialVersionUID = 4L;
 
     private List<ChannelData> channelDataList; // Non timestamped data
     private List<DatedChannelData> datedChannelDataList; // Timestamped data like Peak Demand
-    private RfnMeterIdentifier rfnMeterIdentifier;
+    private RfnIdentifier rfnIdentifier;
     private long timeStamp;
 
     public List<ChannelData> getChannelDataList() {
@@ -30,12 +30,12 @@ public class RfnMeterReadingData implements Serializable {
         this.datedChannelDataList = datedChannelDataList;
     }
 
-    public RfnMeterIdentifier getRfnMeterIdentifier() {
-        return rfnMeterIdentifier;
+    public RfnIdentifier getRfnIdentifier() {
+        return rfnIdentifier;
     }
 
-    public void setRfnMeterIdentifier(RfnMeterIdentifier rfnMeterIdentifier) {
-        this.rfnMeterIdentifier = rfnMeterIdentifier;
+    public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
+        this.rfnIdentifier = rfnIdentifier;
     }
 
     public long getTimeStamp() {
@@ -54,7 +54,7 @@ public class RfnMeterReadingData implements Serializable {
         result =
             prime * result + ((datedChannelDataList == null) ? 0 : datedChannelDataList.hashCode());
         result =
-            prime * result + ((rfnMeterIdentifier == null) ? 0 : rfnMeterIdentifier.hashCode());
+            prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
         result = prime * result + (int) (timeStamp ^ (timeStamp >>> 32));
         return result;
     }
@@ -78,10 +78,10 @@ public class RfnMeterReadingData implements Serializable {
                 return false;
         } else if (!datedChannelDataList.equals(other.datedChannelDataList))
             return false;
-        if (rfnMeterIdentifier == null) {
-            if (other.rfnMeterIdentifier != null)
+        if (rfnIdentifier == null) {
+            if (other.rfnIdentifier != null)
                 return false;
-        } else if (!rfnMeterIdentifier.equals(other.rfnMeterIdentifier))
+        } else if (!rfnIdentifier.equals(other.rfnIdentifier))
             return false;
         if (timeStamp != other.timeStamp)
             return false;
@@ -91,10 +91,10 @@ public class RfnMeterReadingData implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("RfnMeterReadingData [channelDataList=%s, datedChannelDataList=%s, rfnMeterIdentifier=%s, timeStamp=%s]",
+            .format("RfnMeterReadingData [channelDataList=%s, datedChannelDataList=%s, rfnIdentifier=%s, timeStamp=%s]",
                     channelDataList,
                     datedChannelDataList,
-                    rfnMeterIdentifier,
+                    rfnIdentifier,
                     timeStamp);
     }
 

@@ -3,25 +3,25 @@ package com.cannontech.amr.rfn.message.demandReset;
 import java.io.Serializable;
 import java.util.Set;
 
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
  * JMS Queue name: yukon.rr.obj.amr.rfn.MeterDemandResetRequest
  */
 public class RfnMeterDemandResetRequest implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    private Set<RfnMeterIdentifier> rfnMeterIdentifiers;
+    private Set<RfnIdentifier> rfnMeterIdentifiers;
 
-    public RfnMeterDemandResetRequest(Set<RfnMeterIdentifier> rfnMeterIdentifiers) {
+    public RfnMeterDemandResetRequest(Set<RfnIdentifier> rfnMeterIdentifiers) {
         this.rfnMeterIdentifiers = rfnMeterIdentifiers;
     }
 
-    public Set<RfnMeterIdentifier> getRfnMeterIdentifiers() {
+    public Set<RfnIdentifier> getRfnMeterIdentifiers() {
         return rfnMeterIdentifiers;
     }
 
-    public void setRfnMeterIdentifiers(Set<RfnMeterIdentifier> rfnMeterIdentifiers) {
+    public void setRfnMeterIdentifiers(Set<RfnIdentifier> rfnMeterIdentifiers) {
         this.rfnMeterIdentifiers = rfnMeterIdentifiers;
     }
 

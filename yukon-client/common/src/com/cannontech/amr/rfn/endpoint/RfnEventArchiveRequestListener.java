@@ -13,10 +13,11 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.rfn.message.event.RfnEventArchiveRequest;
 import com.cannontech.amr.rfn.message.event.RfnEventArchiveResponse;
-import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterEventService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.rfn.endpoint.RfnArchiveRequestListenerBase;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -38,7 +39,7 @@ public class RfnEventArchiveRequestListener extends RfnArchiveRequestListenerBas
         }
 
         @Override
-        protected void processPointDatas(RfnMeter meter, RfnEventArchiveRequest eventRequest) {
+        protected void processPointDatas(RfnDevice meter, RfnEventArchiveRequest eventRequest) {
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
             rfnMeterEventService.processEvent(meter, eventRequest.getEvent(), messagesToSend);
 

@@ -16,17 +16,17 @@ import com.cannontech.amr.demandreset.service.RfnDemandResetService;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReply;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReplyType;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetRequest;
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -42,7 +42,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    @Autowired private RfnMeterDao rfnMeterDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     private RequestReplyTemplate<RfnMeterDemandResetReply> rrTemplate;
 
@@ -59,8 +59,8 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService {
     public <T extends YukonPao> Set<T> filterDevices(Set<T> devices) {
         Set<T> devicesOfCorrectType =
                 paoDefinitionDao.filterPaosForTag(devices, PaoTag.RFN_DEMAND_RESET);
-        final Map<? extends YukonPao, RfnMeterIdentifier> meterIdentifiersByPao =
-                rfnMeterDao.getMeterIdentifiersByPao(devicesOfCorrectType);
+        final Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao =
+                rfnDeviceDao.getRfnIdentifiersByPao(devicesOfCorrectType);
 
         Predicate<YukonPao> predicate = new Predicate<YukonPao>() {
             @Override
@@ -75,13 +75,13 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService {
     @Override
     public void sendDemandReset(Set<? extends YukonPao> devices, final DemandResetCallback callback,
                                 LiteYukonUser user) {
-        Map<? extends YukonPao, RfnMeterIdentifier> meterIdentifiersByPao =
-                rfnMeterDao.getMeterIdentifiersByPao(devices);
+        Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao =
+                rfnDeviceDao.getRfnIdentifiersByPao(devices);
         final Map<SimpleDevice, SpecificDeviceErrorDescription> errors = Maps.newHashMap();
-        final Map<RfnMeterIdentifier, SimpleDevice> devicesByRfnMeterIdentifier = Maps.newHashMap();
-        for (Map.Entry<? extends YukonPao, RfnMeterIdentifier> entry : meterIdentifiersByPao.entrySet()) {
+        final Map<RfnIdentifier, SimpleDevice> devicesByRfnMeterIdentifier = Maps.newHashMap();
+        for (Map.Entry<? extends YukonPao, RfnIdentifier> entry : meterIdentifiersByPao.entrySet()) {
             YukonPao pao = entry.getKey();
-            RfnMeterIdentifier rfnMeterIdentifier = entry.getValue();
+            RfnIdentifier rfnMeterIdentifier = entry.getValue();
             devicesByRfnMeterIdentifier.put(rfnMeterIdentifier, new SimpleDevice(pao));
         }
 
@@ -105,9 +105,9 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService {
 
             @Override
             public void handleReply(RfnMeterDemandResetReply statusReply) {
-                Map<RfnMeterIdentifier, RfnMeterDemandResetReplyType> replyTypes = statusReply.getReplyTypes();
-                Collection<RfnMeterIdentifier> rfnMeters = replyTypes.keySet();
-                for (RfnMeterIdentifier rfnMeterIdentifier : rfnMeters) {
+                Map<RfnIdentifier, RfnMeterDemandResetReplyType> replyTypes = statusReply.getReplyTypes();
+                Collection<RfnIdentifier> rfnMeters = replyTypes.keySet();
+                for (RfnIdentifier rfnMeterIdentifier : rfnMeters) {
                     RfnMeterDemandResetReplyType replyType = replyTypes.get(rfnMeterIdentifier);
                     if (replyType != RfnMeterDemandResetReplyType.OK) {
                         DeviceErrorDescription error =
@@ -128,7 +128,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService {
         };
 
         // The set returned by keySet isn't serializable, so we have to make a copy.
-        Set<RfnMeterIdentifier> meterIds = Sets.newHashSet(devicesByRfnMeterIdentifier.keySet());
+        Set<RfnIdentifier> meterIds = Sets.newHashSet(devicesByRfnMeterIdentifier.keySet());
         rrTemplate.send(new RfnMeterDemandResetRequest(meterIds), handler);
     }
 }

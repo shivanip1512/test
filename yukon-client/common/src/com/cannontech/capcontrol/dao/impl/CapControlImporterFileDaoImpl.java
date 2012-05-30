@@ -103,7 +103,7 @@ public class CapControlImporterFileDaoImpl implements CapControlImporterFileDao 
 			                                             CbcImportResultType.INVALID_TYPE, e);
 			}
 			
-			if (PaoType.isCbc(paoType)) {
+			if (paoType.isCbc()) {
 			    CbcImportData cbcData = new CbcImportData(name, importAction, paoType);
 			    
 				// There are required fields we KNOW are here. Set them, then try the non-requireds.

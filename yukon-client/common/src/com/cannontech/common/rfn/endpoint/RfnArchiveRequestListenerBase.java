@@ -1,4 +1,4 @@
-package com.cannontech.amr.rfn.endpoint;
+package com.cannontech.common.rfn.endpoint;
 
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -10,14 +10,14 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
-import com.cannontech.amr.rfn.message.archive.RfnArchiveRequest;
-import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
-import com.cannontech.amr.rfn.service.RfnArchiveRequestService;
-import com.cannontech.amr.rfn.service.RfnMeterLookupService;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.rfn.message.RfnArchiveRequest;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.service.RfnArchiveRequestService;
+import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 
@@ -25,10 +25,10 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnArchiveRequest>
 
     private static final Logger log = YukonLogManager.getLogger(RfnArchiveRequestListenerBase.class);
 
-    protected DynamicDataSource dynamicDataSource;
-    protected RfnMeterReadService rfnMeterReadService;
-    protected RfnArchiveRequestService rfnArchiveRequestService;
-    private RfnMeterLookupService rfnMeterLookupService;
+    @Autowired protected DynamicDataSource dynamicDataSource;
+    @Autowired protected RfnMeterReadService rfnMeterReadService;
+    @Autowired protected RfnArchiveRequestService rfnArchiveRequestService;
+    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
 
     protected JmsTemplate jmsTemplate;
 
@@ -76,35 +76,35 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnArchiveRequest>
         }
 
         protected void processInitial(T archiveRequest) {
-            RfnMeterIdentifier meterIdentifier = archiveRequest.getIdentifier();
-            RfnMeter rfnMeter;
+            RfnIdentifier rfnIdentifier = archiveRequest.getRfnIdentifier();
+            RfnDevice rfnDevice;
             try {
-                rfnArchiveRequestService.incrementMeterLookupAttempt();
-                rfnMeter = rfnMeterLookupService.getMeter(meterIdentifier);
+                rfnArchiveRequestService.incrementDeviceLookupAttempt();
+                rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
             } catch (NotFoundException e1) {
-                // looks like we need to create the meter
-                rfnMeter = processCreation(archiveRequest, meterIdentifier);
+                // looks like we need to create the device
+                rfnDevice = processCreation(archiveRequest, rfnIdentifier);
             }
-            processPointDatas(rfnMeter, archiveRequest);
+            processPointDatas(rfnDevice, archiveRequest);
         }
 
-        protected RfnMeter processCreation(T archiveRequest, RfnMeterIdentifier meterIdentifier) {
+        protected RfnDevice processCreation(T archiveRequest, RfnIdentifier rfnIdentifier) {
             try {
-                RfnMeter rfnMeter = rfnArchiveRequestService.createMeter(meterIdentifier);
-                rfnArchiveRequestService.incrementNewMeterCreated();
-                LogHelper.debug(log, "Created new meter: %s", rfnMeter);
-                return rfnMeter;
+                RfnDevice rfnDevice = rfnArchiveRequestService.createDevice(rfnIdentifier);
+                rfnArchiveRequestService.incrementNewDeviceCreated();
+                LogHelper.debug(log, "Created new device: %s", rfnDevice);
+                return rfnDevice;
             } catch (IgnoredTemplateException e) {
-                throw new RuntimeException("Unable to create meter for " + meterIdentifier + " because template is ignored", e);
+                throw new RuntimeException("Unable to create device for " + rfnIdentifier + " because template is ignored", e);
             } catch (Exception e) {
-                LogHelper.debug(log, "Creation failed for %s: %s", meterIdentifier, e);
-                throw new RuntimeException("Creation failed for " + meterIdentifier, e);
+                LogHelper.debug(log, "Creation failed for %s: %s", rfnIdentifier, e);
+                throw new RuntimeException("Creation failed for " + rfnIdentifier, e);
             }
         }
 
-        protected abstract void processPointDatas(RfnMeter rfnMeter, T archiveRequest);
+        protected abstract void processPointDatas(RfnDevice rfnDevice, T archiveRequest);
 
-        protected void shutdown() {
+        public void shutdown() {
             // shutdown mechanism assumes that
             shutdown = true;
             this.interrupt();
@@ -122,7 +122,7 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnArchiveRequest>
 
     public void handleArchiveRequest(T archiveRequest) {
         // determine which worker will handle the request by hashing the serial number
-        int hashCode = archiveRequest.getIdentifier().getSensorSerialNumber().hashCode();
+        int hashCode = archiveRequest.getRfnIdentifier().getSensorSerialNumber().hashCode();
         List<? extends WorkerBase> workers = getWorkers();
         int workerIndex = Math.abs(hashCode) % workers.size();
         WorkerBase worker = workers.get(workerIndex);
@@ -147,23 +147,4 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnArchiveRequest>
         jmsTemplate.setDeliveryPersistent(false);
     }
 
-    @Autowired
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
-    }
-    
-    @Autowired
-    public void setRfnArchiveRequestService(RfnArchiveRequestService rfnArchiveRequestService) {
-        this.rfnArchiveRequestService = rfnArchiveRequestService;
-    }
-    
-    @Autowired
-    public void setRfnMeterLookupService(RfnMeterLookupService rfnMeterLookupService) {
-        this.rfnMeterLookupService = rfnMeterLookupService;
-    }
-    
-    @Autowired
-    public void setRfnMeterReadService(RfnMeterReadService rfnMeterReadService) {
-        this.rfnMeterReadService = rfnMeterReadService;
-    }
 }

@@ -127,7 +127,7 @@ public class RfnMeterReadService {
             }
         };
         
-        rrrTemplate.send(new RfnMeterReadRequest(rfnMeter.getMeterIdentifier()), handler);
+        rrrTemplate.send(new RfnMeterReadRequest(rfnMeter.getRfnIdentifier()), handler);
     }
     
     public void processMeterReadingDataMessage(RfnMeterPlusReadingData meterReadingData, List<? super PointData> pointDatas) {

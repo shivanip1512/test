@@ -9,7 +9,7 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
 public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrategy {
     private PaoDefinitionDao paoDefinitionDao;
     private RfnMeterReadService rfnMeterReadService;
-    private RfnMeterDao rfnMeterDao;
+    private RfnDeviceDao rfnDeviceDao;
     
     @Override
     public StrategyType getType() {
@@ -63,7 +63,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
         for (PaoIdentifier paoIdentifier : paoIdentifiers) {
             RfnMeter rfnMeter;
             try {
-                rfnMeter = rfnMeterDao.getMeter(paoIdentifier); // TODO create bulk loader
+                rfnMeter = rfnDeviceDao.getMeter(paoIdentifier); // TODO create bulk loader
                 rfnMeters.add(rfnMeter);
             } catch (NotFoundException e) {
                 MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.notKnown", e.getMessage());
@@ -133,8 +133,8 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
     }
     
     @Autowired
-    public void setRfnMeterDao(RfnMeterDao rfnMeterDao) {
-        this.rfnMeterDao = rfnMeterDao;
+    public void setRfnDeviceDao(RfnDeviceDao rfnDeviceDao) {
+        this.rfnDeviceDao = rfnDeviceDao;
     }
     
     @Autowired

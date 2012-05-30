@@ -1,47 +1,35 @@
-package com.cannontech.amr.rfn.model;
+package com.cannontech.common.rfn.message;
 
 import java.io.Serializable;
 
 import org.apache.commons.lang.StringUtils;
 
-public class RfnMeterIdentifier implements Serializable{
+public final class RfnIdentifier implements Serializable {
     
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
     
-    private String sensorManufacturer;
-    private String sensorModel;
-    private String sensorSerialNumber;
+    private final String sensorManufacturer;
+    private final String sensorModel;
+    private final String sensorSerialNumber;
     
-    public RfnMeterIdentifier(String sensorSerialNumber, String sensorManufacturer, String sensorModel) {
+    public RfnIdentifier(String sensorSerialNumber, String sensorManufacturer, String sensorModel) {
         this.sensorSerialNumber = sensorSerialNumber;
         this.sensorManufacturer = sensorManufacturer;
         this.sensorModel = sensorModel;
     }
-
+    
     public String getSensorManufacturer() {
         return sensorManufacturer;
-    }
-
-    public void setSensorManufacturer(String sensorManufacturer) {
-        this.sensorManufacturer = sensorManufacturer;
     }
 
     public String getSensorModel() {
         return sensorModel;
     }
 
-    public void setSensorModel(String sensorModel) {
-        this.sensorModel = sensorModel;
-    }
-
     public String getSensorSerialNumber() {
         return sensorSerialNumber;
     }
 
-    public void setSensorSerialNumber(String sensorSerialNumber) {
-        this.sensorSerialNumber = sensorSerialNumber;
-    }
-    
     public String getCombinedIdentifier() {
         return String.format("%s_%s_%s", sensorManufacturer, sensorModel, sensorSerialNumber);
     }
@@ -53,13 +41,13 @@ public class RfnMeterIdentifier implements Serializable{
             && StringUtils.isBlank(sensorSerialNumber);
     }
     
-    public static RfnMeterIdentifier createBlank() {
-        return new RfnMeterIdentifier(null, null, null);
+    public static RfnIdentifier createBlank() {
+        return new RfnIdentifier(null, null, null);
     }
 
     @Override
     public String toString() {
-        return String.format("RfnMeterIdentifier [sensorManufacturer=%s, sensorModel=%s, sensorSerialNumber=%s]",
+        return String.format("RfnIdentifier [sensorManufacturer=%s, sensorModel=%s, sensorSerialNumber=%s]",
                              sensorManufacturer,
                              sensorModel,
                              sensorSerialNumber);
@@ -83,7 +71,7 @@ public class RfnMeterIdentifier implements Serializable{
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RfnMeterIdentifier other = (RfnMeterIdentifier) obj;
+        RfnIdentifier other = (RfnIdentifier) obj;
         if (sensorManufacturer == null) {
             if (other.sensorManufacturer != null)
                 return false;
@@ -101,6 +89,5 @@ public class RfnMeterIdentifier implements Serializable{
             return false;
         return true;
     }
-    
     
 }

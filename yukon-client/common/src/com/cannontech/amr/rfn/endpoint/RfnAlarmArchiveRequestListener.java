@@ -13,10 +13,11 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveResponse;
-import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterEventService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.rfn.endpoint.RfnArchiveRequestListenerBase;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -38,9 +39,9 @@ public class RfnAlarmArchiveRequestListener extends RfnArchiveRequestListenerBas
         }
 
         @Override
-        protected void processPointDatas(RfnMeter meter, RfnAlarmArchiveRequest archiveRequest) {
+        protected void processPointDatas(RfnDevice device, RfnAlarmArchiveRequest archiveRequest) {
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
-            rfnMeterEventService.processEvent(meter, archiveRequest.getAlarm(), messagesToSend);
+            rfnMeterEventService.processEvent(device, archiveRequest.getAlarm(), messagesToSend);
 
             // Save analog value(s) to db
             dynamicDataSource.putValues(messagesToSend);

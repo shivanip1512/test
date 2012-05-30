@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.message.alarm.RfnAlarm;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
-import com.cannontech.amr.rfn.message.archive.RfnArchiveRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
@@ -34,7 +33,8 @@ import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.common.rfn.message.RfnArchiveRequest;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
@@ -96,8 +96,8 @@ public class RfnMeterArchiveTestController {
             
             RfnMeterReadingData data = new RfnMeterReadingData();
             data.setTimeStamp(new Instant().getMillis());
-            RfnMeterIdentifier meterIdentifier = new RfnMeterIdentifier(Integer.toString(i), manufacturer, model);
-            data.setRfnMeterIdentifier(meterIdentifier);
+            RfnIdentifier meterIdentifier = new RfnIdentifier(Integer.toString(i), manufacturer, model);
+            data.setRfnIdentifier(meterIdentifier);
             
             List<ChannelData> dataList = Lists.newArrayList();
             ChannelData channelData = new ChannelData();
@@ -181,9 +181,9 @@ public class RfnMeterArchiveTestController {
 
     private <T extends RfnEvent> T buildEvent(TestEvent testEvent, T rfnEvent, int serialNum) {
         rfnEvent.setType(testEvent.getRfnConditionType());
-        RfnMeterIdentifier meterIdentifier =
-            new RfnMeterIdentifier(Integer.toString(serialNum), testEvent.getManufacturer(), testEvent.getModel());
-        rfnEvent.setRfnMeterIdentifier(meterIdentifier);
+        RfnIdentifier meterIdentifier =
+            new RfnIdentifier(Integer.toString(serialNum), testEvent.getManufacturer(), testEvent.getModel());
+        rfnEvent.setRfnIdentifier(meterIdentifier);
         
         long timestamp;
         if (testEvent.getTimestamp() == null) {

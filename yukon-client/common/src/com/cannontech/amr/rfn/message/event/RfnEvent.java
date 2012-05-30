@@ -3,14 +3,14 @@ package com.cannontech.amr.rfn.message.event;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 
 public class RfnEvent implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     protected RfnConditionType type;
-    protected RfnMeterIdentifier rfnMeterIdentifier;
+    protected RfnIdentifier rfnIdentifier;
     protected long timeStamp;
     protected Map<RfnConditionDataType, Object> eventData;
 
@@ -22,12 +22,12 @@ public class RfnEvent implements Serializable {
         this.type = type;
     }
 
-    public RfnMeterIdentifier getRfnMeterIdentifier() {
-        return rfnMeterIdentifier;
+    public RfnIdentifier getRfnIdentifier() {
+        return rfnIdentifier;
     }
 
-    public void setRfnMeterIdentifier(RfnMeterIdentifier rfnMeterIdentifier) {
-        this.rfnMeterIdentifier = rfnMeterIdentifier;
+    public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
+        this.rfnIdentifier = rfnIdentifier;
     }
 
     public long getTimeStamp() {
@@ -52,7 +52,7 @@ public class RfnEvent implements Serializable {
         int result = 1;
         result = prime * result + ((eventData == null) ? 0 : eventData.hashCode());
         result =
-            prime * result + ((rfnMeterIdentifier == null) ? 0 : rfnMeterIdentifier.hashCode());
+            prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
         result = prime * result + (int) (timeStamp ^ (timeStamp >>> 32));
         result = prime * result + ((type == null) ? 0 : type.hashCode());
         return result;
@@ -72,10 +72,10 @@ public class RfnEvent implements Serializable {
                 return false;
         } else if (!eventData.equals(other.eventData))
             return false;
-        if (rfnMeterIdentifier == null) {
-            if (other.rfnMeterIdentifier != null)
+        if (rfnIdentifier == null) {
+            if (other.rfnIdentifier != null)
                 return false;
-        } else if (!rfnMeterIdentifier.equals(other.rfnMeterIdentifier))
+        } else if (!rfnIdentifier.equals(other.rfnIdentifier))
             return false;
         if (timeStamp != other.timeStamp)
             return false;
@@ -87,9 +87,9 @@ public class RfnEvent implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("RfnEvent [type=%s, rfnMeterIdentifier=%s, timeStamp=%tc, eventData=%s]",
+            .format("RfnEvent [type=%s, rfnIdentifier=%s, timeStamp=%tc, eventData=%s]",
                     type,
-                    rfnMeterIdentifier,
+                    rfnIdentifier,
                     timeStamp,
                     eventData);
     }

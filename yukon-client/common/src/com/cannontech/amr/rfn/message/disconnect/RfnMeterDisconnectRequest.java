@@ -2,26 +2,26 @@ package com.cannontech.amr.rfn.message.disconnect;
 
 import java.io.Serializable;
 
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 
 public class RfnMeterDisconnectRequest implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    private RfnMeterIdentifier rfnMeterIdentifier;
+    private RfnIdentifier rfnIdentifier;
     private RfnMeterDisconnectStatusType action;
 
-    public RfnMeterDisconnectRequest(RfnMeterIdentifier meter, RfnMeterDisconnectStatusType action) {
-        setRfnMeterIdentifier(meter);
+    public RfnMeterDisconnectRequest(RfnIdentifier meter, RfnMeterDisconnectStatusType action) {
+        setRfnIdentifier(meter);
         setAction(action);
     }
 
-    public RfnMeterIdentifier getRfnMeterIdentifier() {
-        return rfnMeterIdentifier;
+    public RfnIdentifier getRfnIdentifier() {
+        return rfnIdentifier;
     }
 
-    public void setRfnMeterIdentifier(RfnMeterIdentifier rfnMeterIdentifier) {
-        this.rfnMeterIdentifier = rfnMeterIdentifier;
+    public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
+        this.rfnIdentifier = rfnIdentifier;
     }
 
     public void setAction(RfnMeterDisconnectStatusType action) {
@@ -34,7 +34,7 @@ public class RfnMeterDisconnectRequest implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("RfnMeterDisconnectRequest [rfnMeterIdentifier=%s]", rfnMeterIdentifier);
+        return String.format("RfnMeterDisconnectRequest [rfnIdentifier=%s]", rfnIdentifier);
     }
 
 }

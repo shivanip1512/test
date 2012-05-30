@@ -138,7 +138,7 @@ public class RfnMeterDisconnectService {
             }
         };
         
-        rrrTemplate.send(new RfnMeterDisconnectRequest(meter.getMeterIdentifier(), action), handler);
+        rrrTemplate.send(new RfnMeterDisconnectRequest(meter.getRfnIdentifier(), action), handler);
     }
     
     private void publishPointData(int rawState, RfnMeter meter) {

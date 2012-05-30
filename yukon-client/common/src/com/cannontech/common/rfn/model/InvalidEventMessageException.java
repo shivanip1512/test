@@ -1,4 +1,4 @@
-package com.cannontech.amr.rfn.model;
+package com.cannontech.common.rfn.model;
 
 public class InvalidEventMessageException extends RuntimeException {
 

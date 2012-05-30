@@ -1,33 +1,35 @@
-package com.cannontech.amr.rfn.message.read;
+package com.cannontech.dr.rfn.message.archive;
 
 import java.io.Serializable;
 
+import com.cannontech.common.rfn.message.RfnArchiveRequest;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
- * JMS Queue name: yukon.rr.obj.amr.rfn.MeterReadRequest
+ * JMS Queue name: yukon.rr.obj.dr.rfn.LcrArchiveRequest
  */
-public class RfnMeterReadRequest implements Serializable {
+public class RfnLcrArchiveRequest implements RfnArchiveRequest, Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
 
     private RfnIdentifier rfnIdentifier;
-
-    public RfnMeterReadRequest(RfnIdentifier meter) {
-        setRfnIdentifier(meter);
-    }
-
+    private long sensorId;
+    
+    @Override
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
     }
-
+    
     public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
         this.rfnIdentifier = rfnIdentifier;
     }
-
-    @Override
-    public String toString() {
-        return String.format("RfnMeterReadRequest [rfnIdentifier=%s]", rfnIdentifier);
+    
+    public long getSensorId() {
+        return sensorId;
+    }
+    
+    public void setSensorId(long sensorId) {
+        this.sensorId = sensorId;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class RfnMeterReadRequest implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
+        result = prime * result + (int) (sensorId ^ (sensorId >>> 32));
         return result;
     }
 
@@ -46,13 +49,20 @@ public class RfnMeterReadRequest implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RfnMeterReadRequest other = (RfnMeterReadRequest) obj;
+        RfnLcrArchiveRequest other = (RfnLcrArchiveRequest) obj;
         if (rfnIdentifier == null) {
             if (other.rfnIdentifier != null)
                 return false;
         } else if (!rfnIdentifier.equals(other.rfnIdentifier))
             return false;
+        if (sensorId != other.sensorId)
+            return false;
         return true;
     }
 
+    @Override
+    public String toString() {
+        return String.format("RfnLcrArchiveRequest [rfnIdentifier=%s, sensorId=%s]", rfnIdentifier, sensorId);
+    }
+    
 }

@@ -3,18 +3,18 @@ package com.cannontech.amr.rfn.message.demandReset;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 
 public class RfnMeterDemandResetReply implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    private Map<RfnMeterIdentifier, RfnMeterDemandResetReplyType> replyTypes;
+    private Map<RfnIdentifier, RfnMeterDemandResetReplyType> replyTypes;
 
-    public Map<RfnMeterIdentifier, RfnMeterDemandResetReplyType> getReplyTypes() {
+    public Map<RfnIdentifier, RfnMeterDemandResetReplyType> getReplyTypes() {
         return replyTypes;
     }
 
-    public void setReplyTypes(Map<RfnMeterIdentifier, RfnMeterDemandResetReplyType> replyTypes) {
+    public void setReplyTypes(Map<RfnIdentifier, RfnMeterDemandResetReplyType> replyTypes) {
         this.replyTypes = replyTypes;
     }
 
@@ -45,6 +45,6 @@ public class RfnMeterDemandResetReply implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("RfnMeterDemandResetReply [replyTypes=%s]", replyTypes);
+        return "RfnMeterDemandResetReply [replyTypes=" + replyTypes + "]";
     }
 }

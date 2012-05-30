@@ -9,7 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -28,7 +28,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class MeterInformationWidget extends WidgetControllerBase {
 
     private MeterDao meterDao = null;
-    private RfnMeterDao rfnMeterDao;
+    private RfnDeviceDao rfnDeviceDao;
     private CommandRequestDeviceExecutor commandRequestExecutor;
     private PaoDefinitionDao paoDefinitionDao;
 
@@ -38,8 +38,8 @@ public class MeterInformationWidget extends WidgetControllerBase {
     }
     
     @Autowired
-    public void setRfnMeterDao(RfnMeterDao rfnMeterDao) {
-        this.rfnMeterDao = rfnMeterDao;
+    public void setRfnDeviceDao(RfnDeviceDao rfnDeviceDao) {
+        this.rfnDeviceDao = rfnDeviceDao;
     }
     
     @Required
@@ -93,7 +93,7 @@ public class MeterInformationWidget extends WidgetControllerBase {
         /* Show RFMESH settings such as serial number, model, and manufacturer*/
         if(paoType.getPaoClass() == PaoClass.RFMESH) {
             mav.addObject("showRFMeshSettings", true);
-            mav.addObject("rfnMeter", rfnMeterDao.getMeter(meter));
+            mav.addObject("rfnMeter", rfnDeviceDao.getMeter(meter));
         }
         
         if(paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS)) {

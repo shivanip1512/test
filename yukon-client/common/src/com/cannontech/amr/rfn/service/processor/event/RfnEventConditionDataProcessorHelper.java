@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
-import com.cannontech.amr.rfn.model.InvalidEventMessageException;
 import com.cannontech.amr.rfn.service.RfnMeterEventService;
+import com.cannontech.common.rfn.model.InvalidEventMessageException;
 
 public class RfnEventConditionDataProcessorHelper {
 

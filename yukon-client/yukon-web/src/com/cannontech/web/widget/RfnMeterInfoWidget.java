@@ -8,13 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterReadCompletionCallback;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.amr.rfn.service.WaitableRfnMeterReadCompletionCallback;
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -22,7 +22,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class RfnMeterInfoWidget extends WidgetControllerBase {
 
-    private RfnMeterDao rfnMeterDao;
+    private RfnDeviceDao rfnDeviceDao;
     private RfnMeterReadService rfnMeterReadService;
     private static final Logger log = YukonLogManager.getLogger(RfnMeterInfoWidget.class);
 
@@ -39,7 +39,7 @@ public class RfnMeterInfoWidget extends WidgetControllerBase {
         
         ModelAndView mav = new ModelAndView("rfnMeterInfoWidget/render.jsp");
         
-        RfnMeter meter = rfnMeterDao.getForId(deviceId);
+        RfnMeter meter = rfnDeviceDao.getMeterForId(deviceId);
         
         mav.addObject("meter", meter);
         
@@ -49,7 +49,7 @@ public class RfnMeterInfoWidget extends WidgetControllerBase {
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
         final ModelAndView mav = new ModelAndView("common/rfnMeterReadingsResult.jsp");
         
-        RfnMeter meter = rfnMeterDao.getForId(WidgetParameterHelper.getRequiredIntParameter(request, "deviceId"));
+        RfnMeter meter = rfnDeviceDao.getMeterForId(WidgetParameterHelper.getRequiredIntParameter(request, "deviceId"));
         
         /* Using a waitable, this will block for the initial response to the read request or until a 10 second timeout expires. */
         
@@ -94,8 +94,8 @@ public class RfnMeterInfoWidget extends WidgetControllerBase {
     }
     
     @Autowired
-    public void setRfnMeterDao(RfnMeterDao rfnMeterDao) {
-        this.rfnMeterDao = rfnMeterDao;
+    public void setRfnDeviceDao(RfnDeviceDao rfnDeviceDao) {
+        this.rfnDeviceDao = rfnDeviceDao;
     }
     
     @Autowired

@@ -2,15 +2,15 @@ package com.cannontech.amr.rfn.message.alarm;
 
 import java.io.Serializable;
 
-import com.cannontech.amr.rfn.message.archive.RfnArchiveRequest;
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.common.rfn.message.RfnArchiveRequest;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
  * JMS Queue name: yukon.rr.obj.amr.rfn.AlarmArchiveRequest
  */
 public class RfnAlarmArchiveRequest implements RfnArchiveRequest, Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     private RfnAlarm alarm;
     private long dataPointId;
@@ -32,8 +32,8 @@ public class RfnAlarmArchiveRequest implements RfnArchiveRequest, Serializable {
     }
 
     @Override
-    public RfnMeterIdentifier getIdentifier() {
-        return alarm.getRfnMeterIdentifier();
+    public RfnIdentifier getRfnIdentifier() {
+        return alarm.getRfnIdentifier();
     }
 
     @Override

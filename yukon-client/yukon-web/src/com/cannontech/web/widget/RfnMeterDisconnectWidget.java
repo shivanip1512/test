@@ -9,7 +9,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -26,7 +26,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     
-    @Autowired private RfnMeterDao rfnMeterDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private ConfigurationSource configurationSource;
@@ -72,7 +72,7 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     }
     
     private void setupRenderModel(ModelMap model, HttpServletRequest request) throws Exception {
-        RfnMeter meter = rfnMeterDao.getForId(WidgetParameterHelper.getRequiredIntParameter(request, "deviceId"));
+        RfnMeter meter = rfnDeviceDao.getMeterForId(WidgetParameterHelper.getRequiredIntParameter(request, "deviceId"));
         model.addAttribute("meter", meter);
         
         model.addAttribute("useArming", isArming());
@@ -92,7 +92,7 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     
     private void setupSendCommandModel(HttpServletRequest request, final ModelMap model, final RfnMeterDisconnectStatusType action) throws ServletRequestBindingException, NotFoundException {
         final int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        final RfnMeter meter = rfnMeterDao.getForId(deviceId);
+        final RfnMeter meter = rfnDeviceDao.getMeterForId(deviceId);
         model.addAttribute("deviceId", deviceId);
         
         WaitableRfnMeterDisconnectCallback waitableCallback = new WaitableRfnMeterDisconnectCallback() {

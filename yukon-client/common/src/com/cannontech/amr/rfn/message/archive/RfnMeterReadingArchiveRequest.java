@@ -4,14 +4,15 @@ import java.io.Serializable;
 
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.common.rfn.message.RfnArchiveRequest;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
  * JMS Queue name: yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest
  */
 public class RfnMeterReadingArchiveRequest implements RfnArchiveRequest, Serializable {
 
-    private static final long serialVersionUID = 3L;
+    private static final long serialVersionUID = 4L;
 
     private RfnMeterReadingData data;
     private RfnMeterReadingType readingType;
@@ -42,8 +43,8 @@ public class RfnMeterReadingArchiveRequest implements RfnArchiveRequest, Seriali
     }
 
     @Override
-    public RfnMeterIdentifier getIdentifier() {
-        return data.getRfnMeterIdentifier();
+    public RfnIdentifier getRfnIdentifier() {
+        return data.getRfnIdentifier();
     }
 
     @Override

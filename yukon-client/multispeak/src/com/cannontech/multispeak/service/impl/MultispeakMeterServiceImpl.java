@@ -36,7 +36,7 @@ import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterBy;
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -177,7 +177,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Autowired private MeterReadProcessingService meterReadProcessingService;
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
-    @Autowired private RfnMeterDao rfnMeterDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
 
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -717,7 +717,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 // check for rf disconnect meter type and perform action
                 boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
                 if (isRfnDisconnect) {
-                    RfnMeter rfnMeter = rfnMeterDao.getMeter(meter);
+                    RfnMeter rfnMeter = rfnDeviceDao.getMeter(meter);
                     rfnMeter.setMeterNumber(meterNumber);   //total hack until RFNMeter properly loads meterNumber values
                     doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), vendor, transactionId);
                     continue;
@@ -933,9 +933,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 // check for rf disconnect meter type and perform action
     		    boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
                 if (isRfnDisconnect) {
-                    RfnMeter rfnMeter = rfnMeterDao.getMeter(meter);
-                    rfnMeter.setMeterNumber(meterNumber);   //total hack until RFNMeter properly loads meterNumber values
-                    doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), vendor, transactionId);
+                    RfnMeter rfnDevice = rfnDeviceDao.getMeter(meter);
+                    doRfnConnectDisconnect(rfnDevice, mspLoadActionCode.getRfnState().getType(), vendor, transactionId);
                     continue;                    
                 } 
 

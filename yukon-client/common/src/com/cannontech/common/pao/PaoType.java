@@ -12,7 +12,7 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PortTypes;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableSet;
 
 public enum PaoType implements DatabaseRepresentationSource {
     CCU710A(DeviceTypes.CCU710A, "CCU-710A", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
@@ -208,11 +208,13 @@ public enum PaoType implements DatabaseRepresentationSource {
 
     private final static ImmutableMap<Integer, PaoType> lookupById;
     private final static ImmutableMap<String, PaoType> lookupByDbString;
+    private final static ImmutableSet<PaoType> meterTypes;
+    private final static ImmutableSet<PaoType> cbcTypes;
     
     static {
         try {
-            Builder<Integer, PaoType> idBuilder = ImmutableMap.builder();
-            Builder<String, PaoType> dbBuilder = ImmutableMap.builder();
+            ImmutableMap.Builder<Integer, PaoType> idBuilder = ImmutableMap.builder();
+            ImmutableMap.Builder<String, PaoType> dbBuilder = ImmutableMap.builder();
             for (PaoType deviceType : values()) {
                 idBuilder.put(deviceType.deviceTypeId, deviceType);
                 dbBuilder.put(deviceType.dbString, deviceType);
@@ -223,6 +225,85 @@ public enum PaoType implements DatabaseRepresentationSource {
             log.warn("Caught exception while building lookup maps, look for a duplicate name or db string.", e);
             throw e;
         }
+        
+        ImmutableSet.Builder<PaoType> cbcTypesBuilder = ImmutableSet.builder();
+        cbcTypesBuilder.add(CBC_7010);
+        cbcTypesBuilder.add(CBC_7011);
+        cbcTypesBuilder.add(CBC_7012);
+        cbcTypesBuilder.add(CBC_7020);
+        cbcTypesBuilder.add(CBC_7022);
+        cbcTypesBuilder.add(CBC_7023);
+        cbcTypesBuilder.add(CBC_7024);
+        cbcTypesBuilder.add(CBC_8020);
+        cbcTypesBuilder.add(CBC_8024);
+        cbcTypesBuilder.add(CBC_DNP);
+        cbcTypesBuilder.add(CBC_EXPRESSCOM);
+        cbcTypesBuilder.add(CBC_FP_2800);
+        cbcTypesBuilder.add(CAPBANKCONTROLLER);
+        
+        cbcTypes = cbcTypesBuilder.build();
+        
+        ImmutableSet.Builder<PaoType> meterTypesBuilder = ImmutableSet.builder();
+        meterTypesBuilder.add(ALPHA_A1);
+        meterTypesBuilder.add(ALPHA_A3);
+        meterTypesBuilder.add(ALPHA_PPLUS);
+        meterTypesBuilder.add(DR_87);
+        meterTypesBuilder.add(FOCUS);
+        meterTypesBuilder.add(FULCRUM);
+        meterTypesBuilder.add(KV);
+        meterTypesBuilder.add(KVII);
+        meterTypesBuilder.add(LANDISGYRS4);
+        meterTypesBuilder.add(QUANTUM);
+        meterTypesBuilder.add(SENTINEL);
+        meterTypesBuilder.add(SIXNET);
+        meterTypesBuilder.add(TRANSDATA_MARKV);
+        meterTypesBuilder.add(VECTRON);
+        meterTypesBuilder.add(IPC430S4);
+        meterTypesBuilder.add(IPC430SL);
+        meterTypesBuilder.add(IPC420AD);
+        meterTypesBuilder.add(IPC410AL);
+        meterTypesBuilder.add(MCTBROADCAST);
+        meterTypesBuilder.add(MCT210);
+        meterTypesBuilder.add(MCT213);
+        meterTypesBuilder.add(MCT240);
+        meterTypesBuilder.add(MCT248);
+        meterTypesBuilder.add(MCT250);
+        meterTypesBuilder.add(MCT310);
+        meterTypesBuilder.add(MCT310CT);
+        meterTypesBuilder.add(MCT310ID);
+        meterTypesBuilder.add(MCT310IDL);
+        meterTypesBuilder.add(MCT310IL);
+        meterTypesBuilder.add(MCT310IM);
+        meterTypesBuilder.add(MCT318);
+        meterTypesBuilder.add(MCT318L);
+        meterTypesBuilder.add(MCT360);
+        meterTypesBuilder.add(MCT370);
+        meterTypesBuilder.add(MCT410CL);
+        meterTypesBuilder.add(MCT410FL);
+        meterTypesBuilder.add(MCT410GL);
+        meterTypesBuilder.add(MCT410IL);
+        meterTypesBuilder.add(MCT420CL);
+        meterTypesBuilder.add(MCT420CLD);
+        meterTypesBuilder.add(MCT420FL);
+        meterTypesBuilder.add(MCT420FLD);
+        meterTypesBuilder.add(MCT430A);
+        meterTypesBuilder.add(MCT430A3);
+        meterTypesBuilder.add(MCT430S4);
+        meterTypesBuilder.add(MCT430SL);
+        meterTypesBuilder.add(MCT470);
+        meterTypesBuilder.add(RFN410FL);
+        meterTypesBuilder.add(RFN410FX);
+        meterTypesBuilder.add(RFN410FD); 
+        meterTypesBuilder.add(RFN420FL);
+        meterTypesBuilder.add(RFN420FX);
+        meterTypesBuilder.add(RFN420FD);
+        meterTypesBuilder.add(RFN420CL);
+        meterTypesBuilder.add(RFN420CD);
+        meterTypesBuilder.add(RFN430A3);
+        meterTypesBuilder.add(RFN430KV);
+        meterTypesBuilder.add(RFWMETER);
+        
+        meterTypes = meterTypesBuilder.build();
     }
 
     /**
@@ -251,25 +332,12 @@ public enum PaoType implements DatabaseRepresentationSource {
         return deviceType;
     }
     
-    public static boolean isCbc(PaoType type) {
-        switch (type) {
-            case CBC_7010:
-            case CBC_7011:
-            case CBC_7012:
-            case CBC_7020:
-            case CBC_7022:
-            case CBC_7023:
-            case CBC_7024:
-            case CBC_8020:
-            case CBC_8024:
-            case CBC_DNP:
-            case CBC_EXPRESSCOM:
-            case CBC_FP_2800:
-            case CAPBANKCONTROLLER:
-                return true;
-            default: 
-                return false;
-        }
+    public boolean isCbc() {
+        return cbcTypes.contains(this);
+    }
+    
+    public boolean isMeter() {
+        return meterTypes.contains(this);
     }
 
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory,

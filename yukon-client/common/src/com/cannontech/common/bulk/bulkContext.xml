@@ -303,7 +303,7 @@
 
     <bean id="rfnMeterBulkFieldProcessor" parent="bulkFieldProcessorBase"
         class="com.cannontech.common.bulk.field.processor.impl.RfnMeterBulkFieldProcessor">
-        <property name="rfnMeterDao" ref="rfnMeterDao" />
+        <property name="rfnDeviceDao" ref="rfnDeviceDao" />
         <property name="updateableFields">
             <set>
                 <ref bean="serialNumberBulkField" />

@@ -22,9 +22,7 @@ import javax.swing.event.CaretListener;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
-import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
@@ -38,6 +36,8 @@ import com.cannontech.common.model.PaoProperty;
 import com.cannontech.common.model.PaoPropertyName;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoPropertyDao;
@@ -2049,11 +2049,11 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	    }
     	    
     	    /* Check for duplicates */
-    	    RfnMeterDao rfnMeterDao = YukonSpringHook.getBean("rfnMeterDao", RfnMeterDao.class);
+    	    RfnDeviceDao rfnDeviceDao = YukonSpringHook.getBean("rfnDeviceDao", RfnDeviceDao.class);
     	    try {
-    	        RfnMeter possibleDuplicate = rfnMeterDao.getMeterForExactIdentifier(new RfnMeterIdentifier(serialNumber, manufacturer, model));
+    	        RfnDevice possibleDuplicate = rfnDeviceDao.getDeviceForExactIdentifier(new RfnIdentifier(serialNumber, manufacturer, model));
     	        if(possibleDuplicate.getPaoIdentifier().getPaoId() != deviceBase.getPAObjectID()) {
-    	            setErrorString("Serial Number, Manufacturer, and Model fields must be unique among RFN Meters.");
+    	            setErrorString("Serial Number, Manufacturer, and Model fields must be unique among RFN Devices.");
     	            return false;
     	        }
     	    } catch (NotFoundException e) { /* IGNORE */ };

@@ -1,79 +1,79 @@
-package com.cannontech.amr.rfn.service;
+package com.cannontech.common.rfn.service;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
-import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableBiMap.Builder;
 
-public class RfnMeterLookupService {
+public class RfnDeviceLookupService {
 
-    private static final Logger log = YukonLogManager.getLogger(RfnMeterLookupService.class);
-    private RfnMeterDao rfnMeterDao;
+    private static final Logger log = YukonLogManager.getLogger(RfnDeviceLookupService.class);
+    private RfnDeviceDao rfnDeviceDao;
     private ConfigurationSource configurationSource;
     private ImmutableBiMap<String, String> modelTranslations;
     
     /**
-     * Will attempt to retrieve a meter based on meter identifier, if not found will attempt to 
+     * Will attempt to retrieve a meter based on rfn identifier, if not found will attempt to 
      * retrieve it based on new versions of model names defined in master.cfg property "RFN_METER_MODEL_CONVERSION".
      * If still not found, will throw a NotFountException.
-     * @param meterIdentifier
-     * @return RfnMeter
+     * @param rfnIdentifier
+     * @return RfnDevice
      * @throws NotFoundException
      */
-    public RfnMeter getMeter(RfnMeterIdentifier meterIdentifier) throws NotFoundException {
+    public RfnDevice getDevice(RfnIdentifier rfnIdentifier) throws NotFoundException {
         NotFoundException originalNotFoundException;
         try {
-            RfnMeter result = rfnMeterDao.getMeterForExactIdentifier(meterIdentifier);
+            RfnDevice result = rfnDeviceDao.getDeviceForExactIdentifier(rfnIdentifier);
             return result;
         } catch (NotFoundException e) {
-            log.debug("exception getting meter 1", e);
+            log.debug("exception getting device 1", e);
             originalNotFoundException = e;
         }
 
-        // chances are the meter doesn't exist, but it may have a renamed model
+        // chances are the device doesn't exist, but it may have a renamed model
 
         // first check if we have the old name in the database
-        if (modelTranslations.containsValue(meterIdentifier.getSensorModel())) {
+        if (modelTranslations.containsValue(rfnIdentifier.getSensorModel())) {
             // the model name we're looking up is the "new" format, see if 
             // we have it in the database with the "old" format
-            String oldModelName = modelTranslations.inverse().get(meterIdentifier.getSensorModel());
-            RfnMeterIdentifier identifierWithOldModel = new RfnMeterIdentifier(meterIdentifier.getSensorSerialNumber(), meterIdentifier.getSensorManufacturer(), oldModelName);
+            String oldModelName = modelTranslations.inverse().get(rfnIdentifier.getSensorModel());
+            RfnIdentifier identifierWithOldModel = new RfnIdentifier(rfnIdentifier.getSensorSerialNumber(), rfnIdentifier.getSensorManufacturer(), oldModelName);
             try {
-                RfnMeter oldMeter = rfnMeterDao.getMeterForExactIdentifier(identifierWithOldModel);
+                RfnDevice oldDevice = rfnDeviceDao.getDeviceForExactIdentifier(identifierWithOldModel);
                 // if we find it, we need to update the database to represent the new model name
-                RfnMeter newMeter = new RfnMeter(oldMeter.getPaoIdentifier(), meterIdentifier);
-                rfnMeterDao.updateMeter(newMeter);
-                log.info("updating older " + oldMeter + " to " + newMeter + " when " + meterIdentifier + " was requested");
-                return newMeter;
+                RfnDevice newDevice = new RfnDevice(oldDevice.getPaoIdentifier(), rfnIdentifier);
+                rfnDeviceDao.updateDevice(newDevice);
+                log.info("updating older " + oldDevice + " to " + newDevice + " when " + rfnIdentifier + " was requested");
+                return newDevice;
             } catch (NotFoundException e) {
-                log.debug("exception getting meter 2", e);
+                log.debug("exception getting device 2", e);
                 // okay, keep looking
             }
         }
 
         // now check if we have the new name in the database
-        if (modelTranslations.containsKey(meterIdentifier.getSensorModel())) {
+        if (modelTranslations.containsKey(rfnIdentifier.getSensorModel())) {
             // the model name we're looking up is the "old" format, see if 
             // we have it in the database with the "new" format
 
             // the only time this would happen is if messages were received out of order,
             // such that we'd already updated the name into the new format but then
-            // received an older message that still referenced the meter with the old format
-            String newModelName = modelTranslations.get(meterIdentifier.getSensorModel());
-            RfnMeterIdentifier identifierWithNewModel = new RfnMeterIdentifier(meterIdentifier.getSensorSerialNumber(), meterIdentifier.getSensorManufacturer(), newModelName);
+            // received an older message that still referenced the device with the old format
+            String newModelName = modelTranslations.get(rfnIdentifier.getSensorModel());
+            RfnIdentifier identifierWithNewModel = new RfnIdentifier(rfnIdentifier.getSensorSerialNumber(), rfnIdentifier.getSensorManufacturer(), newModelName);
             try {
-                RfnMeter result = rfnMeterDao.getMeterForExactIdentifier(identifierWithNewModel);
+                RfnDevice result = rfnDeviceDao.getDeviceForExactIdentifier(identifierWithNewModel);
                 // if we find it, we'll use it, but we don't want to change the name back
-                log.info("returning newer " + result + " when " + meterIdentifier + " was requested");
+                log.info("returning newer " + result + " when " + rfnIdentifier + " was requested");
                 return result;
             } catch (NotFoundException e) {
                 log.debug("exception getting meter 3", e);
@@ -86,8 +86,8 @@ public class RfnMeterLookupService {
     }
     
     @Autowired
-    public void setRfnMeterDao(RfnMeterDao rfnMeterDao) {
-        this.rfnMeterDao = rfnMeterDao;
+    public void setRfnDeviceDao(RfnDeviceDao rfnDeviceDao) {
+        this.rfnDeviceDao = rfnDeviceDao;
     }
     
     @Autowired

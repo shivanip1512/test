@@ -9,11 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.amr.rfn.dao.RfnMeterDao;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.amr.rfn.model.RfnMeterIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -27,61 +28,92 @@ import com.cannontech.database.YukonRowMapper;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
-public class RfnMeterDaoImpl implements RfnMeterDao {
+public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
 
     @Override
-    public RfnMeter getMeterForExactIdentifier(RfnMeterIdentifier meterIdentifier) throws NotFoundException {
+    public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select ypo.PAObjectID, ypo.Type");
         sql.append("from YukonPaObject ypo");
         sql.append(  "join Device d on ypo.PAObjectID = d.DeviceId");
         sql.append(  "join RfnAddress rfn on d.DeviceId = rfn.DeviceId");
-        sql.append("where rfn.SerialNumber").eq(meterIdentifier.getSensorSerialNumber());
-        sql.append(  "and rfn.Manufacturer").eq(meterIdentifier.getSensorManufacturer());
-        sql.append(  "and rfn.Model").eq(meterIdentifier.getSensorModel());
+        sql.append("where rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
+        sql.append(  "and rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
+        sql.append(  "and rfn.Model").eq(rfnIdentifier.getSensorModel());
         
         try {
             PaoIdentifier pao = jdbcTemplate.queryForObject(sql, new YukonPaoRowMapper());
-            RfnMeter rfnMeter = new RfnMeter(pao, meterIdentifier);
-            return rfnMeter;
+            RfnDevice rfnDevice = new RfnDevice(pao, rfnIdentifier);
+            return rfnDevice;
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("no meter matches " + meterIdentifier);
+            throw new NotFoundException("no meter matches " + rfnIdentifier);
         }
     }
     
     @Override
-    public RfnMeter getForId(int paoId) throws NotFoundException {
-        return getMeter(paoDao.getYukonPao(paoId));
+    public RfnDevice getDeviceForId(int paoId) throws NotFoundException {
+        return getDevice(paoDao.getYukonPao(paoId));
     }
-
+    
     @Override
-    public RfnMeter getMeter(YukonPao pao) throws NotFoundException {
+    public RfnDevice getDevice(YukonPao pao) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
         sql.append("from RfnAddress rfn");
         sql.append("where rfn.DeviceId").eq(pao.getPaoIdentifier().getPaoId());
         
         try {
-            RfnMeterIdentifier rfnMeterIdentifier = jdbcTemplate.queryForObject(sql, new YukonRowMapper<RfnMeterIdentifier>() {
-                public RfnMeterIdentifier mapRow(YukonResultSet rs) throws SQLException {
-                    RfnMeterIdentifier result = new RfnMeterIdentifier(rs.getStringSafe("SerialNumber"), 
-                                                                       rs.getStringSafe("Manufacturer"), 
-                                                                       rs.getStringSafe("Model"));
+            RfnIdentifier rfnIdentifier = jdbcTemplate.queryForObject(sql, new YukonRowMapper<RfnIdentifier>() {
+                public RfnIdentifier mapRow(YukonResultSet rs) throws SQLException {
+                    RfnIdentifier result = new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
+                                                             rs.getStringSafe("Manufacturer"), 
+                                                             rs.getStringSafe("Model"));
                     return result;
                 }
             });
-            RfnMeter rfnMeter = new RfnMeter(pao, rfnMeterIdentifier);
+            RfnDevice rfnMeter = new RfnDevice(pao, rfnIdentifier);
             return rfnMeter;
         } catch (EmptyResultDataAccessException e) {
-            RfnMeter rfnMeter = new RfnMeter(pao, RfnMeterIdentifier.createBlank());
+            RfnDevice rfnDevice = new RfnDevice(pao, RfnIdentifier.createBlank());
+            return rfnDevice;
+        }
+    }
+    
+    @Override
+    public RfnMeter getMeterForId(int paoId) throws NotFoundException {
+        return getMeter(paoDao.getYukonPao(paoId));
+    }
+
+    @Override
+    public RfnMeter getMeter(final YukonPao pao) throws NotFoundException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select rfn.SerialNumber, rfn.Manufacturer, rfn.Model, dmg.MeterNumber");
+        sql.append("from RfnAddress rfn");
+        sql.append(  "join DeviceMeterGroup dmg on dmg.deviceId = rfn.DeviceId");
+        sql.append("where rfn.DeviceId").eq(pao.getPaoIdentifier().getPaoId());
+        
+        try {
+            RfnMeter rfnMeter = jdbcTemplate.queryForObject(sql, new YukonRowMapper<RfnMeter>() {
+                public RfnMeter mapRow(YukonResultSet rs) throws SQLException {
+                    RfnIdentifier rfnIdentifier = new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
+                                                                       rs.getStringSafe("Manufacturer"), 
+                                                                       rs.getStringSafe("Model"));
+                    RfnMeter rfnMeter = new RfnMeter(pao, rfnIdentifier);
+                    rfnMeter.setMeterNumber(rs.getStringSafe("MeterNumber"));
+                    return rfnMeter;
+                }
+            });
+            return rfnMeter;
+        } catch (EmptyResultDataAccessException e) {
+            RfnMeter rfnMeter = new RfnMeter(pao, RfnIdentifier.createBlank());
             return rfnMeter;
         }
     }
 
     @Override
-    public <T extends YukonPao> Map<T, RfnMeterIdentifier> getMeterIdentifiersByPao(Iterable<T> paos) {
+    public <T extends YukonPao> Map<T, RfnIdentifier> getRfnIdentifiersByPao(Iterable<T> paos) {
         ChunkingMappedSqlTemplate template =
                 new ChunkingMappedSqlTemplate(jdbcTemplate);
 
@@ -101,12 +133,12 @@ public class RfnMeterDaoImpl implements RfnMeterDao {
             }
         };
 
-        YukonRowMapper<Map.Entry<Integer, RfnMeterIdentifier>> rowMapper =
-                new YukonRowMapper<Entry<Integer, RfnMeterIdentifier>>() {
+        YukonRowMapper<Map.Entry<Integer, RfnIdentifier>> rowMapper =
+                new YukonRowMapper<Entry<Integer, RfnIdentifier>>() {
             @Override
-            public Entry<Integer, RfnMeterIdentifier> mapRow(YukonResultSet rs) throws SQLException {
-                RfnMeterIdentifier rfnMeterIdentifier =
-                        new RfnMeterIdentifier(rs.getStringSafe("SerialNumber"), 
+            public Entry<Integer, RfnIdentifier> mapRow(YukonResultSet rs) throws SQLException {
+                RfnIdentifier rfnMeterIdentifier =
+                        new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
                                                rs.getStringSafe("Manufacturer"), 
                                                rs.getStringSafe("Model"));
                 int deviceId = rs.getInt("DeviceId");
@@ -114,21 +146,21 @@ public class RfnMeterDaoImpl implements RfnMeterDao {
             }
         };
 
-        Map<T, RfnMeterIdentifier> retVal = template.mappedQuery(sqlGenerator, paos, rowMapper, typeMapper);
+        Map<T, RfnIdentifier> retVal = template.mappedQuery(sqlGenerator, paos, rowMapper, typeMapper);
         return retVal;
     }
 
     @Override
-    public void updateMeter(RfnMeter meter) {
-        if(meter.getMeterIdentifier().isBlank()) {
+    public void updateDevice(RfnDevice device) {
+        if(device.getRfnIdentifier().isBlank()) {
             /* When someone has blanked out the three fields of the rfn meter address, delete that row from RfnAddress. */
-            deleteRfnAddress(meter);
+            deleteRfnAddress(device);
             return;
         }
         /* If there is a row in RfnAddress for this meter, update it, otherwise insert it. */
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO RfnAddress");
-        sql.values(meter.getPaoIdentifier().getPaoId(), meter.getMeterIdentifier().getSensorSerialNumber(), meter.getMeterIdentifier().getSensorManufacturer(), meter.getMeterIdentifier().getSensorModel());
+        sql.values(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier().getSensorSerialNumber(), device.getRfnIdentifier().getSensorManufacturer(), device.getRfnIdentifier().getSensorModel());
 
         try{
             jdbcTemplate.update(sql);
@@ -137,10 +169,10 @@ public class RfnMeterDaoImpl implements RfnMeterDao {
             /* Row is there, try to update it. */
             SqlStatementBuilder updateSql = new SqlStatementBuilder();
             updateSql.append("update RfnAddress");
-            updateSql.append("set SerialNumber").eq(meter.getMeterIdentifier().getSensorSerialNumber());
-            updateSql.append(  ", Manufacturer").eq(meter.getMeterIdentifier().getSensorManufacturer());
-            updateSql.append(  ", Model").eq(meter.getMeterIdentifier().getSensorModel());
-            updateSql.append("where DeviceId").eq(meter.getPaoIdentifier().getPaoId());
+            updateSql.append("set SerialNumber").eq(device.getRfnIdentifier().getSensorSerialNumber());
+            updateSql.append(  ", Manufacturer").eq(device.getRfnIdentifier().getSensorManufacturer());
+            updateSql.append(  ", Model").eq(device.getRfnIdentifier().getSensorModel());
+            updateSql.append("where DeviceId").eq(device.getPaoIdentifier().getPaoId());
             int rowsAffected = jdbcTemplate.update(updateSql);
             
             if(rowsAffected == 0) {
@@ -151,15 +183,16 @@ public class RfnMeterDaoImpl implements RfnMeterDao {
 
     }
     
-    private void deleteRfnAddress(RfnMeter meter) {
+    private void deleteRfnAddress(RfnDevice device) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM RfnAddress");
-        sql.append("where DeviceId").eq(meter.getPaoIdentifier().getPaoId());
+        sql.append("where DeviceId").eq(device.getPaoIdentifier().getPaoId());
         
         jdbcTemplate.update(sql);
     }
     
-    public String getFormattedDeviceName(RfnMeter device) throws IllegalArgumentException{
+    public String getFormattedDeviceName(RfnDevice device) throws IllegalArgumentException{
         return device.getName();
     }
+    
 }
