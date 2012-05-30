@@ -444,46 +444,31 @@ string CtiTime::asString(timeFormat type)  const
         (L"Hawaiian Standard Time", "HST") 
         (L"Pacific Standard Time" , "PST")
         (L"Pacific Daylight Time" , "PDT")
-        (L"US Mountain Standard Time", "MST")
-        (L"US Mountain Daylight Time", "MDT")
+        (L"US Mountain Standard Time", "MST-AZ")
         (L"Mountain Standard Time", "MST")
         (L"Mountain Daylight Time", "MDT")
-        (L"Mountain Standard Time (Mexico)", "MST")
-        (L"Mountain Daylight Time (Mexico)", "MDT")
+        (L"Mountain Standard Time (Mexico)", "MST-MEX")
+        (L"Mountain Daylight Time (Mexico)", "MDT-MEX")
         (L"Central Standard Time" , "CST")
         (L"Central Daylight Time" , "CDT")
-        (L"Central Standard Time (Mexico)" , "CST")
-        (L"Central Daylight Time (Mexico)" , "CDT")
-        (L"Central America Standard Time" , "CST")
-        (L"Central America Daylight Time" , "CDT")
-        (L"Canada Central Standard Time" , "CST")
-        (L"Canada Central Daylight Time" , "CDT")
+        (L"Central Standard Time (Mexico)" , "CST-MEX")
+        (L"Central Daylight Time (Mexico)" , "CDT-MEX")
+        (L"Canada Central Standard Time" , "CST-CAN")
+        (L"Canada Central Daylight Time" , "CDT-CAN")
         (L"Eastern Standard Time" , "EST")
         (L"Eastern Daylight Time" , "EDT")
-        (L"US Eastern Standard Time" , "EST")
-        (L"US Eastern Daylight Time" , "EDT")
-        (L"Atlantic Standard Time" , "AST")
-        (L"Atlantic Daylight Time" , "ADT")
-        (L"Newfoundland Standard Time" , "NT")
-        (L"Newfoundland Daylight Time" , "NDT")
-        (L"E. South America Standard Time" , "BRT")
-        (L"E. South America Daylight Time" , "BRST")
+        (L"US Eastern Standard Time" , "EST-IN")
+        (L"US Eastern Daylight Time" , "EDT-IN")
+        (L"Atlantic Standard Time" , "AST-CAN")
+        (L"Atlantic Daylight Time" , "ADT-CAN")
+        (L"Newfoundland Standard Time" , "NT-CAN")
+        (L"Newfoundland Daylight Time" , "NDT-CAN")
+        (L"E. South America Standard Time" , "BRT-BRA")
+        (L"E. South America Daylight Time" , "BRST-BRA")
+        (L"Argentina Standard Time" , "ART-ARG")
         (L"GMT Standard Time" , "GMT")
         (L"Coordinated Universal Time" , "GMT")
-        (L"Greenwich Standard Time" , "GMT")
-        (L"Argentina Standard Time" , "ART")
-        (L"W. Europe Standard Time" , "WET")
-        (L"W. Europe Daylight Time" , "WEST")
-        (L"Central Europe Standard Time" , "CET")
-        (L"Central Europe Daylight Time" , "CEST")
-        (L"Central European Standard Time" , "CET")
-        (L"Central European Daylight Time" , "CEST")
-        (L"Romance Standard Time" , "CET")
-        (L"Romance Daylight Time" , "CEST")
-        (L"Romance Standard Time" , "CET")
-        (L"Romance Daylight Time" , "CEST")
-        (L"Russian Standard Time" , "MSK")
-        (L"Russian Daylight Time" , "MSD")
+        (L"Greenwich Standard Time" , "GMT-UK")
         ;
 
         std::map<std::wstring, std::string>::const_iterator found = timeZoneAbbrevMap.find(wideTimeZoneName);
@@ -493,21 +478,12 @@ string CtiTime::asString(timeFormat type)  const
         }    
 
         int biasHours = bias / MINUTES_PER_HOUR;
-        int biasMinutes = bias % MINUTES_PER_HOUR;
-
-        if (bias <0 && biasMinutes !=0)
-        {
-            //Negative biases that are not an integer number of hours need to be adjusted
-            biasHours -= 1;
-            biasMinutes = MINUTES_PER_HOUR + biasMinutes;
-        }
+        int biasMinutes = abs(bias) % MINUTES_PER_HOUR;
 
         //puts the bias into +H:MM
         ostringstream convert;
         convert << showpos << biasHours << ":" << noshowpos 
-            << setw(2) 
-        << setfill('0') 
-        << biasMinutes;
+            << setw(2) << setfill('0') << biasMinutes;
         biasTime = convert.str();
 
         timeString = timeString + "(UTC" + biasTime + " " + timeZoneName + ")";
