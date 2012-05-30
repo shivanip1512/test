@@ -178,7 +178,7 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
 				if(rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT, user)){
 				    return OptOutEnabled.ENABLED;
 				}else{
-				    return OptOutEnabled.DISABLED_WITH_COMM;
+				    return OptOutEnabled.DISABLED_BY_ROLE_PROP;
 				}
 				
 			}

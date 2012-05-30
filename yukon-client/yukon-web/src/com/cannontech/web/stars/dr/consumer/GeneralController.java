@@ -24,6 +24,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
+import com.cannontech.stars.dr.optout.model.OptOutEnabled;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.user.YukonUserContext;
@@ -51,15 +52,19 @@ public class GeneralController extends AbstractConsumerController {
         
         boolean isNotEnrolled = displayablePrograms.size() == 0;
         map.addAttribute("isNotEnrolled", isNotEnrolled);
+        
+        OptOutEnabled optOutEnabled = optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser());
 
-        if(!optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isOptOutEnabled() ||
-                !optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isCommunicationEnabled()){
-            if(!optOutStatusService.getOptOutEnabled(yukonUserContext.getYukonUser()).isCommunicationEnabled()){
-                map.addAttribute("optOutDisabledKey", "optOutsAndCommuncationDisabledWarning");
-            }else{
-                map.addAttribute("optOutDisabledKey", "optOutsDisabledWarning");
-            }
+        if(optOutEnabled != OptOutEnabled.DISABLED_BY_ROLE_PROP){
+	        if(!optOutEnabled.isOptOutEnabled() || !optOutEnabled.isCommunicationEnabled()){
+	            if(!optOutEnabled.isCommunicationEnabled()){
+	                map.addAttribute("optOutDisabledKey", "optOutsAndCommuncationDisabledWarning");
+	            }else{
+	                map.addAttribute("optOutDisabledKey", "optOutsDisabledWarning");
+	            }
+	        }
         }
+        
         if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
         
         int accountId = customerAccount.getAccountId();

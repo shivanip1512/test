@@ -8,7 +8,9 @@ public enum OptOutEnabled implements DisplayableEnum {
     //in order of restriction - refer to com.cannontech.stars.dr.optout.service.impl.OptOutStatusServiceImpl.getOptOutEnabled(LiteYukonUser)
 	ENABLED (true, true), 
 	DISABLED_WITH_COMM (false, true),
-	DISABLED_WITHOUT_COMM (false, false);
+	DISABLED_WITHOUT_COMM (false, false),
+	DISABLED_BY_ROLE_PROP (false, true);
+	
 	
 	private boolean optOutEnabled;
 	private boolean communicationEnabled;
