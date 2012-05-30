@@ -2555,8 +2555,8 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                     {
                         if (altSub->getDisableFlag())
                         {
+                            currentSubstationBus->setReEnableBusFlag(!currentSubstationBus->getDisableFlag());
                             currentSubstationBus->setDisableFlag(true);
-                            currentSubstationBus->setReEnableBusFlag(true);
                             text += " Disabled by Alt Sub";
                         }
                         else if (altSub->getSwitchOverStatus())
