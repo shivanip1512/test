@@ -1310,13 +1310,15 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
 
                                 if( om && im )
                                 {
-                                    CtiDeviceSPtr temDevice;
-                                    if( !status && (temDevice = DeviceManager.getDeviceByID(InMessage ->TargetID))  )
+                                    if( !status )
                                     {
-                                        if( DlcBaseDevice::dlcAddressMismatch(im->Buffer.DSt, *(DeviceManager.getDeviceByID(im->TargetID)) ))
+                                        if( const CtiDeviceSPtr temDevice = DeviceManager.getDeviceByID(im ->TargetID) )
                                         {
-                                            status = WRONGADDRESS;
-                                            im->EventCode = WRONGADDRESS;
+                                            if( DlcBaseDevice::dlcAddressMismatch(im->Buffer.DSt, *temDevice) )
+                                            {
+                                                status = WRONGADDRESS;
+                                                im->EventCode = WRONGADDRESS;
+                                            }
                                         }
                                     }
 
@@ -2903,13 +2905,15 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 if( (OutMessage->EventCode & BWORD) &&
                     (OutMessage->Buffer.BSt.IO & EmetconProtocol::IO_Read ) )
                 {
-                    CtiDeviceSPtr temDevice;
-                    if( !CommResult && !status && (temDevice = DeviceManager.getDeviceByID(InMessage ->TargetID))  )
+                    if( !CommResult && !status )
                     {
-                        if( DlcBaseDevice::dlcAddressMismatch(InMessage->Buffer.DSt, *(DeviceManager.getDeviceByID(InMessage->TargetID)) ))
+                        if( const CtiDeviceSPtr temDevice = DeviceManager.getDeviceByID(InMessage ->TargetID) )
                         {
-                            status = CommResult = WRONGADDRESS;
-                            InMessage->EventCode = WRONGADDRESS;
+                            if( DlcBaseDevice::dlcAddressMismatch(InMessage->Buffer.DSt, *temDevice ))
+                            {
+                                status = CommResult = WRONGADDRESS;
+                                InMessage->EventCode = WRONGADDRESS;
+                            }
                         }
                     }
 
@@ -3067,13 +3071,15 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         }
                     }
 
-                    CtiDeviceSPtr temDevice;
-                    if( !CommResult && !status && (temDevice = DeviceManager.getDeviceByID(InMessage ->TargetID) )  )
+                    if( !CommResult && !status )
                     {
-                        if( DlcBaseDevice::dlcAddressMismatch(InMessage->Buffer.DSt, *(DeviceManager.getDeviceByID(InMessage->TargetID)) ))
+                        if( const CtiDeviceSPtr temDevice = DeviceManager.getDeviceByID(InMessage ->TargetID) )
                         {
-                            status = CommResult = WRONGADDRESS;
-                            InMessage->EventCode = WRONGADDRESS;
+                            if( DlcBaseDevice::dlcAddressMismatch(InMessage->Buffer.DSt, *(DeviceManager.getDeviceByID(InMessage->TargetID)) ))
+                            {
+                                status = CommResult = WRONGADDRESS;
+                                InMessage->EventCode = WRONGADDRESS;
+                            }
                         }
                     }
                 }
