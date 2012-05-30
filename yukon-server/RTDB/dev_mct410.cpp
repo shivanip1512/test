@@ -1778,38 +1778,13 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         }
     }
     else if( parse.isKeyValid("lp_command") )
-    {
-        const CtiDate today = CtiDate();
-         
-        CtiDate date_begin = parseDateValue(parse.getsValue("lp_date_start"));
-
-        if( parse.getsValue("lp_peaktype") == "interval")
-        {
-            /* 
-             *In an interval, the end date is specified in the "lp_date_start" position
-             *so we must back up to the begining of the range
-             */
-            const int range = parse.getiValue("lp_range");
-            date_begin -= range;
-        }
-        
-        
-    
+    {   
         // Disable load profile peak report for channel 4. (see YUK-4569)
         if ( parse.getsValue("lp_command") == "peak" && parse.getiValue("lp_channel") == 4 )
         {
             nRet = BADPARAM;
             returnErrorMessage(BADPARAM, OutMessage, retList, "Channel 4 Load Profile Peak Report is Unavailable.");
         }
-
-        
-        
-        else if( date_begin > today )  //  must begin on or before today
-        {
-            nRet  = BADPARAM;//
-            returnErrorMessage(BADPARAM, OutMessage, retList, "Invalid date for value request; must be before today (" + date_begin.asStringUSFormat() + ")");
-        }
-
         else
         {
             nRet = Inherited::executeGetValue(pReq, parse, OutMessage, vgList, retList, outList);

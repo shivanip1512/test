@@ -13,6 +13,7 @@
 #include "config_data_mct.h"
 
 #include "ctidate.h"
+#include "date_Utility.h"
 
 using Cti::Protocols::EmetconProtocol;
 using std::string;
@@ -832,7 +833,26 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                         }
                         else
                         {
-                            if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) ||
+                            
+                            const CtiDate today = CtiDate();
+                            const CtiDate date_begin = parseDateValue(parse.getsValue("lp_date_start"));
+                            if( date_begin > today )  //  must begin on or before today
+                            {
+                                CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+
+                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                                ReturnMsg->setResultString(getName() + " / Invalid date for value request: cannot be after today (" + date_begin.asStringUSFormat() + ")" );
+                                retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, ReturnMsg, vgList, retList );
+
+                                delete OutMessage;
+                                OutMessage = 0;
+                                found = false;
+                                nRet  = ExecutionComplete;
+
+                                InterlockedExchange(&_llpPeakInterest.in_progress, false);
+                            }                     
+
+                            else if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) ||
                                 ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
                             {
                                 //  we need to read the SSPEC out of the meter
