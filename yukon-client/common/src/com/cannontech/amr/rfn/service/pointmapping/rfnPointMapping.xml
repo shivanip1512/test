@@ -461,7 +461,7 @@
         </point>
     </pointGroup>
     
-    <pointGroup><!-- NET KWH MAPPINGS -->
+    <pointGroup><!-- NET KWH MAPPING -->
         <paoType value="RFN410FL"/>
         <paoType value="RFN410FX"/>
         <paoType value="RFN410FD"/>
@@ -482,6 +482,14 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
+    </pointGroup>
+    <pointGroup><!-- NET KWH TOU MAPPINGS -->
+        <paoType value="RFN410FX"/>
+        <paoType value="RFN410FD"/>
+        <paoType value="RFN420FX"/>
+        <paoType value="RFN420FD"/>
+        <paoType value="RFN430KV"/>
+        <paoType value="RFN430A3"/>
         <point name="Net kWh (Rate A kWh)">
             <uom>Wh</uom>
             <multiplier value=".001"/>

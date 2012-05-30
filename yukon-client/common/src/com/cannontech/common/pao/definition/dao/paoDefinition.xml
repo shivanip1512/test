@@ -5846,6 +5846,10 @@
                 <unitofmeasure value="kWH"/>
                 <decimalplaces value="3"/>
             </point>
+        </points>
+    </pao>
+    <pao id="RFN_NET_TOU_METERING" abstract="true">
+        <points>
             <point type="Analog" offset="33">
                 <name>Net kWh (Rate A kWh)</name>
                 <multiplier value="1.0"/>
@@ -6172,7 +6176,7 @@
         <displayName>RFN-410fL</displayName>
     </pao>
     
-    <pao id="RFN410FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING">
+    <pao id="RFN410FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING, RFN_NET_TOU_METERING">
         <displayName>RFN-410fX</displayName>
     </pao>
     
@@ -6183,7 +6187,7 @@
     <pao id="RFN420FL" inherits="RFN_ELECTRIC_BASE, RFN_TWO_POINT_VOLTAGE, RFN_NET_METERING">
         <displayName>RFN-420fL</displayName>
     </pao>
-    <pao id="RFN420FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING, SUPPORTS_RFN_DEMAND_RESET_TAG">
+    <pao id="RFN420FX" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING, RFN_NET_TOU_METERING, SUPPORTS_RFN_DEMAND_RESET_TAG">
         <displayName>RFN-420fX</displayName>
     </pao>
     <pao id="RFN420FD" inherits="RFN420FX, RFN_DISCONNECT">
@@ -6199,12 +6203,12 @@
     </pao>
 	
     <!-- ELSTER RFN METERS -->
-    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES, RFN_TOU, RFN_NET_METERING, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_ELSTER_A3_ONLY">
+    <pao id="RFN430A3" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_COINCIDENT_VALUES, RFN_TOU, RFN_NET_METERING, RFN_NET_TOU_METERING, SUPPORTS_RFN_DEMAND_RESET_TAG, RFN_ELSTER_A3_ONLY">
         <displayName>RFN-430A3</displayName>
     </pao>
     
     <!-- GE RFN METERS -->
-    <pao id="RFN430KV" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING">
+    <pao id="RFN430KV" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING, RFN_NET_TOU_METERING">
         <displayName>RFN-430KV</displayName>
     </pao>
 
