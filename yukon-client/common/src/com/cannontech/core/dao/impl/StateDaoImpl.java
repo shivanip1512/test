@@ -30,7 +30,7 @@ public final class StateDaoImpl implements StateDao {
         }
 
         //this is a internal error
-        CTILogger.error("Unable to find the state for StateGroupID=" + stateGroupID +
+        CTILogger.debug("Unable to find the state for StateGroupID=" + stateGroupID +
                         " and rawState=" + rawState );
 
         return null;
