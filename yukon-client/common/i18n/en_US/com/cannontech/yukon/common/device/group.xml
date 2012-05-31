@@ -5,5 +5,6 @@
     <entry key="yukon.common.device.group.header">Group Commander</entry>
     <entry key="yukon.common.device.group.noteLabel"></entry>
     <entry key="yukon.common.device.group.noteText"></entry>
+    <entry key="yukon.common.device.group.addMultipleDevices">Add Multiple Devices</entry> 
 
 </properties>

@@ -71,6 +71,11 @@
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileBulk">Bulk Importer file</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileDeviceId">Device ID (one per line)</entry>
 
+    <entry key="yukon.common.device.bulk.deviceSelection.errNoEnd">No end of range</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.errNoStart">No start of range </entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.errLessThanZero">Negative Start value</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.errOutOfRange">Invalid Range: Start must be lower than End</entry>
+
     <!-- COLLECTION ACTIONS collectionActions.jsp -->
     <entry key="yukon.common.device.bulk.collectionActions.pageTitle">Collection Actions</entry>
     <entry key="yukon.common.device.bulk.collectionActions.header">Select An Action To Perform On Selected Devices:</entry>

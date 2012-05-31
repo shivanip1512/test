@@ -30,7 +30,8 @@
 
 	<div style="width: 700px">
 		
-		<tags:boxContainer title="Add Multiple Devices" hideEnabled="false">
+        <cti:msg key="yukon.common.device.group.addMultipleDevices" var="title"/>
+		<tags:boxContainer title="${title}" hideEnabled="false">
 
             <tags:deviceSelection action="/spring/group/editor/addDevicesByCollection" 
                 groupDataJson="${groupDataJson}"

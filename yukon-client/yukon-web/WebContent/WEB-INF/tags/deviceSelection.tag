@@ -11,6 +11,33 @@
 
 <c:set var="tree_id" value="bulkDeviceSelectionByGroupTree" />
 <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
+<c:set var="byAddrPopupId" value="byAddrPopup" />
+
+<script>
+    jQuery(document).ready(function(){
+        jQuery("#addByAddressForm button").click(function(e){
+            jQuery(e.currentTarget).attr("disabled","disabled");
+                
+            var errors = validateAddressRange();
+            if(errors.length === 0){
+                //submit the form
+                jQuery(e.currentTarget).closest("form")[0].submit();
+                 return true;
+            } else {
+                //show the error
+                jQuery(errors.join(",")).show().addClass("error");
+                jQuery(e.currentTarget).removeAttr("disabled");
+                return false;
+            }
+                
+            });
+        
+        
+        jQuery("#addByAddressForm input:text").keyup(function(e){
+            jQuery(e.currentTarget).val(jQuery(e.currentTarget).val().replace(/\D/g, ''));
+        });
+    });
+</script>
 
     <script type="text/javascript">
     
@@ -65,7 +92,8 @@
         }
         
         function toggleByAddrPopup(id) {
-            $(id + '_startRange').value = '';;
+            clearErrors();
+            $(id + '_startRange').value = '';
             $(id + '_endRange').value = '';
             togglePopup(id);
             if ($(id).visible()) { 
@@ -86,6 +114,41 @@
             $(id).toggle();
         }
         
+        function clearErrors(){
+            jQuery(".undefinedStartAddress").removeClass("error");
+            jQuery(".undefinedEndAddress").removeClass("error");
+            jQuery(".lessThanZero").removeClass("error");
+            jQuery(".outOfRange").removeClass("error");
+            jQuery(".rangeMsg").hide();
+            
+            
+        }
+        
+        function validateAddressRange(){
+            clearErrors();
+            var start = parseInt(jQuery("#${byAddrPopupId}_startRange").val());
+            var end = parseInt(jQuery("#${byAddrPopupId}_endRange").val());
+            var errors = [];
+            
+            //separate errors
+            if(isNaN(start)){
+                errors.push(".undefinedStartAddress");
+            }
+            
+            if(isNaN(end)){
+                errors.push(".undefinedEndAddress");
+            }
+            
+            if(start < 0){
+                errors.push(".lessThanZero");
+            }
+            
+            if(start > end){
+                errors.push(".outOfRange");
+            }
+            
+            return errors;
+        };
     </script>
     
 	<cti:msg key="yukon.common.device.bulk.deviceSelection.cancel" var="cancel" />
@@ -170,7 +233,6 @@
     <tr>
         <td>
 
-            <c:set var="byAddrPopupId" value="byAddrPopup" />
             <cti:msg var="selectAddressPopupTitle" key="yukon.common.device.bulk.deviceSelection.selectAddressPopupTitle" />
             <cti:msg var="selectAddressLabel" key="yukon.common.device.bulk.deviceSelection.selectDevicesByAddress" />
 
@@ -180,20 +242,35 @@
                 
                 <form id="addByAddressForm" method="get" action="${action}">
                 
+                    <ul style="color: red">
+                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errLessThanZero" var="lessThanZero"/>
+                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errOutOfRange" var="outOfRange"/>
+                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errNoStart" var="noStart"/>
+                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errNoEnd" var="noEnd"/>
+                        
+                        <li class="dn rangeMsg lessThanZero">${lessThanZero}</li>
+                        
+                        <li class="dn rangeMsg outOfRange">${outOfRange}</li>
+                        
+                        <li class="dn rangeMsg undefinedStartAddress">${noStart}</li>
+                        
+                        <li class="dn rangeMsg undefinedEndAddress">${noEnd}</li>
+                    </ul>
+                    
                     <input type="hidden" name="collectionType" value="addressRange" />
                     
                     <tags:nameValueContainer>
                         <tags:nameValue name="Start of Range">
-                            <input type="text" id="${byAddrPopupId}_startRange" name="addressRange.start" />
+                            <input type="text" id="${byAddrPopupId}_startRange" name="addressRange.start" class="undefinedStartAddress lessThanZero" />
                         </tags:nameValue>
                         <tags:nameValue name="End of Range">
-                            <input type="text" id="${byAddrPopupId}_endRange" name="addressRange.end" />
+                            <input type="text" id="${byAddrPopupId}_endRange" name="addressRange.end" class="undefinedEndAddress outOfRange" />
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     
                     <br>
                     <cti:msg var="selectDevicesPopupButtonText" key="yukon.common.device.bulk.deviceSelection.selectDevicesPopupButtonText" />
-                    <tags:slowInput myFormId="addByAddressForm" labelBusy="${selectDevicesPopupButtonText}" label="${selectDevicesPopupButtonText}" />
+                    <button class="f_blocker">${selectDevicesPopupButtonText}</button>
                     <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
                 
                 </form>
