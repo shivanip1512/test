@@ -3075,7 +3075,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     {
                         if( const CtiDeviceSPtr temDevice = DeviceManager.getDeviceByID(InMessage ->TargetID) )
                         {
-                            if( DlcBaseDevice::dlcAddressMismatch(InMessage->Buffer.DSt, *(DeviceManager.getDeviceByID(InMessage->TargetID)) ))
+                            if( DlcBaseDevice::dlcAddressMismatch(InMessage->Buffer.DSt, *temDevice) )
                             {
                                 status = CommResult = WRONGADDRESS;
                                 InMessage->EventCode = WRONGADDRESS;
