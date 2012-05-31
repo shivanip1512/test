@@ -54,6 +54,7 @@ public enum DbChangeCategory {
     YUKON_SELECTION_LIST("YukonSelectionList"), 
     YUKON_LIST_ENTRY("YukonListEntry"),
     PORTER_RESPONSE_MONITOR, 
+    CC_MONITOR_BANK_LIST, 
     ;
     
     private final String representation;
