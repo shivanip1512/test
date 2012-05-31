@@ -310,11 +310,12 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getPointIdSql.append("WHERE PaObjectId").eq(regulatorId);
         getPointIdSql.append("AND Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
         
-        List<Integer> pointIdHolder = yukonJdbcTemplate.query(getPointIdSql, new IntegerRowMapper(true));
-        if(pointIdHolder.size() == 0) {
+        int pointId;
+        try {
+            pointId = yukonJdbcTemplate.queryForInt(getPointIdSql);
+        } catch(EmptyResultDataAccessException e) {
             return 0; //no rows affected
         }
-        Integer pointId = pointIdHolder.get(0);
         
         LimitsHolder limits = getLimitsFromStrategyBySubbusId(substationBusId);
         
@@ -426,11 +427,12 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         getZoneInfoSql.append("WHERE RegulatorId").eq(regulatorId);
         getZoneInfoSql.append("AND Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
         
-        List<ZonePointPhaseHolder> zpphList = yukonJdbcTemplate.query(getZoneInfoSql, regulatorPointRowMapper);
-        if(zpphList.size() == 0) {
+        try {
+            return yukonJdbcTemplate.queryForObject(getZoneInfoSql, regulatorPointRowMapper);
+        } catch(EmptyResultDataAccessException e) {
+            //regulator does not have a Voltage Y point assigned.
             return null;
         }
-        return zpphList.get(0);
     }
     
     private LimitsHolder getLimitsFromStrategyByZoneId(int zoneId) {
