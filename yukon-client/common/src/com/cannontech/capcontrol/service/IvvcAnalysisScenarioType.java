@@ -45,6 +45,7 @@ public enum IvvcAnalysisScenarioType {
         builder.put(13, EXECUTED_CAPBANK_OP_CLOSE);
         builder.put(14, EXECUTED_CAPBANK_OP_OPEN);
         builder.put(15, EXECUTED_CAPBANK_OP_ABANDONED_EXCEEDED_MAX_KVAR);
+        //Intentionally skipped 16 to follow the placeholder in the .cpp file
         builder.put(17, ABORTED_REGULATOR_IN_AUTOMODE);
         builder.put(18, STATUS_SUBBUS_DISABLED);
         builder.put(19, STATUS_SUBBUS_ENABLED);
