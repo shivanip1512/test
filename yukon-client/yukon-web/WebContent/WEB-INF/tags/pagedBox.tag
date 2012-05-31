@@ -19,47 +19,48 @@
 <div class="pagedBox<c:if test="${!empty pageScope.styleClass}"> ${pageScope.styleClass}</c:if>"<c:if test="${!empty pageScope.id}"> id="${pageScope.id}"</c:if>>
 
     <div class="title">
-        <table class="boxTable">
-            <tr style="vertical-align: middle;">
-                <td class="titleArea">${pageScope.title}</td>
-                <td class="filterArea">
-                    <c:if test="${!empty pageScope.titleLinkHtml}">
-                        ${pageScope.titleLinkHtml}
-                    </c:if>
-                    <c:if test="${!empty pageScope.filterDialog}">
-                        <cti:button nameKey="filter" styleClass="navlink" onclick="showSimplePopup('${pageScope.filterDialog}', '${pageScope.defaultFilterInput}');" renderMode="labeledImage"/>
-                        <c:if test="${pageScope.isFiltered}">
-                            &nbsp;&nbsp;<a href="${pageScope.showAllUrl}">
-                            <cti:msg key="yukon.common.paging.showAll"/>
-                        </a>
-                        </c:if>
-                    </c:if>
-                </td>
-
-                <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
-            </tr>
-        </table>
+        <span class="titleArea">${pageScope.title}</span>
+        <span class="filterArea">
+            <c:if test="${!empty pageScope.filterDialog}">
+                <cti:button nameKey="filter" styleClass="navlink" 
+                    onclick="showSimplePopup('${pageScope.filterDialog}', '${pageScope.defaultFilterInput}');"
+                    renderMode="labeledImage"/>
+                <c:if test="${pageScope.isFiltered}">
+                    &nbsp;&nbsp;<a href="${pageScope.showAllUrl}">
+                        <cti:msg key="yukon.common.paging.showAll"/>
+                    </a>
+                </c:if>
+            </c:if>
+        </span>
+        <span class="contextMenu">
+			<c:if test="${!empty pageScope.titleLinkHtml}">
+                ${pageScope.titleLinkHtml}
+			</c:if>
+        </span>
     </div>
-
     <div class="content">
         <jsp:doBody/>
     </div>
 
+    <c:if test="${pageScope.searchResult.hitCount > 10}">
     <div class="footer">
-        <table class="boxTable">
-            <tr>
-                <td class="perPageArea">
-                    <cti:msg key="yukon.common.paging.itemsPerPage"/>&nbsp;&nbsp;
-                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="10" baseUrl="${pageScope.baseUrl}"/>&nbsp;
-                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="25" baseUrl="${pageScope.baseUrl}"/>&nbsp;
-                    <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="50" baseUrl="${pageScope.baseUrl}"/>&nbsp;
-                    <c:if test="${pageScope.pageByHundereds}">
-                        <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="100" baseUrl="${pageScope.baseUrl}"/>
-                    </c:if>
-                </td>
-                <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
-            </tr>
-        </table>
+	    <span class="pagingArea fr">
+            <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
+	    </span>
+	    <span class="perPageArea fr">
+	        <cti:msg key="yukon.common.paging.itemsPerPage"/>&nbsp;&nbsp;
+	        <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="10" baseUrl="${pageScope.baseUrl}"/>&nbsp;
+	        <c:if test="${pageScope.searchResult.hitCount > 10}">
+	            <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="25" baseUrl="${pageScope.baseUrl}"/>&nbsp;
+	        </c:if>
+	        <c:if test="${pageScope.searchResult.hitCount > 25}">
+	            <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="50" baseUrl="${pageScope.baseUrl}"/>&nbsp;
+	        </c:if>
+	        <c:if test="${pageScope.pageByHundereds && pageScope.searchResult.hitCount > 50}">
+	            <tags:itemsPerPageLink searchResult="${pageScope.searchResult}" itemsPerPage="100" baseUrl="${pageScope.baseUrl}"/>
+	        </c:if>
+	    </span>
     </div>
+    </c:if>
 
 </div>

@@ -432,6 +432,14 @@
 		                </page>
                 	</pages>
 		        </page>
+		        <page name="waterLeakReport.report" type="BASIC">
+		            <menu>meters</menu>
+					<pages>
+                        <page name="waterLeakReport.report.intervalData" type="DETAIL">
+                            <menu>meters</menu>
+                        </page>
+                	</pages>
+		        </page>
             </pages>
         </page>
         <page name="archivedValueExporter.VIEW" type="BASIC">

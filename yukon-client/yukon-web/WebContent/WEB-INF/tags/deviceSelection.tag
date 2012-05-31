@@ -45,7 +45,7 @@
             var ids = [];
             
             // Get the id out of each of the selected devices
-            for(i=0;i<devices.length;i++){
+            for(var i=0;i<devices.length;i++){
                 ids[i] = devices[i].paoId;
             }
             

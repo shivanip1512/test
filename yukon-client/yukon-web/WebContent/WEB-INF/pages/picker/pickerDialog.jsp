@@ -22,8 +22,10 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
                         <i:inline key=".showAll"/>
                     </a>
                 </td>
-                <tags:nextPrevLinks previousUrl="javascript:${id}.previous()"
-                    nextUrl="javascript:${id}.next()" mode="javascript"/>
+                <td class="pagingArea">
+	                <tags:nextPrevLinks previousUrl="javascript:${id}.previous()"
+	                    nextUrl="javascript:${id}.next()" mode="javascript"/>
+                </td>
             </tr>
         </table>
     </div>

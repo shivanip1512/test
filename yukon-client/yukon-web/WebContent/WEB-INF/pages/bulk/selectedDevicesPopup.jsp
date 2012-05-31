@@ -1,5 +1,7 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:if test="${not empty resultsLimitedTo}">
     <div class="errorRed" style="width:95%;text-align:right;">
@@ -8,6 +10,13 @@
     <br>
 </c:if>
 
+<c:choose>
+	<c:when test="${fn:length(deviceInfoList) == 0}">
+	    <div class="errorRed">
+	        <i:inline key="yukon.common.device.bulk.selectedDevicesEmpty"/>
+	    </div>
+	</c:when>
+<c:otherwise>
 <table class="compactResultsTable">
     
     <c:forEach var="deviceInfoMap" items="${deviceInfoList}" varStatus="status">
@@ -32,3 +41,5 @@
         
     </c:forEach>
 </table>
+</c:otherwise>
+</c:choose>

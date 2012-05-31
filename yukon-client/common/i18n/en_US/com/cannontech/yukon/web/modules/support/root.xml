@@ -161,6 +161,8 @@
     <entry key="yukon.web.modules.support.uiDemos.inlineDialog4.title">In-line Test, options</entry>
     <entry key="yukon.web.modules.support.uiDemos.inline4.label">In-line 4, options</entry>
     <entry key="yukon.web.modules.support.uiDemos.inlineDialog5.title">In-line Test, options (custom buttons)</entry>
+    <entry key="yukon.web.modules.support.uiDemos.inlineDialog5.button1">Button 1</entry>
+    <entry key="yukon.web.modules.support.uiDemos.inlineDialog5.button2">Button 2</entry>
     <entry key="yukon.web.modules.support.uiDemos.inline5.label">In-line 5, options (custom buttons)</entry>
 
     <entry key="yukon.web.modules.support.setupDatabase.pageName">Setup Development Database</entry>

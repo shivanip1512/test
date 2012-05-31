@@ -49,9 +49,18 @@ jQuery(document).ready(function() {
     set to "{'modal' : false}" to turn of modality.<p>
 </dialog:inline>
 
+<cti:msg2 var="button1" key=".inlineDialog5.button1"/>
+<cti:msg2 var="button2" key=".inlineDialog5.button2"/>
+<cti:msg2 var="cancelText" key="yukon.web.components.button.cancel.label"/>
 <dialog:inline id="inlineDialog5" okEvent="none" nameKey="inlineDialog5" on="#sampleInlineBtn5"
-                options="{'buttons': {'Button 1': function(){ alert('Sup, Im button 1!'); }, 'Button 2': function() { alert('Oh hey, Im button 2!'); }, 'Cancel': function() { jQuery(this).dialog('close'); } } }">
-	<p>I'm an example of an in-line dialog box with options, specifically demonstrating how to have custom buttons<p>
+                options="{width: 550, 'buttons': [{text: '${button1}', click: function() { alert('Sup, Im button 1!'); }, class: 'inline_dialog_button_1' },
+                                                  {text: '${button2}', click: function() { alert('Sup, Im button 2!'); } },
+                                                  {text: '${cancelText}', click: function() { jQuery(this).dialog('close'); } }]}">
+	<p>Options used in this dialog:</p>
+	<ul>
+		<li>-width</li>
+		<li>-buttons (button 1 has a specified class on it)</li>
+	</ul>
 </dialog:inline>
 
 <p class="pageDescription">

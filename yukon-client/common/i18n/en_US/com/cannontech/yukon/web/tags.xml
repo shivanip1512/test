@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <!-- selectDevicesTabbed.tag -->
+    <entry key="yukon.web.device.bulk.selectDevicesTabbed.group">Group</entry>
+    <entry key="yukon.web.device.bulk.selectDevicesTabbed.individual">Individual</entry>
+    <entry key="yukon.web.device.bulk.selectDevicesTabbed.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.device.bulk.selectDevicesTabbed.devices">Devices</entry>
+    <entry key="yukon.web.device.bulk.selectDevicesTabbed.devicesCount">Count</entry>
+
+</properties>

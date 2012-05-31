@@ -746,5 +746,6 @@
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->
     <entry key="yukon.common.device.bulk.selectedDevicesResultsLimited">Results limited to first {0} devices.</entry>
+    <entry key="yukon.common.device.bulk.selectedDevicesEmpty">Selected device set is empty</entry>
     
 </properties>

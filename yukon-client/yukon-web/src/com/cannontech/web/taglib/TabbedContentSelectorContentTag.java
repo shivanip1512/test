@@ -7,6 +7,7 @@ import javax.servlet.jsp.JspException;
 public class TabbedContentSelectorContentTag extends YukonTagSupport {
 
 	private String selectorName = "";
+	private String cssClass;
 	private boolean initiallySelected = false;
 	
 	@Override
@@ -19,7 +20,7 @@ public class TabbedContentSelectorContentTag extends YukonTagSupport {
         parent.addTab(selectorName, id, initiallySelected);
         
         // tab content
-		getJspContext().getOut().println("<div id=\"" + id + "\">");
+		getJspContext().getOut().println("<div id=\"" + id + "\" class=\"" + cssClass + "\">");
         getJspBody().invoke(getJspContext().getOut());
 		getJspContext().getOut().println("</div>");
         
@@ -28,7 +29,10 @@ public class TabbedContentSelectorContentTag extends YukonTagSupport {
 	public void setSelectorName(String selectorName) {
 		this.selectorName = selectorName;
 	}
-	public void setInitiallySelected(boolean initiallySelected) {
+	public void setCssClass(String cssClass) {
+        this.cssClass = cssClass;
+    }
+    public void setInitiallySelected(boolean initiallySelected) {
 		this.initiallySelected = initiallySelected;
 	}
 }

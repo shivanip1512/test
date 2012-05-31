@@ -4,6 +4,9 @@
 <cti:url var="phaseDetectUrl" value="/spring/amr/phaseDetect/home"/>
 <cti:url var="archiveDataAnalysesUrl" value="/spring/bulk/archiveDataAnalysis/list/view"/>
 <cti:url var="meterEventsReportUrl" value="/spring/amr/meterEventsReport/selectDevices"/>
+<cti:url var="waterLeakReportUrl" value="/spring/amr/waterLeakReport/report">
+    <cti:param name="initReport" value="true"/>
+</cti:url>
 <div>
     <cti:checkRolesAndProperties value="ARCHIVED_DATA_ANALYSIS">
         <a href="${archiveDataAnalysesUrl}"><i:inline key=".archiveDataAnalysis"/></a><br/>
@@ -13,5 +16,8 @@
     </cti:checkRolesAndProperties>
     <cti:checkRolesAndProperties value="METER_EVENTS">
         <a href="${meterEventsReportUrl}"><i:inline key=".meterEventsReport"/></a><br/>
+    </cti:checkRolesAndProperties>
+    <cti:checkRolesAndProperties value="REPORTING">
+        <a href="${waterLeakReportUrl}"><i:inline key=".waterLeakReport"/></a><br/>
     </cti:checkRolesAndProperties>
 </div>

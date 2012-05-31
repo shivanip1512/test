@@ -133,11 +133,7 @@
                             </c:choose>
                         </td>
                         <td>
-                            <cti:paoTypeIcon yukonPao="${searchResultRow}" /> &nbsp
-                            <c:choose>
-                                <c:when test="${empty searchResultRow.paoType}"></c:when>
-                                <c:otherwise>${searchResultRow.paoType.dbString}</c:otherwise>
-                            </c:choose>
+                            <tags:paoType yukonPao="${searchResultRow}"/>
                         </td>
                         <td>
                             <c:choose>

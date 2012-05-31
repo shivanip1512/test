@@ -1,0 +1,104 @@
+<%-- CUSTOMER INFORMATION --%>
+<table class="compactResultsTable">
+    <tr>
+        <th colspan="2" align="left"><i:inline key=".custInfo"/></th>
+    </tr>
+    <tr>
+    	<td>
+    		<tags:nameValueContainer2>
+	    		<tags:nameValue2 nameKey=".name">
+					${mspCustomer.firstName} 
+            		<c:if test="${not empty mspCustomer.MName}">${mspCustomer.MName}</c:if>
+            		${mspCustomer.lastName}
+				</tags:nameValue2>
+				<tags:nameValueGap2 gapHeight="6px" />
+			    <c:if test="${not empty mspCustomer.DBAName}">
+    	    		<tags:nameValue2 nameKey=".dba" >
+					     ${mspCustomer.DBAName}
+			        </tags:nameValue2>
+				    <tags:nameValueGap2 gapHeight="6px" />
+			    </c:if>
+   	    		<tags:nameValue2 nameKey=".address" >
+                    <tags:address address="${custAddress}" />
+                    <tags:nameValueGap2 gapHeight="6px" />
+		        </tags:nameValue2>
+		        <c:choose>
+	                <c:when test="${not empty mspPhoneNumbers}">
+	                    <c:forEach items="${mspPhoneNumbers}" var="phoneNumber">
+		                    <tags:nameValue2 nameKey=".phoneNumber" >
+		                         ${phoneNumber}
+		                    </tags:nameValue2>
+		                    <tags:nameValueGap2 gapHeight="6px" />
+	                    </c:forEach>
+	                </c:when>
+	                <c:otherwise>
+	                    <tags:nameValue2 nameKey=".phoneNumber" ></tags:nameValue2>
+	                    <tags:nameValueGap2 gapHeight="6px" />
+	                </c:otherwise>
+		        </c:choose>
+		        <c:choose>
+	                <c:when test="${not empty mspEmailAddresses}">
+	                    <c:forEach items="${mspEmailAddresses}" var="emailAddress">
+		                    <tags:nameValue2 nameKey=".emailAddress" >
+		                         ${emailAddress}
+		                    </tags:nameValue2>
+		                    <tags:nameValueGap2 gapHeight="6px" />
+	                    </c:forEach>
+	                </c:when>
+	                <c:otherwise>
+	                    <tags:nameValue2 nameKey=".emailAddress" ></tags:nameValue2>
+	                    <tags:nameValueGap2 gapHeight="6px" />
+	                </c:otherwise>
+		        </c:choose>
+    		</tags:nameValueContainer2>
+        </td>
+    </tr>
+</table>
+
+<%-- SERVICE LOCATION INFORMATION --%>
+<br>
+<table class="compactResultsTable">
+    <tr>
+        <th colspan="2" align="left"><i:inline key=".serviceLocation"/>:</th>
+    </tr>
+    <tr>
+    	<td>
+    		<tags:nameValueContainer2>
+    			<c:if test="${not empty mspServLoc.objectID}">
+			    	<tags:nameValue2 nameKey=".serviceLocation">
+			    		${mspServLoc.objectID}
+			    	</tags:nameValue2>
+			    	<tags:nameValueGap2 gapHeight="6px" />
+			    </c:if>
+			    <c:if test="${not empty mspServLoc.custID}">
+			    	<tags:nameValue2 nameKey=".custNumber">
+			    		${mspServLoc.custID}
+			    	</tags:nameValue2>
+			    	<tags:nameValueGap2 gapHeight="6px" />
+			    </c:if>
+			    <c:if test="${not empty mspServLoc.accountNumber}">
+			        <tags:nameValue2 nameKey=".acctNumber">
+			    		${mspServLoc.accountNumber}
+			    	</tags:nameValue2>
+			    	<tags:nameValueGap2 gapHeight="6px" />
+			    </c:if>
+			    <c:if test="${not empty mspServLoc.siteID}">
+  			        <tags:nameValue2 nameKey=".siteNumber">
+			    		${mspServLoc.siteID}
+			    	</tags:nameValue2>
+			    	<tags:nameValueGap2 gapHeight="6px" />
+			    </c:if>
+			    <c:if test="${not empty mspServLoc.gridLocation}">
+  			        <tags:nameValue2 nameKey=".mapLocation">
+			    		${mspServLoc.gridLocation}
+			    	</tags:nameValue2>
+			    	<tags:nameValueGap2 gapHeight="6px" />
+			    </c:if>
+		        <tags:nameValue2 nameKey=".address">
+		    		<tags:address address="${servLocAddress}" />
+		    	</tags:nameValue2>
+		    	<tags:nameValueGap2 gapHeight="6px" />
+	        </tags:nameValueContainer2>
+        </td>
+    </tr>
+</table>

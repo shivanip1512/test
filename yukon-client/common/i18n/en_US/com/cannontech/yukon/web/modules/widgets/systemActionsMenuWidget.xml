@@ -4,4 +4,5 @@
     <entry key="yukon.web.widgets.systemActionsMenuWidget.phaseDetect">Phase Detect</entry>
     <entry key="yukon.web.widgets.systemActionsMenuWidget.archiveDataAnalysis">Archive Data Analysis</entry>
     <entry key="yukon.web.widgets.systemActionsMenuWidget.meterEventsReport">Meter Events Report</entry>
+    <entry key="yukon.web.widgets.systemActionsMenuWidget.waterLeakReport">Water Leak Report</entry>
 </properties>

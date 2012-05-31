@@ -27,7 +27,8 @@ If it's "javascript", nextUrl and previousUrl are required.
 	<c:if test="${currentPage <= 1}">
 	    <c:set var="previousEnabled" value="false"/>
 	</c:if>
-	<c:if test="${currentPage >= pageScope.searchResult.numberOfPages}">
+	<c:if test="${currentPage >= pageScope.searchResult.numberOfPages ||
+	               pageScope.searchResult.count >= pageScope.searchResult.hitCount}">
 	    <c:set var="nextEnabled" value="false"/>
 	</c:if>
 </c:if>
@@ -37,8 +38,12 @@ If it's "javascript", nextUrl and previousUrl are required.
 <c:set var="disabledPreviousStyle" value=" style=\"display: none;\""/>
 </c:if>
 
+<c:set var="visibilityClass" value="vh"/>
+<c:if test="${previousEnabled || nextEnabled}">
+    <c:set var="visibilityClass" value=""/>
+</c:if>
 
-<td class="pagingArea">
+<div class="${visibilityClass}">
     <table>
         <tr>
             <td class="previousLink">
@@ -91,4 +96,4 @@ If it's "javascript", nextUrl and previousUrl are required.
             </td>
         </tr>
     </table>
-</td>
+</div>

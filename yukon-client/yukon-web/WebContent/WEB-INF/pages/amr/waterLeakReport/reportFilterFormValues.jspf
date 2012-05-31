@@ -1,0 +1,6 @@
+<form:hidden path="fromLocalDate"/>
+<form:hidden path="toLocalDate"/>
+<form:hidden path="fromHour"/>
+<form:hidden path="toHour"/>
+<form:hidden path="threshold"/>
+<form:hidden path="includeDisabledPaos"/>

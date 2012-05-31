@@ -1,16 +1,25 @@
 package com.cannontech.web.util;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cannontech.tools.csv.CSVReader;
+import com.cannontech.tools.csv.CSVWriter;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.exceptions.EmptyImportFileException;
 import com.cannontech.web.exceptions.NoImportFileException;
 
@@ -65,5 +74,26 @@ public class WebFileUtils {
         InputStreamReader inputStreamReader = new InputStreamReader(fileResource.getInputStream());
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         return new CSVReader(bufferedReader);
+    }
+    
+    public static void writeToCSV(HttpServletResponse response, String[] headerRow, List<String[]> dataRows)
+            throws IOException {
+        // set up output for CSV
+        response.setContentType("text/csv");
+        response.setHeader("Content-Type", "application/force-download");
+        String fileName = "WaterLeakReport.csv";
+        fileName = ServletUtil.makeWindowsSafeFileName(fileName);
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
+        OutputStream outputStream = response.getOutputStream();
+
+        // write out the file
+        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        CSVWriter csvWriter = new CSVWriter(writer);
+
+        csvWriter.writeNext(headerRow);
+        for (String[] line : dataRows) {
+            csvWriter.writeNext(line);
+        }
+        csvWriter.close();
     }
 }

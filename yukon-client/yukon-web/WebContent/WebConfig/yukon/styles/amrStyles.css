@@ -142,6 +142,65 @@ div.resultBar > div {
 	margin-left: 5px;
 }
 
+/* WaterLeakReport START */
+#leakFilterDialog.ui-dialog-content {
+    padding: .5em 0em
+}
+
+#leakFilterDialog .waterLeakFilterTab {
+	height: 29px;
+	border-bottom: none;
+	border-left: none;
+	border-right: none;
+}
+
+#leakFilterDialog .under_tabs {
+    padding: 8px;
+    border-top: 1px dotted #CCC;
+    border-bottom: none;
+    border-right: none;
+}
+
+.ui-dialog .ui-dialog-buttonpane button.leakFilterCancelButton {
+	margin-left: -7px;
+    color: #0066CC;
+}
+.ui-dialog .ui-dialog-buttonpane button.leakFilterCancelButton:hover {
+    text-decoration: underline;
+}
+
+.filter_shortcut {
+	font-size: 12px;
+    font-style: italic;
+    position: absolute;
+    left: 8px;
+    width: 320px;
+    margin: .9em 0.4em 0.5em 0;
+}
+
+#algorithmDialog ul {
+    list-style: disc inside none;
+	font-size: 12px;
+}
+
+.accountInfoAjaxDialog {
+    width: 235px;
+    height: 355px;
+}
+
+div#selectDevicesPicker {
+	z-index: 9999;
+}
+
+form#intervalDataForm {
+	position: absolute;
+	right: 100px;
+}
+form#intervalDataForm button {
+	cursor: pointer;
+}
+/* WaterLeakReport END */
+
 div.attributeSetupContainer {
     min-width: 500px;
 }

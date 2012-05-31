@@ -14,7 +14,7 @@
 <%-- PASS THROUGH PARAMETERS TO ext:popupTree --%>
 <%-- see popupTree.tag for parameter descriptions --%>
 <%@ attribute name="id" required="true" type="java.lang.String"%>
-<%@ attribute name="triggerElement" required="true" type="java.lang.String"%>
+<%@ attribute name="triggerElement" required="false" type="java.lang.String"%>
 <%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 <%@ attribute name="dataJson" required="true" type="java.lang.String"%>
 <%@ attribute name="title" required="true" type="java.lang.String"%>

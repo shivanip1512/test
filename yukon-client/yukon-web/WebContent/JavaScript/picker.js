@@ -585,8 +585,6 @@ Picker.prototype = {
 	},
 
 	showSelected: function() {
-		var pickerThis = this;
-
 		var outputColumns = new Array();
 		this.outputColumns.each(function(outputColumn) {
 			var translatedColumn = {
@@ -614,6 +612,7 @@ Picker.prototype = {
 		resultTable.addClassName('rowHighlighting');
 		this.selectedItemsDisplayArea.innerHTML = '';
 		this.selectedItemsDisplayArea.appendChild(resultTable);
+		adjustDialogSizeAndPosition(this.selectedItemsPopup);
 		this.selectedItemsPopup.show();
 	},
 

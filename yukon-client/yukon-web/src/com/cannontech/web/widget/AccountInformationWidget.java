@@ -23,32 +23,32 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.deploy.service.ContactInfo;
 import com.cannontech.multispeak.deploy.service.CoordType;
-import com.cannontech.multispeak.deploy.service.EMailAddress;
 import com.cannontech.multispeak.deploy.service.LinkedTransformer;
 import com.cannontech.multispeak.deploy.service.Nameplate;
 import com.cannontech.multispeak.deploy.service.Network;
 import com.cannontech.multispeak.deploy.service.NodeIdentifier;
 import com.cannontech.multispeak.deploy.service.ObjectRef;
-import com.cannontech.multispeak.deploy.service.PhoneNumber;
 import com.cannontech.multispeak.deploy.service.PointType;
 import com.cannontech.multispeak.deploy.service.UtilityInfo;
+import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.google.common.collect.Lists;
 
 @CheckRoleProperty(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED)
 public class AccountInformationWidget extends WidgetControllerBase{
     
-    private MspObjectDao mspObjectDao;
-    private MultispeakFuncs multispeakFuncs;
-    private MultispeakDao multispeakDao;
-    private MeterDao meterDao;
-    private DateFormattingService dateFormattingService;
-    private RolePropertyDao rolePropertyDao;
+    @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private MultispeakDao multispeakDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
     
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
@@ -123,48 +123,20 @@ public class AccountInformationWidget extends WidgetControllerBase{
     
     private List<Info> getCustomerContactInfo(com.cannontech.multispeak.deploy.service.Customer mspCustomer, YukonUserContext userContext) {
         
-        List<Info> infoList = new ArrayList<Info>();
-        ContactInfo contactInfo = mspCustomer.getContactInfo();
         
-        boolean hasPhones = false;
-        List<String> phones = new ArrayList<String>();
-        if (contactInfo.getPhoneList() != null) {
-            for (PhoneNumber p : contactInfo.getPhoneList()) {
-                String fullPhone = "";
-                if (p.getPhone() != null) {
-                    fullPhone += p.getPhone();
-                }
-                if (p.getPhoneType() != null && p.getPhoneType().getValue() != null) {
-                    fullPhone += " " + p.getPhoneType().getValue();
-                }
-                if (!StringUtils.isBlank(fullPhone)) {
-                    phones.add(fullPhone);
-                    hasPhones = true;
-                }
-            }
-        }
+        List<String> phoneNumbers = multispeakCustomerInfoService.getPhoneNumbers(mspCustomer, userContext);
+        boolean hasPhones = phoneNumbers.size() > 0;
         
-        boolean hasEmails = false;
-        List<String> emails = new ArrayList<String>();
-        if (contactInfo.getEMailList() != null) {
-            for (EMailAddress e : contactInfo.getEMailList()) {
-                String fullEmail = "";
-                if (e.getEMail() != null) {
-                    fullEmail += e.getEMail();
-                }
-                if (!StringUtils.isBlank(fullEmail)) {
-                    emails.add(fullEmail);
-                    hasEmails = true;
-                }
-            }
-        }
+        List<String> emailAddresses = multispeakCustomerInfoService.getEmailAddresses(mspCustomer, userContext);
+        boolean hasEmails = emailAddresses.size() > 0;
         
         if (!hasPhones && !hasEmails) {
             return null;
         }
         
-        add("Phone Number", StringUtils.join(phones, ", "), true, infoList, userContext);
-        add("Email Address", StringUtils.join(emails, ", "), true, infoList, userContext);
+        List<Info> infoList = Lists.newArrayList();
+        add("Phone Number", StringUtils.join(phoneNumbers, ", "), true, infoList, userContext);
+        add("Email Address", StringUtils.join(emailAddresses, ", "), true, infoList, userContext);
         return infoList;
     }
     
@@ -473,31 +445,5 @@ public class AccountInformationWidget extends WidgetControllerBase{
 //        sb.append("&ie=UTF8&om=1&z=16&iwloc=addr&t=h");
 //        return sb.toString();
 //    }
-    
-    @Autowired
-    public void setMspObjectDao(MspObjectDao mspObjectDao) {
-        this.mspObjectDao = mspObjectDao;
-    }
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    @Autowired
-    public void setMultispeakDao(MultispeakDao multispeakDao) {
-        this.multispeakDao = multispeakDao;
-    }
-    @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    @Autowired
-    public void setDateFormattingService(
-            DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
 
 }

@@ -24,7 +24,7 @@
 <c:set var="pagePartSep" value=""/>
 <c:set var="modulePaths" value=""/>
 <c:forEach var="pagePart" items="${pageParts}">
-    <c:set var="modulePaths" value="${modulePaths}${pathSep}modules.${module}.${prevPageParts}${pagePart}"/>
+    <c:set var="modulePaths" value="${modulePaths}${pathSep}modules.${module}.${prevPageParts}${pagePartSep}${pagePart}"/>
     <c:set var="prevPageParts" value="${prevPageParts}${pagePartSep}${pagePart}"/>
     <c:set var="pathSep" value=","/>
     <c:set var="pagePartSep" value="."/>

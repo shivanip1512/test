@@ -2049,6 +2049,12 @@
         <rtexprvalue>true</rtexprvalue>
         <description>Tab name</description>
     </attribute>
+     <attribute>
+        <name>cssClass</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>Css class of the tab div</description>
+    </attribute>
     <attribute>
         <name>initiallySelected</name>
         <required>false</required>
@@ -2101,6 +2107,12 @@
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+  </tag>
+
+  <tag>
+    <name>printMsgScope</name>
+    <tag-class>com.cannontech.web.i18n.PrintMsgScopeTag</tag-class>
+    <body-content>empty</body-content>
   </tag>
   
   <tag>

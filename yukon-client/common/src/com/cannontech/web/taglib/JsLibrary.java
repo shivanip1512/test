@@ -31,6 +31,8 @@ public enum JsLibrary {
     JQUERY_TREE_HELPERS("/JavaScript/lib/jQuery/plugins/dynatree/treeHelper.js"),   //in-house
     JQUERY_UI("/JavaScript/lib/jQuery/plugins/jQueryUI/jquery-ui-1.8.16.custom.min.js"),    //http://www.jqueryui.com
     JQUERY_UI_DIALOG_HELPER("/JavaScript/lib/jQuery/plugins/jQueryUI/dialog-helper.js"), //in-house
+    JQUERY_UI_CHECK_ALL("/JavaScript/lib/jQuery/plugins/checkAll/jquery.checkall.js"), //https://github.com/mjball/jQuery-CheckAll
+    JQUERY_UI_ACTION_WHEN("/JavaScript/lib/jQuery/plugins/actionWhen/jquery.actionwhen.js"), //in-house
 
     JSON("/JavaScript/lib/JSON/2.0/json2.js"),
     OVERLIB("/JavaScript/ol/overlib_mini.js"),

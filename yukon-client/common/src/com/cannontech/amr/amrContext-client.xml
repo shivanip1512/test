@@ -125,4 +125,8 @@
 
     <!-- RFN Meter Disconnect Service -->
     <bean id="rfnMeterDisconnectService" class="com.cannontech.amr.rfn.service.RfnMeterDisconnectService"/>
+    
+    <bean id="waterMeterLeakService" class="com.cannontech.amr.waterMeterLeak.service.impl.WaterMeterLeakServiceImpl"/>
+    
+    <bean id="normalizedUsageService" class="com.cannontech.common.chart.service.impl.NormalizedUsageServiceImpl"/>
 </beans>

@@ -15,7 +15,7 @@
 <%-- PASS THROUGH PARAMETERS TO tree:popupTree --%>
 <%-- see popupTree.tag for parameter descriptions --%>
 <%@ attribute name="id" required="true" type="java.lang.String"%>
-<%@ attribute name="triggerElement" required="true" type="java.lang.String"%>
+<%@ attribute name="triggerElement" required="false" type="java.lang.String"%>
 <%@ attribute name="dataJson" required="true" type="java.lang.String"%>
 <%@ attribute name="title" required="true" type="java.lang.String"%>
 <%@ attribute name="width" required="true" type="java.lang.Integer"%>

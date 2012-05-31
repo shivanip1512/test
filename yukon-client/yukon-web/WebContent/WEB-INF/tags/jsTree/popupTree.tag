@@ -7,7 +7,7 @@
 <%@ attribute name="id" required="true" type="java.lang.String"%>
 <%@ attribute name="treeCss" required="false" type="java.lang.String"%>
 <%@ attribute name="treeParameters" required="false" type="java.lang.String"%>
-<%@ attribute name="triggerElement" required="true" type="java.lang.String"%>
+<%@ attribute name="triggerElement" required="false" type="java.lang.String"%>
 <%@ attribute name="highlightNodePath" required="false" type="java.lang.String"%>
 <%@ attribute name="multiSelect"        required="false"     type="java.lang.Boolean"%>
 <%@ attribute name="includeControlBar" required="false" type="java.lang.Boolean"%>
@@ -88,9 +88,11 @@
 
         window_${id} = jQuery(document.getElementById("window_${id}")).dialog(args);
 
+        <c:if test="${!empty pageScope.triggerElement}">
         //click a button, get the window
         jQuery(document.getElementById("${triggerElement}")).click(function(){
              jQuery(document.getElementById("window_${id}")).dialog('open');
         });
+        </c:if>
     });
 </script>

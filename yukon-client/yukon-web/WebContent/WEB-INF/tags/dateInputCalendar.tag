@@ -1,10 +1,11 @@
 <%@ tag body-content="empty" %>
-<%@ attribute name="fieldId" required="false" type="java.lang.String"%>
-<%@ attribute name="fieldName" required="true" type="java.lang.String"%>
+<%@ attribute name="fieldId" required="false" type="java.lang.String" description="Ends up being the id of the input, not used when springInput = true."%>
+<%@ attribute name="fieldName" required="true" type="java.lang.String" description="Used as the path and id of the input when springInput = true, otherwise used as the name attribute of the input."%>
 <%@ attribute name="fieldValue" required="false" type="java.lang.String"%>
 <%@ attribute name="disabled" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="springInput" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="showErrorOnNextLine" type="java.lang.Boolean" %>
+<%@ attribute name="inputClass"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -47,12 +48,12 @@
 			
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
 	
-	            <c:set var="inputClass" value=""/>
+	            <c:set var="statusError" value=""/>
 	            <c:if test="${status.error}">
-	                <c:set var="inputClass" value="error"/>
+	                <c:set var="statusError" value="error"/>
 	            </c:if>
 	            
-	            <form:input  path="${fieldName}" id="${fieldName}" size="10" maxlength="10" cssClass="calendarInput ${inputClass}"/>
+	            <form:input  path="${fieldName}" id="${fieldName}" size="10" maxlength="10" cssClass="calendarInput ${statusError} ${inputClass}"/>
 	            
 	            <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
 	            <span onclick="javascript:showCalendarControl('${uniqueId}', '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">
@@ -75,7 +76,7 @@
     </c:when>
     <c:otherwise>
         <!-- Normal Input Version -->
-        <input id="${uniqueId}" name="${fieldName}"${disabledStr} type="text" size="10" maxlength="10" value="${pageScope.fieldValue}" class="calendarInput">&nbsp;
+        <input id="${uniqueId}" name="${fieldName}"${disabledStr} type="text" size="10" maxlength="10" value="${pageScope.fieldValue}" class="calendarInput ${inputClass}">&nbsp;
         
         <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
         <span onclick="javascript:showCalendarControl('${uniqueId}', '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">

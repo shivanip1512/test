@@ -260,7 +260,13 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, maxRows, excludeDisabledPaos);
     }
     
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final boolean excludeDisabledPaos, final Clusivity clusivity, final Order order) {
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> displayableDevices,
+                                                                                 Attribute attribute,
+                                                                                 final Date startDate,
+                                                                                 final Date stopDate,
+                                                                                 final boolean excludeDisabledPaos,
+                                                                                 final Clusivity clusivity,
+                                                                                 final Order order) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
