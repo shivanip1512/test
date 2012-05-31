@@ -55,6 +55,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
     private final Map<Integer,YukonOpcItem> receiveItemMap;
     private final Map<Integer,YukonOpcItem> sendItemMap;
     private final int refreshRate;
+    private final int dataUpdateRate;
     
     private YukonOpcServer opcServer;
     private int statusItemId = -1;
@@ -65,10 +66,11 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 	private AsyncDynamicDataSource dataSource;
 	private Set<PointQuality> goodQualitiesSet;
 	
-    public YukonOpcConnectionImpl(String host, String serverName, String statusItemName, int refreshRate) {
+    public YukonOpcConnectionImpl(String host, String serverName, String statusItemName, int refreshRate, int dataUpdateRate) {
 		this.hostIp = host;
 		this.serverName = serverName;
 		this.refreshRate = refreshRate;
+		this.dataUpdateRate = dataUpdateRate*1000;//convert from seconds
 		this.statusItemName = statusItemName;
 		
 		connectionStatusListeners = new EventListenerList();
@@ -297,7 +299,7 @@ public class YukonOpcConnectionImpl implements YukonOpcConnection, Runnable, All
 		
 		if (group == null) {
 			//New Group
-			group = opcServer.addGroup(groupName, nextClientGroupHandle, refreshRate);
+			group = opcServer.addGroup(groupName, nextClientGroupHandle, dataUpdateRate);
 			nextClientGroupHandle++;
 			if (group == null){
 				log.error(" Error adding Group " + groupName);

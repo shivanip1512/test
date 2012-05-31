@@ -53,7 +53,8 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
     private final Map<String, String> serverAddressMap;
     private final Map<String,String> opcServerToStatusItemNameMap;
     private final Set<PointQuality> goodQualitiesSet;
-    private int refreshSeconds;
+    private int connectionRetryRate;
+    private int dataUpdateRate;
     private boolean serviceEnabled = false;
 
     /* Item Tracking Maps - dynamic */
@@ -85,12 +86,19 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
         if (serviceEnabled) {
 
             try {
-                refreshSeconds = Integer.parseInt(config.getRequiredString("OPC_REFRESH"));
+                connectionRetryRate = Integer.parseInt(config.getRequiredString("OPC_CONN_RETRY_RATE"));
             } catch (UnknownKeyException e) {
-                log.warn(" Refresh rate is not in the Master.cfg file. Defaulting to 60 seconds ");
-                refreshSeconds = 60;
+                log.warn(" Connection Retry rate is not in the Master.cfg file. Defaulting OPC_CONN_RETRY_RATE to 60 seconds ");
+                connectionRetryRate = 60;
             }
 
+            try {
+                dataUpdateRate = Integer.parseInt(config.getRequiredString("OPC_DATA_UPDATE_RATE"));
+            } catch (UnknownKeyException e) {
+                log.warn(" Data update rate is not in the Master.cfg file. Defaulting OPC_DATA_UPDATE_RATE to 60 seconds ");
+                dataUpdateRate = 60;
+            }
+            
             /* Reset the Good Qualities List */
             loadGoodQualities();
 
@@ -390,7 +398,7 @@ public class OpcService implements OpcConnectionListener, DBChangeListener {
             statusItemName = "YukonStatusGroup.YukonStatus";
         }
 
-        YukonOpcConnectionImpl conn = new YukonOpcConnectionImpl(serverAddress, serverName, statusItemName, refreshSeconds);
+        YukonOpcConnectionImpl conn = new YukonOpcConnectionImpl(serverAddress, serverName, statusItemName, connectionRetryRate, dataUpdateRate);
 
         /* Configure Connection */
         conn.addOpcConnectionListener(listener);

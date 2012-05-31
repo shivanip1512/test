@@ -92,7 +92,7 @@ public class YukonOpcAdviceSinkImpl extends OpcAdviseSink {
                 newValue += yOpcItem.getOffset();
                 break;
             }
-            case 17: {
+            case OpcItem.DATA_TYPE_UI1: {
                 newValue = opcItem.getByte();
                 newValue *= yOpcItem.getMultiplier();
                 newValue += yOpcItem.getOffset();
