@@ -2744,10 +2744,10 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
         dout << CtiTime() << " - " << outString.c_str() << endl;
     }
 
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
     try
     {
+        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
         CapControlPointDataHandler pointHandler = store->getPointDataHandler();
         pointHandler.processIncomingPointData(message);
 
@@ -2891,7 +2891,6 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
 }
 void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
-
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 
@@ -2943,7 +2942,6 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
 }
 void CtiCapController::pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
-
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 
@@ -3008,7 +3006,6 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
 
 void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
-
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 
@@ -3341,7 +3338,6 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
 void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigned quality, CtiTime& timestamp )
 {
-
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 

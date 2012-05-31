@@ -5721,9 +5721,15 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                 if (currentCCFeeder->getUsePhaseData())
                 {
                     if (currentCCFeeder->getPhaseBId() > 0)
+                    {
                         pointid_feeder_map->insert(make_pair(currentCCFeeder->getPhaseBId(), currentCCFeeder));
+                        currentCCFeeder->addPointId(currentCCFeeder->getPhaseBId());
+                    }
                     if (currentCCFeeder->getPhaseCId() > 0)
+                    {
                         pointid_feeder_map->insert(make_pair(currentCCFeeder->getPhaseCId(), currentCCFeeder));
+                        currentCCFeeder->addPointId(currentCCFeeder->getPhaseCId());
+                    }
                 }
             }
         }
