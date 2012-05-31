@@ -440,11 +440,12 @@ string CtiTime::asString(timeFormat type)  const
         }
 
         //This map is not exhaustive. It is designed to supplement the UTC offset, which is the time zone.
+        //After the common abbreviation, 3 letters indicate a non-USA country code, 2 letters indicate a US state
         static const std::map<std::wstring, std::string> timeZoneAbbrevMap = map_list_of
         (L"Hawaiian Standard Time", "HST") 
         (L"Pacific Standard Time" , "PST")
         (L"Pacific Daylight Time" , "PDT")
-        (L"US Mountain Standard Time", "MST-AZ")
+        (L"US Mountain Standard Time", "MST-AZ") //Used only for 'UTC-07:00 Arizona'
         (L"Mountain Standard Time", "MST")
         (L"Mountain Daylight Time", "MDT")
         (L"Mountain Standard Time (Mexico)", "MST-MEX")
@@ -457,8 +458,8 @@ string CtiTime::asString(timeFormat type)  const
         (L"Canada Central Daylight Time" , "CDT-CAN")
         (L"Eastern Standard Time" , "EST")
         (L"Eastern Daylight Time" , "EDT")
-        (L"US Eastern Standard Time" , "EST-IN")
-        (L"US Eastern Daylight Time" , "EDT-IN")
+        (L"US Eastern Standard Time" , "EST-IN") //Used only for 'UTC-05:00 Indiana (East)'
+        (L"US Eastern Daylight Time" , "EDT-IN") //Used only for 'UTC-05:00 Indiana (East)'
         (L"Atlantic Standard Time" , "AST-CAN")
         (L"Atlantic Daylight Time" , "ADT-CAN")
         (L"Newfoundland Standard Time" , "NT-CAN")
@@ -468,7 +469,7 @@ string CtiTime::asString(timeFormat type)  const
         (L"Argentina Standard Time" , "ART-ARG")
         (L"GMT Standard Time" , "GMT")
         (L"Coordinated Universal Time" , "GMT")
-        (L"Greenwich Standard Time" , "GMT-UK")
+        (L"Greenwich Standard Time" , "GMT-GBR")
         ;
 
         std::map<std::wstring, std::string>::const_iterator found = timeZoneAbbrevMap.find(wideTimeZoneName);
@@ -486,7 +487,7 @@ string CtiTime::asString(timeFormat type)  const
             << setw(2) << setfill('0') << biasMinutes;
         biasTime = convert.str();
 
-        timeString = timeString + "(UTC" + biasTime + " " + timeZoneName + ")";
+        timeString = timeString + " (UTC" + biasTime + " " + timeZoneName + ")";
     }
 
     if(type == GMT_TIMEZONE)
