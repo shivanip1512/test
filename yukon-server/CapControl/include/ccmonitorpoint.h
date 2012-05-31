@@ -36,6 +36,7 @@ public:
     long getNInAvg() const;
     double getUpperBandwidth() const;
     double getLowerBandwidth() const;
+    bool getOverrideStrategy() const;
 
     CtiTime getTimeStamp() const;
     bool getScanInProgress() const;
@@ -48,6 +49,7 @@ public:
     CtiCCMonitorPoint& setNInAvg(long n);
     CtiCCMonitorPoint& setUpperBandwidth(double upperBW);
     CtiCCMonitorPoint& setLowerBandwidth(double lowerBW);
+    CtiCCMonitorPoint& getOverrideStrategy(bool overrideStrategy);
 
     CtiCCMonitorPoint& setTimeStamp(CtiTime timeStamp);
     CtiCCMonitorPoint& setScanInProgress(bool flag);
@@ -75,6 +77,8 @@ public:
 private:
 
     Cti::CapControl::Phase  _phase;
+
+    bool _overrideStrategy;
 
     long _pointId;
     long _deviceId;

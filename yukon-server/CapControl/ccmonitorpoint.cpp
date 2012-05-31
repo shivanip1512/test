@@ -45,6 +45,7 @@ _nInAvg(0),
 _upperBW(0),
 _lowerBW(0),
 _value(0),
+_overrideStrategy(false),
 _scanInProgress(false),
 _insertDynamicDataFlag(false),
 _dirty(false)
@@ -316,6 +317,7 @@ void CtiCCMonitorPoint::saveGuts(RWvostream& ostrm ) const
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/
+
 CtiCCMonitorPoint& CtiCCMonitorPoint::operator=(const CtiCCMonitorPoint& rght)
 {
     if( this != &rght )
@@ -329,6 +331,7 @@ CtiCCMonitorPoint& CtiCCMonitorPoint::operator=(const CtiCCMonitorPoint& rght)
         _upperBW = rght._upperBW;
         _lowerBW = rght._lowerBW;
         _value = rght._value;
+        _overrideStrategy = rght._overrideStrategy;
 
         _timeStamp = rght._timeStamp;
         _scanInProgress = rght._scanInProgress;
@@ -378,6 +381,10 @@ void CtiCCMonitorPoint::restore(Cti::RowReader& rdr)
         CtiToUpper(phaseStr);
         _phase = Cti::CapControl::resolvePhase(phaseStr);
     }
+
+    rdr["OverrideStrategy"] >> tempBoolString;
+    CtiToLower( tempBoolString );
+    _overrideStrategy = ( tempBoolString == "y" );
 
     rdr["deviceid"] >> _deviceId;
     rdr["pointid"] >> _pointId;
@@ -542,6 +549,19 @@ Cti::CapControl::Phase  CtiCCMonitorPoint::getPhase() const
 CtiCCMonitorPoint &  CtiCCMonitorPoint::setPhase( const Cti::CapControl::Phase & phase )
 {
     _dirty |= setVariableIfDifferent(_phase, phase);
+    return *this;
+}
+
+
+bool CtiCCMonitorPoint::getOverrideStrategy() const
+{
+    return _overrideStrategy;
+}
+
+
+CtiCCMonitorPoint & CtiCCMonitorPoint::getOverrideStrategy(bool overrideStrategy)
+{
+    _dirty |= setVariableIfDifferent(_overrideStrategy, overrideStrategy);
     return *this;
 }
 

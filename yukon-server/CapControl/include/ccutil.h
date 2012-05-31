@@ -19,7 +19,8 @@ enum CapControlType
     Schedule,
     SpecialArea,
     ZoneType,                   // added Type suffix to remove warnings from compiler
-    VoltageRegulatorType
+    VoltageRegulatorType,
+    MonitorPoint
 };
 
 

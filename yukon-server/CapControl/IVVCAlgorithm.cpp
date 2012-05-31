@@ -916,98 +916,83 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
     ZoneManager & zoneManager = store->getZoneManager();
 
-    try
+    // Process each zones regulator, CBCs and extra voltage points
+
+    Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
     {
-        // Process each zones regulator, CBCs and extra voltage points
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
-        Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+        // Regulator(s)
 
-        for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+        for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
         {
-            ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
-
-            // Regulator(s)
-
-            for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
+            try
             {
-                try
+                VoltageRegulatorManager::SharedPtr  regulator
+                    = store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+
+                long voltagePointId = regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId();
+
+                pointRequests.insert( PointRequest(voltagePointId, RegulatorRequestType, ! sendScan) );
+
+                if ( sendScan )
                 {
-                    VoltageRegulatorManager::SharedPtr  regulator
-                        = store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
-
-                    long voltagePointId = regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId();
-
-                    pointRequests.insert( PointRequest(voltagePointId, RegulatorRequestType, ! sendScan) );
-
-                    if ( sendScan )
-                    {
-                        regulator->executeIntegrityScan();
-                    }
+                    regulator->executeIntegrityScan();
                 }
-                catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            }
+            catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
+            {
+                configurationError = true;
+
+                if ( ! subbus->getDisableFlag() )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
                     dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
                 }
-                catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
-                {
-                    if (missingAttribute.complain())
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                        dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
-                    }
-                }
             }
-
-            // 2-way CBCs
-
-            Zone::IdSet capbankIds = zone->getBankIds();
-
-            for each ( const Zone::IdSet::value_type & ID in capbankIds )
+            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
             {
-                CtiCCCapBankPtr bank    = store->findCapBankByPAObjectID(ID);
+                configurationError = true;
 
-                for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
+                if (missingAttribute.complain())
                 {
-                    if ( point->getPointId() > 0 )
-                    {
-                        pointRequests.insert( PointRequest(point->getPointId(), CbcRequestType, ! sendScan) );
-                    }
-                }
-                if ( sendScan )
-                {
-                    CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
-                                                                            bank->getControlDeviceId() ) )->execute();
-                }
-            }
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
 
-            // Additional voltage points
-
-            for each ( const Zone::PhaseToVoltagePointIds::value_type & mapping in zone->getPointIds() )
-            {
-                pointRequests.insert( PointRequest(mapping.second, OtherRequestType) );
+                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                }
             }
         }
-    }
-    catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
-    {
-        configurationError = true;
 
-        if (!subbus->getDisableFlag())
+        // 2-way CBCs
+
+        Zone::IdSet capbankIds = zone->getBankIds();
+
+        for each ( const Zone::IdSet::value_type & ID in capbankIds )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+            CtiCCCapBankPtr bank    = store->findCapBankByPAObjectID(ID);
+
+            for each ( CtiCCMonitorPointPtr point in bank->getMonitorPoint() )
+            {
+                if ( point->getPointId() > 0 )
+                {
+                    pointRequests.insert( PointRequest(point->getPointId(), CbcRequestType, ! sendScan) );
+                }
+            }
+            if ( sendScan )
+            {
+                CtiCCExecutorFactory::createExecutor( new ItemCommand( CapControlCommand::SEND_SCAN_2WAY_DEVICE,
+                                                                        bank->getControlDeviceId() ) )->execute();
+            }
         }
-    }
-    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
-    {
-        configurationError = true;
-        if (missingAttribute.complain())
+
+        // Additional voltage points
+
+        for each ( const Zone::PhaseToVoltagePointIds::value_type & mapping in zone->getPointIds() )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+            pointRequests.insert( PointRequest(mapping.second, OtherRequestType) );
         }
     }
 
@@ -2055,15 +2040,17 @@ int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, IVVCStrategy* str
         double Vmin = strategy->getLowerVoltLimit(isPeakTime);
         double Vrm  = strategy->getLowerVoltLimit(isPeakTime) + strategy->getVoltageRegulationMargin(isPeakTime);
 
-        if ( _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS )
-        {
-            std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = _monitorMap.find( b->first );
+        std::map<long, CtiCCMonitorPointPtr>::const_iterator iter = _monitorMap.find( b->first );
 
-            if ( iter != _monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
+        if ( iter != _monitorMap.end() )    // monitor point exists - use its bandwidth settings instead
+        {
+            CtiCCMonitorPointPtr    monitor = iter->second;
+
+            if ( monitor->getOverrideStrategy() )
             {
-                Vmax = iter->second->getUpperBandwidth();
-                Vmin = iter->second->getLowerBandwidth();
-                Vrm  = iter->second->getLowerBandwidth() + strategy->getVoltageRegulationMargin(isPeakTime);
+                Vmax = monitor->getUpperBandwidth();
+                Vmin = monitor->getLowerBandwidth();
+                Vrm  = monitor->getLowerBandwidth() + strategy->getVoltageRegulationMargin(isPeakTime);
             }
         }
 

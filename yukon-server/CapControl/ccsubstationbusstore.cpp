@@ -6879,21 +6879,21 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
         {
             //LOADING OF MONITOR POINTS.
             static const string sqlCapBankNoID =  "SELECT YP.type, MB.deviceid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
-                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, FS.substationbusid "
+                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, MB.OverrideStrategy, FS.substationbusid "
                                            "FROM ccmonitorbanklist MB, yukonpaobject YP, ccfeederbanklist FB, ccfeedersubassignment FS "
                                            "WHERE MB.deviceid = FB.deviceid "
                                            "AND FB.feederid = FS.feederid "
                                            "AND YP.paobjectid = MB.deviceid ";
 
              static const string sqlRegulatorNoID =  "SELECT YP.type, MB.deviceid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
-                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, Z.substationbusid "
+                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, MB.OverrideStrategy, Z.substationbusid "
                                            "FROM ccmonitorbanklist MB, yukonpaobject YP, regulatortozonemapping RTZ, zone Z "
                                            "WHERE MB.deviceid = RTZ.regulatorid "
                                            "AND RTZ.zoneid = Z.zoneid "
                                            "AND YP.paobjectid = MB.deviceid ";
 
               static const string sqlAdditionalNoID =  "SELECT YP.type, MB.deviceid, MB.pointid, MB.displayorder, MB.scannable, MB.ninavg, "
-                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, Z.substationbusid "
+                                               "MB.upperbandwidth, MB.lowerbandwidth, MB.Phase, MB.OverrideStrategy, Z.substationbusid "
                                            "FROM ccmonitorbanklist MB, yukonpaobject YP, pointtozonemapping PTZ, zone Z, point P "
                                            "WHERE MB.deviceid = YP.paobjectid "
                                            "AND PTZ.pointid = P.pointid "
@@ -8690,6 +8690,12 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                                  modifiedBusIdsSet,  modifiedStationIdsSet, capMessages );
                         break;
                     }
+                    case MonitorPoint:
+                    {
+                        handleMonitorPointDBChange(reloadTemp.objectId, reloadTemp.action,  msgBitMask, msgSubsBitMask,
+                                                 modifiedBusIdsSet,  modifiedStationIdsSet, capMessages );
+                        break;
+                    }
                     default:
                         break;
                 }
@@ -10430,6 +10436,33 @@ void CtiCCSubstationBusStore::handleVoltageRegulatorDBChange(long reloadId, BYTE
     else
     {
         _voltageRegulatorManager->unload(reloadId);
+    }
+}
+
+
+void CtiCCSubstationBusStore::handleMonitorPointDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
+                                                 PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages )
+{
+    if ( reloadAction == ChangeTypeUpdate )
+    {
+        PointIdToSubBusMultiMap::iterator   busIter, end;
+
+        findSubBusByPointID( reloadId, busIter, end );
+
+        for ( ; busIter != end; ++busIter )
+        {
+            long subbusId = busIter->second->getPaoId();
+
+            reloadMonitorPointsFromDatabase( subbusId, &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
+                                             &_pointid_capbank_map, &_pointid_subbus_map);
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - Reloaded Monitor Points for bus ID: " << subbusId << endl;
+            }
+        }
     }
 }
 

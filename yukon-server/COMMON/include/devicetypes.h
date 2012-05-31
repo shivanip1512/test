@@ -148,6 +148,7 @@
 #define TYPE_CC_SUBSTATION                   2303
 #define TYPE_CC_SPECIALAREA                  2304
 #define TYPE_CC_VOLTAGEREGULATOR             2305
+#define TYPE_CC_MONITORBANKLIST              2306
 
 // A macro device that can contain other devices - basically a generalized group of devices
 #define TYPE_MACRO                           2900

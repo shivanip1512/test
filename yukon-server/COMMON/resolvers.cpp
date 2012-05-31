@@ -516,6 +516,10 @@ INT resolveCapControlType(const string& _rwsTemp)
     {
         nRet = TYPE_CC_VOLTAGEREGULATOR;
     }
+    else if(rwsTemp == "cc_monitor_bank_list")
+    {
+        nRet = TYPE_CC_MONITORBANKLIST;
+    }
     else
     {
         {
