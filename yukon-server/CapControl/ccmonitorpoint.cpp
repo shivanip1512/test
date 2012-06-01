@@ -565,3 +565,15 @@ CtiCCMonitorPoint & CtiCCMonitorPoint::getOverrideStrategy(bool overrideStrategy
     return *this;
 }
 
+
+void CtiCCMonitorPoint::updateNonDynamicData( const CtiCCMonitorPoint & rhs )
+{
+    _dirty |= setVariableIfDifferent(_displayOrder, rhs._displayOrder);
+    _dirty |= setVariableIfDifferent(_scannable, rhs._scannable);
+    _dirty |= setVariableIfDifferent(_nInAvg, rhs._nInAvg);
+    _dirty |= setVariableIfDifferent(_upperBW, rhs._upperBW);
+    _dirty |= setVariableIfDifferent(_lowerBW, rhs._lowerBW);
+    _dirty |= setVariableIfDifferent(_phase, rhs._phase);
+    _dirty |= setVariableIfDifferent(_overrideStrategy, rhs._overrideStrategy);
+}
+

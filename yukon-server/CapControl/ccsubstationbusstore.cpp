@@ -10451,22 +10451,72 @@ void CtiCCSubstationBusStore::handleMonitorPointDBChange(long reloadId, BYTE rel
 {
     if ( reloadAction == ChangeTypeUpdate )
     {
-        PointIdToSubBusMultiMap::iterator   busIter, end;
+        static const std::string sql =  "SELECT "
+                                            "DeviceId, "
+                                            "PointID, "
+                                            "DisplayOrder, "
+                                            "Scannable, "
+                                            "NINAvg, "
+                                            "UpperBandwidth, "
+                                            "LowerBandwidth, "
+                                            "Phase, "
+                                            "OverrideStrategy "
+                                        "FROM "
+                                            "ccMonitorBankList "
+                                        "WHERE "
+                                            "PointID = ?";
 
-        findSubBusByPointID( reloadId, busIter, end );
+        Cti::Database::DatabaseConnection   connection;
+        Cti::Database::DatabaseReader       rdr(connection, sql);
 
-        for ( ; busIter != end; ++busIter )
+        rdr << reloadId;
+
+        rdr.execute();
+
+        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
         {
-            long subbusId = busIter->second->getPaoId();
+            string loggedSQLstring = rdr.asString();
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << loggedSQLstring << endl;
+            }
+        }
 
-            reloadMonitorPointsFromDatabase( subbusId, &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
-                                             &_pointid_capbank_map, &_pointid_subbus_map);
-
+        while ( rdr() )
+        {
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
 
-                dout << CtiTime() << " - Reloaded Monitor Points for bus ID: " << subbusId << endl;
+                dout << CtiTime() << " - Updating Monitor Point ID: " << reloadId << endl;
+            }
+
+            CtiCCMonitorPointPtr    updatedMonitorPoint = CtiCCMonitorPointPtr( new CtiCCMonitorPoint(rdr) );
+
+            // always update the monitor point in the subbus collection
+
+            PointIdToSubBusMultiMap::iterator   busIter, busEnd;
+
+            findSubBusByPointID( reloadId, busIter, busEnd );
+
+            for ( ; busIter != busEnd; ++busIter )
+            {
+                CtiCCSubstationBusPtr   currentBus = busIter->second;
+
+                currentBus->updateExistingMonitorPoint( updatedMonitorPoint );
+            }
+
+            // update the monitor point in the capbank collection if attached to a bank
+
+            PointIdToCapBankMultiMap::iterator  bankIter, bankEnd;
+
+            findCapBankByPointID( reloadId, bankIter, bankEnd );
+
+            for ( ; bankIter != bankEnd; ++bankIter )
+            {
+                CtiCCCapBankPtr currentBank = bankIter->second;
+
+                currentBank->updateExistingMonitorPoint( updatedMonitorPoint );
             }
         }
     }

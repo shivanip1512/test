@@ -2306,6 +2306,12 @@ void CtiCapController::parseMessage(RWCollectable *message)
                         CcDbReloadInfo reloadInfo(dbChange->getId(), dbChange->getTypeOfChange(), Cti::CapControl::ZoneType);
                         CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
                     }
+                    else if ( dbChange->getCategory() == "CC_MONITOR_BANK_LIST" )
+                    {
+                        CcDbReloadInfo reloadInfo(dbChange->getId(), dbChange->getTypeOfChange(), Cti::CapControl::MonitorPoint);
+
+                        CtiCCSubstationBusStore::getInstance()->insertDBReloadList(reloadInfo);
+                    }
                 }
                 break;
             case MSG_POINTDATA:

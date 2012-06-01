@@ -74,6 +74,8 @@ public:
     Cti::CapControl::Phase  getPhase() const;
     CtiCCMonitorPoint &     setPhase( const Cti::CapControl::Phase & phase );
 
+    void updateNonDynamicData( const CtiCCMonitorPoint & rhs );
+
 private:
 
     Cti::CapControl::Phase  _phase;

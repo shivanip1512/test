@@ -9457,6 +9457,26 @@ bool CtiCCSubstationBus::addMonitorPoint(long pointIdKey, CtiCCMonitorPointPtr m
         _monitorPoints.insert(make_pair(pointIdKey, monPoint));
         return true;
     }
+
+    _monitorPoints[pointIdKey] = monPoint;
+    return false;
+}
+
+/*
+    Inserts a new monitor point if it doesn't exist -- updates the guts of an existing one if it
+        already exists.
+*/
+bool CtiCCSubstationBus::updateExistingMonitorPoint(CtiCCMonitorPointPtr monPoint)
+{
+    long pointIdKey = monPoint->getPointId();
+
+    if (_monitorPoints.find(pointIdKey) == _monitorPoints.end())
+    {
+        _monitorPoints.insert(make_pair(pointIdKey, monPoint));
+        return true;
+    }
+
+    _monitorPoints[pointIdKey]->updateNonDynamicData( *monPoint );
     return false;
 }
 

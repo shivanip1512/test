@@ -154,6 +154,7 @@ public:
 
     std::vector <CtiCCMonitorPointPtr>& getMonitorPoint() {return _monitorPoint;};
     bool addMonitorPoint(CtiCCMonitorPointPtr monPoint);
+    bool updateExistingMonitorPoint(CtiCCMonitorPointPtr monPoint);
 
     CtiCCCapBank& setParentId(long parentId);
     CtiCCCapBank& setAlarmInhibitFlag(bool alarminhibit);

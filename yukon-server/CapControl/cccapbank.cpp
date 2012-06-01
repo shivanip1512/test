@@ -1777,11 +1777,34 @@ PointResponseManager& CtiCCCapBank::getPointResponseManager()
 
 bool CtiCCCapBank::addMonitorPoint(CtiCCMonitorPointPtr monPoint)
 {
-    for each (CtiCCMonitorPointPtr x in _monitorPoint)
+    for ( int index = 0; index < _monitorPoint.size(); ++index )
     {
-		if (x->getPointId() == monPoint->getPointId())
-			return false;
+        if ( _monitorPoint[index]->getPointId() == monPoint->getPointId() )
+        {
+            _monitorPoint[index] = monPoint;
+            return false;
+        }
     }
+
+	_monitorPoint.push_back(monPoint);
+    return true;
+}
+
+/*
+    Inserts a new monitor point if it doesn't exist -- updates the guts of an existing one if it
+        already exists.
+*/
+bool CtiCCCapBank::updateExistingMonitorPoint(CtiCCMonitorPointPtr monPoint)
+{
+    for ( int index = 0; index < _monitorPoint.size(); ++index )
+    {
+        if ( _monitorPoint[index]->getPointId() == monPoint->getPointId() )
+        {
+            _monitorPoint[index]->updateNonDynamicData( *monPoint );
+            return false;
+        }
+    }
+
 	_monitorPoint.push_back(monPoint);
     return true;
 }

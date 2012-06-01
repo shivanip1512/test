@@ -359,6 +359,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void performDataOldAndFallBackNecessaryCheck();
 
     bool addMonitorPoint(long pointId, CtiCCMonitorPointPtr monPoint);
+    bool updateExistingMonitorPoint(CtiCCMonitorPointPtr monPoint);
+
     const map <long, CtiCCMonitorPointPtr>& getAllMonitorPoints();
     std::vector <long> getAllMonitorPointIds();
     std::vector <CtiCCMonitorPointPtr> getAllCapBankMonitorPoints();
