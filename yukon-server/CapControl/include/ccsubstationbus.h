@@ -361,6 +361,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     bool addMonitorPoint(long pointId, CtiCCMonitorPointPtr monPoint);
     const map <long, CtiCCMonitorPointPtr>& getAllMonitorPoints();
     std::vector <long> getAllMonitorPointIds();
+    std::vector <CtiCCMonitorPointPtr> getAllCapBankMonitorPoints();
     void removeAllMonitorPoints();
     CtiCCMonitorPointPtr getMonitorPoint(long pointId);
     Cti::CapControl::PointResponsePtr getPointResponse(Cti::CapControl::PointResponseKey key);

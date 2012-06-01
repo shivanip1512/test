@@ -24,6 +24,8 @@
 #include "PointResponse.h"
 #include "ccutil.h"
 #include "MsgVerifyBanks.h"
+#include "DatabaseDaoFactory.h"
+#include "PointResponseDao.h"
 
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointResponsePtr;
@@ -31,6 +33,8 @@ using Cti::CapControl::PointIdVector;
 using Cti::CapControl::PointResponseKey;
 using Cti::CapControl::ConvertIntToVerificationStrategy;
 using Cti::CapControl::setVariableIfDifferent;
+using Cti::CapControl::PointResponseDaoPtr;
+using Cti::CapControl::Database::DatabaseDaoFactory;
 using std::endl;
 using std::set;
 using std::make_pair;
@@ -6449,6 +6453,18 @@ void CtiCCSubstationBus::dumpDynamicData(Cti::Database::DatabaseConnection& conn
         CtiCCMonitorPointPtr monPoint = entry.second;
         monPoint->dumpDynamicData(conn,currentDateTime);
     }
+    PointResponseDaoPtr pointResponseDao = DatabaseDaoFactory().getPointResponseDao();
+    for each(const map<Cti::CapControl::PointResponseKey, PointResponsePtr>::value_type  entry in _pointResponses)
+    {
+        PointResponsePtr pResponse = entry.second;
+        bool ret = pointResponseDao->save(conn,*pResponse);
+
+        if( (ret == false) && (_CC_DEBUG & CC_DEBUG_DATABASE) )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Point Response save failed. " << endl;
+        }       
+    }
 
 }
 
@@ -6820,10 +6836,10 @@ void CtiCCSubstationBus::updatePointResponseDeltas(std::set<long> pointIds)
             dout << CtiTime() << " Updating POINT RESPONSE DELTAS for CapBank: " << capBank->getPaoName() << endl;
         }
 
-        for (int k = 0; k < _multipleMonitorPoints.size(); k++)
+        for each (const map<long, CtiCCMonitorPointPtr>::value_type & entry in _monitorPoints)
         {
-            CtiCCMonitorPointPtr point = (CtiCCMonitorPointPtr)_multipleMonitorPoints[k];
-
+            CtiCCMonitorPointPtr point = entry.second;
+        
             //This checks to make sure we got an update for the monitor point before updating the deltas.
             if (pointIds.find(point->getPointId()) != pointIds.end())
             {
@@ -9465,6 +9481,21 @@ std::vector <long> CtiCCSubstationBus::getAllMonitorPointIds()
     return pointIds;
 }
 
+std::vector <CtiCCMonitorPointPtr> CtiCCSubstationBus::getAllCapBankMonitorPoints()
+{
+    std::vector<CtiCCMonitorPointPtr> points;
+    for each (const map<long, CtiCCMonitorPointPtr>::value_type & entry in _monitorPoints)
+    {
+        CtiCCMonitorPointPtr mPoint = entry.second;
+        CtiCCFeederPtr feed = NULL;
+        if (CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder(mPoint, feed))
+        {
+             points.push_back(mPoint);
+        }
+    }
+    return points;
+}
+
 void CtiCCSubstationBus::removeAllMonitorPoints()
 {
     _monitorPoints.clear();
@@ -9485,16 +9516,19 @@ PointResponsePtr CtiCCSubstationBus::getPointResponse(PointResponseKey key)
 
 void CtiCCSubstationBus::addDefaultPointResponses( )
 {
-    for each (long mPointId  in getAllMonitorPointIds() )
+    for each (CtiCCMonitorPointPtr mPoint in getAllCapBankMonitorPoints() )
     {
+        long mPointId = mPoint->getPointId();
+        long bankId = mPoint->getDeviceId();
+
         for each(const map<long, CtiCCMonitorPointPtr>::value_type & response in _monitorPoints )
         {
-            int responseDeviceId = response.second->getDeviceId();
-            PointResponseKey prKey = PointResponseKey(responseDeviceId, mPointId);
+            int responsePointId = response.second->getPointId();
+            PointResponseKey prKey = PointResponseKey(bankId, responsePointId);
             PointResponsePtr pResponse = getPointResponse(prKey);
             if (pResponse == NULL)
             {
-                pResponse = boost::shared_ptr<PointResponse>(new PointResponse(mPointId, responseDeviceId, 0, _IVVC_DEFAULT_DELTA, false, getPaoId()));
+                pResponse = boost::shared_ptr<PointResponse>(new PointResponse(responsePointId, bankId, 0, _IVVC_DEFAULT_DELTA, false, getPaoId()));
                 _pointResponses.insert(make_pair(prKey, pResponse));
             }
         }
