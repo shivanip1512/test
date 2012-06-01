@@ -23,9 +23,9 @@
 	<cti:msg2 var="cancelButtonTitle" key=".filterShortcutClose"/>
 
 	<dialog:inline id="leakFilterDialog" okEvent="none" nameKey="leakFilterDialog" on=".f_open_filter_dialog"
-		options="{width: 550, 'buttons': [{text: '${filterButton}', click: function() { WaterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', class: 'leakFilterSubmitButton' },
+		options="{width: 550, 'buttons': [{text: '${filterButton}', click: function() { WaterLeakReport.filter_submit(); }, title: '${filterButtonTitle}', 'class': 'leakFilterSubmitButton' },
                                           {text: '${resetButton}', click: function() { WaterLeakReport.reset_filter_submit(); }, title: '${resetButtonTitle}' },
-                                          {text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', class: 'naked leakFilterCancelButton anchorUnderlineHover' }]}">
+                                          {text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'naked leakFilterCancelButton anchorUnderlineHover' }]}">
 		<form:form id="filterForm" action="report" method="get" commandName="backingBean">
 			<tags:sortFields backingBean="${backingBean}"/>
 			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab"/>
