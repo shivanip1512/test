@@ -278,11 +278,17 @@ ul.dynatree-container a
 /*	outline: 0; /* @ Firefox, prevent dotted border after click */
 }
 
-ul.dynatree-container a:hover,
+ul.dynatree-container a:hover
+{
+    color: #06C;
+/*	text-decoration: underline; */
+}
+
+
 span.dynatree-focused a:link,
 span.dynatree-active a
 {
-/*	text-decoration: underline; */
+    color: #06C;
 	background: #F2F7FD; /* light blue */
 	border-color: #B8D6FB; /* darker light blue */
 }

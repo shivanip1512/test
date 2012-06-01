@@ -9,6 +9,12 @@
 <cti:standardPage module="capcontrol" page="substation">
 <%@ include file="/capcontrol/capcontrolHeader.jspf"%>
 
+<cti:includeScript link="JQUERY_COOKIE" />
+<cti:includeScript link="JQUERY_SCROLLTO" />
+<cti:includeScript link="JQUERY_TREE" />
+<cti:includeScript link="JQUERY_TREE_HELPERS" />
+<cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/ui.dynatree.css"/>
+
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
 <cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>

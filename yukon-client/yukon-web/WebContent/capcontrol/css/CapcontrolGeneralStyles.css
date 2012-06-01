@@ -187,33 +187,10 @@ div.controls {
     padding-left: 3px;
 }
 
-/* BANK MOVE */
-ul.bankMoveHierarchy {
-    height: 250px;
+div.bankMoveContainer div.boxContainer_content {
+    height: 200px;
     overflow: auto;
 }
-div.bankMoveContainer ul {
-    padding-left: 25px;
-}
-div.bankMoveContainer span:hover,
-div.bankMoveContainer label:hover {
-    text-decoration: underline;
-    color: #0066CC;
-    cursor: pointer;
-}
-div.bankMoveContainer li.plus {
-    list-style-image: url('/capcontrol/images/nav-plus.gif');
-}
-div.bankMoveContainer li.minus {
-    list-style-image: url('/capcontrol/images/nav-minus.gif');
-}
-div.bankMoveContainer input[type="radio"]:checked+label {
-    color: #0066CC;
-}
-div.bankMoveContainer li.radio {
-    list-style: none;
-}
-/* END BANK MOVE */
 
 span.normalText {
     color: black;

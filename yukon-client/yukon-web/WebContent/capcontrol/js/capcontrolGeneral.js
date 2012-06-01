@@ -198,17 +198,34 @@ function hideAlertMessage() {
 }
 
 //BANK MOVE JS
-function toggleLi(event) {
- var li = event.findElement('li');
- var childUl = li.down('ul');
- if (childUl) {
-     if (childUl.toggle().visible()) {
-         li.addClassName('minus');
-         li.removeClassName('plus');
-     } else {
-         li.addClassName('plus');
-         li.removeClassName('minus');
-     }
- }
-}
-YEvent.observeSelectorClick('li.toggle', toggleLi);
+//jQuery(function(){
+//    jQuery(document).delegate("li.toggle", 'click', function(){
+//        var li = jQuery(this);
+//        var childUl = li.find('ul')[0];
+//        if(childUl){
+//            childUl.toggle();
+//            if (childUl.attr('display') != 'none') {
+//                li.addClass("plus");
+//                li.removeClass("minus");
+//            } else {
+//                li.addClass("minus");
+//                li.removeClass("plus");
+//            }
+//        }
+//    });
+//});
+
+jQuery(function(){
+    jQuery(document).delegate("li.toggle", 'click', function(e){
+        if(e.target == e.currentTarget){
+            var li = jQuery(this);
+            var subMenu = li.find('ul:first')
+            if(subMenu[0]){
+                subMenu.toggle();
+                li.toggleClass("minus").toggleClass("plus");
+            }
+            return false;
+        }
+        return true;
+    });
+});

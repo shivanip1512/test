@@ -3,6 +3,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree"%>
 <%@ taglib prefix="capTags" tagdir="/WEB-INF/tags/capcontrol"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
@@ -13,13 +14,63 @@
 
 <script type="text/javascript"> 
 updateFeederBankInfo = function () {
-    var params = {'feederId': $F("selectedFeeder")};
-    new Ajax.Updater('controlOrders', '${controlOrderPage}', {method: 'post', parameters: params});
+    var params = {'feederId': jQuery("#selectedFeeder").val()};
+    jQuery.ajax({
+        url: '${controlOrderPage}',
+        method: 'post',
+        data: params,
+        success: function(data) {
+            jQuery('#controlOrders').html(data);
+        }
+    });
 }
 
 selectFeeder = function (fid) {
-    $("selectedFeeder").value = fid;
+    jQuery("#selectedFeeder").val(fid);
+    jQuery("#newFeederId").val(fid);
     updateFeederBankInfo();
+}
+
+function handleNodeClick(node, event) {
+    if (node.getLevel() == 4) {
+        selectFeeder(node.data.key);
+    } else {
+        if (node.getEventTargetType(event) == "title") {
+            node.toggleExpand();
+            return false; // Prevent bubbling event
+        }
+    }
+}
+
+treeInit = function() {
+    
+    var areas = [];
+    <c:forEach var="area" items="${allAreas}">
+        var area = {title: '${area.name}', icon: false};
+        var stations = [];
+        <c:forEach var="station" items="${area.substations}">
+            var station = {title: '${station.name}', icon: false};
+            var buses = [];
+            <c:forEach var="bus" items="${station.substationBuses}">
+                var bus = {title: '${bus.name}', icon: false};
+                var feeders = [];
+                <c:forEach var="feeder" items="${bus.feeders}">
+                    <c:if test="${!(feeder.id == oldFeederId)}">
+                        var feeder = {title: '${feeder.name}', icon: false, key: '${feeder.id}'};
+                        feeders.push(feeder);
+                    </c:if>
+                </c:forEach>
+                bus.children = feeders;
+                buses.push(bus);
+            </c:forEach>
+            station.children = buses;
+            stations.push(station);
+        </c:forEach>
+        area.children = stations;
+        areas.push(area);
+    </c:forEach>
+        
+    jQuery("div.bankMoveContainer div.boxContainer_content").dynatree({children: areas, keyboard: true, clickFolderMode: 3, selectMode: 1, onClick: handleNodeClick});
 }
 </script>
 
@@ -30,8 +81,9 @@ selectFeeder = function (fid) {
         <input type="hidden" name="selectedFeeder" value="${oldFeederId}" id="selectedFeeder">
         <form:hidden path="bankId"/>
         <form:hidden path="oldFeederId"/>
+        <form:hidden path="newFeederId" id="newFeederId"/>
         
-        <tags:nameValueContainer2>
+        <tags:nameValueContainer2 tableClass="marginBottomSmall">
             <tags:nameValue2 nameKey=".capbank">
                 <span style="font-size: 12px;"><spring:escapeBody htmlEscape="true">${bankName}</spring:escapeBody></span>
             </tags:nameValue2>
@@ -42,31 +94,7 @@ selectFeeder = function (fid) {
         </tags:nameValueContainer2>
     
         <tags:boxContainer2 nameKey="feedersContainer" hideEnabled="false" styleClass="padBottom bankMoveContainer">
-            <ul class="bankMoveHierarchy">
-                <c:forEach var="area" items="${allAreas}">
-                    <li class="toggle plus"><span><spring:escapeBody htmlEscape="true">${area.name}</spring:escapeBody></span>
-                        <ul style="display:none">
-                            <c:forEach var="station" items="${area.substations}">
-                                <li class="toggle plus"><span><spring:escapeBody htmlEscape="true">${station.name}</spring:escapeBody></span>
-                                    <ul style="display:none">
-                                        <c:forEach var="bus" items="${station.substationBuses}">
-                                            <li class="toggle plus"><span><spring:escapeBody htmlEscape="true">${bus.name}</spring:escapeBody></span>
-                                                <ul style="display:none">
-                                                    <c:forEach var="feeder" items="${bus.feeders}">
-                                                        <c:if test="${!(feeder.id == oldFeederId)}">
-                                                            <li class="radio"><form:radiobutton path="newFeederId" onclick="selectFeeder(${feeder.id});" label="${feeder.name}" value="${feeder.id}"/></li>
-                                                        </c:if>
-                                                    </c:forEach>
-                                                </ul>
-                                            </li>
-                                        </c:forEach>
-                                    </ul>
-                                </li>
-                            </c:forEach>
-                        </ul>
-                    </li>
-                </c:forEach>
-            </ul>
+            <jsTree:inlineTree id="feederTree" width="500" height="300" treeParameters="{onPostInit: treeInit()}"/>
         </tags:boxContainer2>
 
         <div id="controlOrders" class="padBottom clear"></div>

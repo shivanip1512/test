@@ -130,7 +130,7 @@ public class RfnMeterArchiveTestController {
             }
             channelData.setUnitOfMeasureModifiers(modifiers);
             
-            jmsTemplate.convertAndSend("yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest", message);
+            jmsTemplate.convertAndSend("yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest", message);
         }
         
         return "redirect:viewMeterReadArchiveRequest";
@@ -167,7 +167,7 @@ public class RfnMeterArchiveTestController {
         RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
         archiveRequest.setEvent(rfnEvent);
         archiveRequest.setDataPointId(1);
-        sendArchiveRequest("yukon.rr.obj.amr.rfn.EventArchiveRequest", archiveRequest);
+        sendArchiveRequest("yukon.qr.obj.amr.rfn.EventArchiveRequest", archiveRequest);
     }
     
     private void buildAndSendAlarm(TestEvent event, int serialNum) {
@@ -176,7 +176,7 @@ public class RfnMeterArchiveTestController {
         RfnAlarmArchiveRequest archiveRequest = new RfnAlarmArchiveRequest();
         archiveRequest.setAlarm(rfnAlarm);
         archiveRequest.setDataPointId(1);
-        sendArchiveRequest("yukon.rr.obj.amr.rfn.AlarmArchiveRequest", archiveRequest);
+        sendArchiveRequest("yukon.qr.obj.amr.rfn.AlarmArchiveRequest", archiveRequest);
     }
 
     private <T extends RfnEvent> T buildEvent(TestEvent testEvent, T rfnEvent, int serialNum) {
