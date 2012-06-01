@@ -143,7 +143,7 @@
   <bean id="yukonGroupService" class="com.cannontech.core.service.impl.YukonGroupServiceImpl" />
 
   <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl" />
-  <bean id="rphManagementDao" class="com.cannontech.core.dao.impl.RphManagementDaoImpl" />
+  <bean id="databaseManagementDao" class="com.cannontech.core.dao.impl.DatabaseManagementDaoImpl" />
   
   <bean id="addressDao" class="com.cannontech.core.dao.impl.AddressDaoImpl">
       <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />

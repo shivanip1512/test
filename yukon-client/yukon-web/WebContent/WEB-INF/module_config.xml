@@ -1321,7 +1321,7 @@
                         </option>
                     </options>
                 </option>
-                <option name="maintenance.VIEW">
+                <option name="maintenance">
                     <requireRoleProperty value="ADMIN_SUPER_USER" />
                     <link>/spring/adminSetup/maintenance/view</link>
                 </option>
@@ -1435,14 +1435,15 @@
                             </page>
                         </pages>
                     </page>
-                    <page name="maintenance.VIEW" type="BASIC">
+                    <page name="maintenance" type="BASIC">
                         <requireRoleProperty value="ADMIN_SUPER_USER" />
                         <menu>maintenance|home</menu>
                         <link>/spring/adminSetup/maintenance/view</link>
                         <pages>
-                            <page name="maintenance.EDIT" type="BASIC">
+                            <page name="maintenance.EDIT" type="DETAIL_WITH_INFO">
                                 <menu>maintenance|home</menu>
                                 <link>/spring/adminSetup/maintenance/edit</link>
+                                <labelArgument>${jobNameMsg}</labelArgument>
                             </page>
                         </pages>
                     </page>

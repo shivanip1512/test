@@ -3,17 +3,25 @@
 <properties>
 
     <!-- home.jsp -->
-    <entry key="yukon.web.modules.adminSetup.maintenance.VIEW.pageName">Maintenance</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.EDIT.pageName">Maintenance</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.VIEW.contextualPageName">Maintenance</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.EDIT.contextualPageName">Edit</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.pageDescription">Maintenance</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.rphDuplicateDeletion.title">Rph Duplicate Deletion</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.status">Status</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.status.enabled">Enabled</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.status.disabled">Disabled</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.runSchedule">Run Schedule</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.nextRun">Next Run</entry>
-    <entry key="yukon.web.modules.adminSetup.maintenance.invalidCron">Invalid Cron Expression</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.pageName">Maintenance</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.maintenanceJobs.title">Scheduled Jobs</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.tableHeader.scheduleName">Name</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.tableHeader.scheduleDescription">Run Schedule</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.scheduledRphDuplicateDeletionExecutionJobDefinition.title">Rph Duplicate Deletion</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.scheduledRphDanglingEntriesDeletionExecutionJobDefinition.title">Rph Dangling Entries Deletion</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition.title">Log Dangling Entries Deletion</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.edit.hoverText">Edit Schedule Details ({0})</entry>
+   	<entry key="yukon.web.modules.adminSetup.maintenance.enable.circle.hoverText">Enable ({0})</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.disable.circle.hoverText">Disable ({0})</entry>
     
+  	<!-- edit.jsp -->
+	<entry key="yukon.web.modules.adminSetup.maintenance.EDIT.pageDescription">{0}</entry>
+	<entry key="yukon.web.modules.adminSetup.maintenance.status">Status</entry>
+	<entry key="yukon.web.modules.adminSetup.maintenance.status.enabled">Enabled</entry>
+	<entry key="yukon.web.modules.adminSetup.maintenance.status.disabled">Disabled</entry>
+	<entry key="yukon.web.modules.adminSetup.maintenance.runSchedule">Run Schedule</entry>
+	<entry key="yukon.web.modules.adminSetup.maintenance.nextRun">Next Run</entry>
+	<entry key="yukon.web.modules.adminSetup.maintenance.invalidCron">Invalid Cron Expression</entry>
+	
 </properties>

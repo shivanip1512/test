@@ -52,5 +52,11 @@ public interface SystemEventLogService {
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
     public void rphDeleteDuplicates(int rowsDeleted, Instant start, Instant finish);
     
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
+    public void rphDeleteDanglingEntries(int rowsDeleted, Instant start, Instant finish);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
+    public void systemLogDeleteDanglingEntries(int rowsDeleted, Instant start, Instant finish);
+    
 
 }

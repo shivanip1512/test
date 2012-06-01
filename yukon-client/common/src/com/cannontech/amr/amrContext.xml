@@ -332,6 +332,32 @@
         </property>
     </bean>
     
+     <!-- Scheduled Rph Dangling Entries Deletion Job Definition -->
+    <bean id="scheduledRphDanglingEntriesDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="scheduledRphDanglingEntriesDeletionExecutionTask" />
+        </property>
+        <property name="title" value="Scheduled Rph Dangling Entries Deletion Execution Job" />
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList"><list></list></property>
+            </bean>
+        </property>
+    </bean>
+    
+    <!-- Scheduled System Log Dangling Entries Deletion Job Definition -->
+    <bean id="scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="scheduledSystemLogDanglingEntriesDeletionExecutionTask" />
+        </property>
+        <property name="title" value="Scheduled System Log Dangling Entries Deletion Execution Job" />
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList"><list></list></property>
+            </bean>
+        </property>
+    </bean>
+    
     <!-- Scheduled Group Request Execution Task -->
     <bean id="scheduledGroupRequestExecutionTask" 
         class="com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupRequestExecutionTask"  
@@ -341,6 +367,18 @@
     <!-- Scheduled Rph Duplicate Deletion Execution Task -->
     <bean id="scheduledRphDuplicateDeletionExecutionTask" 
         class="com.cannontech.amr.scheduledRphDuplicateDeletionExecution.tasks.ScheduledRphDuplicateDeletionExecutionTask"  
+        scope="prototype">
+    </bean>
+    
+    <!-- Scheduled Rph Dangling Entries Deletion Execution Task -->
+    <bean id="scheduledRphDanglingEntriesDeletionExecutionTask" 
+        class="com.cannontech.amr.scheduledRphDanglingEntriesDeletionExecutionTask.tasks.ScheduledRphDanglingEntriesDeletionExecutionTask"  
+        scope="prototype">
+    </bean>
+    
+     <!-- Scheduled System Log Dangling Entries Deletion Execution Task -->
+    <bean id="scheduledSystemLogDanglingEntriesDeletionExecutionTask" 
+        class="com.cannontech.amr.scheduledSystemLogDanglingEntriesDeletionExecutionTask.tasks.ScheduledSystemLogDanglingEntriesDeletionExecutionTask"  
         scope="prototype">
     </bean>
     

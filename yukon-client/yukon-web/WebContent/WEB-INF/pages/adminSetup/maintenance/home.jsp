@@ -4,55 +4,73 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
-<cti:standardPage module="adminSetup" page="maintenance.${mode}">
-    <tags:setFormEditMode mode="${mode}"/>
-    <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
-        <cti:dataGridCell>
-            <form action="update" method="post">
-                <c:set var="cronUniqueId" value="cronUniqueId_${job.id}"/>
-                <input type="hidden" name="jobId" value="${job.id}">
-                <input type="hidden" name="cronUniqueId" value="${cronUniqueId}">
-                <tags:formElementContainer nameKey="rphDuplicateDeletion">
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".status">
-                            <c:if test="${job.disabled}">
-                                <span class="fwb errorMessage"><i:inline key=".status.disabled"/></span>
-                            </c:if>
-                            <c:if test="${!job.disabled}">
-                                <span class="fwb successMessage"><i:inline key=".status.enabled"/></span>
-                            </c:if>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".runSchedule">
-                            <cti:displayForPageEditModes modes="VIEW">
-                                <cti:dataUpdaterValue type="JOB" identifier="${job.id}/SCHEDULE_DESCRIPTION"/>
-                            </cti:displayForPageEditModes>
-                            <cti:displayForPageEditModes modes="EDIT">
-                                <tags:cronExpressionData state="${expressionTagState}"
-                                    id="${cronUniqueId}" allowTypeChange="false" />
-                            </cti:displayForPageEditModes>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".nextRun">
-                            <amr:scheduledGroupRequestExecutionJobNextRunDate jobId="${job.id}"/>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </tags:formElementContainer>
-                <cti:displayForPageEditModes modes="VIEW">
-                    <cti:button nameKey="edit" href="edit"/>
-                </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="EDIT">
-                    <cti:button nameKey="update" type="submit"/>
-                    <cti:url value="toggleJobEnabled" var="toggleJobEnabled">
-                        <cti:param name="jobId" value="${job.id}"/>
-                    </cti:url>
-                    <c:if test="${job.disabled}">
-                        <cti:button nameKey="enable" href="${toggleJobEnabled}"/>
-                    </c:if>
-                    <c:if test="${!job.disabled}">
-                        <cti:button nameKey="disable" href="${toggleJobEnabled}"/>
-                    </c:if>
-                    <cti:button nameKey="cancel" href="view"/>
-                </cti:displayForPageEditModes>
-            </form>
-        </cti:dataGridCell>
-    </cti:dataGrid>
+<cti:standardPage module="adminSetup" page="maintenance">
+
+<c:url value="/spring/adminSetup/maintenance/toggleJobEnabledAjax" var="toggleJobAjaxUrl"/>
+
+<script>
+jQuery(function(){
+	jQuery("a.enabled_false").each(function(idx, val){
+		jQuery(val).attr('title', jQuery(val).attr('data-truejobNameMsg'));
+	});
+	
+	jQuery("a.enabled_true").each(function(idx, val){
+		jQuery(val).attr('title', jQuery(val).attr('data-falsejobNameMsg'));
+	});
+	
+	jQuery("a.f_toggleJobEnabled").click(function(e){
+		jQuery.ajax({
+			url: '${toggleJobAjaxUrl}?jobId=' + jQuery(e.currentTarget).attr('data-jobid'),
+			success: function(data){
+				jQuery(e.currentTarget).removeClass("enabled_false, enabled_true");
+				jQuery(e.currentTarget).addClass("enabled_"+data);
+				jQuery(e.currentTarget).attr('title', jQuery(e.currentTarget).attr('data-'+ !data +'jobNameMsg'));
+			}
+		});
+	});
+});
+</script>
+							
+	<cti:dataGrid cols="2">
+		<cti:dataGridCell>
+		    <tags:boxContainer2 nameKey="maintenanceJobs" hideEnabled="false">
+		    	<table class="compactResultsTable">
+			
+					<tr>
+						<th style="width:20px;">&nbsp;</th>
+						<th><i:inline key=".tableHeader.scheduleName"/></th>
+						<th><i:inline key=".tableHeader.scheduleDescription"/></th>
+						<th><i:inline key=".tableHeader.enabled"/></th>
+					</tr>
+					<c:forEach var="job" items="${jobs}">
+						<cti:msg2 var="jobNameMsg" key=".${job.beanName}.title"/>
+						<tr>
+							<cti:url var="editScheduleDetailsUrl" value="/spring/adminSetup/maintenance/edit" >
+								<cti:param name="jobId" value="${job.id}"/>
+							</cti:url>
+							<td>
+			                	<a href="${editScheduleDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${jobNameMsg}"/>" class="icon icon_script"></a>
+							</td>
+							<td class="nonwrapping">
+								<a href="${editScheduleDetailsUrl}" title="<cti:msg2 key=".edit.hoverText" arguments="${jobNameMsg}"/>">
+									<i:inline key=".${job.beanName}.title"/>
+								</a>
+							</td>
+							<td class="nonwrapping">
+								<cti:dataUpdaterValue type="JOB" identifier="${job.id}/SCHEDULE_DESCRIPTION"/>
+							</td>
+							<cti:msg2 key="yukon.web.modules.adminSetup.maintenance.enable.circle.hoverText" argument="${jobNameMsg}" var="enableMsg" />
+							<cti:msg2 key="yukon.web.modules.adminSetup.maintenance.disable.circle.hoverText" argument="${jobNameMsg}" var="disableMsg"/>
+							<td>
+								<a href="javascript:void(0)" class="icon enabled_${not job.disabled} f_toggleJobEnabled" data-truejobNameMsg="${enableMsg}" data-falsejobNameMsg="${disableMsg}" data-jobid="${job.id}">Toggle Job</a>
+							</td>
+		
+						</tr>
+					</c:forEach>
+					
+				</table>
+		    </tags:boxContainer2>
+		</cti:dataGridCell>
+	</cti:dataGrid>
+  
 </cti:standardPage>

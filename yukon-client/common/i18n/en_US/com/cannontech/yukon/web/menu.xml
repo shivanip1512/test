@@ -286,6 +286,6 @@
 <entry key="yukon.web.menu.config.adminSetup.userGroupEditor.home"></entry>
 <entry key="yukon.web.menu.config.adminSetup.encryption">Encryption</entry>
 <entry key="yukon.web.menu.config.adminSetup.encryption.home"></entry>
-<entry key="yukon.web.menu.config.adminSetup.maintenance.VIEW">Maintenance</entry>
+<entry key="yukon.web.menu.config.adminSetup.maintenance">Maintenance</entry>
 
 </properties>
