@@ -11,6 +11,7 @@
 <cti:standardPage page="waterLeakReport.report" module="amr">
 
 	<cti:includeScript link="/JavaScript/water_leak_report.js"/>
+    <cti:includeScript link="/JavaScript/yukon/ui/fieldHelper.js"/>
 
 	<input type="hidden" id="hasFilterError" value="${hasFilterError}"/>
 
@@ -44,8 +45,13 @@
 					<tags:inputNameValue nameKey=".filter.toHour" path="toHour"
 						size="2" inputClass="f_to_hour"/>
 
-					<tags:inputNameValue nameKey=".filter.threshold" path="threshold"
-						size="3" inputClass="f_threshold"/>
+                    <tags:nameValue2 nameKey=".filter.threshold">
+                        <tags:input path="threshold" size="3" inputClass="threshold_input f_threshold"/>
+						<span class="focusableFieldHolder">
+                            <a class="icon icon_help"><i:inline key=".filter.helpText" /></a>
+						</span>
+						<span class="focusedFieldDescription"><i:inline key=".filter.threshold.helpText"/></span>
+                    </tags:nameValue2>
 
 					<tags:nameValue2 nameKey=".filter.includeDisabledDevices">
 						<form:checkbox path="includeDisabledPaos"

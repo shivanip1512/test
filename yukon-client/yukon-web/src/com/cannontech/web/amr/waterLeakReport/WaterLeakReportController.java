@@ -14,7 +14,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
@@ -129,42 +128,38 @@ public class WaterLeakReportController {
             @Override
             public void doValidation(WaterLeakReportFilterBackingBean backingBean, Errors errors) {
                 Instant now = new Instant();
-                /* Dates */
+                /* Dates & Hours */
                 if (backingBean.getFromLocalDate() == null) {
-                    errors.rejectValue("fromLocalDate", "yukon.web.error.required");
+                    if (!errors.hasFieldErrors("fromLocalDate")) {
+                        errors.rejectValue("fromLocalDate", "yukon.web.error.required");
+                    }
+                } else if ((backingBean.getToLocalDate() == null)) {
+                    if (!errors.hasFieldErrors("toLocalDate")) {
+                        errors.rejectValue("toLocalDate", "yukon.web.error.required");
+                    }
                 } else if(backingBean.getFromLocalDate().toDate().after(now.toDate())) {
                     // If the from date is in the future
                     errors.rejectValue("fromLocalDate", baseKey + ".validation.fromDateInFuture");
-                } else if (backingBean.getFromLocalDate().isEqual(new LocalDate(now))) {
-                    if (backingBean.getFromHour() >= now.get(DateTimeFieldType.hourOfDay())) {
-                        // If the from date is today, but the from hour is greater than now
-                        errors.rejectValue("fromHour", baseKey + ".validation.fromHourInFuture");
-                    }
-                }
-
-                if (backingBean.getToLocalDate() == null) {
-                    errors.rejectValue("toLocalDate", "yukon.web.error.required");
-                } else if (backingBean.getFromLocalDate() != null && 
-                           !backingBean.getFromLocalDate().isBefore(backingBean.getToLocalDate())) {
+                } else if (backingBean.getFromLocalDate().isAfter(backingBean.getToLocalDate())) {
+                    errors.rejectValue("fromLocalDate", baseKey + ".validation.fromDateAfterToDate");
+                } else if (backingBean.getFromLocalDate().isEqual(backingBean.getToLocalDate())
+                           && backingBean.getFromHour() >= backingBean.getToHour()) {
                     // If the dates are equal, then the hours must be correct
-                    if (backingBean.getFromLocalDate().isEqual(backingBean.getToLocalDate())) {
-                        if (backingBean.getFromHour() >= backingBean.getToHour()) {
-                            errors.rejectValue("fromHour", baseKey + ".validation.fromHourAfterToHour");
-                        }
-                    } else {
-                        errors.rejectValue("fromLocalDate", baseKey + ".validation.fromDateAfterToDate");
-                    }
+                    errors.rejectValue("fromHour", baseKey + ".validation.fromHourAfterToHour");
+                } else if (backingBean.getFromLocalDate().isEqual(new LocalDate(now))
+                           && backingBean.getFromHour() >= now.get(DateTimeFieldType.hourOfDay())) {
+                    // If the from date is today, but the from hour is greater than now
+                    errors.rejectValue("fromHour", baseKey + ".validation.fromHourInFuture");
                 } else if(backingBean.getToLocalDate().toDate().after(now.toDate())) {
                     // If the to date is in the future
                     errors.rejectValue("toLocalDate", baseKey + ".validation.toDateInFuture");
-                } else if (backingBean.getToLocalDate().isEqual(new LocalDate(now))) {
-                    if (backingBean.getToHour() >= now.get(DateTimeFieldType.hourOfDay())) {
-                        // If the to date is today, but the to hour is greater than now
-                        errors.rejectValue("toHour", baseKey + ".validation.toHourInFuture");
-                    }
+                } else if (backingBean.getToLocalDate().isEqual(new LocalDate(now))
+                           && backingBean.getToHour() >= now.get(DateTimeFieldType.hourOfDay())) {
+                    // If the to date is today, but the to hour is greater than now
+                    errors.rejectValue("toHour", baseKey + ".validation.toHourInFuture");
                 }
 
-                /* Hours */
+                /* Hours (general) */
                 if (backingBean.getFromHour() < 0) {
                     errors.rejectValue("fromHour", baseKey + ".validation.fromHourTooLow");
                 }
@@ -191,18 +186,15 @@ public class WaterLeakReportController {
                          FlashScope flashScope, YukonUserContext userContext, boolean initReport,
                          boolean resetReport)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
-//        WaterLeakReportFilterBackingBean errorBackingBean = new WaterLeakReportFilterBackingBean(backingBean);
         if (initReport) model.addAttribute("first_visit", true);
-        if (initReport || resetReport || backingBean.getFromLocalDate() == null || backingBean.getToLocalDate() == null) {
+        if (initReport || resetReport) {
             backingBean = new WaterLeakReportFilterBackingBean(userContext);
         }
         setupDeviceCollectionFromRequest(backingBean, request);
-        setupBackingBeanDateTimes(backingBean, model, userContext);
         filterValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-//            model.addAttribute("backingBean", errorBackingBean);
             model.addAttribute("hasFilterError", true);
             return "waterLeakReport/report.jsp";
         }
@@ -217,7 +209,6 @@ public class WaterLeakReportController {
                                Integer[] selectedPaoIds)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         setupDeviceCollectionForIntervalData(backingBean, selectedPaoIds, userContext);
-        setupBackingBeanDateTimes(backingBean, model, userContext);
         setupWaterLeakIntervalFromFilter(backingBean, userContext, model);
         return "waterLeakReport/intervalData.jsp";
     }
@@ -227,7 +218,6 @@ public class WaterLeakReportController {
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         WaterLeakReportFilterBackingBean backingBean = new WaterLeakReportFilterBackingBean(userContext);
         setupDeviceCollectionFromRequest(backingBean, request);
-        setupBackingBeanDateTimes(backingBean, model, userContext);
         setupWaterLeakReportFromFilter(request, backingBean, userContext, model);
         return "waterLeakReport/report.jsp";
     }
@@ -271,7 +261,6 @@ public class WaterLeakReportController {
             ServletRequestBindingException, DeviceCollectionCreationException {
 
         setupDeviceCollectionFromRequest(backingBean, request);
-        setupBackingBeanDateTimes(backingBean, model, userContext);
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         // header row
@@ -283,8 +272,8 @@ public class WaterLeakReportController {
 
         // data rows
         List<WaterMeterLeak> waterLeaks = waterMeterLeakService.getWaterMeterLeaks(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                                                                   backingBean.getFromDateTime().toDate(),
-                                                                                   backingBean.getToDateTime().toDate(),
+                                                                                   backingBean.getFromInstant().toDate(),
+                                                                                   backingBean.getToInstant().toDate(),
                                                                                    backingBean.isIncludeDisabledPaos(),
                                                                                    backingBean.getThreshold(),
                                                                                    userContext);
@@ -320,7 +309,6 @@ public class WaterLeakReportController {
                                            YukonUserContext userContext) throws IOException,
             ServletRequestBindingException, DeviceCollectionCreationException {
 
-        setupBackingBeanDateTimes(backingBean, model, userContext);
         setupDeviceCollectionFromRequest(backingBean, request);
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
@@ -335,8 +323,8 @@ public class WaterLeakReportController {
         // data rows
         List<WaterMeterLeak> waterLeaks = waterMeterLeakService
                 .getWaterMeterLeakIntervalData(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                               backingBean.getFromDateTime().toDate(),
-                                               backingBean.getToDateTime().toDate(),
+                                               backingBean.getFromInstant().toDate(),
+                                               backingBean.getToInstant().toDate(),
                                                backingBean.isIncludeDisabledPaos(),
                                                backingBean.getThreshold(),
                                                userContext);
@@ -369,17 +357,6 @@ public class WaterLeakReportController {
         return "";
     }
 
-    private void setupBackingBeanDateTimes(WaterLeakReportFilterBackingBean backingBean,
-                                           ModelMap model, YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
-        DateTime fromDateTime = new DateTime(backingBean.getFromLocalDate().toDate(),
-                                             userContext.getJodaTimeZone()).plus(Hours.hours(backingBean.getFromHour()));
-        DateTime toDateTime = new DateTime(backingBean.getToLocalDate().toDate(),
-                                           userContext.getJodaTimeZone()).plus(Hours.hours(backingBean.getToHour()));
-        backingBean.setFromDateTime(fromDateTime);
-        backingBean.setToDateTime(toDateTime);
-    }
-
     private void setupDeviceCollectionFromRequest(WaterLeakReportFilterBackingBean backingBean,
                                                   HttpServletRequest request)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
@@ -388,8 +365,7 @@ public class WaterLeakReportController {
         if (type != null) {
             deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         } else {
-            // Setup default device group (this is probably the first time the user is hitting this
-            // page)
+            // Setup default device group (this is probably the first time the user is hitting this page)
             DeviceGroup deviceGroup = deviceGroupService.findGroupName(SystemGroupEnum.DEVICETYPES.getFullPath()
                                                                        + PaoType.RFWMETER.getPaoTypeName());
             if (deviceGroup == null) {
@@ -421,8 +397,8 @@ public class WaterLeakReportController {
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         List<WaterMeterLeak> waterLeaks =
             waterMeterLeakService.getWaterMeterLeaks(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                                     backingBean.getFromDateTime().toDate(),
-                                                     backingBean.getToDateTime().toDate(),
+                                                     backingBean.getFromInstant().toDate(),
+                                                     backingBean.getToInstant().toDate(),
                                                      backingBean.isIncludeDisabledPaos(),
                                                      backingBean.getThreshold(),
                                                      userContext);
@@ -433,8 +409,8 @@ public class WaterLeakReportController {
                                                   YukonUserContext userContext, ModelMap model) {
         List<WaterMeterLeak> waterLeaks = 
                 waterMeterLeakService.getWaterMeterLeakIntervalData(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                                                    backingBean.getFromDateTime().toDate(),
-                                                                    backingBean.getToDateTime().toDate(),
+                                                                    backingBean.getFromInstant().toDate(),
+                                                                    backingBean.getToInstant().toDate(),
                                                                     backingBean.isIncludeDisabledPaos(),
                                                                     backingBean.getThreshold(),
                                                                     userContext);
@@ -472,7 +448,7 @@ public class WaterLeakReportController {
         model.addAttribute("filterResult", filterResult);
         model.addAttribute("backingBean", backingBean);
 
-        Hours hoursBetween = Hours.hoursBetween(backingBean.getToDateTime().toInstant(), new Instant());
+        Hours hoursBetween = Hours.hoursBetween(backingBean.getToInstant(), new Instant());
         if (hoursBetween.isLessThan(water_node_reporting_interval)) {
             model.addAttribute("water_node_reporting_interval", water_node_reporting_interval.getHours());
             model.addAttribute("filter_datetime_breach", hoursBetween.getHours());

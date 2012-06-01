@@ -169,6 +169,14 @@ div.resultBar > div {
     text-decoration: underline;
 }
 
+form#filterForm .threshold_input {
+	float: left;
+	margin-right: 5px;
+}
+form#filterForm .icon_help {
+	top: 1px;
+}
+
 .filter_shortcut {
 	font-size: 12px;
     font-style: italic;

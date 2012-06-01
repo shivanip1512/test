@@ -1807,6 +1807,7 @@ div.scrollingContainer {
     right: 168px;
     top: 188px;
     width: 300px;
+    z-index: 1003;
 }
 .pointingPopup_content {
     background: none repeat scroll 0 0 white;

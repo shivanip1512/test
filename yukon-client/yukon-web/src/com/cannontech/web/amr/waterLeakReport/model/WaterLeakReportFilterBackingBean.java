@@ -3,6 +3,7 @@ package com.cannontech.web.amr.waterLeakReport.model;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Hours;
+import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
@@ -15,8 +16,6 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
     public final static int DEFAULT_TO_HOURS = 25;
 
     private DeviceCollection deviceCollection;
-    private DateTime fromDateTime;
-    private DateTime toDateTime;
     private LocalDate fromLocalDate;
     private LocalDate toLocalDate;
     private int fromHour;
@@ -26,28 +25,16 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
     
     public WaterLeakReportFilterBackingBean() {/* Needed by Spring */}
 
-    public WaterLeakReportFilterBackingBean(WaterLeakReportFilterBackingBean toCopy) {
-        this.deviceCollection = toCopy.deviceCollection;
-        this.fromDateTime = new DateTime(toCopy.fromDateTime);
-        this.toDateTime = new DateTime(toCopy.toDateTime);
-        this.fromLocalDate = new LocalDate(toCopy.fromLocalDate);
-        this.toLocalDate = new LocalDate(toCopy.toLocalDate);
-        this.fromHour = toCopy.fromHour;
-        this.toHour = toCopy.toHour;
-        this.threshold = toCopy.threshold;
-        this.includeDisabledPaos = toCopy.includeDisabledPaos;
-    }
-
     public WaterLeakReportFilterBackingBean(YukonUserContext userContext) {
-        fromDateTime = new DateTime(userContext.getJodaTimeZone()).minus(Hours.hours(DEFAULT_FROM_HOURS));
-        toDateTime = new DateTime(userContext.getJodaTimeZone()).minus(Hours.hours(DEFAULT_TO_HOURS));
+        DateTime fromDateTime = new DateTime(userContext.getJodaTimeZone()).minus(Hours.hours(DEFAULT_FROM_HOURS));
+        DateTime toDateTime = new DateTime(userContext.getJodaTimeZone()).minus(Hours.hours(DEFAULT_TO_HOURS));
 
         fromLocalDate = new LocalDate(fromDateTime);
         toLocalDate = new LocalDate(toDateTime);
 
         fromHour = fromDateTime.get(DateTimeFieldType.hourOfDay());
         toHour = toDateTime.get(DateTimeFieldType.hourOfDay());
-        
+
         setItemsPerPage(10);
     }
 
@@ -59,20 +46,12 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
         this.deviceCollection = deviceCollection;
     }
 
-    public DateTime getFromDateTime() {
-        return fromDateTime;
+    public Instant getFromInstant() {
+        return new Instant(fromLocalDate.toDate()).plus(Hours.hours(fromHour).toStandardDuration());
     }
 
-    public void setFromDateTime(DateTime fromDateTime) {
-        this.fromDateTime = fromDateTime;
-    }
-
-    public DateTime getToDateTime() {
-        return toDateTime;
-    }
-
-    public void setToDateTime(DateTime toDateTime) {
-        this.toDateTime = toDateTime;
+    public Instant getToInstant() {
+        return new Instant(toLocalDate.toDate()).plus(Hours.hours(toHour).toStandardDuration());
     }
 
     public LocalDate getFromLocalDate() {
