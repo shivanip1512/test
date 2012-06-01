@@ -10,7 +10,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollectionType;
 import com.cannontech.common.bulk.iterator.CloseableIterator;
@@ -39,6 +42,8 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
     
     private InventoryDao inventoryDao;
     private MemoryCollectionProducer memoryCollectionProducer;
+    
+    private Logger logger = YukonLogManager.getLogger(InventoryFileUploadCollectionProducer.class);
     
     private static enum ColumnHeader {
         SERIAL_NUMBER,
@@ -124,11 +129,13 @@ public class InventoryFileUploadCollectionProducer implements CollectionProducer
                     boolean deviceTypeOK = inventoryDao.checkdeviceType(yukonInventory.getInventoryIdentifier().getInventoryId(), deviceType);
                     
                     if (!(accountNumberOK && deviceTypeOK)) {
+                        logger.error(ColumnHeader.ACCOUNT_NUMBER + " or " + ColumnHeader.DEVICE_TYPE + " not found in system. Values " + ArrayUtils.toString(from));
                         throw new CollectionCreationException("invalidInventoryData");
                     }
                     
                     return yukonInventory.getInventoryIdentifier();
                 } catch (DataAccessException e) {
+                    logger.error(ColumnHeader.SERIAL_NUMBER + " not found in system. Values " + ArrayUtils.toString(from));
                     throw new CollectionCreationException("invalidInventoryData", e);
                 }
             }
