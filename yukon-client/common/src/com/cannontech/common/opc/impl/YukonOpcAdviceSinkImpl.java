@@ -30,11 +30,16 @@ public class YukonOpcAdviceSinkImpl extends OpcAdviseSink {
 	
 	public void readAsyncCallback(OpcItem opcItem) {
 		int handle = opcItem.getClientHandle();
-
+		
 		YukonOpcItem yOpcItem = yukonOpcConnection.getOpcReceiveItem(handle);
 		
 		if (yOpcItem == null) {
-			log.warn("OPC Item received from the Opc Server was not found in Yukon.");
+			yOpcItem = yukonOpcConnection.getOpcSendItem(handle);
+			if (yOpcItem != null) {
+			    log.error("OPC Item received that was configured for sending. Item: " + yOpcItem.getItemName() + " Yukon PointId: " + yOpcItem.getPointId());
+			} else {
+			    log.warn("OPC Item received from the Opc Server was not found in Yukon Receive List.");
+			}
 			return;
 		}
 		
