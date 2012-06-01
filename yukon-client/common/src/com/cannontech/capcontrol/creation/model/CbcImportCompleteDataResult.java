@@ -4,6 +4,7 @@ import org.apache.commons.lang.Validate;
 import org.jdom.Element;
 import org.jdom.Namespace;
 
+import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class CbcImportCompleteDataResult implements CbcImportResult {

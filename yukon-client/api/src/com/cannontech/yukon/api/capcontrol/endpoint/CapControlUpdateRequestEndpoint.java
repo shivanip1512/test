@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
-import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.requests.runnable.YukonJob;
 import com.cannontech.common.requests.runnable.capcontrol.CapControlJobFactory;
 import com.cannontech.common.requests.service.JobManagementService;

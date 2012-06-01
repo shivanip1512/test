@@ -21,6 +21,7 @@
 	<bean class="com.cannontech.capcontrol.creation.service.impl.CapControlImportServiceImpl"/>
     <bean id="capControlCreationService" class="com.cannontech.capcontrol.creation.service.impl.CapControlCreationServiceImpl"/>
 	<bean class="com.cannontech.capcontrol.dao.impl.CapControlImporterFileDaoImpl"/>
+    <bean id="regulatorImportService" class="com.cannontech.capcontrol.creation.service.impl.RegulatorImportServiceImpl"/>
 	
     <bean id="zoneDao" class="com.cannontech.capcontrol.dao.impl.ZoneDaoImpl"/>
     <bean id="ccMonitorBankListDao" class="com.cannontech.capcontrol.dao.impl.CcMonitorBankListDaoImpl"/>

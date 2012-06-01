@@ -20,12 +20,12 @@ import com.cannontech.capcontrol.creation.model.HierarchyImportInvalidDataResult
 import com.cannontech.capcontrol.creation.model.HierarchyImportMissingDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
-import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.capcontrol.exception.CapControlCbcImportException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyImportException;
 import com.cannontech.capcontrol.exception.ImporterCbcMissingDataException;
 import com.cannontech.capcontrol.exception.ImporterHierarchyMissingDataException;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.requests.runnable.YukonJob;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;

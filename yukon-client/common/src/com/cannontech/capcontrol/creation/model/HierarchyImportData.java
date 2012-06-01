@@ -1,6 +1,7 @@
 package com.cannontech.capcontrol.creation.model;
 
 import com.cannontech.capcontrol.BankOpState;
+import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.pao.PaoType;
 	
 public class HierarchyImportData {

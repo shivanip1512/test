@@ -22,6 +22,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 /**
 * A very simple CSV reader released under a commercial-friendly license.
 * 
@@ -123,9 +125,9 @@ public class CSVReader {
     * @throws IOException
     *             if bad things happen during the read
     */
-   public List readAll() throws IOException {
+   public List<String[]> readAll() throws IOException {
 
-       List allElements = new ArrayList();
+       List<String[]> allElements = Lists.newArrayList();
        while (hasNext) {
            String[] nextLineAsTokens = readNext();
            if (nextLineAsTokens != null)

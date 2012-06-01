@@ -46,4 +46,5 @@ public interface CBCSettingsRole
     public static final int ALLOW_FEEDER_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 24;
     public static final int ALLOW_CAPBANK_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 25;
     public static final int CONTROL_WARNING = CapControlRoleDefs.CBC_PROPERTYID_BASE - 26;
+    public static final int CAP_CONTROL_IMPORTER = CapControlRoleDefs.CBC_PROPERTYID_BASE - 27;
 }

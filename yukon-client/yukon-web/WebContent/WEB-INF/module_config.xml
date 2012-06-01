@@ -488,6 +488,14 @@
                 </page>
             </pages>
         </page>
+        <page name="pointImport" type="BASIC">
+            <menu></menu>
+            <pages>
+                <page name="pointImport.results" type="DETAIL">
+                    <menu></menu>
+                </page>
+            </pages>
+        </page>
     </pages>
   </module>
 
@@ -915,7 +923,9 @@
                 </page>
             </pages>
         </page>
-        
+        <page name="import" type="BASIC">
+            <menu>import</menu>
+        </page>
     </pages>
   </module>
 

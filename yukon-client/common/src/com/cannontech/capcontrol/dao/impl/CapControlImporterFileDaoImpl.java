@@ -24,7 +24,6 @@ import com.cannontech.capcontrol.creation.model.HierarchyImportInvalidDataResult
 import com.cannontech.capcontrol.creation.model.HierarchyImportMissingDataResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
-import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.capcontrol.dao.CapControlImporterFileDao;
 import com.cannontech.capcontrol.exception.CapControlCbcFileImportException;
 import com.cannontech.capcontrol.exception.CapControlCbcImportException;
@@ -32,6 +31,7 @@ import com.cannontech.capcontrol.exception.CapControlFileImporterException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyImportException;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Lists;

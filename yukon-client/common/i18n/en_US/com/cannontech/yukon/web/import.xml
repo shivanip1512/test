@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="yukon.web.import.result.SUCCESS">Success - {0} succeeded for object "{1}"</entry>
+    <entry key="yukon.web.import.result.INVALID_IMPORT_ACTION">Invalid Import Action - Cannot perform action "{0}" for object "{1}"</entry>
+    <entry key="yukon.web.import.result.OBJECT_EXISTS">Object Already Exists - {0} failed for object "{1}"</entry>
+    <entry key="yukon.web.import.result.NO_SUCH_OBJECT">Object Does Not Exist - {0} failed for object "{1}"</entry>
+    <entry key="yukon.web.import.result.MISSING_DATA">Data Missing - Required values were missing: {0}</entry>
+    <entry key="yukon.web.import.result.BAD_DATA">Invalid Value - Specified value is not valid in column: {0}</entry>
+    <entry key="yukon.web.import.result.HAS_DEPENDENCIES">Object Has Dependencies - {0} failed for object "{1}"</entry>
+</properties>

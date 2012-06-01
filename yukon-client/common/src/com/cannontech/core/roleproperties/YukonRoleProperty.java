@@ -154,6 +154,7 @@ public enum YukonRoleProperty {
     ALLOW_FEEDER_CONTROLS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.ALLOW_FEEDER_CONTROLS, booleanType()),
     ALLOW_CAPBANK_CONTROLS(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.ALLOW_CAPBANK_CONTROLS, booleanType()),
     CONTROL_WARNING(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.CONTROL_WARNING, booleanType()),
+    CAP_CONTROL_IMPORTER(CBC_SETTINGS, com.cannontech.roles.capcontrol.CBCSettingsRole.CAP_CONTROL_IMPORTER, booleanType()),
     
     RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.CONSUMER_INFO_ACCOUNT_GENERAL, booleanType()),
     RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY, booleanType()),

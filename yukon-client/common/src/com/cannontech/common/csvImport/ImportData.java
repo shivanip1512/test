@@ -1,0 +1,121 @@
+package com.cannontech.common.csvImport;
+
+import java.util.List;
+
+import com.google.common.collect.Lists;
+
+/**
+ * Object representing all the data from an import. 
+ * 
+ * Column names are stored separately from the data rows, and are automatically uppercased and 
+ * trimmed of leading and trailing whitespace. Data is stored and retrieved as rows, but actions
+ * can also be taken on columns.
+ * 
+ * Additionally, the data object stores its expected format, which can be validated against.
+ */
+public class ImportData {
+    private ImportFileFormat format;
+    private List<String[]> originalData;
+    private List<String> columnNames = Lists.newArrayList();
+    private List<ImportRow> rows = Lists.newArrayList();
+    
+    public ImportData(List<String[]> stringData, ImportFileFormat format) {
+        originalData = stringData;
+        this.format = format;
+        
+        columnNames = Lists.newArrayList();
+        for(String header : stringData.get(0)) {
+            columnNames.add(header.trim().toUpperCase());
+        }
+        stringData.remove(0);
+        
+        for(String[] stringRow : stringData) {
+            ImportRow newImportRow = new ImportRow(columnNames, stringRow);
+            rows.add(newImportRow);
+        }
+    }
+    
+    public ImportFileFormat getFormat() {
+        return format;
+    }
+    
+    /**
+     * @return A list of column names, ordered as they were in the import file. Column names are 
+     * automatically made upper-case and trimmed of leading and trailing whitespace, regardless of 
+     * their original formatting.
+     */
+    public List<String> getColumnNames() {
+        return columnNames;
+    }
+    
+    public List<ImportRow> getRows() {
+        return rows;
+    }
+    
+    /**
+     * @return The original Strings this data object was built from. This includes column headers
+     * and remains identical to the contents of the original file, regardless of any operations
+     * performed on the ImportData object.
+     */
+    public List<String[]> getOriginalData() {
+        return originalData;
+    }
+    
+    /**
+     * @return The value string from the specified column and row.
+     */
+    public String getValue(String columnName, int rowNum) {
+        return rows.get(rowNum).getValue(columnName);
+    }
+    
+    /**
+     * @return True if a value is present in the specified column and row, otherwise false. NULL
+     * is considered a value, but "" (empty string) is not.
+     */
+    public boolean hasValue(String columnName, int rowNum) {
+        return rows.get(rowNum).hasValue(columnName);
+    }
+    
+    /**
+     * Completely removes a column based on its name. This includes removing the name from the list
+     * of column names, as well as removing the values in that column from all data rows.
+     * 
+     * @return True if the column was successfully removed, or false if an invalid column name was
+     * supplied.
+     */
+    public boolean removeColumn(String columnName) {
+        Integer columnIndex = getColumnIndex(columnName);
+        return removeColumn(columnName, columnIndex);
+    }
+    
+    /**
+     * Completely removes a column based on its index. This includes removing the name from the list
+     * of column names, as well as removing the values in that column from all data rows.
+     * 
+     * @return True if the column was successfully removed, or false if an invalid column index was
+     * supplied.
+     */
+    public boolean removeColumn(int columnIndex) {
+        String columnName = columnNames.get(columnIndex);
+        return removeColumn(columnName, columnIndex);
+    }
+    
+    private boolean removeColumn(String columnName, int columnIndex) {
+        columnNames.remove(columnIndex);
+        for(ImportRow row : rows) {
+            row.removeColumn(columnName, columnIndex);
+        }
+        return true;
+    }
+    
+    //find the index of a column based on its name. Returns null if the column cannot be found.
+    private Integer getColumnIndex(String columnName) {
+        Integer index = null;
+        for(int i = 0; i < columnNames.size(); i++) {
+            if(columnNames.get(i).equalsIgnoreCase(columnName)) {
+                index = i;
+            }
+        }
+        return index;
+    }
+}

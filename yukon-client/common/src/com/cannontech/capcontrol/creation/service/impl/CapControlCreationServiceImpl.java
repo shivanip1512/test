@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.capcontrol.creation.model.HierarchyImportData;
-import com.cannontech.capcontrol.creation.model.ImportAction;
 import com.cannontech.capcontrol.creation.service.CapControlCreationService;
+import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;

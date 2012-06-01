@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +31,30 @@ import com.cannontech.capcontrol.creation.model.HierarchyImportData;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResult;
 import com.cannontech.capcontrol.creation.model.HierarchyImportResultType;
 import com.cannontech.capcontrol.creation.service.CapControlImportService;
+import com.cannontech.capcontrol.creation.service.RegulatorImportService;
 import com.cannontech.capcontrol.dao.CapControlImporterFileDao;
 import com.cannontech.capcontrol.exception.CapControlCbcFileImportException;
 import com.cannontech.capcontrol.exception.CapControlHierarchyFileImporterException;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.csvImport.ImportData;
+import com.cannontech.common.csvImport.ImportFileFormat;
+import com.cannontech.common.csvImport.ImportFileValidator;
+import com.cannontech.common.csvImport.ImportParser;
+import com.cannontech.common.csvImport.ImportResult;
+import com.cannontech.common.exception.DuplicateColumnNameException;
+import com.cannontech.common.exception.InvalidColumnNameException;
+import com.cannontech.common.exception.RequiredColumnMissingException;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.exceptions.EmptyImportFileException;
+import com.cannontech.web.exceptions.NoImportFileException;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -48,14 +63,15 @@ import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/import/*")
-@CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
+@CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_IMPORTER)
 public class CapControlImportController {
 	private static Logger log = YukonLogManager.getLogger(CapControlImportController.class);
 
 	@Autowired private CapControlImportService capControlImportService;
 	@Autowired private CapControlImporterFileDao capControlFileImporterDao;
+	@Autowired private RegulatorImportService regulatorImportService;
 	
-	private Cache<String, List<CapControlImportResolvable>> resultsLookup = CacheBuilder.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
+	private Cache<String, List<ImportResult>> resultsLookup = CacheBuilder.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
 	
 	private static Function<CapControlImporterCbcField, String> colNameOfField =
 	        new Function<CapControlImporterCbcField, String>() {
@@ -65,7 +81,18 @@ public class CapControlImportController {
         }
     };
 	
-	public static class CapControlImportResolvable {
+    private static enum ImportType implements DisplayableEnum {
+        CBC,
+        HIERARCHY,
+        REGULATOR,
+        ;
+        
+        public String getFormatKey() {
+            return "yukon.web.modules.capcontrol.import.importTypes." + name();
+        }
+    }
+    
+	public static class CapControlImportResolvable implements ImportResult {
 	    
 	    private final YukonMessageSourceResolvable message;
 	    private final boolean success;
@@ -85,27 +112,21 @@ public class CapControlImportController {
 	}
 	
 	@RequestMapping(method=RequestMethod.GET)
-	public String view(String hierarchyKey, String cbcKey, LiteYukonUser user, ModelMap model) throws ExecutionException {
-		List<CapControlImportResolvable> results = Lists.newArrayList();
+	public String view(String hierarchyKey, String cbcKey, String regulatorKey, LiteYukonUser user, ModelMap model) throws ExecutionException {
+	    List<ImportResult> results = Lists.newArrayList();
 		
-		List<CapControlImportResolvable> hierarchyResults = null;
 		if (hierarchyKey != null) {
-		    hierarchyResults = resultsLookup.getIfPresent(hierarchyKey);
+		    results.addAll(resultsLookup.getIfPresent(hierarchyKey));
 		}
-		List<CapControlImportResolvable> cbcResults = null;
 		if (cbcKey != null) {
-		    cbcResults = resultsLookup.getIfPresent(cbcKey);
+		    results.addAll(resultsLookup.getIfPresent(cbcKey));
 		}
-		
-		if (hierarchyResults != null) {
-			results.addAll(hierarchyResults);
-		}
-		
-		if (cbcResults != null) {
-			results.addAll(cbcResults);
+		if(regulatorKey != null) {
+		    results.addAll(resultsLookup.getIfPresent(regulatorKey));
 		}
 		
 		model.addAttribute("results", results);
+		model.addAttribute("importTypes", ImportType.values());
 		
 		return "import/capcontrolImport.jsp";
 	}
@@ -181,7 +202,7 @@ public class CapControlImportController {
         if (inputStream.available() <= 0) {
             log.error("Cap Control CBC Import File is empty.");
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.cbcFileEmpty"));
-        	return "redirect:importer";
+        	return "redirect:view";
         } else {
         	try {
 	        	List<CbcImportData> cbcImportData = capControlFileImporterDao.getCbcImportData(inputStream, results);
@@ -192,21 +213,21 @@ public class CapControlImportController {
         		Iterable<String> colNames = Iterables.transform(e.getColumns(), colNameOfField);
                 String columnString = StringUtils.join(colNames.iterator(), ", ");
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.missingRequiredColumn", columnString));
-        		return "import/capcontrolImport.jsp";
+        		return "redirect:view";
         	} catch (IllegalArgumentException e) {
         		log.error("Invalid column name found in import file: " + e.getMessage());
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.invalidColumns", e.getMessage()));
-        		return "import/capcontrolImport.jsp";
+        		return "redirect:view";
         	} catch (RuntimeException e) { 
         	    flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.errorProcessingFile", e.getMessage()));
                 log.error(e.getMessage());
-                return "import/capcontrolImport.jsp";
+                return "redirect:view";
             } finally {
         		inputStream.close();
         	}
         }
         
-        List<CapControlImportResolvable> cbcResults = getCbcResultResolvables(results);
+        List<ImportResult> cbcResults = getCbcResultResolvables(results);
         
         UUID randomUUID = UUID.randomUUID();
         resultsLookup.put(randomUUID.toString(), cbcResults);
@@ -216,13 +237,63 @@ public class CapControlImportController {
         for (CbcImportResult result : results) {
             if (!result.getResultType().isSuccess()) {
                 flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.processedWithErrors"));
-                return "redirect:importer";
+                return "redirect:view";
             }
         }
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.importCbcFileSuccess"));
         
-        return "redirect:importer";
+        return "redirect:view";
+	}
+	
+	@RequestMapping
+	public String regulatorFile(ModelMap model, HttpServletRequest request, FlashScope flashScope) throws IOException {
+	    //Procure the import file
+        if(!ServletFileUpload.isMultipartContent(request)) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.noImportFile"));
+            return "redirect:view";
+        }
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        MultipartFile dataFile = multipartRequest.getFile("dataFile");
+	    
+        //Set up a reader for the file
+        CSVReader csvReader = null;
+        try {
+            csvReader = WebFileUtils.getTempBackedCsvReaderFromMultipartFile(dataFile);
+        } catch(NoImportFileException e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.noImportFile"));
+            return "redirect:view";
+        } catch(EmptyImportFileException e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.errorProcessingFile"));
+            return "redirect:view";
+        }
+        
+        ImportFileFormat importFormat = regulatorImportService.getFormat();
+        ImportParser parser = new ImportParser(importFormat);
+        ImportData data = parser.parseFromCsvReader(csvReader);
+        csvReader.close();
+        
+        try {
+             ImportFileValidator.validateFileStructure(data);
+	    } catch(DuplicateColumnNameException e) {
+	        flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.duplicateColumns", e.getJoinedDuplicateColumnNames()));
+	        return "redirect:view";
+	    } catch(InvalidColumnNameException e) {
+	        flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.invalidColumns", e.getJoinedInvalidColumnNames()));
+            return "redirect:view";
+	    } catch(RequiredColumnMissingException e) {
+	        flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.missingRequiredColumn", e.getJoinedMissingColumnNames()));
+            return "redirect:view";
+	    }
+	    
+	    List<ImportResult> results = regulatorImportService.startImport(data);
+	    
+	    String resultId = UUID.randomUUID().toString();
+	    resultsLookup.put(resultId, results);
+	    
+	    model.addAttribute("regulatorKey", resultId);
+	    
+        return "redirect:view";
 	}
 	
 	@RequestMapping(method=RequestMethod.POST)
@@ -236,7 +307,7 @@ public class CapControlImportController {
         if (inputStream.available() <= 0) {
         	log.error("Cap Control Hierarchy Import File is empty.");
         	flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.hierarchyFileEmpty"));
-        	return "redirect:importer";
+        	return "redirect:view";
         } else {
         	try {
         		List<HierarchyImportData> hierarchyImportData = capControlFileImporterDao.getHierarchyImportData(inputStream, results);
@@ -245,17 +316,17 @@ public class CapControlImportController {
         	} catch (CapControlHierarchyFileImporterException e) {
         		log.error(e.getMessage());
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.missingRequiredColumn", e.getColumns()));
-        		return "import/capcontrolImport.jsp";
+        		return "redirect:view";
         	} catch (IllegalArgumentException e) {
         		log.error("Invalid column name found in import file: " + e.getMessage());
         		flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.invalidColumns", e.getMessage()));
-        		return "import/capcontrolImport.jsp";
+        		return "redirect:view";
         	} finally {
                 inputStream.close();
         	}
         }
         
-        List<CapControlImportResolvable> resolvables = getHierarchyResultResolvables(results);
+        List<ImportResult> resolvables = getHierarchyResultResolvables(results);
 
         UUID randomUUID = UUID.randomUUID();
         resultsLookup.put(randomUUID.toString(), resolvables);
@@ -265,16 +336,16 @@ public class CapControlImportController {
 		for (HierarchyImportResult result : results) {
 		    if (!result.getResultType().isSuccess()) {
 		        flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.processedWithErrors"));
-		        return "redirect:importer";
+		        return "redirect:view";
 		    }
 		}
 
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.importHierarchyFileSuccess"));
-        return "redirect:importer";
+        return "redirect:view";
 	}
 	
-	private List<CapControlImportResolvable> getHierarchyResultResolvables(List<HierarchyImportResult> results) {
-		List<CapControlImportResolvable> resolvables = Lists.newArrayList();
+	private List<ImportResult> getHierarchyResultResolvables(List<HierarchyImportResult> results) {
+		List<ImportResult> resolvables = Lists.newArrayList();
 		
 		for (HierarchyImportResult result : results) {	
 		    YukonMessageSourceResolvable message = result.getMessage();
@@ -288,8 +359,8 @@ public class CapControlImportController {
 		return resolvables;
 	}
 	
-	private List<CapControlImportResolvable> getCbcResultResolvables(List<CbcImportResult> results) {
-		List<CapControlImportResolvable> resolvables = Lists.newArrayList();
+	private List<ImportResult> getCbcResultResolvables(List<CbcImportResult> results) {
+		List<ImportResult> resolvables = Lists.newArrayList();
 		
 		for (CbcImportResult result : results) {
 		    YukonMessageSourceResolvable message = result.getMessage();

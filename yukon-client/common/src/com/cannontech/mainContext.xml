@@ -150,6 +150,7 @@
                <value>classpath:com/cannontech/yukon/web/components</value>
                <value>classpath:com/cannontech/yukon/web/tags</value>
                <value>classpath:com/cannontech/yukon/web/googleAnalytics</value>
+               <value>classpath:com/cannontech/yukon/web/import</value>
                <value>classpath:com/cannontech/yukon/web/modules/consumer/general</value>
                <value>classpath:com/cannontech/yukon/web/modules/consumer/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/dr/optOut</value>

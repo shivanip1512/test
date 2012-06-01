@@ -1,4 +1,4 @@
-package com.cannontech.capcontrol.creation.model;
+package com.cannontech.common.csvImport;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
