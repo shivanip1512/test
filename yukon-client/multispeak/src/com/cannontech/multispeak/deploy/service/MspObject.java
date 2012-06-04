@@ -27,6 +27,9 @@ public abstract class MspObject  implements java.io.Serializable {
     public MspObject() {
     }
 
+    //This constructor was manually added to address inconsistencies in the deployment of different
+    // MultiSpeak services. It's simply a reorder of the auto generated constructor to support the older 
+    // point to point services (MR_CB, CD_CB, for example).
     public MspObject(
             java.lang.String objectID,
             com.cannontech.multispeak.deploy.service.Action verb,
