@@ -8,7 +8,7 @@ import com.cannontech.common.rfn.message.RfnArchiveRequest;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
- * JMS Queue name: yukon.rr.obj.amr.rfn.MeterReadingArchiveRequest
+ * JMS Queue name: yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest
  */
 public class RfnMeterReadingArchiveRequest implements RfnArchiveRequest, Serializable {
 

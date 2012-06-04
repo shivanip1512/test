@@ -93,11 +93,7 @@
     <!-- RFN Meter Read Service -->
     <bean id="rfnMeterReadService" class="com.cannontech.amr.rfn.service.RfnMeterReadService"/>
 
-    <!-- RFN Device Lookup Service -->
-    <bean id="rfnDeviceLookupService" class="com.cannontech.common.rfn.service.RfnDeviceLookupService"/>
-    
     <bean id="rfnMeterEventService" class="com.cannontech.amr.rfn.service.RfnMeterEventService"/>
-    <bean id="rfnArchiveRequestService" class="com.cannontech.common.rfn.service.RfnArchiveRequestService"/>
     
     <!-- RFN Event Processors to handle certain events in special ways -->
     <bean id="rfnOutageEventArchiveRequestProcessor" class="com.cannontech.amr.rfn.service.processor.event.RfnOutageEventArchiveRequestProcessor"/>

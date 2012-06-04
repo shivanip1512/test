@@ -37,7 +37,7 @@ import com.google.common.collect.Sets;
 public class RfnDemandResetServiceImpl implements RfnDemandResetService {
     private static final Logger log = YukonLogManager.getLogger(RfnDemandResetServiceImpl.class);
 
-    private final static String queueName = "yukon.rr.obj.amr.rfn.MeterDemandResetRequest";
+    private final static String queueName = "yukon.qr.obj.amr.rfn.MeterDemandResetRequest";
 
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ConnectionFactory connectionFactory;

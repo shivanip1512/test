@@ -31,7 +31,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.spring.YukonSpringHook;
 
-public class RfnMeterPanel extends DataInputPanel implements CaretListener {
+public class RfnBasePanel extends DataInputPanel implements CaretListener {
     private JLabel manufacturerLabel;
     private JLabel modelLabel;
     private JLabel serialNumberLabel;
@@ -41,7 +41,7 @@ public class RfnMeterPanel extends DataInputPanel implements CaretListener {
     private Font textFont = new Font("dialog", 0, 14);
     private JCheckBox createPointsCheckBox;
 
-    public RfnMeterPanel() {
+    public RfnBasePanel() {
         super();
         initialize();
     }

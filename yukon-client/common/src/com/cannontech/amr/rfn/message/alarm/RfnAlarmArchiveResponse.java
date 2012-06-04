@@ -3,7 +3,7 @@ package com.cannontech.amr.rfn.message.alarm;
 import java.io.Serializable;
 
 /**
- * JMS Queue name: yukon.rr.obj.amr.rfn.AlarmArchiveResponse
+ * JMS Queue name: yukon.qr.obj.amr.rfn.AlarmArchiveResponse
  */
 public class RfnAlarmArchiveResponse implements Serializable {
     

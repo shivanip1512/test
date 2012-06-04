@@ -161,7 +161,7 @@ public class RfnMeterDisconnectService {
         rrrTemplate.setConfigurationName("RFN_METER_DISCONNECT");
         rrrTemplate.setConfigurationSource(configurationSource);
         rrrTemplate.setConnectionFactory(connectionFactory);
-        rrrTemplate.setRequestQueueName("yukon.rr.obj.amr.rfn.MeterDisconnectRequest", false);
+        rrrTemplate.setRequestQueueName("yukon.qr.obj.amr.rfn.MeterDisconnectRequest", false);
     }
     
 }

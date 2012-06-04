@@ -3,7 +3,7 @@ package com.cannontech.amr.rfn.message.event;
 import java.io.Serializable;
 
 /**
- * JMS Queue name: yukon.rr.obj.amr.rfn.EventArchiveResponse
+ * JMS Queue name: yukon.qr.obj.amr.rfn.EventArchiveResponse
  */
 public class RfnEventArchiveResponse implements Serializable {
     

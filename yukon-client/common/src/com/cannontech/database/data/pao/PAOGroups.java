@@ -243,6 +243,10 @@ public final static int getDeviceType(String typeString)
 	  return MCT210;
    else if (isStringDevice(compareString, STRING_LCR_3102))
 	  return LCR3102;
+   else if (isStringDevice(compareString, STRING_LCR_6200_RFN))
+       return LCR6200_RFN;
+   else if (isStringDevice(compareString, STRING_LCR_6600_RFN))
+       return LCR6600_RFN;
    else if (isStringDevice(compareString, STRING_MCT_BROADCAST))
       return MCTBROADCAST;
    else if (isStringDevice(compareString, STRING_REPEATER))
@@ -573,6 +577,10 @@ public final static String getPAOTypeString(int type)
 			
 		case LCR3102:
 			return STRING_LCR_3102[0];
+		case LCR6200_RFN:
+		    return STRING_LCR_6200_RFN[0];
+		case LCR6600_RFN:
+		    return STRING_LCR_6600_RFN[0];
 		
 		case REPEATER:
 			return STRING_REPEATER[0];

@@ -311,6 +311,8 @@ public final static boolean isTwoWayLcr(int deviceType)
 	switch(deviceType)
 	{
 		case LCR3102:
+		case LCR6200_RFN:
+		case LCR6600_RFN:
 			return true;
 	
 		default:

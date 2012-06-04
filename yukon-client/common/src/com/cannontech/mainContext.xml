@@ -178,7 +178,6 @@
                <value>classpath:com/cannontech/yukon/web/modules/amr/statusPointMonitoring</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/porterResponseMonitor</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/porterResponseMonitorsWidget</value>
-               <value>classpath:com/cannontech/yukon/web/modules/amr/waterLeakReport</value>
                <value>classpath:com/cannontech/yukon/web/modules/common/vee/vee</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/commandRequestExecution</value>
                <value>classpath:com/cannontech/yukon/web/deviceGroups</value>
@@ -308,4 +307,7 @@
     
     <bean class="com.cannontech.common.requests.service.impl.JobManagementServiceImpl"/>
     <bean class="com.cannontech.common.requests.runnable.capcontrol.CapControlJobFactory"/>
+    
+    <bean id="rfnDeviceLookupService" class="com.cannontech.common.rfn.service.RfnDeviceLookupService"/>
+    <bean id="rfnArchiveRequestService" class="com.cannontech.common.rfn.service.RfnArchiveRequestService"/>
 </beans>

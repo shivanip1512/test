@@ -6,7 +6,7 @@ import com.cannontech.common.rfn.message.RfnArchiveRequest;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
- * JMS Queue name: yukon.rr.obj.dr.rfn.LcrArchiveRequest
+ * JMS Queue name: yukon.qr.obj.dr.rfn.LcrArchiveRequest
  */
 public class RfnLcrArchiveRequest implements RfnArchiveRequest, Serializable {
 

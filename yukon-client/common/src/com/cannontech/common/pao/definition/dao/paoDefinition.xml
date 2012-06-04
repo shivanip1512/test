@@ -3402,6 +3402,29 @@
         </points>
     </pao>
     
+    <!-- RF LCRs -->
+    <pao id="RF_LCR" abstract="true">
+        <displayGroup>RFMESH</displayGroup>
+        <points>
+        </points>
+        <attributes>
+        </attributes>
+    </pao>
+    <pao id="LCR6200_RFN" inherits="RF_LCR">
+        <displayName>LCR-6200 RFN</displayName>
+        <points>
+        </points>
+        <attributes>
+        </attributes>
+    </pao>
+    <pao id="LCR6600_RFN" inherits="RF_LCR">
+        <displayName>LCR-6600 RFN</displayName>
+        <points>
+        </points>
+        <attributes>
+        </attributes>
+    </pao>
+    
     <!-- TWO WAY LCRs -->
     <pao id="TWO_WAY_LCR_BASE" abstract="true">
     	<displayGroup>Two Way LCR</displayGroup>

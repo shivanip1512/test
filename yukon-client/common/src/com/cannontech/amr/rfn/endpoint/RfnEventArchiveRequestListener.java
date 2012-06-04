@@ -26,7 +26,7 @@ import com.google.common.collect.Lists;
 public class RfnEventArchiveRequestListener extends RfnArchiveRequestListenerBase<RfnEventArchiveRequest> {
 
     private static final Logger log = YukonLogManager.getLogger(RfnEventArchiveRequestListener.class);
-    private static final String archiveResponseQueueName = "yukon.rr.obj.amr.rfn.EventArchiveResponse";
+    private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.EventArchiveResponse";
 
     @Autowired private RfnMeterEventService rfnMeterEventService;
 

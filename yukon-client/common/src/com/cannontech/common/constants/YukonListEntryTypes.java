@@ -72,6 +72,8 @@ public interface YukonListEntryTypes
     public static final int YUK_DEF_ID_DEV_TYPE_LCR_6200_XCOM  = 1321;
     public static final int YUK_DEF_ID_DEV_TYPE_LCR_6600_ZIGBEE       = 1322;
     public static final int YUK_DEF_ID_DEV_TYPE_LCR_6600_XCOM  = 1323;
+    public static final int YUK_DEF_ID_DEV_TYPE_LCR_6200_RFN  = 1324;
+    public static final int YUK_DEF_ID_DEV_TYPE_LCR_6600_RFN  = 1325;
     
     public static final int YUK_DEF_ID_APP_CAT_DEFAULT                = 1400;
     public static final int YUK_DEF_ID_APP_CAT_AIR_CONDITIONER        = 1401;

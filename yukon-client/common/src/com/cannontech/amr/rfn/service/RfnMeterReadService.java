@@ -215,6 +215,6 @@ public class RfnMeterReadService {
         rrrTemplate.setConfigurationName("RFN_METER_READ");
         rrrTemplate.setConfigurationSource(configurationSource);
         rrrTemplate.setConnectionFactory(connectionFactory);
-        rrrTemplate.setRequestQueueName("yukon.rr.obj.amr.rfn.MeterReadRequest", false);
+        rrrTemplate.setRequestQueueName("yukon.qr.obj.amr.rfn.MeterReadRequest", false);
     }
 }

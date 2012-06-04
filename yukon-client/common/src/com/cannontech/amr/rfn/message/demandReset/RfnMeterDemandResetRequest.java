@@ -6,7 +6,7 @@ import java.util.Set;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
- * JMS Queue name: yukon.rr.obj.amr.rfn.MeterDemandResetRequest
+ * JMS Queue name: yukon.qr.obj.amr.rfn.MeterDemandResetRequest
  */
 public class RfnMeterDemandResetRequest implements Serializable {
     private static final long serialVersionUID = 2L;

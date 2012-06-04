@@ -6,7 +6,7 @@ import com.cannontech.common.rfn.message.RfnArchiveRequest;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
- * JMS Queue name: yukon.rr.obj.dr.rfn.LcrReadingArchiveRequest
+ * JMS Queue name: yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest
  */
 public class RfnLcrReadingArchiveRequest implements RfnArchiveRequest, Serializable {
 
@@ -78,7 +78,7 @@ public class RfnLcrReadingArchiveRequest implements RfnArchiveRequest, Serializa
     
     @Override
     public String toString() {
-        return String.format("RfnLcrDataArchiveRequest [data=%s, type=%s, dataPointId=%s]", data, type, dataPointId);
+        return String.format("RfnLcrReadingArchiveRequest [data=%s, type=%s, dataPointId=%s]", data, type, dataPointId);
     }
     
 }

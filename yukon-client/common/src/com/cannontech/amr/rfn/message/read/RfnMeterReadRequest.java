@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
- * JMS Queue name: yukon.rr.obj.amr.rfn.MeterReadRequest
+ * JMS Queue name: yukon.qr.obj.amr.rfn.MeterReadRequest
  */
 public class RfnMeterReadRequest implements Serializable {
 

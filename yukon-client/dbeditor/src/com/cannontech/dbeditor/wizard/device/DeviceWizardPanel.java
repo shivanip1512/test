@@ -1,9 +1,9 @@
 package com.cannontech.dbeditor.wizard.device;
 
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -32,7 +32,7 @@ public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private DeviceSixnetWizardPanel deviceSixnetWizardPanel;
 	private MCTBroadcastListEditorPanel mctBroadcastListEditorPanel;
 	private DeviceScanRateEditorPanel deviceScanRateEditorPanel;
-    private RfnMeterPanel rfnMeterPanel;
+    private RfnBasePanel rfnBasePanel;
     private DeviceRDSTerminalPanel rdsTerminalPanel;
     private DeviceTcpTerminalPanel tcpTerminalPanel;
 
@@ -225,11 +225,11 @@ protected DeviceCommChannelPanel getDeviceCommChannelPanel() {
 	return deviceCommChannelPanel;
 }
 
-protected RfnMeterPanel getRfnMeterPanel() {
-    if( rfnMeterPanel == null ) {
-        rfnMeterPanel = new RfnMeterPanel();
+protected RfnBasePanel getRfnBasePanel() {
+    if( rfnBasePanel == null ) {
+        rfnBasePanel = new RfnBasePanel();
     }
-    return rfnMeterPanel;    
+    return rfnBasePanel;    
 }
 
 /**
@@ -376,8 +376,8 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 	{
 	    int devType = getDeviceTypePanel().getDeviceType();
 	    if(DeviceTypesFuncs.isRfn(devType)) {
-	        getRfnMeterPanel().setFirstFocus();
-	        return getRfnMeterPanel();
+	        getRfnBasePanel().setFirstFocus();
+	        return getRfnBasePanel();
 	    } else {
 	        getDeviceScanRatePanel().setDeviceType(devType);
 	        getDeviceScanRatePanel().setFirstFocus();
@@ -481,7 +481,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
             || currentPanel == getDeviceRoutePanel() 
             || (currentPanel == getDeviceBaseNamePanel() && getDeviceTypePanel().getDeviceType() == PAOGroups.VIRTUAL_SYSTEM)
             || currentPanel == getDeviceGridPanel()
-            || currentPanel == getRfnMeterPanel()
+            || currentPanel == getRfnBasePanel()
             || currentPanel == getTcpTerminalPanel()
             || (currentPanel == getDeviceCommChannelPanel() 
                 && 

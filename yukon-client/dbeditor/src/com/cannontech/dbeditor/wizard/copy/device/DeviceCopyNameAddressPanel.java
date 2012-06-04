@@ -38,7 +38,7 @@ import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.device.Repeater921;
-import com.cannontech.database.data.device.RfnBase;
+import com.cannontech.database.data.device.RfnMeterBase;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -498,8 +498,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 				 ((MCTBase ) val).getDeviceMeterGroup().setMeterNumber( getJTextFieldMeterNumber().getText() );
 			} else if( val instanceof IEDMeter ) {
 				 ((IEDMeter) val).getDeviceMeterGroup().setMeterNumber( getJTextFieldMeterNumber().getText() );
-			} else if( val instanceof RfnBase ) {
-			    ((RfnBase) val).getDeviceMeterGroup().setMeterNumber( getJTextFieldMeterNumber().getText() );
+			} else if( val instanceof RfnMeterBase ) {
+			    ((RfnMeterBase) val).getDeviceMeterGroup().setMeterNumber( getJTextFieldMeterNumber().getText() );
 			} else { //didn't find it
 				throw new Error("Unable to determine device type when attempting to set the Meter Number");
 			}
@@ -722,7 +722,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
 		//handle all meter fields
 		boolean showMeterNumber = (val instanceof MCTBase) 
 		    || (val instanceof IEDMeter)
-		    || (val instanceof RfnBase);
+		    || (val instanceof RfnMeterBase);
 		
 		getJTextFieldMeterNumber().setVisible( showMeterNumber );
 		getJLabelMeterNumber().setVisible( showMeterNumber );
@@ -760,8 +760,8 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
       if( val instanceof MCTBase )
          getJTextFieldMeterNumber().setText( ((MCTBase)val).getDeviceMeterGroup().getMeterNumber().toString() );
       
-      if( val instanceof RfnBase )
-          getJTextFieldMeterNumber().setText( ((RfnBase)val).getDeviceMeterGroup().getMeterNumber().toString() );
+      if( val instanceof RfnMeterBase )
+          getJTextFieldMeterNumber().setText( ((RfnMeterBase)val).getDeviceMeterGroup().getMeterNumber().toString() );
       
       if( val instanceof IEDMeter )
          getJTextFieldMeterNumber().setText( ((IEDMeter)val).getDeviceMeterGroup().getMeterNumber().toString() );

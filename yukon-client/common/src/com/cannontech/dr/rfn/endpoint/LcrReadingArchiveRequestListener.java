@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 public class LcrReadingArchiveRequestListener  extends RfnArchiveRequestListenerBase<RfnLcrReadingArchiveRequest> {
     
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
-    private static final String archiveResponseQueueName = "yukon.rr.obj.dr.rfn.LcrReadingArchiveResponse";
+    private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
     
     private List<Worker> workers;
     private AtomicInteger archivedReadings = new AtomicInteger();

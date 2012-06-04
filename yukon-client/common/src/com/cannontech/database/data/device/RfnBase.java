@@ -8,24 +8,21 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.spring.YukonSpringHook;
 
-public class RfnBase extends DeviceBase implements IDeviceMeterGroup {
+public class RfnBase extends DeviceBase {
+    
     private RfnAddress rfnAddress = null;
-    private DeviceMeterGroup deviceMeterGroup = null;
     
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
-        getDeviceMeterGroup().setDeviceID(deviceID);
         getRfnAddress().setDeviceID(deviceID);
     }
 
     @Override
     public void add() throws SQLException {
         super.add();
-        getDeviceMeterGroup().add();
         if(!getRfnAddress().isBlank()) {
             getRfnAddress().add();
         }
@@ -34,7 +31,6 @@ public class RfnBase extends DeviceBase implements IDeviceMeterGroup {
     @Override
     public void addPartial() throws SQLException {
         super.addPartial();
-        getDeviceMeterGroup().add();
         if(!getRfnAddress().isBlank()) {
             getRfnAddress().add();
         }
@@ -42,7 +38,6 @@ public class RfnBase extends DeviceBase implements IDeviceMeterGroup {
     
     @Override
     public void delete() throws SQLException {
-        getDeviceMeterGroup().delete();
         getRfnAddress().delete();
         super.delete();
     }
@@ -55,14 +50,12 @@ public class RfnBase extends DeviceBase implements IDeviceMeterGroup {
     @Override
     public void retrieve() throws SQLException {
         super.retrieve();
-        getDeviceMeterGroup().retrieve();
         getRfnAddress().retrieve();
     }
     
     @Override
     public void update() throws SQLException {
         super.update();
-        getDeviceMeterGroup().update();
         
         /* Use the rfn device dao to do updating since depending on the address arguments
          * we will either be doing a delete, and insert or an update. */
@@ -75,20 +68,6 @@ public class RfnBase extends DeviceBase implements IDeviceMeterGroup {
     public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
         getRfnAddress().setDbConnection(conn);
-        getDeviceMeterGroup().setDbConnection(conn);
-    }
-
-    @Override
-    public DeviceMeterGroup getDeviceMeterGroup() {
-        if( deviceMeterGroup == null ) {
-            deviceMeterGroup = new DeviceMeterGroup();
-        }
-        return deviceMeterGroup;
-    }
-
-    @Override
-    public void setDeviceMeterGroup(DeviceMeterGroup deviceMeterGroup) {
-        this.deviceMeterGroup = deviceMeterGroup;
     }
 
     public RfnAddress getRfnAddress() {
@@ -101,4 +80,5 @@ public class RfnBase extends DeviceBase implements IDeviceMeterGroup {
     public void setRfnAddress(RfnAddress rfmAddress) {
         this.rfnAddress = rfmAddress;
     }
+    
 }
