@@ -1272,6 +1272,8 @@ void LoadScannableDevices(void *ptr)
     {
         if( (pChg->getTypeOfChange() == ChangeTypeAdd) || (pChg->getTypeOfChange() == ChangeTypeUpdate) )
         {
+            ScannerPointManager.refreshList(pChg->getId(), 0, resolvePointType(pChg->getObjectType()));
+
             LONG paoDeviceID = GetPAOIdOfPoint(pChg->getId());
 
             if( paoDeviceID )
