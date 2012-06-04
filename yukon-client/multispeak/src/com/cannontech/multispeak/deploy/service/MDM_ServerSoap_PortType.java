@@ -1674,12 +1674,12 @@ public interface MDM_ServerSoap_PortType extends java.rmi.Remote {
      * registrationID. The calling parameter registrationInfo is a complex
      * type that includes the following information: registrationID - the
      * previously requested registrationID obtained from the publisher by
-     * calling RequestRegistrationID, responseURL – the URL to which information
+     * calling RequestRegistrationID, responseURL xx the URL to which information
      * should subsequently be published on this subscription, msFunction
-     * – the abbreviated string name of the MultiSpeak method making the
+     * xx the abbreviated string name of the MultiSpeak method making the
      * subscription request (for instance, if an application that exposes
      * the Meter Reading function has made the request, then the msFunction
-     * variable should include “MR”), methodsList – An array of strings that
+     * variable should include xxxxxx), methodsList xx An array of strings that
      * contain the string names of the MultiSpeak methods to which the subscriber
      * would like to subscribe.  Subsequent calls to RegisterForService on
      * an existing subscription replace prior subscription details in their
