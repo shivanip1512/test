@@ -438,6 +438,7 @@ public:
     void createAndSendClientMessages( unsigned long &msgBitMask, unsigned long &msgSubsBitMask, PaoIdSet &modifiedBusIdsSet,
                                       PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages);
     CtiCCSubstationBus_set getAllSubBusesByIds(PaoIdSet modifiedBusIdsSet);
+    void addVectorIdsToSet(const Cti::CapControl::PaoIdVector idVector, PaoIdSet &idSet);
     void updateSubstationObjectSet(long substationId, CtiMultiMsg_set &modifiedStationsSet);
     void updateAreaObjectSet(long areaId, CtiMultiMsg_set &modifiedAreasSet);
     void clearDBReloadList();
