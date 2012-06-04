@@ -43,6 +43,7 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
     private static final Class<?> validParameterTypesArray[] = {Element.class, LiteYukonUser.class, YukonUserContext.class, CustomerAccount.class};
     private Set<Class<?>> validParameterTypes = ImmutableSet.copyOf(validParameterTypesArray);
 
+    @Override
     protected boolean supportsInternal(MethodEndpoint methodEndpoint) {
         Method method = methodEndpoint.getMethod();
 
@@ -57,6 +58,7 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
         return goodReturnType && goodParameters;
     }
 
+    @Override
     protected void invokeInternal(MessageContext messageContext, MethodEndpoint methodEndpoint) throws Exception {
         try {
             Class<?>[] parameterTypes = methodEndpoint.getMethod().getParameterTypes();
@@ -144,7 +146,7 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
         return yukonUser;
     }
     
-    public CustomerAccount getCustomerAccount(MessageContext messageContext) {
+    private CustomerAccount getCustomerAccount(MessageContext messageContext) {
         QName userQName = new QName(YukonXml.getYukonNamespace().getURI(), "yukonUser");
         String userName = SoapHeaderElementUtil.findElementValue(messageContext.getRequest(), userQName);
 
