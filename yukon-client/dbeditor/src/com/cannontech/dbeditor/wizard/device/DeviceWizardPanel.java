@@ -322,8 +322,14 @@ protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 		}
 	}
 	else if (currentInputPanel == getDeviceBaseNamePanel()) {
-	    getDeviceMeterNumberPanel().setFirstFocus();
-        return getDeviceMeterNumberPanel();
+	    int devType = getDeviceTypePanel().getDeviceType();
+	    if (DeviceTypesFuncs.isMeter(devType)) {
+    	    getDeviceMeterNumberPanel().setFirstFocus();
+            return getDeviceMeterNumberPanel();
+	    } else {
+            getRfnBasePanel().setFirstFocus();
+            return getRfnBasePanel();
+        }
 	}
 	else if ((currentInputPanel == getDeviceNameAddressPanel()) || (currentInputPanel == getDeviceIEDNamePanel()))
 	{

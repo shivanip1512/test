@@ -341,6 +341,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     public boolean isMeter() {
         return meterTypes.contains(this);
     }
+    
+    public boolean isRfn() {
+        return this.paoClass == PaoClass.RFMESH;
+    }
 
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory,
             PaoClass paoClass) {

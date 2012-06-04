@@ -3413,13 +3413,263 @@
     <pao id="LCR6200_RFN" inherits="RF_LCR">
         <displayName>LCR-6200 RFN</displayName>
         <points>
+            <!-- Analog Points -->
+            <point type="Analog" offset="1">
+                <init>true</init>
+                <name>Blink Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="2">
+                <init>true</init>
+                <name>Addressing - SPID</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="3">
+                <init>true</init>
+                <name>Addressing - GEO</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="4">
+                <init>true</init>
+                <name>Addressing - Substation</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="5">
+                <init>true</init>
+                <name>Addressing - Feeder</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="6">
+                <init>true</init>
+                <name>Addressing - ZIP</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="7">
+                <init>true</init>
+                <name>Addressing - User</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="8">
+                <init>true</init>
+                <name>Addressing - Relay 1 Program</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="9">
+                <init>true</init>
+                <name>Addressing - Relay 1 Splinter</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="10">
+                <init>true</init>
+                <name>Relay 1 Run Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="11">
+                <init>true</init>
+                <name>Relay 1 Control Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="12">
+                <init>true</init>
+                <name>Relay 1 Shed Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="13">
+                <init>true</init>
+                <name>Relay 1 kW Load Size</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="14">
+                <init>true</init>
+                <name>Relay 1 Remaining Control Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="15">
+                <init>true</init>
+                <name>Temp Out of Service Duration</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="16">
+                <init>true</init>
+                <name>Reporting Interval</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="17">
+                <init>true</init>
+                <name>Recording Interval</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="18">
+                <init>false</init>
+                <name>Total LUF Event Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="19">
+                <init>false</init>
+                <name>Total LUV Event Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            
+            <!-- Status Points -->
+            <point type="Status" offset="1">
+                <init>true</init>
+                <name>Control Status</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point type="Status" offset="2">
+                <init>true</init>
+                <name>Service Status</name>
+                <stategroup value="LCR Service Status"/>
+            </point>
+            <point type="Status" offset="3">
+                <init>true</init>
+                <name>Runtime Tamper</name>
+                <stategroup value="TrueFalse"/>
+            </point>
         </points>
         <attributes>
         </attributes>
     </pao>
-    <pao id="LCR6600_RFN" inherits="RF_LCR">
+    
+    <pao id="LCR6600_RFN" inherits="RF_LCR, LCR6200_RFN">
         <displayName>LCR-6600 RFN</displayName>
         <points>
+            <point type="Analog" offset="20">
+                <init>true</init>
+                <name>Addressing - Relay 2 Program</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="21">
+                <init>true</init>
+                <name>Addressing - Relay 2 Splinter</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="22">
+                <init>true</init>
+                <name>Relay 2 Run Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="23">
+                <init>true</init>
+                <name>Relay 2 Control Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="24">
+                <init>true</init>
+                <name>Relay 2 Shed Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="25">
+                <init>true</init>
+                <name>Relay 2 kW Load Size</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="26">
+                <init>true</init>
+                <name>Relay 2 Remaining Control Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="27">
+                <init>true</init>
+                <name>Addressing - Relay 3 Program</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="28">
+                <init>true</init>
+                <name>Addressing - Relay 3 Splinter</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="29">
+                <init>true</init>
+                <name>Relay 3 Run Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="30">
+                <init>true</init>
+                <name>Relay 3 Control Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="31">
+                <init>true</init>
+                <name>Relay 3 Shed Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="32">
+                <init>true</init>
+                <name>Relay 3 kW Load Size</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="33">
+                <init>true</init>
+                <name>Relay 3 Remaining Control Time</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="0"/>
+            </point>
         </points>
         <attributes>
         </attributes>

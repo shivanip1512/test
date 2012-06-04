@@ -1617,6 +1617,10 @@ public static Object changeType (String newType,
         return paoDao.getYukonPao(portId).getPaoIdentifier().getPaoType() == PaoType.TCPPORT;
     }
     
+    /**
+     * Depricated, Use Paotype.isRfn
+     */
+    @Deprecated
     public static boolean isRfn(int deviceType) {
         try {
             return PaoType.getForId(deviceType).getPaoClass() == PaoClass.RFMESH;
