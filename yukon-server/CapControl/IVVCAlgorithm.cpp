@@ -103,6 +103,67 @@ bool IVVCAlgorithm::checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSu
     return (missingRegulatorCount == 0);
 }
 
+/**
+ * Checks to see if the subbus or any of the parents of the 
+ * subbus are disabled. 
+ * 
+ * @param state The IVVC state.
+ * @param subbus The subbus object.
+ * 
+ * @return bool - true if the subbus or any of the subbus' 
+ *         parents are disabled, false otherwise.
+ */
+bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    long spAreaId, areaId, substationId;
+    store->getSubBusParentInfo(subbus, spAreaId, areaId, substationId);
+
+    CtiCCAreaPtr area = store->findAreaByPAObjectID(areaId);
+    CtiCCSpecialPtr spArea = store->findSpecialAreaByPAObjectID(spAreaId);
+    CtiCCSubstationPtr sub = store->findSubstationByPAObjectID(substationId);
+
+    std::string culprit;
+
+    if ( area != NULL && area->getDisableFlag() )
+    {
+        // Area is disabled.
+        culprit = "area";
+    }
+    else if ( spArea != NULL && spArea->getDisableFlag() )
+    {
+        // Special area is disabled.
+        culprit = "special area";
+    }
+    else if ( sub != NULL && sub->getDisableFlag() )
+    {
+        // Substation is disabled.
+        culprit = "substation";
+    }
+    else if ( subbus->getDisableFlag() && !subbus->getVerificationFlag() )
+    {
+        // subbus is disabled - reset the algorithm and bail
+        culprit = "bus";
+        sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusDisabledMessage(subbus->getPaoId(), CtiTime::now()));
+        sendDisableRemoteControl( subbus );
+    }
+
+    if ( !culprit.empty() )
+    {
+        if ( state->isShowBusDisableMsg() )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() 
+                 << ". The " << culprit << " is disabled." << std::endl;
+        }
+        state->setShowBusDisableMsg(false);
+        state->setState(IVVCState::IVVC_WAIT);
+        return true;
+    }
+
+    return false;
+}
 
 void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning)
 {
@@ -112,8 +173,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     long subbusId = subbus->getPaoId();
 
     // Make sure all zones on the subbus have a regulator attached.
-
-   if ( ! checkConfigAllZonesHaveRegulator(state, subbus) )
+    if ( ! checkConfigAllZonesHaveRegulator(state, subbus) )
     {
         state->setShowNoRegulatorAttachedMsg(false);
         state->setState(IVVCState::IVVC_WAIT);
@@ -132,22 +192,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             state->setTimeStamp(subbus->getLastOperationTime());
         }
     }
-    else if ( subbus->getDisableFlag() && !subbus->getVerificationFlag())
+    else if ( isBusInDisabledIvvcState(state, subbus) )
     {
-        // subbus is disabled - reset the algorithm and bail
-        if (state->isShowBusDisableMsg())
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". The bus is disabled." << std::endl;
-            }
-            sendDisableRemoteControl( subbus );
-            sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusDisabledMessage(subbus->getPaoId(), timeNow));
-        }
-        state->setShowBusDisableMsg(false);
-        state->setState(IVVCState::IVVC_WAIT);
-
         return;
     }
 
