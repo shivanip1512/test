@@ -504,6 +504,7 @@
     <entry key="yukon.web.modules.capcontrol.import.importTypes.CBC">CBC</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypes.HIERARCHY">Hierarchy</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypes.REGULATOR">Regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.import.importTypes.POINT_MAPPING">Point Mapping</entry>
     <entry key="yukon.web.modules.capcontrol.import.noImportFile">No import file was selected.</entry>
     <entry key="yukon.web.modules.capcontrol.import.errorProcessingFile">Importer encountered errors processing the file.</entry>
     <entry key="yukon.web.modules.capcontrol.import.missingRequiredColumn">File is missing a required column (or data for a required column): {0}</entry>
@@ -532,6 +533,7 @@
     <entry key="yukon.web.modules.capcontrol.import.cbcRemoveSuccess">{0} - Remove succeeded for CBC named "{1}"</entry>
     <entry key="yukon.web.modules.capcontrol.import.cbcImportFailure">{0} - Import failed for CBC named "{1}"</entry>
     <entry key="yukon.web.modules.capcontrol.import.cbcImportSuccess">{0} - Import succeeded for CBC named "{1}"</entry>
+    <entry key="yukon.web.modules.capcontrol.import.regulatorMappingBadPointType">Invalid Value - {0} failed. Point type "{1}" is invalid for mapping "{2}"</entry>
     
     <!-- ControlAlgorithm.java -->
     <entry key="yukon.web.modules.capcontrol.controlAlgorithm.NONE">NONE</entry>

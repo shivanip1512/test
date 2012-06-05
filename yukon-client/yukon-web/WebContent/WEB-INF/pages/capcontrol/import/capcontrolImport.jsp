@@ -8,7 +8,9 @@
     <script>
     jQuery(document).ready(function(){
         jQuery("#importTypeSelector").change(function(){
-            var importType = jQuery("#importTypeSelector").val().toLowerCase();
+            //get the import type value, remove spaces, lowercase
+            var importType = jQuery('#importTypeSelector').val().replace(/_/g, '')
+            importType = importType.toLowerCase();
             jQuery("#importForm").attr("action", "/spring/capcontrol/import/" + importType + "File");
         });
     });

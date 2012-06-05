@@ -16,20 +16,17 @@ import com.cannontech.common.csvImport.ImportValidationResult;
 import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.csvImport.ImportResult;
 import com.cannontech.common.csvImport.types.RegulatorType;
-import com.cannontech.common.pao.PaoCategory;
-import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.service.PaoPersistenceService;
-import com.cannontech.core.dao.PaoDao;
 import com.google.common.collect.Lists;
 
 public class RegulatorImportServiceImpl implements RegulatorImportService {
     private static ImportFileFormat importFormat;
     
     @Autowired private PaoPersistenceService paoPersistenceService;
-    @Autowired private PaoDao paoDao;
     @Autowired private VoltageRegulatorDao regulatorDao;
+    @Autowired private RegulatorImportHelper regulatorImportHelper;
     
     //This block specifies the format for voltage regulator import files
     static {
@@ -66,7 +63,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
             
             ImportValidationResult validationResult = ImportFileValidator.validateRow(row, importData.getFormat());
             if(validationResult.isFailed()) {
-                result = processValidationResult(validationResult);
+                result = regulatorImportHelper.processValidationResult(validationResult);
             } else {
                 ImportAction action = ImportAction.valueOf(row.getValue("ACTION"));
                 switch(action) {
@@ -91,7 +88,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
     
     private CsvImportResult createRegulator(ImportRow row) {
         String name = row.getValue("NAME");
-        YukonPao pao = retrieveRegulatorPao(name);
+        YukonPao pao = regulatorImportHelper.retrieveRegulatorPao(name);
         if(pao != null) {
             //Error - device already exists with this name
             return new CsvImportResult(ImportAction.ADD, CsvImportResultType.OBJECT_EXISTS, name);
@@ -119,7 +116,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
     
     private CsvImportResult updateRegulator(ImportRow row) {
         String name = row.getValue("NAME");
-        YukonPao pao = retrieveRegulatorPao(name);
+        YukonPao pao = regulatorImportHelper.retrieveRegulatorPao(name);
         if(pao == null) {
             //Error - no existing device with this name
             return new CsvImportResult(ImportAction.UPDATE, CsvImportResultType.NO_SUCH_OBJECT, name);
@@ -145,7 +142,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
     
     private CsvImportResult removeRegulator(ImportRow row) {
         String name = row.getValue("NAME");
-        YukonPao pao = retrieveRegulatorPao(name);
+        YukonPao pao = regulatorImportHelper.retrieveRegulatorPao(name);
         if(pao == null) {
             //Error - no existing device with this name
             return new CsvImportResult(ImportAction.REMOVE, CsvImportResultType.NO_SUCH_OBJECT, name);
@@ -157,22 +154,5 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
         
         paoPersistenceService.deletePao(pao.getPaoIdentifier());
         return new CsvImportResult(ImportAction.REMOVE, CsvImportResultType.SUCCESS, name);
-    }
-    
-    //Takes a validation result and returns a representative import result
-    private CsvImportResult processValidationResult(ImportValidationResult validationResult) {
-        String[] invalidColumns = validationResult.getInvalidColumns().toArray(new String[1]);
-        if(validationResult.isBadValue()) {
-            return new CsvImportResult(CsvImportResultType.BAD_DATA, invalidColumns);
-        } else if(validationResult.isMissingValue()) {
-            return new CsvImportResult(CsvImportResultType.MISSING_DATA, invalidColumns);
-        } else {
-            throw new IllegalArgumentException("Unable to process validation result with type " + validationResult.getType());
-        }
-    }
-    
-    //Returns the pao for the regulator with this name, or null if no such regulator exists
-    private YukonPao retrieveRegulatorPao(String name) {
-        return paoDao.findYukonPao(name, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
     }
 }

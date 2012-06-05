@@ -13,6 +13,7 @@ public enum CsvImportResultType implements DisplayableEnum{
     NO_SUCH_OBJECT(false),
     MISSING_DATA(false),
     BAD_DATA(false),
+    CONDITIONAL_BAD_DATA(false),
     HAS_DEPENDENCIES(false),
     ;
     

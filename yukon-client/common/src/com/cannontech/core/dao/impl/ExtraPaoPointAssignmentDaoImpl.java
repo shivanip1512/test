@@ -19,6 +19,8 @@ import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.enums.RegulatorPointMapping;
@@ -27,6 +29,16 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
     
     @Autowired private PointDao pointDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    
+    private YukonRowMapper<ExtraPaoPointMapping> extraPaoPointMappingRowMapper = new YukonRowMapper<ExtraPaoPointMapping>() {
+        @Override
+        public ExtraPaoPointMapping mapRow(YukonResultSet rs)  throws SQLException {
+            ExtraPaoPointMapping mapping = new ExtraPaoPointMapping();
+            mapping.setPointId(rs.getInt("PointId"));
+            mapping.setRegulatorPointMapping(rs.getEnum("Attribute", RegulatorPointMapping.class));
+            return mapping;
+        }
+    };
     
     private ParameterizedRowMapper<PaoPointIdentifier> paoPointIdentifierRowMapper = new ParameterizedRowMapper<PaoPointIdentifier>() {
 
@@ -94,7 +106,60 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
         sql.appendArgument(pao.getPaoIdentifier().getPaoId());
         yukonJdbcTemplate.update(sql);
     }
-
+    
+    @Override
+    public boolean removeAssignment(PaoIdentifier paoIdentifier, RegulatorPointMapping regulatorMapping) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ExtraPaoPointAssignment");
+        sql.append("WHERE PAObjectId").eq(paoIdentifier.getPaoId());
+        sql.append("AND Attribute").eq_k(regulatorMapping);
+        
+        int rowsModified = yukonJdbcTemplate.update(sql);
+        return rowsModified == 1;
+    }
+    
+    @Override
+    public List<ExtraPaoPointMapping> getAssignments(PaoIdentifier paoIdentifier) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PointId, Attribute");
+        sql.append("FROM ExtraPaoPointAssignment");
+        sql.append("WHERE PAObjectId").eq(paoIdentifier.getPaoId());
+        
+        List<ExtraPaoPointMapping> mappings = yukonJdbcTemplate.query(sql, extraPaoPointMappingRowMapper);
+        return mappings;
+    }
+    
+    @Override
+    public void addAssignment(YukonPao pao, int pointId, RegulatorPointMapping regulatorMapping, boolean overwriteExistingPoint) {
+        //get existing mappings for this device
+        List<ExtraPaoPointMapping> eppMappings = getAssignments(pao.getPaoIdentifier());
+        
+        //check for existing point on this mapping
+        ExtraPaoPointMapping existingMapping = null;
+        for(ExtraPaoPointMapping mapping : eppMappings) {
+            if(mapping.getRegulatorPointMapping() == regulatorMapping) {
+                existingMapping = mapping;
+                break;
+            }
+        }
+        if(!overwriteExistingPoint && existingMapping != null) {
+            String message = "Illegal overwrite of existing mapping. Pao: " + pao.getPaoIdentifier().getPaoId() 
+                             + ", Existing Point: " + existingMapping.getPointId() 
+                             + ", New Point: " + pointId;
+            throw new IllegalStateException(message);
+        }
+        
+        //add new mapping
+        eppMappings.remove(existingMapping);
+        ExtraPaoPointMapping eppMapping = new ExtraPaoPointMapping();
+        eppMapping.setRegulatorPointMapping(regulatorMapping);
+        eppMapping.setPointId(pointId);
+        eppMappings.add(eppMapping);
+        
+        //save
+        saveAssignments(pao, eppMappings);
+    }
+    
     @Override
     public LitePoint getLitePoint(YukonPao regulator, RegulatorPointMapping regulatorMapping) {
         return pointDao.getLitePoint(getPointId(regulator, regulatorMapping));
