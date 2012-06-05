@@ -243,7 +243,7 @@ public class CapControlImportController {
         return "redirect:view";
 	}
 	
-	@RequestMapping
+	@RequestMapping(method=RequestMethod.POST)
 	public String regulatorFile(ModelMap model, HttpServletRequest request, FlashScope flashScope) throws IOException {
 	    //Procure the import file
         if(!ServletFileUpload.isMultipartContent(request)) {
