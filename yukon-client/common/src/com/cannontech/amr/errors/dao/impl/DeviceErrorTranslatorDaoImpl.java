@@ -147,4 +147,9 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
         
         log.info("Device error code descriptions loaded ("+ userContext.getLocale().getDisplayCountry() +"): " + store.get(userContext.getLocale()).size());
     }
+    
+    //Added for unit test, but really shouldn't be here
+    public void setYukonUserContextMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver){
+    	this.messageSourceResolver = messageSourceResolver; 
+    }
 }
