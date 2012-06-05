@@ -116,10 +116,7 @@ class CtiCCCommandExecutor : public CtiCCExecutor
 
         void AutoEnableOvUv();
         void AutoDisableOvUv();
-        void AutoEnableOvUvByArea();
-        void AutoDisableOvUvByArea();
-        void AutoControlOvUvBySubstation(bool disableFlag);
-        void AutoControlOvUvBySubBus(bool disableFlag);
+        void setAutoControlOvUvFlags(CtiCCSubstationBusPtr currentSubBus, bool disableFlag);
         bool checkForCommandRefusal(CtiCCFeeder* feeder);
         void ControlAllCapBanks(long paoId, int control);
         void syncCbcAndCapBankStates(long bankId);
