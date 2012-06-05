@@ -6,4 +6,5 @@ public interface DevDatabasePopulationService {
     public void executeFullDatabasePopulation(DevDbSetupTask devDbBackingBean);
     public DevDbSetupTask getExecuting();
     public void cancelExecution();
+    public void main(String [] args);
 }

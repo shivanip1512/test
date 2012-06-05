@@ -1,5 +1,7 @@
 package com.cannontech.web.support.development.database.service.impl;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.RoleDao;
@@ -24,8 +26,9 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
     }
 
     private void updateAllRolePropertiesForGroup(LiteYukonGroup group) {
-        // OPERATOR_ADMINISTRATOR
-        setRoleTrue(group, YukonRoleProperty.ADMIN_VIEW_LOGS);
+
+        // Demand Response
+        setRoleTrue(group, YukonRoleProperty.DEMAND_RESPONSE);
 
         // APPLICATION_BILLING
         setRoleTrue(group, YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP);
@@ -175,6 +178,9 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
         setRoleTrue(group, YukonRoleProperty.ADMIN_MANAGE_INDEXES);
         setRoleTrue(group, YukonRoleProperty.ADMIN_VIEW_LOGS);
         setRoleTrue(group, YukonRoleProperty.ADMIN_DATABASE_MIGRATION);
+        setRoleTrue(group, YukonRoleProperty.ADMIN_EVENT_LOGS);
+        setRoleTrue(group, YukonRoleProperty.OPERATOR_SURVEY_EDIT);
+        setRoleTrue(group, YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT);
 
         // CI_CURTAILMENT
         setRole(group, YukonRoleProperty.CURTAILMENT_LABEL, "CI Curtailment");
@@ -269,7 +275,9 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
 
     private void setRoleTrue(LiteYukonGroup group, YukonRoleProperty property) {
         GroupRolePropertyValueCollection propertyValues = rolePropertyEditorDao.getForGroupAndRole(group, property.getRole(), true);
-        propertyValues.getValueMap().put(property, true);
+        Map<YukonRoleProperty, Object> valueMap = propertyValues.getValueMap();
+        valueMap.put(property, true);
+        propertyValues.putAll(valueMap);
         rolePropertyEditorDao.save(propertyValues);
         log.info("YukonRole " + property.getRole().name() + " and YukonRoleProperty " + property.name() + " set to true");
     }

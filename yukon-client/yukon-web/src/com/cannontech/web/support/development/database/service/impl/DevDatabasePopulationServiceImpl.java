@@ -7,11 +7,15 @@ import com.cannontech.web.support.development.DevDbSetupTask;
 import com.cannontech.web.support.development.database.service.DevDatabasePopulationService;
 
 public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationService {
-    private DevAMRCreationService devAMRCreationService;
     private DevRolePropUpdaterService devRolePropUpdaterService;
+    private DevAMRCreationService devAMRCreationService;
     private DevCapControlCreationService devCapControlCreationService;
     private DevStarsCreationService devStarsCreationService;
     private DevDbSetupTask devDbSetupTask;
+
+    public void main(String [] args) {
+        executeFullDatabasePopulation(new DevDbSetupTask());
+    }
 
     @Transactional
     public synchronized void executeFullDatabasePopulation(DevDbSetupTask dbSetupTask) {
