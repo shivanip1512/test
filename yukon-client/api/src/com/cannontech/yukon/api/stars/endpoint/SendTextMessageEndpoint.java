@@ -251,7 +251,7 @@ public class SendTextMessageEndpoint {
             requestedElem.setAttribute("failedLookup", Integer.toString(failed));
         }
         if (unsupported > 0) {
-            requestedElem.setAttribute("unsupported", Integer.toString(unsupported));
+            requestedElem.setAttribute("unsupportedDevices", Integer.toString(unsupported));
         }
         parent.addContent(requestedElem);
     }
