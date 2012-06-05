@@ -151,7 +151,7 @@ public class SendTextMessageEndpoint {
     	
 		for (InventoryIdentifier invIdentifier : inventory) {
 			//check if device accepts text messages
-			if (!invIdentifier.getHardwareType().isSupportsMessages()) {
+			if (!invIdentifier.getHardwareType().isSupportsTextMessages()) {
 				for (String serialNumber : serialNumberToInventoryIdMap.keySet()) {
 					if (invIdentifier.getInventoryId() == serialNumberToInventoryIdMap.get(serialNumber)) {
 						unsupportedSerialNumbers.add(serialNumber);

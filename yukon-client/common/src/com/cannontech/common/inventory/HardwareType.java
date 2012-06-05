@@ -250,16 +250,16 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     /**
-     * Returns true if this hardware type supports receiving messages
-     */
-    public boolean isSupportsMessages() {
-    	boolean isSupportsMessages = false;
-    	if(isUtilityProType()){
-    		isSupportsMessages = isZigbee() || isExpressCom();
-    	}
-    	return isSupportsMessages;
-    }
-    
+	 * Returns true if this hardware type supports receiving messages
+	 */
+	public boolean isSupportsTextMessages() {
+		boolean isSupportsMessages = false;
+		if (isUtilityProType()) {
+			isSupportsMessages = isZigbee() || isExpressCom();
+		}
+		return isSupportsMessages;
+	}
+
     /**
      * Returns set of all hardware types that support the 'add by range' action.
      */
