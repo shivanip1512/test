@@ -256,10 +256,10 @@ public class WaterLeakReportController {
 
         // header row
         String[] headerRow = new String[4];
-        headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.amr.waterLeakReport.report.tableHeader.deviceName.linkText");
-        headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.amr.waterLeakReport.report.tableHeader.meterNumber.linkText");
-        headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.amr.waterLeakReport.report.tableHeader.deviceType.linkText");
-        headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.amr.waterLeakReport.report.tableHeader.leakRate.linkText");
+        headerRow[0] = messageSourceAccessor.getMessage(baseKey + ".tableHeader.deviceName.linkText");
+        headerRow[1] = messageSourceAccessor.getMessage(baseKey + ".tableHeader.meterNumber.linkText");
+        headerRow[2] = messageSourceAccessor.getMessage(baseKey + ".tableHeader.deviceType.linkText");
+        headerRow[3] = messageSourceAccessor.getMessage(baseKey + ".tableHeader.leakRate.linkText");
 
         // data rows
         List<WaterMeterLeak> waterLeaks = waterMeterLeakService.getWaterMeterLeaks(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
@@ -305,11 +305,11 @@ public class WaterLeakReportController {
 
         // header row
         String[] headerRow = new String[5];
-        headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.amr.waterLeakReport.report.intervalData.tableHeader.deviceName.linkText");
-        headerRow[1] = messageSourceAccessor.getMessage("yukon.web.modules.amr.waterLeakReport.report.intervalData.tableHeader.meterNumber.linkText");
-        headerRow[2] = messageSourceAccessor.getMessage("yukon.web.modules.amr.waterLeakReport.report.intervalData.tableHeader.deviceType.linkText");
-        headerRow[3] = messageSourceAccessor.getMessage("yukon.web.modules.amr.waterLeakReport.report.intervalData.tableHeader.usage.linkText");
-        headerRow[4] = messageSourceAccessor.getMessage("yukon.web.modules.amr.waterLeakReport.report.intervalData.tableHeader.date.linkText");
+        headerRow[0] = messageSourceAccessor.getMessage(baseKey + ".intervalData.tableHeader.deviceName.linkText");
+        headerRow[1] = messageSourceAccessor.getMessage(baseKey + ".intervalData.tableHeader.meterNumber.linkText");
+        headerRow[2] = messageSourceAccessor.getMessage(baseKey + ".intervalData.tableHeader.deviceType.linkText");
+        headerRow[3] = messageSourceAccessor.getMessage(baseKey + ".intervalData.tableHeader.usage.linkText");
+        headerRow[4] = messageSourceAccessor.getMessage(baseKey + ".intervalData.tableHeader.date.linkText");
 
         // data rows
         List<WaterMeterLeak> waterLeaks = waterMeterLeakService
@@ -374,7 +374,7 @@ public class WaterLeakReportController {
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String message = messageSourceAccessor
-                .getMessage("yukon.web.modules.amr.waterLeakReport.report.intervalData.results.deviceCollectionDescription");
+                .getMessage(baseKey + ".intervalData.results.deviceCollectionDescription");
 
         HashSet<PaoIdentifier> paoIdentifiers = Sets.newHashSet(paoDao.getPaoIdentifiersForPaoIds(Lists.newArrayList(selectedPaoIds)));
         Set<Meter> meters = Sets.newHashSet(meterDao.getMetersForYukonPaos(paoIdentifiers));
@@ -468,7 +468,7 @@ public class WaterLeakReportController {
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String message = messageSourceAccessor
-                .getMessage("yukon.web.modules.amr.waterLeakReport.report.results.deviceCollectionDescription");
+                .getMessage(baseKey + ".results.deviceCollectionDescription");
         return getDeviceCollectionFromYukonDevices(meters, message);
     }
 

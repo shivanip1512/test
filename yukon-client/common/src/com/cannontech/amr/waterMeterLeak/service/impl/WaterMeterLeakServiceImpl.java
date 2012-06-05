@@ -100,7 +100,27 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
                                                               boolean includeDisabledPaos,
                                                               double threshold,
                                                               YukonUserContext userContext) {
+        return getLeaks(devices, fromDate, toDate, includeDisabledPaos, threshold, userContext, true);
+    }
 
+    @Override
+    public List<WaterMeterLeak> getWaterMeterLeaks(Set<SimpleDevice> devices,
+                                                   Date fromDate,
+                                                   Date toDate,
+                                                   boolean includeDisabledPaos,
+                                                   double threshold,
+                                                   YukonUserContext userContext) {
+        return getLeaks(devices, fromDate, toDate, includeDisabledPaos, threshold, userContext, false);
+    }
+
+    private List<WaterMeterLeak> getLeaks(Set<SimpleDevice> devices,
+                                          Date fromDate,
+                                          Date toDate,
+                                          boolean includeDisabledPaos,
+                                          double threshold,
+                                          YukonUserContext userContext,
+                                          boolean getIntervalData) {
+        
         if (CollectionUtils.isEmpty(devices)) {
             return new ArrayList<WaterMeterLeak>();
         }
@@ -118,49 +138,25 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         List<WaterMeterLeak> leakingMeterIntervalData = Lists.newArrayListWithCapacity(reportingMeters.size());
         int numHours = Hours.hoursBetween(new Instant(fromDate), new Instant(toDate)).getHours();
         for (Meter meter : reportingMeters) {
-            List<PointValueHolder> pointValues = getPointValueFromMeterAndReadings(meter, intervalReadings);
             Double leakRate = getLeakRate(meter, numHours, threshold, intervalReadings);
-            for (PointValueHolder pointValueHolder : pointValues) {
+            if (getIntervalData) {
+                List<PointValueHolder> pointValues = getPointValueFromMeterAndReadings(meter, intervalReadings);
+                for (PointValueHolder pointValueHolder : pointValues) {
+                    WaterMeterLeak leak = new WaterMeterLeak();
+                    leak.setMeter(meter);
+                    leak.setPointValueHolder(pointValueHolder);
+                    leak.setLeakRate(leakRate);
+                    leakingMeterIntervalData.add(leak);
+                }
+            } else {
+                if (leakRate == null) continue;
                 WaterMeterLeak leak = new WaterMeterLeak();
                 leak.setMeter(meter);
-                leak.setPointValueHolder(pointValueHolder);
                 leak.setLeakRate(leakRate);
                 leakingMeterIntervalData.add(leak);
             }
         }
         return leakingMeterIntervalData;
-    }
-
-    @Override
-    public List<WaterMeterLeak> getWaterMeterLeaks(Set<SimpleDevice> devices, Date fromDate,
-                                                   Date toDate, boolean includeDisabledPaos,
-                                                   double threshold,
-                                                   YukonUserContext userContext) {
-        if (CollectionUtils.isEmpty(devices)) {
-            return new ArrayList<WaterMeterLeak>();
-        }
-
-        List<Meter> meters = meterDao.getMetersForYukonPaos(devices);
-        List<MeterPointValueHolder> intervalReadings = Lists.newArrayList();
-        Set<Meter> reportingMeters = Sets.newHashSet();
-        populateMeterSetAndIntervalReadings(meters,
-                                            fromDate,
-                                            toDate,
-                                            includeDisabledPaos,
-                                            reportingMeters,
-                                            intervalReadings);
-
-        int numHours = Hours.hoursBetween(new Instant(fromDate), new Instant(toDate)).getHours();
-        List<WaterMeterLeak> leaks = Lists.newArrayList();
-        for (Meter meter : reportingMeters) {
-            Double leakRate = getLeakRate(meter, numHours, threshold, intervalReadings);
-            if (leakRate == null) continue;
-            WaterMeterLeak leak = new WaterMeterLeak();
-            leak.setMeter(meter);
-            leak.setLeakRate(leakRate);
-            leaks.add(leak);
-        }
-        return leaks;
     }
 
     private Double getLeakRate(Meter meter, int numHours, double threshold,

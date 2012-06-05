@@ -420,30 +420,5 @@ public class AccountInformationWidget extends WidgetControllerBase{
             return StringUtils.isBlank(this.value);
         }
     }
-    
-//    private String getMapURL(Address address) {
-//        if (address == null ||
-//                address.getLocationAddress1() == null ||
-//                address.getCityName() == null ||
-//                address.getStateCode() == null ||
-//                address.getZipCode() == null) {
-//            return null;
-//        }
-//
-//        String[] split = StringUtils.split(address.getLocationAddress1(), ' ');
-//        String join = StringUtils.join(split, '+');
-//
-//        final StringBuilder sb = new StringBuilder();
-//        sb.append("http://maps.google.com/maps?f=q&hl=en&q=");
-//        sb.append(join);
-//        sb.append("+");
-//        sb.append(address.getCityName());
-//        sb.append(",+");
-//        sb.append(address.getStateCode());
-//        sb.append("+");
-//        sb.append(address.getZipCode());
-//        sb.append("&ie=UTF8&om=1&z=16&iwloc=addr&t=h");
-//        return sb.toString();
-//    }
 
 }
