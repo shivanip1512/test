@@ -164,7 +164,7 @@
           </option>
 
           <option name="viewScheduledOptOutEvents">
-            <link>/operator/Admin/OptOutEvents.jsp</link>
+            <link>/spring/stars/operator/optOut/admin/viewScheduled</link>
             <requireRoleProperty value="ADMIN_VIEW_OPT_OUT_EVENTS" />
           </option>
 
