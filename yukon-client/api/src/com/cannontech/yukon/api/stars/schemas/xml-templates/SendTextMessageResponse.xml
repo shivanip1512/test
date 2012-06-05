@@ -2,8 +2,12 @@
 <sendTextMessageResponse xmlns="http://yukon.cannontech.com/api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://yukon.cannontech.com/api ../SendTextMessageResponse.xsd" version="1.0">
 
-    <requested initiated="3" failedLookup="1" />
-
+    <requested initiated="3" failedLookup="1" unsupportedDevices="1"/>
+    
+  	<unsupportedDevices>
+    	<serialNumber>1000001</serialNumber>
+  	</unsupportedDevices>
+  
     <lookupError>
         <serialNumber>100000</serialNumber>
     </lookupError>

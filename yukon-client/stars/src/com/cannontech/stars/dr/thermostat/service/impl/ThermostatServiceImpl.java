@@ -635,12 +635,14 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
         for(HardwareType hardwareType:hardwareTypeToInventoryIds.keySet()){
             message.setInventoryIds(hardwareTypeToInventoryIds.get(hardwareType));
-            if (hardwareType.isZigbee()) {
-                jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", message);
-            } else {
-                expressComCommandService.sendTextMessage(message, hardwareSummary);
-            }
-               
+            //Sending text messages are only supported by Utility Pro thermostats (Zigbee or ExpressCom)
+            if(hardwareType.isSupportsMessages()){
+	            if (hardwareType.isZigbee()) {
+	                jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", message);
+	            } else if(hardwareType.isExpressCom()){
+	                expressComCommandService.sendTextMessage(message, hardwareSummary);
+	            }
+            }   
         }
     }
     

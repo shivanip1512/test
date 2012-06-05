@@ -3,6 +3,7 @@ package com.cannontech.yukon.api.stars.endpoint;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +24,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
@@ -98,18 +100,22 @@ public class SendTextMessageEndpoint {
                 Map<String, Integer> serialNumberToInventoryIdMap =
                     inventoryDao.getSerialNumberToInventoryIdMap(deviceTextMessage.getSerialNumbers(),
                                                                  yukonEnergyCompany.getEnergyCompanyId());
+                // Remove devices which cannot accept messages
+                List<String> unsupportedSerialNumbers = removeUnsupportedSerialNumbers(deviceTextMessage, serialNumberToInventoryIdMap);
+                		
                 // Remove invalid serial numbers
                 List<String> lookupFailedSerialNumbers = removeInvalidSerialNumbers(deviceTextMessage, serialNumberToInventoryIdMap);
-
+                
                 if (!deviceTextMessage.getSerialNumbers().isEmpty()) {
                     YukonTextMessage yukonTextMessage = getYukonTextMessage(deviceTextMessage, serialNumberToInventoryIdMap, user);
-
+                    
                     // Send out message
                     thermostatService.sendTextMessage(yukonTextMessage);
                 }
                 // build a response
-                addRequestedNode(deviceTextMessage.getSerialNumbers().size(), lookupFailedSerialNumbers.size(), resp);
-                addLookupErrorsNode(lookupFailedSerialNumbers, resp);
+                addRequestedNode(deviceTextMessage.getSerialNumbers().size(), lookupFailedSerialNumbers.size(), unsupportedSerialNumbers.size(), resp);
+                addErrorsNode(unsupportedSerialNumbers, resp, "unsupportedDevices");
+                addErrorsNode(lookupFailedSerialNumbers, resp, "lookupError");
             } else {
                 // build a response
                 addInvalidMessageNode(deviceTextMessage, resp);
@@ -132,7 +138,34 @@ public class SendTextMessageEndpoint {
         return resp;
     }
 
-    /**
+	/**
+     * This method removes devices that cannot accept messages from inventory map. Messages will not be send to those
+     * devices.
+     * 
+     * @param serialNumberToInventoryIdMap
+     * @return
+     */
+    private List<String> removeUnsupportedSerialNumbers(DeviceTextMessage deviceTextMessage, Map<String, Integer> serialNumberToInventoryIdMap) {
+    	List<String> unsupportedSerialNumbers = Lists.newArrayList();
+    	Set<InventoryIdentifier> inventory = inventoryDao.getYukonInventory(serialNumberToInventoryIdMap.values());
+    	
+		for (InventoryIdentifier invIdentifier : inventory) {
+			//check if device accepts text messages
+			if (!invIdentifier.getHardwareType().isSupportsMessages()) {
+				for (String serialNumber : serialNumberToInventoryIdMap.keySet()) {
+					if (invIdentifier.getInventoryId() == serialNumberToInventoryIdMap.get(serialNumber)) {
+						unsupportedSerialNumbers.add(serialNumber);
+					}
+				}
+			}
+		}
+		// remove devices which cannot accept messages
+		deviceTextMessage.getSerialNumbers().removeAll(unsupportedSerialNumbers);
+		return unsupportedSerialNumbers;
+	}
+    
+
+	/**
      * This method converts a text message to Yukon text message object. Yukon text message object
      * can then be passed to the Yukon Message Handler and sent out.
      * 
@@ -194,9 +227,9 @@ public class SendTextMessageEndpoint {
      * @param serialNumbers
      * @param
      */
-    private void addLookupErrorsNode(List<String> serialNumbers, Element parent) {
+    private void addErrorsNode(List<String> serialNumbers, Element parent, String elementName) {
         if (!serialNumbers.isEmpty()) {
-            Element lookupErrorElem = new Element("lookupError", ns);
+            Element lookupErrorElem = new Element(elementName, ns);
             for (String serialNumber : serialNumbers) {
                 lookupErrorElem.addContent(XmlUtils.createStringElement("serialNumber", ns, serialNumber));
             }
@@ -211,11 +244,14 @@ public class SendTextMessageEndpoint {
      * @param failed
      * @param parent
      */
-    private void addRequestedNode(int initiated, int failed, Element parent) {
+    private void addRequestedNode(int initiated, int failed, int unsupported, Element parent) {
         Element requestedElem = new Element("requested", ns);
         requestedElem.setAttribute("initiated", Integer.toString(initiated));
         if (failed > 0) {
             requestedElem.setAttribute("failedLookup", Integer.toString(failed));
+        }
+        if (unsupported > 0) {
+            requestedElem.setAttribute("unsupported", Integer.toString(unsupported));
         }
         parent.addContent(requestedElem);
     }

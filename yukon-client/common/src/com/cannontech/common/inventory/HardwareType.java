@@ -105,7 +105,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         supportsChangeType = builder2.build();
         supportsAddByRange = builder2.build();
         
-        utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
+        utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
     }
     
@@ -240,6 +240,17 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
      */
     public boolean isSupportsAddByRange() {
         return supportsAddByRange.contains(this);
+    }
+    
+    /**
+     * Returns true if this hardware type supports receiving messages
+     */
+    public boolean isSupportsMessages() {
+    	boolean isSupportsMessages = false;
+    	if(isUtilityProType()){
+    		isSupportsMessages = isZigbee() || isExpressCom();
+    	}
+    	return isSupportsMessages;
     }
     
     /**
