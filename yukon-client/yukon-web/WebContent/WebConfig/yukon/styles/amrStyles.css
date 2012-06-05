@@ -201,11 +201,7 @@ div#selectDevicesPicker {
 }
 
 form#intervalDataForm {
-	position: absolute;
-	right: 100px;
-}
-form#intervalDataForm button {
-	cursor: pointer;
+	display: inline-block;
 }
 /* WaterLeakReport END */
 

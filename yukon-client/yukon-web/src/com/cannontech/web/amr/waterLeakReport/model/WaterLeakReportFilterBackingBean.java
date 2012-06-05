@@ -25,7 +25,7 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
     
     public WaterLeakReportFilterBackingBean() {/* Needed by Spring */}
 
-    public WaterLeakReportFilterBackingBean(YukonUserContext userContext) {
+    public WaterLeakReportFilterBackingBean(WaterLeakReportFilterBackingBean backingBean, YukonUserContext userContext) {
         DateTime fromDateTime = new DateTime(userContext.getJodaTimeZone()).minus(Hours.hours(DEFAULT_FROM_HOURS));
         DateTime toDateTime = new DateTime(userContext.getJodaTimeZone()).minus(Hours.hours(DEFAULT_TO_HOURS));
 
@@ -35,7 +35,11 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
         fromHour = fromDateTime.get(DateTimeFieldType.hourOfDay());
         toHour = toDateTime.get(DateTimeFieldType.hourOfDay());
 
-        setItemsPerPage(10);
+        // Just using the backingbean for the paging & sorting values
+        setSort(backingBean.getSort());
+        setDescending(backingBean.getDescending());
+        setPage(backingBean.getPage());
+        setItemsPerPage(backingBean.getItemsPerPage());
     }
 
     public DeviceCollection getDeviceCollection() {

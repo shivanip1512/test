@@ -188,7 +188,7 @@ public class WaterLeakReportController {
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         if (initReport) model.addAttribute("first_visit", true);
         if (initReport || resetReport) {
-            backingBean = new WaterLeakReportFilterBackingBean(userContext);
+            backingBean = new WaterLeakReportFilterBackingBean(backingBean, userContext);
         }
         setupDeviceCollectionFromRequest(backingBean, request);
         filterValidator.validate(backingBean, bindingResult);
@@ -211,15 +211,6 @@ public class WaterLeakReportController {
         setupDeviceCollectionForIntervalData(backingBean, selectedPaoIds, userContext);
         setupWaterLeakIntervalFromFilter(backingBean, userContext, model);
         return "waterLeakReport/intervalData.jsp";
-    }
-
-    @RequestMapping(method = RequestMethod.GET)
-    public String reset(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
-        WaterLeakReportFilterBackingBean backingBean = new WaterLeakReportFilterBackingBean(userContext);
-        setupDeviceCollectionFromRequest(backingBean, request);
-        setupWaterLeakReportFromFilter(request, backingBean, userContext, model);
-        return "waterLeakReport/report.jsp";
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -500,13 +491,13 @@ public class WaterLeakReportController {
 
     private static Comparator<WaterMeterLeak> getMeterNumberComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
-        Ordering<WaterMeterLeak> nameOrdering = normalStringComparer
+        Ordering<WaterMeterLeak> numberOrdering = normalStringComparer
             .onResultOf(new Function<WaterMeterLeak, String>() {
                 public String apply(WaterMeterLeak from) {
                     return from.getMeter().getMeterNumber();
                 }
             });
-        return nameOrdering;
+        return numberOrdering;
     }
 
     private static Comparator<WaterMeterLeak> getDeviceTypeComparator() {

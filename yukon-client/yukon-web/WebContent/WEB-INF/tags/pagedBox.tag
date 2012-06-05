@@ -20,19 +20,19 @@
 
     <div class="title">
         <span class="titleArea">${pageScope.title}</span>
-        <span class="filterArea">
-            <c:if test="${!empty pageScope.filterDialog}">
-                <cti:button nameKey="filter" styleClass="navlink" 
-                    onclick="showSimplePopup('${pageScope.filterDialog}', '${pageScope.defaultFilterInput}');"
-                    renderMode="labeledImage"/>
-                <c:if test="${pageScope.isFiltered}">
-                    &nbsp;&nbsp;<a href="${pageScope.showAllUrl}">
-                        <cti:msg key="yukon.common.paging.showAll"/>
-                    </a>
-                </c:if>
-            </c:if>
-        </span>
-        <span class="contextMenu">
+        <span class="contextArea">
+	        <span class="filterArea">
+	            <c:if test="${!empty pageScope.filterDialog}">
+                    <button onclick="showSimplePopup('${pageScope.filterDialog}', '${pageScope.defaultFilterInput}');">
+                        <cti:msg2 key="filter"/>
+                    </button>
+	                <c:if test="${pageScope.isFiltered}">
+	                    &nbsp;&nbsp;<a href="${pageScope.showAllUrl}">
+	                        <cti:msg key="yukon.common.paging.showAll"/>
+	                    </a>
+	                </c:if>
+	            </c:if>
+	        </span>
 			<c:if test="${!empty pageScope.titleLinkHtml}">
                 ${pageScope.titleLinkHtml}
 			</c:if>

@@ -28,9 +28,9 @@ if(typeof(WaterLeakReport) === 'undefined'){
         init: function(){
             if(!this._initialized){
                 /* report.jsp */
+                jQuery(WaterLeakReport._all_selector).checkAll(this._single_selector);
                 jQuery(WaterLeakReport._all_selector).bind("change", this._all_checked);
                 jQuery(WaterLeakReport._single_selector).bind("change", this._single_checked);
-                jQuery(WaterLeakReport._all_selector).checkAll(this._single_selector);
 //                jQuery(WaterLeakReport._interval_data_form_selector).showWhenChecked(this._single_selector + ", " + this._all_selector);
                 jQuery(WaterLeakReport._leak_filter_dialog).bind("keyup", this._init_filter_key_bindings);
                 jQuery(document).delegate(WaterLeakReport._leak_filter_dialog, "dialogopen", this._filter_dialog_open);

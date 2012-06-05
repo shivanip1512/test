@@ -796,7 +796,6 @@ table .perPageArea {
     width: 70%;
 }
 
-.filterArea,
 .pagingArea,
 .perPageArea {
     width: 175px;
@@ -805,11 +804,17 @@ table .perPageArea {
     white-space: nowrap;
 }
 
+.perPageArea {
+	top: 2px; /* to align the pagingArea and the perPageArea until the pagingArea is turned into something other than a table */ 
+}
+
 .filterArea a,
 .pagingArea a,
 .perPageArea a {
    color: #06C;
    text-decoration: none;
+   font-weight: normal;
+   vertical-align: top;
 }
 
 div.pagedBox .selectedItem {
@@ -820,11 +825,11 @@ div.pagedBox table.boxTable {
     height: 100%;
 }
 
-.pagedBox .contextMenu {
+.pagedBox .contextArea {
     float: right;
 }
 
-.pagedBox .contextMenu button {
+.pagedBox .contextArea button {
     position: relative;
     top: -3px;
     font-size: 13px!important;
@@ -835,29 +840,30 @@ div.pagedBox table.boxTable {
     padding: 4px 8px 4px 8px !important;
     margin: 0 7px 0 0;
     text-shadow: 0 1px 0 #EFEFEF;
-    float:left !important;
+    cursor: pointer;
 }
 
-.pagedBox .contextMenu button:hover {
+.pagedBox .contextArea button:hover {
     background-color: #ddd;
     color: #333;
     border-color: #666 !important;
 }
-.pagedBox .contextMenu button:active {
+.pagedBox .contextArea button:active {
     background: -moz-linear-gradient(#ddd, #efefef);
     user-select:none !important;
     outline: none !important;
 }
-.pagedBox .contextMenu button:disabled,
-.pagedBox .contextMenu button:disabled:hover {
+.pagedBox .contextArea button:disabled,
+.pagedBox .contextArea button:disabled:hover {
     background: #efefef !important;
     color: #999 !important;
     border: solid 1px #ccc !important;
+    cursor: default;
 }
-.pagedBox .contextMenu button:disabled:active {
+.pagedBox .contextArea button:disabled:active {
 }
 
-.pagedBox .contextMenu button:focus {
+.pagedBox .contextArea button:focus {
     outline: none !important;
 }
 
@@ -1865,7 +1871,9 @@ div.scrollingContainer {
 
 /* dropdown cog menu start */
 .dropdown-container {
+	display: inline-block;
 	position: relative;
+	width: 25px;
 }
 
 .dropdown-menu::before {
@@ -1954,11 +1962,11 @@ div.scrollingContainer {
 .dropdown-menu {
     position: absolute;
     right: 1px;
-    top: 22px;
+    top: 7px;
 }
 .dropdown-container .actions_link {
     position: absolute;
-    top: 5px;
+    top: -11px;
     right: 0px;
 }
 .dropdown-container .actions_link:hover {
