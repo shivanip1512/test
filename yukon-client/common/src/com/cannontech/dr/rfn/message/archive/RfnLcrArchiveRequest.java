@@ -12,7 +12,7 @@ public class RfnLcrArchiveRequest implements RfnArchiveRequest, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected RfnIdentifier rfnIdentifier;
+    private RfnIdentifier rfnIdentifier;
     private long sensorId;
     
     @Override
