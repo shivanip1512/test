@@ -3,12 +3,11 @@ package com.cannontech.dr.rfn.message.archive;
 import java.io.Serializable;
 
 import com.cannontech.common.rfn.message.RfnArchiveRequest;
-import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
  * JMS Queue name: yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest
  */
-public class RfnLcrReadingArchiveRequest implements RfnArchiveRequest, Serializable {
+public class RfnLcrReadingArchiveRequest extends RfnLcrArchiveRequest implements RfnArchiveRequest, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,11 +39,6 @@ public class RfnLcrReadingArchiveRequest implements RfnArchiveRequest, Serializa
         this.dataPointId = dataPointId;
     }
     
-    @Override
-    public RfnIdentifier getRfnIdentifier() {
-        return data.getRfnIdentifier();
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -14,6 +14,8 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.endpoint.RfnArchiveRequestListenerBase;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
+import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveResponse;
 import com.cannontech.message.dispatch.message.PointData;
@@ -21,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 @ManagedResource
-public class LcrReadingArchiveRequestListener  extends RfnArchiveRequestListenerBase<RfnLcrReadingArchiveRequest> {
+public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerBase<RfnLcrArchiveRequest> {
     
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
@@ -35,16 +37,18 @@ public class LcrReadingArchiveRequestListener  extends RfnArchiveRequestListener
         }
         
         @Override
-        public void processPointDatas(RfnDevice rfnDevice, RfnLcrReadingArchiveRequest archiveRequest) {
-            List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
-//            rfnMeterReadService.processMeterReadingDataMessage(meterPlusReadingData, messagesToSend);
-
-            dynamicDataSource.putValues(messagesToSend);
-            archivedReadings.addAndGet(messagesToSend.size());
-
-            sendAcknowledgement(archiveRequest);
-            rfnArchiveRequestService.incrementProcessedArchiveRequest();
-            LogHelper.debug(log, "%d PointDatas generated for RfnLcrReadingArchiveRequest", messagesToSend.size());
+        public void processPointDatas(RfnDevice rfnDevice, RfnLcrArchiveRequest archiveRequest) {
+            if (archiveRequest instanceof RfnLcrReadingArchiveRequest) { // Nothing to do when just an RfnLcrArchiveRequest
+                List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
+                // TODO Garret's stuff
+    
+                dynamicDataSource.putValues(messagesToSend);
+                archivedReadings.addAndGet(messagesToSend.size());
+    
+                sendAcknowledgement(archiveRequest);
+                rfnArchiveRequestService.incrementProcessedArchiveRequest();
+                LogHelper.debug(log, "%d PointDatas generated for RfnLcrReadingArchiveRequest", messagesToSend.size());
+            }
         }
     }
     
@@ -77,10 +81,17 @@ public class LcrReadingArchiveRequestListener  extends RfnArchiveRequestListener
     }
 
     @Override
-    protected RfnLcrReadingArchiveResponse getRfnArchiveResponse(RfnLcrReadingArchiveRequest archiveRequest) {
-        RfnLcrReadingArchiveResponse response = new RfnLcrReadingArchiveResponse();
-        response.setDataPointId(archiveRequest.getDataPointId());
-        return response;
+    protected Object getRfnArchiveResponse(RfnLcrArchiveRequest archiveRequest) {
+        if (archiveRequest instanceof RfnLcrReadingArchiveRequest) {
+            RfnLcrReadingArchiveRequest readRequest = (RfnLcrReadingArchiveRequest) archiveRequest;
+            RfnLcrReadingArchiveResponse response = new RfnLcrReadingArchiveResponse();
+            response.setDataPointId(readRequest.getDataPointId());
+            return response;
+        } else {
+            RfnLcrArchiveResponse response = new RfnLcrArchiveResponse();
+            response.setSensorId(archiveRequest.getSensorId());
+            return response;
+        }
     }
 
     @Override

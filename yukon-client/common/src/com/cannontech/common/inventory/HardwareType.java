@@ -66,6 +66,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     DIGI_GATEWAY(YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, TWO_WAY_RECEIVER, GATEWAY, EXPRESSCOM, true, false, false);
     
     
+    private final static ImmutableSet<HardwareType> rfTypes;
     private final static ImmutableSet<HardwareType> zigbeeTypes;
     private final static ImmutableSet<HardwareType> zigbeeEndpointTypes;
     private final static ImmutableSet<HardwareType> utilityProTypes;
@@ -84,26 +85,28 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         builder.add(DIGI_GATEWAY);
         zigbeeTypes = builder.build();
         
-        Builder<HardwareType> builder2 = ImmutableSet.builder();
-        builder2.add(LCR_6600_EXPRESSCOM);
-        builder2.add(LCR_6200_EXPRESSCOM);
-        builder2.add(LCR_5000_EXPRESSCOM);
-        builder2.add(LCR_5000_VERSACOM);
-        builder2.add(LCR_4000);
-        builder2.add(LCR_3000);
-        builder2.add(LCR_2000);
-        builder2.add(LCR_1000);
-        builder2.add(SA_205);
-        builder2.add(SA_305);
-        builder2.add(SA_SIMPLE);
-        builder2.add(EXPRESSSTAT);
-        builder2.add(COMMERCIAL_EXPRESSSTAT);
-        builder2.add(EXPRESSSTAT_HEAT_PUMP);
-        builder2.add(UTILITY_PRO);
-        builder2.add(UTILITY_PRO_G2);
-        builder2.add(UTILITY_PRO_G3);
-        supportsChangeType = builder2.build();
-        supportsAddByRange = builder2.build();
+        builder = ImmutableSet.builder();
+        builder.add(LCR_6600_EXPRESSCOM);
+        builder.add(LCR_6200_EXPRESSCOM);
+        builder.add(LCR_5000_EXPRESSCOM);
+        builder.add(LCR_5000_VERSACOM);
+        builder.add(LCR_4000);
+        builder.add(LCR_3000);
+        builder.add(LCR_2000);
+        builder.add(LCR_1000);
+        builder.add(SA_205);
+        builder.add(SA_305);
+        builder.add(SA_SIMPLE);
+        builder.add(EXPRESSSTAT);
+        builder.add(COMMERCIAL_EXPRESSSTAT);
+        builder.add(EXPRESSSTAT_HEAT_PUMP);
+        builder.add(UTILITY_PRO);
+        builder.add(UTILITY_PRO_G2);
+        builder.add(UTILITY_PRO_G3);
+        supportsChangeType = builder.build();
+        supportsAddByRange = builder.build();
+        
+        rfTypes = ImmutableSet.of(LCR_6200_RFN, LCR_6600_RFN);
         
         utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
@@ -192,6 +195,10 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     /* HELPERS */
+    
+    public boolean isRf() {
+        return rfTypes.contains(this);
+    }
     
     /**
      * Returns true if this hardware type is a thermostat.
@@ -349,4 +356,5 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public boolean isUtilityProType() {
         return utilityProTypes.contains(this);
     }
+    
 }
