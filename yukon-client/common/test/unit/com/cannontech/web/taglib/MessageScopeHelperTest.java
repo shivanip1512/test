@@ -51,7 +51,7 @@ public class MessageScopeHelperTest {
         List<String> actual = messageScope.getFullKeys(".suffix", "yukon.web.");
 
         ImmutableList<String> expected = ImmutableList.of("yukon.web.modules.someModule.somePage.someWidget.suffix",
-                                                          "yukon.web.widgets.someWidget.suffix");
+                                                          "yukon.web.widget.some.suffix");
 
         assertContainsInOrder(expected, actual);
     }
@@ -143,7 +143,7 @@ public class MessageScopeHelperTest {
         List<String> actual = messageScope.getFullKeys(".suffix", "yukon.web.");
 
         ImmutableList<String> expected = ImmutableList.of("yukon.web.modules.someModule.somePage.someWidget.someTag.instance.suffix",
-                                                          "yukon.web.widgets.someWidget.someTag.instance.suffix",
+                                                          "yukon.web.widget.some.someTag.instance.suffix",
                                                           "yukon.web.components.someTag.instance.suffix",
                                                           "yukon.web.components.someTag.suffix");
 

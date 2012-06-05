@@ -211,7 +211,7 @@ public class StatusPointMonitorDaoImpl implements StatusPointMonitorDao, Initial
             p.addValue("StatusPointMonitorId", holder.parent.getStatusPointMonitorId());
             p.addValue("PrevState", holder.statusPointMonitorProcessor.getPrevState());
             p.addValue("NextState", holder.statusPointMonitorProcessor.getNextState());
-            p.addValue("ActionType", holder.statusPointMonitorProcessor.getActionType());
+            p.addValue("ActionType", holder.statusPointMonitorProcessor.getActionTypeEnum().name());
         }
         public Number getPrimaryKey(StoredStatusPointMonitorProcessor holder) {
             return holder.statusPointMonitorProcessor.getStatusPointMonitorProcessorId();

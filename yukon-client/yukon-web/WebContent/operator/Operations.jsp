@@ -22,13 +22,15 @@
     COMMANDER,
     OPERATOR_ADMINISTRATOR" />
 
-<cti:standardPage title="Energy Services Operations Center" module="operations">
+<cti:msg key="yukon.web.module.operations.pageTitle" var="pageTitle" />
+
+<cti:standardPage title="${pageTitle}" module="operations">
     <cti:standardMenu />
 
 <script type="text/javascript">
 	function confirmDelete() {
-		if (confirm("Are you sure you want to delete the energy company and all customer account information belongs to it?")
-			&& confirm("Are you really sure you want to delete the energy company?"))
+		if (confirm("<cti:msg key="yukon.web.operations.confirmDeleteEnergyCompany"/>")
+			&& confirm("<cti:msg key="yukon.web.operations.secondConfirmDeleteEnergyCompany"/>"))
 			document.DeleteForm.submit();
 	}
 	
@@ -116,28 +118,29 @@
 
         <!-- Metering section -->
         <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,TrendingRole.ROLEID,operator.DeviceActionsRole.ROLEID,SchedulerRole.ROLEID">
-            <tags:operationSection sectionName="Metering" sectionImageName="MeteringLogo">
+        	<cti:msg key="yukon.web.metering" var="sectionTitle" />
+            <tags:operationSection sectionName="${sectionTitle}" sectionImageName="MeteringLogo">
                 <cti:checkRole role="TrendingRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="Metering/Metering.jsp">All Trends</a>
+                        <a href="Metering/Metering.jsp"><cti:msg key="yukon.web.allTrends"/></a>
                     </tags:sectionLink>
                 </cti:checkRole>
                 <cti:checkRole role="MeteringRole.ROLEID">
                     <cti:checkProperty property="operator.MeteringRole.IMPORTER_ENABLED">
                         <tags:sectionLink>
-                            <a href="/spring/amr/bulkimporter/home">Bulk Importer</a>
+                            <a href="/spring/amr/bulkimporter/home"><cti:msg key="yukon.web.bulkImporter"/></a>
                         </tags:sectionLink>
                     </cti:checkProperty>
                 </cti:checkRole>
                 <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,SchedulerRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="<cti:url value="/spring/meter/start"/>">Metering</a>
+                        <a href="<cti:url value="/spring/meter/start"/>"><cti:msg key="yukon.web.metering"/></a>
                     </tags:sectionLink>
                 </cti:checkMultiRole>
 
                 <cti:checkRole role="operator.DeviceActionsRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="<cti:url value="/spring/bulk/bulkHome"/>">Bulk Operations</a>
+                        <a href="<cti:url value="/spring/bulk/bulkHome"/>"><cti:msg key="yukon.web.bulkOperations"/></a>
                     </tags:sectionLink>
                 </cti:checkRole>
 
@@ -152,12 +155,12 @@
 
         <!-- Load Response section -->
         <cti:checkMultiRole roles="loadcontrol.DirectLoadcontrolRole.ROLEID,OddsForControlRole.ROLEID,CICurtailmentRole.ROLEID">
-
-            <tags:operationSection sectionName="Load Response" sectionImageName="LoadResponseLogo">
+			<cti:msg key="yukon.web.loadResponse" var="sectionTitle" />
+            <tags:operationSection sectionName="${sectionTitle}" sectionImageName="LoadResponseLogo">
                 <cti:checkRole role="loadcontrol.DirectLoadcontrolRole.ROLEID">
                     <cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DIRECT_CONTROL">
                         <tags:sectionLink>
-                            <a href="LoadControl/oper_direct.jsp">Direct</a>
+                            <a href="LoadControl/oper_direct.jsp"><cti:msg key="yukon.web.direct"/></a>
                         </tags:sectionLink>
                     </cti:isPropertyTrue>
                 </cti:checkRole>
@@ -169,12 +172,12 @@
                 </cti:checkRole>
                 <cti:checkRole role="OddsForControlRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="Consumer/Odds.jsp">Odds for Control</a>
+                        <a href="Consumer/Odds.jsp"><cti:msg key="yukon.web.oddsForControl"/></a>
                     </tags:sectionLink>
                 </cti:checkRole>
                 <cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DEMAND_RESPONSE">
                     <tags:sectionLink>
-                        <a href="/spring/dr/home"><cti:msg key="yukon.web.operations.demandResponse" /></a>
+                        <a href="/spring/dr/home"><cti:msg key="yukon.web.demandResponse" /></a>
                     </tags:sectionLink>
                 </cti:isPropertyTrue>
             </tags:operationSection>
@@ -183,16 +186,16 @@
 
         <!-- Distribution Automation section -->
         <cti:checkRolesAndProperties value="CAP_CONTROL_ACCESS,OPERATOR_ESUBSTATION_DRAWINGS_VIEW">
-
-            <tags:operationSection sectionName="Distribution Automation" sectionImageName="DistributionAutomationLogo">
+			<cti:msg key="yukon.web.distributionAutomation" var="sectionTitle" />
+            <tags:operationSection sectionName="${sectionTitle}" sectionImageName="DistributionAutomationLogo">
                 <cti:checkRolesAndProperties value="CAP_CONTROL_ACCESS">
                     <tags:sectionLink>
-                        <a href="/spring/capcontrol/tier/areas">Volt/Var Management</a>
+                        <a href="/spring/capcontrol/tier/areas"><cti:msg key="yukon.web.voltVarManagement"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW">
                     <tags:sectionLink>
-                        <a href="/esub/home">eSubstation</a>
+                        <a href="/esub/home"><cti:msg key="yukon.web.esubstation"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
             </tags:operationSection>
@@ -201,16 +204,16 @@
 
         <!-- Hardware Inventory section -->
         <cti:checkRole roleid="<%= InventoryRole.ROLEID %>">
-
-            <tags:operationSection sectionName="Hardware Inventory" sectionImageName="HardwareInventoryLogo">
+			<cti:msg key="yukon.web.hardwareInventory" var="sectionTitle" />
+            <tags:operationSection sectionName="${sectionTitle}" sectionImageName="HardwareInventoryLogo">
                 <cti:checkRole role="InventoryRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="/spring/stars/operator/inventory/home"><cti:msg key="yukon.web.operations.inventory"/></a>
+                        <a href="/spring/stars/operator/inventory/home"><cti:msg key="yukon.web.inventory"/></a>
                     </tags:sectionLink>
                 </cti:checkRole>
                 <cti:checkProperty property="InventoryRole.PURCHASING_ACCESS">
                     <tags:sectionLink>
-                        <a href="Hardware/PurchaseTrack.jsp">Purchasing</a>
+                        <a href="Hardware/PurchaseTrack.jsp"><cti:msg key="yukon.web.purchasing"/></a>
                     </tags:sectionLink>
                 </cti:checkProperty>
 
@@ -232,7 +235,7 @@
 									</c:forEach>
 								</select> <input type="text" name="searchValue" id="invSearchValue"
 									value="" size="15"> <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>"
-									alt="search" onClick="$('invSearchForm').submit();">
+									alt="search" onClick="$('invSearchForm').submit();"
 							</div>
 						</form>
 					</div>
@@ -243,11 +246,11 @@
 
         <!-- Work Orders section -->
         <cti:checkRole roleid="<%= WorkOrderRole.ROLEID %>">
-
-            <tags:operationSection sectionName="Work Orders" sectionImageName="WorkOrdersLogo">
+			<cti:msg key="yukon.web.workOrders" var="sectionTitle" />
+            <tags:operationSection sectionName="${sectionTitle}" sectionImageName="WorkOrdersLogo">
                 <cti:checkProperty property="WorkOrderRole.WORK_ORDER_SHOW_ALL">
                     <tags:sectionLink>
-                        <a href="${serviceOrderPage}">Service Order List</a>
+                        <a href="${serviceOrderPage}"><cti:msg key="yukon.web.serviceOrderList"/></a>
                     </tags:sectionLink>
                 </cti:checkProperty>
 
@@ -256,7 +259,7 @@
                     <form name="soSearchForm" method="post" action="<cti:url value="/servlet/WorkOrderManager"/>">
                         <input type="hidden" name="action" value="SearchWorkOrder"> <input type="hidden" name="REDIRECT" value="<cti:url value="/operator/WorkOrder/SearchResults.jsp"/>">
 
-                        <div class="sectionFormLabel">Search for existing service order:</div>
+                        <div class="sectionFormLabel"><cti:msg key="yukon.web.operations.searchForExistingServiceOrder"/></div>
                         <div>
                             <select name="SearchBy" data-input="#SearchValue" class="resetFieldOnChange">
                                 <c:forEach items="${serviceOrderSearchList}" var="entry">
@@ -273,21 +276,21 @@
 
         <!-- Analysis section -->
         <cti:checkRolesAndProperties value="REPORTING,ENABLE_WEB_COMMANDER,MSP_LM_MAPPING_SETUP">
-
-            <tags:operationSection sectionName="Analysis" sectionImageName="AnalysisLogo">
+			<cti:msg key="yukon.web.analysis" var="sectionTitle" />
+            <tags:operationSection sectionName="${sectionTitle}" sectionImageName="AnalysisLogo">
                 <cti:checkRole role="ReportingRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="../analysis/Reports.jsp">Reporting</a>
+                        <a href="../analysis/Reports.jsp"><cti:msg key="yukon.web.reporting"/></a>
                     </tags:sectionLink>
                 </cti:checkRole>
                 <cti:checkProperty property="CommanderRole.ENABLE_WEB_COMMANDER">
                     <tags:sectionLink>
-                        <a href="../apps/SelectDevice.jsp">Commander</a>
+                        <a href="../apps/SelectDevice.jsp"><cti:msg key="yukon.web.commander"/></a>
                     </tags:sectionLink>
                 </cti:checkProperty>
                 <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORT">
                     <tags:sectionLink>
-                        <a href="/spring/amr/archivedValuesExporter/view">Archived Data Export</a>
+                        <a href="/spring/amr/archivedValuesExporter/view"><cti:msg key="yukon.web.archivedDataExport"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
                 <cti:checkProperty property="MultispeakRole.MSP_LM_MAPPING_SETUP">
@@ -308,8 +311,8 @@
 
         <!-- Administration section -->
         <cti:checkRole role="operator.AdministratorRole.ROLEID">
-
-            <tags:operationSection sectionName="Administration" sectionImageName="AdministrationLogo">
+			<cti:msg key="yukon.web.administration" var="sectionTitle" />
+            <tags:operationSection sectionName="${sectionTitle}" sectionImageName="AdministrationLogo">
 
                 <c:if test="${showSystemAdmin}">
                     <tags:sectionLink>
@@ -319,7 +322,7 @@
 
                 <cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS">
                     <tags:sectionLink>
-                        <a href="Admin/SwitchCommands.jsp">View Batch Commands</a>
+                        <a href="Admin/SwitchCommands.jsp"><cti:msg key="yukon.web.viewBatchCommands"/></a>
                     </tags:sectionLink>
                 </cti:checkProperty>
 
@@ -331,25 +334,25 @@
 
                 <cti:checkRolesAndProperties value="OPERATOR_ADMINISTRATOR">
                     <tags:sectionLink>
-                        <a href="/spring/support/">Support</a>
+                        <a href="/spring/support/"><cti:msg key="yukon.web.support"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
 
                 <cti:checkRolesAndProperties value="ADMIN_VIEW_LOGS">
                     <tags:sectionLink>
-                        <a href="/spring/support/logging/menu?file=/">View Logs</a>
+                        <a href="/spring/support/logging/menu?file=/"><cti:msg key="yukon.web.viewLogs"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
 
                 <cti:checkProperty property="AdministratorRole.ADMIN_MANAGE_INDEXES">
                     <tags:sectionLink>
-                        <a href="/index/manage">Manage Indexes</a>
+                        <a href="/index/manage"><cti:msg key="yukon.web.manageIndexes"/></a>
                     </tags:sectionLink>
                 </cti:checkProperty>
 
                 <cti:checkProperty property="AdministratorRole.ADMIN_VIEW_CONFIG">
                     <tags:sectionLink>
-                        <a href="<cti:url value="/spring/deviceConfiguration?home"/>">Device Configuration</a>
+                        <a href="<cti:url value="/spring/deviceConfiguration?home"/>"><cti:msg key="yukon.web.deviceConfiguration"/></a>
                     </tags:sectionLink>
                 </cti:checkProperty>
 

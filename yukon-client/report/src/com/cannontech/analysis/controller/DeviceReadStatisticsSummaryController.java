@@ -57,7 +57,7 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
         if(StringUtils.isNotBlank(attributeString)){
             Attribute attribute = BuiltInAttribute.valueOf(attributeString);
             deviceReadSummaryModel.setAttribute(attribute);
-            deviceReadSummaryModel.setTitle("Device Read Statistics Summary: " + attribute.getDescription());  
+            deviceReadSummaryModel.setTitle("Device Read Statistics Summary: " + attribute.getMessage().getDefaultMessage());  
         }
         
         ReportFilter filter = ServletRequestEnumUtils.getEnumParameter(request, ReportFilter.class, ReportModelBase.ATT_FILTER_MODEL_TYPE, ReportFilter.NONE);

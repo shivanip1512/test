@@ -5,7 +5,7 @@
 <c:choose>
     <c:when test="${responseSuccess}">
         <div class="successMessage">
-            <i:inline key="yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.success" arguments="${command}"/>
+            <i:inline key="yukon.web.widgets.rfnMeterDisconnect.sendCommand.success" arguments="${command}"/>
         </div>
     </c:when>
     <c:otherwise>

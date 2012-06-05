@@ -321,7 +321,7 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		
 		Iterator iter = ((ScheduledMeterReadModel)getModel()).getTotals().entrySet().iterator();
 		int offset = 8;
-		
+
 		DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
 		offset += 12;
 		while( iter.hasNext())
@@ -332,6 +332,7 @@ public class ScheduledMeterReadReport extends YukonReportBase
 			factory = ReportFactory.createGroupLabelElementDefault(statusCode, 0, 
 				offset, getModel().getColumnProperties(ScheduledMeterReadModel.STATUS_CODE_COLUMN).getWidth());
 			footer.addElement(factory.createElement());
+			
 			
 			DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(Integer.valueOf(statusCode));
 			factory = ReportFactory.createGroupLabelElementDefault(deviceErrorDesc.getDescription(), 50, 

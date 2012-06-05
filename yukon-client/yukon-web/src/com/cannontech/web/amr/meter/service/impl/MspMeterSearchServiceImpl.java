@@ -32,7 +32,7 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService, Initial
 		
 		List<MspFilterBy> msFilterByList = new ArrayList<MspFilterBy>();
 		for (MspSearchField mspSearchField : mspSearchFields) {
-			msFilterByList.add(new MspFilterBy(mspSearchField.getName(), methodResultProviderMap.get(mspSearchField)));
+			msFilterByList.add(new MspFilterBy(mspSearchField.name(), methodResultProviderMap.get(mspSearchField)));
         }
 		
 		return msFilterByList;

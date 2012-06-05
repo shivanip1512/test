@@ -52,7 +52,7 @@
             
             <%-- threshold --%>
             <td class="${tdClass}" style="text-align:right;">
-                ${monitor.reasonableMaxKwhPerDay}
+                <cti:msg2 key="yukon.common.float.tenths" argument="${monitor.reasonableMaxKwhPerDay}" />
             </td>
             
             <%-- monitoring count --%>

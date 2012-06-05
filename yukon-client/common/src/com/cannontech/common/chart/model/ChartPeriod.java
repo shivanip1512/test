@@ -2,37 +2,39 @@ package com.cannontech.common.chart.model;
 
 import java.util.Date;
 
+import com.cannontech.common.i18n.DisplayableEnum;
+
 /**
  * Enum which represents the time period over which data will be displayed in
  * the chart
  */
-public enum ChartPeriod {
-    YEAR("Year") {
+public enum ChartPeriod implements DisplayableEnum {
+    YEAR {
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             return ChartInterval.WEEK;
         }
     },
-    THREEMONTH("Three Month") {
+    THREEMONTH {
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             return ChartInterval.DAY;
         }
     },
-    MONTH("Month") {
+    MONTH {
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             return ChartInterval.DAY;
         }
     },
-    WEEK("Week") {
+    WEEK {
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             return ChartInterval.HOUR;
         }
     },
-    DAY("Day") {
+    DAY {
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             return ChartInterval.FIVEMINUTE;
-        } 
+        }
     },
-    NOPERIOD("NoPeriod") {
+    NOPERIOD {
         public ChartInterval getChartUnit(Date startDate, Date endDate) {
             
             // choose interval based on how many days apart the two dates are
@@ -51,18 +53,16 @@ public enum ChartPeriod {
                 return ChartInterval.MINUTE;
             }
             
-        } 
+        }
+
     };
 
-    private String label = null;
-
-    private ChartPeriod(String label) {
-        this.label = label;
+    @Override
+    public String getFormatKey() {
+    	return baseKey + name();
     }
+
+    private static String baseKey = "yukon.common.chartPeriod.";
 
     public abstract ChartInterval getChartUnit(Date startDate, Date endDate);
-
-    public String getPeriodLabel() {
-        return label;
-    }
 }

@@ -9,6 +9,7 @@ public class AttributeGraphType {
     private ConverterType converterType = null;
     private String label = null;
     private String description = null;
+    private String baseKey = "yukon.web.attributeGraphType.";
 
     public BuiltInAttribute getAttribute() {
         return attribute;
@@ -19,7 +20,7 @@ public class AttributeGraphType {
     }
 
     public String getLabel() {
-        return label;
+        return baseKey + attribute.name() + ".label";
     }
 
     public void setLabel(String label) {
@@ -27,7 +28,7 @@ public class AttributeGraphType {
     }
 
     public String getDescription() {
-        return description;
+    	return baseKey +  attribute.name() + ".description";
     }
 
     public void setDescription(String description) {
@@ -51,6 +52,6 @@ public class AttributeGraphType {
     }
     
     public String toString() {
-        return this.label;
+        return this.attribute.name();
     }
 }

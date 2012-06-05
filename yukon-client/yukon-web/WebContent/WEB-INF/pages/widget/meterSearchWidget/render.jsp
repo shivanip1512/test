@@ -11,7 +11,8 @@
     <form id="filterForm" action="/spring/meter/search">
         <tags:nameValueContainer altRowOn="false" tableClass="nonwrapping">
 	        <c:forEach var="filter" items="${filterByList}" varStatus="status">
-                <tags:nameValue name="${filter.name}"><input size="40" type="text" id="searchField_${status.count}" name="${filter.name}" value="${filter.filterValue}"></tags:nameValue>
+	        	<cti:msg2 key="${filter.formatKey}" var="filterName"/>
+                <tags:nameValue name="${filterName}"><input size="40" type="text" id="searchField_${status.count}" name="${filter.name}" value="${filter.filterValue}"></tags:nameValue>
 	        </c:forEach>
         </tags:nameValueContainer>
         

@@ -28,6 +28,7 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yc.gui.YC;
 
 /**
@@ -44,6 +45,7 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 	private HashMap<String, Vector<String>> serialTypeToNumberMap = null;
 
 	private int userID = 0;
+	private YukonUserContext userContext = null;
 	
 	/** Valid route types for serial commands to be sent out on */
 	private int [] validRouteTypes = new int[]{
@@ -106,7 +108,12 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 					setErrorMsg(getErrorMsg() + "<br>* Command Failed - " + returnMsg.getCommandString());
 				}
 				DeviceErrorTranslatorDao deviceErrorTrans = YukonSpringHook.getBean("deviceErrorTranslator", DeviceErrorTranslatorDao.class);
-				DeviceErrorDescription deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
+				DeviceErrorDescription deviceErrorDesc = null;
+				if(userContext != null){
+					deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus(), userContext);
+				}else{
+					deviceErrorDesc = deviceErrorTrans.translateErrorCode(returnMsg.getStatus());
+				}
 				setErrorMsg( getErrorMsg() + "<BR><B>"+deviceErrorDesc.getCategory()+"</B> -- " 
 						+ deviceErrorDesc.getDescription() + "<BR>" + returnMsg.getResultString());
 			}
@@ -222,4 +229,12 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
         }
         this.setLiteYukonPao(litePAO);
     }
+
+	public YukonUserContext getUserContext() {
+		return userContext;
+	}
+
+	public void setUserContext(YukonUserContext userContext) {
+		this.userContext = userContext;
+	}
 }

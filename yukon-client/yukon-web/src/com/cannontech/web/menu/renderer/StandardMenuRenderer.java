@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ecs.html.A;
+import org.apache.ecs.html.Button;
 import org.apache.ecs.html.Div;
 import org.apache.ecs.html.Form;
 import org.apache.ecs.html.Input;
@@ -383,20 +384,21 @@ public class StandardMenuRenderer implements MenuRenderer {
                 }
                 
                 searchDiv.addElement(select);
-            } else {
-                searchDiv.addElement("Find: ");
             }
             
             
             // search box
             Input textInput = new Input(Input.text, formData.getFieldName(), "");
             textInput.setID("textInput");
+            textInput.addAttribute("placeholder", messageSource.getMessage("yukon.web.find"));
             
             searchDiv.addElement(textInput);
-            searchDiv.addElement(new Input(Input.image, "Go")
-                                  .setSrc(buildUrl("/WebConfig/yukon/Buttons/GoButtonGray.gif"))
-                                  .setAlt("Go")
-                                  .setStyle("vertical-align: middle"));
+            
+            Button button = new Button();
+            button.setClass("searchButton");
+            button.addElement(new Span());
+            
+            searchDiv.addElement(button);
             searchForm.addElement(searchDiv);
             right.addElement(searchForm);
             wrapper.addElement(right);

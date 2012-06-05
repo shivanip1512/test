@@ -176,30 +176,30 @@ function checkDates(){
 	                	var startMinute = Number($F('startMinuteID')); 
 	                	var stopMinute = Number($F('stopMinuteID')); 
 	                	if(startMinute >= stopMinute){
-	                		alert("The start time must occur before the stop time. ");
+	                		alert("<cti:msg key="yukon.common.errors.time.startBeforeStop"/>");
 	                        $('startCal').focus();
 	                        return false;
 	                	}else{
 	                		loadTarget(document.reportForm);
 	                	}
 	                }else {
-	                	alert("The start time must occur before the stop time. ");
+	                	alert("<cti:msg key="yukon.common.errors.time.startBeforeStop"/>");
 	                    $('startCal').focus();
 	                    return false;
 	                }
 	            }else{
-	            	alert("The start date must occur before the stop date. ");
+	            	alert("<cti:msg key="yukon.common.errors.date.startBeforeStop"/>");
 	                $('startCal').focus();
 	                return false;
 	            }
 			} else {
-				alert("The start date must occur before the stop date. ");
+				alert("<cti:msg key="yukon.common.errors.date.startBeforeStop"/>");
 				$('startCal').focus();
 				return false;
 			}
 		}
 	} else {
-		alert("One of the dates entered is not a valid date.");
+		alert("<cti:msg key="yukon.common.errors.date.oneInvalid"/>");
 		$('startCal').focus();
 		return false;
 	}
@@ -226,8 +226,9 @@ function makeFirstSelectedFilterValueVisible() {
 }
 
 </script>
+<cti:msg key="yukon.common.dateFormatting.DATE" var="dateFormat"/>
 <%
-	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
+	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat((String)pageContext.getAttribute("dateFormat"));
 		
 	String bulletImg = "<img src='../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_SELECTED) + "' width='9' height='9'>";
 	String bulletImgExp = "<img src='../WebConfig/" + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, WebClientRole.NAV_BULLET_EXPAND) + "' width='9' height='9'>";
@@ -248,33 +249,34 @@ function makeFirstSelectedFilterValueVisible() {
 	  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
 	  <input type="hidden" name="ecID" value="<%=REPORT_BEAN.getEnergyCompanyID() %>">
 	  <input type="hidden" name="ACTION" value="DownloadReport">
-      <cti:titledContainer title="Report Selection">
+	  <cti:msg key="yukon.web.reportSelection" var="reportSelectionTitle"/>
+      <cti:titledContainer title="${reportSelectionTitle}">
             <table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#FFFFFF" align="center">
               <tr>
-				<td class="columnHeader">Reports</td>
+				<td class="columnHeader"><cti:msg key="yukon.web.reports"/></td>
                 <td class="columnHeader">&nbsp;</td>
-                <td class="columnHeader">Start Date</td>
+                <td class="columnHeader"><cti:msg key="yukon.common.date.start"/></td>
                 <td class="columnHeader">&nbsp;</td>
-                <td class="columnHeader">Stop Date</td>
+                <td class="columnHeader"><cti:msg key="yukon.common.date.stop"/></td>
                 <td class="columnHeader">&nbsp;</td>
-                <td class="columnHeader">Format</td>
+                <td class="columnHeader"><cti:msg key="yukon.web.format"/></td>
 			  </tr>
 			  <tr bgcolor="EEEEEE">
                 <td class="main">&nbsp;</td>
                 <td class="main">&nbsp;</td>
                 <td class="main">
                     <%if(controller == null){ %>
-                    <span class='NavText'>* Greater than 00:00, not inclusive</span>
+                    <span class='NavText'><cti:msg key="yukon.common.reports.startTimeNotInclusive"/></span>
                     <%} else if(!controller.useStartStopTimes()){%>
-                    <span class='NavText'>* Greater than 00:00, not inclusive</span>
+                    <span class='NavText'><cti:msg key="yukon.common.reports.startTimeNotInclusive"/></span>
                     <%} %>
                 </td>
                 <td class="main">&nbsp;</td>
                 <td class="main">
                     <%if(controller == null){ %>
-                    <span class='NavText'>* Less than or equal to 00:00, inclusive</span>
+                    <span class='NavText'><cti:msg key="yukon.common.reports.stopTimeInclusive"/></span>
                     <%} else if(!controller.useStartStopTimes()){%>
-                    <span class='NavText'>* Less than or equal to 00:00, inclusive</span>
+                    <span class='NavText'><cti:msg key="yukon.common.reports.stopTimeInclusive"/></span>
                     <%} %>
                 </td>
                 <td class="main">&nbsp;</td>
@@ -289,7 +291,7 @@ function makeFirstSelectedFilterValueVisible() {
 						for (ReportTypes reportType : rptTypes){%>
 				    	<tr>
 						  <td class="main">
-						  <input type="radio" name="type" value="<%=reportType%>" <%=(reportType==REPORT_BEAN.getReportType()?"checked":"")%> onclick='document.reportForm.ACTION.value="LoadParameters";document.reportForm.submit();'><font title="<%= reportType.getDescription() %>"><%=reportType.getTitle()%></font>
+						  <input type="radio" name="type" value="<%=reportType%>" <%=(reportType==REPORT_BEAN.getReportType()?"checked":"")%> onclick='document.reportForm.ACTION.value="LoadParameters";document.reportForm.submit();'><font title="<cti:msg key="<%= reportType.getDescriptionKey() %>"/>"><cti:msg key="<%= reportType.getFormatKey() %>"/></font>
 						  </td>
 						</tr>
 					    <%}
@@ -324,7 +326,7 @@ function makeFirstSelectedFilterValueVisible() {
 						  <%}%>
 						</select>
 					  </td>
-					  <td width="100%" class="columnHeader" align="center">Min<BR>
+					  <td width="100%" class="columnHeader" align="center"><cti:msg key="yukon.web.min"/><BR>
 					    <select name="startMinute" id="startMinuteID">
 					    <% for (int i = 0; i < 60; i=i+5) {
 						    String iStr = String.valueOf(i);
@@ -352,7 +354,7 @@ function makeFirstSelectedFilterValueVisible() {
 					  <td valign="bottom">&nbsp</td>
 					  <% if( controller != null && controller.useStartStopTimes() ){%>
 
-					  <td class="columnHeader" align="center">Hour<BR>
+					  <td class="columnHeader" align="center"><cti:msg key="yukon.web.min"/><BR>
 					    <select name="stopHour" id="stopHourID">
 					    <% for (int i = 0; i < 24; i++) {
 						    String iStr = String.valueOf(i);
@@ -361,7 +363,7 @@ function makeFirstSelectedFilterValueVisible() {
 						  <%}%>
 						</select>
 					  </td>
-					  <td width="100%" class="columnHeader" align="center">Min<BR>
+					  <td width="100%" class="columnHeader" align="center"><cti:msg key="yukon.web.min"/><BR>
 					    <select name="stopMinute" id="stopMinuteID">
 					    <% for (int i = 0; i < 60; i=i+5) {
 						    String iStr = String.valueOf(i);
@@ -379,11 +381,13 @@ function makeFirstSelectedFilterValueVisible() {
 	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
 				    <tr>
 					  <td class="main">
-						<input <%=(!supportPdf ? " disabled='disabled' " : "")%> type="radio" name="ext" value="pdf" <%=(supportPdf ? " checked='checked' " : "")%>>PDF<BR>
-  						<input <%=(!supportPdf ? " checked='checked' " : "")%>type="radio" name="ext" value="csv">CSV
+						<input <%=(!supportPdf ? " disabled='disabled' " : "")%> type="radio" name="ext" value="pdf" <%=(supportPdf ? " checked='checked' " : "")%>><cti:msg key="yukon.web.pdf"/><BR>
+  						<input <%=(!supportPdf ? " checked='checked' " : "")%>type="radio" name="ext" value="csv"><cti:msg key="yukon.web.csv"/>
 					  </td>
 					  <td class="main">
-					    <input type="image" id="Generate" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(model == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport"; return true;'>
+					    <button id="Generate" name="Generate" border="0" alt="Generate" align="middle" <%=(model == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport"; return true;'>
+					    	<cti:msg key="yukon.web.generate"/>
+					    </button>
 					  </td>
 					</tr>
 				  </table>
@@ -397,7 +401,8 @@ function makeFirstSelectedFilterValueVisible() {
          
 	  <br>	  
 	  
-      <cti:titledContainer title="Options">
+	  <cti:msg key="yukon.web.options" var="optionsTitle"/>
+      <cti:titledContainer title="${optionsTitle}">
             <%=REPORT_BEAN.buildOptionsHTML()%>
       </cti:titledContainer>
       
@@ -405,7 +410,8 @@ function makeFirstSelectedFilterValueVisible() {
 	  {%>
 		  <br>	  
 		  
-          <cti:titledContainer title="Filter">
+		  <cti:msg key="yukon.web.options" var="filterTitle"/>
+          <cti:titledContainer title="${filterTitle}">
 			<SCRIPT>
 
         function changeFilter(filterBy) {
@@ -522,11 +528,11 @@ function makeFirstSelectedFilterValueVisible() {
             			<%if( filter.equals(ReportFilter.METER ) ){%>
                     		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
                     		<input type='text' name="filterMeterValues" style='width:650px;'/>
-                    		<BR><span class='NavText'>* Enter a comma separated list of Meter Number(s).</span><br></div>
+                    		<BR><span class='NavText'><cti:msg key="yukon.common.reports.filterMeterValues"/></span><br></div>
             			<%} else if( filter.equals(ReportFilter.DEVICE)) {%>
                     		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
 		                    <input type='text' name='filterDeviceValues' style='width:650px;'/>
-        		            <BR><span class='NavText'>* Enter a comma separated list of Device Name(s).</span><br></div>   
+        		            <BR><span class='NavText'><cti:msg key="yukon.common.reports.filterDeviceValues"/></span><br></div>   
         		            
         		        <%-- LM PROGRAM PICKER --%>
         		        <%} else if( filter.equals(ReportFilter.PROGRAM) || filter.equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {%>
@@ -548,7 +554,7 @@ function makeFirstSelectedFilterValueVisible() {
 				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');">
 				             	
 				             	<img src="/WebConfig/yukon/Icons/add.gif">
-				             	Choose Programs
+				             	<cti:msg key="yukon.web.choosePrograms" />
 	                            </tags:pickerDialog>
 	                    			
 	                    		<%	
@@ -565,7 +571,7 @@ function makeFirstSelectedFilterValueVisible() {
 			                                 		immediateSelectMode="true">
 			                                 		
 				             	<img src="/WebConfig/yukon/Icons/add.gif">
-								Choose Program 
+								<cti:msg key="yukon.web.chooseProgram" />
 	                            </tags:pickerDialog>
 	                    			
 	                    		<%	
@@ -592,7 +598,7 @@ function makeFirstSelectedFilterValueVisible() {
 				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedGroupNamesSpan');">
 				             	
 				             	<img src="/WebConfig/yukon/Icons/add.gif">
-				             	Choose Groups 
+								<cti:msg key="yukon.web.chooseGroups" />
 	                            </tags:pickerDialog>
 	                             
 	                            <br>
@@ -615,7 +621,7 @@ function makeFirstSelectedFilterValueVisible() {
 				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedControlAreaNamesSpan');">
 				             	
 				             	<img src="/WebConfig/yukon/Icons/add.gif">
-				             	Choose Control Areas 
+								<cti:msg key="yukon.web.chooseControlAreas" />
 	                            </tags:pickerDialog>
 	                             
 	                            <br>
@@ -638,7 +644,7 @@ function makeFirstSelectedFilterValueVisible() {
 				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedScenarioNamesSpan');">
 				             	
 				             	<img src="/WebConfig/yukon/Icons/add.gif">
-				             	Choose Scenarios 
+								<cti:msg key="yukon.web.chooseScenarios" />
 	                            </tags:pickerDialog>
 	                             
 	                            <br>
@@ -662,7 +668,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                     endAction="setPickerSelectedAccountNumberNamesFunction('selectedAccountNumberNamesSpan');">
                                 
                                 <img src="/WebConfig/yukon/Icons/add.gif">
-                                Choose Account Numbers 
+								<cti:msg key="yukon.web.chooseAccountNumbers" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -687,7 +693,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                     endAction="setPickerSelectedSerialNumberNamesFunction('selectedSerialNumberNamesSpan');">
                                 
                                 <img src="/WebConfig/yukon/Icons/add.gif">
-                                Choose Serial Numbers
+								<cti:msg key="yukon.web.chooseSerialNumbers" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -712,7 +718,7 @@ function makeFirstSelectedFilterValueVisible() {
                                                     endAction="setPickerSelectedUserNamesFunction('selectedUserNamesSpan');">
                                 
                                 <img src="/WebConfig/yukon/Icons/add.gif">
-                                Choose Users 
+								<cti:msg key="yukon.web.chooseUsers" />
                                 </tags:pickerDialog>
                                  
                                 <br>
@@ -789,10 +795,10 @@ function makeFirstSelectedFilterValueVisible() {
                         	</select>
                             <BR>
                             <%if(filter.isMultiSelect()){ %>
-                    			<span class='NavText'>* Hold &lt;CTRL&gt; key down to select multiple values</span><br>
-                    			<span class='NavText'>* Hold &lt;Shift&gt; key down to select range of values</span>
+                    			<span class='NavText'><cti:msg key="yukon.web.help.multiSelect"/></span><br>
+                    			<span class='NavText'><cti:msg key="yukon.web.help.rangeSelect"/></span>
                             <%} else { %>
-                                <span class='NavText'>* Select one value to filter by</span>
+                                <span class='NavText'><cti:msg key="yukon.common.reports.selectFilter"/></span>
                             <%} %>
                       	</div>
             			<% } %>

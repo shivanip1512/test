@@ -81,7 +81,7 @@ public class RfnMeterDisconnectService {
             @Override
             public void handleException(Exception e) {
                 MessageSourceResolvable message = 
-                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error", e.toString());
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widget.RfnMeterDisconnect.sendCommand.error", e.toString());
                 callback.processingExceptionOccured(message);
             }
 
@@ -90,7 +90,7 @@ public class RfnMeterDisconnectService {
                 if (!initialReply.isSuccess()) {
                     /* Request failed */
                     MessageSourceResolvable message = 
-                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error", initialReply);
+                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widget.RfnMeterDisconnect.sendCommand.error", initialReply);
                     callback.receivedError(message);
                     return false;
                 } else {
@@ -104,7 +104,7 @@ public class RfnMeterDisconnectService {
                 if (!confirmationReplyMessage.isSuccess()) {
                     /* Request failed */
                     MessageSourceResolvable message = 
-                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.confirmError", confirmationReplyMessage);
+                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widget.RfnMeterDisconnect.sendCommand.confirmError", confirmationReplyMessage);
                     callback.receivedError(message);
                 } else {
                     // State will only be used as the state of the meter when doing
@@ -126,14 +126,14 @@ public class RfnMeterDisconnectService {
             @Override
             public void handleTimeout1() {
                 MessageSourceResolvable createSingleCodeWithArguments = 
-                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.error", "T1");
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widget.RfnMeterDisconnect.sendCommand.error", "T1");
                 callback.receivedError(createSingleCodeWithArguments);
             }
 
             @Override
             public void handleTimeout2() {
                 MessageSourceResolvable createSingleCodeWithArguments = 
-                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.rfnMeterDisconnectWidget.sendCommand.confirmError", "T2");
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widget.RfnMeterDisconnect.sendCommand.confirmError", "T2");
                 callback.receivedError(createSingleCodeWithArguments);
             }
         };

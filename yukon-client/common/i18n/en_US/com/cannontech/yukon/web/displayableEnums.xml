@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<!-- Metering -->
+<entry key="yukon.web.standardFilterBy.address">Address</entry>
+<entry key="yukon.web.standardFilterBy.deviceName">Device Name</entry>
+<entry key="yukon.web.standardFilterBy.deviceType">Device Type</entry>
+<entry key="yukon.web.standardFilterBy.meterNumber">Meter Number</entry>
+<entry key="yukon.web.standardFilterBy.quickSearch">Quick Search</entry>
+<entry key="yukon.web.standardFilterBy.route">Route</entry>
+<entry key="yukon.web.mspFilterBy.ACCOUNT_NUMBER">Account Number</entry>
+<entry key="yukon.web.mspFilterBy.CUSTOMER_ID">Customer ID</entry>
+<entry key="yukon.web.mspFilterBy.EA_LOCATION">EA Location</entry>
+<entry key="yukon.web.mspFilterBy.FACILITY_ID">Facility ID</entry>
+<entry key="yukon.web.mspFilterBy.SERVICE_LOCATION">Service Location</entry>
+
+<!-- Chart Period -->
+<entry key="yukon.common.chartPeriod.DAY">Day</entry>
+<entry key="yukon.common.chartPeriod.WEEK">Week</entry>
+<entry key="yukon.common.chartPeriod.MONTH">Month</entry>
+<entry key="yukon.common.chartPeriod.THREEMONTH">Three Month</entry>
+<entry key="yukon.common.chartPeriod.YEAR">Year</entry>
+<entry key="yukon.common.chartPeriod.NOPERIOD">NoPeriod</entry>
+
+<!--  Attribute Graph Type -->
+<entry key="yukon.web.attributeGraphType.USAGE_WATER.label">Water Usage (Delta)</entry>
+<entry key="yukon.web.attributeGraphType.USAGE_WATER.description"><![CDATA[The <b>Delta Usage</b> graph is a view of the usage data as the delta between intervals.<br><br>  Each
+                            point on the graph is generated using the following formula: 
+                            (reading - previousReading) / (days between readings).
+                            If gaps in data exist that are greater than the charted interval, then that interval will be
+                            removed from the display.]]></entry>
+<entry key="yukon.web.attributeGraphType.LOAD_PROFILE.label">Load Profile</entry>
+<entry key="yukon.web.attributeGraphType.LOAD_PROFILE.description"><![CDATA[Graph of raw Load Profile data.]]></entry>
+<entry key="yukon.web.attributeGraphType.VOLTAGE_PROFILE.label">Voltage Profile</entry>
+<entry key="yukon.web.attributeGraphType.VOLTAGE_PROFILE.description"><![CDATA[Graph of raw Voltage Profile data.]]></entry>
+<entry key="yukon.web.attributeGraphType.DEMAND.label">Demand</entry>
+<entry key="yukon.web.attributeGraphType.DEMAND.description"><![CDATA[Graph of raw Demand data.]]></entry>
+<entry key="yukon.web.attributeGraphType.USAGE.label">Usage (Normalized)</entry>
+<entry key="yukon.web.attributeGraphType.USAGE.description"><![CDATA[The <b>Normalized Usage</b> graph is a normalized view of the usage data.<br><br>  Each
+							point on the graph is generated using the following formula: (reading - 
+							previousReading) / (days between readings)]]></entry>
+				
+<!-- systemGroupEnum -->			
+	<entry key="yukon.common.systemGroupEnum.ROOT">/</entry>
+    <entry key="yukon.common.systemGroupEnum.METERS">/Meters/</entry> 
+    <entry key="yukon.common.systemGroupEnum.BILLING">/Meters/Billing/</entry> 
+    <entry key="yukon.common.systemGroupEnum.COLLECTION">/Meters/Collection/</entry> 
+    <entry key="yukon.common.systemGroupEnum.ALTERNATE">/Meters/Alternate/</entry> 
+    <entry key="yukon.common.systemGroupEnum.FLAGS">/Meters/Flags/</entry> 
+    <entry key="yukon.common.systemGroupEnum.INVENTORY">/Meters/Flags/Inventory/</entry> 
+    <entry key="yukon.common.systemGroupEnum.DISCONNECTSTATUS">/Meters/Flags/DisconnectedStatus/</entry> 
+    <entry key="yukon.common.systemGroupEnum.USAGEMONITORING">/Meters/Flags/UsageMonitoring/</entry>
+    <entry key="yukon.common.systemGroupEnum.SYSTEM">/System/</entry>
+    <entry key="yukon.common.systemGroupEnum.ATTRIBUTES_EXISTING">/System/Attributes/Existing</entry>
+    <entry key="yukon.common.systemGroupEnum.ATTRIBUTES_SUPPORTED">/System/Attributes/Supported</entry>
+    <entry key="yukon.common.systemGroupEnum.DEVICETYPES">/System/Device Types/</entry>
+    <entry key="yukon.common.systemGroupEnum.DEVICECONFIGS">/System/Meters/Device Configs/</entry>
+    <entry key="yukon.common.systemGroupEnum.ROUTES">/System/Routes/</entry>
+    <entry key="yukon.common.systemGroupEnum.SCANNINGMETERS">/System/Meters/Scanning/</entry>
+    <entry key="yukon.common.systemGroupEnum.TEMPORARYGROUPS">/System/Temporary/</entry>
+    <entry key="yukon.common.systemGroupEnum.SYSTEMMETERS">/System/Meters/</entry>
+    <entry key="yukon.common.systemGroupEnum.SYSTEMMETERSDISABLED">/System/Meters/Disabled/</entry>
+    <entry key="yukon.common.systemGroupEnum.DEVICETAGS">/System/Device Tags/</entry>
+    <entry key="yukon.common.systemGroupEnum.OUTAGE_PROCESSING">/Meters/Monitors/Outage/</entry>
+    <entry key="yukon.common.systemGroupEnum.TAMPER_FLAG_PROCESSING">/Meters/Monitors/Tamper Flag/</entry>
+    <entry key="yukon.common.systemGroupEnum.SYSTEMMETERS_DISCONNECT">/System/Meters/Disconnect/</entry>
+    <entry key="yukon.common.systemGroupEnum.SUBSTATION_NAME">/Meters/CIS Substation/</entry>
+    <entry key="yukon.common.systemGroupEnum._A">/System/Meters/Phase Detect/Last Results/A</entry>
+    <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_B">/System/Meters/Phase Detect/Last Results/B</entry>
+    <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_C">/System/Meters/Phase Detect/Last Results/C</entry>
+    <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_AB">/System/Meters/Phase Detect/Last Results/AB</entry>
+    <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_AC">/System/Meters/Phase Detect/Last Results/AC</entry>
+    <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_BC">/System/Meters/Phase Detect/Last Results/BC</entry>
+    <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_ABC">/System/Meters/Phase Detect/Last Results/ABC</entry>
+    <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_UNKNOWN">/System/Meters/Phase Detect/Last Results/UNKNOWN</entry>
+    
+    <!-- OutageActionTypeEnum -->
+    <entry key="yukon.common.outageActionType.Outage">Outage</entry>
+    <entry key="yukon.common.outageActionType.Restoration">Restoration</entry>
+    <entry key="yukon.common.outageActionType.NoResponse">No Response</entry>
+    
+    
+
+</properties>

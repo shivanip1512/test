@@ -17,6 +17,11 @@ public class StandardFilterBy implements FilterBy {
         this.name = name;
         this.fieldList = Arrays.asList(fieldList);
     }
+    
+    @Override
+    public String getFormatKey() {
+    	return "yukon.web.standardFilterBy." + getName().replace(" ", "");
+    }
 
     @Override
     public String getName() {

@@ -12,8 +12,8 @@ import com.cannontech.user.checker.UserChecker;
 
 public abstract class WidgetControllerBase implements WidgetDefinitionBean, BeanNameAware, WidgetController {
     private String shortName;
-    private String title;
     private String identityPath;
+    private static final String keyPrefix = "yukon.web.widgets.";
     private boolean lazyLoad = false;
     private Set<WidgetInput> inputs;
     private UserChecker roleAndPropertiesChecker;
@@ -31,12 +31,8 @@ public abstract class WidgetControllerBase implements WidgetDefinitionBean, Bean
         this.shortName = name;
     }
     
-    public String getTitle() {
-        return this.title;
-    }
-    
-    public void setTitle(String title) {
-        this.title = title;
+    public String getTitleKey() {
+    	return WidgetControllerBase.keyPrefix + this.shortName;
     }
     
     public void setLazyLoad(boolean lazyLoad) {

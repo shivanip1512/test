@@ -4,39 +4,39 @@
 
     <!-- DisconnectMeterWidget render.jsp -->
     
-    <entry key="yukon.web.widgets.disconnectMeterWidget.read.label">Read Status</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.read.labelBusy">Reading</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.errorReading">There was an error reading the meter:</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.successReading">Successful Read</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.connect.label">Connect</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.connect.labelBusy">Connecting</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.connect.confirmText">Are you sure you want to connect this meter?</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.connectSuccess">The connect command was successful.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnect.label">Disconnect</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnect.labelBusy">Disconnecting</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnect.confirmText">Are you sure you want to disconnect this meter?</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnectConfigSettings">Disconnect Configuration Settings</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnectSuccess">The disconnect command was successful.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.title.label">Disconnect</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.title.labelBusy">Disconnect</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.infoLink">Disconnect Information</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.notConfigured">Disconnect Status Point is not configured.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnectStatus">Disconnect Status</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.statusMessages">Status Messages</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.stateGroupHeader">{0}</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.mct410Devices">MCT-410 Devices</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.mct310Devices">MCT-310 Devices</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.mct213Devices">MCT-213 Devices</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.read.label">Read Status</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.read.labelBusy">Reading</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.errorReading">There was an error reading the meter:</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.successReading">Successful Read</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.connect.label">Connect</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.connect.labelBusy">Connecting</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.connect.confirmText">Are you sure you want to connect this meter?</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.connectSuccess">The connect command was successful.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.disconnect.label">Disconnect</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.disconnect.labelBusy">Disconnecting</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.disconnect.confirmText">Are you sure you want to disconnect this meter?</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.disconnectConfigSettings">Disconnect Configuration Settings</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.disconnectSuccess">The disconnect command was successful.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.title.label">Disconnect</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.title.labelBusy">Disconnect</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.infoLink">Disconnect Information</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.notConfigured">Disconnect Status Point is not configured.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.disconnectStatus">Disconnect Status</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.statusMessages">Status Messages</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.stateGroupHeader">{0}</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.mct410Devices">MCT-410 Devices</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.mct310Devices">MCT-310 Devices</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.mct213Devices">MCT-213 Devices</entry>
     
-    <entry key="yukon.web.widgets.disconnectMeterWidget.connectedMsg">The meter is connected to service.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.connectArmedMsg">The meter is armed and ready to be returned to service by the customer.  This is sent when the connect command is sent to the disconnect collar.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.confirmedDisconnectMsg">The disconnect status is confirmed as disconnected.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.unconfirmedDisconnectMsg">A full demand interval has not yet passed; therefore, the disconnect status cannot be confirmed until an entire demand interval has passed.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.connectedMsg">The meter is connected to service.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.connectArmedMsg">The meter is armed and ready to be returned to service by the customer.  This is sent when the connect command is sent to the disconnect collar.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.confirmedDisconnectMsg">The disconnect status is confirmed as disconnected.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.unconfirmedDisconnectMsg">A full demand interval has not yet passed; therefore, the disconnect status cannot be confirmed until an entire demand interval has passed.</entry>
     
-    <entry key="yukon.web.widgets.disconnectMeterWidget.openMsg">The meter is connected to service.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.closedMsg">The meter is removed from service.</entry>
-    <entry key="yukon.web.widgets.disconnectMeterWidget.unknownMsg">The meter state cannot be determined.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.openMsg">The meter is connected to service.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.closedMsg">The meter is removed from service.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.unknownMsg">The meter state cannot be determined.</entry>
     
-    <entry key="yukon.web.widgets.disconnectMeterWidget.disconnectNote">The Disconnect Status field is momentarily highlighted when the information is updated. If an error occurs while reading the meter, an error message is displayed in the Disconnect widget.</entry>
+    <entry key="yukon.web.widgets.disconnectMeter.disconnectNote">The Disconnect Status field is momentarily highlighted when the information is updated. If an error occurs while reading the meter, an error message is displayed in the Disconnect widget.</entry>
 
 </properties>

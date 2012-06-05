@@ -41,7 +41,7 @@ Temperature = function(args){
     
     this.getResolution = function() {
         return this.resolution[this.unit];
-    }
+    };
     
     this.setF = function(degreesFahrenheit){
         switch(this.unit){
@@ -92,11 +92,9 @@ Temperature = function(args){
         default:
             return NaN;
         }
-    }
+    };
     
     this.sanitizedValue = function(toUnit) {
-        var unitSuffix = "";
-        
         switch(toUnit){
         case 'F':
             return parseFloat(this._getResolvedFahrenheitTemp().toFixed(this.decimalPlaces['F']));
@@ -112,7 +110,7 @@ Temperature = function(args){
             toUnit = this.unit;
         }
         return this.sanitizedValue(toUnit).toFixed(this.decimalPlaces[toUnit]);
-    }
+    };
     
     this.toFahrenheit = function(args) {
         if(typeof(args) == 'undefined'){
@@ -123,8 +121,8 @@ Temperature = function(args){
                 degrees: this.getF(),
                 unit: 'F',
                 resolution: typeof(args.resolution) == 'undefined' ? this.resolution : args.resolution,
-                decimalPlaces: typeof(args.decimalPlaces) == 'undefined' ? this.decimalPlaces : args.decimalPlaces,
-        }
+                decimalPlaces: typeof(args.decimalPlaces) == 'undefined' ? this.decimalPlaces : args.decimalPlaces
+        };
         
         this.init(opts);
     };
@@ -138,8 +136,8 @@ Temperature = function(args){
                 degrees: this.getC(),
                 unit: 'C',
                 resolution: typeof(args.resolution) == 'undefined' ? this.resolution : args.resolution,
-                decimalPlaces: typeof(args.decimalPlaces) == 'undefined' ? this.decimalPlaces : args.decimalPlaces,
-        }
+                decimalPlaces: typeof(args.decimalPlaces) == 'undefined' ? this.decimalPlaces : args.decimalPlaces
+        };
         
         this.init(opts);
     };

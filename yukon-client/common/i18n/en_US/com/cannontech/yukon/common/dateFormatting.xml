@@ -24,5 +24,14 @@
 <entry key="yukon.common.dateFormatting.intervalSeparator">&#160;to&#160;</entry>
 
 <entry key="yukon.common.timeFormatter">/JavaScript/timeFormatter.js</entry>
+<entry key="yukon.common.date.start">Start Date</entry>
+<entry key="yukon.common.date.stop">Stop Date</entry>
+<entry key="yukon.common.time.start">Start Time</entry>
+<entry key="yukon.common.time.stop">Stop Time</entry>
+
+<entry key="yukon.common.errors.time.startBeforeStop">The start time must occur before the stop time.</entry>
+<entry key="yukon.common.errors.date.startBeforeStop">The start date must occur before the stop date.</entry>
+<entry key="yukon.common.errors.date.invalid">The date entered is invalid.</entry>
+<entry key="yukon.common.errors.date.oneInvalid">One of the dates entered is not a valid date.</entry>
 
 </properties>

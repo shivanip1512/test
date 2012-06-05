@@ -3,11 +3,15 @@
 <%@ taglib uri="http://java.sun.com/jstl/xml" prefix="x"  %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+<cti:msgScope paths="modules.amr.billing.HOME">
+<cti:msg2 key=".pageName" var="pageName"/>
+
 <cti:standardPage title="Billing Formats Setup" module="amr">
 	<cti:standardMenu menuSelection="billing|setup"/>
 	<cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	    &gt; Billing Setup
+		<cti:msg key="yukon.web.components.button.home.label" var="homeLabel"/>
+	    <cti:crumbLink url="/operator/Operations.jsp" title="${homeLabel}" />
+	    &gt; <cti:msg2 key=".contextualPageName"/>
 	</cti:breadCrumbs>
 
 <script type="text/Javascript" >
@@ -56,7 +60,7 @@ function unfreeze(){ //used to enable or disable buttons
 
 <form method="get" id="begin" name="begin" action="" onclick="unfreeze();">
 
-	<h2>Available Formats</h2> <br>
+	<h2><cti:msg2 key=".availableFormats"/></h2> <br>
 	<table width="400" border="0" cellspacing="0" cellpadding="0">
 		<tr>
 		   <td width="300" align="center">
@@ -75,10 +79,10 @@ function unfreeze(){ //used to enable or disable buttons
 		  
 		  <td width="100px" valign="top">
             <div style="padding-left:10px;">
-    			<input type="button" id="create" name="create" value="Create" onclick="createButton();"  style="width:100px;margin-bottom:10px;">
-    			<input type="button" id="edit" name="edit" value="Edit" onclick="editButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
-    			<input type="button" id="copy" name="copy" value="Copy" onclick="copyButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
-    			<input type="button" id="delete" name="delete" value="Delete" onclick="deleteButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
+    			<input type="button" id="create" name="create" value="<cti:msg2 key=".create"/>" onclick="createButton();"  style="width:100px;margin-bottom:10px;">
+    			<input type="button" id="edit" name="edit" value="<cti:msg2 key=".edit"/>" onclick="editButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
+    			<input type="button" id="copy" name="copy" value="<cti:msg2 key=".copy"/>" onclick="copyButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
+    			<input type="button" id="delete" name="delete" value="<cti:msg2 key=".delete"/>" onclick="deleteButton();" disabled="disabled" style="width:100px;margin-bottom:10px;">
 		    </div>
           </td>
 
@@ -89,3 +93,4 @@ function unfreeze(){ //used to enable or disable buttons
 </form>
 
 </cti:standardPage>
+</cti:msgScope>

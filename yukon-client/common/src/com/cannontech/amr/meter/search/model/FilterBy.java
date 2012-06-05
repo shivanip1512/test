@@ -17,6 +17,7 @@ public interface FilterBy {
     public String toSearchString();
     
 	public String getName();
+	public String getFormatKey();
 	public String getFilterValue();
     public void setFilterValue(String filterValue);
 	

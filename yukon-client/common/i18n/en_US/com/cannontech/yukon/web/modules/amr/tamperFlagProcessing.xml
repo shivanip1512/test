@@ -7,18 +7,18 @@
     <!-- TamperFlagMonitorsWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.noMonitors">No Tamper Flag Monitors</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.tableHeader.name">Name</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.tableHeader.violations">Violations</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.edit.imageUrl">/WebConfig/yukon/Icons/cog_go.gif</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.edit.hoverUrl">/WebConfig/yukon/Icons/cog_go_over.gif</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.edit.hoverText">Edit Tamper Flag Monitor ({0})</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.enable.hoverText">Enable ({0})</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.disable.hoverText">Disable ({0})</entry>
-    <entry key="yukon.web.widgets.tamperFlagMonitorsWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.noMonitors">No Tamper Flag Monitors</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.tableHeader.name">Name</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.tableHeader.violations">Violations</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.tableHeader.monitoring">Monitoring</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.edit.imageUrl">/WebConfig/yukon/Icons/cog_go.gif</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.edit.hoverUrl">/WebConfig/yukon/Icons/cog_go_over.gif</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.edit.hoverText">Edit Tamper Flag Monitor ({0})</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.enable.hoverText">Enable ({0})</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.disable.hoverText">Disable ({0})</entry>
+    <entry key="yukon.web.widgets.tamperFlagMonitors.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
 
     <!-- TamperFlagProcessingEditorController edit.jsp -->
     <!-- ================================================================================================================================================= -->

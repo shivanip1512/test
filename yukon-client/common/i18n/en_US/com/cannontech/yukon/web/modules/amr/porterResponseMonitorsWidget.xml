@@ -3,15 +3,15 @@
 <properties>
 
     <!-- PorterResponseMonitorsWidget render.jsp -->
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.noMonitors">No Porter Response Monitors</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.name">Name</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.enabled">Enabled</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.edit.imageUrl">/WebConfig/yukon/Icons/cog_go.gif</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.edit.hoverUrl">/WebConfig/yukon/Icons/cog_go_over.gif</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.edit.hoverText">Edit Porter Response Monitor Details ({0})</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.enable.hoverText">Enable ({0})</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.disable.hoverText">Disable ({0})</entry>
-    <entry key="yukon.web.widgets.porterResponseMonitorsWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitors.noMonitors">No Porter Response Monitors</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitors.name">Name</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitors.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitors.edit.imageUrl">/WebConfig/yukon/Icons/cog_go.gif</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitors.edit.hoverUrl">/WebConfig/yukon/Icons/cog_go_over.gif</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitors.edit.hoverText">Edit Porter Response Monitor Details ({0})</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitors.enable.hoverText">Enable ({0})</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitors.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitors.disable.hoverText">Disable ({0})</entry>
+    <entry key="yukon.web.widgets.porterResponseMonitors.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
 
 </properties>

@@ -74,6 +74,7 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_COLOR.getPath());
         builder.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
         builder.add(JsLibrary.JQUERY_FORM.getPath());
+        builder.add(JsLibrary.JQUERY_PLACEHOLDER.getPath());
 
         //add the other standard libs
         builder.add(JsLibrary.PROTOTYPE.getPath());

@@ -117,7 +117,7 @@
             <cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>
         </li>
         <li>
-            Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
+        	<cti:msg key="yukon.web.layout.standard.generatedAt" /><cti:formatDate type="FULL" value="${currentTime}"/>
         </li>
         
         <c:if test="${not empty energyCompanyName}">
@@ -134,7 +134,7 @@
     <ul class="pipes">
     	<cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">
             <li>
-                module=${info.moduleName}, page=${info.pageName}
+                <cti:msg key="yukon.web.layout.standard.moduleName" arguments="${info.moduleName}" />, <cti:msg key="yukon.web.layout.standard.pageName" arguments="${info.pageName}" />
             </li>
         </cti:checkGlobalRolesAndProperties>
         <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">

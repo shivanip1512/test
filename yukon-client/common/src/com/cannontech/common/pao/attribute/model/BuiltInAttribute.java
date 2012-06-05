@@ -8,13 +8,14 @@ import java.util.Set;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.Displayable;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 
-public enum BuiltInAttribute implements Attribute {
+public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
 	/* NOTE: Remember to add any new attributes to point.xml for i18n'ing, too */
 	
@@ -122,6 +123,8 @@ public enum BuiltInAttribute implements Attribute {
     VOLTAGE_PHASE_C_OUT("Voltage Phase C Out"),
     VOLTAGE_PHASE_ERROR("Voltage Phase Error");
     
+    private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
+    
     private static ImmutableSet<BuiltInAttribute> rfnEventTypes;
     private static ImmutableSet<BuiltInAttribute> rfnEventStatusTypes;
     private static ImmutableSet<BuiltInAttribute> rfnEventAnalogTypes;
@@ -224,8 +227,9 @@ public enum BuiltInAttribute implements Attribute {
     private String description;
     
     public String getDescription() {
-        return description;
+    	return description;
     }
+
     
     public boolean isProfile() {
 		return profileAttributes.contains(this);
@@ -281,5 +285,11 @@ public enum BuiltInAttribute implements Attribute {
         };
         Collections.sort(attributes, comparator);
     }
+
+
+	@Override
+	public String getFormatKey() {
+		return keyPrefix + name();
+	}
     
 }

@@ -58,6 +58,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.application.CommanderRole;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportOutputter;
 import com.cannontech.simplereport.SimpleYukonReportDefinition;
 import com.cannontech.tools.email.DefaultEmailAttachmentMessage;
@@ -348,7 +349,7 @@ public class GroupCommanderController implements InitializingBean {
     }
     
     @RequestMapping({"errorsList", "successList"})
-    public void results(String resultKey, ModelMap map) {
+    public void results(HttpServletRequest request, String resultKey, ModelMap map) {
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);  
 		
         /*
@@ -356,10 +357,11 @@ public class GroupCommanderController implements InitializingBean {
          */
         Map<SimpleDevice, SpecificDeviceErrorDescription> errors = result
 				.getCallback().getErrors();
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		if (!errors.isEmpty()) {
 			for (SimpleDevice device : errors.keySet()) {
 				if (device.getDeviceType().getPaoClass() == PaoClass.RFMESH && errors.get(device).getErrorCode() != 2000) {
-					DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(2000);
+					DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(2000, userContext);
 					SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(error, null);
 					errors.put(device, deviceError);
 				}

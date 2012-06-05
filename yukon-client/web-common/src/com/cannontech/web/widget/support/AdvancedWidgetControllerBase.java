@@ -14,6 +14,7 @@ public abstract class AdvancedWidgetControllerBase implements WidgetDefinitionBe
     
     private String shortName;
     private String title;
+    private static final String keyPrefix = "yukon.web.widgets.";
     private String identityPath;
     private boolean lazyLoad = false;
     private Set<WidgetInput> inputs;
@@ -25,6 +26,10 @@ public abstract class AdvancedWidgetControllerBase implements WidgetDefinitionBe
     
     public void setBeanName(String name) {
         this.shortName = name;
+    }
+    
+    public String getTitleKey() {
+    	return this.keyPrefix + this.shortName;
     }
     
     public String getTitle() {

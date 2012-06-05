@@ -14,7 +14,11 @@
     <entry key="yukon.common.chart.interval.FIFTEENMINUTE">interval</entry>
 
 	<entry key="yukon.common.chart.model.converterType.RAW">{0}</entry>    
+	<entry key="yukon.common.chart.model.converterType.RAW.label">Raw</entry>    
     <entry key="yukon.common.chart.model.converterType.NORMALIZED_DELTA">{0} / day</entry>
+    <entry key="yukon.common.chart.model.converterType.NORMALIZED_DELTA.label">Normalized</entry>
     <entry key="yukon.common.chart.model.converterType.DELTA_WATER">{0} / {1}</entry>
+    <entry key="yukon.common.chart.model.converterType.DELTA_WATER.label">Delta</entry>
 	<entry key="yukon.common.chart.model.converterType.POWERFACTOR">{0}</entry>
+	<entry key="yukon.common.chart.model.converterType.POWERFACTOR.label">PowerFactor</entry>
 </properties>

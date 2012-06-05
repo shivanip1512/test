@@ -1,4 +1,7 @@
-
+li.bullet {
+    background: transparent url(../Icons/bullet.png) left top no-repeat;
+    padding-left: 18px;
+}
 
 input, input:active, input:hover {
     outline: none;  /* Thank IE for this rule */
@@ -2020,6 +2023,14 @@ tr.ui-priority-secondary {
 
 button.wideButton {
     width: 185px;
+}
+
+/* sugar */
+a { color: #0066CC; }
+a:visited { color: #002288; }
+
+.filters label {
+	margin-right: 8px;
 }
 
 li.bullet {

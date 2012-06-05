@@ -28,7 +28,7 @@
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".attribute">
-                ${statusPointMonitor.attribute.description}
+                <i:inline key="${statusPointMonitor.attribute.formatKey}"/>
             </tags:nameValue2>
             
             <tags:nameValue2 nameKey=".stateGroup">
@@ -56,7 +56,7 @@
                             <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
                                 <td nowrap="nowrap">${prevStateStrings[status.index]}</td>
                                 <td nowrap="nowrap">${nextStateStrings[status.index]}</td>
-                                <td nowrap="nowrap">${row.actionType}</td>
+                                <td nowrap="nowrap"><i:inline key="${row.actionTypeEnum.formatKey}"/></td>
                             </tr>
                         </c:forEach>
                     </table>

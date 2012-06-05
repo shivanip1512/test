@@ -15,20 +15,20 @@
         </tr>
 		<tr>
 			<td>
-				<ct:nameValueContainer>
+				<ct:nameValueContainer2>
 					<c:if test="${not empty usageAttribute}" >
-						<ct:nameValue name="${usageAttribute.description}" nameColumnWidth="200px">
+						<ct:nameValue2 nameKey="${usageAttribute.formatKey}" >
 							<ct:attributeValue device="${meter}" attribute="${usageAttribute}" />
-						</ct:nameValue>
+						</ct:nameValue2>
 						<ct:nameValueGap gapHeight="6px" />
 					</c:if>
 					<c:if test="${not empty peakAttribute}" >
-						<ct:nameValue name="${peakAttribute.description}" nameColumnWidth="200px">
+						<ct:nameValue2 nameKey="${peakAttribute.formatKey}" >
 							<ct:attributeValue device="${meter}" attribute="${peakAttribute}" />
-						</ct:nameValue>
+						</ct:nameValue2>
 						<ct:nameValueGap gapHeight="6px" />
 					</c:if>
-				</ct:nameValueContainer>
+				</ct:nameValueContainer2>
 			</td>
 		</tr>
 	</table>

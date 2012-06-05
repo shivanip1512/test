@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -23,6 +24,9 @@ import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yc.bean.YCBean;
@@ -72,6 +76,9 @@ public class ManualCommandController extends MultiActionController {
 		ycBean.setUserID(user.getUserID());
 		ycBean.setLiteYukonPao(deviceId);
 		ycBean.setDeviceType(deviceId);
+		
+		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+		ycBean.setUserContext(userContext);
 
 		LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
 		mav.addObject("device", device);

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+<!-- overview.jsp (dynamicBilling) -->
+    <entry key="yukon.web.modules.amr.billing.DETAIL.title">Field Setup</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.pageName">Billing Format Editor</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.contextualPageName">Billing Setup</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.formatSetup.title">Format Setup</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.nameOfFormat">Name of Format</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.delimiter">Delimiter</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.header">Header</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.footer">Footer</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.fieldSetup.title">Field Setup</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.selectedFields">Selected Fields</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.comma">Comma</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.colon">Colon</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.semicolon">Semicolon</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.custom">Custom</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.moveUp">Move Up</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.moveDown">Move Down</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.remove">Remove</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.addFields">Add Fields</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.add">Add</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.done">Done</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.availableFields">Available Fields</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.formatSelectedField">Format Selected Field</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.formatSelectedFieldHelp">* Select a field from 'Selected Fields' list to customize field formatting.</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.formatHelp">Help with Format</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.readingType">Reading Type</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.readingChannel">Reading Channel</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.roundingMode">Rounding Mode</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.roundingHelp">Help with Rounding</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.readingPattern">Reading Pattern</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.fieldSize">Field Size</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.fieldSizeHelp">(0 for no max)</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.padding">Padding</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.noFormat">No Format</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.threePlaces">###.###</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.twoPlaces">####.##</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.none">None</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.left">Left</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.right">Right</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.character">Character</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.space">Space</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.zero">Zero</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.dayMonthYear">dd/MM/yyyy</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.monthDayYear">MM/dd/yyyy</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.12hour">hh:mm:ss a</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.24hour">HH:mm:ss</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.plainTextInput">Plain Text Input</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.save">Save</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.timestampPattern">Timestamp Pattern</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.previewAndSave">Preview &amp; Save Format</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.errors.fieldsNotEmpty">Selected Fields must contain at least 1 available field</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.errors.nameNotEmpty">Name cannot be empty</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.errors.nameMaxLength">Name cannot be longer than 100 characters</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.errors.invalidPattern">invalid pattern detected. please check the pattern</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.errors.invalidFormat">invalid format information detected. please check the format information</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.errors.errorSaving">Error saving format:</entry>
+
+<!-- overview.jsp -->
+    <entry key="yukon.web.modules.amr.billing.HOME.pageName">Billing Formats Setup</entry>
+    <entry key="yukon.web.modules.amr.billing.HOME.contextualPageName">Billing Setup</entry>
+    <entry key="yukon.web.modules.amr.billing.HOME.availableFormats">Available Formats</entry>
+    <entry key="yukon.web.modules.amr.billing.HOME.create">Create</entry>
+    <entry key="yukon.web.modules.amr.billing.HOME.edit">Edit</entry>
+    <entry key="yukon.web.modules.amr.billing.HOME.copy">Copy</entry>
+    <entry key="yukon.web.modules.amr.billing.HOME.delete">Delete</entry>
+    
+    <!-- roundingHelper.jsp -->
+    <entry key="yukon.web.modules.amr.billing.roundingHelper.description"><![CDATA[
+    The rounding mode drop down list contains rounding options that are available for formatting your
+reading. The rounding will be applied to the selected field when the billing file is generated. <br>
+<br>
+Acceptable rounding modes for the reading are: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP. The default rounding mode selected
+is defined by the Yukon [System] Billing Role property Rounding Mode. <br><br>
+Rounding Mode specifies a rounding behavior for numerical operations capable of discarding precision. Each rounding mode indicates how the
+least significant returned digit of a rounded result is to be calculated. If fewer digits are returned than the digits needed to
+represent the exact numerical result, the discarded digits will be referred to as the discarded fraction regardless the digits'
+contribution to the value of the number. In other words, considered as a numerical value, the discarded fraction could have an absolute value
+greater than one.
+    ]]></entry>
+    <entry key="yukon.web.modules.amr.billing.roundingHelper.title">Rounding Mode Examples</entry>
+    <entry key="yukon.web.modules.amr.billing.roundingHelper.input">Input</entry>
+    <entry key="yukon.web.modules.amr.billing.roundingHelper.roundingModes">Rounding Modes</entry>
+    
+    <!-- valueHelper.jsp -->
+    <entry key="yukon.web.modules.amr.billing.valueHelper.description"><![CDATA[The reading pattern input box will accept a textual pattern that represents a number format.  The format will be applied
+    to the selected field when the billing file is generated. <br><br>Acceptable symbols for the pattern are: ,(comma) .(decimal) 
+    -(minus sign) $(currency symbols). Digits are represented by a 0(zero) or a #(pound sign). A zero will display a number if
+    one exists for that position in the reading or a '0' filler will be displayed. A pound sign will display a number if one 
+    exists for that position in the reading or nothing will be displayed in that position.<br><br>
+    If no pattern is specified, the default pattern is: '#####.00' 
+    
+    <h3>Example Formats</h3>
+    
+    <table  border="1" cellpadding="5px" cellspacing="0px">
+        <tr>
+            <th>Input</th>
+            <th>Result</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>####,###.##</td>
+            <td>123,456 (for a reading of 123456)</td>
+            <td>Display 7 digits and 2 decimals (if digits exist at each position)</td>
+        </tr>
+        <tr>
+            <td>0000,000.00</td>
+            <td>0123,456.00 (for a reading of 123456)</td>
+            <td>Display 7 digits and 2 decimals (filling in '0's for missing digits)</td>
+        </tr>
+        <tr>
+            <td>####,000.0#</td>
+            <td>123,456.0 (for a reading of 123456)</td>
+            <td>Display 7 digits and 2 decimals (filling in '0's for missing digits)</td>
+        </tr>
+    </table>]]></entry>
+    
+	<!-- timestampHelper.jsp -->    
+    <entry key="yukon.web.modules.amr.billing.timestampHelper.description"><![CDATA[The timestamp pattern input box will accept a textual pattern that represents a date and time format.  The format will be applied
+    to the selected field when the billing file is generated. <br><br>Be careful as it is case sensitive and enter only the characters listed 
+    in the examples below. <br><br>If no pattern is specified, the default pattern is: 'MM/dd/yyyy hh:mm:ss zZ'
+
+    <h3>Example Formats</h3>
+    <table  border="1" cellpadding="5px" cellspacing="0px" width="95%">
+        <tr>
+            <th>Input</th>
+            <th>Result</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>yy;yyyy</td>
+            <td>07;2007</td>
+            <td>year, the digits showed</td>
+        </tr>
+        <tr>
+            <td>M;MM;MMM;MMMM</td>
+            <td>7;07;Jul;July</td>
+            <td>Month in number and word</td>
+        </tr>
+        <tr>
+            <td>dd</td>
+            <td>15</td>
+            <td>calendar day</td>
+        </tr>
+        <tr>
+            <td>EEE;EEEE</td>
+            <td>Wed;Wednesday</td>
+            <td>Day name in the week</td>
+        </tr>
+        <tr>
+            <td>HH</td>
+            <td>14</td>
+            <td>Hours in a day(0-24)</td>
+        </tr>
+        <tr>
+            <td>h</td>
+            <td>12</td>
+            <td>Hour in AM/PM</td>
+        </tr>
+        <tr>
+            <td>a</td>
+            <td>AM</td>
+            <td>AM/PM marker</td>
+        </tr>
+        <tr>
+            <td>mm</td>
+            <td>45</td>
+            <td>Minute in an hour</td>
+        </tr>
+        <tr>
+            <td>ss</td>
+            <td>55</td>
+            <td>Second in a minute</td>
+        </tr>
+        <tr>
+            <td>SSS</td>
+            <td>181</td>
+            <td>Millisecond</td>
+        </tr>
+        <tr>
+            <td>z; zzzz</td>
+            <td>CDT; Central Daylight Time</td>
+            <td>Timezone in general</td>
+        </tr>
+        <tr>
+            <td>Z</td>
+            <td>-0800</td>
+            <td>hour difference timezone</td>
+        </tr>
+    </table>]]></entry>
+    
+    <entry key="yukon.web.billing.mustSelectGroup">Billing group must be selected.</entry>
+
+	<!-- Billing.jsp -->
+	<entry key="yukon.web.billing.fileFormat">File Format</entry>
+	<entry key="yukon.web.billing.billingEndDate">Billing End Date</entry>
+	<entry key="yukon.web.billing.demandDaysPrevious">Demand Days Previous</entry>
+	<entry key="yukon.web.billing.energyDaysPrevious">Energy Days Previous</entry>
+	<entry key="yukon.web.billing.removeMultiplier">Remove Multiplier</entry>
+	<entry key="yukon.web.billing.billingGroup">Billing Group</entry>
+	<entry key="yukon.web.billing.timeZoneDisclaimer">* All times are {0}</entry>
+</properties>

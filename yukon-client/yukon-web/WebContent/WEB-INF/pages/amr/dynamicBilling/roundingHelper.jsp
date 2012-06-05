@@ -1,22 +1,18 @@
-<div style="font-size: 12px;">The rounding mode drop down list contains rounding options that are available for formatting your
-reading. The rounding will be applied to the selected field when the billing file is generated. <br>
-<br>
-Acceptable rounding modes for the reading are: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP. The default rounding mode selected
-is defined by the Yukon [System] Billing Role property Rounding Mode. <br><br>
-Rounding Mode specifies a rounding behavior for numerical operations capable of discarding precision. Each rounding mode indicates how the
-least significant returned digit of a rounded result is to be calculated. If fewer digits are returned than the digits needed to
-represent the exact numerical result, the discarded digits will be referred to as the discarded fraction regardless the digits'
-contribution to the value of the number. In other words, considered as a numerical value, the discarded fraction could have an absolute value
-greater than one.
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<h3>Rounding Mode Examples</h3>
+<cti:msgScope paths="modules.amr.billing.roundingHelper">
+
+<div style="font-size: 12px;">
+<cti:msg2 key=".description" htmlEscape="false" />
+<h3><cti:msg2 key=".title"/></h3>
 
 <table border="1" cellpadding="5px" cellspacing="0px">
 	<tr>
-		<th rowspan="2">Input</th>
-		<th colspan="7">Rounding Modes</th>
+		<th rowspan="2"><cti:msg2 key=".input"/></th>
+		<th colspan="7"><cti:msg2 key=".roundingModes"/></th>
 	</tr>
 	<tr>
+	
 		<th>UP</th>
 		<th>DOWN</th>
 		<th>CEILING</th>
@@ -127,3 +123,4 @@ greater than one.
 	</tr>
 </table>
 </div>
+</cti:msgScope>

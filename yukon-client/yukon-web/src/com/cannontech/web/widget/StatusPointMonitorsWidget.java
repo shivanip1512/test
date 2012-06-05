@@ -49,7 +49,7 @@ public class StatusPointMonitorsWidget extends AdvancedWidgetControllerBase {
         try {
             status = statusPointMonitorService.toggleEnabled(statusPointMonitorId);
         } catch (NotFoundException e) {
-        	statusPointMonitorsWidgetError = e.getMessage();
+        	statusPointMonitorsWidgetError = "yukon.web.widgets.statusPointMonitors.exception.notFound";
         }
         
         setupRenderModel(model, request);

@@ -40,7 +40,7 @@
                 <c:choose>
                     <c:when test="${empty schedules}">
                         <div>
-                            <i:inline key="yukon.web.widgets.commandScheduleWidget.noSchedules"/>
+                            <i:inline key="yukon.web.widgets.commandSchedule.noSchedules"/>
                         </div>
                     </c:when>
                 
@@ -49,10 +49,10 @@
                         <table class="compactResultsTable">
                     
                             <tr>
-                                <th><i:inline key="yukon.web.widgets.commandScheduleWidget.start"/></th>
-                                <th><i:inline key="yukon.web.widgets.commandScheduleWidget.runPeriod"/></th>
-                                <th><i:inline key="yukon.web.widgets.commandScheduleWidget.delayPeriod"/></th>
-                                <th style="text-align:right;"><i:inline key="yukon.web.widgets.commandScheduleWidget.enabled"/></th>
+                                <th><i:inline key="yukon.web.widgets.commandSchedule.start"/></th>
+                                <th><i:inline key="yukon.web.widgets.commandSchedule.runPeriod"/></th>
+                                <th><i:inline key="yukon.web.widgets.commandSchedule.delayPeriod"/></th>
+                                <th style="text-align:right;"><i:inline key="yukon.web.widgets.commandSchedule.enabled"/></th>
                             </tr>
                         
                             <c:forEach var="schedule" items="${schedules}">

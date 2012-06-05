@@ -10,11 +10,15 @@
 
 <cti:verifyRolesAndProperties value="APPLICATION_BILLING"/>
 
-<cti:standardPage module="amr" title="Billing">
+<cti:msg key="yukon.common.role.APPLICATION_BILLING" var="billingTitle"/>
+
+<cti:standardPage module="amr" title="${billingTitle}">
 	<cti:standardMenu menuSelection="billing|generation"/>
 	<cti:breadCrumbs>
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	    &gt; Billing
+		
+		<cti:msg key="yukon.web.components.button.home.label" var="homeLabel"/>
+	    <cti:crumbLink url="/operator/Operations.jsp" title="${homeLabel}" />
+	    &gt; ${billingTitle}
 	</cti:breadCrumbs>
 	
 	<cti:includeScript link="/JavaScript/calendarControl.js"/>
@@ -28,21 +32,22 @@
 			var billingGroupSelected = $('billGroup').value.strip() != '';
 
 			if (!billingGroupSelected && format != <%= FileFormatTypes.CURTAILMENT_EVENTS_ITRON %>) {
-				alert("Billing group must be selected.");
+				alert("<cti:msg key="yukon.web.billing.mustSelectGroup"/>");
 			} else {
 				$('MForm').submit();
 			}
 		}
 	</script>
 	
-	<h2>Billing</h2>
+	<h2>${billingTitle}</h2>
 	<br>
 	
 	<c:set var="formatMap" value="<%=FileFormatTypes.getValidFormats()%>"></c:set>
 	<c:set var="origEndDate" value="<%= datePart.format(billingBean.getEndDate()) %>"></c:set>
 	<c:set var="systemTimezone" value="<%= tzFormat.format(billingBean.getEndDate()) %>"></c:set>
     
-    <tags:boxContainer title="Settings:" id="billingContainer" hideEnabled="false">
+    <cti:msg key="yukon.web.settings" var="settingsLabel"/>
+    <tags:boxContainer title="${settingsLabel}" id="billingContainer" hideEnabled="false">
 
 	<form id="MForm" name = "MForm" action="<cti:url value="/servlet/BillingServlet" />" method="post">
 	
@@ -52,27 +57,34 @@
 			</c:if>
 	
 			<tags:nameValueContainer>
-				<tags:nameValue name="File Format" nameColumnWidth="250px">
+				
+				<cti:msg key="yukon.web.billing.fileFormat" var="fileFormat" />
+				<tags:nameValue name="${fileFormat}" nameColumnWidth="250px">
 		            <select id="fileFormat" name="fileFormat">
 		            	<c:forEach var="format" items="${formatMap}">
 		            		<option value="${format.value}" ${(format.value == BILLING_BEAN.fileFormat)?'selected':''}>${format.key}</option>
 		            	</c:forEach>
 		            </select>
 				</tags:nameValue>
-				<tags:nameValue name="Billing End Date">
+				<cti:msg key="yukon.web.billing.billingEndDate" var="billingEndDate" />
+				<tags:nameValue name="${billingEndDate}">
 		        	<tags:dateInputCalendar fieldName="endDate" fieldValue="${origEndDate}"></tags:dateInputCalendar>
-		        	* All times are <c:out value="${systemTimezone}"></c:out>
+		        	<cti:msg key="yukon.web.billing.timeZoneDisclaimer" argument="${systemTimezone }"/>
 				</tags:nameValue>
-				<tags:nameValue name="Demand Days Previous">
+				<cti:msg key="yukon.web.billing.demandDaysPrevious" var="demandDaysPrevious" />
+				<tags:nameValue name="${demandDaysPrevious}">
 		        	<input type="text" name="demandDays" value="${BILLING_BEAN.demandDaysPrev}" size = "8">
 				</tags:nameValue>
-				<tags:nameValue name="Energy Days Previous">
+				<cti:msg key="yukon.web.billing.energyDaysPrevious" var="energyDaysPrevious" />
+				<tags:nameValue name="${energyDaysPrevious}">
 		        	<input type="text" name="energyDays" value="${BILLING_BEAN.energyDaysPrev}" size = "8">
 				</tags:nameValue>
-				<tags:nameValue name="Remove Multiplier">
+				<cti:msg key="yukon.web.billing.removeMultiplier" var="removeMultiplier" />
+				<tags:nameValue  name="${removeMultiplier}">
 		        	<input type="checkbox" name="removeMultiplier" ${(BILLING_BEAN.removeMult)? 'checked':''} >
 				</tags:nameValue>
-				<tags:nameValue name="Billing Group">
+				<cti:msg key="yukon.web.billing.billingGroup" var="billingGroup" />
+				<tags:nameValue name="${billingGroup}">
                 
                     <cti:deviceGroupHierarchyJson predicates="NON_HIDDEN" var="dataJson" />
                     <jsTree:nodeValueSelectingInlineTree fieldId="billGroup"
@@ -88,7 +100,8 @@
 				</tags:nameValue>
 				
 			</tags:nameValueContainer>
-			<input type="button" name="generate" value="Generate" onclick="checkBillingGroup();">
+			<cti:msg key="yukon.web.generate" var="generateLabel" />
+			<input type="button" name="generate" value="${generateLabel}" onclick="checkBillingGroup();">
 
 	</form>
     

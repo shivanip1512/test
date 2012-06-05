@@ -11,7 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.chart.model.AttributeGraphType;
@@ -25,6 +27,8 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -43,6 +47,7 @@ public class TrendWidget extends WidgetControllerBase {
     private DateFormattingService dateFormattingService = null;
     private CachingWidgetParameterGrabber cachingWidgetParameterGrabber = null;
     private BuiltInAttribute defaultAttribute = null;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     /*
      * (non-Javadoc)
@@ -165,15 +170,37 @@ public class TrendWidget extends WidgetControllerBase {
         mav.addObject("startDate", startDateStr);
         mav.addObject("stopDate", stopDateStr);
         mav.addObject("graphType", graphType);
-
+        
         if (!period.equals("NOPERIOD")) {
-            mav.addObject("title",
-                          "Previous " + chartPeriod.getPeriodLabel() + "'s " + 
-                          attributeGraphType.getConverterType().getLabel() + " " + attribute.getKey());
+        	
+        	
+        	MessageSourceResolvable chartPeriodResolvable = new YukonMessageSourceResolvable(chartPeriod.getFormatKey());
+        	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
+        	MessageSourceResolvable attributeResolvable = new YukonMessageSourceResolvable(attribute.getFormatKey());
+        	
+        	List<String> arguments = new ArrayList<String>();
+        	arguments.add(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(chartPeriodResolvable));
+        	arguments.add(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(converterTypeResolvable));
+        	arguments.add(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(attributeResolvable));
+        	
+        	MessageSourceResolvable titleResolvable = YukonMessageSourceResolvable.createSingleCodeWithArgumentList("yukon.web.widgets.trend.noPeriod", arguments);
+
+        	mav.addObject("title", 
+                          messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(titleResolvable));
         } else {
+        	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
+        	MessageSourceResolvable attributeResolvable = new YukonMessageSourceResolvable(attribute.getFormatKey());
+        	
+        	List<String> arguments = new ArrayList<String>();
+        	arguments.add(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(converterTypeResolvable));
+        	arguments.add(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(attributeResolvable));
+        	arguments.add(startDateStr);
+        	arguments.add(stopDateStr);
+        	
+        	MessageSourceResolvable titleResolvable = YukonMessageSourceResolvable.createSingleCodeWithArgumentList("yukon.web.widgets.trend.noPeriod", arguments);
+        	
             mav.addObject("title",
-                          attributeGraphType.getConverterType().getLabel() + " " + attribute.getKey() + 
-                          ": " + startDateStr + " - " + stopDateStr);
+            		messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(titleResolvable));
         }
         
         mav.addObject("pointId", pointId);

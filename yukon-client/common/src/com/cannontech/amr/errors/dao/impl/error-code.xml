@@ -1,1093 +1,432 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <?xml-stylesheet type="text/xsl" href="porter_error.xsl"?>
 <portererrorcodes>
+
+	<!-- These keys are defined in /common/i18n/en_US/com/cannontech/yukon/common/porterErrors.xml -->
+
     <error code="3">
-        <category>Bulk Communications</category>
-        <porter>Bad Message Type</porter>
-        <description>The master station has received an unexpected response from the CCU.
-        </description>
-        <troubleshooting>
-            This is a bulk communications error associated with a logic problem internal to the CCU
-            or possibly an echo on the communication channel.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>From Commander, remotely reset the CCU and attempt the command again</li>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_3.category</category>
+        <porter>yukon.web.errorCodes_3.porter</porter>
+        <description>yukon.web.errorCodes_3.description</description>
+        <troubleshooting>yukon.web.errorCodes_3.troubleshooting</troubleshooting>
     </error>
 
     <error code="4">
-        <category>Bulk Communications</category>
-        <porter>D Word Wrong length</porter>
-        <description>The master station has received an invalid response from the targeted device.
-        </description>
-        <troubleshooting>
-            This is a bulk communications error associated with the number of data packets received
-            for a single communication. This error code is returned when the CCU
-            receives too many or too few packets based on the request.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_4.category</category>
+        <porter>yukon.web.errorCodes_4.porter</porter>
+        <description>yukon.web.errorCodes_4.description</description>
+        <troubleshooting>yukon.web.errorCodes_4.troubleshooting</troubleshooting>
     </error>
+
     <error code="9">
-        <category>Data Validation</category>
-        <porter>Parameter Out of Range</porter>
-        <description>A parameter supplied in the command string is outside of its valid range.
-        </description>
-        <troubleshooting>
-            A parameter supplied in the command string is outside of its valid range.
-            Correct the invalid parameter and attempt the command again.
-            <ul>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_9.category</category>
+        <porter>yukon.web.errorCodes_9.porter</porter>
+        <description>yukon.web.errorCodes_9.description</description>
+        <troubleshooting>yukon.web.errorCodes_9.troubleshooting</troubleshooting>
     </error>
+
     <error code="15">
-        <category>Bulk Communications</category>
-        <porter>Parity Error</porter>
-        <description>Checksum verification failed on communication between the master station and
-            the targeted device.</description>
-        <troubleshooting>
-            This is a bulk communications error typically associated with systems using direct radio
-            communications between the master station and a targeted device such as a CCU, RTU or
-            dial up meter.
-            Communication timing setup usually plays a role in troubleshooting this problem.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Using Commander, attempt a loop or scan on the targeted device to verify
-                    communications</li>
-                <ul>
-                    <li>If the loop or scan is successful, </li>
-                    <ul>
-                        <li>Adjust the timings of the communication channel (Steps to find the
-                            settings are shown below). If you are unfamiliar with the timing
-                            parameters available, please contact Technical Support at
-                            1-800-815-2258.</li>
-                        <ol>
-                            <li>Open Database Editor</li>
-                            <li>View -> Core</li>
-                            <li>Sort By-> Comm Channel</li>
-                            <li>Select and edit the appropriate channel</li>
-                            <li>Timings tab</li>
-                        </ol>
-                    </ul>
-                    <li>If the loopback is not successful</li>
-                    <ul>
-                        <li>Attempt to loop or scan another device using the same communications
-                            channel</li>
-                    </ul>
-                </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_15.category</category>
+        <porter>yukon.web.errorCodes_15.porter</porter>
+        <description>yukon.web.errorCodes_15.description</description>
+        <troubleshooting>yukon.web.errorCodes_15.troubleshooting</troubleshooting>
     </error>
 
     <error code="16">
-        <category>Bulk Communications</category>
-        <porter>Bad CCU Specification</porter>
-        <description>The CCU address in the response does not match the address of the targeted CCU.
-        </description>
-        <troubleshooting>
-            This is a bulk communications error that is commonly due to timing or buffering problems
-            with communication equipment such as portservers or radios.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Adjust the timings of the communication channel (Steps to find the settings are
-                    shown below) or the communication equipment itself. If you are unfamiliar with
-                    the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
-                </li>
-                <ol>
-                    <li>Open Database Editor</li>
-                    <li>View -> Core</li>
-                    <li>Sort By-> Comm Channel</li>
-                    <li>Select and edit the appropriate channel</li>
-                    <li>Timings tab</li>
-                </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_16.category</category>
+        <porter>yukon.web.errorCodes_16.porter</porter>
+        <description>yukon.web.errorCodes_16.description</description>
+        <troubleshooting>yukon.web.errorCodes_16.troubleshooting</troubleshooting>
     </error>
 
     <error code="17">
-        <category>Powerline Carrier</category>
-        <porter>Word 1 NACK</porter>
-        <description>The CCU received a partial response from the targeted device.</description>
-        <troubleshooting>
-            This is a powerline carrier error typically associated with marginal or corrupted signal
-            received at the CCU.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt the same command with a different device on the same route</li>
-                <li>Attempt communication on another route if available</li>
-                <ol>
-                    <li>Using Commander, target the device and perform a 'locate' command</li>
-                    <li>In the Database Editor, edit the device's communication route and select one
-                        of the successful routes from the 'locate' command</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>Verify the signal to noise ratio (signal strength) at the substation with the
-                    original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_17.category</category>
+        <porter>yukon.web.errorCodes_17.porter</porter>
+        <description>yukon.web.errorCodes_17.description</description>
+        <troubleshooting>yukon.web.errorCodes_17.troubleshooting</troubleshooting>
     </error>
 
     <error code="18">
-        <category>Powerline Carrier</category>
-        <porter>Word 2 NACK</porter>
-        <description>The CCU received a partial response from the targeted device.</description>
-        <troubleshooting>
-            This is a powerline carrier error typically associated with marginal or corrupted signal
-            received at the CCU.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt the same command with a different device on the same route</li>
-                <li>Attempt communication on another route if available</li>
-                <ol>
-                    <li>Using Commander, target the device and perform a 'locate' command</li>
-                    <li>In the Database Editor, edit the device's communication route and select one
-                        of the successful routes from the 'locate' command</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>Verify the signal to noise ratio (signal strength) at the substation with the
-                    original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_18.category</category>
+        <porter>yukon.web.errorCodes_18.porter</porter>
+        <description>yukon.web.errorCodes_18.description</description>
+        <troubleshooting>yukon.web.errorCodes_18.troubleshooting</troubleshooting>
     </error>
 
     <error code="19">
-        <category>Powerline Carrier</category>
-        <porter>Word 3 NACK</porter>
-        <description>The CCU received a partial response from the targeted device.</description>
-        <troubleshooting>
-            This is a powerline carrier error typically associated with marginal or corrupted signal
-            received at the CCU.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt the same command with a different device on the same route</li>
-                <li>Attempt communication on another route if available</li>
-                <ol>
-                    <li>Using Commander, target the device and perform a 'locate' command</li>
-                    <li>In the Database Editor, edit the device's communication route and select one
-                        of the successful routes from the 'locate' command</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>Verify the signal to noise ratio (signal strength) at the substation with the
-                    original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_19.category</category>
+        <porter>yukon.web.errorCodes_19.porter</porter>
+        <description>yukon.web.errorCodes_19.description</description>
+        <troubleshooting>yukon.web.errorCodes_19.troubleshooting</troubleshooting>
     </error>
 
     <error code="20">
-        <category>Powerline Carrier</category>
-        <porter>Word 1 NACK Padded</porter>
-        <description>The CCU did not receive a response from the targeted device.</description>
-        <troubleshooting>
-            This is a powerline carrier error that is typically associated with marginal signal or a
-            request to a non existent device.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt communication on another route if available</li>
-                <ol>
-                    <li>Using Commander, target the device and perform a 'locate' command</li>
-                    <li>In the Database Editor, edit the device's communication route and select one
-                        of the successful routes from the 'locate' command</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>Attempt the same command with a different device on the original route</li>
-                <ul>
-                    <li>If the second device is successful</li>
-                    <ul>
-                        <li>Verify the original device's serial number</li>
-                        <li>Verify the signal to noise ratio (signal strength) at the substation
-                            with the original device</li>
-                    </ul>
-                </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_20.category</category>
+        <porter>yukon.web.errorCodes_20.porter</porter>
+        <description>yukon.web.errorCodes_20.description</description>
+        <troubleshooting>yukon.web.errorCodes_20.troubleshooting</troubleshooting>
     </error>
+
     <error code="21">
-        <category>Powerline Carrier</category>
-        <porter>Word 2 NACK Padded</porter>
-        <description>The CCU did not receive a response from the targeted device.</description>
-        <troubleshooting>
-            This is a powerline carrier error that is typically associated with marginal signal or a
-            request to a non existent device.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt communication on another route if available</li>
-                <ol>
-                    <li>Using Commander, target the device and perform a 'locate' command</li>
-                    <li>In the Database Editor, edit the device's communication route and select one
-                        of the successful routes from the 'locate' command</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>Attempt the same command with a different device on the original route</li>
-                <ul>
-                    <li>If the second device is successful</li>
-                    <ul>
-                        <li>Verify the original device's serial number</li>
-                        <li>Verify the signal to noise ratio (signal strength) at the substation
-                            with the original device</li>
-                    </ul>
-                </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_21.category</category>
+        <porter>yukon.web.errorCodes_21.porter</porter>
+        <description>yukon.web.errorCodes_21.description</description>
+        <troubleshooting>yukon.web.errorCodes_21.troubleshooting</troubleshooting>
     </error>
 
     <error code="22">
-        <category>Powerline Carrier</category>
-        <porter>Word 3 NACK Padded</porter>
-        <description>The CCU did not receive a response from the targeted device.</description>
-        <troubleshooting>
-            This is a powerline carrier error that is typically associated with marginal signal or a
-            request to a non existent device.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt communication on another route if available</li>
-                <ol>
-                    <li>Using Commander, target the device and perform a 'locate' command</li>
-                    <li>In the Database Editor, edit the device's communication route and select one
-                        of the successful routes from the 'locate' command</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>Attempt the same command with a different device on the original route</li>
-                <ul>
-                    <li>If the second device is successful</li>
-                    <ul>
-                        <li>Verify the original device's serial number</li>
-                        <li>Verify the signal to noise ratio (signal strength) at the substation
-                            with the original device</li>
-                    </ul>
-                </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_22.category</category>
+        <porter>yukon.web.errorCodes_22.porter</porter>
+        <description>yukon.web.errorCodes_22.description</description>
+        <troubleshooting>yukon.web.errorCodes_22.troubleshooting</troubleshooting>
     </error>
 
     <error code="31">
-        <category>Bulk Communications</category>
-        <porter>Timeout Reading from Port</porter>
-        <description>The master station did not receive a response from the targeted device.
-        </description>
-        <troubleshooting>
-            This is a bulk communications error that is typically associated with a setup problem or
-            possibly caused by a communications equipment failure
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt a loop or scan of another device using the same communications channel
-                    if available</li>
-                <ul>
-                    <li>If communication to the second device is successful, the error is probably
-                        caused by an equipment or setup problem with the original device.</li>
-                    <ul>
-                        <li>Verify the targeted device's serial number and/or address</li>
-                        <li>Verify the communication equipment (modem, phone line or radio) at the
-                            targeted device is working properly</li>
-                    </ul>
-                    <li>If the communication to the second device is not successful, the error is
-                        probably caused by an equipment problem at the master station</li>
-                    <ul>
-                        <li>Verify the communication equipment (modem, phone line or radio) at the
-                            master station is working properly</li>
-                        <li>If the targeted device is a CCU, verify it is powered up and the
-                            selector is not switched to external</li>
-                    </ul>
-                </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_31.category</category>
+        <porter>yukon.web.errorCodes_31.porter</porter>
+        <description>yukon.web.errorCodes_31.description</description>
+        <troubleshooting>yukon.web.errorCodes_31.troubleshooting</troubleshooting>
     </error>
 
     <error code="32">
-        <category>Bulk Communications</category>
-        <porter>Sequence Reject Frame Received... Sequencing Adjusted</porter>
-        <description>The response's sequence number does not match what was expected by the master
-            station.</description>
-        <troubleshooting>
-            This is a bulk communications error that is typically associated with invalid timing
-            parameter's set at the master station. Another possible cause is a field visit to the
-            CCU
-            resulting in local communications being used. Upon setting the communications back to internal, the master
-            station may receive this error on the first request due internal bookkeeping mismatches.
-            The
-            master station will automatically recovery from this internal mismatch.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Adjust the timings of the communication channel (Steps to find the settings are
-                    shown below) or the communication equipment itself. If you are unfamiliar with
-                    the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
-                </li>
-                <ol>
-                    <li>Open Database Editor</li>
-                    <li>View -> Core</li>
-                    <li>Sort By-> Comm Channel</li>
-                    <li>Select and edit the appropriate channel</li>
-                    <li>Timings tab</li>
-                </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_32.category</category>
+        <porter>yukon.web.errorCodes_32.porter</porter>
+        <description>yukon.web.errorCodes_32.description</description>
+        <troubleshooting>yukon.web.errorCodes_32.troubleshooting</troubleshooting>
     </error>
 
     <error code="33">
-        <category>Bulk Communications</category>
-        <porter>Framing Error</porter>
-        <description>The master station received an invalid header in the response from the targeted
-            device.</description>
-        <troubleshooting>
-            This is a bulk communications error that is typically associated with invalid timing
-            parameters set at the master station. This particular code is returned when the first
-            section
-            of the response from the targeted device does not match what the master station was expecting.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Adjust the timings of the communication channel (Steps to find the settings are
-                    shown below) or the communication equipment itself. If you are unfamiliar with
-                    the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
-                </li>
-                <ol>
-                    <li>Open Database Editor</li>
-                    <li>View -> Core</li>
-                    <li>Sort By-> Comm Channel</li>
-                    <li>Select and edit the appropriate channel</li>
-                    <li>Timings tab</li>
-                </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_33.category</category>
+        <porter>yukon.web.errorCodes_33.porter</porter>
+        <description>yukon.web.errorCodes_33.description</description>
+        <troubleshooting>yukon.web.errorCodes_33.troubleshooting</troubleshooting>
     </error>
 
     <error code="34">
-        <category>Bulk Communications</category>
-        <porter>Bad CRC on Message</porter>
-        <description>Checksum verification failed on response from the targeted device.
-        </description>
-        <troubleshooting>
-            This is a bulk communications error caused by an incomplete or corrupted response.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Adjust the timings of the communication channel (Steps to find the settings are
-                    shown below) or the communication equipment itself. If you are unfamiliar with
-                    the timing parameters available,
-                    please contact Technical Support at 1-800-815-2258
-                </li>
-                <ol>
-                    <li>Open Database Editor</li>
-                    <li>View -> Core</li>
-                    <li>Sort By-> Comm Channel</li>
-                    <li>Select and edit the appropriate channel</li>
-                    <li>Timings tab</li>
-                </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_34.category</category>
+        <porter>yukon.web.errorCodes_34.porter</porter>
+        <description>yukon.web.errorCodes_34.description</description>
+        <troubleshooting>yukon.web.errorCodes_34.troubleshooting</troubleshooting>
     </error>
 
     <error code="36">
-        <category>Powerline Carrier</category>
-        <porter>Bad HDLC UA Frame</porter>
-        <description>The CCU did not respond correctly to a reset request.</description>
-        <troubleshooting>
-            This is a powerline carrier error associated with a logic problem internal to the CCU.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>If the problem persists, contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_36.category</category>
+        <porter>yukon.web.errorCodes_36.porter</porter>
+        <description>yukon.web.errorCodes_36.description</description>
+        <troubleshooting>yukon.web.errorCodes_36.troubleshooting</troubleshooting>
     </error>
 
     <error code="46">
-        <category>Bulk Communications</category>
-        <porter>REQACK Flag set-- Frame Unexecutable</porter>
-        <description>The CCU has rejected a request from the master station.</description>
-        <troubleshooting>
-            This is a bulk communications error often caused by a mismatch of bookkeeping between
-            the master station and the CCU. Another possibility is a logic problem internal to
-            the CCU.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>From Commander, remotely reset the CCU and attempt the command again</li>
-                <li>If the problem persists, it may be due to a faulty logic card in the CCU.
-                    Replace the logic card or contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_46.category</category>
+        <porter>yukon.web.errorCodes_46.porter</porter>
+        <description>yukon.web.errorCodes_46.description</description>
+        <troubleshooting>yukon.web.errorCodes_46.troubleshooting</troubleshooting>
     </error>
 
     <error code="54">
-        <category>Yukon System</category>
-        <porter>Device ID not found</porter>
-        <description>The device ID requested does not exist or is not loaded yet.</description>
-        <troubleshooting>
-            The devices may still be in process of being loaded by the servers, wait a few minutes
-            and attempt the command again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_54.category</category>
+        <porter>yukon.web.errorCodes_54.porter</porter>
+        <description>yukon.web.errorCodes_54.description</description>
+        <troubleshooting>yukon.web.errorCodes_54.troubleshooting</troubleshooting>
     </error>
 
     <error code="57">
-        <category>Powerline Carrier</category>
-        <porter>E-Word Received in Returned Message</porter>
-        <description>The repeater did not receive a response from the end device.</description>
-        <troubleshooting>
-            This is a powerline carrier error that is typically associated with marginal signal or a
-            request to a non existent device.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt communication on another route if available</li>
-                <ol>
-                    <li>Using Commander, target the device and perform a 'locate' command</li>
-                    <li>In the Database Editor, edit the device's communication route and select one
-                        of the successful routes from the 'locate' command</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>Attempt the same command with a different device on the same route</li>
-                <ul>
-                    <li>If the second device is successful</li>
-                    <ul>
-                        <li>Verify the original device's serial number</li>
-                        <li>Verify the signal to noise ratio (signal strength) at the substation
-                            with the original device</li>
-                    </ul>
-                </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_57.category</category>
+        <porter>yukon.web.errorCodes_57.porter</porter>
+        <description>yukon.web.errorCodes_57.description</description>
+        <troubleshooting>yukon.web.errorCodes_57.troubleshooting</troubleshooting>
     </error>
 
     <error code="65">
-        <category>Bulk Communications</category>
-        <porter>No DCD on Return Message</porter>
-        <description>The master station timed out while waiting for carrier detect on the
-            communications channel.</description>
-        <troubleshooting>
-            This is a bulk communications error that is typically associated with equipment failure
-            or improperly configured communication channels
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Verify carrier detect is necessary for this communication channel</li>
-                <ul>
-                    <li>If carrier detect is not necessary for this communication channel</li>
-                    <ul>
-                        <li>Verify "Carrier Detect Wait" is unchecked on the communication channel
-                        </li>
-                        <ol>
-                            <li>Open Database Editor</li>
-                            <li>View -> Core</li>
-                            <li>Sort By-> Comm Channel</li>
-                            <li>Select and edit the appropriate channel</li>
-                            <li>"Carrier Detect Wait" checkbox on the General tab</li>
-                        </ol>
-                    </ul>
-                </ul>
-                <li>Verify the communication equipment (modem, phone line or radio) at the master
-                    station is working properly</li>
-                <li>If the targeted device is a CCU, verify it is powered up and the selector is not
-                    switched to external</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_65.category</category>
+        <porter>yukon.web.errorCodes_65.porter</porter>
+        <description>yukon.web.errorCodes_65.description</description>
+        <troubleshooting>yukon.web.errorCodes_65.troubleshooting</troubleshooting>
     </error>
 
     <error code="67">
-        <category>Bulk Communications</category>
-        <porter>Error Reading from Port</porter>
-        <description>The master station was unable to read from the communications channel.
-        </description>
-        <troubleshooting>
-            This is a bulk communications error that is typically associated with the inability to
-            connect to or retrieve data from the communications channel. Built in methods allow the
-            system to attempt to recover from this code automatically
-            <ul>
-                <li>Attempt the command again</li>
-                <li>If using a port server or terminal server, verify connectivity to the device
-                    containing the physical communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_67.category</category>
+        <porter>yukon.web.errorCodes_67.porter</porter>
+        <description>yukon.web.errorCodes_67.description</description>
+        <troubleshooting>yukon.web.errorCodes_67.troubleshooting</troubleshooting>
     </error>
 
     <error code="68">
-        <category>Bulk Communications</category>
-        <porter>Error Writing to Port</porter>
-        <description>The master station was unable to write to the communications channel.
-        </description>
-        <troubleshooting>
-            This is a bulk communications error that is typically associated with the inability to
-            connect to or write data to the communications channel. Built in methods allow the
-            system to attempt to recover from this code automatically
-            <ul>
-                <li>Attempt the command again</li>
-                <li>If using a port server or terminal server, verify connectivity to the device
-                    containing the physical communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_68.category</category>
+        <porter>yukon.web.errorCodes_68.porter</porter>
+        <description>yukon.web.errorCodes_68.description</description>
+        <troubleshooting>yukon.web.errorCodes_68.troubleshooting</troubleshooting>
     </error>
 
     <error code="72">
-        <category>Powerline Carrier</category>
-        <porter>DLC Read Timeout on CCU Queue Entry</porter>
-        <description>The CCU did not receive a response from the targeted device on a queued
-            request.</description>
-        <troubleshooting>
-            This is a powerline carrier error that is typically associated with marginal signal or a
-            request to a non existent device.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt communication on another route if available</li>
-                <ol>
-                    <li>Using Commander, target the device and perform a 'locate' command</li>
-                    <li>In the Database Editor, edit the device's communication route and select one
-                        of the successful routes from the 'locate' command</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>Attempt the same command with a different device on the same route</li>
-                <ul>
-                    <li>If the second device is successful</li>
-                    <ul>
-                        <li>Verify the original device's serial number</li>
-                        <li>Verify the signal to noise ratio (signal strength) at the substation
-                            with the original device</li>
-                    </ul>
-                </ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_72.category</category>
+        <porter>yukon.web.errorCodes_72.porter</porter>
+        <description>yukon.web.errorCodes_72.description</description>
+        <troubleshooting>yukon.web.errorCodes_72.troubleshooting</troubleshooting>
     </error>
 
     <error code="74">
-        <category>Powerline Carrier</category>
-        <porter>Route Failed on CCU Queue Entry</porter>
-        <description>The CCU received a partial response from the targeted device on a queued
-            request.</description>
-        <troubleshooting>
-            This is a powerline carrier error typically associated with marginal or corrupted signal
-            received at the CCU.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt the same command with a different device on the same route</li>
-                <li>Attempt communication on another route if available</li>
-                <ol>
-                    <li>Using Commander, target the device and perform a 'locate' command</li>
-                    <li>In the Database Editor, edit the device's communication route and select one
-                        of the successful routes from the 'locate' command</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>Verify the signal to noise ratio (signal strength) at the substation with the
-                    original device</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_74.category</category>
+        <porter>yukon.web.errorCodes_74.porter</porter>
+        <description>yukon.web.errorCodes_74.description</description>
+        <troubleshooting>yukon.web.errorCodes_74.troubleshooting</troubleshooting>
     </error>
 
     <error code="83">
-        <category>Yukon System</category>
-        <porter>Operation Attempted on Inhibited Port</porter>
-        <description>The targeted port is disabled or inhibited in the Yukon System.</description>
-        <troubleshooting>
-            This is a Yukon system message, the port is flagged as disabled in the Device Setup.
-        </troubleshooting>
+        <category>yukon.web.errorCodes_83.category</category>
+        <porter>yukon.web.errorCodes_83.porter</porter>
+        <description>yukon.web.errorCodes_83.description</description>
+        <troubleshooting>yukon.web.errorCodes_83.troubleshooting</troubleshooting>
     </error>
 
     <error code="85">
-        <category>Yukon System</category>
-        <porter>Operation Attempted on Inhibited Device</porter>
-        <description>The targeted device is disabled or inhibited in the Yukon System.</description>
-        <troubleshooting>
-            This is a Yukon system message, the device is flagged as disabled in the Device Setup.
-        </troubleshooting>
+        <category>yukon.web.errorCodes_85.category</category>
+        <porter>yukon.web.errorCodes_85.porter</porter>
+        <description>yukon.web.errorCodes_85.description</description>
+        <troubleshooting>yukon.web.errorCodes_85.troubleshooting</troubleshooting>
     </error>
 
     <error code="87">
-        <category>Bulk Communications</category>
-        <porter>Error Dialing Up Remote</porter>
-        <description>The master station was unable to communicate with the targeted device due to
-            communication failure.</description>
-        <troubleshooting>
-            This is a bulk communications error typically associated with a failure to initialize
-            the modem for dial-up.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Verify the modem is functioning properly</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_87.category</category>
+        <porter>yukon.web.errorCodes_87.porter</porter>
+        <description>yukon.web.errorCodes_87.description</description>
+        <troubleshooting>yukon.web.errorCodes_87.troubleshooting</troubleshooting>
     </error>
 
     <error code="88">
-        <category>Powerline Carrier</category>
-        <porter>Wrong Unique Address Received</porter>
-        <description>The CCU heard a response from a device other than the one it was targeting.
-        </description>
-        <troubleshooting>
-            This is a powerline carrier error that is typically associated either crosstalk or is
-            preceded by a bulk communication error such as a timeout.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_88.category</category>
+        <porter>yukon.web.errorCodes_88.porter</porter>
+        <description>yukon.web.errorCodes_88.description</description>
+        <troubleshooting>yukon.web.errorCodes_88.troubleshooting</troubleshooting>
     </error>
 
     <error code="89">
-        <category>Bulk Communications</category>
-        <porter>Error Connecting to Terminal Server</porter>
-        <description>The master station was unable to connect to the communications channel.
-        </description>
-        <troubleshooting>
-            This is a bulk communications error that is associated with the inability to connect to
-            or initialize the communications channel. Built in methods allow the
-            system to attempt to recover from this code automatically
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Verify connectivity to the device (terminal server) containing the physical
-                    communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_89.category</category>
+        <porter>yukon.web.errorCodes_89.porter</porter>
+        <description>yukon.web.errorCodes_89.description</description>
+        <troubleshooting>yukon.web.errorCodes_89.troubleshooting</troubleshooting>
     </error>
 
     <error code="90">
-        <category>Bulk Communications</category>
-        <porter>Error Writing to Terminal Server</porter>
-        <description>The master station was unable to write to the communications channel.
-        </description>
-        <troubleshooting>
-            This is a bulk communications error that is typically associated with the inability to
-            connect to or send data to the communications channel. Built in methods allow the
-            system to attempt to recover from this code automatically
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Verify connectivity to the device (terminal server) containing the physical
-                    communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_90.category</category>
+        <porter>yukon.web.errorCodes_90.porter</porter>
+        <description>yukon.web.errorCodes_90.description</description>
+        <troubleshooting>yukon.web.errorCodes_90.troubleshooting</troubleshooting>
     </error>
 
     <error code="91">
-        <category>Bulk Communications</category>
-        <porter>Error Reading from Terminal Server</porter>
-        <description>The master station was unable to read from the communications channel.
-        </description>
-        <troubleshooting>
-            This is a bulk communications error that is typically associated with the inability to
-            connect to retrieve data from the communications channel. Built in methods allow the
-            system to attempt to recover from this code automatically
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Verify connectivity to the device (terminal server) containing the physical
-                    communication ports</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_91.category</category>
+        <porter>yukon.web.errorCodes_91.porter</porter>
+        <description>yukon.web.errorCodes_91.description</description>
+        <troubleshooting>yukon.web.errorCodes_91.troubleshooting</troubleshooting>
     </error>
 
     <error code="92">
-        <category>Powerline Carrier</category>
-        <porter>Address Does Not Match Expected Value</porter>
-        <description>The CCU heard a response from a device other than the one it was targeting.
-        </description>
-        <troubleshooting>
-            This is a powerline carrier error that is typically associated either crosstalk or is
-            preceded by a bulk communication error such as a timeout.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_92.category</category>
+        <porter>yukon.web.errorCodes_92.porter</porter>
+        <description>yukon.web.errorCodes_92.description</description>
+        <troubleshooting>yukon.web.errorCodes_92.troubleshooting</troubleshooting>
     </error>
 
     <error code="93">
-        <category>Powerline Carrier</category>
-        <porter>Bad Data Buffer for IED</porter>
-        <description>The powerline carrier device was unable to communicate to the connected IED.
-        </description>
-        <troubleshooting>
-            This is a powerline carrier error that is associated with using a powerline carrier
-            device to query data from another intelligent device on the line. The error is
-            returned when the carrier device is unable to communicate with the polyphase meter or other end device.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>If possible, verify the physical connection between the carrier device and the
-                    IED</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_93.category</category>
+        <porter>yukon.web.errorCodes_93.porter</porter>
+        <description>yukon.web.errorCodes_93.description</description>
+        <troubleshooting>yukon.web.errorCodes_93.troubleshooting</troubleshooting>
     </error>
+
     <error code="94">
-        <category>Yukon System</category>
-        <porter>Missing Required Configuration Entry</porter>
-        <description>The device was unable to complete the requested command.</description>
-        <troubleshooting>
-            This is a Yukon system error that is associated with using MCT device configuration
-            information. The error is
-            returned when the MCT device does not have configuration information stored already in the database. An
-            attempt
-            to retrieve the configuration information should be should be made.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>If possible, verify the physical connection between the carrier device and the
-                    IED</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_94.category</category>
+        <porter>yukon.web.errorCodes_94.porter</porter>
+        <description>yukon.web.errorCodes_94.description</description>
+        <troubleshooting>yukon.web.errorCodes_94.troubleshooting</troubleshooting>
     </error>
 
     <error code="98">
-        <category>Yukon System</category>
-        <porter>Bad Nexus Specification</porter>
-        <description>A connection to the TCP/IP device could not be established or a current
-            connection failed.</description>
-        <troubleshooting>
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Confirm communication with TCP/IP devices by 'pinging' the IP address of the
-                    devices. Check the setup of all devices found unreachable.</li>
-                <li>Confirm the Yukon configuration of the TCP/IP device and communications port are
-                    correct.</li>
-                <li>Confirm the device's configuration is correct.</li>
-                <li>Physically inspect any unreachable devices for hardware issues.</li>
-                <li>Contact third parties to confirm operation of network.</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_98.category</category>
+        <porter>yukon.web.errorCodes_98.porter</porter>
+        <description>yukon.web.errorCodes_98.description</description>
+        <troubleshooting>yukon.web.errorCodes_98.troubleshooting</troubleshooting>
     </error>
 
     <error code="99">
-        <category>Yukon System</category>
-        <porter>Error Writing to Port</porter>
-        <description>A connection to the TCP/IP device could not be established or a current
-            connection failed.</description>
-        <troubleshooting>
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Confirm communication with TCP/IP devices by 'pinging' the IP address of the
-                    devices. Check the setup of all devices found unreachable.</li>
-                <li>Confirm the Yukon configuration of the TCP/IP device and communications port are
-                    correct.</li>
-                <li>Confirm the device's configuration is correct.</li>
-                <li>Physically inspect any unreachable devices for hardware issues.</li>
-                <li>Contact third parties to confirm operation of network.</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_99.category</category>
+        <porter>yukon.web.errorCodes_99.porter</porter>
+        <description>yukon.web.errorCodes_99.description</description>
+        <troubleshooting>yukon.web.errorCodes_99.troubleshooting</troubleshooting>
     </error>
 
     <error code="100">
-        <category>Powerline Carrier</category>
-        <porter>Bad BCH</porter>
-        <description>Checksum verification failed on the response from the end device.</description>
-        <troubleshooting>
-            This is a powerline carrier error typically associated with marginal or corrupted signal
-            received at the CCU.
-            <ul>
-                <li>Attempt the command again</li>
-                <li>Attempt communication on another route if available</li>
-                <ol>
-                    <li>Using Commander, target the device and perform a 'locate' command</li>
-                    <li>In the Database Editor, edit the device's communication route and select one
-                        of the successful routes from the 'locate' command</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>Attempt the same command with a different device on the same route</li>
-                <li>Attempt the command on the original device and verify the signal to noise ratio
-                    (signal strength) at the substation</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_100.category</category>
+        <porter>yukon.web.errorCodes_100.porter</porter>
+        <description>yukon.web.errorCodes_100.description</description>
+        <troubleshooting>yukon.web.errorCodes_100.troubleshooting</troubleshooting>
     </error>
+
     <error code="202">
-        <category>Yukon System</category>
-        <porter>NoMethod or invalid command.</porter>
-        <description>The command is incorrect or not supported by this device type.</description>
-        <troubleshooting>
-            <ul>
-                <li>Verify the command string syntax is valid.</li>
-                <li>The firmware for this device may not support this operation.</li>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_202.category</category>
+        <porter>yukon.web.errorCodes_202.porter</porter>
+        <description>yukon.web.errorCodes_202.description</description>
+        <troubleshooting>yukon.web.errorCodes_202.troubleshooting</troubleshooting>
     </error>
+
     <error code="261">
-        <category>Data Validation</category>
-        <porter>The freeze check bit in the frozen reading does not match the last recorded freeze
-            sent to the device.</porter>
-        <description>The freeze check bit in the frozen reading does not match the last recorded
-            freeze sent to the device.</description>
-        <troubleshooting>
-            This is a data validation error associated with the freeze check bit retrieved from the
-            device not matching the value expected by the master station.
-            <ul>
-                <li>Send the expected freeze command and attempt the command again</li>
-                <ol>
-                    <li>Using Commander, resend the expected freeze.</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_261.category</category>
+        <porter>yukon.web.errorCodes_261.porter</porter>
+        <description>yukon.web.errorCodes_261.description</description>
+        <troubleshooting>yukon.web.errorCodes_261.troubleshooting</troubleshooting>
     </error>
+
     <error code="262">
-        <category>Data Validation</category>
-        <porter>The frozen peak timestamp is outside of the expected range.</porter>
-        <description>Verification of the frozen peak's timestamp as retrieved from the device has
-            failed.</description>
-        <troubleshooting>
-            This is a data validation error associated with the frozen peak demand's timestamp
-            falling outside the range expected by the master station.
-            This range is defined as greater than the last frozen peak demand reading archived in the database
-            and less than the timestamp of the most recent freeze command sent to the device.
-            This error typically occurs if the device missed an attempted freeze of the registers.
-            <ul>
-                <li>Send the expected freeze command and attempt the command again</li>
-                <ol>
-                    <li>Using Commander, resend the expected freeze.</li>
-                    <li>Attempt the command again</li>
-                </ol>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_262.category</category>
+        <porter>yukon.web.errorCodes_262.porter</porter>
+        <description>yukon.web.errorCodes_262.description</description>
+        <troubleshooting>yukon.web.errorCodes_262.troubleshooting</troubleshooting>
     </error>
+
     <error code="263">
-        <category>Data Validation</category>
-        <porter>The freeze counter is less than the expected value.</porter>
-        <description>Verification of the freeze counter has failed. Device did not receive one or
-            more of the last Freeze commands.</description>
-        <troubleshooting>
-            The last recorded freeze count (in Yukon) for the device does not match the current
-            count returned from the device. This indicates a
-            freeze command was not received by the device.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_263.category</category>
+        <porter>yukon.web.errorCodes_263.porter</porter>
+        <description>yukon.web.errorCodes_263.description</description>
+        <troubleshooting>yukon.web.errorCodes_263.troubleshooting</troubleshooting>
     </error>
+
     <error code="264">
-        <category>Data Validation</category>
-        <porter>Invalid data was received for one or more data points.</porter>
-        <description>Invalid data was received for one or more data points.</description>
-        <troubleshooting>
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_264.category</category>
+        <porter>yukon.web.errorCodes_264.porter</porter>
+        <description>yukon.web.errorCodes_264.description</description>
+        <troubleshooting>yukon.web.errorCodes_264.troubleshooting</troubleshooting>
     </error>
+
     <error code="265">
-        <category>Data Validation</category>
-        <porter>There is no record of the last freeze sent to this device.</porter>
-        <description>There is no record of the last freeze sent to this device.</description>
-        <troubleshooting>
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_265.category</category>
+        <porter>yukon.web.errorCodes_265.porter</porter>
+        <description>yukon.web.errorCodes_265.description</description>
+        <troubleshooting>yukon.web.errorCodes_265.troubleshooting</troubleshooting>
     </error>
+
     <error code="267">
-        <category>Data Validation</category>
-        <porter>Invalid time returned OR time outside of requested range - retry.</porter>
-        <description>The setup validation data returned by the meter did not match the expected
-            value. The device did not hear the setup command.</description>
-        <troubleshooting>
-            The meter did not receive the setup command for the read. Attempt the read again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_267.category</category>
+        <porter>yukon.web.errorCodes_267.porter</porter>
+        <description>yukon.web.errorCodes_267.description</description>
+        <troubleshooting>yukon.web.errorCodes_267.troubleshooting</troubleshooting>
     </error>
+
     <error code="268">
-        <category>Data Validation</category>
-        <porter>Invalid channel returned by daily read.</porter>
-        <description>The setup validation data returned by the meter did not match the expected
-            value. The device did not hear the setup command.</description>
-        <troubleshooting>
-            The meter did not receive the setup command for the read. Attempt the read again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_268.category</category>
+        <porter>yukon.web.errorCodes_268.porter</porter>
+        <description>yukon.web.errorCodes_268.description</description>
+        <troubleshooting>yukon.web.errorCodes_268.troubleshooting</troubleshooting>
     </error>
+
     <error code="269">
-        <category>Data Validation</category>
-        <porter>Invalid or insufficient device SSPEC revision.</porter>
-        <description>The meter does not support the requested command.</description>
-        <troubleshooting>
-            Please verify the SSPEC supports the requested command. Execute 'getconfig model' to
-            retrieve the SSPEC revision.
-            <ul>
-                <li>For more information, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_269.category</category>
+        <porter>yukon.web.errorCodes_269.porter</porter>
+        <description>yukon.web.errorCodes_269.description</description>
+        <troubleshooting>yukon.web.errorCodes_269.troubleshooting</troubleshooting>
     </error>
+
     <error code="270">
-        <category>Data Validation</category>
-        <porter>Verification of device SSPEC revision is required.</porter>
-        <description>Verification of device SSPEC revision is required.</description>
-        <troubleshooting>
-            Execute 'getconfig model' to verify the device SSPEC revision.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_270.category</category>
+        <porter>yukon.web.errorCodes_270.porter</porter>
+        <description>yukon.web.errorCodes_270.description</description>
+        <troubleshooting>yukon.web.errorCodes_270.troubleshooting</troubleshooting>
     </error>
+
     <error code="271">
-        <category>Transmitter</category>
-        <porter>Transmitter is busy</porter>
-        <description>The transmitter is busy with another request.</description>
-        <troubleshooting>
-            The transmitter is busy with another request, possibly from another system. Attempt the
-            command again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_271.category</category>
+        <porter>yukon.web.errorCodes_271.porter</porter>
+        <description>yukon.web.errorCodes_271.description</description>
+        <troubleshooting>yukon.web.errorCodes_271.troubleshooting</troubleshooting>
     </error>
+
     <error code="273">
-        <category>Bulk Communications</category>
-        <porter>Port is not initialized</porter>
-        <description>The request has been received, but may be delayed because the port is not
-            initialized. Bulk communication channel may be experiencing connection difficulties.
-        </description>
-        <troubleshooting>
-            Verify the bulk communication channel is functioning properly.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_273.category</category>
+        <porter>yukon.web.errorCodes_273.porter</porter>
+        <description>yukon.web.errorCodes_273.description</description>
+        <troubleshooting>yukon.web.errorCodes_273.troubleshooting</troubleshooting>
     </error>
+
     <error code="274">
-        <category>Data Validation</category>
-        <porter>Daily read request already in progress</porter>
-        <description>The daily read request is already in progress.</description>
-        <troubleshooting>
-            The daily read request is already in progress with another daily read request. Only one
-            daily read can be in progress at a time. Wait for a moment and attempt the command
-            again.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_274.category</category>
+        <porter>yukon.web.errorCodes_274.porter</porter>
+        <description>yukon.web.errorCodes_274.description</description>
+        <troubleshooting>yukon.web.errorCodes_274.troubleshooting</troubleshooting>
     </error>
+
     <error code="275">
-        <category>Bulk Communications</category>
-        <porter>Device is not connected</porter>
-        <description>Yukon is unable to establish a connection with the device.</description>
-        <troubleshooting>
-            Verify the device's connection parameters.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_275.category</category>
+        <porter>yukon.web.errorCodes_275.porter</porter>
+        <description>yukon.web.errorCodes_275.description</description>
+        <troubleshooting>yukon.web.errorCodes_275.troubleshooting</troubleshooting>
     </error>
+
     <error code="276">
-        <category>Yukon System</category>
-        <porter>No disconnect configured on this device</porter>
-        <description>The device does not have a disconnect to be operated on.</description>
-        <troubleshooting>
-            Verify there is a disconnect configured in the Device Setup.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_276.category</category>
+        <porter>yukon.web.errorCodes_276.porter</porter>
+        <description>yukon.web.errorCodes_276.description</description>
+        <troubleshooting>yukon.web.errorCodes_276.troubleshooting</troubleshooting>
     </error>
+
     <error code="277">
-        <category>Transmitter</category>
-        <porter>Transmitter is overheating</porter>
-        <description>The request was denied because the PLC transmitter is overheating.
-        </description>
-        <troubleshooting>
-            Hardware Protection Mode.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_277.category</category>
+        <porter>yukon.web.errorCodes_277.porter</porter>
+        <description>yukon.web.errorCodes_277.description</description>
+        <troubleshooting>yukon.web.errorCodes_277.troubleshooting</troubleshooting>
     </error>
+
     <error code="278">
-        <category>Yukon System</category>
-        <porter>Command requires channel configuration to continue.</porter>
-        <description>In order to collect load profile, the system needs to retrieve the channel
-            setup information.</description>
-        <troubleshooting>
-            The system will attempt to collect the required configuration data automatically. Retry
-            the command.
-            <ul>
-                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
-            </ul>
-        </troubleshooting>
+        <category>yukon.web.errorCodes_278.category</category>
+        <porter>yukon.web.errorCodes_278.porter</porter>
+        <description>yukon.web.errorCodes_278.description</description>
+        <troubleshooting>yukon.web.errorCodes_278.troubleshooting</troubleshooting>
     </error>
 
     <error code="1024">
-        <category>Network Manager</category>
-        <porter>No node in Network Manager.</porter>
-        <description>
-            There isn't a node in Network Manager which is currently associated with this
-            device in Yukon.
-        </description>
-        <troubleshooting>
-            Use Network Manager to see if this meter exists and is known to be paired with any RF
-            nodes.
-        </troubleshooting>
+        <category>yukon.web.errorCodes_1024.category</category>
+        <porter>yukon.web.errorCodes_1024.porter</porter>
+        <description>yukon.web.errorCodes_1024.description</description>
+        <troubleshooting>yukon.web.errorCodes_1024.troubleshooting</troubleshooting>
     </error>
+
     <error code="1025">
-        <category>Network Manager</category>
-        <porter>There is no RF gateway associated with the RF node.</porter>
-        <description>
-            There isn't a gateway in Network Manager which is currently associated with this node.
-        </description>
-        <troubleshooting>
-            Use Network Manager to see which RF gateway is associated with the RF node in
-            question, if any.
-        </troubleshooting>
+        <category>yukon.web.errorCodes_1025.category</category>
+        <porter>yukon.web.errorCodes_1025.porter</porter>
+        <description>yukon.web.errorCodes_1025.description</description>
+        <troubleshooting>yukon.web.errorCodes_1025.troubleshooting</troubleshooting>
     </error>
+
     <error code="1026">
-        <category>Network Manager</category>
-        <porter>There was an error while processing the request.</porter>
-        <description>
-            An unexpected Network Manager error has occurred.
-        </description>
-        <troubleshooting>
-            Check Network Manager server logs to identify the root cause of the failure.
-        </troubleshooting>
+        <category>yukon.web.errorCodes_1026.category</category>
+        <porter>yukon.web.errorCodes_1026.porter</porter>
+        <description>yukon.web.errorCodes_1026.description</description>
+        <troubleshooting>yukon.web.errorCodes_1026.troubleshooting</troubleshooting>
     </error>
+
     <error code="1027">
-        <category>Network Manager</category>
-        <porter>Timeout</porter>
-        <description>Request timed out</description>
-        <troubleshooting>Check Yukon Logs for errors</troubleshooting>
+        <category>yukon.web.errorCodes_1027.category</category>
+        <porter>yukon.web.errorCodes_1027.porter</porter>
+        <description>yukon.web.errorCodes_1027.description</description>
+        <troubleshooting>yukon.web.errorCodes_1027.troubleshooting</troubleshooting>
     </error>
 
     <error code="2000">
-        <category>Yukon System</category>
-        <porter>Invalid Action for Device Type.</porter>
-        <description>This action cannot be performed on this device type.</description>
-        <troubleshooting>For more information, please contact Technical Support at 1-800-815-2258
-        </troubleshooting>
+        <category>yukon.web.errorCodes_2000.category</category>
+        <porter>yukon.web.errorCodes_2000.porter</porter>
+        <description>yukon.web.errorCodes_2000.description</description>
+        <troubleshooting>yukon.web.errorCodes_2000.troubleshooting</troubleshooting>
     </error>
-    
+
+	<!-- FIX ME to delete this whole file! -->
     <error code="0">
-        <category>N/A</category>
-        <description>Successful Read</description>
+        <category>yukon.web.errorCodes_0.category</category>
+        <description>yukon.web.errorCodes_0.description</description>
     </error>
+
     <error code="*">
-        <category>N/A</category>
-        <porter>Troubleshooting tips for this error code are not available at this time</porter>
-        <description>Troubleshooting tips for this error code are not available at this time
-        </description>
-        <troubleshooting>
-            If the problem persists, please contact Technical Support at 1-800-815-2258
-        </troubleshooting>
+        <category>yukon.web.errorCodes_any.category</category>
+        <porter>yukon.web.errorCodes_any.porter</porter>
+        <description>yukon.web.errorCodes_any.description</description>
+        <troubleshooting>yukon.web.errorCodes_any.troubleshooting</troubleshooting>
     </error>
 </portererrorcodes>

@@ -14,31 +14,31 @@
 				<td class="widgetColumnCell">
 				
 					<%-- OUTAGE MONITORS WIDGET --%>
-					<ct:widget bean="outageMonitorsWidget"/>
+					<ct:widget bean="outageMonitors"/>
 					
 					<%-- TAMPER FLAGS WIDGET --%>
-					<ct:widget bean="tamperFlagMonitorsWidget"/>
+					<ct:widget bean="tamperFlagMonitors"/>
                     
                     <%-- STATUS POINT MONITORS WIDGET --%>
-                    <ct:widget bean="statusPointMonitorsWidget"/>
+                    <ct:widget bean="statusPointMonitors"/>
                     
                     <%-- PORTER RESPONSE MONITORS WIDGET --%>
-                    <ct:widget bean="porterResponseMonitorsWidget"/>
+                    <ct:widget bean="porterResponseMonitors"/>
                     
                     <%-- VALIDATION MONITORS WIDGET --%>
-                    <ct:widget bean="validationMonitorsWidget"/>
+                    <ct:widget bean="validationMonitors"/>
 					
 					<%-- SCHEDULED GROUP REQUESTS WIDGET --%>
 					<cti:checkRolesAndProperties value="SCHEDULER">
-						<ct:widget bean="scheduledGroupRequestExecutionWidget"/>
+						<ct:widget bean="scheduledGroupRequestExecution"/>
 					</cti:checkRolesAndProperties>
 					
 				</td>
 				
 				<td class="widgetColumnCell">
-					<ct:widget bean="meterSearchWidget" />
+					<ct:widget bean="meterSearch" />
 					<cti:checkRole role="DeviceActionsRole.ROLEID">
-                        <ct:widget bean="systemActionsMenuWidget" />
+                        <ct:widget bean="systemActionsMenu" />
                     </cti:checkRole>
 				</td>
 			

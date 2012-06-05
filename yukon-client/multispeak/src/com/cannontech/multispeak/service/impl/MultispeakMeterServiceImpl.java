@@ -933,8 +933,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 // check for rf disconnect meter type and perform action
     		    boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
                 if (isRfnDisconnect) {
-                    RfnMeter rfnDevice = rfnDeviceDao.getMeter(meter);
-                    doRfnConnectDisconnect(rfnDevice, mspLoadActionCode.getRfnState().getType(), vendor, transactionId);
+                    RfnMeter rfnMeter = rfnDeviceDao.getMeter(meter);
+                    rfnMeter.setMeterNumber(meterNumber);   //total hack until RFNMeter properly loads meterNumber values
+                    doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), vendor, transactionId);
                     continue;                    
                 } 
 
@@ -1828,7 +1829,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	 */
     private List<com.cannontech.amr.meter.model.Meter> searchForMetersByPaoName(String filterValue) {
         List<FilterBy> searchFilter = new ArrayList<FilterBy>(1);
-        FilterBy filterBy = new StandardFilterBy("Device Name", MeterSearchField.PAONAME);
+        FilterBy filterBy = new StandardFilterBy("deviceName", MeterSearchField.PAONAME);
         filterBy.setFilterValue(filterValue);
         searchFilter.add(filterBy);
         OrderBy orderBy = new OrderBy(MeterSearchField.PAONAME.toString(), true);

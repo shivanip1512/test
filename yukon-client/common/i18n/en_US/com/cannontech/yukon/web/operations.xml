@@ -2,7 +2,61 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<entry key="yukon.web.operations.demandResponse">Demand Response</entry>
-<entry key="yukon.web.operations.inventory">Inventory</entry>
+<!-- operations.jsp -->
 
+<entry key="yukon.web.modules.operations.moduleName">Operations</entry>
+<entry key="yukon.web.module.operations.pageTitle">Energy Services Operations Center</entry>
+
+<entry key="yukon.web.operations.searchForExistingServiceOrder">Search for existing service order:</entry>
+<entry key="yukon.web.operations.confirmDeleteEnergyCompany">Are you sure you want to delete the energy company and all customer account information belongs to it?</entry>
+<entry key="yukon.web.operations.secondConfirmDeleteEnergyCompany">Are you really sure you want to delete the energy company?</entry>
+
+<entry key="yukon.web.administration">Administration</entry>
+<entry key="yukon.web.allTrends">All Trends</entry>
+<entry key="yukon.web.analysis">Analysis</entry>
+<entry key="yukon.web.archivedDataExport">Archived Data Export</entry>
+
+<entry key="yukon.web.backToSearchResults">&#0171; Back To Search Results</entry>
+<entry key="yukon.web.bulkImporter">Bulk Importer</entry>
+<entry key="yukon.web.bulkOperations">Bulk Operations</entry>
+
+<entry key="yukon.web.commander">Commander</entry>
+<entry key="yukon.web.csv">CSV</entry>
+
+<entry key="yukon.web.demandResponse">Demand Response</entry>
+<entry key="yukon.web.deviceConfiguration">Device Configuration</entry>
+<entry key="yukon.web.direct">Direct</entry>
+<entry key="yukon.web.distributionAutomation">Distribution Automation</entry>
+
+<entry key="yukon.web.esubstation">eSubstation</entry>
+
+<entry key="yukon.web.find">Find</entry>
+<entry key="yukon.web.filter">Filter</entry>
+
+<entry key="yukon.web.hardwareInventory">Hardware Inventory</entry>
+
+<entry key="yukon.web.inventory">Inventory</entry>
+
+<entry key="yukon.web.loadResponse">Load Response</entry>
+
+<entry key="yukon.web.manageIndexes">Manage Indexes</entry>
+<entry key="yukon.web.metering">Metering</entry>
+
+<entry key="yukon.web.oddsForControl">Odds for Control</entry>
+<entry key="yukon.web.options">Options</entry>
+
+<entry key="yukon.web.pdf">PDF</entry>
+<entry key="yukon.web.purchasing">Purchasing</entry>
+
+<entry key="yukon.web.reporting">Reporting</entry>
+<entry key="yukon.web.reportSelection">Report Selection</entry>
+
+<entry key="yukon.web.serviceOrderList">Service Order List</entry>
+<entry key="yukon.web.support">Support</entry>
+
+<entry key="yukon.web.viewBatchCommands">View Batch Commands</entry>
+<entry key="yukon.web.viewLogs">View Logs</entry>
+<entry key="yukon.web.voltVarManagement">Volt/Var Management</entry>
+
+<entry key="yukon.web.workOrders">Work Orders</entry>
 </properties>

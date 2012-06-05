@@ -41,6 +41,18 @@
 <entry key="yukon.common.prefixedByteValue.pebi">{0,number,#,##0.0} PB</entry>
 <entry key="yukon.common.prefixedByteValue.exbi">{0,number,#,##0.0} EB</entry>
 
+<entry key="yukon.common.float.tenths">{0,number,#,##0.0}</entry>
+<entry key="yukon.common.float.hundredths">{0,number,#,##0.00}</entry>
+<entry key="yukon.common.float.thousandths">{0,number,#,##0.000}</entry>
+<entry key="yukon.common.float.ten_thousandths">{0,number,#,##0.0000}</entry>
+<entry key="yukon.common.float.hundred_thousandths">{0,number,#,##0.00000}</entry>
+<entry key="yukon.common.float.millionths">{0,number,#,##0.000000}</entry>
+<entry key="yukon.common.float.ten_millionths">{0,number,#,##0.0000000}</entry>
+<entry key="yukon.common.float.hundred_millionths">{0,number,#,##0.00000000}</entry>
+
+<entry key="yukon.common.decimalSeparator">.</entry>
+<entry key="yukon.common.thousandSeparator">,</entry>
+
 <entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 
 </properties>

@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 
 <!-- Value between [] brackets, for example [#FFFFFF] shows default value which is used if this parameter is not set -->
 <!-- This means, that if you are happy with this value, you can delete this line at all and reduce file size -->
@@ -14,8 +15,8 @@
   <font>Arial</font>                                          <!-- [Arial] (font name) use device fonts, such as Arial, Times New Roman, Tahoma, Verdana... -->
   <text_size>11</text_size>                                   <!-- [11] (Number) text size of all texts. Every text size can be set individually in the settings below -->
   <text_color>#000000</text_color>                            <!-- [#000000] (hex color code) main text color. Every text color can be set individually in the settings below-->
-  <decimals_separator>.</decimals_separator>                  <!-- [,] (string) decimal separator. Note, that this is for displaying data only. Decimals in data xml file must be separated with a dot -->
-  <thousands_separator>,</thousands_separator>                <!-- [ ] (string) thousand separator. use "none" if you don't want to separate -->
+  <decimals_separator><cti:msg2 key="yukon.common.decimalSeparator"/></decimals_separator>                  <!-- [,] (string) decimal separator. Note, that this is for displaying data only. Decimals in data xml file must be separated with a dot -->
+  <thousands_separator><cti:msg2 key="yukon.common.thousandSeparator"/></thousands_separator>                <!-- [ ] (string) thousand separator. use "none" if you don't want to separate -->
   <scientific_min></scientific_min>                           <!-- [0.000001] If absolute value of your number is equal or less then scientific_min, this number will be formatted using scientific notation, for example: 0.0000023 -> 2.3e-6 -->
   <scientific_max></scientific_max>                           <!-- [1000000000000000] If absolute value of your number is equal or bigger then scientific_max, this number will be formatted using scientific notation, for example: 15000000000000000 -> 1.5e16 -->
   <digits_after_decimal></digits_after_decimal>               <!-- [] (Number) if your value has less digits after decimal then is set here, zeroes will be added -->
@@ -228,7 +229,7 @@
   </error_messages>    
   
   <strings>
-    <no_data>No data for selected period</no_data>            <!-- [No data for selected period] (text) if data is missing, this message will be displayed -->
+    <no_data><cti:msg2 key="yukon.web.widgets.trend.noData"/></no_data>            <!-- [No data for selected period] (text) if data is missing, this message will be displayed -->
     <export_as_image></export_as_image>                       <!-- [Export as image] (text) text for right click menu -->
     <collecting_data></collecting_data>                       <!-- [Collecting data] (text) this text is displayed while exporting chart to an image -->
     <!-- the strings below are only important if you format your axis values as durations -->

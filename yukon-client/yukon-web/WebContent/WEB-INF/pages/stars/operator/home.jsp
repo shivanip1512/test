@@ -5,6 +5,6 @@
 
 <cti:standardPage module="operator" page="home">
 
-	<tags:widget bean="operatorAccountSearchWidget"/>
+	<tags:widget bean="operatorAccountSearch"/>
 	
 </cti:standardPage>

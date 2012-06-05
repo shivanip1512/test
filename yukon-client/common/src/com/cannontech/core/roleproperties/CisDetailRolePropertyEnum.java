@@ -3,8 +3,8 @@ package com.cannontech.core.roleproperties;
 public enum CisDetailRolePropertyEnum {
 
 	NONE(null),
-	MULTISPEAK("accountInformationWidget"),
-	CAYENTA("cayentaAccountInformationWidget");
+	MULTISPEAK("accountInformation"),
+	CAYENTA("cayentaAccountInformation");
 	
 	private String widgetName;
 	

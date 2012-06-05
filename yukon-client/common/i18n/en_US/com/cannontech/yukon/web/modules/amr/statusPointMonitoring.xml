@@ -5,17 +5,17 @@
     <entry key="yukon.web.modules.amr.statusPointMonitorProcessing.pageName">Status Point Processing</entry>
 
 	<!-- StatusPointMonitorsWidget render.jsp -->
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.noMonitors">No Status Point Monitors</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.name">Name</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.monitoring">Monitoring</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.edit.imageUrl">/WebConfig/yukon/Icons/cog_go.gif</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.edit.hoverUrl">/WebConfig/yukon/Icons/cog_go_over.gif</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.edit.hoverText">Edit Status Point Monitor Details ({0})</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.enable.hoverText">Enable ({0})</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.disable.hoverText">Disable ({0})</entry>
-    <entry key="yukon.web.widgets.statusPointMonitorsWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.noMonitors">No Status Point Monitors</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.tableHeader.name">Name</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.tableHeader.monitoring">Monitoring</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.edit.imageUrl">/WebConfig/yukon/Icons/cog_go.gif</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.edit.hoverUrl">/WebConfig/yukon/Icons/cog_go_over.gif</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.edit.hoverText">Edit Status Point Monitor Details ({0})</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.enable.hoverText">Enable ({0})</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.disable.hoverText">Disable ({0})</entry>
+    <entry key="yukon.web.widgets.statusPointMonitors.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
     
     <!-- StatusPointMonitorController create.jsp -->
     <entry key="yukon.web.modules.amr.statusPointMonitorCreator.pageName">Status Point Monitoring</entry>

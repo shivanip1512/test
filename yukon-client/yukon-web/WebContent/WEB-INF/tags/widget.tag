@@ -42,10 +42,10 @@
     <c:set var="showIdentity" value="${widgetParameters.identify and beanInst.hasIdentity}"/>
     <c:if test="${showIdentity}">
         <c:import var="widgetIdentity" url="/spring/widget/${beanInst.shortName}/identity" scope="page"/>
-        <c:set var="containerTitle" value="${beanInst.title}: ${widgetIdentity}"/>
+        <cti:msg2 var="containerTitle" key="${beanInst.titleKey}.widgetIdentity" argument="${widgetIdentity}"/>
     </c:if>
     <c:if test="${not showIdentity}">
-        <c:set var="containerTitle" value="${beanInst.title}"/>
+        <cti:msg2 var="containerTitle" key="${beanInst.titleKey}"/>
     </c:if>
     <c:if test="${not empty pageScope.title}">
         <c:set var="containerTitle" value="${pageScope.title}"/>

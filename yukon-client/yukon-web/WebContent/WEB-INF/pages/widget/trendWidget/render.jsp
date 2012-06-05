@@ -22,8 +22,8 @@
         <%-- DESCRIPTION POPUP --%>
 		<c:if test="${attributeGraphType.description != null}">
 			<div style="font-size: 10px; text-align: right; position: relative"  onmouseover="toggleWhatsThis()" onmouseout="toggleWhatsThis()">
-				<i:inline key=".whatsThis"/>
-			<div id="whatsThisText" class="widgetPopup" style="display:none;text-align: left">${attributeGraphType.description}</div>
+				<cti:msg2 htmlEscape="false" key=".whatsThis"/>
+			<div id="whatsThisText" class="widgetPopup" style="display:none;text-align: left"><i:inline key="${attributeGraphType.description}"/></div>
 			</div>
 		</c:if>
 		
@@ -46,7 +46,7 @@
             				|
             			</c:if>
                         
-            			<tags:widgetLink method="render" title="${agt.label} data" labelBusy="${agt.label}" selected="${agt == attributeGraphType}" attribute="${agt.attribute.key}">${agt.label}</tags:widgetLink>
+            			<tags:widgetLink method="render" title="${agt.label} data" labelBusy="${agt.label}" selected="${agt == attributeGraphType}" attribute="${agt.attribute.key}"><i:inline key="${agt.label}"/></tags:widgetLink>
             			
             			<c:set var="notFirst" value="true" scope="page"></c:set>
                         

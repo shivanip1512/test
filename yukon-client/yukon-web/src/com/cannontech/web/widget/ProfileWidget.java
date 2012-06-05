@@ -369,15 +369,15 @@ public class ProfileWidget extends WidgetControllerBase {
                                                 userContext);
 
                     if (scheduledStartDate == null) {
-                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startRequired");
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widget.Profile.startRequired");
                     } else if (scheduledStartDate.compareTo(today) <= 0) {
-                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startAfterToday", startDate);
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widget.Profile.startAfterToday", startDate);
                     } else {
                         scheduledStartDate = DateUtils.addHours(scheduledStartDate, startTime.getHourOfDay());
                         scheduledStartDate = DateUtils.addMinutes(scheduledStartDate, startTime.getMinuteOfHour());
                     }
                 } catch (ParseException e) {
-                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startInvalid", e.getMessage());
+                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widget.Profile.startInvalid", e.getMessage());
                 }
             }
             // validate scheduled stop date
@@ -388,15 +388,15 @@ public class ProfileWidget extends WidgetControllerBase {
                                                 userContext);
 
                     if (scheduledStopDate == null) {
-                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopRequired");
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widget.Profile.stopRequired");
                     } else if (scheduledStopDate.compareTo(today) <= 0) {
-                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterToday", stopDate);
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widget.Profile.stopAfterToday", stopDate);
                     } else {
                         scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopTime.getHourOfDay());
                         scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, stopTime.getMinuteOfHour());
                     }
                 } catch (ParseException e) {
-                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopInvalid", e.getMessage());
+                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widget.Profile.stopInvalid", e.getMessage());
                 }
             }
             // start now
@@ -410,7 +410,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 // was starting scheduled for later as well? make sure its before this scheduled
                 // stop date
                 if (stopRadio.equalsIgnoreCase("future") && scheduledStopDate.compareTo(scheduledStartDate) <= 0) {
-                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterStart", stopDate, startDate);
+                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widget.Profile.stopAfterStart", stopDate, startDate);
                 }
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
@@ -453,15 +453,15 @@ public class ProfileWidget extends WidgetControllerBase {
                                                 DateFormattingService.DateOnlyMode.START_OF_DAY,
                                                 userContext);
                     if (scheduledStopDate == null) {
-                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopRequired");
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widget.Profile.stopRequired");
                     } else if (scheduledStopDate.compareTo(today) <= 0) {
-                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopAfterToday", stopDate);
+                        toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widget.Profile.stopAfterToday", stopDate);
                     } else {
                         scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopTime.getHourOfDay());
                         scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, stopTime.getMinuteOfHour());
                     }
                 } catch (ParseException e) {
-                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopInvalid", e.getMessage());
+                    toggleErrorMsg = messageSourceAccessor.getMessage("yukon.web.widget.Profile.stopInvalid", e.getMessage());
                 }
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
@@ -511,7 +511,7 @@ public class ProfileWidget extends WidgetControllerBase {
         } catch (IllegalUseOfAttribute e) {
             Meter meter = meterDao.getForId(device.getDeviceId());
             PaoType paoType = meter.getPaoType();
-            errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.operationNotSupported",
+            errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widget.Profile.operationNotSupported",
                                                                paoType.getPaoTypeName()));
         }
         // validate dates
@@ -552,10 +552,10 @@ public class ProfileWidget extends WidgetControllerBase {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         if (StringUtils.isBlank(reportStartDateStr)) {
-            errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startRequired"));
+            errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widget.Profile.startRequired"));
         }
         if (StringUtils.isBlank(reportStopDateStr)) {
-            errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopRequired"));
+            errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widget.Profile.stopRequired"));
         }
         if (!StringUtils.isBlank(reportStartDateStr) && !StringUtils.isBlank(reportStopDateStr)) {
             LocalDate startDate = null;
@@ -563,22 +563,22 @@ public class ProfileWidget extends WidgetControllerBase {
             try {
                 startDate = dateFormattingService.parseLocalDate(reportStartDateStr, userContext);
             } catch (ParseException e) {
-                errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startInvalid",
+                errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widget.Profile.startInvalid",
                                                                    reportStartDateStr));
             }
             try {
                 stopDate = dateFormattingService.parseLocalDate(reportStopDateStr, userContext);
             } catch (ParseException e) {
-                errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopInvalid", 
+                errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widget.Profile.stopInvalid", 
                                                                    reportStopDateStr));
             }
             if (startDate != null && stopDate != null) {
                 LocalDate today = new LocalDate(userContext.getJodaTimeZone());
                 if (stopDate.isBefore(startDate)) {
-                    errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.startOnOrBeforeStop", reportStartDateStr));
+                    errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widget.Profile.startOnOrBeforeStop", reportStartDateStr));
                 }
                 if (stopDate.isAfter(today)) {
-                    errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widgets.profileWidget.stopOnOrBeforeToday", reportStopDateStr));
+                    errorMessages.add(messageSourceAccessor.getMessage("yukon.web.widget.Profile.stopOnOrBeforeToday", reportStopDateStr));
                 }
             }
         }

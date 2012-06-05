@@ -18,7 +18,7 @@
             <c:choose>
                 <c:when test="${readable}">
 			    	<div id="meterinfo" style="width: 600px">
-			            <ct:widget bean="meterInformationWidget"
+			            <ct:widget bean="meterInformation"
 			                identify="false" deviceId="${deviceId}"
 			                hideEnabled="false" />
 						<br>

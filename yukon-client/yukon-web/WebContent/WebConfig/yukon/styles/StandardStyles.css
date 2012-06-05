@@ -66,9 +66,70 @@ body {
     margin: 0;
 }
 
-#findForm input,
+#findForm {
+	font-size: 1em;
+	margin: 5px;
+}
+
 #findForm select {
 	margin-left: 5px;
+}
+
+#textInput {
+	margin: 0;
+	height: 14px;
+	padding: 5px;
+	border: solid 1px #999;
+	border-style: 2px 0 0 2px;
+	border-radius: 2px 0 0 2px;
+	-moz-border-radius: 2px 0 0 2px;
+	-webkit-border-radius: 2px 0 0 2px;
+	float: left;
+}
+
+#findForm .searchButton {
+	margin: 0 0 0 -1px;
+	height: 26px;
+	width: 50px;
+	overflow: hidden;
+	padding: 1px 10px;
+	border: 1px solid #999;
+/* 	border: 1px solid #3079ED; */
+	border-radius: 0 2px 2px 0;
+	-moz-border-radius: 0 2px 2px 0;
+	-webkit-border-radius: 0 2px 2px 0;
+	background-color: #ccc;
+/* 	background-color: #4D90FE; */
+/* 	background-image: linear-gradient(top,#4D90FE,#4787ED); */
+/* 	background-image: -webkit-linear-gradient(top,#4D90FE,#4787ED); */
+/* 	background-image: -moz-linear-gradient(top,#4D90FE,#4787ED); */
+/* 	background-image: -ms-linear-gradient(top,#4D90FE,#4787ED); */
+	float:left;
+	cursor: pointer;
+}
+
+#findForm .searchButton:focus, #findForm .searchButton:hover {
+	border-color: #2F5BB7;
+	background-color: #0066CC;
+/* 	background-color: #357AEB; */
+/* 	background-image: linear-gradient(top,#4D90FE,#357AEB); */
+/* 	background-image: -webkit-linear-gradient(top,#4D90FE,#357AEB); */
+/* 	background-image: -moz-linear-gradient(top,#4D90FE,#357AEB); */
+/* 	background-image: -ms-linear-gradient(top,#4D90FE,#357AEB); */
+}
+#findForm .searchButton:active {
+	background: #357AEB;
+	background-image: linear-gradient(bottom,#4D90FE,#357AEB);
+	background-image: -webkit-linear-gradient(bottom,#4D90FE,#357AEB);
+	background-image: -moz-linear-gradient(top,#4D90FE,#357AEB);
+	background-image: -ms-linear-gradient(top,#4D90FE,#357AEB);
+}
+
+#findForm .searchButton span {
+	height: 16px;
+	width: 25px;
+	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDJCNEUwNzM4OTY0MTFFMEE0MDNEODlCOThCNUNBOTgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDJCNEUwNzQ4OTY0MTFFMEE0MDNEODlCOThCNUNBOTgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0MkI0RTA3MTg5NjQxMUUwQTQwM0Q4OUI5OEI1Q0E5OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0MkI0RTA3Mjg5NjQxMUUwQTQwM0Q4OUI5OEI1Q0E5OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Po7ONFMAAADISURBVHjanFJBCsIwEFzrF7z04h9E/Efx5MEHePHmr4T6hFLwF6G/sKW0lLixEwh1AtGB6SaZne22G7HWCrhT1sqXneHiE+fC6BcX5Wg5RujU7CoPSDTKs3KLaHA+sA7co0JCE2mvgV4xcwuxiJgL6C0zTxDziDmHPi21TER6mbEXDn/efykYT8o316ztQzAm93dPyg2iCUZ2/WfOIe7M7DtwN6pDYof9LVZAYldvwZIVSDXTApmk46h8BPv16vP631D6Ym8BBgAsamp63yCdlAAAAABJRU5ErkJggg==") no-repeat center center;
+	display: inline-block;
 }
 
 #Content {
@@ -198,7 +259,7 @@ a.stdhdr_menuLink {
 /* used for "CSS" Icons in the clearbits folder */
 img.cssicon,input.cssicon {
     background-color: #C30;
-    background-image: url(../Icons/clearbits/bg_rounded.gif);
+    background-image: url(`clearbits/bg_rounded.gif);
     background-repeat: no-repeat;
     border: none;
     vertical-align: middle;
@@ -289,4 +350,8 @@ img.graycssicon,input.graycssicon {
 .contextualMenu li:hover a {
     color: #0066cc;
     background-color: white;
+}
+
+input.placeholder {
+	color: #aaa;
 }

@@ -15,4 +15,159 @@
 
 <entry key="yukon.common.reports.groupCommandSuccess.title">Group Command Success Results</entry>
 
+<entry key="yukon.common.reports.startTimeNotInclusive">Greater than 00:00, not inclusive</entry>
+<entry key="yukon.common.reports.stopTimeInclusive">Less than or equal to 00:00, inclusive</entry>
+<entry key="yukon.common.reports.filterMeterValues">Enter a comma separated list of Meter Number(s).</entry>
+<entry key="yukon.common.reports.filterDeviceValues">Enter a comma separated list of Device Name(s).</entry>
+<entry key="yukon.common.reports.selectFilter">Select one value to filter by</entry>
+
+<entry key="yukon.web.reportTypes.SYSTEM_LOG">System Log</entry>
+<entry key="yukon.web.reportTypes.SYSTEM_LOG.description">Detailed report of actions, including username and time, which have occurred in the Yukon database.</entry>
+
+
+<entry key="yukon.web.reportTypes.POINT_DATA_INTERVAL">Point Data Interval</entry>   
+<entry key="yukon.web.reportTypes.POINT_DATA_INTERVAL.description">Detailed report of archived point data values, timestamp, and quality.</entry>
+<entry key="yukon.web.reportTypes.POINT_DATA_SUMMARY">Point Data Summary</entry> 
+<entry key="yukon.web.reportTypes.POINT_DATA_SUMMARY.description">Summary report of archived point data values and timestamps; includes 6 peaks and lows per point.</entry>
+<entry key="yukon.web.reportTypes.DEVICE_READINGS">Device Readings</entry>   
+<entry key="yukon.web.reportTypes.DEVICE_READINGS.description">Details report of archived point data values and timestamps, based on attribute selection.</entry>
+<entry key="yukon.web.reportTypes.DEVICE_READ_STATISTICS_SUMMARY">Device Read Statistics Summary</entry>   
+<entry key="yukon.web.reportTypes.DEVICE_READ_STATISTICS_SUMMARY.description">Summary report of percentage of devices with archived readings over selected dates; aggregated by device group.</entry>
+
+<entry key="yukon.web.reportTypes.CARRIER_DATA">Carrier Data</entry>
+<entry key="yukon.web.reportTypes.CARRIER_DATA.description">Utility report for Carrier devices; includes name, disabled status, type, meter number, address, and route.</entry>
+<entry key="yukon.web.reportTypes.CARRIER_ROUTE_MACRO_DATA">Carrier Route Macro Data</entry>
+<entry key="yukon.web.reportTypes.CARRIER_ROUTE_MACRO_DATA.description">Utility report for macro routes; includes assigned routes, transmitters, CCU bus numbers, CCU amp use, fixed and variable bits.</entry>
+<entry key="yukon.web.reportTypes.CARRIER_ROUTE_DATA">Carrier Route Data</entry>
+<entry key="yukon.web.reportTypes.CARRIER_ROUTE_DATA.description">Utility report identifying routes and meter assignments; includes meter name, meter number, address, and type.</entry>
+<entry key="yukon.web.reportTypes.REPEATER_ROLE_COLLISION">Repeater Role Collision</entry>
+<entry key="yukon.web.reportTypes.REPEATER_ROLE_COLLISION.description">Utility report identifying routes with same fixed and variable bits.</entry>
+
+<entry key="yukon.web.reportTypes.METER_READ">Meter Reads</entry>
+<entry key="yukon.web.reportTypes.METER_READ.description">Detailed report of successful or missed meter reads, based on the latest archived point for a meter.</entry>
+<entry key="yukon.web.reportTypes.METER_OUTAGE_LOG">Meter Outages Log</entry>
+<entry key="yukon.web.reportTypes.METER_OUTAGE_LOG.description">Detailed report of archived outage log data per meter; includes meter information, time and duration of outage.</entry>
+<entry key="yukon.web.reportTypes.METER_OUTAGE_COUNT">Meter Outage Counts</entry>
+<entry key="yukon.web.reportTypes.METER_OUTAGE_COUNT.description">Detailed report of archived blink counts by meter; includes time, values, and delta (count) between readings.</entry>
+<entry key="yukon.web.reportTypes.METER_DISCONNECT_STATUS">Meter Disconnect Status</entry>
+<entry key="yukon.web.reportTypes.METER_DISCONNECT_STATUS.description">Detailed report of archived disconnect status by meter; includes meter information, collar address, time, and disconnect status.</entry>
+<entry key="yukon.web.reportTypes.LP_SETUP_DATA">Load Profile Setup Data</entry>
+<entry key="yukon.web.reportTypes.LP_SETUP_DATA.description">Utility report for meters and profile configurations; includes meter information and profile intervals (as defined in meter setup).</entry>
+<entry key="yukon.web.reportTypes.LP_POINT_DATA_SUMMARY">LP Point Data Summary</entry>
+<entry key="yukon.web.reportTypes.LP_POINT_DATA_SUMMARY.description">Summary report of archived profile point data values and timestamps; includes 6 peaks and lows per point.</entry> 
+<entry key="yukon.web.reportTypes.SCHEDULED_METER_READS">Scheduled Meter Reads (MACS)</entry>
+<entry key="yukon.web.reportTypes.SCHEDULED_METER_READS.description">Detailed report of MACS schedules; includes schedule start/stop; request start/stop, and status codes for meters processed.</entry>
+<entry key="yukon.web.reportTypes.METER_USAGE">Meter Usage</entry>
+<entry key="yukon.web.reportTypes.METER_USAGE.description">Detailed report of archived kWh readings and calculated usage (delta between readings).</entry>
+<entry key="yukon.web.reportTypes.MCT_CONFIG">MCT 430/470 Config To Device</entry>
+<entry key="yukon.web.reportTypes.MCT_CONFIG.description">Utility report identifying 430/470 MCT meters and configuration assignments; meter information, profile and demand rates.</entry>
+<entry key="yukon.web.reportTypes.DISCONNECT_COLLAR_DATA">Disconnect Collar Data</entry>
+<entry key="yukon.web.reportTypes.DISCONNECT_COLLAR_DATA.description">Utility report for meters with disconnect collar assignments; includes meter information and collar address.</entry>
+<entry key="yukon.web.reportTypes.SCAN_RATE_SETUP_DATA">Scan Rate Setup Data</entry>
+<entry key="yukon.web.reportTypes.SCAN_RATE_SETUP_DATA.description">Utility report for meters and scanning configurations; includes meter information and scan intervals (as defined in meter setup).</entry>
+
+<entry key="yukon.web.reportTypes.LM_SYSTEM_LOG">Load Management System Log</entry>
+<entry key="yukon.web.reportTypes.LM_SYSTEM_LOG.description">Detailed report of load management actions, including username and time, which have occurred in the Yukon database.</entry>
+<entry key="yukon.web.reportTypes.LG_ACCOUNTING">Load Group Accounting</entry>
+<entry key="yukon.web.reportTypes.LG_ACCOUNTING.description">Detailed report of load control events; includes control start/stop times, duration, and aggregated control durations.</entry>
+<entry key="yukon.web.reportTypes.LM_DAILY_PEAKS">Load Management Daily Peaks</entry>
+<entry key="yukon.web.reportTypes.LM_DAILY_PEAKS.description">Detailed report of control area peak point data; includes peak and off peak values, quality, and time.</entry>
+<entry key="yukon.web.reportTypes.LOAD_CONTROL_VERIFICATION">Load Control Verification</entry>
+<entry key="yukon.web.reportTypes.LOAD_CONTROL_VERIFICATION.description">Utility report for verifying a transmitter sent or a receiver accepted a load control command.</entry>
+<entry key="yukon.web.reportTypes.LCR3102Data">LCR 3102 Data</entry>
+<entry key="yukon.web.reportTypes.LCR3102Data.description">Detailed report of archived point data from LCR3102 devices; includes serial number, route, run time load, relay shed time, relay, and timestamp.</entry>
+<entry key="yukon.web.reportTypes.PROGRAM_AND_GEAR_CONTROL">Program and Gear Control</entry>
+<entry key="yukon.web.reportTypes.PROGRAM_AND_GEAR_CONTROL.description">Detailed report of load program, control area, or control scenario control events; includes gear information.</entry>
+
+<entry key="yukon.web.reportTypes.CAP_BANK_DETAILS">Cap Bank Details</entry>
+<entry key="yukon.web.reportTypes.CAP_BANK_DETAILS.description">Detailed report of the capbanks, including information on its location, size, cbc, feeder and substation bus.</entry>
+<entry key="yukon.web.reportTypes.CBC_INVENTORY">CBC Inventory</entry>
+<entry key="yukon.web.reportTypes.CBC_INVENTORY.description">Detailed report showing cbc information and attached parent objects.</entry>
+<entry key="yukon.web.reportTypes.CBC_SPECIALAREA_ASSIGNMENT">CBC Special Area Assignment </entry>
+<entry key="yukon.web.reportTypes.CBC_SPECIALAREA_ASSIGNMENT.description">Report showing the special area assignment for a cbc.</entry>
+<entry key="yukon.web.reportTypes.STRATEGY_ASSIGNMENT">Strategy Assignment </entry>
+<entry key="yukon.web.reportTypes.STRATEGY_ASSIGNMENT.description">Report showing the devices assigned to each strategy.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_UNSOLICITED_MESSAGES">Unsolicited Messages</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_UNSOLICITED_MESSAGES.description">Report showing unsolicited messages received from a cbc.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_DISABLED_DEVICES">Disabled Devices</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_DISABLED_DEVICES.description">Report showing disabled capcontrol devices.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_MAINTENANCE_PENDING">Maintenance Pending</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_MAINTENANCE_PENDING.description">Report showing sites pending maintenance.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_ABNORMAL_TELEMETRY_DATA">Abnormal Telemetry Data</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_ABNORMAL_TELEMETRY_DATA.description">Report showing feeders with abnormal telemetry data.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_ASSET_UNAVAILABILITY">Asset Unavailability</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_ASSET_UNAVAILABILITY.description">Report showing number of times capbanks were not available for correction when needed.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_SCHEDULE_ACTIVITY">Schedule Activity</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_SCHEDULE_ACTIVITY.description">Detailed report of ending bank status activity or all schedule activity</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_SCHEDULE_DETAIL">Schedule Detail</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_SCHEDULE_DETAIL.description">Detailed report showing all capcontrol schedules and their specifics.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_TIME_CONTROLLED_CAPBANKS">Time Controlled Cap Banks</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_TIME_CONTROLLED_CAPBANKS.description">Report showing all time controlled capbanks.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_CURRENT_STATUS">Current Status</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_CURRENT_STATUS.description">Detailed report of cap bank statuses, based on var response information</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_STATE_COMPARISON">State Comparisons</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_STATE_COMPARISON.description">Detailed report showing a comparison of capbank states set by var response against its two-way cbc reported state.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_NEW_ACTIVITY">New Activity</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_NEW_ACTIVITY.description">Detailed report of capbank activity, including manual and automated controls, operation outcomes, and capcontrol database changes.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_OPERATIONS">Operations</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_OPERATIONS.description">Detailed report showing capbank operations and their related outcomes.</entry>
+<entry key="yukon.web.reportTypes.CAP_BANK_OPERATIONS_PERFORMANCE">Cap Bank Operations Performance</entry>
+<entry key="yukon.web.reportTypes.CAP_BANK_OPERATIONS_PERFORMANCE.description">Detailed report showing capbank operational information for combinations of failed, questionable, and successful outcomes based on a user entered percentage level.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_CONFIRMATION_PERCENTAGE">Confirmation Percentage</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_CONFIRMATION_PERCENTAGE.description">Detailed report showing operational percentages for failed, questionable, and successful operation outcomes.</entry>
+<entry key="yukon.web.reportTypes.CAP_BANK_RECENT_MAX_DAILY_OPERATIONS">Cap Bank Recent Max Daily Operations</entry>
+<entry key="yukon.web.reportTypes.CAP_BANK_RECENT_MAX_DAILY_OPERATIONS.description">Detailed report showing a 6 week history of capbanks that have reached max daily operations limit.</entry>
+<entry key="yukon.web.reportTypes.CAP_BANK_MAX_OPS_EXCEEDED">Cap Bank Max Ops Exceeded</entry>
+<entry key="yukon.web.reportTypes.CAP_BANK_MAX_OPS_EXCEEDED.description">Report showing capbanks that have reached max daily operations limit for a custom date range.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_RETRIES">Retries</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_RETRIES.description">Detailed report showing capbank control retry information.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_VAR_CHANGE">Var Change</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_VAR_CHANGE.description">Report showing change in var values.</entry>
+<entry key="yukon.web.reportTypes.VAR_IMBALANCE_ON_EXECUTION">Var Imbalance on Execution</entry>
+<entry key="yukon.web.reportTypes.VAR_IMBALANCE_ON_EXECUTION.description">Report showing the var imbalance on execution.</entry>
+
+<entry key="yukon.web.reportTypes.COMM_STATISTICS">Communication Statistics</entry>
+<entry key="yukon.web.reportTypes.COMM_STATISTICS.description">Detailed report of communication statistics by device.</entry>
+<entry key="yukon.web.reportTypes.DEVICE_REQUEST_DETAIL">Device Request Detail</entry>
+<entry key="yukon.web.reportTypes.DEVICE_REQUEST_DETAIL.description">Detailed report of data requests by devices.</entry>
+
+<entry key="yukon.web.reportTypes.EC_ACTIVITY_LOG_SUMMARY">Energy Company Activity Log Summary</entry>
+<entry key="yukon.web.reportTypes.EC_ACTIVITY_LOG_SUMMARY.description">Summary report of energy company activity; includes aggregate count by contact name, username, account number, and action.</entry>
+<entry key="yukon.web.reportTypes.EC_ACTIVITY_LOG_DETAIL">Energy Company Activity Log Detail</entry>
+<entry key="yukon.web.reportTypes.EC_ACTIVITY_LOG_DETAIL.description">Detailed report of energy company activity; includes timestamp, contact name, username, account number, and action.</entry>
+<entry key="yukon.web.reportTypes.PROGRAM_DETAIL">Program Detail</entry>
+<entry key="yukon.web.reportTypes.PROGRAM_DETAIL.description">Detailed report of program and account assignments; includes contact name, account number, and status.</entry>
+<entry key="yukon.web.reportTypes.EC_WORK_ORDER">Work Order</entry>
+<entry key="yukon.web.reportTypes.EC_WORK_ORDER.description">Individual work orders, formatted as a working document.</entry>
+<entry key="yukon.web.reportTypes.STARS_LM_SUMMARY">STARS Load Management Summary</entry>
+<entry key="yukon.web.reportTypes.STARS_LM_SUMMARY.description">Summary report of hardware assigned to load groups; includes number of receivers in group and number out of service.</entry>
+<entry key="yukon.web.reportTypes.STARS_LM_DETAIL">STARS Load Management Detail</entry>
+<entry key="yukon.web.reportTypes.STARS_LM_DETAIL.description">Detailed report of hardware assigned to load groups; includes account information, device type, and status.</entry>
+<entry key="yukon.web.reportTypes.LM_CONTROL_SUMMARY">Customer Control Summary</entry>
+<entry key="yukon.web.reportTypes.LM_CONTROL_SUMMARY.description">Summary report of totalized control information for load programs.</entry>
+<entry key="yukon.web.reportTypes.LM_CONTROL_DETAIL">Customer Control Detail</entry>
+<entry key="yukon.web.reportTypes.LM_CONTROL_DETAIL.description">Detailed report of accounts and program enrollment.</entry>
+<entry key="yukon.web.reportTypes.STARS_AMR_DETAIL">STARS AMR Detail</entry>
+<entry key="yukon.web.reportTypes.STARS_AMR_DETAIL.description">Detailed report of meters assigned to customers; includes account information, meter information, and latest archived kWh.</entry>
+<entry key="yukon.web.reportTypes.OPT_OUT_INFO">Opt Out Info</entry> 
+<entry key="yukon.web.reportTypes.OPT_OUT_INFO.description">Detailed report of control history in regards to opt outs; includes account number, serial number, opt out information, and control history for that account during that opt out.</entry>
+<entry key="yukon.web.reportTypes.OPT_OUT_LIMIT">Opt Out Limit</entry>
+<entry key="yukon.web.reportTypes.OPT_OUT_LIMIT.description">Detailed report of opt outs and the number of opt outs used by a customer; includes account number, serial number, alternate tracking number, and opt out information.</entry>
+
+<entry key="yukon.web.reportTypes.CCURT_EVENT_SUMMARY">Event Summary</entry>
+<entry key="yukon.web.reportTypes.CCURT_EVENT_SUMMARY.description">Detail report of curtailment events for C&amp;I customers.</entry>
+<entry key="yukon.web.reportTypes.CCURT_INTERRUPTION_SUMMARY">Interruption Summary</entry>
+<entry key="yukon.web.reportTypes.CCURT_INTERRUPTION_SUMMARY.description">Summary report of curtailment by customer; includes contract hours, remaining hours, used hours, and curtailment setup information.</entry>
+
+<entry key="yukon.web.reportTypes.HECO_LMEVENT_SUMMARY">LM Event Summary</entry>
+<entry key="yukon.web.reportTypes.HECO_LMEVENT_SUMMARY.description">LM Event Summary.</entry>
+<entry key="yukon.web.reportTypes.HECO_MONTHLY_BILLING">Monthly Billing Settlement</entry>
+<entry key="yukon.web.reportTypes.HECO_MONTHLY_BILLING.description">Monthly Billing Settlement.</entry>
+<entry key="yukon.web.reportTypes.HECO_CUSTOMER_MONTHLY_BILLING">Customer Monthly Billing Settlement</entry>
+<entry key="yukon.web.reportTypes.HECO_CUSTOMER_MONTHLY_BILLING.description">Customer Monthly Billing Settlement.</entry>
+<entry key="yukon.web.reportTypes.HECO_DSMIS">DSMIS Settlement</entry>
+<entry key="yukon.web.reportTypes.HECO_DSMIS.description">DSMIS Settlement.</entry>
+<entry key="yukon.web.reportTypes.ZIGBEE_CONTROL_EVENT_DEVICE">Zigbee Controlled Devices</entry>
+<entry key="yukon.web.reportTypes.ZIGBEE_CONTROL_EVENT_DEVICE.description">Detailed report showing the control information for ZigBee devices.</entry>
+
 </properties>

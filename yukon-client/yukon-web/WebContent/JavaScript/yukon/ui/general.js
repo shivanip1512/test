@@ -35,6 +35,9 @@ Yukon.ui = {
     
     autoWire: function() {
         // register listeners
+    	
+    	//html5 placeholder support for IE
+		jQuery.placeholder();
         
         //buttons that redirect the page on click
         jQuery(document).delegate("button[data-href]", 'click', function(event){window.location = jQuery(this).attr("data-href");});

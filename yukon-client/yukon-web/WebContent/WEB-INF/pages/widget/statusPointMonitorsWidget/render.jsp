@@ -10,7 +10,7 @@
 
 <%-- ERROR --%>
 <c:if test="${not empty statusPointMonitorsWidgetError}">
-  	<div class="errorMessage">${statusPointMonitorsWidgetError}</div>
+  	<div class="errorMessage"><i:inline key="${statusPointMonitorsWidgetError}"/></div>
 </c:if>
 
 <%-- TABLE --%>

@@ -10,21 +10,21 @@
         <tr>
             <td class="widgetColumnCell" valign="top">
                 <c:if test="${lpSupported}">
-                    <tags:widget bean="profileWidget" />
+                    <tags:widget bean="profile" />
                 </c:if>
                 
                 <c:if test="${peakReportSupported}">
-                    <tags:widget bean="peakReportWidget" />
+                    <tags:widget bean="peakReport" />
                 </c:if>
                 
             </td>
             
             <td class="widgetColumnCell" valign="top">
             
-                <tags:widget bean="meterInformationWidget" />
+                <tags:widget bean="meterInformation" />
                 
                 <c:if test="${lpSupported && profileCollection}">
-                    <tags:widget bean="pendingProfilesWidget" />
+                    <tags:widget bean="pendingProfiles" />
                 </c:if>
             
             </td>

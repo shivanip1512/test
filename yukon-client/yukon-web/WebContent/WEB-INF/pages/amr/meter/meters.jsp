@@ -59,10 +59,10 @@
             <input type="hidden" name="descending" value="true"/>
         </c:if>
         
-        <div>
+        <div class="filters">
 	        <c:forEach var="filter" items="${filterByList}">
 	            <div style="width: 21em; text-align: right; float:left; margin-bottom: 5px;margin-right: 5px;">
-                    ${filter.name}:&nbsp;<input style="width: 10em" type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}" />
+                    <label for="${filter.name}"><i:inline key="${filter.formatKey}"/></label><input style="width: 10em" type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}" />
                 </div>
 	        </c:forEach>
         </div>
@@ -71,6 +71,9 @@
         <cti:button nameKey="filter" name="filter" value="true" type="submit"/>
         <cti:button nameKey="showAll" onclick="javascript:clearFilter()"/>
     </form>
+    
+    
+    
     </tags:hideReveal>
     <br>
     <br>

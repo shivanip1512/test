@@ -84,6 +84,6 @@ if(typeof(Yukon.Util.AnalyticsManager) === 'undefined'){
                 }
                 _gaq.push(['a._setAccount',this._additional_tracking_id],trackPageview);
             }
-        },
+        }
 	};
 }

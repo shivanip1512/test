@@ -103,11 +103,11 @@
     <entry key="yukon.web.modules.adminSetup.groups.addGroups.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
     <entry key="yukon.web.modules.adminSetup.groups.noGroups">This user is not a member of any groups.</entry>
     
-    <entry key="yukon.web.widgetClasses.GroupPermissionEditorWidget.save.labelBusy">Saving</entry>
+    <entry key="yukon.web.widgets.groupPermissionEditor.save.labelBusy">Saving</entry>
     
     <!--  userGroupPermissionEditor render.jsp -->
-    <entry key="yukon.web.widgets.userPermissionEditorWidget.save.label">Save</entry>
-    <entry key="yukon.web.widgets.userPermissionEditorWidget.save.labelBusy">Saving</entry>
-    <entry key="yukon.web.widgets.userPermissionEditorWidget.remove.hoverText">Remove this PAO</entry>
-    <entry key="yukon.web.widgets.userPermissionEditorWidget.remove.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    <entry key="yukon.web.widgets.userPermissionEditor.save.label">Save</entry>
+    <entry key="yukon.web.widgets.userPermissionEditor.save.labelBusy">Saving</entry>
+    <entry key="yukon.web.widgets.userPermissionEditor.remove.hoverText">Remove this PAO</entry>
+    <entry key="yukon.web.widgets.userPermissionEditor.remove.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
 </properties>

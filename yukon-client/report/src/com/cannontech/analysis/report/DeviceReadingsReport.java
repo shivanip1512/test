@@ -26,7 +26,7 @@ public class DeviceReadingsReport extends SimpleYukonReportBase {
             new ColumnLayoutData("Device Name", "deviceName", 175),
             new ColumnLayoutData("Type", "type", 125),
             new ColumnLayoutData("Date", "date", 125),
-            new ColumnLayoutData(deviceReadingsModel.getAttribute().getDescription(), "value", 125),
+            new ColumnLayoutData(deviceReadingsModel.getAttribute().getMessage().getDefaultMessage(), "value", 125),
         };
         return Arrays.asList(bodyColumns);
     }

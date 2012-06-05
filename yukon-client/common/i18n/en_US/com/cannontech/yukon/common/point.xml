@@ -32,6 +32,8 @@
     <entry key="yukon.common.point.pointFormatting.shortQuality.Uninitialized">!</entry>
     
     <!-- BuiltInAttribute-->
+    <entry key="yukon.common.attribute.builtInAttribute.AUTO_BLOCK_ENABLE">Auto Block Enable</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AUTO_REMOTE_CONTROL">Auto/Remote Control</entry>
     <entry key="yukon.common.attribute.builtInAttribute.BLINK_COUNT">Blink Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONNECTION_STATUS">Connection Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONTROL_POINT">Control Point</entry>
@@ -44,10 +46,13 @@
     <entry key="yukon.common.attribute.builtInAttribute.ENERGY_GENERATED">Energy Generated</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FAULT_STATUS">Fault Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.GENERAL_ALARM_FLAG">General Alarm Flag</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KEEP_ALIVE">Keep Alive</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KEEP_ALIVE_TIMER">Keep Alive Timer</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVAR">kVAr</entry>
     <entry key="yukon.common.attribute.builtInAttribute.KVARH">kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LM_GROUP_STATUS">LM Group Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_PROFILE">Load Profile</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TAP_DOWN">Lower Tap Position</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE">Maximum Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_VOLTAGE">Minimum Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTAGE_LOG">Outage Log</entry>
@@ -57,8 +62,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FAIL_FLAG">Power Fail Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PROFILE_CHANNEL_2">Profile Channel 2</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PROFILE_CHANNEL_3">Profile Channel 3</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TAP_UP">Raise Tap Position</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_POWER_FLAG">Reverse Power Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAMPER_FLAG">Tamper Flag</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TAP_POSITION">Tap Position</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_A_PEAK_DEMAND">Tou Rate A Peak</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_B_PEAK_DEMAND">Tou Rate B Peak</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_RATE_C_PEAK_DEMAND">Tou Rate C Peak</entry>
@@ -72,6 +79,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_A">Voltage (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_B">Voltage (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PHASE_C">Voltage (Phase C)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_X">Voltage X</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_Y">Voltage Y</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TERMINATE">Terminate</entry>
     <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_PROFILE">Voltage Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_WATER">Water Usage Reading</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZERO_USAGE_FLAG">Zero Usage Flag</entry>

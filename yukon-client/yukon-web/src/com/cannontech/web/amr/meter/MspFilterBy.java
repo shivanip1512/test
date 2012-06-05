@@ -21,6 +21,11 @@ public class MspFilterBy implements FilterBy {
     }
 
     @Override
+    public String getFormatKey() {
+    	return "yukon.web.mspFilterBy." + getName();
+    }
+    
+    @Override
     public String getName() {
         return name;
     }

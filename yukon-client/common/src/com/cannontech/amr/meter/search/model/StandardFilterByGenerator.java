@@ -9,13 +9,13 @@ public class StandardFilterByGenerator {
 
         List<StandardFilterBy> filterByList = new ArrayList<StandardFilterBy>();
 
-        filterByList.add(new StandardFilterBy("Quick Search", MeterSearchField.METERNUMBER, MeterSearchField.PAONAME));
+        filterByList.add(new StandardFilterBy("quickSearch", MeterSearchField.METERNUMBER, MeterSearchField.PAONAME));
 
-        filterByList.add(new StandardFilterBy("Meter Number", MeterSearchField.METERNUMBER));
-        filterByList.add(new StandardFilterBy("Device Name", MeterSearchField.PAONAME));
-        filterByList.add(new StandardFilterBy("Device Type", MeterSearchField.TYPE));
-        filterByList.add(new StandardFilterBy("Address", MeterSearchField.ADDRESS));
-        filterByList.add(new StandardFilterBy("Route", MeterSearchField.ROUTE));
+        filterByList.add(new StandardFilterBy("meterNumber", MeterSearchField.METERNUMBER));
+        filterByList.add(new StandardFilterBy("deviceName", MeterSearchField.PAONAME));
+        filterByList.add(new StandardFilterBy("deviceType", MeterSearchField.TYPE));
+        filterByList.add(new StandardFilterBy("address", MeterSearchField.ADDRESS));
+        filterByList.add(new StandardFilterBy("route", MeterSearchField.ROUTE));
 
         return filterByList;
     }

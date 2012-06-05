@@ -99,12 +99,12 @@
                 <br>
                 
                 <%-- DEVICE RECONFIG MONITORS WIDGET --%>
-                <tags:widget bean="deviceReconfigMonitorsWidget"/>
+                <tags:widget bean="deviceReconfigMonitors"/>
                 
                 <br>
                 
                 <%-- COMMAND SCHEDULE WIDGET --%>
-                <tags:widget bean="commandScheduleWidget" />
+                <tags:widget bean="commandSchedule" />
             
             </cti:dataGridCell>
             

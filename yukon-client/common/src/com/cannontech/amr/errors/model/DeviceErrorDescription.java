@@ -1,6 +1,7 @@
 package com.cannontech.amr.errors.model;
 
 
+
 public class DeviceErrorDescription {
 
     private Integer errorCode;
@@ -31,6 +32,7 @@ public class DeviceErrorDescription {
      * @return
      */
     public String getDescription() {
+//    	getMessageSourceResolver().getMessageSource(userContext).getMessage(description);
         return description;
     }
 
@@ -79,5 +81,4 @@ public class DeviceErrorDescription {
             return false;
         return true;
     }
-    
 }

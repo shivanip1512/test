@@ -13,8 +13,12 @@ public class UserDefinedAttribute implements Attribute {
         this.key = key;
     }
     
+//    public String getDescription() {
+//        return description;
+//    }
+    
     public String getDescription() {
-        return description;
+    	return getMessage().getDefaultMessage();
     }
 
     public String getKey() {

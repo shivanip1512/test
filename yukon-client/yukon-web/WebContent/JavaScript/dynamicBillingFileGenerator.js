@@ -154,32 +154,32 @@ function addFieldButton() {
 function saveButton(){
     $("begin").action = "save";
 	save();
-	var errorMsg = "";
+	var errorMsg = [];
 	
 	var name = $("formatName").value;
     $('errorMsg').innerHTML = "&nbsp;";
 	
 	//name and fields cannot be empty;
 	if ($("selectedFields").length == 0){
-		errorMsg += "Selected Fields must contain at least 1 available field<br/>";
+		errorMsg.push(BILLING_ERRORS['fieldsNotEmpty']);
 	}
 	if (name.blank()){
-		errorMsg += "Name cannot be empty <br/>";
+		errorMsg.push(BILLING_ERRORS['nameNotEmpty']);
 		$("formatName").value = "";
 	}
 	if (name.length > 100){
-		errorMsg += "Name cannot be longer than 100 characters <br/>";
+		errorMsg.push(BILLING_ERRORS['nameMaxLength']);
 	}
 	//see whether fields + patterns can be saved or not
 	if ( !patternCanBeSaved){
-		errorMsg += "invalid pattern detected. please check the pattern <br/>";
+		errorMsg.push(BILLING_ERRORS['invalidPattern']);
 	}
 	//see whether format information can be saved or not
     if ( !formatInfoCanBeSaved){
-        errorMsg += "invalid format information detected. please check the format information <br/>";
+        errorMsg.push(BILLING_ERRORS['invalidFormat']);
     }
 	if (errorMsg.length > 0){
-		$('errorMsg').innerHTML = "Error saving format: <br />" + errorMsg + "<br/>";
+		$('errorMsg').innerHTML = BILLING_ERRORS['errorSaving'] +"<br />" + errorMsg.join("<br/>") + "<br/>";
 		var currTime = new Date();
 		//check if it's less than 2 sec = 2000 ms
 		if ( currTime - errorHighlight >= 2000){
