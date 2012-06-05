@@ -145,17 +145,19 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
     {
         // subbus is disabled - reset the algorithm and bail
         culprit = "bus";
-        sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusDisabledMessage(subbus->getPaoId(), CtiTime::now()));
-        sendDisableRemoteControl( subbus );
     }
 
     if ( !culprit.empty() )
     {
         if ( state->isShowBusDisableMsg() )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() 
-                 << ". The " << culprit << " is disabled." << std::endl;
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() 
+                     << ". The " << culprit << " is disabled." << std::endl;
+            }
+            sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusDisabledMessage(subbus->getPaoId(), CtiTime::now()));
+            sendDisableRemoteControl( subbus );
         }
         state->setShowBusDisableMsg(false);
         state->setState(IVVCState::IVVC_WAIT);
