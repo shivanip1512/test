@@ -13,10 +13,6 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
     private DevStarsCreationService devStarsCreationService;
     private DevDbSetupTask devDbSetupTask;
 
-    public void main(String [] args) {
-        executeFullDatabasePopulation(new DevDbSetupTask());
-    }
-
     @Transactional
     public synchronized void executeFullDatabasePopulation(DevDbSetupTask dbSetupTask) {
         if (devDbSetupTask != null && devDbSetupTask.isRunning()) {
