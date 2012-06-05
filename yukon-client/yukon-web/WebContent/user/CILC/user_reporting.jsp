@@ -112,7 +112,7 @@ function loadTarget(form)
                                       <%}
                                       //Below is the ending tag for radio input%>
                                       >
-                                              <%=rptTypes.get(j).getTitle()%> 
+                                              <cti:msg key="<%=rptTypes.get(j).getFormatKey()%>"/> 
                                             </td>
                                           </tr>
                                           <%}%>
