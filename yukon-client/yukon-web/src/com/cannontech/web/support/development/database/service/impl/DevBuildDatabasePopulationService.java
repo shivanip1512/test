@@ -10,7 +10,8 @@ public class DevBuildDatabasePopulationService {
     private static DevDatabasePopulationService devDatabasePopulationService;
     
     public static void main(String[] args) {
-        devDatabasePopulationService = YukonSpringHook.getBean(DevDatabasePopulationService.class);
+        devDatabasePopulationService = YukonSpringHook.getBean("devDatabasePopulationService", DevDatabasePopulationService.class);
+        //devDatabasePopulationService = YukonSpringHook.getBean(DevDatabasePopulationService.class);
         devDatabasePopulationService.executeFullDatabasePopulation(new DevDbSetupTask());
     }
 
