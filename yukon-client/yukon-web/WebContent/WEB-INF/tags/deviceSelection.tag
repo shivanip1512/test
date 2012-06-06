@@ -115,13 +115,8 @@
         }
         
         function clearErrors(){
-            jQuery(".undefinedStartAddress").removeClass("error");
-            jQuery(".undefinedEndAddress").removeClass("error");
-            jQuery(".lessThanZero").removeClass("error");
-            jQuery(".outOfRange").removeClass("error");
+            jQuery(".undefinedStartAddress, .undefinedEndAddress, .lessThanZero, .outOfRange").removeClass('error');
             jQuery(".rangeMsg").hide();
-            
-            
         }
         
         function validateAddressRange(){
