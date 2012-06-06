@@ -110,6 +110,8 @@ public enum PaoType implements DatabaseRepresentationSource {
     RFN430A3(DeviceTypes.RFN430A3, "RFN-430A3", PaoCategory.DEVICE, PaoClass.RFMESH), 
     RFN430KV(DeviceTypes.RFN430KV, "RFN-430KV", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFWMETER(DeviceTypes.RFWMETER, "RFW-Meter", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN420ELO(DeviceTypes.RFN420ELO, "RFN-420ELO", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFN430ELO(DeviceTypes.RFN430ELO, "RFN-430ELO", PaoCategory.DEVICE, PaoClass.RFMESH),
 
     ION_7700(DeviceTypes.ION_7700, "ION-7700", PaoCategory.DEVICE, PaoClass.RTU),
     ION_8300(DeviceTypes.ION_8300, "ION-8300", PaoCategory.DEVICE, PaoClass.RTU),
@@ -303,6 +305,8 @@ public enum PaoType implements DatabaseRepresentationSource {
         meterTypesBuilder.add(RFN420CD);
         meterTypesBuilder.add(RFN430A3);
         meterTypesBuilder.add(RFN430KV);
+        meterTypesBuilder.add(RFN420ELO);
+        meterTypesBuilder.add(RFN430ELO);
         meterTypesBuilder.add(RFWMETER);
         
         meterTypes = meterTypesBuilder.build();

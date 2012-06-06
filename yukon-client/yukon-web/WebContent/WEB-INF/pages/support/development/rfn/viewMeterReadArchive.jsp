@@ -28,6 +28,7 @@ function useRandom() {
                         <option value="Eka">Eka</option>
                         <option value="EE">EE</option>
                         <option value="GE">GE</option>
+                        <option value="ELO">ELO</option>
                     </select>
                 </tags:nameValue>
                 
@@ -41,6 +42,8 @@ function useRandom() {
                         <option value="kV2">kV2</option>
                         <option value="FocusAXD">FocusAXD</option>
                         <option value="FocusAXR">FocusAXR</option>
+                        <option value="2131T">2131T</option>
+                        <option value="2131xT">2131xT</option>
                     </select>
                 </tags:nameValue>
                 
@@ -73,7 +76,7 @@ function useRandom() {
                 </tags:nameValue>
                 
                 <tags:nameValue name="Value">
-                    <input id="static" name="value" type="text" value="34543.4">  <input type="checkbox" id="random" onclick="useRandom()">  <label for="random">Random</label>
+                    <input id="static" name="value" type="text" value="34543.4">  <input type="checkbox" id="random" name="random" onclick="useRandom()">  <label for="random">Random</label>
                 </tags:nameValue>
                 
             </tags:nameValueContainer>

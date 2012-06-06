@@ -182,6 +182,9 @@ public interface DeviceTypes extends TypeBase
     public final static int LCR6200_RFN = DEVICE_OFFSET + 141;
     public final static int LCR6600_RFN = DEVICE_OFFSET + 142;
     
+    public final static int RFN420ELO = DEVICE_OFFSET + 143;
+    public final static int RFN430ELO = DEVICE_OFFSET + 144;
+    
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
 	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};	
@@ -311,5 +314,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_IPC_430SL = {"IPC-430SL"};
     public static final String[] STRING_IPC_420AD = {"IPC-420AD"};
     public static final String[] STRING_IPC_410AL = {"IPC-410AL"};
+    public static final String[] STRING_RFN_420ELO = {"RFN-420ELO"};
+    public static final String[] STRING_RFN_430ELO = {"RFN-430ELO"};
     
 }

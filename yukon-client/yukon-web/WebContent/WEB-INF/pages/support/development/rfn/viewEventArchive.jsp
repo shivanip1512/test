@@ -29,6 +29,7 @@
                         <form:option value="Eka">Eka</form:option>
                         <form:option value="EE">EE</form:option>
                         <form:option value="GE">GE</form:option>
+                        <form:option value="ELO">ELO</form:option>
                     </form:select>
                 </tags:nameValue>
                 
@@ -43,6 +44,8 @@
                         <form:option value="kV2">kV2</form:option>
                         <form:option value="FocusAXD">FocusAXD</form:option>
                         <form:option value="FocusAXR">FocusAXR</form:option>
+                        <form:option value="2131T">2131T</form:option>
+                        <form:option value="2131xT">2131xT</form:option>
                     </form:select>
                 </tags:nameValue>
                 

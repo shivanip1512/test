@@ -6484,6 +6484,233 @@
     <pao id="RFN430KV" inherits="RFN_EXTENDED, RFN_ADVANCED, RFN_THREE_PHASE_VOLTAGE, RFN_TOU, RFN_NET_METERING, RFN_NET_TOU_METERING">
         <displayName>RFN-430KV</displayName>
     </pao>
+    
+    <pao id="RFN_ELO_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG">
+        <displayGroup>RFMESH</displayGroup>
+        <changeGroup>rfn</changeGroup>
+        <points>
+            <point type="Analog" offset="1">
+                <init>true</init>
+                <name>Delivered kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="20">
+                <init>true</init>
+                <name>Blink Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="21">
+                <init>true</init>
+                <name>Blink Restore Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="22">
+                <init>true</init>
+                <name>Outage Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="23">
+                <init>true</init>
+                <name>Outage Restore Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="24">
+                <init>true</init>
+                <name>Peak kW (Rate A kW)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="25">
+                <init>true</init>
+                <name>Rate A kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="26">
+                <name>Peak kW (Rate B kW)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="27">
+                <name>Rate B kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="28">
+                <name>Peak kW (Rate C kW)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="29">
+                <name>Rate C kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="31">
+                <name>Rate D kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="32">
+                <name>Peak kW (Rate D kW)</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="4"/>
+            </point>
+            <point type="Analog" offset="100">
+                <init>true</init>
+                <name>Outages</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="101">
+                <init>true</init>
+                <name>Delivered kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="105">
+                <init>true</init>
+                <name>Peak kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="CalcAnalog" offset="0">
+                <init>true</init>
+                <name>Total Outage Count</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+                <calculation>
+                    <updateType>On First Change</updateType>
+                    <components>
+                        <component point="Blink Count"/>
+                        <component point="Outage Count"/>
+                    </components>
+                </calculation>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="USAGE">
+                <basicLookup point="Delivered kWh" />
+            </attribute>
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Peak kW" />
+            </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="Delivered kW" />
+            </attribute>
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="Total Outage Count" />
+            </attribute>
+            <attribute name="RFN_BLINK_COUNT">
+                <basicLookup point="Blink Count" />
+            </attribute>
+            <attribute name="RFN_OUTAGE_COUNT">
+                <basicLookup point="Outage Count" />
+            </attribute>
+
+            <!-- Outage Duration -->
+            <attribute name="OUTAGE_LOG">
+                <basicLookup point="Outages" />
+            </attribute>
+        </attributes>
+        <tags>
+            <tag name="DEVICE_ICON_TYPE">
+                <value>electric_meter</value>
+            </tag>
+            <tag name="METER_DETAIL_DISPLAYABLE"/>
+            <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
+            <tag name="USES_METER_NUMBER_FOR_MSP"/>
+        </tags>
+    </pao>
+    
+    <!-- ELO RFN METERS -->
+    <pao id="RFN420ELO" inherits="RFN_ELO_BASE, RFN_BASIC_VOLTAGE, RFN_DISCONNECT">
+        <displayName>RFN-420ELO</displayName>
+    </pao>
+    <pao id="RFN430ELO" inherits="RFN_ELO_BASE, THREE_PHASE_VOLTAGE">
+        <displayName>RFN-430ELO</displayName>
+        <points>
+            <point type="Analog" offset="70">
+                <init>true</init>
+                <name>Volts Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="71">
+                <init>true</init>
+                <name>Volts Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="72">
+                <init>true</init>
+                <name>Volts Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point type="Analog" offset="73">
+                <init>true</init>
+                <name>Amps Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="74">
+                <init>true</init>
+                <name>Amps Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="75">
+                <init>true</init>
+                <name>Amps Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="VOLTAGE_PHASE_A">
+                <basicLookup point="Volts Phase A" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_B">
+                <basicLookup point="Volts Phase B" />
+            </attribute>
+            <attribute name="VOLTAGE_PHASE_C">
+                <basicLookup point="Volts Phase C" />
+            </attribute>
+        </attributes>
+    </pao>
 
     <pao id="RFN_WATER_BASE" abstract="true">
         <displayGroup>RFMESH</displayGroup>

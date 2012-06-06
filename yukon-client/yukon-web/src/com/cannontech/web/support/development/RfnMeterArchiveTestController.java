@@ -126,9 +126,10 @@ public class RfnMeterArchiveTestController {
             if (quad4) modifiers.add("Quadrant 4");
             
             if (random) {
-                value = Math.random() * 1000;
+                channelData.setValue(Math.random() * 1000);
+            } else {
+                channelData.setValue(value);
             }
-            channelData.setValue(value);
             dataList.add(channelData);
             
             data.setChannelDataList(dataList);

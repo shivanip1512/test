@@ -135,9 +135,15 @@ public class RfnMeterReadService {
         List<ChannelData> nonDatedChannelData = meterReadingData.getRfnMeterReadingData().getChannelDataList();
         List<? extends ChannelData> datedChannelData = meterReadingData.getRfnMeterReadingData().getDatedChannelDataList();
         
-        List<ChannelData> allChannelData = Lists.newArrayList(nonDatedChannelData);
+        List<ChannelData> allChannelData = Lists.newArrayList();
         
-        allChannelData.addAll(datedChannelData);
+        if (nonDatedChannelData != null) {
+            allChannelData.addAll(nonDatedChannelData);
+        }
+        
+        if (datedChannelData != null) {
+            allChannelData.addAll(datedChannelData);
+        }
         
         Instant readingInstant = new Instant(meterReadingData.getRfnMeterReadingData().getTimeStamp());
         

@@ -148,6 +148,8 @@ public final class DeviceFactory {
         case RFN420CD:
         case RFN430A3:
         case RFN430KV:
+        case RFN420ELO:
+        case RFN430ELO:
         case RFWMETER:
             returnDevice = new RfnMeterBase();
             returnDevice.setDeviceClass(PaoClass.RFMESH.getDbString());
