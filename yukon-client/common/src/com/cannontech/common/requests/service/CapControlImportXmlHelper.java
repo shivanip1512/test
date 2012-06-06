@@ -263,13 +263,9 @@ public class CapControlImportXmlHelper {
                     }
                 }
                 
-                try {
-                    Integer capBankSize = hierarchyTemplate.evaluateAsInt("y:capBankSize");
-                    if (capBankSize != null) {
-                        data.setCapBankSize(capBankSize);
-                    }
-                } catch (NumberFormatException e) {
-                    // no op
+                Integer capBankSize = hierarchyTemplate.evaluateAsInt("y:capBankSize");
+                if (capBankSize != null) {
+                    data.setCapBankSize(capBankSize);
                 }
             }
         }

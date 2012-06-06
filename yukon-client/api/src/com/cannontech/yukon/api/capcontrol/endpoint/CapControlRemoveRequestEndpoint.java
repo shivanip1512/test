@@ -25,7 +25,7 @@ public class CapControlRemoveRequestEndpoint {
     private final static Namespace ns = YukonXml.getYukonNamespace();
     
     @Autowired private JobManagementService jobManagementService;
-    @Autowired private CapControlJobFactory capControlRunnableFactory;
+    @Autowired private CapControlJobFactory capControlJobFactory;
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="capControlRemoveRequest")
     public Element invoke(Element capControlRemoveRequest, LiteYukonUser user) {
@@ -35,7 +35,7 @@ public class CapControlRemoveRequestEndpoint {
         Element response = new Element("capControlRemoveResponse", ns);
         response.setAttribute("version", XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
-        YukonJob runnable = capControlRunnableFactory.createRunnable(ImportAction.REMOVE, capControlRemoveRequest);
+        YukonJob runnable = capControlJobFactory.createRunnable(ImportAction.REMOVE, capControlRemoveRequest);
         
         Token token = jobManagementService.createJob(TokenType.YUKON_JOB, runnable);
         

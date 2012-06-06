@@ -25,7 +25,7 @@ public class CapControlAddRequestEndpoint {
     private final static Namespace ns = YukonXml.getYukonNamespace();
     
     @Autowired private JobManagementService jobManagementService;
-    @Autowired private CapControlJobFactory capControlRunnableFactory;
+    @Autowired private CapControlJobFactory capControlJobFactory;
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="capControlAddRequest")
     public Element invoke(Element capControlAddRequest, LiteYukonUser user) {
@@ -35,7 +35,7 @@ public class CapControlAddRequestEndpoint {
         Element response = new Element("capControlAddResponse", ns);
         response.setAttribute("version", XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
-        YukonJob runnable = capControlRunnableFactory.createRunnable(ImportAction.ADD, capControlAddRequest);
+        YukonJob runnable = capControlJobFactory.createRunnable(ImportAction.ADD, capControlAddRequest);
         
         Token token = jobManagementService.createJob(TokenType.YUKON_JOB, runnable);
         

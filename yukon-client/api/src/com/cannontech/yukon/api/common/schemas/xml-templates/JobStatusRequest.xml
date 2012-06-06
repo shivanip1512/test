@@ -5,6 +5,6 @@
            xsi:schemaLocation="http://yukon.cannontech.com/api ../JobStatusRequest.xsd"
            version="1.0">
            
-    <token value="CCI:1337094954-0"/>
+    <token value="JOB:1337094954-0"/>
     
 </jobStatusRequest>
