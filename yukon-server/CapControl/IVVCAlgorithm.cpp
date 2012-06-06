@@ -121,7 +121,6 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
     store->getSubBusParentInfo(subbus, spAreaId, areaId, substationId);
 
     CtiCCAreaPtr area = store->findAreaByPAObjectID(areaId);
-    CtiCCSpecialPtr spArea = store->findSpecialAreaByPAObjectID(spAreaId);
     CtiCCSubstationPtr sub = store->findSubstationByPAObjectID(substationId);
 
     std::string culprit;
@@ -130,11 +129,6 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
     {
         // Area is disabled.
         culprit = "area";
-    }
-    else if ( spArea != NULL && spArea->getDisableFlag() )
-    {
-        // Special area is disabled.
-        culprit = "special area";
     }
     else if ( sub != NULL && sub->getDisableFlag() )
     {
