@@ -103,30 +103,6 @@ public class InventoryManagerUtil {
 	public static final String DEVICE_SELECTED = "DEVICE_SELECTED";
 	public static final String HARDWARE_ADDRESSING = "HARDWARE_ADDRESSING";
 	
-	public static final String[] MCT_TYPES = {
-		PAOGroups.STRING_MCT_410IL[0],
-		PAOGroups.STRING_MCT_410CL[0],
-		PAOGroups.STRING_MCT_430A[0],
-        PAOGroups.STRING_MCT_430S4[0],
-        PAOGroups.STRING_MCT_430SL[0],
-        PAOGroups.STRING_MCT_470[0],
-        PAOGroups.STRING_MCT_370[0],
-		PAOGroups.STRING_MCT_360[0],
-		PAOGroups.STRING_MCT_318L[0],
-		PAOGroups.STRING_MCT_318[0],
-		PAOGroups.STRING_MCT_310CT[0],
-		PAOGroups.STRING_MCT_310ID[0],
-		PAOGroups.STRING_MCT_310IDL[0],
-		PAOGroups.STRING_MCT_310IL[0],
-		PAOGroups.STRING_MCT_310IM[0],
-		PAOGroups.STRING_MCT_310[0],
-		PAOGroups.STRING_MCT_250[0],
-		PAOGroups.STRING_MCT_248[0],
-		PAOGroups.STRING_MCT_240[0],
-		PAOGroups.STRING_MCT_213[0],
-		PAOGroups.STRING_MCT_210[0],
-	};
-	
 	private static Map<Integer,Object[]> batchCfgSubmission = null;
 	
 	/**
@@ -359,47 +335,50 @@ public class InventoryManagerUtil {
 			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class); 
 
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( cmd.getEnergyCompanyID() );
-		LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(cmd.getInventoryID());
         boolean writeToFile = false;
+        
         String batchProcessType = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.BATCHED_SWITCH_COMMAND_TOGGLE );
-        if(batchProcessType != null)
-        {
+        if(batchProcessType != null) {
             writeToFile = batchProcessType.compareTo(StarsUtils.BATCH_SWITCH_COMMAND_MANUAL) == 0 
                 && VersionTools.staticLoadGroupMappingExists();
         }
         
-		if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
-        {
-			if(writeToFile)
-			    YukonSwitchCommandAction.fileWriteConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
-            else    
-                YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
-        }
-        else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
-        {
-            if(writeToFile)
-                YukonSwitchCommandAction.fileWriteDisableCommand( energyCompany, liteHw, null );
-            else
-                YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
-        }
-		else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
-        {
-            if(writeToFile)
-                YukonSwitchCommandAction.fileWriteEnableCommand( energyCompany, liteHw, null );
-            else
-                YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
-        }
-		
-		SwitchCommandQueue.getInstance().removeCommand( cmd.getInventoryID() );
-		
-		if (liteHw.getAccountID() > 0) 
-        {
-			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
-			if (starsAcctInfo != null) {
-				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-				YukonSwitchCommandAction.populateInventoryFields( starsAcctInfo, starsInv );
-			}
+		try {
+		    LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(cmd.getInventoryID());
+		    
+    		if (cmd.getCommandType().equalsIgnoreCase(SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE)) {
+    			if (writeToFile)
+    			    YukonSwitchCommandAction.fileWriteConfigCommand(energyCompany, liteHw, true, cmd.getInfoString());
+                else    
+                    YukonSwitchCommandAction.sendConfigCommand(energyCompany, liteHw, true, cmd.getInfoString());
+            }
+            else if (cmd.getCommandType().equalsIgnoreCase(SwitchCommandQueue.SWITCH_COMMAND_DISABLE)) {
+                if (writeToFile)
+                    YukonSwitchCommandAction.fileWriteDisableCommand(energyCompany, liteHw, null);
+                else
+                    YukonSwitchCommandAction.sendDisableCommand(energyCompany, liteHw, null);
+            }
+    		else if (cmd.getCommandType().equalsIgnoreCase(SwitchCommandQueue.SWITCH_COMMAND_ENABLE)) {
+                if (writeToFile)
+                    YukonSwitchCommandAction.fileWriteEnableCommand(energyCompany, liteHw, null);
+                else
+                    YukonSwitchCommandAction.sendEnableCommand(energyCompany, liteHw, null);
+            }
+    		
+    		if (liteHw.getAccountID() > 0) {
+                StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation(liteHw.getAccountID());
+                if (starsAcctInfo != null) {
+                    StarsInventory starsInv = StarsLiteFactory.createStarsInventory(liteHw, energyCompany);
+                    YukonSwitchCommandAction.populateInventoryFields(starsAcctInfo, starsInv);
+                }
+            }
+    		
+		} catch (NotFoundException e) {
+		    // Inventory (no longer?) exists in Yukon. Switch command
+		    CTILogger.warn(e.getMessage() + " - Inventory commands skipped for " + cmd.toString());
 		}
+		
+		SwitchCommandQueue.getInstance().removeCommand(cmd.getInventoryID());
 	}
     
 	public static String getSNRange(Long snFrom, Long snTo) {
