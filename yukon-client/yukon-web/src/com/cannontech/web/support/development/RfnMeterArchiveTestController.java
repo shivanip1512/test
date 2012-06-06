@@ -1,8 +1,6 @@
 package com.cannontech.web.support.development;
 
 import java.beans.PropertyEditor;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.xml.sax.SAXException;
 
 import com.cannontech.amr.rfn.message.alarm.RfnAlarm;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
@@ -39,8 +36,10 @@ import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.common.rfn.message.RfnArchiveRequest;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
+import com.cannontech.dr.rfn.message.archive.RfnLcrReadingType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -52,7 +51,6 @@ import com.cannontech.web.support.development.model.TestEvent;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.siemens.ct.exi.exceptions.EXIException;
 
 @Controller("/development/rfn/*")
 @CheckDevelopmentMode
@@ -79,6 +77,11 @@ public class RfnMeterArchiveTestController {
     @RequestMapping
     public String viewLcrReadArchiveRequest() {
         return "development/rfn/viewLcrReadArchive.jsp";
+    }
+    
+    @RequestMapping
+    public String viewLcrArchiveRequest() {
+        return "development/rfn/viewLcrArchive.jsp";
     }
 
     private String setupEventAlarmAttributes(ModelMap model, TestEvent event) {
@@ -148,7 +151,7 @@ public class RfnMeterArchiveTestController {
     }
     
     @RequestMapping("sendLcrReadArchiveRequest")
-    public String sendLcr(int serialFrom, int serialTo, String manufacturer, String model) throws EXIException, IOException, SAXException, URISyntaxException {
+    public String sendLcrReadArchive(int serialFrom, int serialTo, String manufacturer, String model) {
         JmsTemplate jmsTemplate;
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(false);
@@ -156,24 +159,46 @@ public class RfnMeterArchiveTestController {
         jmsTemplate.setPubSubDomain(false);
         
         // Create archive request
-        RfnLcrReadingArchiveRequest archiveRequest = new RfnLcrReadingArchiveRequest();
+        RfnLcrReadingArchiveRequest readArchiveRequest = new RfnLcrReadingArchiveRequest();
         RfnLcrReading data = new RfnLcrReading();
         
         // Encode test message from classpath and turn it into the payload for RfnLcrReading.
-//        URL payloadUrl = RfnAlarm.class.getResource("/common/resource/DRReport.exi");
-//        File exampleExiPayload = new File(payloadUrl.toURI());
-//        byte[] payload = FileUtils.readFileToByteArray(exampleExiPayload);
         byte[] payload = new byte[64];
         long timeStamp = new Instant().getMillis();
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(new Integer(serialFrom).toString(), manufacturer, model);
         
         // Set all data
         data.setPayload(payload);
         data.setTimeStamp(timeStamp);
-        archiveRequest.setData(data);
+        readArchiveRequest.setData(data);
+        readArchiveRequest.setDataPointId(0);
+        readArchiveRequest.setRfnIdentifier(rfnIdentifier);
+        readArchiveRequest.setType(RfnLcrReadingType.UNSOLICITED);
+        
+        // Put request on queue
+        jmsTemplate.convertAndSend("yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest", readArchiveRequest);
+        return "redirect:viewLcrReadArchiveRequest";
+    }
+    
+    @RequestMapping("sendLcrArchiveRequest")
+    public String sendLcrArchive(int serialFrom, int serialTo, String manufacturer, String model) {
+        JmsTemplate jmsTemplate;
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(false);
+        jmsTemplate.setDeliveryPersistent(false);
+        jmsTemplate.setPubSubDomain(false);
+        
+        // Create archive request & fake identifier
+        RfnLcrArchiveRequest archiveRequest = new RfnLcrArchiveRequest();
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(new Integer(serialFrom).toString(), manufacturer, model);
+        
+        // Set all data
+        archiveRequest.setRfnIdentifier(rfnIdentifier);
+        archiveRequest.setSensorId(1234);
         
         // Put request on queue
         jmsTemplate.convertAndSend("yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest", archiveRequest);
-        return "redirect:viewLcrReadArchiveRequest";
+        return "redirect:viewLcrArchiveRequest";
     }
     
     @RequestMapping
