@@ -132,8 +132,8 @@ private JComboBox buildForegroundColorComboBox() {
 	jComboBox.addItem(Colors.BLUE_STR_ID);
 	jComboBox.addItem(Colors.CYAN_STR_ID);
 	jComboBox.addItem(Colors.BLACK_STR_ID);
-	jComboBox.addItem(Colors.MAGENTA_STR_ID);
 	jComboBox.addItem(Colors.ORANGE_STR_ID);
+	jComboBox.addItem(Colors.MAGENTA_STR_ID);
 	jComboBox.addItem(Colors.GRAY_STR_ID);
 	jComboBox.addItem(Colors.PINK_STR_ID);
 	
