@@ -11,6 +11,7 @@ public class MappingRowCallbackHandler<I> extends AbstractRowCallbackHandler {
 
     private final ParameterizedRowMapper<I> mapper;
     private final SimpleCallback<I> callback;
+
     public MappingRowCallbackHandler(ParameterizedRowMapper<I> mapper, SimpleCallback<I> callback) {
         this.mapper = mapper;
         this.callback = callback;
