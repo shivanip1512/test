@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
@@ -38,7 +39,8 @@ public final class MspMeterDaoImpl implements MspMeterDao
     private static String selectSql;
     
     static {
-        selectSql = "SELECT MeterNumber, PaobjectId, Type, Address, SerialNumber, DisconnectAddress " +
+        selectSql = "SELECT PaobjectId, Type, MeterNumber, Address, DisconnectAddress, " +
+                        "SerialNumber, Manufacturer, Model " +
                     "FROM YukonPaobject pao " +
                         "JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId " +
                         "LEFT JOIN DeviceCarrierSettings dcs ON pao.PAObjectID = dcs.DEVICEID " +
@@ -48,12 +50,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
     
     private static final YukonRowMapper<Meter> mspMeterRowMapper = new YukonRowMapper<Meter>() {
     	public Meter mapRow(YukonResultSet rset) throws SQLException {
-            String meterNumber = rset.getString("meternumber");
-            String address = rset.getString("address");
-            String serialNumber = rset.getString("serialnumber");
-            String discAddress = rset.getString("disconnectaddress");
-            PaoIdentifier paoIdentifier = rset.getPaoIdentifier("paobjectid", "type");
-            Meter mspMeter = createMeter(paoIdentifier, meterNumber, address, serialNumber, discAddress);
+            Meter mspMeter = createMeter(rset);
             return mspMeter;
     	};
    };
@@ -124,12 +121,19 @@ public final class MspMeterDaoImpl implements MspMeterDao
     /**
      * Creates a new (MSP) Meter object.
      * The information commented out is being used for in-line documentation of available MultiSpeak fields. 
-     * @param meterNumber The Multispeak objectID.
-     * @param address The meter's transponderID (Physical Address)
-     * @return
+     * @param rset The YukonResultSet to pull data values from. View actual method to see required column names. 
+     * @return Meter
      */
-    public static Meter createMeter(PaoIdentifier paoIdentifier, String meterNumber, String carrierAddress, String rfnSerialNumber, String discCollarAddress)
+    private static Meter createMeter(YukonResultSet rset) throws SQLException
     {
+        PaoIdentifier paoIdentifier = rset.getPaoIdentifier("paobjectid", "type");
+        String meterNumber = rset.getString("meternumber");
+        String carrierAddress = rset.getString("address");
+        String discCollarAddress = rset.getString("disconnectaddress");
+        String rfnSerialNumber = rset.getString("serialnumber");
+        String rfnManufacturer = rset.getString("manufacturer");
+        String rfnModel = rset.getString("model");
+        
         Meter meter = new Meter();
         meter.setObjectID(meterNumber);
 //      MessageElement element = new MessageElement(QName.valueOf("AMRMeterType"), paoType);
@@ -138,17 +142,32 @@ public final class MspMeterDaoImpl implements MspMeterDao
 //        ext.set_any(new MessageElement[]{element2});
 //        meter.setExtensions(ext);
         meter.setMeterNo(meterNumber);
-//        meter.setSerialNumber( );    //Meter serial number. This is the original number assigned to the meter by the manufacturer. This is NOT rfnSerialNumber.
-        meter.setMeterType(paoIdentifier.getPaoType().getPaoTypeName());  //Meter type/model.
-//        meter.setManufacturer();    //Meter manufacturer.
+        
+        // For RF meters, use RFNAddress.model; for all other meters, use PaoType
+        if (StringUtils.isNotBlank(rfnModel)) {
+            meter.setMeterType(rfnModel);  //Meter type/model.
+        } else {
+            meter.setMeterType(paoIdentifier.getPaoType().getPaoTypeName());  //Meter type/model.
+        }
+        
+        if (StringUtils.isNotBlank(rfnManufacturer)) {
+            meter.setManufacturer(rfnManufacturer);    //Meter manufacturer.
+        }
 //        meter.setSealNumberList(null);  //Seal Number List
 //        meter.setAMRDeviceType(paoType);	//This is the Yukon Template Field, Yukon doesn't store what this meter used as it's template.
+        
         meter.setAMRVendor(MultispeakDefines.AMR_VENDOR);
-        if (carrierAddress != null) {
+        
+        // For RF meters, set serialNumber and transponderId; for PLC set only transponderId
+        if (StringUtils.isNotBlank(carrierAddress)) {
             meter.setNameplate(getNameplate(meterNumber, carrierAddress));
-        } else if (rfnSerialNumber != null) {
+            // serialNumber not known for carrier meters.
+            //meter.setSerialNumber( );    //Meter serial number. This is the original number assigned to the meter by the manufacturer.
+        } else if (StringUtils.isNotBlank(rfnSerialNumber)) {
             meter.setNameplate(getNameplate(meterNumber, rfnSerialNumber));
+            meter.setSerialNumber(rfnSerialNumber);    //Meter serial number. This is the original number assigned to the meter by the manufacturer.
         }
+        
 //        meter.setSealNumberList(null);  //List of seals applied to this meter.
 //        meter.setUtilityInfo(null);     //This information relates the meter to the account with which it is associated
         
