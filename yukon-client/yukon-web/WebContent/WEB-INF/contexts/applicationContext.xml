@@ -1918,12 +1918,6 @@
     <bean id="serviceCompanyDtoValidator" class="com.cannontech.web.admin.energyCompany.serviceCompany.model.ServiceCompanyDtoValidator"/>
     <bean id="designationCodeDtoValidator" class="com.cannontech.web.admin.energyCompany.serviceCompany.model.DesignationCodeDtoValidator"/>
 
-    <bean id="devDatabasePopulationService" class="com.cannontech.web.support.development.database.service.impl.DevDatabasePopulationServiceImpl"/>
-    <bean id="devRolePropUpdaterService" class="com.cannontech.web.support.development.database.service.impl.DevRolePropUpdaterService"/>
-    <bean id="devAMRCreationService" class="com.cannontech.web.support.development.database.service.impl.DevAMRCreationService"/>
-    <bean id="devCapControlCreationService" class="com.cannontech.web.support.development.database.service.impl.DevCapControlCreationService"/>
-    <bean id="devStarsCreationService" class="com.cannontech.web.support.development.database.service.impl.DevStarsCreationService"/>
-
     <bean id="devBackingService" class="com.cannontech.web.updater.development.DevBackingService"/>
 
     <bean id="archiveValuesExportFormatDao" class="com.cannontech.amr.archivedValueExporter.dao.impl.ArchiveValuesExportFormatDaoImpl"/>
