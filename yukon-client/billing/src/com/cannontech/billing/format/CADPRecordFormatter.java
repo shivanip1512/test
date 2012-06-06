@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.billing.device.base.BillableDevice;
@@ -183,26 +181,19 @@ public class CADPRecordFormatter extends BillingFormatterBase {
         String coopId = DaoFactory.getRoleDao().getGlobalPropertyValue(BillingRole.COOP_ID_CADP_ONLY);
 
         if (StringUtils.isBlank(coopId)) {
-            CTILogger.info(" Missing 'coop_id' in config.properties.");
-
-            String value = JOptionPane.showInputDialog(null,
-                                                       "Please enter your 5 digit coop-Id now: ",
-                                                       "Add coop_id to config.properties",
-                                                       JOptionPane.WARNING_MESSAGE);
-
-            if (value != null) {
-                if (value.length() > 5)
-                    value = value.substring(0, 5);
-                else if (value.length() < 5) {
-                    for (int i = value.length(); i < 5; i++) {
-                        value += value + " ";
-                    }
-                }
-                coopId = value;
-            } else
-                coopId = "00000";
+            CTILogger.info("No value set for Billing Configuration > Coop ID - CADP Only. A default value of '00000' will be used.");
+            coopId = "00000";
         }
-
+    
+        if (coopId.length() > 5) {
+            coopId = coopId.substring(0, 5);
+            CTILogger.info("Coop Id value's length greater than 5 characters. Value will be trimmed to first 5 characters.");
+        } else if (coopId.length() < 5) {
+            for (int i = coopId.length(); i < 5; i++) {
+                coopId += " ";
+            }
+            CTILogger.info("Coop Id value's length less than 5 characters. Spaces appended to end of value.");
+        }
         return coopId;
     }
 
