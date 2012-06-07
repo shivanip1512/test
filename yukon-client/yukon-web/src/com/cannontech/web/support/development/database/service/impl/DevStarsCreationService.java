@@ -11,6 +11,7 @@ import com.cannontech.common.model.Address;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -41,6 +42,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
 
     @Override
     protected void createAll() {
@@ -110,7 +112,8 @@ public class DevStarsCreationService extends DevObjectCreationBase {
                 LiteStarsEnergyCompany e = energyCompanyService.createEnergyCompany(ec,  yukonUserDao.getLiteYukonUser(-2), null);
                 devDbSetupTask.getDevStars().setEnergyCompany(e);
             } catch (Exception e) {
-                log.warn("Cannot create new energy company.", e);
+                devDbSetupTask.getDevStars().setEnergyCompany(starsDatabaseCache.getDefaultEnergyCompany());
+                log.warn("Cannot create new energy company. Setting to default", e);
             } 
         }
 
