@@ -934,7 +934,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     		    boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
                 if (isRfnDisconnect) {
                     RfnMeter rfnMeter = rfnDeviceDao.getMeter(meter);
-                    rfnMeter.setMeterNumber(meterNumber);   //total hack until RFNMeter properly loads meterNumber values
                     doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), vendor, transactionId);
                     continue;                    
                 } 

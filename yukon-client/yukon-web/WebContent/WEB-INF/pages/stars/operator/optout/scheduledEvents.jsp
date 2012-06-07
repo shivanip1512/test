@@ -36,7 +36,7 @@
 			    </c:choose>
 			</td>
     		<td class="widgetColumnCell" valign="top">
-			    <ct:widget bean="operatorAccountSearch"/>
+			    <ct:widget bean="operatorAccountSearchWidget"/>
     		</td>
     	</tr>
     </table>

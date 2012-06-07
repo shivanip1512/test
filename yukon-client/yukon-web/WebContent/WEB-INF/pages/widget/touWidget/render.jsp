@@ -20,19 +20,19 @@
 		    </a>
 		</div>
 		<div id="touTable">
-			<tags:touAttribute headerKey="yukon.web.widgets.tou.rateA"
+			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateA"
 			                 usageAttribute="${TOU_RATE_A_USAGE}"
 			                 peakAttribute="${TOU_RATE_A_PEAK_DEMAND}" />
 		
-			<tags:touAttribute headerKey="yukon.web.widgets.tou.rateB"
+			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateB"
 			                 usageAttribute="${TOU_RATE_B_USAGE}"
 			                 peakAttribute="${TOU_RATE_B_PEAK_DEMAND}" />
 			        
-			<tags:touAttribute headerKey="yukon.web.widgets.tou.rateC"
+			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateC"
 			                 usageAttribute="${TOU_RATE_C_USAGE}"
 			                 peakAttribute="${TOU_RATE_C_PEAK_DEMAND}" />
 			        
-			<tags:touAttribute headerKey="yukon.web.widgets.tou.rateD"
+			<tags:touAttribute headerKey="yukon.web.widgets.touWidget.rateD"
 			                 usageAttribute="${TOU_RATE_D_USAGE}"
 			                 peakAttribute="${TOU_RATE_D_PEAK_DEMAND}" />
 		</div>

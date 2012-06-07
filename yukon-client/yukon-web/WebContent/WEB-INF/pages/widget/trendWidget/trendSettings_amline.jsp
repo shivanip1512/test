@@ -252,7 +252,7 @@
     <text_color></text_color>                                 <!-- [text_color] (hex color code) button text and magnifying glass icon color -->
     <text_color_hover>#666666</text_color_hover>              <!-- [#BBBB00] (hex color code) button text and magnifying glass icon roll over color -->    
     <text_size></text_size>                                   <!-- [text_size] (Number) button text size -->
-    <text><cti:msg2 key="yukon.web.widgets.trend.showAll"/></text>                                     <!-- [Show all] (text) -->    
+    <text><cti:msg2 key="yukon.web.widgetClasses.TrendWidget.showAll"/></text>                                     <!-- [Show all] (text) -->    
   </zoom_out_button> 
    
   <help>                                                      <!-- HELP button and balloon -->  
@@ -298,7 +298,7 @@
   </error_messages>  
   
   <strings>
-    <no_data><cti:msg2 key="yukon.web.widgets.trend.noData"/></no_data>            <!-- [No data for selected period] (text) if data for selected period is missing, this message will be displayed -->
+    <no_data><cti:msg2 key="yukon.web.widgetClasses.TrendWidget.noData"/></no_data>            <!-- [No data for selected period] (text) if data for selected period is missing, this message will be displayed -->
     <export_as_image></export_as_image>                       <!-- [Export as image] (text) text for right click menu -->
     <error_in_data_file></error_in_data_file>                 <!-- [Error in data file] (text) this text is displayed if there is an error in data file or there is no data in file. "There is no data" means that there should actually be at least one space in data file. If data file will be completly empty, it will display "error loading file" text -->
     <collecting_data></collecting_data>                       <!-- [Collecting data] (text) this text is displayed while exporting chart to an image -->

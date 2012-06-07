@@ -31,7 +31,7 @@
                 <td class="widgetColumnCell" valign="top">
                     <div style="width:600px;">
                     <tags:widgetContainer deviceId="${deviceId}">
-                       <tags:widget bean="meterInformation" />
+                       <tags:widget bean="meterInformationWidget" />
                     </tags:widgetContainer>
                     </div>
                     <tags:boxContainer2 nameKey="executeCommand" hideEnabled="false" styleClass="widgetContainer">

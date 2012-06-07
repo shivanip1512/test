@@ -22,12 +22,12 @@ public class LastTooltipHandler implements ScheduledGroupRequestExecutionUpdater
 
         String tooltipString;
         if (status == ScheduledGroupRequestExecutionStatus.RUNNING) {
-            tooltipString = messageSourceAccessor.getMessage("yukon.web.widgets.scheduledGroupRequestExecution.tooltip.running",
+            tooltipString = messageSourceAccessor.getMessage("yukon.web.widgets.scheduledGroupRequestExecutionWidget.tooltip.running",
                                 successCount,
                                 failureCount,
                                 totalCount);
         } else {
-            tooltipString = messageSourceAccessor.getMessage("yukon.web.widgets.scheduledGroupRequestExecution.tooltip.notRunning",
+            tooltipString = messageSourceAccessor.getMessage("yukon.web.widgets.scheduledGroupRequestExecutionWidget.tooltip.notRunning",
                                 successCount,
                                 failureCount,
                                 totalCount);

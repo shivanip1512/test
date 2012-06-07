@@ -32,7 +32,6 @@ public class DeviceErrorDescription {
      * @return
      */
     public String getDescription() {
-//    	getMessageSourceResolver().getMessageSource(userContext).getMessage(description);
         return description;
     }
 

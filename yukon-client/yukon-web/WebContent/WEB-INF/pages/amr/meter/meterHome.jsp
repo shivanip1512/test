@@ -15,19 +15,19 @@
 		<table class="widgetColumns">
 			<tr>
 				<td class="widgetColumnCell" valign="top">
-				    <ct:widget bean="meterInformation" />
+				    <ct:widget bean="meterInformationWidget" />
 
                     <c:choose>
                         <c:when test="${threePhaseVoltageOrCurrentSupported}">
-                           <ct:widget bean="polyphaseMeterReadings" />
+                           <ct:widget bean="polyphaseMeterReadingsWidget" />
                         </c:when>
                         <c:otherwise>
-    					   <ct:widget bean="meterReadings" />
+    					   <ct:widget bean="meterReadingsWidget" />
                         </c:otherwise>
                     </c:choose>
 
                     <c:if test="${isRFMesh_JUST_HIDE_FOR_NOW}">
-                        <ct:widget bean="rfnMeterInfo" />
+                        <ct:widget bean="rfnMeterInfoWidget" />
                     </c:if>
                     
 					<c:if test="${cisInfoWidgetName != null}">
@@ -41,7 +41,7 @@
 					<cti:includeScript link="JQUERY_TREE" />
 					<cti:includeScript link="JQUERY_TREE_HELPERS" />
 					<cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/ui.dynatree.css"/>
-	                <ct:widget bean="deviceGroup"/>
+	                <ct:widget bean="deviceGroupWidget"/>
 
 					<ct:boxContainer2 nameKey="actions" styleClass="widgetContainer">
 	                
@@ -118,34 +118,34 @@
 				</td>
 				<td class="widgetColumnCell" valign="top">
 	
-					<ct:widget bean="csrTrend" tabularDataViewer="archivedDataReport" />
+					<ct:widget bean="csrTrendWidget" tabularDataViewer="archivedDataReport" />
 					
 					<c:if test="${disconnectSupported}">
-						<ct:widget bean="disconnectMeter"/>
+						<ct:widget bean="disconnectMeterWidget"/>
 					</c:if>
 					
 					<c:if test="${rfnDisconnectSupported}">
-						<ct:widget bean="rfnMeterDisconnect"/>
+						<ct:widget bean="rfnMeterDisconnectWidget"/>
 					</c:if>
 					
                     <c:if test="${rfnEventsSupported}">
-    					<ct:widget bean="meterEvents"/>
+    					<ct:widget bean="meterEventsWidget"/>
                     </c:if>
 	
 					<c:if test="${outageSupported}">
-						<ct:widget bean="meterOutages" />
+						<ct:widget bean="meterOutagesWidget" />
 					</c:if>
                     
                     <c:if test="${rfnOutageSupported}">
-                        <ct:widget bean="rfnOutages"/>
+                        <ct:widget bean="rfnOutagesWidget"/>
                     </c:if>
 	
 					<c:if test="${touSupported}">
-						<ct:widget bean="tou" />
+						<ct:widget bean="touWidget" />
 					</c:if>
 					
 					<c:if test="${configSupported}">
-	                    <ct:widget bean="config" />
+	                    <ct:widget bean="configWidget" />
 	                </c:if>
 				</td>
 			</tr>

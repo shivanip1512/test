@@ -5,9 +5,9 @@
 	<!-- ACCOUNT -->
 	
 	<!-- operator account search widget -->
-    <entry key="yukon.web.widgets.operatorAccountSearch.searchBoxTitle">Account Search</entry>
-	<entry key="yukon.web.widgets.operatorAccountSearch.searchTypeLabel">Type</entry>
-	<entry key="yukon.web.widgets.operatorAccountSearch.searchValueLabel">Value</entry>
+    <entry key="yukon.web.widgets.operatorAccountSearchWidget.searchBoxTitle">Account Search</entry>
+	<entry key="yukon.web.widgets.operatorAccountSearchWidget.searchTypeLabel">Type</entry>
+	<entry key="yukon.web.widgets.operatorAccountSearchWidget.searchValueLabel">Value</entry>
 	
 	<!-- OperatorAccountSearchBy enum -->
 	<entry key="yukon.web.modules.operator.accountSearchByEnum.ACCOUNT_NUMBER">Account Number</entry>

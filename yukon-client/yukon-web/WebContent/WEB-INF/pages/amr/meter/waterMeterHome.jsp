@@ -15,19 +15,19 @@
 		<table class="widgetColumns">
 			<tr>
 				<td class="widgetColumnCell" valign="top">
-				    <ct:widget bean="meterInformation" />
+				    <ct:widget bean="meterInformationWidget" />
 	
-					<ct:widget bean="waterMeterReadings" />
+					<ct:widget bean="waterMeterReadingsWidget" />
                     
                     <c:if test="${isRFMesh_JUST_HIDE_FOR_NOW}">
-                        <ct:widget bean="rfnMeterInfo" />
+                        <ct:widget bean="rfnMeterInfoWidget" />
                     </c:if>
                     
 					<c:if test="${cisInfoWidgetName != null}">
 						<ct:widget bean="${cisInfoWidgetName}" />
 					</c:if>
 	
-	                <ct:widget bean="deviceGroup"/>
+	                <ct:widget bean="deviceGroupWidget"/>
 
 					<ct:boxContainer2 nameKey="actions" styleClass="widgetContainer">
 	                
@@ -43,7 +43,7 @@
 				</td>
 				<td class="widgetColumnCell" valign="top">
 	
-					<ct:widget bean="waterCsrTrend" tabularDataViewer="archivedDataReport" />
+					<ct:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" />
 				</td>
 			</tr>
 		</table>

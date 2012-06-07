@@ -72,13 +72,14 @@ body {
 }
 
 #findForm select {
-	margin-left: 5px;
+	margin-right: 5px;
+	float: left;
 }
 
 #textInput {
 	margin: 0;
 	height: 14px;
-	padding: 5px;
+	padding: 2px 5px;
 	border: solid 1px #999;
 	border-style: 2px 0 0 2px;
 	border-radius: 2px 0 0 2px;
@@ -89,21 +90,15 @@ body {
 
 #findForm .searchButton {
 	margin: 0 0 0 -1px;
-	height: 26px;
-	width: 50px;
+	height: 20px;
+	width: 40px;
 	overflow: hidden;
 	padding: 1px 10px;
 	border: 1px solid #999;
-/* 	border: 1px solid #3079ED; */
 	border-radius: 0 2px 2px 0;
 	-moz-border-radius: 0 2px 2px 0;
 	-webkit-border-radius: 0 2px 2px 0;
 	background-color: #ccc;
-/* 	background-color: #4D90FE; */
-/* 	background-image: linear-gradient(top,#4D90FE,#4787ED); */
-/* 	background-image: -webkit-linear-gradient(top,#4D90FE,#4787ED); */
-/* 	background-image: -moz-linear-gradient(top,#4D90FE,#4787ED); */
-/* 	background-image: -ms-linear-gradient(top,#4D90FE,#4787ED); */
 	float:left;
 	cursor: pointer;
 }
@@ -111,11 +106,6 @@ body {
 #findForm .searchButton:focus, #findForm .searchButton:hover {
 	border-color: #2F5BB7;
 	background-color: #0066CC;
-/* 	background-color: #357AEB; */
-/* 	background-image: linear-gradient(top,#4D90FE,#357AEB); */
-/* 	background-image: -webkit-linear-gradient(top,#4D90FE,#357AEB); */
-/* 	background-image: -moz-linear-gradient(top,#4D90FE,#357AEB); */
-/* 	background-image: -ms-linear-gradient(top,#4D90FE,#357AEB); */
 }
 #findForm .searchButton:active {
 	background: #357AEB;
@@ -259,7 +249,7 @@ a.stdhdr_menuLink {
 /* used for "CSS" Icons in the clearbits folder */
 img.cssicon,input.cssicon {
     background-color: #C30;
-    background-image: url(`clearbits/bg_rounded.gif);
+    background-image: url(../Icons/clearbits/bg_rounded.gif);
     background-repeat: no-repeat;
     border: none;
     vertical-align: middle;

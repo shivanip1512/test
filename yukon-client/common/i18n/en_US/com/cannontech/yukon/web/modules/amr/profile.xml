@@ -3,69 +3,69 @@
 <properties>
 
     <!-- ProfileWidget.java -->
-    <entry key="yukon.web.widgets.profile.startRequired">Start date Required.</entry>
-    <entry key="yukon.web.widgets.profile.stopRequired">Stop date Required.</entry>  
-    <entry key="yukon.web.widgets.profile.startInvalid">Start date: {0} is invalid.</entry>
-    <entry key="yukon.web.widgets.profile.stopInvalid">Stop date: {0} is invalid.</entry>
-    <entry key="yukon.web.widgets.profile.startOnOrBeforeStop">Start date: {0} must be on or before stop date.</entry>
-    <entry key="yukon.web.widgets.profile.stopOnOrBeforeToday">Stop date: {0} must be on or before today.</entry>
-    <entry key="yukon.web.widgets.profile.startAfterToday">Start date: {0} must be after today.</entry>
-    <entry key="yukon.web.widgets.profile.stopAfterToday">Stop date: {0} must be after today.</entry>
-    <entry key="yukon.web.widgets.profile.stopAfterStart">Stop date: {0} must be after start date: {1}</entry>
+    <entry key="yukon.web.widgets.profileWidget.startRequired">Start date Required.</entry>
+    <entry key="yukon.web.widgets.profileWidget.stopRequired">Stop date Required.</entry>  
+    <entry key="yukon.web.widgets.profileWidget.startInvalid">Start date: {0} is invalid.</entry>
+    <entry key="yukon.web.widgets.profileWidget.stopInvalid">Stop date: {0} is invalid.</entry>
+    <entry key="yukon.web.widgets.profileWidget.startOnOrBeforeStop">Start date: {0} must be on or before stop date.</entry>
+    <entry key="yukon.web.widgets.profileWidget.stopOnOrBeforeToday">Stop date: {0} must be on or before today.</entry>
+    <entry key="yukon.web.widgets.profileWidget.startAfterToday">Start date: {0} must be after today.</entry>
+    <entry key="yukon.web.widgets.profileWidget.stopAfterToday">Stop date: {0} must be after today.</entry>
+    <entry key="yukon.web.widgets.profileWidget.stopAfterStart">Stop date: {0} must be after start date: {1}</entry>
     
     <!-- profileWidget/render.jsp -->
-    <entry key="yukon.web.widgets.profile.channel">Channel:</entry>
-    <entry key="yukon.web.widgets.profile.requestPastProfile">Request Past Profile:</entry>
-    <entry key="yukon.web.widgets.profile.startDate">Start Date:</entry>
-    <entry key="yukon.web.widgets.profile.stopDate">Stop Date:</entry>
-    <entry key="yukon.web.widgets.profile.email">Email:</entry>
-    <entry key="yukon.web.widgets.profile.start.label">Start</entry>
-    <entry key="yukon.web.widgets.profile.start.labelBusy">Start</entry>
-    <entry key="yukon.web.widgets.profile.viewReport.label">View Report</entry>
-    <entry key="yukon.web.widgets.profile.viewReport.labelBusy">View Report</entry>
-    <entry key="yukon.web.widgets.profile.dailyUsageReport">Daily Usage Report:</entry>
-    <entry key="yukon.web.widgets.profile.retrievingReport">Retrieving report...</entry>
-    <entry key="yukon.web.widgets.profile.errorPastProfile">Error Retrieving Past Profile:</entry>
-    <entry key="yukon.web.widgets.profile.errorDailyReport">Error Retrieving Daily Usage Report:</entry>
-    <entry key="yukon.web.widgets.profile.errorToggleChannel">Error Toggling Channel: </entry>
-    <entry key="yukon.web.widgets.profile.operationNotSupported">Device type: {0} does not support this operation.</entry>
+    <entry key="yukon.web.widgets.profileWidget.channel">Channel:</entry>
+    <entry key="yukon.web.widgets.profileWidget.requestPastProfile">Request Past Profile:</entry>
+    <entry key="yukon.web.widgets.profileWidget.startDate">Start Date:</entry>
+    <entry key="yukon.web.widgets.profileWidget.stopDate">Stop Date:</entry>
+    <entry key="yukon.web.widgets.profileWidget.email">Email:</entry>
+    <entry key="yukon.web.widgets.profileWidget.start.label">Start</entry>
+    <entry key="yukon.web.widgets.profileWidget.start.labelBusy">Start</entry>
+    <entry key="yukon.web.widgets.profileWidget.viewReport.label">View Report</entry>
+    <entry key="yukon.web.widgets.profileWidget.viewReport.labelBusy">View Report</entry>
+    <entry key="yukon.web.widgets.profileWidget.dailyUsageReport">Daily Usage Report:</entry>
+    <entry key="yukon.web.widgets.profileWidget.retrievingReport">Retrieving report...</entry>
+    <entry key="yukon.web.widgets.profileWidget.errorPastProfile">Error Retrieving Past Profile:</entry>
+    <entry key="yukon.web.widgets.profileWidget.errorDailyReport">Error Retrieving Daily Usage Report:</entry>
+    <entry key="yukon.web.widgets.profileWidget.errorToggleChannel">Error Toggling Channel: </entry>
+    <entry key="yukon.web.widgets.profileWidget.operationNotSupported">Device type: {0} does not support this operation.</entry>
     
     <!-- profileWidget/channelScanning.jsp -->
-    <entry key="yukon.web.widgets.profile.scanning.channel">Channel</entry>
-    <entry key="yukon.web.widgets.profile.scanning.interval">Interval</entry>
-    <entry key="yukon.web.widgets.profile.scanning.collectionState">Collection State</entry>
-    <entry key="yukon.web.widgets.profile.scanning.action">Action</entry>
-    <entry key="yukon.web.widgets.profile.scanning.starts">(Starts {0})</entry>
-    <entry key="yukon.web.widgets.profile.scanning.stops">(Stops {0})</entry>
-    <entry key="yukon.web.widgets.profile.scanning.neverStarts">(Never Starts)</entry>
-    <entry key="yukon.web.widgets.profile.scanning.neverStops">(Never Stops)</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.channel">Channel</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.interval">Interval</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.collectionState">Collection State</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.action">Action</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.starts">(Starts {0})</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.stops">(Stops {0})</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.neverStarts">(Never Starts)</entry>
+    <entry key="yukon.web.widgets.profileWidget.scanning.neverStops">(Never Stops)</entry>
     <!-- toggleProfilingPopup.tag -->
-    <entry key="yukon.web.widgets.profile.scheduleStart">Schedule Start</entry>
-    <entry key="yukon.web.widgets.profile.scheduleStop">Schedule Stop</entry>
-    <entry key="yukon.web.widgets.profile.now">Now</entry>
-    <entry key="yukon.web.widgets.profile.date">Date</entry>
-    <entry key="yukon.web.widgets.profile.neverStop">Never Stop</entry>
+    <entry key="yukon.web.widgets.profileWidget.scheduleStart">Schedule Start</entry>
+    <entry key="yukon.web.widgets.profileWidget.scheduleStop">Schedule Stop</entry>
+    <entry key="yukon.web.widgets.profileWidget.now">Now</entry>
+    <entry key="yukon.web.widgets.profileWidget.date">Date</entry>
+    <entry key="yukon.web.widgets.profileWidget.neverStop">Never Stop</entry>
         
     <!-- peakReportWidget/render.jsp -->
-    <entry key="yukon.web.widgets.peakReport.channel">Channel:</entry>
-    <entry key="yukon.web.widgets.peakReport.reportType">Report Type:</entry>
-    <entry key="yukon.web.widgets.peakReport.getReport.label">Get Report</entry>
-    <entry key="yukon.web.widgets.peakReport.getReport.labelBusy">Reading</entry>
-    <entry key="yukon.web.widgets.peakReport.notAuthorized">You are not authorized to view this report.</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.channel">Channel:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.reportType">Report Type:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.getReport.label">Get Report</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.getReport.labelBusy">Reading</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.notAuthorized">You are not authorized to view this report.</entry>
     <!-- peakReportWidget/peakSummaryReportResult.jsp -->
-    <entry key="yukon.web.widgets.peakReport.report">Report: {0}</entry>
-    <entry key="yukon.web.widgets.peakReport.period">Period:</entry>
-    <entry key="yukon.web.widgets.peakReport.avgDailyVsTotalUsage">Avg Daily / Total Usage:</entry>
-    <entry key="yukon.web.widgets.peakReport.kwhVsKwh">{0} / {1} kWH</entry>
-    <entry key="yukon.web.widgets.peakReport.kwh">{0} kWH</entry>
-    <entry key="yukon.web.widgets.peakReport.kw">{0} KW</entry>
-    <entry key="yukon.web.widgets.peakReport.peak">Peak {0}:</entry>
-    <entry key="yukon.web.widgets.peakReport.peakInterval">Peak Interval Demand:</entry>
-    <entry key="yukon.web.widgets.peakReport.peakDay">Peak Day Total Usage:</entry>
-    <entry key="yukon.web.widgets.peakReport.errorRead">There was an error reading the meter:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.report">Report: {0}</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.period">Period:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.avgDailyVsTotalUsage">Avg Daily / Total Usage:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.kwhVsKwh">{0} / {1} kWH</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.kwh">{0} kWH</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.kw">{0} KW</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.peak">Peak {0}:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.peakInterval">Peak Interval Demand:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.peakDay">Peak Day Total Usage:</entry>
+    <entry key="yukon.web.widgets.peakReportWidget.errorRead">There was an error reading the meter:</entry>
     
     <!-- pendingProfilesWidget/ongoingProfiles.jsp -->
-    <entry key="yukon.web.widgets.pendingProfiles.channel">Channel</entry>
-    <entry key="yukon.web.widgets.pendingProfiles.requestedBy">Requested By:</entry>
-    <entry key="yukon.web.widgets.pendingProfiles.none">None</entry>
+    <entry key="yukon.web.widgets.pendingProfilesWidget.channel">Channel</entry>
+    <entry key="yukon.web.widgets.pendingProfilesWidget.requestedBy">Requested By:</entry>
+    <entry key="yukon.web.widgets.pendingProfilesWidget.none">None</entry>
 </properties>

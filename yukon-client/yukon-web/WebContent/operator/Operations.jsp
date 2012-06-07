@@ -177,7 +177,7 @@
                 </cti:checkRole>
                 <cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DEMAND_RESPONSE">
                     <tags:sectionLink>
-                        <a href="/spring/dr/home"><cti:msg key="yukon.web.demandResponse" /></a>
+                        <a href="/spring/dr/home"><cti:msg key="yukon.web.operations.demandResponse" /></a>
                     </tags:sectionLink>
                 </cti:isPropertyTrue>
             </tags:operationSection>
@@ -208,7 +208,7 @@
             <tags:operationSection sectionName="${sectionTitle}" sectionImageName="HardwareInventoryLogo">
                 <cti:checkRole role="InventoryRole.ROLEID">
                     <tags:sectionLink>
-                        <a href="/spring/stars/operator/inventory/home"><cti:msg key="yukon.web.inventory"/></a>
+                        <a href="/spring/stars/operator/inventory/home"><cti:msg key="yukon.web.operations.inventory"/></a>
                     </tags:sectionLink>
                 </cti:checkRole>
                 <cti:checkProperty property="InventoryRole.PURCHASING_ACCESS">
@@ -235,7 +235,7 @@
 									</c:forEach>
 								</select> <input type="text" name="searchValue" id="invSearchValue"
 									value="" size="15"> <img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>"
-									alt="search" onClick="$('invSearchForm').submit();"
+									alt="search" onClick="$('invSearchForm').submit();" />
 							</div>
 						</form>
 					</div>

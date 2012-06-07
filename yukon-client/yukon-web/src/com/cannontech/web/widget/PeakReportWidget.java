@@ -133,7 +133,7 @@ public class PeakReportWidget extends WidgetControllerBase {
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             DecimalFormat formatter = new DecimalFormat("#0.#");
             mav.addObject("avgVsTotal", 
-                          messageSourceAccessor.getMessage("yukon.web.widget.peakReport.kwhVsKwh", 
+                          messageSourceAccessor.getMessage("yukon.web.widgets.peakReportWidget.kwhVsKwh", 
                                                            formatter.format(peakResult.getAverageDailyUsage()),
                                                            formatter.format(peakResult.getTotalUsage())));
             mav.addObject("peakResult", peakResult);

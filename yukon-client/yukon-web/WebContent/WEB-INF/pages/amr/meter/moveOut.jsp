@@ -20,7 +20,7 @@
     
         
 			        <div id="meterinfo" style="width: 600px">
-			            <ct:widget bean="meterInformation"
+			            <ct:widget bean="meterInformationWidget"
 			                identify="false" deviceId="${deviceId}"
 			                hideEnabled="false" />
 			        	<br>

@@ -21,6 +21,7 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -171,36 +172,31 @@ public class TrendWidget extends WidgetControllerBase {
         mav.addObject("stopDate", stopDateStr);
         mav.addObject("graphType", graphType);
         
-        if (!period.equals("NOPERIOD")) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+		if (!period.equals("NOPERIOD")) {
         	
         	
         	MessageSourceResolvable chartPeriodResolvable = new YukonMessageSourceResolvable(chartPeriod.getFormatKey());
         	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
         	MessageSourceResolvable attributeResolvable = new YukonMessageSourceResolvable(attribute.getFormatKey());
         	
-        	List<String> arguments = new ArrayList<String>();
-        	arguments.add(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(chartPeriodResolvable));
-        	arguments.add(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(converterTypeResolvable));
-        	arguments.add(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(attributeResolvable));
+        	String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.hasPeriod", 
+        			accessor.getMessage(chartPeriodResolvable),
+        			accessor.getMessage(converterTypeResolvable),
+        			accessor.getMessage(attributeResolvable));
         	
-        	MessageSourceResolvable titleResolvable = YukonMessageSourceResolvable.createSingleCodeWithArgumentList("yukon.web.widgets.trend.noPeriod", arguments);
-
-        	mav.addObject("title", 
-                          messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(titleResolvable));
+			mav.addObject("title", title);
         } else {
         	MessageSourceResolvable converterTypeResolvable = new YukonMessageSourceResolvable(attributeGraphType.getConverterType().getFormatKey() + ".label");
         	MessageSourceResolvable attributeResolvable = new YukonMessageSourceResolvable(attribute.getFormatKey());
         	
-        	List<String> arguments = new ArrayList<String>();
-        	arguments.add(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(converterTypeResolvable));
-        	arguments.add(messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(attributeResolvable));
-        	arguments.add(startDateStr);
-        	arguments.add(stopDateStr);
+        	String title = accessor.getMessage("yukon.web.widgetClasses.TrendWidget.noPeriod",
+        			accessor.getMessage(converterTypeResolvable),
+        			accessor.getMessage(attributeResolvable),
+        			startDateStr,
+        			stopDateStr);
         	
-        	MessageSourceResolvable titleResolvable = YukonMessageSourceResolvable.createSingleCodeWithArgumentList("yukon.web.widgets.trend.noPeriod", arguments);
-        	
-            mav.addObject("title",
-            		messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(titleResolvable));
+            mav.addObject("title", title);
         }
         
         mav.addObject("pointId", pointId);

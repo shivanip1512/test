@@ -235,7 +235,7 @@
 			</td>
 			
 			<td class="widgetColumnCell" valign="top">
-				<tags:widget bean="operatorAccountSearch"/>
+				<tags:widget bean="operatorAccountSearchWidget"/>
 			</td>
 		</tr>
 	</table>

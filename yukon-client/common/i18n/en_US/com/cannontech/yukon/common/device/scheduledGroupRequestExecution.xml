@@ -4,25 +4,25 @@
     <!-- breadcrumb placeholder -->
     <entry key="yukon.web.modules.amr.scheduledGroupRequestProcessing.pageName">Scheduled Group Request Processing</entry>
 
-    <!-- ScheduledGroupRequestExecution render.jsp -->
+    <!-- ScheduledGroupRequestExecutionWidget render.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.noSchedules">No Schedules</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.viewDetails">View Details</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.viewDetailsWithAdditional">View Details ({0} {0, choice, 1#Job|1&lt;Jobs} Not Shown)</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.tableHeader.scheduleName">Name</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.tableHeader.scheduleDescription">Run Schedule</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.tableHeader.status">Status</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.tableHeader.enabled">Enabled</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.edit.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.edit.hoverUrl">/WebConfig/yukon/Icons/script_over.gif</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.edit.hoverText">Edit Schedule Details ({0})</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
-	<entry key="yukon.web.widgets.scheduledGroupRequestExecution.enable.hoverText">Enable ({0})</entry>
-	<entry key="yukon.web.widgets.scheduledGroupRequestExecution.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.disable.hoverText">Disable ({0})</entry>
-    <entry key="yukon.web.widgets.scheduledGroupRequestExecution.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.noSchedules">No Schedules</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.viewDetails">View Details</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.viewDetailsWithAdditional">View Details ({0} {0, choice, 1#Job|1&lt;Jobs} Not Shown)</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.scheduleName">Name</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.scheduleDescription">Run Schedule</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.status">Status</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tableHeader.enabled">Enabled</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.edit.imageUrl">/WebConfig/yukon/Icons/script.gif</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.edit.hoverUrl">/WebConfig/yukon/Icons/script_over.gif</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.edit.hoverText">Edit Schedule Details ({0})</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tooltip.running">{0} Success / {1} Missed / {2} Total</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.tooltip.notRunning">Last Run: {0} Success / {1} Missed / {2} Total</entry>
+	<entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.enable.hoverText">Enable ({0})</entry>
+	<entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.enable.imageUrl">/WebConfig/yukon/Icons/gray_circle.png</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.disable.hoverText">Disable ({0})</entry>
+    <entry key="yukon.web.widgets.scheduledGroupRequestExecutionWidget.disable.imageUrl">/WebConfig/yukon/Icons/green_circle.png</entry>
     
     <!-- ScheduledGroupRequestExecutionController home.jsp -->
     <!-- ================================================================================================================================================= -->

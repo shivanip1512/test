@@ -2,224 +2,149 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     <!-- meterSearchWidget/render.jsp -->
-    <entry key="yukon.web.widgets.meterSearch.search.label">Search</entry>
+    <entry key="yukon.web.widgets.meterSearchWidget.search.label">Search</entry>
     
-    <!-- MeterInformationWidget/render.jsp -->
-    <entry key="yukon.web.widgets.meterInformation.deviceName">Device Name</entry>
-    <entry key="yukon.web.widgets.meterInformation.meterNumber">Meter Number</entry>
-    <entry key="yukon.web.widgets.meterInformation.type">Type</entry>
-    <entry key="yukon.web.widgets.meterInformation.physicalAddress">Physical Address</entry>
-    <entry key="yukon.web.widgets.meterInformation.route">Route</entry>
-    <entry key="yukon.web.widgets.meterInformation.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.widgets.meterInformation.model">Model</entry>
-    <entry key="yukon.web.widgets.meterInformation.manufacturer">Manufacturer</entry>
-    <entry key="yukon.web.widgets.meterInformation.status">Status</entry>
-    <entry key="yukon.web.widgets.meterInformation.ping.label">Ping</entry>
-    <entry key="yukon.web.widgets.meterInformation.ping.labelBusy">Pinging</entry>
-    <entry key="yukon.web.widgets.meterInformation.disabled">Disabled</entry>
-    <entry key="yukon.web.widgets.meterInformation.enabled">Enabled</entry>
+    <!-- meterInformationWidget/render.jsp -->
+    <entry key="yukon.web.widgets.meterInformationWidget.deviceName">Device Name</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.meterNumber">Meter Number</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.type">Type</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.physicalAddress">Physical Address</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.route">Route</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.model">Model</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.manufacturer">Manufacturer</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.status">Status</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.ping.label">Ping</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.ping.labelBusy">Pinging</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.disabled">Disabled</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.enabled">Enabled</entry>
     <!-- meterReadingsResult.tag -->
-    <entry key="yukon.web.widgets.meterInformation.successReading">Successful Read</entry>  
-    <entry key="yukon.web.widgets.meterInformation.errorReading">There was an error reading the meter:</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.successReading">Successful Read</entry>  
+    <entry key="yukon.web.widgets.meterInformationWidget.errorReading">There was an error reading the meter:</entry>
 
     <!-- meterReadingsWidget/render.jsp -->
-    <entry key="yukon.web.widgets.meterReadings.unsupported">Unsupported</entry>
-    <entry key="yukon.web.widgets.meterReadings.notConfigured">Not Configured</entry>
-    <entry key="yukon.web.widgets.meterReadings.previousUsage">Previous Usage Reading</entry>
-    <entry key="yukon.web.widgets.meterReadings.totalConsumption">Total Consumption</entry>
-    <entry key="yukon.web.widgets.meterReadings.readNow.label">Read Now</entry>
-    <entry key="yukon.web.widgets.meterReadings.readNow.labelBusy">Reading</entry>
-    <entry key="yukon.web.widgets.meterReadings.argumentStub">{0}</entry>
-    <entry key="yukon.web.widgets.meterReadings.threePhaseVoltage">Phase A Voltage</entry>
-
-    <entry key="yukon.web.widgets.waterMeterReadings.unsupported">Unsupported</entry>
-    <entry key="yukon.web.widgets.waterMeterReadings.notConfigured">Not Configured</entry>
-    <entry key="yukon.web.widgets.waterMeterReadings.previousUsage">Previous Usage Reading</entry>
-    <entry key="yukon.web.widgets.waterMeterReadings.totalConsumption">Total Consumption</entry>
-    <entry key="yukon.web.widgets.waterMeterReadings.readNow.label">Read Now</entry>
-    <entry key="yukon.web.widgets.waterMeterReadings.readNow.labelBusy">Reading</entry>
-    <entry key="yukon.web.widgets.waterMeterReadings.argumentStub">{0}</entry>
-    <entry key="yukon.web.widgets.waterMeterReadings.threePhaseVoltage">Phase A Voltage</entry>
-
-    <entry key="yukon.web.widgets.polyphaseMeterReadings.unsupported">Unsupported</entry>
-    <entry key="yukon.web.widgets.polyphaseMeterReadings.notConfigured">Not Configured</entry>
-    <entry key="yukon.web.widgets.polyphaseMeterReadings.previousUsage">Previous Usage Reading</entry>
-    <entry key="yukon.web.widgets.polyphaseMeterReadings.totalConsumption">Total Consumption</entry>
-    <entry key="yukon.web.widgets.polyphaseMeterReadings.readNow.label">Read Now</entry>
-    <entry key="yukon.web.widgets.polyphaseMeterReadings.readNow.labelBusy">Reading</entry>
-    <entry key="yukon.web.widgets.polyphaseMeterReadings.argumentStub">{0}</entry>
-    <entry key="yukon.web.widgets.polyphaseMeterReadings.threePhaseVoltage">Phase A Voltage</entry>
-
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.unsupported">Unsupported</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.notConfigured">Not Configured</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.previousUsage">Previous Usage Reading</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.totalConsumption">Total Consumption</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow.label">Read Now</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.readNow.labelBusy">Reading</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.argumentStub">{0}</entry>
+    <entry key="yukon.web.widgetClasses.MeterReadingsWidget.threePhaseVoltage">Phase A Voltage</entry>
 
     <!-- common/rfnMeterReadingsResult.jsp -->
-    <entry key="yukon.web.widgets.rfnMeterInfo.errorSending">There was an error sending the read request:</entry>
-    <entry key="yukon.web.widgets.rfnMeterInfo.successSending">Read request sent successfully.</entry>
+    <entry key="yukon.web.widgets.rfnMeterInfoWidget.errorSending">There was an error sending the read request:</entry>
+    <entry key="yukon.web.widgets.rfnMeterInfoWidget.successSending">Read request sent successfully.</entry>
     
     <!-- accountInformationWidget/accountInfo.jsp -->
-    <entry key="yukon.web.widgets.accountInformation.noVendor">No primary CIS vendor set.</entry>
-    <entry key="yukon.web.widgets.accountInformation.viewDetails">View CIS Details</entry>
-    <entry key="yukon.web.widgets.accountInformation.custInfo">Customer Information:</entry>
-    <entry key="yukon.web.widgets.accountInformation.serviceLocation">Service Location</entry>
-    <entry key="yukon.web.widgets.accountInformation.name">Name</entry>
-    <entry key="yukon.web.widgets.accountInformation.dba">DBA</entry>
-    <entry key="yukon.web.widgets.accountInformation.custNumber">Customer Number</entry>
-    <entry key="yukon.web.widgets.accountInformation.acctNumber">Account Number</entry>
-    <entry key="yukon.web.widgets.accountInformation.siteNumber">Site Number</entry>
-    <entry key="yukon.web.widgets.accountInformation.mapLocation">Map Location</entry>
-    <entry key="yukon.web.widgets.accountInformation.address">Address</entry>
-    <entry key="yukon.web.widgets.accountInformation.phoneNumber">Phone Number</entry>
-    <entry key="yukon.web.widgets.accountInformation.emailAddress">Email</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.noVendor">No primary CIS vendor set.</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.viewDetails">View CIS Details</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.custInfo">Customer Information:</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.serviceLocation">Service Location</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.name">Name</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.dba">DBA</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.custNumber">Customer Number</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.acctNumber">Account Number</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.siteNumber">Site Number</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.mapLocation">Map Location</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.address">Address</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.phoneNumber">Phone Number</entry>
+    <entry key="yukon.web.widgets.accountInformationWidget.emailAddress">Email</entry>
     
     <!-- cayentaAccountInformationWidget/accountInfo.jsp -->
-    <entry key="yukon.web.widgets.cayentaAccountInformation.custInfo">Customer Information:</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformation.acctNumber">Account Number</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformation.name">Name</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformation.locationNum">Location Number</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformation.serviceAddr">Service Address</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformation.meterSerial">Meter Serial Number</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformation.phoneNum">Phone Number</entry>
-    <entry key="yukon.web.widgets.cayentaAccountInformation.mapNum">Map Number</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.custInfo">Customer Information:</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.acctNumber">Account Number</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.name">Name</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.locationNum">Location Number</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.serviceAddr">Service Address</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.meterSerial">Meter Serial Number</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.phoneNum">Phone Number</entry>
+    <entry key="yukon.web.widgets.cayentaAccountInformationWidget.mapNum">Map Number</entry>
 
     <!-- trendWidget/render.jsp -->
-    <entry key="yukon.web.widgets.csrTrend.whatsThis">What's this?</entry>
-    <entry key="yukon.web.widgets.csrTrend.graphType">Graph Type:</entry>
-    <entry key="yukon.web.widgets.csrTrend.timePeriod">Time Period:</entry>
-    <entry key="yukon.web.widgets.csrTrend.prev24HourData">Previous 24 hours' data</entry>
-    <entry key="yukon.web.widgets.csrTrend.prevWeeksData">Previous week's data</entry>
-    <entry key="yukon.web.widgets.csrTrend.prevMonthsData">Previous month's data</entry>
-    <entry key="yukon.web.widgets.csrTrend.prev3MonthsData">Previous 3 months' data</entry>
-    <entry key="yukon.web.widgets.csrTrend.prevYearsData">Previous year's data</entry>
-    <entry key="yukon.web.widgets.csrTrend.customDateRange">Custom Date Range</entry>
-    <entry key="yukon.web.widgets.csrTrend.oneDay">1D</entry>
-    <entry key="yukon.web.widgets.csrTrend.oneWeek">1W</entry>
-    <entry key="yukon.web.widgets.csrTrend.oneMonth">1M</entry>
-    <entry key="yukon.web.widgets.csrTrend.threeMonths">3M</entry>
-    <entry key="yukon.web.widgets.csrTrend.oneYear">1Y</entry>
-    <entry key="yukon.web.widgets.csrTrend.custom">Custom</entry>
-    <entry key="yukon.web.widgets.csrTrend.reloadUsingCustomDates.label">Reload Graph Using Custom Dates</entry>
-    <entry key="yukon.web.widgets.csrTrend.reloadUsingCustomDates.imageUrl">/WebConfig/yukon/Icons/arrow_refresh.png</entry>
-    <entry key="yukon.web.widgets.csrTrend.reloadUsingCustomDates.hoverUrl">/WebConfig/yukon/Icons/arrow_refresh_over.png</entry>
-    <entry key="yukon.web.widgets.csrTrend.chartStyle">Chart Style:</entry>
-    <entry key="yukon.web.widgets.csrTrend.line">Line</entry>
-    <entry key="yukon.web.widgets.csrTrend.lineGraph">Line Graph</entry>
-    <entry key="yukon.web.widgets.csrTrend.column">Column</entry>
-    <entry key="yukon.web.widgets.csrTrend.columnGraph">Column Graph</entry>
-    <entry key="yukon.web.widgets.csrTrend.archivedUsageData">Archived Usage Data</entry>
-    <entry key="yukon.web.widgets.csrTrend.tabularUsageData">Tabular Usage Data</entry>
-    <entry key="yukon.web.widgets.csrTrend.normalizedUsageData">Normalized Usage Data:</entry>
-    <entry key="yukon.web.widgets.csrTrend.noTrendsAvailable">No trends available for device</entry>
-
-    <entry key="yukon.web.widgets.hbcTrend.whatsThis">What's this?</entry>
-    <entry key="yukon.web.widgets.hbcTrend.graphType">Graph Type:</entry>
-    <entry key="yukon.web.widgets.hbcTrend.timePeriod">Time Period:</entry>
-    <entry key="yukon.web.widgets.hbcTrend.prev24HourData">Previous 24 hours' data</entry>
-    <entry key="yukon.web.widgets.hbcTrend.prevWeeksData">Previous week's data</entry>
-    <entry key="yukon.web.widgets.hbcTrend.prevMonthsData">Previous month's data</entry>
-    <entry key="yukon.web.widgets.hbcTrend.prev3MonthsData">Previous 3 months' data</entry>
-    <entry key="yukon.web.widgets.hbcTrend.prevYearsData">Previous year's data</entry>
-    <entry key="yukon.web.widgets.hbcTrend.customDateRange">Custom Date Range</entry>
-    <entry key="yukon.web.widgets.hbcTrend.oneDay">1D</entry>
-    <entry key="yukon.web.widgets.hbcTrend.oneWeek">1W</entry>
-    <entry key="yukon.web.widgets.hbcTrend.oneMonth">1M</entry>
-    <entry key="yukon.web.widgets.hbcTrend.threeMonths">3M</entry>
-    <entry key="yukon.web.widgets.hbcTrend.oneYear">1Y</entry>
-    <entry key="yukon.web.widgets.hbcTrend.custom">Custom</entry>
-    <entry key="yukon.web.widgets.hbcTrend.reloadUsingCustomDates.label">Reload Graph Using Custom Dates</entry>
-    <entry key="yukon.web.widgets.hbcTrend.reloadUsingCustomDates.imageUrl">/WebConfig/yukon/Icons/arrow_refresh.png</entry>
-    <entry key="yukon.web.widgets.hbcTrend.reloadUsingCustomDates.hoverUrl">/WebConfig/yukon/Icons/arrow_refresh_over.png</entry>
-    <entry key="yukon.web.widgets.hbcTrend.chartStyle">Chart Style:</entry>
-    <entry key="yukon.web.widgets.hbcTrend.line">Line</entry>
-    <entry key="yukon.web.widgets.hbcTrend.lineGraph">Line Graph</entry>
-    <entry key="yukon.web.widgets.hbcTrend.column">Column</entry>
-    <entry key="yukon.web.widgets.hbcTrend.columnGraph">Column Graph</entry>
-    <entry key="yukon.web.widgets.hbcTrend.archivedUsageData">Archived Usage Data</entry>
-    <entry key="yukon.web.widgets.hbcTrend.tabularUsageData">Tabular Usage Data</entry>
-    <entry key="yukon.web.widgets.hbcTrend.normalizedUsageData">Normalized Usage Data:</entry>
-    <entry key="yukon.web.widgets.hbcTrend.noTrendsAvailable">No trends available for device</entry>
-
-    <entry key="yukon.web.widgets.waterCsrTrend.whatsThis">What's this?</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.graphType">Graph Type:</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.timePeriod">Time Period:</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.prev24HourData">Previous 24 hours' data</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.prevWeeksData">Previous week's data</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.prevMonthsData">Previous month's data</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.prev3MonthsData">Previous 3 months' data</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.prevYearsData">Previous year's data</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.customDateRange">Custom Date Range</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.oneDay">1D</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.oneWeek">1W</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.oneMonth">1M</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.threeMonths">3M</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.oneYear">1Y</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.custom">Custom</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.reloadUsingCustomDates.label">Reload Graph Using Custom Dates</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.reloadUsingCustomDates.imageUrl">/WebConfig/yukon/Icons/arrow_refresh.png</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.reloadUsingCustomDates.hoverUrl">/WebConfig/yukon/Icons/arrow_refresh_over.png</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.chartStyle">Chart Style:</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.line">Line</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.lineGraph">Line Graph</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.column">Column</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.columnGraph">Column Graph</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.archivedUsageData">Archived Usage Data</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.tabularUsageData">Tabular Usage Data</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.normalizedUsageData">Normalized Usage Data:</entry>
-    <entry key="yukon.web.widgets.waterCsrTrend.noTrendsAvailable">No trends available for device</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.whatsThis">What's this?</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.graphType">Graph Type:</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.timePeriod">Time Period:</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prev24HourData">Previous 24 hours' data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevWeeksData">Previous week's data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevMonthsData">Previous month's data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prev3MonthsData">Previous 3 months' data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.prevYearsData">Previous year's data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.customDateRange">Custom Date Range</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.oneDay">1D</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.oneWeek">1W</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.oneMonth">1M</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.threeMonths">3M</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.oneYear">1Y</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.custom">Custom</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.label">Reload Graph Using Custom Dates</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.imageUrl">/WebConfig/yukon/Icons/arrow_refresh.png</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.reloadUsingCustomDates.hoverUrl">/WebConfig/yukon/Icons/arrow_refresh_over.png</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.chartStyle">Chart Style:</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.line">Line</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.lineGraph">Line Graph</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.column">Column</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.columnGraph">Column Graph</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.archivedUsageData">Archived Usage Data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.tabularUsageData">Tabular Usage Data</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
+    <entry key="yukon.web.widgetClasses.TrendWidget.noTrendsAvailable">No trends available for device</entry>
 
    <!-- meterOutagesWidget/render.jsp -->
-    <entry key="yukon.web.widgets.meterOutages.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>
-    <entry key="yukon.web.widgets.meterOutages.read.label">Read Now</entry>
-    <entry key="yukon.web.widgets.meterOutages.read.labelBusy">Reading</entry>
-    <entry key="yukon.web.widgets.meterOutages.outagesLastRetrieved">Outages Last Retrieved</entry>
-    <entry key="yukon.web.widgets.meterOutages.outageLogPointNotConfigured">Outage Log Analog Point is not configured.</entry>
-    <entry key="yukon.web.widgets.meterOutages.log">Log</entry>
-    <entry key="yukon.web.widgets.meterOutages.time">Time</entry>
-    <entry key="yukon.web.widgets.meterOutages.duration">Duration</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.read.label">Read Now</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.read.labelBusy">Reading</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.outagesLastRetrieved">Outages Last Retrieved</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.outageLogPointNotConfigured">Outage Log Analog Point is not configured.</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.log">Log</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.time">Time</entry>
+    <entry key="yukon.web.widgets.meterOutagesWidget.duration">Duration</entry>
 
     <!-- configWidget/render.jsp -->
-    <entry key="yukon.web.widgets.config.currentConfigurations">Current Configuration</entry>
-    <entry key="yukon.web.widgets.config.deviceConfigurations">Device Configurations</entry>
-    <entry key="yukon.web.widgets.config.assign.label">Assign</entry>
-    <entry key="yukon.web.widgets.config.assign.labelBusy">Assigning</entry>
-    <entry key="yukon.web.widgets.config.send.label">Send</entry>
-    <entry key="yukon.web.widgets.config.send.labelBusy">Sending</entry>
-    <entry key="yukon.web.widgets.config.read.label">Read</entry>
-    <entry key="yukon.web.widgets.config.read.labelBusy">Reading</entry>
-    <entry key="yukon.web.widgets.config.verify.label">Verify</entry>
-    <entry key="yukon.web.widgets.config.verify.labelBusy">Verifying</entry>
-    <entry key="yukon.web.widgets.config.noConfigurations">There are no existing configurations.</entry>
+    <entry key="yukon.web.widgets.configWidget.currentConfigurations">Current Configuration</entry>
+    <entry key="yukon.web.widgets.configWidget.deviceConfigurations">Device Configurations</entry>
+    <entry key="yukon.web.widgets.configWidget.assign.label">Assign</entry>
+    <entry key="yukon.web.widgets.configWidget.assign.labelBusy">Assigning</entry>
+    <entry key="yukon.web.widgets.configWidget.send.label">Send</entry>
+    <entry key="yukon.web.widgets.configWidget.send.labelBusy">Sending</entry>
+    <entry key="yukon.web.widgets.configWidget.read.label">Read</entry>
+    <entry key="yukon.web.widgets.configWidget.read.labelBusy">Reading</entry>
+    <entry key="yukon.web.widgets.configWidget.verify.label">Verify</entry>
+    <entry key="yukon.web.widgets.configWidget.verify.labelBusy">Verifying</entry>
+    <entry key="yukon.web.widgets.configWidget.noConfigurations">There are no existing configurations.</entry>
     
     <!-- configWidget/configWidgetResult.jsp -->
-    <entry key="yukon.web.widgets.config.inSync">In Sync</entry>
-    <entry key="yukon.web.widgets.config.fail">Failed</entry>
-    <entry key="yukon.web.widgets.config.verifyResult">Verify Result</entry>
-    <entry key="yukon.web.widgets.config.sendResult">Send Result</entry>
-    <entry key="yukon.web.widgets.config.readResult">Read Result</entry>
-    <entry key="yukon.web.widgets.config.sendConfigSuccess">Config Sent Successfully</entry>
-    <entry key="yukon.web.widgets.config.sendConfigFail">Failed</entry>
-    <entry key="yukon.web.widgets.config.readSentSuccess">Read Performed Successfully</entry>
+    <entry key="yukon.web.widgets.configWidget.inSync">In Sync</entry>
+    <entry key="yukon.web.widgets.configWidget.fail">Failed</entry>
+    <entry key="yukon.web.widgets.configWidget.verifyResult">Verify Result</entry>
+    <entry key="yukon.web.widgets.configWidget.sendResult">Send Result</entry>
+    <entry key="yukon.web.widgets.configWidget.readResult">Read Result</entry>
+    <entry key="yukon.web.widgets.configWidget.sendConfigSuccess">Config Sent Successfully</entry>
+    <entry key="yukon.web.widgets.configWidget.sendConfigFail">Failed</entry>
+    <entry key="yukon.web.widgets.configWidget.readSentSuccess">Read Performed Successfully</entry>
 
     <!-- touWidget/render.jsp -->
-    <entry key="yukon.web.widgets.tou.title">Tou Readings</entry>
-    <entry key="yukon.web.widgets.tou.notConfigured">Tou Widget not configured.</entry>
-    <entry key="yukon.web.widgets.tou.rateA">A</entry>
-    <entry key="yukon.web.widgets.tou.rateB">B</entry>
-    <entry key="yukon.web.widgets.tou.rateC">C</entry>
-    <entry key="yukon.web.widgets.tou.rateD">D</entry>
-    <entry key="yukon.web.widgets.tou.read.label">Read Now</entry>
-    <entry key="yukon.web.widgets.tou.read.labelBusy">Reading</entry>
-    <entry key="yukon.web.widgets.tou.errorReading">There was an error reading the meter:</entry>
-    <entry key="yukon.web.widgets.tou.successReading">Successful Read</entry>
-    <entry key="yukon.web.widgets.tou.dailyReadings">Daily readings (before {0})</entry>
-    <entry key="yukon.web.widgets.tou.recentReadings">Recent Readings (since {0})</entry>
-    <entry key="yukon.web.widgets.tou.currentReading">{0} Reading</entry>
-    <entry key="yukon.web.widgets.tou.previousReadings">Previous {0} Readings</entry>
-    <entry key="yukon.web.widgets.tou.totalConsumption">Total Consumption</entry>
-    <entry key="yukon.web.widgets.tou.previousReadingsLink">View Historical Readings</entry>
+    <entry key="yukon.web.widgets.touWidget.title">Tou Readings</entry>
+    <entry key="yukon.web.widgets.touWidget.notConfigured">Tou Widget not configured.</entry>
+    <entry key="yukon.web.widgets.touWidget.rateA">A</entry>
+    <entry key="yukon.web.widgets.touWidget.rateB">B</entry>
+    <entry key="yukon.web.widgets.touWidget.rateC">C</entry>
+    <entry key="yukon.web.widgets.touWidget.rateD">D</entry>
+    <entry key="yukon.web.widgets.touWidget.read.label">Read Now</entry>
+    <entry key="yukon.web.widgets.touWidget.read.labelBusy">Reading</entry>
+    <entry key="yukon.web.widgets.touWidget.errorReading">There was an error reading the meter:</entry>
+    <entry key="yukon.web.widgets.touWidget.successReading">Successful Read</entry>
+    <entry key="yukon.web.widgets.touWidget.dailyReadings">Daily readings (before {0})</entry>
+    <entry key="yukon.web.widgets.touWidget.recentReadings">Recent Readings (since {0})</entry>
+    <entry key="yukon.web.widgets.touWidget.currentReading">{0} Reading</entry>
+    <entry key="yukon.web.widgets.touWidget.previousReadings">Previous {0} Readings</entry>
+    <entry key="yukon.web.widgets.touWidget.totalConsumption">Total Consumption</entry>
+    <entry key="yukon.web.widgets.touWidget.previousReadingsLink">View Historical Readings</entry>
 
     <!-- touScheduleWidget/render.jsp --> 
-    <entry key="yukon.web.widgets.touSchedule.downloadSchedule.label">Download TOU Schedule</entry>
-    <entry key="yukon.web.widgets.touSchedule.downloadSchedule.labelBusy">Downloading TOU Schedule</entry>
-    <entry key="yukon.web.widgets.touSchedule.noSchedules">No Schedules</entry>
-    <entry key="yukon.web.widgets.touSchedule.errorReading">There was an error reading the meter:</entry>
-    <entry key="yukon.web.widgets.touSchedule.successReading">Successful Download</entry>
+    <entry key="yukon.web.widgets.touScheduleWidget.downloadSchedule.label">Download TOU Schedule</entry>
+    <entry key="yukon.web.widgets.touScheduleWidget.downloadSchedule.labelBusy">Downloading TOU Schedule</entry>
+    <entry key="yukon.web.widgets.touScheduleWidget.noSchedules">No Schedules</entry>
+    <entry key="yukon.web.widgets.touScheduleWidget.errorReading">There was an error reading the meter:</entry>
+    <entry key="yukon.web.widgets.touScheduleWidget.successReading">Successful Download</entry>
 </properties>

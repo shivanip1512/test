@@ -353,9 +353,9 @@
         <%-- PENDING --%>
         <tags:widgetContainer deviceId="${deviceId}" identify="false">
         
-            <tags:widget bean="meterInformation" width="500px" identify="false" deviceId="${deviceId}" hideEnabled="false" />
+            <tags:widget bean="meterInformationWidget" width="500px" identify="false" deviceId="${deviceId}" hideEnabled="false" />
             <br>
-            <tags:widget bean="pendingProfiles" width="500px" identify="false" deviceId="${deviceId}" hideEnabled="false" />
+            <tags:widget bean="pendingProfilesWidget" width="500px" identify="false" deviceId="${deviceId}" hideEnabled="false" />
             
         </tags:widgetContainer>
     

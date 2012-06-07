@@ -159,7 +159,7 @@
         <property name="required" value="true"/>
     </bean>
     
-    <bean id="meterSearch"
+    <bean id="meterSearchWidget"
     	class="com.cannontech.web.widget.MeterSearchWidget">
     	<property name="roleAndPropertiesChecker">
 	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
@@ -168,7 +168,7 @@
 	   	</property>
     </bean>
 
-    <bean id="accountInformation"
+    <bean id="accountInformationWidget"
     	class="com.cannontech.web.widget.AccountInformationWidget">
     	<property name="identityPath" value="common/deviceIdentity.jsp" />
     	<property name="lazyLoad" value="true" />
@@ -184,7 +184,7 @@
 	   	</property>
     </bean>
     
-    <bean id="cayentaAccountInformation"
+    <bean id="cayentaAccountInformationWidget"
     	class="com.cannontech.web.widget.CayentaAccountInformationWidget">
     	<property name="identityPath" value="common/deviceIdentity.jsp" />
     	<property name="lazyLoad" value="true" />
@@ -200,7 +200,7 @@
 	   	</property>
     </bean>
 
-	<bean id="deviceGroup"
+	<bean id="deviceGroupWidget"
     	class="com.cannontech.web.widget.DeviceGroupWidget">
 		<property name="lazyLoad" value="true" />
     	<property name="inputs">
@@ -215,7 +215,7 @@
         <property name="deviceGroupService" ref="deviceGroupService"/>
     </bean>
 
-	<bean id="tou"
+	<bean id="touWidget"
     	class="com.cannontech.web.widget.TouWidget">
     	<property name="inputs">
            <set>
@@ -229,7 +229,7 @@
 	   	</property>
     </bean>
     
-    <bean id="config"
+    <bean id="configWidget"
         class="com.cannontech.web.widget.ConfigWidget">
         <property name="inputs">
            <set>
@@ -247,7 +247,7 @@
         <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
     </bean>
 
-    <bean id="disconnectMeter"
+    <bean id="disconnectMeterWidget"
     	class="com.cannontech.web.widget.DisconnectMeterWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
@@ -270,7 +270,7 @@
         <property name="deviceDao" ref="deviceDao" />
     </bean>
     
-    <bean id="rfnMeterDisconnect" class="com.cannontech.web.widget.RfnMeterDisconnectWidget">
+    <bean id="rfnMeterDisconnectWidget" class="com.cannontech.web.widget.RfnMeterDisconnectWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -284,7 +284,7 @@
         </property>
     </bean>
     
-    <bean id="rfnOutages" class="com.cannontech.web.widget.RfnOutagesWidget">
+    <bean id="rfnOutagesWidget" class="com.cannontech.web.widget.RfnOutagesWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -298,7 +298,7 @@
         </property>
     </bean>
     
-    <bean id="meterEvents" class="com.cannontech.web.widget.MeterEventsWidget">
+    <bean id="meterEventsWidget" class="com.cannontech.web.widget.MeterEventsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
 		<property name="lazyLoad" value="true" />
         <property name="inputs">
@@ -313,7 +313,7 @@
         </property>
     </bean>
     
-    <bean id="meterOutages"
+    <bean id="meterOutagesWidget"
     	class="com.cannontech.web.widget.MeterOutagesWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
@@ -331,7 +331,7 @@
         <property name="meterDao" ref="meterDao"/>
     </bean>
     
-    <bean id="meterInformation"
+    <bean id="meterInformationWidget"
     	class="com.cannontech.web.widget.MeterInformationWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
@@ -349,7 +349,7 @@
         <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
     </bean>
     
-    <bean id="simpleAttribute"
+    <bean id="simpleAttributesWidget"
         class="com.cannontech.web.widget.SimpleAttributesWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
@@ -368,7 +368,7 @@
         <property name="deviceDao" ref="deviceDao"/>
     </bean>
     
-    <bean id="touSchedule"
+    <bean id="touScheduleWidget"
         class="com.cannontech.web.widget.TouScheduleWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
@@ -386,7 +386,7 @@
         <property name="databaseCache" ref="databaseCache"/>
     </bean>
     
-    <bean id="meterReadings" class="com.cannontech.web.widget.MeterReadingsWidget">
+    <bean id="meterReadingsWidget" class="com.cannontech.web.widget.MeterReadingsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -416,7 +416,7 @@
         </property>
     </bean>
     
-    <bean id="polyphaseMeterReadings" class="com.cannontech.web.widget.MeterReadingsWidget">
+    <bean id="polyphaseMeterReadingsWidget" class="com.cannontech.web.widget.MeterReadingsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -448,7 +448,7 @@
         </property>
     </bean>
 
-    <bean id="waterMeterReadings" class="com.cannontech.web.widget.MeterReadingsWidget">
+    <bean id="waterMeterReadingsWidget" class="com.cannontech.web.widget.MeterReadingsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -475,7 +475,7 @@
         </property>
     </bean>
     
-    <bean id="rfnMeterInfo" class="com.cannontech.web.widget.RfnMeterInfoWidget">
+    <bean id="rfnMeterInfoWidget" class="com.cannontech.web.widget.RfnMeterInfoWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -489,7 +489,7 @@
 	   	</property>
     </bean>
     
-    <bean id="miniTdc"
+    <bean id="miniTdcWidget"
     	class="com.cannontech.web.widget.MiniTdcWidget">
         <property name="identityPath" value="miniTdcWidget/identity.jsp" />
         <property name="inputs">
@@ -506,7 +506,7 @@
         <property name="paoDao" ref="paoDao"/>
     </bean>
     
-    <bean id="profileCollection"
+    <bean id="profileWidget"
     	class="com.cannontech.web.widget.ProfileWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
@@ -521,7 +521,7 @@
 	   	</property>
     </bean>
     
-    <bean id="pendingProfiles"
+    <bean id="pendingProfilesWidget"
      class="com.cannontech.web.widget.PendingProfilesWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
@@ -539,7 +539,7 @@
         
     </bean>
     
-    <bean id="userPermissionEditor"
+    <bean id="userPermissionEditorWidget"
     	class="com.cannontech.web.widget.UserPermissionEditorWidget">
         <property name="identityPath" value="common/userPermissionIdentity.jsp" />
         <property name="inputs">
@@ -560,7 +560,7 @@
         <property name="editorService" ref="userEditorService"/>
     </bean>
     
-    <bean id="groupPermissionEditor"
+    <bean id="groupPermissionEditorWidget"
     	class="com.cannontech.web.widget.GroupPermissionEditorWidget">
         <property name="identityPath" value="common/groupPermissionIdentity.jsp" />
         <property name="inputs">
@@ -581,7 +581,7 @@
         <property name="editorService" ref="groupEditorService"/>
     </bean>
 
-    <bean id="peakReport"
+    <bean id="peakReportWidget"
     	class="com.cannontech.web.widget.PeakReportWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
@@ -601,7 +601,7 @@
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
     
-    <bean id="outageMonitors" class="com.cannontech.web.widget.OutageMonitorsWidget">
+    <bean id="outageMonitorsWidget" class="com.cannontech.web.widget.OutageMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
 	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
@@ -610,7 +610,7 @@
 	   	</property>
     </bean>
     
-    <bean id="tamperFlagMonitors" class="com.cannontech.web.widget.TamperFlagMonitorsWidget">
+    <bean id="tamperFlagMonitorsWidget" class="com.cannontech.web.widget.TamperFlagMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
 	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
@@ -619,7 +619,7 @@
 	   	</property>
     </bean>
     
-    <bean id="statusPointMonitors" class="com.cannontech.web.widget.StatusPointMonitorsWidget">
+    <bean id="statusPointMonitorsWidget" class="com.cannontech.web.widget.StatusPointMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
@@ -628,7 +628,7 @@
         </property>
     </bean>
     
-    <bean id="porterResponseMonitors" class="com.cannontech.web.widget.PorterResponseMonitorsWidget">
+    <bean id="porterResponseMonitorsWidget" class="com.cannontech.web.widget.PorterResponseMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
@@ -637,7 +637,7 @@
         </property>
     </bean>
 
-    <bean id="validationMonitors" class="com.cannontech.web.widget.ValidationMonitorsWidget">
+    <bean id="validationMonitorsWidget" class="com.cannontech.web.widget.ValidationMonitorsWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
@@ -646,7 +646,7 @@
         </property>
     </bean>
     
-    <bean id="deviceReconfigMonitors" class="com.cannontech.web.widget.DeviceReconfigMonitorsWidget">
+    <bean id="deviceReconfigMonitorsWidget" class="com.cannontech.web.widget.DeviceReconfigMonitorsWidget">
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="DEVICE_RECONFIG"/>
@@ -654,7 +654,7 @@
         </property>
     </bean>
     
-    <bean id="commandSchedule" class="com.cannontech.web.widget.CommandScheduleWidget">
+    <bean id="commandScheduleWidget" class="com.cannontech.web.widget.CommandScheduleWidget">
         <property name="roleAndPropertiesChecker">
             <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="DEVICE_RECONFIG"/>
@@ -662,14 +662,14 @@
         </property>
     </bean>
     
-    <bean id="scheduledGroupRequestExecution" class="com.cannontech.web.widget.ScheduledGroupRequestExecutionWidget">
+    <bean id="scheduledGroupRequestExecutionWidget" class="com.cannontech.web.widget.ScheduledGroupRequestExecutionWidget">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
     </bean>
     
-    <bean id="systemActionsMenu" class="com.cannontech.web.widget.SystemActionsMenuWidget">
+    <bean id="systemActionsMenuWidget" class="com.cannontech.web.widget.SystemActionsMenuWidget">
     </bean>
     
-    <bean id="operatorAccountSearch" class="com.cannontech.web.widget.OperatorAccountSearchWidget">
+    <bean id="operatorAccountSearchWidget" class="com.cannontech.web.widget.OperatorAccountSearchWidget">
         <property name="roleAndPropertiesChecker">
 	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
                 <constructor-arg value="CONSUMER_INFO"/>
@@ -1112,7 +1112,7 @@
         <property name="useCache" value="true" />
         <property name="uniqueIdentifiers">
             <list>
-                <value>csrTrend</value>
+                <value>csrTrendWidget</value>
             </list>
         </property>
         <aop:scoped-proxy/>
@@ -1123,7 +1123,7 @@
         <aop:scoped-proxy/>
     </bean>
 
-    <bean id="electricTrend" abstract="true">
+    <bean id="electricTrendWidget" abstract="true">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -1162,11 +1162,11 @@
         </property>
     </bean>
  
-    <bean id="csrTrend" class="com.cannontech.web.widget.TrendWidget" parent="electricTrend">
+    <bean id="csrTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="electricTrendWidget">
         <property name="cachingWidgetParameterGrabber" ref="csrTrendWidgetCachingWidgetParameterGrabber" />
     </bean>
     
-    <bean id="hbcTrend" class="com.cannontech.web.widget.TrendWidget" parent="electricTrend">
+    <bean id="hbcTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="electricTrendWidget">
         <property name="cachingWidgetParameterGrabber" ref="hbcTrendWidgetCachingWidgetParameterGrabber" />
     </bean> 
 
@@ -1174,13 +1174,13 @@
         <property name="useCache" value="true" />
         <property name="uniqueIdentifiers">
             <list>
-                <value>waterCsrTrend</value>
+                <value>waterCsrTrendWidget</value>
             </list>
         </property>
         <aop:scoped-proxy/>
     </bean>
 
-    <bean id="waterTrend" abstract="true">
+    <bean id="waterTrendWidget" abstract="true">
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -1204,7 +1204,7 @@
         </property>
     </bean>
 
-    <bean id="waterCsrTrend" class="com.cannontech.web.widget.TrendWidget" parent="waterTrend">
+    <bean id="waterCsrTrendWidget" class="com.cannontech.web.widget.TrendWidget" parent="waterTrendWidget">
         <property name="cachingWidgetParameterGrabber" ref="waterCsrTrendWidgetCachingWidgetParameterGrabber" />
     </bean> 
 

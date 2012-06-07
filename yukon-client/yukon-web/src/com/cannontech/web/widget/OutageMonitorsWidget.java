@@ -45,7 +45,7 @@ public class OutageMonitorsWidget extends WidgetControllerBase {
         try {
         	outageMonitorService.toggleEnabled(outageMonitorId);
         } catch (OutageMonitorNotFoundException e) {
-        	outageMonitorsWidgetError = "yukon.web.widgets.outageMonitors.exception.notFound";
+        	outageMonitorsWidgetError = "yukon.web.widgets.outageMonitorsWidget.exception.notFound";
         }
         
         ModelAndView mav = render(request, response);

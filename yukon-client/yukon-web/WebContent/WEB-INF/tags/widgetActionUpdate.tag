@@ -30,7 +30,6 @@
         <cti:button nameKey="${nameKey}" id="${buttonId}"/>
         <script type="text/javascript">
             $("${buttonId}").observe("click", function() {
-            	alert('clicked ping buton');
                 var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
                 var confirmed = true;
                 if (confirmText != null && confirmText.strip() != '') {

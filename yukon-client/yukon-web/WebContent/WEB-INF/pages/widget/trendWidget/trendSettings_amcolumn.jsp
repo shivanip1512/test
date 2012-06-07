@@ -229,7 +229,7 @@
   </error_messages>    
   
   <strings>
-    <no_data><cti:msg2 key="yukon.web.widgets.trend.noData"/></no_data>            <!-- [No data for selected period] (text) if data is missing, this message will be displayed -->
+    <no_data><cti:msg2 key="yukon.web.widgetClasses.TrendWidget.noData"/></no_data>            <!-- [No data for selected period] (text) if data is missing, this message will be displayed -->
     <export_as_image></export_as_image>                       <!-- [Export as image] (text) text for right click menu -->
     <collecting_data></collecting_data>                       <!-- [Collecting data] (text) this text is displayed while exporting chart to an image -->
     <!-- the strings below are only important if you format your axis values as durations -->

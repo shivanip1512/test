@@ -2,15 +2,16 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<entry key="yukon.web.widgets.rfnOutages.title">Outages</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.title">Outages</entry>
 
-<entry key="yukon.web.widgets.rfnOutages.start">Start</entry>
-<entry key="yukon.web.widgets.rfnOutages.end">End</entry>
-<entry key="yukon.web.widgets.rfnOutages.duration">Duration</entry>
-<entry key="yukon.web.widgets.rfnOutages.argumentStub">{0}</entry>
-<entry key="yukon.web.widgets.rfnOutages.read.label">Read Now</entry>
-<entry key="yukon.web.widgets.rfnOutages.read.labelBusy">Reading</entry>
-<entry key="yukon.web.widgets.rfnOutages.outageLog">RFN Outages Log Since</entry>
-<entry key="yukon.web.widgets.rfnOutages.noLogs">No Outage Logs</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.start">Start</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.end">End</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.duration">Duration</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.argumentStub">{0}</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.read.label">Read Now</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.read.labelBusy">Reading</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.outageLog">RFN Outages Log Since</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.noLogs">No Outage Logs</entry>
+<entry key="yukon.web.widgets.rfnOutagesWidget.unknown">Unknown</entry>
 
 </properties>

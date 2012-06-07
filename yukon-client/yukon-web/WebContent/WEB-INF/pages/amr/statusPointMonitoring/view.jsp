@@ -56,7 +56,7 @@
                             <tr class="<tags:alternateRow odd="tableCell" even="altTableCell"/>">
                                 <td nowrap="nowrap">${prevStateStrings[status.index]}</td>
                                 <td nowrap="nowrap">${nextStateStrings[status.index]}</td>
-                                <td nowrap="nowrap"><i:inline key="${row.actionTypeEnum.formatKey}"/></td>
+                                <td nowrap="nowrap"><i:inline key="${row.actionTypeEnum}"/></td>
                             </tr>
                         </c:forEach>
                     </table>

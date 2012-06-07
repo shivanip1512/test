@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <entry key="yukon.web.widgets.systemActionsMenu.phaseDetect">Phase Detect</entry>
-    <entry key="yukon.web.widgets.systemActionsMenu.archiveDataAnalysis">Archive Data Analysis</entry>
-    <entry key="yukon.web.widgets.systemActionsMenu.meterEventsReport">Meter Events Report</entry>
-    <entry key="yukon.web.widgets.systemActionsMenu.waterLeakReport">Water Leak Report</entry>
+    <entry key="yukon.web.widgets.systemActionsMenuWidget.phaseDetect">Phase Detect</entry>
+    <entry key="yukon.web.widgets.systemActionsMenuWidget.archiveDataAnalysis">Archive Data Analysis</entry>
+    <entry key="yukon.web.widgets.systemActionsMenuWidget.meterEventsReport">Meter Events Report</entry>
+    <entry key="yukon.web.widgets.systemActionsMenuWidget.waterLeakReport">Water Leak Report</entry>
 </properties>

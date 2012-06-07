@@ -15,7 +15,7 @@
                     <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
                     <span class="notes"><i:inline key=".lm.notes"/></span>
                 </div>
-        		<tags:widget bean="groupPermissionEditor" pickerType="lmDevicePicker" permission="LM_VISIBLE" allow="true"/>
+        		<tags:widget bean="groupPermissionEditorWidget" pickerType="lmDevicePicker" permission="LM_VISIBLE" allow="true"/>
     		</cti:dataGridCell>
     		
             <cti:dataGridCell>
@@ -23,7 +23,7 @@
                     <span class="smallBoldLabel"><i:inline key=".instructions"/></span>
                     <span class="notes"><i:inline key=".cc.notes"/></span>
                 </div>
-        		<tags:widget bean="groupPermissionEditor" pickerType="capControlAreaPicker"
+        		<tags:widget bean="groupPermissionEditorWidget" pickerType="capControlAreaPicker"
                     permission="PAO_VISIBLE" allow="false" permissionDescription="Cap Control Object Visibility"/>
             </cti:dataGridCell>
             
