@@ -9,9 +9,10 @@
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="emptyValueKey" required="false" type="java.lang.String"%>
 <%@ attribute name="onchange" required="false" type="java.lang.String"%>
+<%@ attribute name="inputClass" required="false" type="java.lang.String"%>
 
 <tags:nameValue2 nameKey="${nameKey}">
 	<tags:selectWithItems path="${path}" items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}" 
                           defaultItemValue="${pageScope.defaultItemValue}" defaultItemLabel="${pageScope.defaultItemLabel}" 
-                          emptyValueKey="${pageScope.emptyValueKey}" onchange="${onchange}"/>
+                          emptyValueKey="${pageScope.emptyValueKey}" onchange="${onchange}" inputClass="${inputClass}"/>
 </tags:nameValue2>

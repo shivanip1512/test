@@ -15,6 +15,7 @@
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="emptyValueKey" required="false" type="java.lang.String"%>
 <%@ attribute name="onchange" required="false" type="java.lang.String"%>
+<%@ attribute name="inputClass" required="false" type="java.lang.String"%>
 
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">
@@ -35,12 +36,12 @@
 
 <spring:bind path="${path}">
 
-<c:set var="inputClass" value=""/>
+<c:set var="theInputClass" value="${pageScope.inputClass}"/>
 <c:if test="${status.error}">
-	<c:set var="inputClass" value="error"/>
+	<c:set var="theInputClass" value="${pageScope.inputClass} error"/>
 </c:if>
 
-<form:select path="${path}" id="${path}" cssClass="${inputClass}" onchange="${pageScope.onchange}">
+<form:select path="${path}" id="${path}" cssClass="${theInputClass}" onchange="${pageScope.onchange}">
     <c:if test="${not empty pageScope.defaultItemLabel}">
         <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
     </c:if>
