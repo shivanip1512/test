@@ -80,8 +80,7 @@ function checkGraphExpired(chart_Id) {
             amChart_reloadAll(chart_Id);
             mostRecentPointTime = newLargestTime;
         }
-
-    }
+    };
 }
 
 var chart_timer = {};
