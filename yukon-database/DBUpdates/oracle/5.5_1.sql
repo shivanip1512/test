@@ -85,12 +85,10 @@ INSERT INTO DynamicPAOStatistics
 DROP TABLE tempDynamicPaoStatistics;
 /* End YUK-10981 */    
     
-/* Start YUK- */
-/* End YUK- */    
-/* Start YUK- */
-/* End YUK- */    
-/* Start YUK- */
-/* End YUK- */    
+/* Start YUK-11023 */
+INSERT INTO YukonRoleProperty VALUES (-70027, -700, 'Enable Importer', 'false', 'Allows access to the Cap Control importers');
+/* End YUK-11023 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
