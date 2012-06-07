@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -16,6 +17,8 @@ import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.model.HardwareHistory;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.model.EnergyCompanyDto;
+import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.web.support.development.database.objects.DevCCU;
 import com.cannontech.web.support.development.database.objects.DevHardwareType;
@@ -27,9 +30,12 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     private HardwareUiService hardwareUiService;
     private CustomerAccountDao customerAccountDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private YukonUserDao yukonUserDao;
     
     @Override
     protected void createAll() {
+        createEC();
         createStars(devDbSetupTask.getDevStars());
     }
     
@@ -38,6 +44,26 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         log.info("Stars:");
     }
 
+    private void createEC() {
+        if (devDbSetupTask.getDevStars().isCreateCooperEC()) {
+            EnergyCompanyDto ec = new EnergyCompanyDto();
+            ec.setName("Cooper EC");
+            ec.setEmail("info@cannontech.com");
+            ec.setPrimaryOperatorGroupId(-100);
+            ec.setAdminUsername("op");
+            ec.setAdminPassword1("op");
+            ec.setAdminPassword2("op");
+
+            try {
+                LiteStarsEnergyCompany e = energyCompanyService.createEnergyCompany(ec,  yukonUserDao.getLiteYukonUser(-2), null);
+                devDbSetupTask.getDevStars().setEnergyCompany(e);
+            } catch (Exception e) {
+                log.warn("Cannot create new energy company.", e);
+            } 
+        }
+
+    }
+    
     private void createStars(DevStars devStars) {
         log.info("Creating Stars Accounts (and Hardware) ...");
         int inventoryIdIterator = devStars.getDevStarsHardware().getSerialNumMin();

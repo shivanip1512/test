@@ -201,6 +201,7 @@
     <entry
         key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.parentEnergyCompany">Parent Energy Company</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numAccounts"># of Accounts</entry>
+    <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.createNewEC">Create and Use Cooper EC</entry>
     <entry
         key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numHardwarePerAccount"># of Hardware (per account)</entry>
     <entry key="yukon.web.modules.support.setupDatabase.setupDevDatabase.option.stars.numExtra"># of Extra Hardware (per type)</entry>

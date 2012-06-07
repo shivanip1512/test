@@ -6,7 +6,8 @@ public class DevStars extends DevObject {
     private LiteStarsEnergyCompany energyCompany;
     private DevStarsAccounts devStarsAccounts = new DevStarsAccounts();
     private DevStarsHardware devStarsHardware = new DevStarsHardware();
-    
+    private boolean createCooperEC = false;
+
     public LiteStarsEnergyCompany getEnergyCompany() {
         return energyCompany;
     }
@@ -41,5 +42,13 @@ public class DevStars extends DevObject {
         int extraHardware = devStarsHardware.getNumExtraTotal();
         int total = accounts + accountHardware + extraHardware;
         return total;
+    }
+
+    public boolean isCreateCooperEC() {
+        return createCooperEC;
+    }
+
+    public void setCreateCooperEC(boolean createCooperEC) {
+        this.createCooperEC = createCooperEC;
     }
 }

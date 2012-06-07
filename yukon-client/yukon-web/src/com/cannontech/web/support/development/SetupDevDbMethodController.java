@@ -39,11 +39,11 @@ import com.google.common.collect.Lists;
 @CheckDevelopmentMode
 public class SetupDevDbMethodController {
     private static final Logger log = YukonLogManager.getLogger(SetupDevDbMethodController.class);
-    private DevDatabasePopulationService devDatabasePopulationService;
-    private ECMappingDao ecMappingDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private YukonGroupDao yukonGroupDao;
-    private PaoDao paoDao;
+    @Autowired private DevDatabasePopulationService devDatabasePopulationService;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private PaoDao paoDao;
 
     @RequestMapping
     public void main(ModelMap model) {
@@ -154,26 +154,5 @@ public class SetupDevDbMethodController {
                 setValue(devPaoType);
             }
         });
-    }
-
-    @Autowired
-    public void setDevDatabasePopulationService(DevDatabasePopulationService devDatabasePopulationService) {
-        this.devDatabasePopulationService = devDatabasePopulationService;
-    }
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    @Autowired
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
-    }
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
     }
 }

@@ -101,7 +101,9 @@
                             <ul>
                                 <li>
                                     <tags:nameValueContainer2>
-                                        <tags:selectNameValue path="devStars.energyCompany" nameKey=".setupDevDatabase.option.stars.parentEnergyCompany" items="${allEnergyCompanies}" itemLabel="name" itemValue="energyCompanyId"/>
+                                    	<tags:checkbox path="devStars.createCooperEC"/>
+                                    	<span><i:inline key=".setupDevDatabase.option.stars.createNewEC" /></span>
+                                    	<tags:selectNameValue path="devStars.energyCompany" nameKey=".setupDevDatabase.option.stars.parentEnergyCompany" items="${allEnergyCompanies}" itemLabel="name" itemValue="energyCompanyId"/>
                                         <tags:inputNameValue path="devStars.devStarsAccounts.numAccounts" nameKey=".setupDevDatabase.option.stars.numAccounts" size="4"/>
                                         <tags:inputNameValue path="devStars.devStarsHardware.numPerAccount" nameKey=".setupDevDatabase.option.stars.numHardwarePerAccount" size="2"/>
                                         <tags:inputNameValue path="devStars.devStarsHardware.numExtra" nameKey=".setupDevDatabase.option.stars.numExtra" size="2"/>
@@ -192,29 +194,33 @@
 </cti:dataGrid>
 
 <script type="text/javascript">
-    YEvent.observeSelectorClick('.setupDevDatabaseButton', function(event) {
-        $('setupDevDatabaseButtonId').disable();
-        var displayCancelBtn = false;
-        if ($('createAMR').checked) {
-            $('setupDbAMRProgressBar').show();
-            displayCancelBtn = true;
-        }
-        if ($('createCapControl').checked) {
-            $('setupDbCCProgressBar').show();
-            displayCancelBtn = true;
-        }
-        if ($('createStars').checked) {
-            $('setupDbStarsProgressBar').show();
-            displayCancelBtn = true;
-        }
-        if (displayCancelBtn) {
-            $('cancelDevDatabaseSetupButtonId').show();
-        }
-        $('setupDbForm').submit();
-    });
-    YEvent.observeSelectorClick('.cancelDevDatabaseSetup', function(event) {
-        new Ajax.Request("cancelExecution");
-    });
+	jQuery(document).ready(function() {
+	    jQuery(document).delegate('.setupDevDatabaseButton','click', function(event) {
+	        $('setupDevDatabaseButtonId').disable();
+	        var displayCancelBtn = false;
+	        if ($('createAMR').checked) {
+	            $('setupDbAMRProgressBar').show();
+	            displayCancelBtn = true;
+	        }
+	        if ($('createCapControl').checked) {
+	            $('setupDbCCProgressBar').show();
+	            displayCancelBtn = true;
+	        }
+	        if ($('createStars').checked) {
+	            $('setupDbStarsProgressBar').show();
+	            displayCancelBtn = true;
+	        }
+	        if (displayCancelBtn) {
+	            $('cancelDevDatabaseSetupButtonId').show();
+	        }
+	        $('setupDbForm').submit();
+	    });
+	    
+	    jQuery(document).delegate('.cancelDevDatabaseSetup','click', function(event) {
+	        new Ajax.Request("cancelExecution");
+	    });
+	    
+	});
 </script>
 
 </cti:standardPage>
