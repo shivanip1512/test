@@ -13,7 +13,7 @@
 #include "config_data_mct.h"
 
 #include "ctidate.h"
-#include "date_Utility.h"
+#include "date_utility.h"
 
 using Cti::Protocols::EmetconProtocol;
 using std::string;
@@ -835,13 +835,13 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                         {
                             
                             const CtiDate today = CtiDate();
-                            const CtiDate date_begin = parseDateValue(parse.getsValue("lp_date_start"));
-                            if( date_begin > today )  //  must begin on or before today
+                            const CtiDate request_date =  CtiDate(day,month,year);
+                            if( request_date > today )  //  must begin on or before today
                             {
                                 CtiReturnMsg *ReturnMsg = new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
                                 ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                ReturnMsg->setResultString(getName() + " / Invalid date for value request: cannot be after today (" + date_begin.asStringUSFormat() + ")" );
+                                ReturnMsg->setResultString(getName() + " / Invalid date for value request: cannot be after today (" + request_date.asStringUSFormat() + ")" );
                                 retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, ReturnMsg, vgList, retList );
 
                                 delete OutMessage;
@@ -851,9 +851,8 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
                                 InterlockedExchange(&_llpPeakInterest.in_progress, false);
                             }                     
-
                             else if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) ||
-                                ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
+                                     ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
                             {
                                 //  we need to read the SSPEC out of the meter
                                 executeBackgroundRequest("getconfig model", *OutMessage, outList);
