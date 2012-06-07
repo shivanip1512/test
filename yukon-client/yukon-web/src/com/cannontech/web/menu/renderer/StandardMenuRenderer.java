@@ -25,9 +25,9 @@ import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;

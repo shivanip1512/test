@@ -23,7 +23,7 @@ import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
-import com.cannontech.stars.dr.controlhistory.service.LmControlHistoryUtilService;
+import com.cannontech.stars.dr.controlHistory.service.LmControlHistoryUtilService;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;

@@ -9,6 +9,7 @@ import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.google.common.collect.ImmutableSet;
 
 public class RfnTemplateBulkImportMethod extends BulkImportMethodBase{
@@ -40,7 +41,7 @@ public class RfnTemplateBulkImportMethod extends BulkImportMethodBase{
     
     @Override
     public SimpleDevice initDevice(Map<BulkFieldColumnHeader, String> fields)
-            throws DeviceCreationException {
+            throws DeviceCreationException, BadConfigurationException {
 
         String creationFieldStringValue = fields.get(BulkFieldColumnHeader.TEMPLATE);
         String nameFieldStringValue = fields.get(BulkFieldColumnHeader.NAME);

@@ -11,8 +11,8 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.lm.SettlementCustomer;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.db.customer.CICustomerPointData;
+import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
 
 /**
  * Created on Nov 15, 2005

@@ -1,6 +1,7 @@
 package com.cannontech.common.device.creation;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.pao.PaoType;
 
 
@@ -28,8 +29,9 @@ public interface DeviceCreationService {
      * @param copyPoints
      * @return 
      * @throws DeviceCreationException
+     * @throws BadConfigurationException 
      */
-    public SimpleDevice createRfnDeviceByTemplate(String templateName, String newDeviceName, String model, String manufacturer, String serialNumber, boolean copyPoints) throws DeviceCreationException;
+    public SimpleDevice createRfnDeviceByTemplate(String templateName, String newDeviceName, String model, String manufacturer, String serialNumber, boolean copyPoints) throws DeviceCreationException, BadConfigurationException;
     
     /**
      * Creates the MCT device by device type.

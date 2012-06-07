@@ -8,8 +8,8 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.db.stars.purchasing.DeliverySchedule;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.db.purchasing.DeliverySchedule;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.PurchaseBean;
 import com.cannontech.web.stars.action.StarsInventoryActionController;

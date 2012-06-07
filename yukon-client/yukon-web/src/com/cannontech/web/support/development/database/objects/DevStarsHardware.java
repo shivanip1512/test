@@ -2,8 +2,8 @@ package com.cannontech.web.support.development.database.objects;
 
 import java.util.List;
 
+import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
-import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.google.common.collect.Lists;
 
 public class DevStarsHardware {

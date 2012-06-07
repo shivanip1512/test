@@ -27,6 +27,5 @@
 	<classpathentry kind="lib" path="/third-party/org.springframework.integration.adapter-1.0.3.RELEASE.jar"/>
 	<classpathentry kind="lib" path="/third-party/org.springframework.integration.jms-1.0.3.RELEASE.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/stars"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

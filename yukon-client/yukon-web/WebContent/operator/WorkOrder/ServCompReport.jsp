@@ -5,17 +5,17 @@
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
-<%@ page import="com.cannontech.database.data.stars.report.ServiceCompany" %>
+<%@ page import="com.cannontech.stars.database.data.report.ServiceCompany" %>
 <%@ page import="com.cannontech.stars.web.bean.FilterBean" %>
 <%@ page import="java.util.ArrayList" %>
 
 <jsp:useBean id="workOrderBean" class="com.cannontech.stars.web.bean.WorkOrderBean" scope="session"/>
 <%
-	com.cannontech.database.db.stars.report.ServiceCompany serviceCompany = (com.cannontech.database.db.stars.report.ServiceCompany) session.getAttribute("ServiceCompany");
+    com.cannontech.stars.database.db.report.ServiceCompany serviceCompany = (com.cannontech.stars.database.db.report.ServiceCompany) session.getAttribute("ServiceCompany");
 	if(serviceCompany == null)
 	{
 		session.setAttribute("ServiceCompany", ServiceCompany.retrieveServiceCompanyByContactLoginID(lYukonUser.getUserID()));
-		serviceCompany = (com.cannontech.database.db.stars.report.ServiceCompany)session.getAttribute("ServiceCompany");
+		serviceCompany = (com.cannontech.stars.database.db.report.ServiceCompany)session.getAttribute("ServiceCompany");
 	}
 
     ArrayList<FilterWrapper> filterWrappers = new ArrayList<FilterWrapper>();
@@ -32,7 +32,7 @@
   		if( entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_RELEASED)
   		{//Add the Release service status filter.
   			filter = new FilterWrapper(String.valueOf(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS), "Service Status: Released", String.valueOf(entry.getEntryID()));
-            filterWrappers.add(filter);
+    filterWrappers.add(filter);
         }
     }
 	workOrderBean.setFilters(filterWrappers);

@@ -13,10 +13,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.Pair;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
-import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
+import com.cannontech.stars.database.db.report.WorkOrderBase;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;

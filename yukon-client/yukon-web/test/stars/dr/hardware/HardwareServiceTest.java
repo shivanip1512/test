@@ -8,15 +8,15 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.HardwareClass;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.impl.StarsSearchDaoImpl;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
-import com.cannontech.stars.dr.hardware.model.Hardware;
 import com.cannontech.stars.dr.hardware.service.impl.HardwareUiServiceImpl;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.google.common.collect.ListMultimap;

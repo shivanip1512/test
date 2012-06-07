@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.AccountCheckerService;
-import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
+import com.cannontech.stars.dr.controlHistory.model.ControlPeriod;
 import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;

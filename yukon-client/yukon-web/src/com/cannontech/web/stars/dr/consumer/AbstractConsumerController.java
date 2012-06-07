@@ -13,7 +13,7 @@ import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
-import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryDao;
+import com.cannontech.stars.dr.controlHistory.dao.ControlHistoryDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;

@@ -5,10 +5,10 @@
 <%@ page import="com.cannontech.stars.util.task.TimeConsumingTask" %>
 <%@ page import="com.cannontech.stars.util.task.DeleteEnergyCompanyTask" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
+<%@ page import="com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.common.version.VersionTools" %>
-<%@ page import="com.cannontech.database.cache.StarsDatabaseCache"%>
+<%@ page import="com.cannontech.stars.database.cache.StarsDatabaseCache"%>
 <%
 
     LiteStarsEnergyCompany liteEC = null;

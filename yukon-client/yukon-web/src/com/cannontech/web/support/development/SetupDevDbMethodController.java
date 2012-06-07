@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckDevelopmentMode;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
@@ -60,7 +60,7 @@ public class SetupDevDbMethodController {
         } catch (Exception e) {
             log.warn("caught exception in setupDevDatabase", e);
             flashScope.setError(YukonMessageSourceResolvable
-                .createDefaultWithoutCode("Database setup encountered a problem and may not have successfully completed: " + e.getMessage()));
+                .createDefaultWithoutCode("Unable to setup development database: " + e.getMessage()));
         }
         setupPage(model, devDbSetupTask);
 

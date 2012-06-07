@@ -14,11 +14,12 @@ import org.junit.Test;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
-import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
-import com.cannontech.stars.dr.controlhistory.model.ActiveRestoreEnum;
-import com.cannontech.stars.dr.controlhistory.model.ObservedControlHistory;
-import com.cannontech.stars.dr.controlhistory.service.LmControlHistoryUtilService;
+import com.cannontech.stars.database.data.lite.LiteLMControlHistory;
+import com.cannontech.stars.database.data.lite.LiteStarsLMControlHistory;
+import com.cannontech.stars.dr.controlHistory.model.ActiveRestoreEnum;
+import com.cannontech.stars.dr.controlHistory.model.ObservedControlHistory;
+import com.cannontech.stars.dr.controlHistory.service.LmControlHistoryUtilService;
+import com.cannontech.stars.dr.controlHistory.service.impl.LmControlHistoryUtilServiceImpl;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.xml.serialize.ControlHistoryEntry;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;

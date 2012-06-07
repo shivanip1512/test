@@ -6,7 +6,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/web-common"/>
 	<classpathentry kind="src" path="/dbeditor"/>
 	<classpathentry kind="src" path="/resource"/>
-	<classpathentry kind="src" path="/stars"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>

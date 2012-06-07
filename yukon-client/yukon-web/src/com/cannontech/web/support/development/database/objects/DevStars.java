@@ -1,6 +1,6 @@
 package com.cannontech.web.support.development.database.objects;
 
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 
 public class DevStars extends DevObject {
     private LiteStarsEnergyCompany energyCompany;

@@ -13,7 +13,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import com.cannontech.common.util.Completable;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;

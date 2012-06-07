@@ -17,6 +17,6 @@
   http://www.springframework.org/schema/integration/jms
   http://www.springframework.org/schema/integration/jms/spring-integration-jms-1.0.xsd">
 
-    <bean class="com.cannontech.stars.dr.hardware.HardwareConfigService"/>
+    <bean class="com.cannontech.stars.dr.hardware.service.HardwareConfigService"/>
 
 </beans>

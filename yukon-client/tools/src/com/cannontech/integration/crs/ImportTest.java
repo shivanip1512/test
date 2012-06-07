@@ -2,7 +2,7 @@ package com.cannontech.integration.crs;
 
 import java.util.List;
 
-import com.cannontech.database.db.stars.integration.CRSToSAM_PTJ;
+import com.cannontech.stars.database.db.integration.CRSToSAM_PTJ;
 
 public class ImportTest {
 

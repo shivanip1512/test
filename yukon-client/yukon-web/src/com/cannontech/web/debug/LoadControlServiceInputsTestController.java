@@ -22,8 +22,8 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
-import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
+import com.cannontech.stars.ws.StarsControllableDeviceDTO;
+import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 

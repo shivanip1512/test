@@ -1,18 +1,56 @@
 package com.cannontech.common.inventory;
 
-import static com.cannontech.common.constants.YukonListEntryTypes.*;
-import static com.cannontech.common.inventory.HardwareClass.*;
-import static com.cannontech.common.inventory.HardwareConfigType.*;
-import static com.cannontech.common.inventory.InventoryCategory.*;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6200_RFN;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6200_XCOM;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6200_ZIGBEE;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6600_RFN;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6600_XCOM;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_6600_ZIGBEE;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO_G2;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO_G3;
+import static com.cannontech.common.constants.YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ZIGBEE_UTILITYPRO;
+import static com.cannontech.common.inventory.HardwareClass.GATEWAY;
+import static com.cannontech.common.inventory.HardwareClass.METER;
+import static com.cannontech.common.inventory.HardwareClass.SWITCH;
+import static com.cannontech.common.inventory.HardwareClass.THERMOSTAT;
+import static com.cannontech.common.inventory.HardwareConfigType.EXPRESSCOM;
+import static com.cannontech.common.inventory.HardwareConfigType.NOT_CONFIGURABLE;
+import static com.cannontech.common.inventory.HardwareConfigType.SA205;
+import static com.cannontech.common.inventory.HardwareConfigType.SA305;
+import static com.cannontech.common.inventory.HardwareConfigType.SEP;
+import static com.cannontech.common.inventory.HardwareConfigType.VERSACOM;
+import static com.cannontech.common.inventory.InventoryCategory.MCT;
+import static com.cannontech.common.inventory.InventoryCategory.ONE_WAY_RECEIVER;
+import static com.cannontech.common.inventory.InventoryCategory.TWO_WAY_RECEIVER;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 
 /**
@@ -75,6 +113,8 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     private final static ImmutableSet<HardwareType> supportsChangeType;
     private final static ImmutableSet<HardwareType> supportsAddByRange;
     
+    private final static ListMultimap<PaoType, HardwareType> starsToPaoMap;
+    
     static {
         Builder<HardwareType> builder = ImmutableSet.builder();
         builder.add(UTILITY_PRO_ZIGBEE);
@@ -110,6 +150,16 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         
         utilityProTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3, UTILITY_PRO_ZIGBEE);
         autoModeEnableTypes =  ImmutableSet.of(UTILITY_PRO, UTILITY_PRO_G2, UTILITY_PRO_G3);
+        
+        // PaoType map
+        starsToPaoMap = ArrayListMultimap.create();
+        starsToPaoMap.put(PaoType.DIGIGATEWAY, DIGI_GATEWAY);
+        starsToPaoMap.put(PaoType.ZIGBEE_ENDPOINT, UTILITY_PRO_ZIGBEE);
+        starsToPaoMap.put(PaoType.ZIGBEE_ENDPOINT, LCR_6200_ZIGBEE);
+        starsToPaoMap.put(PaoType.ZIGBEE_ENDPOINT, LCR_6600_ZIGBEE);
+        starsToPaoMap.put(PaoType.LCR3102, LCR_3102);
+        starsToPaoMap.put(PaoType.LCR6200_RFN, LCR_6200_RFN);
+        starsToPaoMap.put(PaoType.LCR6600_RFN, LCR_6600_RFN);
     }
     
     // this key prefix can be found in the following file:
@@ -355,6 +405,14 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
      */
     public boolean isUtilityProType() {
         return utilityProTypes.contains(this);
+    }
+    
+    /**
+     * Returns a list of hardware types that map to a pao type, or an empty list if no
+     * mappings exist for that pao type.  MCT types are not supported, only dr style devices.
+     */
+    public static List<HardwareType> getForPaoType(PaoType type) {
+        return starsToPaoMap.get(type);
     }
     
 }

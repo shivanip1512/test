@@ -1,5 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.data.lite.stars.*" %>
+<%@ page import="com.cannontech.stars.database.data.lite.*" %>
 <html>
 <head>
 <title>Energy Services Operations Center</title>

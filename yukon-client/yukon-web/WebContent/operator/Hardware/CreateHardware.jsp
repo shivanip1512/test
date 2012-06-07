@@ -1,5 +1,5 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.database.data.lite.stars.*" %>
+<%@ page import="com.cannontech.stars.database.data.lite.*" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
 <%@ page import="com.cannontech.stars.web.bean.InventoryBean" %>

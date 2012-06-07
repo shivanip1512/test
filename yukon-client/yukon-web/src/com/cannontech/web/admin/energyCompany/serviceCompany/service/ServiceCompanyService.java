@@ -3,7 +3,7 @@ package com.cannontech.web.admin.energyCompany.serviceCompany.service;
 import java.util.List;
 
 import com.cannontech.common.model.ServiceCompanyDto;
-import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
+import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 
 /**
  * Service for manipulating Service Companies

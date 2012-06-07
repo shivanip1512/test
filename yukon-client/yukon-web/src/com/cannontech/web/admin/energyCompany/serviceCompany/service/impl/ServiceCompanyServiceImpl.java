@@ -16,10 +16,10 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DesignationCodeDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
+import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.web.admin.energyCompany.serviceCompany.service.ServiceCompanyService;
 
 public class ServiceCompanyServiceImpl implements ServiceCompanyService {

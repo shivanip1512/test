@@ -16,7 +16,7 @@ import com.cannontech.common.util.OpenInterval;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
-import com.cannontech.stars.dr.controlhistory.service.LmControlHistoryUtilService;
+import com.cannontech.stars.dr.controlHistory.service.LmControlHistoryUtilService;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.program.dao.ProgramDao;

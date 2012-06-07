@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.db.stars.purchasing.Shipment;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.db.purchasing.Shipment;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.PurchaseBean;
 import com.cannontech.web.stars.action.StarsInventoryActionController;

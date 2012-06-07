@@ -21,7 +21,6 @@
 	<classpathentry kind="lib" path="/third-party/jfreereport.jar"/>
 	<classpathentry kind="lib" path="/third-party/jradius-client.jar"/>
 	<classpathentry kind="src" path="/report"/>
-	<classpathentry kind="src" path="/stars"/>
 	<classpathentry kind="src" path="/tools"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="src" path="/multispeak"/>

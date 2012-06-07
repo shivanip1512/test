@@ -8,8 +8,8 @@ package com.cannontech.analysis.data.stars;
 
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
+import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 
 /**
  * @author yao

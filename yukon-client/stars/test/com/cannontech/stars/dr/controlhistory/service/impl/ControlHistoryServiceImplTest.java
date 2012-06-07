@@ -15,9 +15,10 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
-import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
-import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
-import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.controlHistory.model.ControlHistory;
+import com.cannontech.stars.dr.controlHistory.model.ControlHistoryEvent;
+import com.cannontech.stars.dr.controlHistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.controlHistory.service.impl.ControlHistoryServiceImpl;
 
 public class ControlHistoryServiceImplTest {
     private static final DateTimeFormatter dateTimeFormmater = 

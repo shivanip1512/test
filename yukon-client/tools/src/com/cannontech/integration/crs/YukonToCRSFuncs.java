@@ -19,35 +19,35 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.data.stars.appliance.ApplianceBase;
-import com.cannontech.database.data.stars.customer.AccountSite;
-import com.cannontech.database.data.stars.customer.CustomerAccount;
-import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
-import com.cannontech.database.data.stars.report.ServiceCompany;
+import com.cannontech.stars.database.data.appliance.ApplianceBase;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.database.db.stars.ECToGenericMapping;
-import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
-import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
-import com.cannontech.database.db.stars.integration.CRSToSAM_PTJ;
-import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeters;
-import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
-import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PTJ;
-import com.cannontech.database.db.stars.integration.FailureCRSToSAM_PremMeterChg;
-import com.cannontech.database.db.stars.integration.Failure_SwitchReplacement;
-import com.cannontech.database.db.stars.integration.SwitchReplacement;
-import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.database.data.customer.AccountSite;
+import com.cannontech.stars.database.data.customer.CustomerAccount;
+import com.cannontech.stars.database.data.hardware.MeterHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
+import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
+import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.data.lite.StarsLiteFactory;
+import com.cannontech.stars.database.data.report.ServiceCompany;
+import com.cannontech.stars.database.db.ECToGenericMapping;
+import com.cannontech.stars.database.db.appliance.ApplianceAirConditioner;
+import com.cannontech.stars.database.db.appliance.ApplianceWaterHeater;
+import com.cannontech.stars.database.db.integration.CRSToSAM_PTJ;
+import com.cannontech.stars.database.db.integration.CRSToSAM_PTJAdditionalMeters;
+import com.cannontech.stars.database.db.integration.CRSToSAM_PremiseMeterChange;
+import com.cannontech.stars.database.db.integration.FailureCRSToSAM_PTJ;
+import com.cannontech.stars.database.db.integration.FailureCRSToSAM_PremMeterChg;
+import com.cannontech.stars.database.db.integration.Failure_SwitchReplacement;
+import com.cannontech.stars.database.db.integration.SwitchReplacement;
+import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -188,7 +188,7 @@ public class YukonToCRSFuncs
 	public static Contact getContactFromAccountNumber(String acctNumber)
     {
         SqlStatement stmt = new SqlStatement("SELECT CONT.* " + 
-        				" FROM " + Contact.TABLE_NAME + " CONT, " + Customer.TABLE_NAME + " CUST, " + com.cannontech.database.db.stars.customer.CustomerAccount.TABLE_NAME + " CA " +
+        				" FROM " + Contact.TABLE_NAME + " CONT, " + Customer.TABLE_NAME + " CUST, " + com.cannontech.stars.database.db.customer.CustomerAccount.TABLE_NAME + " CA " +
         				" WHERE CONT.CONTACTID = CUST.PRIMARYCONTACTID " +
         				" AND CUST.CUSTOMERID = CA.CUSTOMERID " +
         				" AND ACCOUNTNUMBER = '" + acctNumber + "'", CtiUtilities.getDatabaseAlias());
@@ -227,7 +227,7 @@ public class YukonToCRSFuncs
 	public static CustomerAccount retrieveCustomerAccount(String acctNumber)
     {
         SqlStatement stmt = new SqlStatement("SELECT CA.ACCOUNTID, ACCOUNTSITEID, ACCOUNTNUMBER, CUSTOMERID, BILLINGADDRESSID, ACCOUNTNOTES, ENERGYCOMPANYID " + 
-        				" FROM " + com.cannontech.database.db.stars.customer.CustomerAccount.TABLE_NAME + " CA, ECTOACCOUNTMAPPING MAP " +
+        				" FROM " + com.cannontech.stars.database.db.customer.CustomerAccount.TABLE_NAME + " CA, ECTOACCOUNTMAPPING MAP " +
         				" WHERE CA.ACCOUNTID = MAP.ACCOUNTID " +
         				" AND ACCOUNTNUMBER = '" + acctNumber + "'", CtiUtilities.getDatabaseAlias());
         
@@ -297,11 +297,11 @@ public class YukonToCRSFuncs
     public static ServiceCompany retrieveServiceCompany(String code)
     {
         SqlStatement stmt = new SqlStatement("SELECT COMPANYID, COMPANYNAME, ADDRESSID, MAINPHONENUMBER, MAINFAXNUMBER, PRIMARYCONTACTID, HITYPE, ENERGYCOMPANYID " +
-        									" FROM " + com.cannontech.database.db.stars.report.ServiceCompany.TABLE_NAME + " SC, " + 
+        									" FROM " + com.cannontech.stars.database.db.report.ServiceCompany.TABLE_NAME + " SC, " + 
         									ServiceCompanyDesignationCode.TABLE_NAME + " SCDC, " +
         									ECToGenericMapping.TABLE_NAME + " MAP " +
         									" WHERE SC.COMPANYID = SCDC.SERVICECOMPANYID " +
-        									" AND MAP.MAPPINGCATEGORY = '" + com.cannontech.database.db.stars.report.ServiceCompany.TABLE_NAME + "' " +
+        									" AND MAP.MAPPINGCATEGORY = '" + com.cannontech.stars.database.db.report.ServiceCompany.TABLE_NAME + "' " +
         									" AND SC.COMPANYID = MAP.ITEMID " + 
         									" AND DESIGNATIONCODEVALUE = '" + code + "'", CtiUtilities.getDatabaseAlias());
         try

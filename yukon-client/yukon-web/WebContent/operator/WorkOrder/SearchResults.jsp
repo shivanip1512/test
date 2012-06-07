@@ -20,7 +20,7 @@
 <jsp:setProperty name="workOrderBean" property="page" param="page"/>
 
 
-<%@page import="com.cannontech.database.data.lite.stars.LiteWorkOrderBase"%><html>
+<%@page import="com.cannontech.stars.database.data.lite.LiteWorkOrderBase"%><html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">

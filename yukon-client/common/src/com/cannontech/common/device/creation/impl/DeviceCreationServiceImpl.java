@@ -1,13 +1,21 @@
 package com.cannontech.common.device.creation.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.constants.YukonDefinition;
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -15,6 +23,9 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.inventory.Hardware;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -24,14 +35,19 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.RfnBase;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public class DeviceCreationServiceImpl implements DeviceCreationService {
 
@@ -43,6 +59,9 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     @Autowired private DlcAddressRangeService dlcAddressRangeService;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private DBPersistentDao dbPersistentDao = null;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private YukonListDao yukonListDao;
     
     @Transactional
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
@@ -66,7 +85,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
   
     @Transactional
     public SimpleDevice createRfnDeviceByTemplate(String templateName, String newDeviceName, String model, String manufacturer, String serialNumber, boolean copyPoints)
-            throws DeviceCreationException {
+            throws DeviceCreationException, BadConfigurationException {
         
         //get template, validate that a template is an RFN Template
         DeviceBase templateDevice = retrieveExistingDeviceByTemplate(templateName);
@@ -92,6 +111,56 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
         // create new device
         SimpleDevice newYukonDevice = createNewDeviceByTemplate(newDevice, templateIdentifier, templateName, copyPoints);
+        
+        /** SUPER HACK: This is to initialize inventory tables (for now) for device types that need them (rf lcr's) */
+        List<HardwareType> hardwareTypes = HardwareType.getForPaoType(newYukonDevice.getDeviceType());
+        if (!CollectionUtils.isEmpty(hardwareTypes) && hardwareTypes.size() == 1) {
+            String ecName = configurationSource.getString("RFN_ENERGY_COMPANY_NAME");
+            if (StringUtils.isEmpty(ecName)) {
+                throw new BadConfigurationException("RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg");
+            }
+            final LiteEnergyCompany ec = energyCompanyDao.getEnergyCompanyByName(ecName);
+            YukonEnergyCompany yec = new YukonEnergyCompany() {
+                @Override
+                public String getName() {
+                    return ec.getName();
+                }
+                @Override
+                public LiteYukonUser getEnergyCompanyUser() {
+                    return null; // don't care
+                }
+                @Override
+                public int getEnergyCompanyId() {
+                    return ec.getEnergyCompanyID();
+                }
+                @Override
+                public DateTimeZone getDefaultDateTimeZone() {
+                    return null; // don't care
+                }
+            };
+            
+            HardwareType ht = hardwareTypes.get(0);
+            Hardware h = new Hardware();
+            h.setSerialNumber(serialNumber);
+            h.setDeviceId(newYukonDevice.getDeviceId());
+            h.setEnergyCompanyId(ec.getEnergyCompanyID());
+            h.setFieldReceiveDate(new Date());
+            
+            List<YukonListEntry> hardwareTypeEntries = yukonListDao.getYukonListEntry(ht.getDefinitionId(), yec);
+            h.setHardwareTypeEntryId(hardwareTypeEntries.get(0).getEntryID());
+            
+            List<YukonListEntry> statusTypeEntries = yukonListDao.getYukonListEntry(YukonDefinition.DEV_STAT_INSTALLED.getDefinitionId(), yec);
+            h.setDeviceStatusEntryId(statusTypeEntries.get(0).getEntryID());
+            
+            List<YukonSelectionList> lists = yukonListDao.getSelectionListsByEnergyCompanyId(ec.getEnergyCompanyID());
+            for (YukonSelectionList list : lists) {
+                if (list.getListName() == YukonSelectionListEnum.DEVICE_VOLTAGE.getListName()) {
+                    h.setVoltageEntryId(list.getYukonListEntries().get(0).getEntryID());
+                }
+            }
+            
+            /** END SUPER HACK */
+        }
 
         return newYukonDevice;
 

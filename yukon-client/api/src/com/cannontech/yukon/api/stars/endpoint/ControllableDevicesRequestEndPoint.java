@@ -28,8 +28,8 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlready
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
 import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
-import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
-import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
+import com.cannontech.stars.ws.StarsControllableDeviceDTO;
+import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 

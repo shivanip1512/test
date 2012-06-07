@@ -1,15 +1,15 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.LiteAddress" %>
-<%@ page import="com.cannontech.database.data.lite.stars.*" %>
-<%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
+<%@ page import="com.cannontech.stars.database.data.lite.*" %>
+<%@ page import="com.cannontech.stars.database.cache.StarsDatabaseCache" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
 <%@ page import="com.cannontech.common.util.Pair" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsWorkOrderBaseDao"%>
 <%@ page import="com.cannontech.stars.dr.event.dao.EventWorkOrderDao"%>
 <%@ page import="com.cannontech.spring.YukonSpringHook"%>
-<%@ page import="com.cannontech.database.data.stars.event.EventWorkOrder"%>
+<%@ page import="com.cannontech.stars.database.data.event.EventWorkOrder"%>
 <%@ page import="com.cannontech.stars.dr.event.model.EventBase"%>
 <%@ page import="com.cannontech.common.model.ContactNotificationType"%>
 

@@ -16,28 +16,28 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.stars.customer.CustomerAccount;
-import com.cannontech.database.data.stars.event.EventWorkOrder;
-import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
-import com.cannontech.database.data.stars.report.ServiceCompany;
-import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.database.db.stars.hardware.LMHardwareBase;
-import com.cannontech.database.db.stars.integration.CRSToSAM_PTJ;
-import com.cannontech.database.db.stars.integration.CRSToSAM_PTJAdditionalMeters;
-import com.cannontech.database.db.stars.integration.CRSToSAM_PremiseMeterChange;
-import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
-import com.cannontech.database.db.stars.integration.SwitchReplacement;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.database.data.customer.CustomerAccount;
+import com.cannontech.stars.database.data.event.EventWorkOrder;
+import com.cannontech.stars.database.data.hardware.MeterHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.data.report.ServiceCompany;
+import com.cannontech.stars.database.data.report.WorkOrderBase;
+import com.cannontech.stars.database.db.hardware.LMHardwareBase;
+import com.cannontech.stars.database.db.integration.CRSToSAM_PTJ;
+import com.cannontech.stars.database.db.integration.CRSToSAM_PTJAdditionalMeters;
+import com.cannontech.stars.database.db.integration.CRSToSAM_PremiseMeterChange;
+import com.cannontech.stars.database.db.integration.SAMToCRS_PTJ;
+import com.cannontech.stars.database.db.integration.SwitchReplacement;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
@@ -522,7 +522,7 @@ public final class YukonCRSIntegrator
         	YukonListEntry workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, servStat);
 
         	WorkOrderBase workOrder = new WorkOrderBase();
-            workOrder.getWorkOrderBase().setOrderID(com.cannontech.database.db.stars.report.WorkOrderBase.getNextOrderID());
+            workOrder.getWorkOrderBase().setOrderID(com.cannontech.stars.database.db.report.WorkOrderBase.getNextOrderID());
             workOrder.getWorkOrderBase().setOrderNumber(String.valueOf(workOrder.getWorkOrderBase().getOrderID()));	//orderNumber is the same as orderID, I guess...
             workOrder.getWorkOrderBase().setWorkTypeID(new Integer(workTypeEntry.getEntryID()));
             workOrder.getWorkOrderBase().setCurrentStateID(new Integer(workStatusEntry.getEntryID()));
@@ -581,7 +581,7 @@ public final class YukonCRSIntegrator
 		               		try{
 		               			//Retrieve the lmhardwarebase data object
 		               			LMHardwareBase hardware = lmHardwares.get(i);
-		               			com.cannontech.database.data.stars.hardware.LMHardwareBase lmHardwareBase = new com.cannontech.database.data.stars.hardware.LMHardwareBase();
+		               			com.cannontech.stars.database.data.hardware.LMHardwareBase lmHardwareBase = new com.cannontech.stars.database.data.hardware.LMHardwareBase();
 		               			lmHardwareBase.setInventoryID(hardware.getInventoryID());
 		               			lmHardwareBase.setLMHardwareBase(hardware);
 		               			lmHardwareBase = Transaction.createTransaction(Transaction.RETRIEVE, lmHardwareBase).execute();
@@ -664,7 +664,7 @@ public final class YukonCRSIntegrator
         	if( !woType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_MAINTENANCE_STRING))
         		errorMsg.append("Invalid Work Order Type found: " + woType + "; ");
 
-        	ArrayList<com.cannontech.database.db.stars.customer.CustomerAccount> customerAccounts = com.cannontech.database.db.stars.customer.CustomerAccount.searchBySerialNumber(serialNumber);
+        	ArrayList<com.cannontech.stars.database.db.customer.CustomerAccount> customerAccounts = com.cannontech.stars.database.db.customer.CustomerAccount.searchBySerialNumber(serialNumber);
         	if( customerAccounts.size() < 1)
         		errorMsg.append("No Customer Account found for Serial Number: " + serialNumber);
         	else if( customerAccounts.size() > 1)
@@ -735,7 +735,7 @@ public final class YukonCRSIntegrator
         	YukonListEntry workStatusEntry = YukonToCRSFuncs.getEntryByYukonDefID(serviceStatusList, servStat);
 
         	WorkOrderBase workOrder = new WorkOrderBase();
-            workOrder.getWorkOrderBase().setOrderID(com.cannontech.database.db.stars.report.WorkOrderBase.getNextOrderID());
+            workOrder.getWorkOrderBase().setOrderID(com.cannontech.stars.database.db.report.WorkOrderBase.getNextOrderID());
             workOrder.getWorkOrderBase().setOrderNumber(String.valueOf(workOrder.getWorkOrderBase().getOrderID()));	//orderNumber is the same as orderID, I guess...
             workOrder.getWorkOrderBase().setWorkTypeID(new Integer(workTypeEntry.getEntryID()));
             workOrder.getWorkOrderBase().setCurrentStateID(new Integer(workStatusEntry.getEntryID()));

@@ -1,7 +1,7 @@
 package com.cannontech.web.admin.energyCompany.warehouse.model;
 
 import com.cannontech.database.data.lite.LiteAddress;
-import com.cannontech.database.db.stars.hardware.Warehouse;
+import com.cannontech.stars.database.db.hardware.Warehouse;
 
 public class WarehouseDto {
     private Warehouse warehouse = new Warehouse();

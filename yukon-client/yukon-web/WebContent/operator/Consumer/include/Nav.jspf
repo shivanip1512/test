@@ -1,4 +1,4 @@
-<%@ page import="com.cannontech.database.data.stars.hardware.MeterHardwareBase" %>
+<%@ page import="com.cannontech.stars.database.data.hardware.MeterHardwareBase" %>
 <%
 	// Table of [link, label, page name(optional)]
 	String linkTable[][] = {{"Update.jsp", "General"},

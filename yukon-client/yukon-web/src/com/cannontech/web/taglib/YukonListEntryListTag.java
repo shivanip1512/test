@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListEnum;
-import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 
 @Configurable("yukonListEntryListTagPrototype")
 public class YukonListEntryListTag extends YukonTagSupport {

@@ -12,15 +12,15 @@
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
 <%@ page import="com.cannontech.common.version.VersionTools" %>
 <%@ page import="com.cannontech.database.PoolManager" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"%>
+<%@ page import="com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation"%>
 <%@ page import="com.cannontech.yukon.IDatabaseCache"%>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache"%>
-<%@ page import="com.cannontech.database.cache.StarsDatabaseCache"%>
+<%@ page import="com.cannontech.stars.database.cache.StarsDatabaseCache"%>
 <%@ page import="com.cannontech.database.data.device.DeviceTypesFuncs" %>
 <%@ page import="com.cannontech.database.data.lite.LiteGraphDefinition"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
+<%@ page import="com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.db.graph.GraphCustomerList" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
@@ -64,8 +64,8 @@
 <%@page import="com.cannontech.core.roleproperties.enums.SerialNumberValidation"%>
 <%@page import="com.cannontech.core.roleproperties.YukonRoleProperty"%>
 <jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
-<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
-<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/>
+<jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation"/>
+<jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsAppliance"/>
 
 <cti:includeScript link="PROTOTYPE" force="true"/>
 <script language="JavaScript" type="text/javascript"  src="/JavaScript/yukonGeneral.js"></script>

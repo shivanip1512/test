@@ -2,11 +2,11 @@ package com.cannontech.web.stars.dr.operator.hardware.service;
 
 import java.util.List;
 
+import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.util.Pair;
-import com.cannontech.stars.dr.hardware.model.Hardware;
-import com.cannontech.stars.dr.thirdparty.digi.model.GatewayDto;
-import com.cannontech.stars.dr.thirdparty.digi.model.ZigbeeDeviceDto;
+import com.cannontech.stars.dr.digi.model.GatewayDto;
+import com.cannontech.stars.dr.digi.model.ZigbeeDeviceDto;
 import com.cannontech.thirdparty.digi.model.DigiGateway;
 
 public interface ZigbeeDeviceService {

@@ -1,7 +1,7 @@
 <%@page import="com.cannontech.clientutils.CTILogger"%>
 <jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
-<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
-<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation"/>
+<jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsAppliance"/><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:useBean id="starsLMPermissionBean" class="com.cannontech.stars.web.bean.StarsLMPermissionBean" scope="page"/>
 
@@ -11,9 +11,9 @@
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionListDefs" %>
-<%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
+<%@ page import="com.cannontech.stars.database.cache.StarsDatabaseCache" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
+<%@ page import="com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.roles.application.TrendingRole" %>
@@ -29,8 +29,8 @@
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
 <jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
-<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
-<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/>
+<jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation"/>
+<jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsAppliance"/>
 
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
