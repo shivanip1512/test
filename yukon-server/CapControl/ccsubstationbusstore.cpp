@@ -3056,6 +3056,10 @@ void CtiCCSubstationBusStore::resetDailyOperations()
     {
         setValid(false);
     }
+    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate() - 1) )// yesterday
+    {
+        setValid(false);
+    }
     if( pointChanges.size() > 0 )
     {
         multiPointMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
