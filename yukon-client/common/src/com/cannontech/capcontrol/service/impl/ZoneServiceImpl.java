@@ -101,7 +101,7 @@ public class ZoneServiceImpl implements ZoneService {
     }
     
     @Override
-    public boolean saveVoltagePointInfo(AbstractZone abstractZone, List<VoltageLimitedDeviceInfo> deviceInfos) {
+    public void saveVoltagePointInfo(AbstractZone abstractZone, List<VoltageLimitedDeviceInfo> deviceInfos) {
         List<PointToZoneMapping> pointToZoneMappings = getPointToZoneMappingByDto(abstractZone);
         for (PointToZoneMapping mapping : pointToZoneMappings) {
             VoltageLimitedDeviceInfo deviceInfo = findDeviceInfoWithPointId(deviceInfos, mapping.getPointId());
@@ -114,7 +114,6 @@ public class ZoneServiceImpl implements ZoneService {
 
         zoneDao.updatePointToZoneMapping(abstractZone, pointToZoneMappings);
         ccMonitorBankListDao.updateDeviceInfo(deviceInfos);
-        return false;
     }
 
     private VoltageLimitedDeviceInfo findDeviceInfoWithPointId(List<VoltageLimitedDeviceInfo> deviceInfos, int pointId) {

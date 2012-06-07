@@ -32,7 +32,7 @@ public interface ZoneService {
      * Use this method to save a zone's VoltageLimitedDeviceInfo (voltage points). This method is currently only being used to save our 
      * from the voltage points edit page (on save).
      */
-    public boolean saveVoltagePointInfo(AbstractZone abstractZone, List<VoltageLimitedDeviceInfo> deviceInfos);
+    public void saveVoltagePointInfo(AbstractZone abstractZone, List<VoltageLimitedDeviceInfo> deviceInfos);
     
     public List<Zone> getZonesBySubBusId(int subbusId);
 

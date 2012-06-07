@@ -95,7 +95,7 @@ jQuery(function() {
         jQuery("#updatesPaused").hide();
         jQuery('#hideMsg span').text(getChartPauseSeconds());
         jQuery('#hideMsg').show();
-        var sec = jQuery('#hideMsg span').text() || 0;
+        var sec = parseInt(jQuery('#hideMsg span').text()) || 0;
         chart_timer[chart_Id] = setInterval(function() {
             jQuery('#hideMsg span').text(--sec);
             if (sec == 0) {
@@ -117,9 +117,9 @@ function timeoutEnd() {
 }
 
 function getChartId() {
-    return jQuery("input#ivvcChartIdValue").val();
+    return jQuery("#ivvcChartIdValue").val();
 }
 
 function getChartPauseSeconds() {
-    return jQuery("input#ivvcChartPauseValue").val();
+    return jQuery("#ivvcChartPauseValue").val();
 }
