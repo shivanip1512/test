@@ -63,7 +63,56 @@ ALTER TABLE AcctThermostatScheduleEntry
     ALTER COLUMN HeatTemp NUMERIC NOT NULL;
 /* @error ignore-end */
 /* End YUK-10963 */
+    
+/* Start YUK-10981 */
+CREATE TABLE tempDynamicPaoStatistics (
+   DynamicPAOStatisticsId NUMERIC              not null,
+   PAObjectId             NUMERIC              not null,
+   StatisticType          VARCHAR(16)          not null,
+   StartDateTime          DATETIME             not null,
+   Requests               NUMERIC              not null,
+   Attempts               NUMERIC              not null,
+   Completions            NUMERIC              not null,
+   CommErrors             NUMERIC              not null,
+   ProtocolErrors         NUMERIC              not null,
+   SystemErrors           NUMERIC              not null,
+);
+GO
+INSERT INTO tempDynamicPaoStatistics 
+    SELECT 
+        MIN(DynamicPaoStatisticsId), 
+        PAObjectId, 
+        'Lifetime',
+        '2000-01-01 00:00',
+        SUM(requests), 
+        SUM(attempts), 
+        SUM(completions), 
+        SUM(CommErrors), 
+        SUM(ProtocolErrors), 
+        SUM(SystemErrors) 
+    FROM DynamicPAOStatistics 
+    WHERE statistictype = 'Lifetime' 
+    GROUP BY PAObjectId;
+GO
+DELETE FROM DynamicPAOStatistics WHERE StatisticType = 'Lifetime';
+GO
+INSERT INTO DynamicPAOStatistics 
+    SELECT * FROM tempDynamicPaoStatistics;
+GO
+DROP TABLE tempDynamicPaoStatistics;
+GO
+/* End YUK-10981 */
 
+/* Start YUK- */
+
+/* End YUK- */
+
+/* Start YUK- */
+/* End YUK- */    
+/* Start YUK- */
+/* End YUK- */    
+/* Start YUK- */
+/* End YUK- */  
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

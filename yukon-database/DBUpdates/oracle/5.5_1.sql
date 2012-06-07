@@ -47,6 +47,50 @@ ALTER TABLE AcctThermostatScheduleEntry
 /* @error ignore-end */
 /* End YUK-10963 */
 
+/* Start YUK-10981 */
+CREATE TABLE tempDynamicPaoStatistics (
+   DynamicPAOStatisticsId NUMBER               not null,
+   PAObjectId             NUMBER               not null,
+   StatisticType          VARCHAR2(16)         not null,
+   StartDateTime          DATE                 not null,
+   Requests               NUMBER               not null,
+   Attempts               NUMBER               not null,
+   Completions            NUMBER               not null,
+   CommErrors             NUMBER               not null,
+   ProtocolErrors         NUMBER               not null,
+   SystemErrors           NUMBER               not null
+);
+
+INSERT INTO tempDynamicPaoStatistics 
+    SELECT 
+        MIN(DynamicPaoStatisticsId), 
+        PAObjectId, 
+        'Lifetime',
+        TO_DATE('2000-JAN-01 00:00', 'YYYY-MON-DD HH24::MI'),
+        SUM(requests), 
+        SUM(attempts), 
+        SUM(completions), 
+        SUM(CommErrors), 
+        SUM(ProtocolErrors), 
+        SUM(SystemErrors) 
+    FROM DynamicPAOStatistics 
+    WHERE statistictype = 'Lifetime' 
+    GROUP BY PAObjectId;
+
+DELETE FROM DynamicPAOStatistics WHERE StatisticType = 'Lifetime';
+
+INSERT INTO DynamicPAOStatistics 
+    SELECT * FROM tempDynamicPaoStatistics;
+
+DROP TABLE tempDynamicPaoStatistics;
+/* End YUK-10981 */    
+    
+/* Start YUK- */
+/* End YUK- */    
+/* Start YUK- */
+/* End YUK- */    
+/* Start YUK- */
+/* End YUK- */    
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
