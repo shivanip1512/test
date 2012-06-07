@@ -1,16 +1,22 @@
 package com.cannontech.web.support.development.database.service.impl;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.Address;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
@@ -23,6 +29,7 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.web.support.development.database.objects.DevCCU;
 import com.cannontech.web.support.development.database.objects.DevHardwareType;
 import com.cannontech.web.support.development.database.objects.DevStars;
+import com.cannontech.web.support.development.database.objects.DevStarsAccounts;
 import com.google.common.collect.Lists;
 
 public class DevStarsCreationService extends DevObjectCreationBase {
@@ -32,10 +39,13 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     private StarsInventoryBaseDao starsInventoryBaseDao;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
-    
+    @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private ECMappingDao ecMappingDao;
+
     @Override
     protected void createAll() {
         createEC();
+        setupStarsAccounts(devDbSetupTask.getDevStars());
         createStars(devDbSetupTask.getDevStars());
     }
     
@@ -44,6 +54,48 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         log.info("Stars:");
     }
 
+    private void setupStarsAccounts(DevStars devStars) {
+        DevStarsAccounts devStarsAccounts = devStars.getDevStarsAccounts();
+        int accountNumIterator = devStarsAccounts.getAccountNumMin();
+        for (int i = 0; i < devStarsAccounts.getNumAccounts(); i++) {
+            UpdatableAccount account = new UpdatableAccount();
+            String accountNumString = String.valueOf(accountNumIterator);
+            AccountDto accountDto = new AccountDto();
+            accountDto.setAccountNumber(accountNumString);
+            accountDto.setLastName("last" + accountNumString);
+            accountDto.setFirstName("first" + accountNumString);
+            accountDto.setCompanyName("company" + accountNumString);
+            accountDto.setHomePhone("555-555-5555");
+            accountDto.setWorkPhone("555-555-5555");
+            accountDto.setEmailAddress(accountNumString + "@test.com");
+            accountDto.setStreetAddress(new Address("1234 Fake Street", "5678 Really Fake Street", "Fakeland", "MN", "55555", "Fake County"));
+            accountDto.setBillingAddress(new Address("1234 Fake Street", "5678 Really Fake Street", "Fakeland", "MN", "55555", "Fake County"));
+            accountDto.setUserName(accountNumString);
+            accountDto.setPassword(accountNumString);
+            int energyCompanyId = devStars.getEnergyCompany().getEnergyCompanyId();
+            List<LiteYukonGroup> residentialGroups = ecMappingDao.getResidentialGroups(energyCompanyId);
+            if (residentialGroups.isEmpty()) {
+                LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroupByName("Residential Customers Grp");
+                ecMappingDao.addECToResidentialGroupMapping(energyCompanyId, Lists.newArrayList(liteYukonGroup.getGroupID()));
+                accountDto.setLoginGroup(liteYukonGroup.getGroupName());
+            } else {
+                accountDto.setLoginGroup(residentialGroups.get(0).getGroupName());
+            }
+            accountDto.setMapNumber(accountNumString);
+            accountDto.setAltTrackingNumber(accountNumString);
+            accountDto.setIsCommercial(false);
+            accountDto.setCustomerNumber(accountNumString);
+//            accountDto.setCustomerStatus(customerStatus); // not sure what this is
+            accountDto.setIsCustAtHome(true);
+            accountDto.setPropertyNotes("Property Notes for account number: " + accountNumString);
+            accountDto.setAccountNotes("Account Notes for account number: " + accountNumString);
+            account.setAccountDto(accountDto);
+            account.setAccountNumber(accountNumString);
+            devStarsAccounts.getAccounts().add(account);
+            accountNumIterator++;
+        }
+    }
+    
     private void createEC() {
         if (devDbSetupTask.getDevStars().isCreateCooperEC()) {
             EnergyCompanyDto ec = new EnergyCompanyDto();
