@@ -89,6 +89,18 @@ DROP TABLE tempDynamicPaoStatistics;
 INSERT INTO YukonRoleProperty VALUES (-70027, -700, 'Enable Importer', 'false', 'Allows access to the Cap Control importers');
 /* End YUK-11023 */
 
+/* Start YUK-11025 */
+INSERT INTO YukonListEntry VALUES (1045, 1005, 0, 'LCR-6200(RFN)', 1324);
+INSERT INTO YukonListEntry VALUES (1046, 1005, 0, 'LCR-6600(RFN)', 1325);
+
+INSERT INTO StateGroup VALUES (-18, 'LCR Service Status', 'Status');
+
+INSERT INTO State VALUES (-18, 0, 'Unknown', 9, 6, 0);
+INSERT INTO State VALUES (-18, 1, 'In Service', 0, 6, 0);
+INSERT INTO State VALUES (-18, 2, 'Out of Service', 1, 6, 0);
+INSERT INTO State VALUES (-18, 3, 'Temporarily Out of Serivice', 7, 6, 0);
+/* End YUK-11025 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

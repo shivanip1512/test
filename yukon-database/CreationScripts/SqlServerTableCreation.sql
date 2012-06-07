@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/7/2012 4:22:12 PM                          */
+/* Created on:     6/7/2012 4:55:21 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7607,6 +7607,10 @@ create table State (
 )
 go
 
+INSERT INTO State VALUES(-18, 0, 'Unknown', 9, 6, 0);
+INSERT INTO State VALUES(-18, 1, 'In Service', 0, 6, 0);
+INSERT INTO State VALUES(-18, 2, 'Out of Service', 1, 6, 0);
+INSERT INTO State VALUES(-18, 3, 'Temporarily Out of Serivice', 7, 6, 0);
 INSERT INTO State VALUES(-17, 0, 'Manual', 0, 6, 0);
 INSERT INTO State VALUES(-17, 1, 'SCADA Override', 1, 6, 0);
 INSERT INTO State VALUES(-17, 2, 'Fault Current', 2, 6, 0);
@@ -7733,6 +7737,7 @@ create table StateGroup (
 )
 go
 
+INSERT INTO StateGroup VALUES(-18, 'LCR Service Status', 'Status');
 INSERT INTO StateGroup VALUES(-17, 'Last Control', 'Status');
 INSERT INTO StateGroup VALUES(-16, 'Event Status', 'Status');
 INSERT INTO StateGroup VALUES(-15, 'Signal Strength', 'Status'); 
@@ -8795,6 +8800,8 @@ insert into YukonListEntry values (1034,1003,0,'Non Yukon Meter',1204);
 insert into YukonListEntry values (1041,1004,0,' ',0);
 insert into YukonListEntry values (1042,1004,0,'120/120',0);
 
+INSERT INTO YukonListEntry VALUES (1045, 1005, 0, 'LCR-6200(RFN)', 1324);
+INSERT INTO YukonListEntry VALUES (1046, 1005, 0, 'LCR-6600(RFN)', 1325);
 INSERT INTO YukonListEntry VALUES (1047, 1005, 0, 'LCR-6200(ZIGBEE)', 1320); 
 INSERT INTO YukonListEntry VALUES (1048, 1005, 0, 'LCR-6200(EXPRESSCOM)', 1321); 
 INSERT INTO YukonListEntry VALUES (1049, 1005, 0, 'LCR-6600(ZIGBEE)', 1322); 
