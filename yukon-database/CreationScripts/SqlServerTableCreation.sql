@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/7/2012 4:55:21 PM                          */
+/* Created on:     6/7/2012 5:06:49 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7607,6 +7607,10 @@ create table State (
 )
 go
 
+INSERT INTO State VALUES(-19, 0, 'Success', 0, 6, 0);
+INSERT INTO State VALUES(-19, 1, 'Not Applicable', 9, 6, 0);
+INSERT INTO State VALUES(-19, 2, 'Failure', 1, 6, 0);
+INSERT INTO State VALUES(-19, 3, 'Unsupported', 7, 6, 0);
 INSERT INTO State VALUES(-18, 0, 'Unknown', 9, 6, 0);
 INSERT INTO State VALUES(-18, 1, 'In Service', 0, 6, 0);
 INSERT INTO State VALUES(-18, 2, 'Out of Service', 1, 6, 0);
@@ -7737,6 +7741,7 @@ create table StateGroup (
 )
 go
 
+INSERT INTO StateGroup VALUES(-19, 'RF Demand Reset', 'Status');
 INSERT INTO StateGroup VALUES(-18, 'LCR Service Status', 'Status');
 INSERT INTO StateGroup VALUES(-17, 'Last Control', 'Status');
 INSERT INTO StateGroup VALUES(-16, 'Event Status', 'Status');

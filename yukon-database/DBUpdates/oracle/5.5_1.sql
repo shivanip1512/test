@@ -101,6 +101,15 @@ INSERT INTO State VALUES (-18, 2, 'Out of Service', 1, 6, 0);
 INSERT INTO State VALUES (-18, 3, 'Temporarily Out of Serivice', 7, 6, 0);
 /* End YUK-11025 */
 
+/* Start YUK-11031 */
+INSERT INTO StateGroup VALUES(-19, 'RF Demand Reset', 'Status');
+
+INSERT INTO State VALUES(-19, 0, 'Success', 0, 6, 0);
+INSERT INTO State VALUES(-19, 1, 'Not Applicable', 9, 6, 0);
+INSERT INTO State VALUES(-19, 2, 'Failure', 1, 6, 0);
+INSERT INTO State VALUES(-19, 3, 'Unsupported', 7, 6, 0);
+/* End YUK-11031 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
