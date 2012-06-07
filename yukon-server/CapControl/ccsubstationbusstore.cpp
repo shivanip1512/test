@@ -3056,11 +3056,11 @@ void CtiCCSubstationBusStore::resetDailyOperations()
     const CtiDate today = CtiDate();
     const CtiDate yesterday = today - 1;
 
-    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(today)
+    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(today) )
     {
         setValid(false);
     }
-    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(yesterday)
+    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(yesterday) )
     {
         setValid(false);
     }
