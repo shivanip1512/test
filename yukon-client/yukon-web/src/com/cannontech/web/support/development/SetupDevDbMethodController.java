@@ -60,7 +60,7 @@ public class SetupDevDbMethodController {
         } catch (Exception e) {
             log.warn("caught exception in setupDevDatabase", e);
             flashScope.setError(YukonMessageSourceResolvable
-                .createDefaultWithoutCode("Unable to setup development database: " + e.getMessage()));
+                .createDefaultWithoutCode("Database setup encountered a problem and may not have successfully completed: " + e.getMessage()));
         }
         setupPage(model, devDbSetupTask);
 
