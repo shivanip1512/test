@@ -21,6 +21,7 @@ ALTER TABLE MACSimpleSchedule
 ALTER TABLE MACSimpleSchedule
     ADD CONSTRAINT FK_MACSimpSch_MACSch FOREIGN KEY (ScheduleId)
         REFERENCES MACSchedule (ScheduleID);
+GO
 sp_rename @objname = 'MACSchedule.ScheduleID',
           @newname = 'ScheduleId',
           @objtype = 'COLUMN';
