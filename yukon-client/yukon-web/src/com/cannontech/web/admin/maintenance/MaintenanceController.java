@@ -46,15 +46,16 @@ public class MaintenanceController {
     private YukonJobDefinition<ScheduledRphDanglingEntriesDeletionExecutionTask> scheduledRphDanglingEntriesDeletionExecutionJobDefinition;
     private YukonJobDefinition<ScheduledSystemLogDanglingEntriesDeletionExecutionTask> scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition;
     
+    private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
+    private final static String RPH_DANGLING_CRON = "0 15 21 ? * *"; // every night at 9:15pm
+    private final static String SYSTEM_LOG_DANGLING_CRON = "0 30 21 ? * *"; // every night at 9:30pm
+    
     @RequestMapping
     public String view(ModelMap model, YukonUserContext userContext) {
     	List<ScheduledRepeatingJob> jobs = Lists.newArrayList();
-    	//default - every night at 9:00pm
-    	jobs.add(getJob(userContext, scheduledRphDuplicateDeletionExecutionJobDefinition, "0 0 21 ? * *"));
-    	//default - every night at 9:15pm
-    	jobs.add(getJob(userContext, scheduledRphDanglingEntriesDeletionExecutionJobDefinition, "0 15 21 ? * *"));
-    	//default - every night at 9:30pm
-    	jobs.add(getJob(userContext, scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition, "0 30 21 ? * *"));
+    	jobs.add(getJob(userContext, scheduledRphDuplicateDeletionExecutionJobDefinition, RPH_DUPLICATE_CRON));
+    	jobs.add(getJob(userContext, scheduledRphDanglingEntriesDeletionExecutionJobDefinition, RPH_DANGLING_CRON));
+    	jobs.add(getJob(userContext, scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition, SYSTEM_LOG_DANGLING_CRON));
         model.addAttribute("jobs", jobs);
         return "maintenance/home.jsp";
     }

@@ -22,9 +22,7 @@ jQuery(function(){
 		jQuery.ajax({
 			url: '${toggleJobAjaxUrl}?jobId=' + jQuery(e.currentTarget).attr('data-jobid'),
 			success: function(data){
-				jQuery(e.currentTarget).removeClass("enabled_false, enabled_true");
-				jQuery(e.currentTarget).addClass("enabled_"+data);
-				jQuery(e.currentTarget).attr('title', jQuery(e.currentTarget).attr('data-'+ !data +'jobNameMsg'));
+				jQuery(e.currentTarget).removeClass("enabled_false, enabled_true").addClass("enabled_"+data).attr('title', jQuery(e.currentTarget).attr('data-'+ !data +'jobNameMsg'));
 			}
 		});
 	});
@@ -37,7 +35,7 @@ jQuery(function(){
 		    	<table class="compactResultsTable">
 			
 					<tr>
-						<th style="width:20px;">&nbsp;</th>
+						<th>&nbsp;</th>
 						<th><i:inline key=".tableHeader.scheduleName"/></th>
 						<th><i:inline key=".tableHeader.scheduleDescription"/></th>
 						<th><i:inline key=".tableHeader.enabled"/></th>
@@ -61,7 +59,7 @@ jQuery(function(){
 							</td>
 							<cti:msg2 key="yukon.web.modules.adminSetup.maintenance.enable.circle.hoverText" argument="${jobNameMsg}" var="enableMsg" />
 							<cti:msg2 key="yukon.web.modules.adminSetup.maintenance.disable.circle.hoverText" argument="${jobNameMsg}" var="disableMsg"/>
-							<td>
+							<td class="fr">
 								<a href="javascript:void(0)" class="icon enabled_${not job.disabled} f_toggleJobEnabled" data-truejobNameMsg="${enableMsg}" data-falsejobNameMsg="${disableMsg}" data-jobid="${job.id}">Toggle Job</a>
 							</td>
 		

@@ -16,6 +16,9 @@ import com.cannontech.database.LongRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 
 public class DatabaseManagementDaoImpl  implements DatabaseManagementDao {
+	
+	private final static int ROWS_TO_DELETE = 1000000;
+	
     @Autowired private YukonJdbcTemplate yukonTemplate;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
     

@@ -2,9 +2,7 @@ package com.cannontech.core.dao;
 
 
 public interface DatabaseManagementDao {
-	
-	int ROWS_TO_DELETE = 1000000;
-    /**
+	    /**
      * Returns the number of duplicates deleted. Will delete a maximum of 1000000 (1 million) rows.
      */
     public int deleteRphDuplicates();
