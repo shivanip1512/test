@@ -3052,11 +3052,15 @@ void CtiCCSubstationBusStore::resetDailyOperations()
         }
     }
     CtiHolidayManager::getInstance().refresh();
-    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
+
+    const CtiDate today = CtiDate();
+    const CtiDate yesterday = today - 1;
+
+    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(today)
     {
         setValid(false);
     }
-    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate() - 1) )// yesterday
+    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(yesterday)
     {
         setValid(false);
     }
