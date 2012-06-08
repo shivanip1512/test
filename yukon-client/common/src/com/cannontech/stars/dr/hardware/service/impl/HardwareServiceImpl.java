@@ -87,7 +87,7 @@ public class HardwareServiceImpl implements HardwareService {
     public void deleteHardware(LiteYukonUser user, boolean delete, int inventoryId) 
     throws NotFoundException, CommandCompletionException, SQLException, PersistenceException, WebClientException {
         
-        boolean deleteMCT = false;
+        boolean deletePao = false;
         String accountNumber = null;
         
         LiteInventoryBase lib = starsInventoryBaseDao.getByInventoryId(inventoryId);
@@ -114,32 +114,24 @@ public class HardwareServiceImpl implements HardwareService {
                 
             } catch (NotFoundException ignore) {
                 /* Ignore this if we are not an LMHardwareBase such as mct's */
-                deleteMCT = true;
+                deletePao = true;
             }
         }
         
         if (delete) {
             InventoryIdentifier id = inventoryDao.getYukonInventory(inventoryId);
             YukonPao pao = paoDao.getYukonPao(lib.getDeviceID());
+            if (pao.getPaoIdentifier().getPaoType().isRfn()) deletePao = true;
             
             // Warn the ExtensionService we are about to delete.
             hardwareTypeExtensionService.preDeleteCleanup(pao, id);
             
             /* Delete this hardware from the database */
             /*TODO handle this with new code, not with this util. */
-            InventoryManagerUtil.deleteInventory( lib, ec, deleteMCT);
+            InventoryManagerUtil.deleteInventory( lib, ec, deletePao);
 
             // Give the Extension service a chance to clean up its tables
             hardwareTypeExtensionService.deleteDevice(pao, id);
-            
-            if (id.getHardwareType().isRf()) {
-                /** This is fine for now (at some point we should probably move the creation and deletion of
-                 * RF device tables from stars into the hardwareTypeExtensionService.  Creation methods here would then
-                 * have to know if the device tables had already been created by {@link DeviceCreationService} due to 
-                 * an archive request from NM.  Currently these devices cannot be created from stars pages.
-                 */
-                deviceDao.removeDevice(new SimpleDevice(pao));
-            }
             
             // Log hardware deletion
             hardwareEventLogService.hardwareDeleted(user, lib.getDeviceLabel());

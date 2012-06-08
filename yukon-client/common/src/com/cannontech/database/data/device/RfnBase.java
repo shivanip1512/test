@@ -3,6 +3,8 @@ package com.cannontech.database.data.device;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -44,20 +46,32 @@ public class RfnBase extends DeviceBase {
     @Override
     public void delete() throws SQLException {
         getRfnAddress().delete();
+        
+        /** Clean up stars tables */
         PaoType paoType = PaoType.getForDbString(getPAOType());
         if (paoType.isRfn() && !paoType.isMeter()) {
-            /** Clean up stars tables */
             HardwareService hardwareService = YukonSpringHook.getBean("hardwareService", HardwareService.class);
             InventoryDao inventoryDao = YukonSpringHook.getBean("inventoryDao", InventoryDao.class);
             YukonEnergyCompanyService ecService = YukonSpringHook.getBean("yukonEnergyCompanyService", YukonEnergyCompanyService.class);
-            YukonInventory inventory = inventoryDao.getYukonInventoryForDeviceId(getPAObjectID());
-            int inventoryId = inventory.getInventoryIdentifier().getInventoryId();
-            YukonEnergyCompany ec = ecService.getEnergyCompanyByInventoryId(inventoryId);
             
+            boolean skip = false;
+            YukonInventory inventory = null;
             try {
-                hardwareService.deleteHardware(ec.getEnergyCompanyUser(), true, inventoryId);
-            } catch (Exception e) {
-                throw new SQLException("Could not delete stars tables for: " + this, e);
+                inventory = inventoryDao.getYukonInventoryForDeviceId(getPAObjectID());
+            } catch (EmptyResultDataAccessException e) {
+                /* When an rf device gets deleted from stars, the stars tables will have already been cleaned up. */
+                skip = true;
+            }
+            
+            if (!skip) {
+                int inventoryId = inventory.getInventoryIdentifier().getInventoryId();
+                YukonEnergyCompany ec = ecService.getEnergyCompanyByInventoryId(inventoryId);
+                
+                try {
+                    hardwareService.deleteHardware(ec.getEnergyCompanyUser(), true, inventoryId);
+                } catch (Exception e) {
+                    throw new SQLException("Could not delete stars tables for: " + this, e);
+                }
             }
         }
         super.delete();
