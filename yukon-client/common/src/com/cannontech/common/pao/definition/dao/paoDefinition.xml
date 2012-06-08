@@ -6485,7 +6485,7 @@
         <displayName>RFN-430KV</displayName>
     </pao>
     
-    <pao id="RFN_ELO_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG">
+    <pao id="RFN_ELO_BASE" abstract="true" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, SUPPORTS_TOU_TAG">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>
@@ -6637,6 +6637,30 @@
             <!-- Outage Duration -->
             <attribute name="OUTAGE_LOG">
                 <basicLookup point="Outages" />
+            </attribute>
+            <attribute name="TOU_RATE_A_PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate A kW)"/>
+            </attribute>
+            <attribute name="TOU_RATE_A_USAGE">
+                <basicLookup point="Rate A kWh" />
+            </attribute>
+            <attribute name="TOU_RATE_B_PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate B kW)"/>
+            </attribute>
+            <attribute name="TOU_RATE_B_USAGE">
+                <basicLookup point="Rate B kWh" />
+            </attribute>
+            <attribute name="TOU_RATE_C_PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate C kW)"/>
+            </attribute>
+            <attribute name="TOU_RATE_C_USAGE">
+                <basicLookup point="Rate C kWh" />
+            </attribute>
+            <attribute name="TOU_RATE_D_PEAK_DEMAND">
+                <basicLookup point="Peak kW (Rate D kW)"/>
+            </attribute>
+            <attribute name="TOU_RATE_D_USAGE">
+                <basicLookup point="Rate D kWh" />
             </attribute>
         </attributes>
         <tags>

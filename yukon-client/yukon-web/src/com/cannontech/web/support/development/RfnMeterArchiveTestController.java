@@ -95,10 +95,9 @@ public class RfnMeterArchiveTestController {
 
     @RequestMapping("sendMeterArchiveRequest")
     public String send(int serialFrom, int serialTo, String manufacturer, String model, Double value, boolean random, String uom, 
-                       boolean quad1,
-                       boolean quad2,
-                       boolean quad3,
-                       boolean quad4) {
+                       boolean quad1, boolean quad2, boolean quad3, boolean quad4, boolean max, boolean min, boolean avg,
+                       boolean phaseA, boolean phaseB, boolean phaseC, boolean touRateA, boolean touRateB, boolean touRateC,
+                       boolean touRateD, boolean touRateE, boolean netFlow, boolean coincident, boolean harmonic, boolean cumulative) {
         JmsTemplate jmsTemplate;
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(false);
@@ -120,10 +119,30 @@ public class RfnMeterArchiveTestController {
             
             channelData.setUnitOfMeasure(uom);
             Set<String> modifiers = Sets.newHashSet();
+            
             if (quad1) modifiers.add("Quadrant 1");
             if (quad2) modifiers.add("Quadrant 2");
             if (quad3) modifiers.add("Quadrant 3");
             if (quad4) modifiers.add("Quadrant 4");
+            
+            if (max) modifiers.add("Max");
+            if (min) modifiers.add("Min");
+            if (avg) modifiers.add("Avg");
+            
+            if (phaseA) modifiers.add("Phase A");
+            if (phaseB) modifiers.add("Phase B");
+            if (phaseC) modifiers.add("Phase C");
+            
+            if (touRateA) modifiers.add("TOU Rate A");
+            if (touRateB) modifiers.add("TOU Rate B");
+            if (touRateC) modifiers.add("TOU Rate C");
+            if (touRateD) modifiers.add("TOU Rate D");
+            if (touRateE) modifiers.add("TOU Rate E");
+            
+            if (netFlow)    modifiers.add("Net Flow");
+            if (coincident) modifiers.add("Coincident");
+            if (harmonic)   modifiers.add("Harmonic");
+            if (cumulative) modifiers.add("Cumulative");
             
             if (random) {
                 channelData.setValue(Math.random() * 1000);

@@ -20,7 +20,11 @@ function useRandom() {
         <form action="sendMeterArchiveRequest" method="post">
             <tags:nameValueContainer>
                 
-                <tags:nameValue name="Serial Number"><input name="serialFrom" type="text" value="1000"> to <input name="serialTo" type="text" value="1000"></tags:nameValue>
+                <tags:nameValue name="Serial Number">
+                    <input name="serialFrom" type="text" value="1000"> 
+                    to 
+                    <input name="serialTo" type="text" value="1000">
+                </tags:nameValue>
                 
                 <tags:nameValue name="Manufacturer">
                     <select name="manufacturer">
@@ -69,19 +73,46 @@ function useRandom() {
                 </tags:nameValue>
                 
                 <tags:nameValue name="Modifiers">
-                    <input type="checkbox" id="quad1" name="quad1" checked="checked"> <label for="quad1">Quadrant 1</label><br>
-                    <input type="checkbox" id="quad2" name="quad2"> <label for="quad2">Quadrant 2</label><br>
-                    <input type="checkbox" id="quad3" name="quad3"> <label for="quad3">Quadrant 3</label><br>
-                    <input type="checkbox" id="quad4" name="quad4" checked="checked"> <label for="quad4">Quadrant 4</label><br>
+                    <table cellspacing="5">
+                        <tr>
+                            <td><label><input type="checkbox" name="quad1" checked="checked">Quadrant 1</label></td>
+                            <td><label><input type="checkbox" name="quad2">Quadrant 2</label></td>
+                            <td><label><input type="checkbox" name="quad3">Quadrant 3</label></td>
+                            <td><label><input type="checkbox" name="quad4" checked="checked">Quadrant 4</label></td>
+                        </tr>
+                        <tr>
+                            <td><label><input type="checkbox" id="max" name="max">Max</label></td>
+                            <td><label><input type="checkbox" id="min" name="min">Min</label></td>
+                            <td><label><input type="checkbox" id="avg" name="avg">Average</label></td>
+                        </tr>
+                        <tr>
+                            <td><label><input type="checkbox" id="phaseA" name="phaseA">Phase A</label></td>
+                            <td><label><input type="checkbox" id="phaseB" name="phaseB">Phase B</label></td>
+                            <td><label><input type="checkbox" id="phaseC" name="phaseC">Phase C</label></td>
+                        </tr>
+                        <tr>
+                            <td><label><input type="checkbox" id="touRateA" name="touRateA">TOU Rate A</label></td>
+                            <td><label><input type="checkbox" id="touRateB" name="touRateB">TOU Rate B</label></td>
+                            <td><label><input type="checkbox" id="touRateC" name="touRateC">TOU Rate C</label></td>
+                            <td><label><input type="checkbox" id="touRateD" name="touRateD">TOU Rate D</label></td>
+                            <td><label><input type="checkbox" id="touRateE" name="touRateE">TOU Rate E</label></td>
+                        </tr>
+                        <tr>
+                            <td><label><input type="checkbox" id="netFlow"    name="netFlow">Net Flow</label></td>
+                            <td><label><input type="checkbox" id="coincident" name="coincident">Coincident</label></td>
+                            <td><label><input type="checkbox" id="harmonic"   name="harmonic">Harmonic</label></td>
+                            <td><label><input type="checkbox" id="cumulative" name="cumulative">Cumulative</label></td>
+                        </tr>
+                    </table>
                 </tags:nameValue>
                 
                 <tags:nameValue name="Value">
-                    <input id="static" name="value" type="text" value="34543.4">  <input type="checkbox" id="random" name="random" onclick="useRandom()">  <label for="random">Random</label>
+                    <input id="static" name="value" type="text" value="34543.4">
+                    <label><input type="checkbox" id="random" name="random" onclick="useRandom()">Random</label>
                 </tags:nameValue>
                 
             </tags:nameValueContainer>
             <div clas="actionArea"><cti:button nameKey="send" type="submit" styleClass="f_blocker"/></div>
         </form>
     </tags:sectionContainer>
-
 </cti:standardPage>

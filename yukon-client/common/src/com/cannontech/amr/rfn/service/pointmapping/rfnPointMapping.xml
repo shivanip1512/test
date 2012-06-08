@@ -1453,8 +1453,8 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Delivered kWh">
-            <uom>Wh</uom>
+        <point name="Delivered kW"> 
+            <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
