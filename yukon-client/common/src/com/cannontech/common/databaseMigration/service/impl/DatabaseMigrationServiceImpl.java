@@ -28,6 +28,7 @@ import org.jdom.output.XMLOutputter;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -1527,6 +1528,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     }
     
     @Autowired
+    @Qualifier("main")
     public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
 		this.scheduledExecutor = scheduledExecutor;
 	}
