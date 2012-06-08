@@ -1,6 +1,5 @@
 package com.cannontech.common.rfn.service.impl;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
