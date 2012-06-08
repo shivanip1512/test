@@ -52,12 +52,16 @@ function initiateCannonDataUpdate(url, delayMs) {
             var id = it.readAttribute('cannonColorUpdater');
             // use the cannonUpdater "id" to look up value in response
             var newData = responseStruc.data[id];
-            if (newData && newData != it.style.color) {
-                // data was sent and is different than current
-                it.style.color = newData;
-                it.childElements().each(function(child) {
-                    child.style.color = newData;
-                });
+            try{
+	            if (newData && newData != it.style.color) {
+	                // data was sent and is different than current
+	                it.setStyle({color: newData});
+	                it.childElements().each(function(child) {
+	                    child.setStyle({color: newData});
+	                });
+	            }
+            }catch(err){
+            	//do nothing, thanks ie!
             }
         });
         
