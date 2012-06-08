@@ -3,14 +3,16 @@ package com.cannontech.web.support.development.database.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.development.BulkPointDataInjectionService;
 import com.cannontech.web.support.development.DevDbSetupTask;
 import com.cannontech.web.support.development.database.service.DevDatabasePopulationService;
 
 public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationService {
-    private DevRolePropUpdaterService devRolePropUpdaterService;
-    private DevAMRCreationService devAMRCreationService;
-    private DevCapControlCreationService devCapControlCreationService;
-    private DevStarsCreationService devStarsCreationService;
+    @Autowired private DevRolePropUpdaterService devRolePropUpdaterService;
+    @Autowired private DevAMRCreationService devAMRCreationService;
+    @Autowired private DevCapControlCreationService devCapControlCreationService;
+    @Autowired private DevStarsCreationService devStarsCreationService;
+    @Autowired private BulkPointDataInjectionService bulkPointDataInjectionService;
     private DevDbSetupTask devDbSetupTask;
 
     @Transactional
@@ -46,6 +48,9 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
             if (devDbSetupTask.getDevStars().isCreate()) {
                 devStarsCreationService.createAll(devDbSetupTask);
             }
+            if (devDbSetupTask.isBulkPointDataInject()) {
+                bulkPointDataInjectionService.executeInjection();
+            }
         } catch (Exception e) {
             devDbSetupTask.setHasRun(false);
             devDbSetupTask.setRunning(false);
@@ -60,25 +65,5 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
         devAMRCreationService.logFinalExecutionDetails(devDbSetupTask.getDevAMR());
         devCapControlCreationService.logFinalExecutionDetails(devDbSetupTask.getDevCapControl());
         devStarsCreationService.logFinalExecutionDetails(devDbSetupTask.getDevStars());
-    }
-
-    @Autowired
-    public void setDevRolePropUpdaterService(DevRolePropUpdaterService devRolePropUpdaterService) {
-        this.devRolePropUpdaterService = devRolePropUpdaterService;
-    }
-
-    @Autowired
-    public void setDevAMRCreationService(DevAMRCreationService devAMRCreationService) {
-        this.devAMRCreationService = devAMRCreationService;
-    }
-
-    @Autowired
-    public void setDevCapControlCreationService(DevCapControlCreationService devCapControlCreationService) {
-        this.devCapControlCreationService = devCapControlCreationService;
-    }
-
-    @Autowired
-    public void setDevStarsCreationService(DevStarsCreationService devStarsCreationService) {
-        this.devStarsCreationService = devStarsCreationService;
     }
 }

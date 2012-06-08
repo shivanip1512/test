@@ -78,8 +78,9 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             
             try {
                 StarsAdminUtil.mapOperatorLogin(yukonUserDao.getLiteYukonUser(-2),devDbSetupTask.getDevStars().getEnergyCompany());
+                log.info("Set user Yukon as operator login for Cooper EC");
             } catch (CommandExecutionException e) {
-                log.warn("Unable to link new energy company to yukon/yukon");
+                log.warn("Unable to link new energy company to yukon/yukon",e);
             }
         }
 

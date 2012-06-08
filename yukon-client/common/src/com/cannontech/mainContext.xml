@@ -316,4 +316,6 @@
     
     <bean id="rfnDeviceLookupService" class="com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl"/>
     <bean id="rfnArchiveRequestService" class="com.cannontech.common.rfn.service.impl.RfnArchiveRequestServiceImpl"/>
+
+    <bean id="bulkPointDataInjectionService" class="com.cannontech.development.impl.BulkPointDataInjectionServiceImpl"/>
 </beans>

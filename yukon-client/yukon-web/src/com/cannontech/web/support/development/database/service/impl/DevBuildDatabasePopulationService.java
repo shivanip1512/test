@@ -32,9 +32,11 @@ public class DevBuildDatabasePopulationService {
             DevStars ds = new DevStars();
             ds.setCreateCooperEC(true);
             task.setDevStars(ds);
+            task.setBulkPointDataInject(true);
+
             // Execute database population
             devDatabasePopulationService.executeFullDatabasePopulation(task);
-        } catch (Exception e) { 
+        } catch (Exception e) {
         } finally {
             YukonSpringHook.shutdownContext();
             System.exit(0);

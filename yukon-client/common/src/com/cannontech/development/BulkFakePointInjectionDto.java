@@ -1,4 +1,4 @@
-package com.cannontech.web.support.development.database.objects;
+package com.cannontech.development;
 
 import java.util.List;
 
@@ -25,6 +25,7 @@ public class BulkFakePointInjectionDto {
     private double valueLow;
     private double valueHigh;
     private int decimalPlaces;
+    private int injectionCount = 0;
 
     public String getGroupName() {
         return groupName;
@@ -106,5 +107,14 @@ public class BulkFakePointInjectionDto {
     }
     public double getMean() {
         return (this.valueHigh + this.valueLow)/2;
+    }
+    public void setInjectionCount(int injectionCount) {
+        this.injectionCount = injectionCount;
+    }
+    public int getInjectionCount() {
+        return injectionCount;
+    }
+    public void incrementInjectionCount() {
+        injectionCount++;
     }
 }
