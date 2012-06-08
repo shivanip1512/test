@@ -12,7 +12,7 @@
        </list>
      </constructor-arg>
      <constructor-arg>
-         <ref bean="com.cannontech.context.baseapi"/>
+         <ref bean="com.cannontech.context.common"/>
      </constructor-arg>
    </bean>
     

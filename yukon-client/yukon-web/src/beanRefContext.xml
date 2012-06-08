@@ -10,7 +10,6 @@
        <list>
             <value>com/cannontech/web/devDatabaseContext.xml</value>
             <value>com/cannontech/web/serverContext.xml</value>
-            <value>com/cannontech/cc/applicationContext.xml</value>
             <value>com/cannontech/common/alert/alertContext.xml</value>
 			<value>com/cannontech/common/chart/chartContext.xml</value>
 			<value>com/cannontech/common/search/searchContext.xml</value>
@@ -21,7 +20,7 @@
        </list>
      </constructor-arg>
      <constructor-arg>
-         <ref bean="com.cannontech.context.baseapi"/>
+         <ref bean="com.cannontech.context.common"/>
      </constructor-arg>
    </bean>
     

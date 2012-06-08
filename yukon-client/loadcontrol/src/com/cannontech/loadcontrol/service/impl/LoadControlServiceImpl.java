@@ -10,6 +10,7 @@ import java.util.concurrent.Executor;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -548,6 +549,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 	}
     
     @Autowired
+    @Qualifier("main")
     public void setExecutor(ScheduledExecutor executor) {
 		this.executor = executor;
 	}

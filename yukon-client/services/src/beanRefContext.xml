@@ -16,10 +16,8 @@
         class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true" >
         <constructor-arg index="0">
             <list merge="true">
-                <value>com/cannontech/core/service/serverServicesContext.xml</value>
                 <value>com/cannontech/services/server/serviceManagerContext.xml</value>
                 <value>com/cannontech/cbc/cbcContext.xml</value>
-                <value>com/cannontech/stars/starsContext.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg index="1" value="true" />
