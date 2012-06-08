@@ -13,16 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -78,6 +81,7 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired private PaoDao paoDao;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private YukonListDao yukonListDao;
+    @Autowired private DeviceDao deviceDao;
     
     @Override
     @Transactional
@@ -128,6 +132,17 @@ public class HardwareServiceImpl implements HardwareService {
 
             // Give the Extension service a chance to clean up its tables
             hardwareTypeExtensionService.deleteDevice(pao, id);
+            
+            if (id.getHardwareType().isRf()) {
+                /** This is fine for now (at some point we should probably move the creation and deletion of
+                 * RF device tables from stars into the hardwareTypeExtensionService.  Creation methods here would then
+                 * have to know if the device tables had already been created by {@link DeviceCreationService} due to 
+                 * an archive request from NM.  Currently these devices cannot be created from stars pages.
+                 */
+                RfnBase rfnBase = new RfnBase();
+                rfnBase.setDeviceID(pao.getPaoIdentifier().getPaoId());
+                deviceDao.removeDevice(new SimpleDevice(pao));
+            }
             
             // Log hardware deletion
             hardwareEventLogService.hardwareDeleted(user, lib.getDeviceLabel());
