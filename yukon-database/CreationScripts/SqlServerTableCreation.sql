@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/8/2012 1:23:06 PM                          */
+/* Created on:     6/8/2012 2:13:29 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -10058,109 +10058,6 @@ INSERT INTO YukonUserGroup VALUES(-2,-1);
 INSERT INTO YukonUserGroup VALUES(-2,-2);
 
 /*==============================================================*/
-/* Table: YukonUserRole                                         */
-/*==============================================================*/
-create table YukonUserRole (
-   UserRoleID           numeric              not null,
-   UserID               numeric              not null,
-   RoleID               numeric              not null,
-   RolePropertyID       numeric              not null,
-   Value                varchar(1000)        not null,
-   constraint PK_YKONUSRROLE primary key nonclustered (UserRoleID)
-)
-go
-
-/* Database Editor */
-INSERT INTO YukonUserRole VALUES(-100,-1,-100,-10000,' ');
-INSERT INTO YukonUserRole VALUES(-102,-1,-100,-10002,' ');
-INSERT INTO YukonUserRole VALUES(-104,-1,-100,-10004,' ');
-INSERT INTO YukonUserRole VALUES(-105,-1,-100,-10005,' ');
-INSERT INTO YukonUserRole VALUES(-107,-1,-100,-10007,'true');
-INSERT INTO YukonUserRole VALUES(-108,-1,-100,-10008,' ');
-INSERT INTO YukonUserRole VALUES(-109,-1,-100,-10009,' ');
-
-/* TDC */
-INSERT INTO YukonUserRole VALUES(-120,-1,-101,-10100,' ');
-INSERT INTO YukonUserRole VALUES(-121,-1,-101,-10101,' ');
-INSERT INTO YukonUserRole VALUES(-122,-1,-101,-10102,' ');
-INSERT INTO YukonUserRole VALUES(-123,-1,-101,-10103,' ');
-INSERT INTO YukonUserRole VALUES(-124,-1,-101,-10104,' ');
-INSERT INTO YukonUserRole VALUES(-127,-1,-101,-10107,' ');
-INSERT INTO YukonUserRole VALUES(-128,-1,-101,-10108,' ');
-INSERT INTO YukonUserRole VALUES(-130,-1,-101,-10111,' ');
-
-/* Trending */
-INSERT INTO YukonUserRole VALUES(-150,-1,-102,-10200,' ');
-INSERT INTO YukonUserRole VALUES(-152,-1,-102,-10202,' ');
-INSERT INTO YukonUserRole VALUES(-153,-1,-102,-10203,' ');
-INSERT INTO YukonUserRole VALUES(-155,-1,-102,-10205,' ');
-INSERT INTO YukonUserRole VALUES(-156,-1,-102,-10206,' ');
-
-/* Commander */
-INSERT INTO YukonUserRole VALUES(-170,-1,-103,-10300,' ');
-INSERT INTO YukonUserRole VALUES(-171,-1,-103,-10301,'true');
-INSERT INTO YukonUserRole VALUES(-172,-1,-103,-10302,'true');
-INSERT INTO YukonUserRole VALUES(-173,-1,-103,-10303,'false');
-INSERT INTO YukonUserRole VALUES(-174,-1,-103,-10304,'false');
-INSERT INTO YukonUserRole VALUES(-175,-1,-103,-10305,' ');
-
-/* Esubstation Editor */
-INSERT INTO YukonUserRole VALUES(-250,-1,-107,-10700,' ');
-
-/* Esub Drawings */
-INSERT INTO YukonUserRole VALUES(-300,-1,-206,-20600,' ');
-INSERT INTO YukonUserRole VALUES(-301,-1,-206,-20601,' ');
-INSERT INTO YukonUserRole VALUES(-302,-1,-206,-20602,' ');
-
-/* Web Client Customers Web Client role */
-INSERT INTO YukonUserRole VALUES(-400, -1, -108, -10800, '/operator/Operations.jsp');
-INSERT INTO YukonUserRole VALUES(-402, -1, -108, -10802, ' ');
-INSERT INTO YukonUserRole VALUES(-403, -1, -108, -10803, ' ');
-INSERT INTO YukonUserRole VALUES(-404, -1, -108, -10804, ' ');
-INSERT INTO YukonUserRole VALUES(-405, -1, -108, -10805, ' ');
-INSERT INTO YukonUserRole VALUES(-406, -1, -108, -10806, ' ');
-INSERT INTO YukonUserRole VALUES(-407, -1, -108, -10807, ' ');
-INSERT INTO YukonUserRole VALUES(-408, -1, -108, -10808, ' ');
-INSERT INTO YukonUserRole VALUES(-41001,-1, -108, -10811, ' ');
-
-/* Give admin login access to View Logs, */
-INSERT INTO YukonUserRole VALUES(-2000, -1, -200, -20009, ' ');
-INSERT INTO YukonUserRole VALUES(-2001, -1, -200, -20019, 'true');
-
-INSERT INTO YukonUserRole VALUES(-1000, -100, -108, -10800, '/operator/Operations.jsp');
-INSERT INTO YukonUserRole VALUES(-1002, -100, -108, -10802, ' ');
-INSERT INTO YukonUserRole VALUES(-1003, -100, -108, -10803, ' ');
-INSERT INTO YukonUserRole VALUES(-1004, -100, -108, -10804, ' ');
-INSERT INTO YukonUserRole VALUES(-1005, -100, -108, -10805, ' ');
-INSERT INTO YukonUserRole VALUES(-1006, -100, -108, -10806, ' ');
-INSERT INTO YukonUserRole VALUES(-1007, -100, -108, -10811, ' ');
-INSERT INTO YukonUserRole VALUES(-1010, -100, -200, -20000, ' ');
-INSERT INTO YukonUserRole VALUES(-1011, -100, -200, -20001, 'true');
-
-INSERT INTO YukonUserRole VALUES(-1013, -100, -200, -20003, ' ');
-INSERT INTO YukonUserRole VALUES(-1014, -100, -200, -20004, ' ');
-INSERT INTO YukonUserRole VALUES(-1015, -100, -200, -20005, ' ');
-INSERT INTO YukonUserRole VALUES(-1016, -100, -200, -20006, ' ');
-INSERT INTO YukonUserRole VALUES(-1017, -100, -200, -20007, ' ');
-INSERT INTO YukonUserRole VALUES(-1019, -100, -200, -20009, ' ');
-INSERT INTO YukonUserRole VALUES(-1020, -100, -200, -20019, 'true');
-
-/* Adding the Energy Company Role to DefaultCTI */
-INSERT INTO YukonUserRole VALUES(-1100, -100, -2, -1100, ' ');
-INSERT INTO YukonUserRole VALUES(-1101, -100, -2, -1101, ' ');
-INSERT INTO YukonUserRole VALUES(-1102, -100, -2, -1102, ' ');
-INSERT INTO YukonUserRole VALUES(-1107, -100, -2, -1107, ' ');
-INSERT INTO YukonUserRole VALUES(-1108, -100, -2, -1108, ' ');
-INSERT INTO YukonUserRole VALUES(-1109, -100, -2, -1109, ' ');
-INSERT INTO YukonUserRole VALUES(-1110, -100, -2, -1110, ' ');
-INSERT INTO YukonUserRole VALUES(-1111, -100, -2, -1111, ' ');
-INSERT INTO YukonUserRole VALUES(-1112, -100, -2, -1112, ' ');
-INSERT INTO YukonUserRole VALUES(-1114, -100, -2, -1114, ' ');
-
-/* Adding the IVR role to DefaultCTI */
-INSERT INTO YukonUserRole VALUES(-1200, -100, -801, -80100, ' '); 
-
-/*==============================================================*/
 /* Table: YukonWebConfiguration                                 */
 /*==============================================================*/
 create table YukonWebConfiguration (
@@ -13509,21 +13406,6 @@ go
 
 alter table YukonUserGroup
    add constraint FK_YUKONUSE_REF_YKUSG_YUKONUSE foreign key (UserID)
-      references YukonUser (UserID)
-go
-
-alter table YukonUserRole
-   add constraint FK_YkUsRl_RlPrp foreign key (RolePropertyID)
-      references YukonRoleProperty (RolePropertyID)
-go
-
-alter table YukonUserRole
-   add constraint FK_YkUsRl_YkRol foreign key (RoleID)
-      references YukonRole (RoleID)
-go
-
-alter table YukonUserRole
-   add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID)
 go
 
