@@ -4,12 +4,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.service.HardwareService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 
 public class RfnBase extends DeviceBase {
     
@@ -39,6 +44,22 @@ public class RfnBase extends DeviceBase {
     @Override
     public void delete() throws SQLException {
         getRfnAddress().delete();
+        PaoType paoType = PaoType.getForDbString(getPAOType());
+        if (paoType.isRfn() && !paoType.isMeter()) {
+            /** Clean up stars tables */
+            HardwareService hardwareService = YukonSpringHook.getBean("hardwareService", HardwareService.class);
+            InventoryDao inventoryDao = YukonSpringHook.getBean("inventoryDao", InventoryDao.class);
+            YukonEnergyCompanyService ecService = YukonSpringHook.getBean("yukonEnergyCompanyService", YukonEnergyCompanyService.class);
+            YukonInventory inventory = inventoryDao.getYukonInventoryForDeviceId(getPAObjectID());
+            int inventoryId = inventory.getInventoryIdentifier().getInventoryId();
+            YukonEnergyCompany ec = ecService.getEnergyCompanyByInventoryId(inventoryId);
+            
+            try {
+                hardwareService.deleteHardware(ec.getEnergyCompanyUser(), true, inventoryId);
+            } catch (Exception e) {
+                throw new SQLException("Could not delete stars tables for: " + this, e);
+            }
+        }
         super.delete();
     }
     

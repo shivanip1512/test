@@ -150,7 +150,6 @@ public class RfnArchiveRequestServiceImpl implements RfnArchiveRequestService{
                         h.setSerialNumber(rfnIdentifier.getSensorSerialNumber());
                         h.setDeviceId(newDevice.getPaoIdentifier().getPaoId());
                         h.setEnergyCompanyId(ec.getEnergyCompanyID());
-                        h.setFieldReceiveDate(new Date());
                         
                         List<YukonListEntry> statusTypeEntries = yukonListDao.getYukonListEntry(YukonDefinition.DEV_STAT_INSTALLED.getDefinitionId(), lsec);
                         h.setDeviceStatusEntryId(statusTypeEntries.get(0).getEntryID());

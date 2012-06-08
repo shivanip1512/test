@@ -81,10 +81,9 @@ public class HardwareServiceImpl implements HardwareService {
     
     @Override
     @Transactional
-    public void deleteHardware(YukonUserContext context, boolean delete, int inventoryId) 
+    public void deleteHardware(LiteYukonUser user, boolean delete, int inventoryId) 
     throws NotFoundException, CommandCompletionException, SQLException, PersistenceException, WebClientException {
         
-        LiteYukonUser user = context.getYukonUser();
         boolean deleteMCT = false;
         String accountNumber = null;
         
