@@ -11,7 +11,7 @@
 	</c:when>
 	<c:otherwise>
 		<cti:url var="meterSearchUrl" value="/spring/meter/search">
-			<cti:param name="Device Type">${yukonPao.paoType.dbString}</cti:param>
+			<cti:param name="deviceType">${yukonPao.paoType.dbString}</cti:param>
 		</cti:url>
 		<a href="${meterSearchUrl}">
             <cti:paoTypeIcon yukonPao="${yukonPao}"/>&nbsp;${yukonPao.paoType.dbString}

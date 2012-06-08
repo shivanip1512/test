@@ -798,7 +798,6 @@ table .perPageArea {
 
 .pagingArea,
 .perPageArea {
-    width: 175px;
 	color: gray;
     font-weight: normal;
     white-space: nowrap;

@@ -38,12 +38,7 @@ If it's "javascript", nextUrl and previousUrl are required.
 <c:set var="disabledPreviousStyle" value=" style=\"display: none;\""/>
 </c:if>
 
-<c:set var="visibilityClass" value="vh"/>
-<c:if test="${previousEnabled || nextEnabled}">
-    <c:set var="visibilityClass" value=""/>
-</c:if>
-
-<div class="${visibilityClass}">
+<div>
     <table>
         <tr>
             <td class="previousLink">
