@@ -713,7 +713,7 @@ public class StarsAdminUtil {
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
 	
-	public static void addUserToOperaterLogin(LiteYukonUser yu, LiteStarsEnergyCompany ec) throws CommandExecutionException {
+	public static void mapOperatorLogin(LiteYukonUser yu, LiteStarsEnergyCompany ec) throws CommandExecutionException {
 	    if (yu != null && ec != null ) {
             SqlStatement stmt = new SqlStatement(
                     "INSERT INTO EnergyCompanyOperatorLoginList VALUES(" +
