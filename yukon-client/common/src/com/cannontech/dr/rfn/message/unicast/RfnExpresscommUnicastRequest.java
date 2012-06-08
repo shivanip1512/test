@@ -3,10 +3,9 @@ package com.cannontech.dr.rfn.message.unicast;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import com.cannontech.common.rfn.message.RfnIdentifingMessage;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifingMessage;
 import com.cannontech.common.rfn.message.RfnMessageClass;
-import com.cannontech.common.rfn.model.YukonRfn;
 
 /**
  * JMS Queue names:
