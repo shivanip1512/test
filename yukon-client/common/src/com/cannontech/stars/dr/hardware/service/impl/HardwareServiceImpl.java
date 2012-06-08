@@ -25,7 +25,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
