@@ -3,6 +3,7 @@ package com.cannontech.dr.rfn.message.unicast;
 import java.io.Serializable;
 import java.util.Arrays;
 
+import com.cannontech.common.rfn.message.RfnIdentifingMessage;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnMessageClass;
 import com.cannontech.common.rfn.model.YukonRfn;
@@ -14,7 +15,7 @@ import com.cannontech.common.rfn.model.YukonRfn;
  * <li>yukon.qr.obj.dr.rfn.ExpresscommBulkUnicastRequest</li>
  * </ul>
  */
-public class RfnExpresscommUnicastRequest implements YukonRfn, Serializable {
+public class RfnExpresscommUnicastRequest implements RfnIdentifingMessage, Serializable {
     
     private static final long serialVersionUID = 1L;
 

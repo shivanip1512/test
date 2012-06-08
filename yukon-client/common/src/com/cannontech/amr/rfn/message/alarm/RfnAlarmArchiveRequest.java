@@ -2,13 +2,13 @@ package com.cannontech.amr.rfn.message.alarm;
 
 import java.io.Serializable;
 
-import com.cannontech.common.rfn.message.RfnArchiveRequest;
+import com.cannontech.common.rfn.message.RfnIdentifingMessage;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
  * JMS Queue name: yukon.qr.obj.amr.rfn.AlarmArchiveRequest
  */
-public class RfnAlarmArchiveRequest implements RfnArchiveRequest, Serializable {
+public class RfnAlarmArchiveRequest implements RfnIdentifingMessage, Serializable {
 
     private static final long serialVersionUID = 2L;
 

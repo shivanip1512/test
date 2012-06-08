@@ -13,7 +13,7 @@ import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.rfn.message.RfnArchiveRequest;
+import com.cannontech.common.rfn.message.RfnIdentifingMessage;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnArchiveRequestService;
@@ -21,7 +21,7 @@ import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 
-public abstract class RfnArchiveRequestListenerBase<T extends RfnArchiveRequest> {
+public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifingMessage> {
 
     private static final Logger log = YukonLogManager.getLogger(RfnArchiveRequestListenerBase.class);
 
