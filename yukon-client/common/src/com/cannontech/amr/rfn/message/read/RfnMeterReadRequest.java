@@ -3,11 +3,12 @@ package com.cannontech.amr.rfn.message.read;
 import java.io.Serializable;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifingMessage;
 
 /**
  * JMS Queue name: yukon.qr.obj.amr.rfn.MeterReadRequest
  */
-public class RfnMeterReadRequest implements Serializable {
+public class RfnMeterReadRequest implements RfnIdentifingMessage, Serializable {
 
     private static final long serialVersionUID = 2L;
 
