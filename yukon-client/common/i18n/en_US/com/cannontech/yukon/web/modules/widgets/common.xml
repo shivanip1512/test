@@ -87,7 +87,7 @@
 <!-- keys specific to the widget class, not the implementation! -->
 <entry key="yukon.web.widgetClasses.TrendWidget.hasPeriod">Previous {0}''s {1} {2}</entry>
 <entry key="yukon.web.widgetClasses.TrendWidget.noPeriod">{0} {1}: {2} - {3}</entry>
-<entry key="yukon.web.widgetClasses.TrendWidget.noData">No data for selected period!!!</entry>
+<entry key="yukon.web.widgetClasses.TrendWidget.noData">No data for selected period</entry>
 <entry key="yukon.web.widgetClasses.TrendWidget.showAll">Show All</entry>
 
 

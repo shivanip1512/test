@@ -273,7 +273,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     @Override
     public MessageSourceResolvable getMessage() {
-        return YukonMessageSourceResolvable.createDefault("yukon.common.attribute.builtInAttribute." + name(), description);
+        return YukonMessageSourceResolvable.createDefault(keyPrefix + name(), description);
     }
     
     public static void sort(List<BuiltInAttribute> attributes, final MessageSourceAccessor accessor) {
