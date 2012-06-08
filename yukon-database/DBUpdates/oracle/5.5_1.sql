@@ -200,7 +200,7 @@ INSERT INTO YukonRoleProperty VALUES(-11050,-110,'Policy Quality Check','3','The
 INSERT INTO YukonRoleProperty VALUES(-11051,-110,'Policy Rule - Uppercase Characters','true','Uppercase characters count toward the required policy quality check.  (A, B, C, ... z)');
 INSERT INTO YukonRoleProperty VALUES(-11052,-110,'Policy Rule - Lowercase Characters','true','Lowercase characters count toward the required policy quality check.  (a, b, c, ... z)');
 INSERT INTO YukonRoleProperty VALUES(-11053,-110,'Policy Rule - Base 10 Digits','true','Base 10 digits count toward the required policy quality check.  (0, 1, 2, ... 9)');
-INSERT INTO YukonRoleProperty VALUES(-11054,-110,'Policy Rule - Nonalphanumeric Characters','true','Nonalphanumic characters count toward the required password rules check.  (~, !, @, #, $, %, ^, &, *, _, -, +, =, `, |, (, ), {, }, [, ], :, ;, ", '', <, >, ,, ., ?, /, )');
+INSERT INTO YukonRoleProperty VALUES(-11054,-110,'Policy Rule - Nonalphanumeric Characters','true','Nonalphanumic characters count toward the required password rules check.  (~, !, @, #, $, %, ^, &, *, _, -, +, =, `, |, (, ), {, }, [, ], :, ", '', <, >, ,, ., ?, /)');
 INSERT INTO YukonRoleProperty VALUES(-11055,-110,'Policy Rule - Unicode Characters','true','Any Unicode character that is categorized as an alphabetic character but is not uppercase or lowercase count toward the policy quality check. This includes Unicode characters from Asian languages.');
 
 ALTER TABLE YukonUser

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/8/2012 4:46:03 PM                          */
+/* Created on:     6/8/2012 5:38:47 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9649,7 +9649,7 @@ INSERT INTO YukonRoleProperty VALUES(-11050,-110,'Policy Quality Check','3','The
 INSERT INTO YukonRoleProperty VALUES(-11051,-110,'Policy Rule - Uppercase Characters','true','Uppercase characters count toward the required policy quality check.  (A, B, C, ... z)');
 INSERT INTO YukonRoleProperty VALUES(-11052,-110,'Policy Rule - Lowercase Characters','true','Lowercase characters count toward the required policy quality check.  (a, b, c, ... z)');
 INSERT INTO YukonRoleProperty VALUES(-11053,-110,'Policy Rule - Base 10 Digits','true','Base 10 digits count toward the required policy quality check.  (0, 1, 2, ... 9)');
-INSERT INTO YukonRoleProperty VALUES(-11054,-110,'Policy Rule - Nonalphanumeric Characters','true','Nonalphanumic characters count toward the required password rules check.  (~, !, @, #, $, %, ^, &, *, _, -, +, =, `, |, (, ), {, }, , , :, ;, ", '', <, >, ,, ., ?, /, )');
+INSERT INTO YukonRoleProperty VALUES(-11054,-110,'Policy Rule - Nonalphanumeric Characters','true','Nonalphanumic characters count toward the required password rules check.  (~, !, @, #, $, %, ^, &, *, _, -, +, =, `, |, (, ), {, }, , , :, ", '', <, >, ,, ., ?, /)');
 INSERT INTO YukonRoleProperty VALUES(-11055,-110,'Policy Rule - Unicode Characters','true','Any Unicode character that is categorized as an alphabetic character but is not uppercase or lowercase count toward the policy quality check. This includes Unicode characters from Asian languages.');
 
 /* Operator Consumer Info Role Properties */
@@ -10060,10 +10060,10 @@ create table YukonUser (
 )
 go
 
-insert into yukonuser values ( -9999, '(none)', '(none)', 'Disabled', 'PLAIN' );
-insert into yukonuser values ( -100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN' );
-insert into yukonuser values ( -2, 'yukon', 'yukon', 'Enabled', 'PLAIN' );
-insert into yukonuser values ( -1, 'admin', 'admin', 'Enabled', 'PLAIN' );
+insert into yukonuser values ( -9999, '(none)', '(none)', 'Disabled', 'PLAIN', '01-JAN-2000', 'N');
+insert into yukonuser values ( -100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
+insert into yukonuser values ( -2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
+insert into yukonuser values ( -1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
 
 /*==============================================================*/
 /* Index: Indx_YkUsIDNm                                         */
