@@ -186,7 +186,7 @@ BEGIN
                WHERE YUR.UserId = @v_UserId;
     
     FETCH NEXT FROM userId_curs INTO @v_UserId, @v_Username;
-END    
+END;    
 CLOSE userId_curs;
 DEALLOCATE userId_curs;
 /* @end-block */
@@ -201,6 +201,72 @@ ALTER TABLE YukonUserRole
     DROP CONSTRAINT FK_YkUsRlr_YkUsr;
 /* End YUK-11012 */
 
+/* Start YUK-11013 */
+INSERT INTO YukonRole VALUES(-110,'Password Policy','Application','Handles the password rules and restrictions for a given group.');
+
+INSERT INTO YukonRoleProperty VALUES(-11001,-110,'Password History','5','The number of different passwords retained before a user can reuse a password.');
+INSERT INTO YukonRoleProperty VALUES(-11002,-110,'Minimum Password Length','8','The minimum number of characters a password has to be before it passes.');
+INSERT INTO YukonRoleProperty VALUES(-11003,-110,'Minimum Password Age','0','The number of hours a user has to wait before changing their password again.');
+INSERT INTO YukonRoleProperty VALUES(-11004,-110,'Maximum Password Age','60','The number of days before a login is expired and needs to be changed.');
+INSERT INTO YukonRoleProperty VALUES(-11005,-110,'Lockout Threshold','5','The number of login attempts before an account is locked out.');
+INSERT INTO YukonRoleProperty VALUES(-11006,-110,'Lockout Duration','20','The number of minutes a login is disabled when an account is locked out.');
+
+INSERT INTO YukonRoleProperty VALUES(-11050,-110,'Policy Quality Check','3','The number of policy rules that are required to be able to save a password.');
+INSERT INTO YukonRoleProperty VALUES(-11051,-110,'Policy Rule - Uppercase Characters','true','Uppercase characters count toward the required policy quality check.  (A, B, C, ... z)');
+INSERT INTO YukonRoleProperty VALUES(-11052,-110,'Policy Rule - Lowercase Characters','true','Lowercase characters count toward the required policy quality check.  (a, b, c, ... z)');
+INSERT INTO YukonRoleProperty VALUES(-11053,-110,'Policy Rule - Base 10 Digits','true','Base 10 digits count toward the required policy quality check.  (0, 1, 2, ... 9)');
+INSERT INTO YukonRoleProperty VALUES(-11054,-110,'Policy Rule - Nonalphanumeric Characters','true','Nonalphanumic characters count toward the required password rules check.  (~, !, @, #, $, %, ^, &, *, _, -, +, =, `, |, (, ), {, }, [, ], :, ;, ", '', <, >, ,, ., ?, /, )');
+INSERT INTO YukonRoleProperty VALUES(-11055,-110,'Policy Rule - Unicode Characters','true','Any Unicode character that is categorized as an alphabetic character but is not uppercase or lowercase count toward the policy quality check. This includes Unicode characters from Asian languages.');
+
+ALTER TABLE YukonUser
+    ADD LastChangedDate DATETIME;
+UPDATE YukonUser
+SET LastChangedDate = GETDATE();
+ALTER TABLE YukonUser
+    ALTER COLUMN LastChangedDate DATETIME NOT NULL;
+
+ALTER TABLE YukonUser
+    ADD ForceReset CHAR(1);
+UPDATE YukonUser
+SET ForceReset = 'N';
+ALTER TABLE YukonUser
+    ALTER COLUMN ForceReset CHAR(1) NOT NULL;
+
+CREATE TABLE PasswordHistory  (
+    PasswordHistoryId    NUMERIC                        NOT NULL,
+    UserId               NUMERIC                        NOT NULL,
+    Password             VARCHAR(64)                    NOT NULL,
+    AuthType             VARCHAR(16)                    NOT NULL,
+    PasswordChangedDate  DATETIME                       NOT NULL,
+    CONSTRAINT PK_PasswordHistory PRIMARY KEY (UserId)
+);
+
+ALTER TABLE PasswordHistory
+    ADD CONSTRAINT FK_PassHist_YukonUser FOREIGN KEY (UserId)
+        REFERENCES YukonUser (UserId)
+           ON DELETE CASCADE;
+           
+DECLARE @v_UserId                      NUMERIC;
+DECLARE @v_MaxPasswordHistoryId        NUMERIC;
+    
+DECLARE userId_curs CURSOR FOR (SELECT DISTINCT YU.UserId FROM YukonUser YU);
+OPEN userId_curs;
+FETCH NEXT FROM userId_curs INTO @v_UserId
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    SET @v_MaxPasswordHistoryId = (SELECT ISNULL(MAX(PasswordHistoryId)+1, 0)
+                                   FROM PasswordHistory);
+    INSERT INTO PasswordHistory
+        SELECT @v_MaxPasswordHistoryId, YU.UserId, YU.Password, YU.AuthType, YU.LastChangedDate
+        FROM YukonUser YU
+        WHERE YU.UserId = @v_UserId;
+
+    FETCH NEXT FROM userId_curs INTO @v_UserId
+END;
+CLOSE userId_curs;
+DEALLOCATE userId_curs
+/* End YUK-11013 */
+    
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

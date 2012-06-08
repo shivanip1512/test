@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/8/2012 2:13:29 PM                          */
+/* Created on:     6/8/2012 4:46:03 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7106,6 +7106,19 @@ create table PROFILEPEAKRESULT (
 go
 
 /*==============================================================*/
+/* Table: PasswordHistory                                       */
+/*==============================================================*/
+create table PasswordHistory (
+   PasswordHistoryId    numeric              not null,
+   UserId               numeric              not null,
+   Password             varchar(64)          not null,
+   AuthType             varchar(16)          not null,
+   PasswordChangedDate  datetime             not null,
+   constraint PK_PasswordHistory primary key nonclustered (UserId)
+)
+go
+
+/*==============================================================*/
 /* Table: PersistedSystemValue                                  */
 /*==============================================================*/
 create table PersistedSystemValue (
@@ -9371,6 +9384,7 @@ INSERT INTO YukonRole VALUES(-106,'Billing','Application','Billing. Edit this ro
 INSERT INTO YukonRole VALUES(-107,'Esubstation Editor','Application','Access to the Esubstation Drawing Editor application');
 INSERT INTO YukonRole VALUES(-108,'Web Client','Application','Access to the Yukon web application');
 INSERT INTO YukonRole VALUES(-109,'Reporting','Application','Access to reports generation.');
+INSERT INTO YukonRole VALUES(-110,'Password Policy','Application','Handles the password rules and restrictions for a given group.');
 
 /* Web client operator roles */
 INSERT INTO YukonRole VALUES(-200,'Administrator','Operator','Access to Yukon administration');
@@ -9623,6 +9637,20 @@ INSERT INTO YukonRoleProperty VALUES(-10908,-109,'Database Reports Group','true'
 INSERT INTO YukonRoleProperty VALUES(-10909,-109,'Stars Reports Group','true','Access to Stars group reports.');
 /* YUK-6642 INSERT INTO YukonRoleProperty VALUES(-10911,-109,'Settlement Reports Group','false','Access to Settlement group reports.'); */ 
 INSERT INTO YukonRoleProperty VALUES(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
+
+INSERT INTO YukonRoleProperty VALUES(-11001,-110,'Password History','5','The number of different passwords retained before a user can reuse a password.');
+INSERT INTO YukonRoleProperty VALUES(-11002,-110,'Minimum Password Length','8','The minimum number of characters a password has to be before it passes.');
+INSERT INTO YukonRoleProperty VALUES(-11003,-110,'Minimum Password Age','0','The number of hours a user has to wait before changing their password again.');
+INSERT INTO YukonRoleProperty VALUES(-11004,-110,'Maximum Password Age','60','The number of days before a login is expired and needs to be changed.');
+INSERT INTO YukonRoleProperty VALUES(-11005,-110,'Lockout Threshold','5','The number of login attempts before an account is locked out.');
+INSERT INTO YukonRoleProperty VALUES(-11006,-110,'Lockout Duration','20','The number of minutes a login is disabled when an account is locked out.');
+
+INSERT INTO YukonRoleProperty VALUES(-11050,-110,'Policy Quality Check','3','The number of policy rules that are required to be able to save a password.');
+INSERT INTO YukonRoleProperty VALUES(-11051,-110,'Policy Rule - Uppercase Characters','true','Uppercase characters count toward the required policy quality check.  (A, B, C, ... z)');
+INSERT INTO YukonRoleProperty VALUES(-11052,-110,'Policy Rule - Lowercase Characters','true','Lowercase characters count toward the required policy quality check.  (a, b, c, ... z)');
+INSERT INTO YukonRoleProperty VALUES(-11053,-110,'Policy Rule - Base 10 Digits','true','Base 10 digits count toward the required policy quality check.  (0, 1, 2, ... 9)');
+INSERT INTO YukonRoleProperty VALUES(-11054,-110,'Policy Rule - Nonalphanumeric Characters','true','Nonalphanumic characters count toward the required password rules check.  (~, !, @, #, $, %, ^, &, *, _, -, +, =, `, |, (, ), {, }, , , :, ;, ", '', <, >, ,, ., ?, /, )');
+INSERT INTO YukonRoleProperty VALUES(-11055,-110,'Policy Rule - Unicode Characters','true','Any Unicode character that is categorized as an alphabetic character but is not uppercase or lowercase count toward the policy quality check. This includes Unicode characters from Asian languages.');
 
 /* Operator Consumer Info Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20102,-201,'Account Residence','false','Controls whether to show the customer residence information');
@@ -10026,6 +10054,8 @@ create table YukonUser (
    Password             varchar(64)          not null,
    Status               varchar(20)          not null,
    AuthType             varchar(16)          not null,
+   LastChangedDate      datetime             not null,
+   ForceReset           char(1)              not null,
    constraint PK_YUKONUSER primary key (UserID)
 )
 go
@@ -13035,6 +13065,12 @@ go
 alter table PROFILEPEAKRESULT
    add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
       references DEVICE (DEVICEID)
+         on delete cascade
+go
+
+alter table PasswordHistory
+   add constraint FK_PassHist_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
          on delete cascade
 go
 
