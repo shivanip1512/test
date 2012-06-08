@@ -38,9 +38,9 @@ ALTER TABLE OptOutTemporaryOverride
     ALTER COLUMN OptOutValue VARCHAR(25);
     
 DECLARE constraint_cursor CURSOR FOR
-        SELECT name from sys.default_constraints
+        SELECT name FROM sys.default_constraints
         WHERE OBJECT_NAME(parent_object_id) = 'AcctThermostatSchedule'
-          AND name like 'DF__AcctTherm__%';
+          AND name LIKE 'DF__AcctTherm__%';
 OPEN constraint_cursor;
 DECLARE @constraintName VARCHAR(100);
 FETCH NEXT FROM constraint_cursor INTO @constraintName;
@@ -68,3 +68,4 @@ ALTER TABLE AcctThermostatScheduleEntry
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.4', 'Garrett D', '22-MAY-2012', 'Latest Update', 5 );
