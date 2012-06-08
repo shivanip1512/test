@@ -139,8 +139,6 @@ public class HardwareServiceImpl implements HardwareService {
                  * have to know if the device tables had already been created by {@link DeviceCreationService} due to 
                  * an archive request from NM.  Currently these devices cannot be created from stars pages.
                  */
-                RfnBase rfnBase = new RfnBase();
-                rfnBase.setDeviceID(pao.getPaoIdentifier().getPaoId());
                 deviceDao.removeDevice(new SimpleDevice(pao));
             }
             
