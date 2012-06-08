@@ -10,6 +10,7 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareHistory;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.Address;
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -27,6 +28,7 @@ import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.web.support.development.database.objects.DevCCU;
 import com.cannontech.web.support.development.database.objects.DevHardwareType;
 import com.cannontech.web.support.development.database.objects.DevStars;
@@ -34,16 +36,16 @@ import com.cannontech.web.support.development.database.objects.DevStarsAccounts;
 import com.google.common.collect.Lists;
 
 public class DevStarsCreationService extends DevObjectCreationBase {
-    private AccountService accountService;
-    private HardwareUiService hardwareUiService;
-    private CustomerAccountDao customerAccountDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private ECMappingDao ecMappingDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-
+    @Autowired private AccountService accountService;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private HardwareUiService hardwareUiService;
+    @Autowired private StarsInventoryBaseDao starsInventoryBaseDao;
+    
     @Override
     protected void createAll() {
         createEC();
@@ -54,6 +56,33 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     @Override
     protected void logFinalExecutionDetails() {
         log.info("Stars:");
+    }
+
+    private void createEC() {
+        if (devDbSetupTask.getDevStars().isCreateCooperEC()) {
+            EnergyCompanyDto ecd = new EnergyCompanyDto();
+            ecd.setName("Cooper EC");
+            ecd.setEmail("info@cannontech.com");
+            ecd.setPrimaryOperatorGroupId(-100);
+            ecd.setAdminUsername("op");
+            ecd.setAdminPassword1("op");
+            ecd.setAdminPassword2("op");
+            
+            try {
+                LiteStarsEnergyCompany ec = energyCompanyService.createEnergyCompany(ecd,  yukonUserDao.getLiteYukonUser(-2), null);
+                devDbSetupTask.getDevStars().setEnergyCompany(ec);
+            } catch (Exception e) {
+                devDbSetupTask.getDevStars().setEnergyCompany(starsDatabaseCache.getDefaultEnergyCompany());
+                log.warn("Cannot create new energy company. Setting to default", e);
+            }
+            
+            try {
+                StarsAdminUtil.addUserToOperaterLogin(yukonUserDao.getLiteYukonUser(-2),devDbSetupTask.getDevStars().getEnergyCompany());
+            } catch (CommandExecutionException e) {
+                log.warn("Unable to link new energy company to yukon/yukon");
+            }
+        }
+
     }
 
     private void setupStarsAccounts(DevStars devStars) {
@@ -87,7 +116,6 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             accountDto.setAltTrackingNumber(accountNumString);
             accountDto.setIsCommercial(false);
             accountDto.setCustomerNumber(accountNumString);
-//            accountDto.setCustomerStatus(customerStatus); // not sure what this is
             accountDto.setIsCustAtHome(true);
             accountDto.setPropertyNotes("Property Notes for account number: " + accountNumString);
             accountDto.setAccountNotes("Account Notes for account number: " + accountNumString);
@@ -96,27 +124,6 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             devStarsAccounts.getAccounts().add(account);
             accountNumIterator++;
         }
-    }
-    
-    private void createEC() {
-        if (devDbSetupTask.getDevStars().isCreateCooperEC()) {
-            EnergyCompanyDto ec = new EnergyCompanyDto();
-            ec.setName("Cooper EC");
-            ec.setEmail("info@cannontech.com");
-            ec.setPrimaryOperatorGroupId(-100);
-            ec.setAdminUsername("op");
-            ec.setAdminPassword1("op");
-            ec.setAdminPassword2("op");
-
-            try {
-                LiteStarsEnergyCompany e = energyCompanyService.createEnergyCompany(ec,  yukonUserDao.getLiteYukonUser(-2), null);
-                devDbSetupTask.getDevStars().setEnergyCompany(e);
-            } catch (Exception e) {
-                devDbSetupTask.getDevStars().setEnergyCompany(starsDatabaseCache.getDefaultEnergyCompany());
-                log.warn("Cannot create new energy company. Setting to default", e);
-            } 
-        }
-
     }
     
     private void createStars(DevStars devStars) {
@@ -216,15 +223,8 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         hardware.setDisplayType(hardwareType.name());
         hardware.setCategoryName("Category");
         hardware.setAltTrackingNumber("4");
-//            private Integer voltageEntryId;
         hardware.setFieldInstallDate(new Date());
-//            private Date fieldReceiveDate;
-//            private Date fieldRemoveDate;
-//            private Integer serviceCompanyId;
-//            private Integer warehouseId;
         hardware.setInstallNotes("Install notes: This hardware went in super easy.");
-//            private Integer deviceStatusEntryId;
-//            private Integer originalDeviceStatusEntryId;
         HardwareHistory hardwareHistory = new HardwareHistory();
         hardwareHistory.setAction("Install performed.");
         hardwareHistory.setDate(new Date());
@@ -284,22 +284,5 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             return false;
         }
         return true;
-    }
-    
-    @Autowired
-    public void setAccountService(AccountService accountService) {
-        this.accountService = accountService;
-    }
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-    @Autowired
-    public void setHardwareUiService(HardwareUiService hardwareUiService) {
-        this.hardwareUiService = hardwareUiService;
-    }
-    @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
     }
 }

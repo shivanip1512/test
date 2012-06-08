@@ -27,6 +27,7 @@ public class DevBuildDatabasePopulationService {
                 dpt.setCreate(true);
             }
             da.setMeterTypes(meters);
+            da.setNumAdditionalMeters(2);
             task.setDevAMR(da);
             DevStars ds = new DevStars();
             ds.setCreateCooperEC(true);

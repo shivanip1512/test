@@ -21,15 +21,15 @@ import com.cannontech.web.support.development.database.objects.DevCommChannel;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
 
 public class DevCapControlCreationService extends DevObjectCreationBase {
-    private CapControlCreationService capControlCreationService;
-    private SubstationDao substationDao;
-    private CapbankDao capbankDao;
-    private FeederDao feederDao;
-    private SubstationBusDao substationBusDao;
-    private CapbankControllerDao capbankControllerDao;
-    private PaoScheduleDao paoScheduleDao;
-    private StrategyDao strategyDao;
-    
+    @Autowired private CapControlCreationService capControlCreationService;
+    @Autowired private SubstationDao substationDao;
+    @Autowired private CapbankDao capbankDao;
+    @Autowired private FeederDao feederDao;
+    @Autowired private SubstationBusDao substationBusDao;
+    @Autowired private CapbankControllerDao capbankControllerDao;
+    @Autowired private PaoScheduleDao paoScheduleDao;
+    @Autowired private StrategyDao strategyDao;
+
     @Override
     protected void createAll() {
         createCapControl(devDbSetupTask.getDevCapControl());
@@ -187,45 +187,5 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
         }
         
         strategyDao.add(name);
-    }
-    
-    @Autowired
-    public void setCapbankDao(CapbankDao capbankDao) {
-        this.capbankDao = capbankDao;
-    }
-    
-    @Autowired
-    public void setSubstationDao(SubstationDao substationDao) {
-        this.substationDao = substationDao;
-    }
-    
-    @Autowired
-    public void setSubstationBusDao(SubstationBusDao substationBusDao) {
-        this.substationBusDao = substationBusDao;
-    }
-    
-    @Autowired
-    public void setFeederDao(FeederDao feederDao) {
-        this.feederDao = feederDao;
-    }
-    
-    @Autowired
-    public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
-        this.capbankControllerDao = capbankControllerDao;
-    }
-    
-    @Autowired
-    public void setPaoScheduleDao(PaoScheduleDao paoScheduleDao) {
-    	this.paoScheduleDao = paoScheduleDao;
-    };
-
-    @Autowired
-    public void setCapControlCreationService(CapControlCreationService capControlCreationService) {
-        this.capControlCreationService = capControlCreationService;
-    }
-    
-    @Autowired
-    public void setStrategyDao(StrategyDao strategyDao) {
-        this.strategyDao = strategyDao;
     }
 }
