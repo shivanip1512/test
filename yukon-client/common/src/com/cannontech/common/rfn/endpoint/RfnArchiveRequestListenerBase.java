@@ -13,11 +13,11 @@ import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.rfn.message.RfnIdentifingMessage;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnArchiveRequestService;
-import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 
@@ -28,7 +28,7 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifingMessa
     @Autowired protected DynamicDataSource dynamicDataSource;
     @Autowired protected RfnMeterReadService rfnMeterReadService;
     @Autowired protected RfnArchiveRequestService rfnArchiveRequestService;
-    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
+    @Autowired private RfnDeviceLookupServiceImpl rfnDeviceLookupServiceImpl;
 
     protected JmsTemplate jmsTemplate;
 
@@ -80,7 +80,7 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifingMessa
             RfnDevice rfnDevice;
             try {
                 rfnArchiveRequestService.incrementDeviceLookupAttempt();
-                rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
+                rfnDevice = rfnDeviceLookupServiceImpl.getDevice(rfnIdentifier);
             } catch (NotFoundException e1) {
                 // looks like we need to create the device
                 rfnDevice = processCreation(archiveRequest, rfnIdentifier);

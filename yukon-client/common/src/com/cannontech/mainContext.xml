@@ -314,6 +314,6 @@
     <bean class="com.cannontech.common.requests.service.impl.JobManagementServiceImpl"/>
     <bean class="com.cannontech.common.requests.runnable.capcontrol.CapControlJobFactory"/>
     
-    <bean id="rfnDeviceLookupService" class="com.cannontech.common.rfn.service.RfnDeviceLookupService"/>
-    <bean id="rfnArchiveRequestService" class="com.cannontech.common.rfn.service.RfnArchiveRequestService"/>
+    <bean id="rfnDeviceLookupService" class="com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl"/>
+    <bean id="rfnArchiveRequestService" class="com.cannontech.common.rfn.service.impl.RfnArchiveRequestServiceImpl"/>
 </beans>
