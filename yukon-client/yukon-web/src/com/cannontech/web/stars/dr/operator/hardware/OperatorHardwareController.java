@@ -780,7 +780,10 @@ public class OperatorHardwareController {
 
         /* For switches and tstats, if they have inventory checking turned off they can edit the serial number. */
         if (!inventoryChecking && !clazz.isMeter()) {
-            model.addAttribute("serialNumberEditable", true);
+            /* Rf devices can not have their serial number edited here...yet. */
+            if (!type.isRf()) {
+                model.addAttribute("serialNumberEditable", true);
+            }
         }
         
         /* For switches and tstats, show serial number instead of device name */
@@ -893,8 +896,10 @@ public class OperatorHardwareController {
         /* Add device types for dropdown menus */
         ListMultimap<String, DeviceTypeOption> deviceTypeMap = ArrayListMultimap.create();
         List<YukonListEntry> deviceTypeList = liteEnergyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE).getYukonListEntries();
+        
         for (YukonListEntry deviceTypeEntry : deviceTypeList) {
             HardwareType type = HardwareType.valueOf(deviceTypeEntry.getYukonDefID());
+            if (type.isRf()) continue; /** Rf devices should not be creatable here yet.  This means that cannot yet be attached to accounts. */
             DeviceTypeOption option = new DeviceTypeOption();
             option.setDisplayName(deviceTypeEntry.getEntryText());
             option.setHardwareTypeEntryId(deviceTypeEntry.getEntryID());
