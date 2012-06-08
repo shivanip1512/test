@@ -548,10 +548,11 @@ public class InventoryController {
     throws NotFoundException, PersistenceException, CommandCompletionException, SQLException, WebClientException {
         
         Hardware hardwareToDelete = hardwareUiService.getHardware(inventoryId);
-        hardwareEventLogService.hardwareDeletionAttemptedByOperator(context.getYukonUser(), hardwareToDelete.getDisplayName());
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
+        LiteYukonUser user = context.getYukonUser();
+        hardwareEventLogService.hardwareDeletionAttemptedByOperator(user, hardwareToDelete.getDisplayName());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
         
-        hardwareService.deleteHardware(context, true, inventoryId);
+        hardwareService.deleteHardware(user, true, inventoryId);
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareDeleted"));
         return "redirect:home";

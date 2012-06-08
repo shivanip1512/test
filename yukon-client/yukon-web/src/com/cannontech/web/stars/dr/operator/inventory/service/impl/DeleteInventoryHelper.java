@@ -22,7 +22,7 @@ public class DeleteInventoryHelper extends InventoryActionsHelper {
                     for (InventoryIdentifier inv : collection.getList()) {
                         if (canceled) break;
                         try {
-                            hardwareService.deleteHardware(context, true, inv.getInventoryId());
+                            hardwareService.deleteHardware(context.getYukonUser(), true, inv.getInventoryId());
                             successCount++;
                         } catch (Exception e) {
                             log.error("Unable to delete inventory: " + inv, e);

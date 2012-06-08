@@ -515,14 +515,15 @@ public class OperatorHardwareController {
     throws NotAuthorizedException, NotFoundException, CommandCompletionException, SQLException, PersistenceException, WebClientException {
         
         Hardware hardwareToDelete = hardwareUiService.getHardware(inventoryId);
-        hardwareEventLogService.hardwareDeletionAttemptedByOperator(context.getYukonUser(), hardwareToDelete.getDisplayName());
+        LiteYukonUser user = context.getYukonUser();
+        hardwareEventLogService.hardwareDeletionAttemptedByOperator(user, hardwareToDelete.getDisplayName());
         
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, context.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
         
         /* Delete this hardware or just take it off the account and put in back in the warehouse */
         boolean delete = deleteOption.equalsIgnoreCase("delete");
-        hardwareService.deleteHardware(context, delete, inventoryId);
+        hardwareService.deleteHardware(user, delete, inventoryId);
         
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
         if (delete) {
