@@ -1,6 +1,5 @@
 package com.cannontech.common.device.creation.impl;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -8,11 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.constants.YukonDefinition;
-import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -21,8 +16,6 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.BadConfigurationException;
-import com.cannontech.common.inventory.Hardware;
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -32,20 +25,14 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.device.RfnBase;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.dr.hardware.service.HardwareUiService;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 
 public class DeviceCreationServiceImpl implements DeviceCreationService {
 
@@ -57,11 +44,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     @Autowired private DlcAddressRangeService dlcAddressRangeService;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private DBPersistentDao dbPersistentDao = null;
-    @Autowired private ConfigurationSource configurationSource;
-    @Autowired private EnergyCompanyDao energyCompanyDao;
-    @Autowired private YukonListDao yukonListDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private HardwareUiService hardwareSevice;
     
     @Transactional
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
@@ -112,33 +94,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         // create new device
         SimpleDevice newYukonDevice = createNewDeviceByTemplate(newDevice, templateIdentifier, templateName, copyPoints);
         
-        List<HardwareType> hardwareTypes = HardwareType.getForPaoType(newYukonDevice.getDeviceType());
-        
-        if (!CollectionUtils.isEmpty(hardwareTypes) && hardwareTypes.size() == 1) {
-            String ecName = configurationSource.getString("RFN_ENERGY_COMPANY_NAME");
-            if (StringUtils.isEmpty(ecName)) {
-                throw new BadConfigurationException("RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg");
-            }
-            final LiteEnergyCompany ec = energyCompanyDao.getEnergyCompanyByName(ecName);
-            LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ec.getEnergyCompanyID());
-            
-            HardwareType ht = hardwareTypes.get(0);
-            
-            List<YukonListEntry> typeEntries = yukonListDao.getYukonListEntry(ht.getDefinitionId(), lsec);
-            
-            Hardware h = new Hardware();
-            h.setHardwareTypeEntryId(typeEntries.get(0).getEntryID());
-            h.setSerialNumber(serialNumber);
-            h.setDeviceId(newYukonDevice.getDeviceId());
-            h.setEnergyCompanyId(ec.getEnergyCompanyID());
-            h.setFieldReceiveDate(new Date());
-            
-            List<YukonListEntry> statusTypeEntries = yukonListDao.getYukonListEntry(YukonDefinition.DEV_STAT_INSTALLED.getDefinitionId(), lsec);
-            h.setDeviceStatusEntryId(statusTypeEntries.get(0).getEntryID());
-            
-            hardwareSevice.createHardware(h, 0, lsec.getUser());
-        }
-
         return newYukonDevice;
     }
     
