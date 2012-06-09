@@ -17,8 +17,7 @@ import com.cannontech.core.authentication.service.AuthenticationThrottleHelper;
  * login attempts.
  * @author mmalekar
  */
-public class AuthenticationThrottleHelperImpl implements
-        AuthenticationThrottleHelper {
+public class AuthenticationThrottleHelperImpl implements AuthenticationThrottleHelper {
 
     // map of username and AuthenticationThrottle data
     private Map<String, AuthenticationThrottle> authThrottleMap = new HashMap<String, AuthenticationThrottle>();
@@ -61,8 +60,8 @@ public class AuthenticationThrottleHelperImpl implements
     }
 
     @Override
-    public synchronized AuthenticationThrottleDto getAuthenticationThrottleData(
-            String username) {
+    public synchronized AuthenticationThrottleDto getAuthenticationThrottleData(String username) {
+
         AuthenticationThrottleDto authThrottleDto = null;
         AuthenticationThrottle authThrottle = authThrottleMap.get(username);
         if (authThrottle != null) {
