@@ -245,7 +245,8 @@ ALTER TABLE PasswordHistory
     ADD CONSTRAINT FK_PassHist_YukonUser FOREIGN KEY (UserId)
         REFERENCES YukonUser (UserId)
            ON DELETE CASCADE;
-           
+         
+/* @start-block */  
 DECLARE @v_UserId                      NUMERIC;
 DECLARE @v_MaxPasswordHistoryId        NUMERIC;
     
@@ -264,7 +265,8 @@ BEGIN
     FETCH NEXT FROM userId_curs INTO @v_UserId
 END;
 CLOSE userId_curs;
-DEALLOCATE userId_curs
+DEALLOCATE userId_curs;
+/* @end-block */
 /* End YUK-11013 */
     
 /**************************************************************/ 
