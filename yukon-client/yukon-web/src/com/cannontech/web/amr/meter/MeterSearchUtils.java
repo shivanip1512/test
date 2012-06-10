@@ -25,13 +25,4 @@ public class MeterSearchUtils {
         
         return queryFilter;
     }
-    
-    public static String getFilterByString(List<FilterBy> queryFilter) {
-        
-        List<String> filterByStringList = new ArrayList<String>();
-        for (FilterBy filterBy : queryFilter) {
-            filterByStringList.add(filterBy.toSearchString());
-        }
-        return StringUtils.join(filterByStringList, " and ");
-    }
 }

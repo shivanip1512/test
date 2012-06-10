@@ -45,7 +45,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.i18n.WebMessageSourceResolvable;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -77,7 +76,6 @@ import com.cannontech.web.stars.dr.operator.HardwareModelHelper;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareValidator;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -207,23 +205,9 @@ public class InventoryController {
                                                                               startIndex, 
                                                                               itemsPerPage,
                                                                               starsMeters);
-            if(results.getHitCount() == 0){
-                final MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(context);
-                List<Map<String, String>>  fieldList = buildNotFoundFieldList(inventorySearch, messageSourceAccessor);
-                List<MessageSourceResolvable> messages = Lists.newArrayList();
-                MessageSourceResolvable noResultsForFilter = new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.noResultsForFilter");
-                messages.add(noResultsForFilter);
-                for (Map<String, String> keyValue : fieldList){
-                    String field = keyValue.keySet().iterator().next();
-                    String fieldValue = keyValue.get(field);
-                    WebMessageSourceResolvable noResultsForFilterItem = new WebMessageSourceResolvable("yukon.web.modules.operator.inventory.noResultsForFilterItem", field, fieldValue);
-                    noResultsForFilterItem.setClassName("bullet");
-                    messages.add(noResultsForFilterItem);
-                }
-                flashScope.setWarning(messages);
-            }
+
             // Redirect to inventory page if only one result is found
-            else if (results.getHitCount() == 1) {
+           if (results.getHitCount() == 1) {
                 InventorySearchResult inventory = results.getResultList().get(0);
                 
                 if (inventory.getAccountId() > 0) {
@@ -245,6 +229,7 @@ public class InventoryController {
         model.addAttribute("showWordOrder", StringUtils.isNotBlank(inventorySearch.getWorkOrderNumber()));
         model.addAttribute("showAltTrackingNumber", StringUtils.isNotBlank(inventorySearch.getAltTrackingNumber()));
         model.addAttribute("showEc", liteEc.hasChildEnergyCompanies());
+        model.addAttribute("hasWarnings", hasWarnings);
         
         return "operator/inventory/inventoryList.jsp";
     }

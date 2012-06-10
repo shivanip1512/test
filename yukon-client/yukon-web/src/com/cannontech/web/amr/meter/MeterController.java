@@ -120,9 +120,6 @@ public class MeterController extends MultiActionController {
         // query filter
         List<FilterBy> queryFilter = MeterSearchUtils.getQueryFilter(request, filterByList);
         
-        // filter string
-        String filterByString = MeterSearchUtils.getFilterByString(queryFilter);
-
         // Perform the search
         SearchResult<Meter> meterSearchResults = 
             meterSearchService.search(queryFilter, orderBy, startIndex, itemsPerPage);
@@ -148,7 +145,6 @@ public class MeterController extends MultiActionController {
         
         mav.addObject("deviceGroupCollection", deviceGroupCollection);
         
-        mav.addObject("filterByString", filterByString);
         mav.addObject("orderBy", orderBy);
         mav.addObject("meterSearchResults", meterSearchResults);
         mav.addObject("orderByFields", MeterSearchField.values());

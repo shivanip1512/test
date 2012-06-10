@@ -24,15 +24,20 @@
     <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.route.linkText">Route</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.pageName">Meters</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.pageDescription">Meters</entry>
-    <entry key="yukon.web.modules.amr.meterSearchResults.noResultsForFilter">No results for Filter: {0}</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.showAll.label">Show All</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.showAll">Show All</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.filter">Filter:</entry>
-    <entry key="yukon.web.modules.amr.meterSearchResults.filter.label">Filter</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.search.label">Search</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.editFilters">Edit Filters</entry>
     <entry key="yukon.web.modules.amr.deviceSelection.performCollectionAction">Perform Collection Action</entry>
     <entry key="yukon.web.modules.amr.deviceSelection.performCollectionAction.title">Click to perform a bulk operation on these devices</entry>
-
+    <entry key="yukon.web.modules.amr.meterSearch.title">Advanced Meter Search</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.notFound">No Results Found</entry>
+    <entry key="yukon.web.modules.amr.meterSearch.helpText"><![CDATA[
+        Returns inventory that matches the combination of all values provided. The search returns all inventory that has values which start with the provided text.
+        <br><br>Quick Search will search both Meter Number and Device Name fields.
+        <br><br>For example searching for any field with "12" will return any values that begin with "12" such as "1234".
+    ]]></entry>
     <!-- meterHome.jsp -->
     <entry key="yukon.web.modules.amr.meterDetail.electric.pageName">Meter Detail</entry>
     <entry key="yukon.web.modules.amr.meterDetail.electric.pageDescription">{0}</entry>
