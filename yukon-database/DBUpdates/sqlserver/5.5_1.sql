@@ -141,7 +141,7 @@ BEGIN
                              AND YUR.RolePropertyId = YGR.RolePropertyId);
 
     IF 0 < @errorFlagCount BEGIN
-        RAISERROR('Your thermostat default schedules contain errors. To correct this, please go to your EC default schedules & double-check them.  There will be at least one default schedule that has invalid data (too many entries).  For any schedules that have incorrect entries, choose a different mode and save.  Then edit the schedule again to restore the original mode (the entries will then be gone).  For more information see YUK-10441.', 16, 1);
+        RAISERROR('Your system currently has a potential role conflict.  Please go to YUK-11012 to find out the correct way to resolve this issue.', 16, 1);
     END
 END;
 /* @end-block */

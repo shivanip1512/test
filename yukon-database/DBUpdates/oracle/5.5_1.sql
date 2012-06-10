@@ -123,7 +123,7 @@ BEGIN
       AND YUR.RolePropertyId = YGR.RolePropertyId;
 
     IF 0 < errorFlagCount THEN
-        RAISE_APPLICATION_ERROR(-20001, 'Your system currently has a potential role conflict.  Please go to YUK-00000 to find out the correct way to resolve this issue.');
+        RAISE_APPLICATION_ERROR(-20001, 'Your system currently has a potential role conflict.  Please go to YUK-11012 to find out the correct way to resolve this issue.');
     END IF;
 END;
 /
