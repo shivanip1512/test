@@ -12,7 +12,7 @@ public class FailedImportResult implements ImportResult {
     }
     
     @Override
-    public YukonMessageSourceResolvable getMessage() {
+    public YukonMessageSourceResolvable getImportResultMessage() {
         return new YukonMessageSourceResolvable(key, arguments);
     }
 

@@ -105,7 +105,7 @@ public class CapControlImportController {
 	        this.success = success;
 	    }
 	    
-	    public YukonMessageSourceResolvable getMessage() {
+	    public YukonMessageSourceResolvable getImportResultMessage() {
             return message;
         }
 	    
@@ -297,7 +297,7 @@ public class CapControlImportController {
 	public String pointmappingFile(ModelMap model, HttpServletRequest request, FlashScope flashScope) throws IOException {
 	    //Procure the import file
         if(!ServletFileUpload.isMultipartContent(request)) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.noImportFile"));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.import.error.noImportFile"));
             return "redirect:view";
         }
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -308,7 +308,7 @@ public class CapControlImportController {
         try {
             csvReader = WebFileUtils.getTempBackedCsvReaderFromMultipartFile(dataFile);
         } catch(NoImportFileException e) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.noImportFile"));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.import.error.noImportFile"));
             return "redirect:view";
         } catch(EmptyImportFileException e) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.import.errorProcessingFile"));

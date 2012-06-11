@@ -35,7 +35,7 @@ public class CsvImportResult implements ImportResult {
     /**
      * @return The MessageSourceResolvable describing the results of the import attempt.
      */
-    public YukonMessageSourceResolvable getMessage() {
+    public YukonMessageSourceResolvable getImportResultMessage() {
         return new YukonMessageSourceResolvable(resultType.getFormatKey(), arguments.toArray());
     }
     

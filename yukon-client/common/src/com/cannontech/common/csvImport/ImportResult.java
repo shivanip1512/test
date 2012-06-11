@@ -7,6 +7,6 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
  * result types to be intermingled and read, even if their internals are different.
  */
 public interface ImportResult {
-    public YukonMessageSourceResolvable getMessage();
+    public YukonMessageSourceResolvable getImportResultMessage();
     public boolean isSuccess();
 }
