@@ -73,6 +73,8 @@ public class LayoutController {
         builder.add(JsLibrary.JQUERY_UI.getPath());
         builder.add(JsLibrary.JQUERY_COLOR.getPath());
         builder.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
+        builder.add(JsLibrary.JQUERY_UI_CHECK_ALL.getPath());
+        builder.add(JsLibrary.JQUERY_UI_ACTION_WHEN.getPath());
         builder.add(JsLibrary.JQUERY_FORM.getPath());
         builder.add(JsLibrary.JQUERY_PLACEHOLDER.getPath());
 
