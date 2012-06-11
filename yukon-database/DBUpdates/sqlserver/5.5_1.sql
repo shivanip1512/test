@@ -147,16 +147,19 @@ END;
 /* @end-block */
 
 /* Taking care of the system role properties first.  Lets Migrate the Admin user role settings to the Admin login group and the DefaultCTI user to its own login group */
+INSERT INTO YukonGroup VALUES(-4, 'Administrator Grp', 'The administrator login group settings');
 INSERT INTO YukonGroupRole 
-SELECT (UserRoleId-2800), -1, RoleId, RolePropertyId, Value 
+SELECT (UserRoleId-2800), -4, RoleId, RolePropertyId, Value 
 FROM YukonUserRole
 WHERE UserId = -1;
+INSERT INTO YukonUserGroup VALUES (-1, -4);
 
 INSERT INTO YukonGroup VALUES(-3, 'DefaultCTI Login Grp', 'The defaultCTI login group settings');
 INSERT INTO YukonGroupRole 
 SELECT (UserRoleId-1600), -3, RoleId, RolePropertyId, Value 
 FROM YukonUserRole
 WHERE UserId = -100;
+INSERT INTO YukonUserGroup VALUES (-100, -3);
 
 /* Migrating the rest of the YukonUserRole data */
 /* @start-block */
