@@ -3,8 +3,8 @@
 <properties>
     
     <!-- /inventory/home.jsp -->
-    <entry key="yukon.web.modules.operator.inventory.home.pageName">Inventory</entry>
-    <entry key="yukon.web.modules.operator.inventory.home.pageDescription"></entry>
+    <entry key="yukon.web.modules.operator.inventory.home.pageName">Inventory Search</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.pageDescription">Inventory Search</entry>
     <entry key="yukon.web.modules.operator.inventory.home.deviceSelection.title">Collection Actions</entry>
     <entry key="yukon.web.modules.operator.inventory.home.selectInventoryButton.label">Select by Inventory</entry>
     <entry key="yukon.web.modules.operator.inventory.home.selectInventoryDescription">Choose inventory manually.</entry>
