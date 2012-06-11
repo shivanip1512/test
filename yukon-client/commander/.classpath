@@ -8,6 +8,7 @@
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
+	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry kind="lib" path="resource"/>
