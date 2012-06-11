@@ -36,7 +36,7 @@
 <cti:includeCss link="/editor/css/greybox/greybox.css"/>     
 
 <!-- Beans -->
-<jsp:useBean id="ccSession" class="com.cannontech.web.capcontrol.CCSessionInfo" type="com.cannontech.cbc.web.CCSessionInfo" scope="session"/>
+<jsp:useBean id="ccSession" class="com.cannontech.web.capcontrol.CCSessionInfo" type="com.cannontech.web.capcontrol.CCSessionInfo" scope="session"/>
 <jsp:useBean id="CtiNavObject" class="com.cannontech.web.navigation.CtiNavObject" type="com.cannontech.web.navigation.CtiNavObject" scope="session"/>
 
 <jsp:setProperty name="CtiNavObject" property="moduleLabel" value="Cap Control"/>
