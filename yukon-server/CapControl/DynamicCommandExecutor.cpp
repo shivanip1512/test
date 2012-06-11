@@ -90,6 +90,15 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
+        if (CtiCCSubstationBusPtr bus = store->findSubBusByCapBankID(bankId))
+        {
+            PointResponseKey prKey = PointResponseKey(bankId,pointId);
+            PointResponsePtr pointResponse = bus->getPointResponse(prKey);
+            pointResponse->setDelta(newDelta);
+            pointResponse->setStaticDelta(staticDelta);
+            bus->updatePointResponse(prKey, pointResponse);
+        }
+
         CtiCCCapBankPtr bankPtr = store->getCapBankByPaoId(bankId);
         if (bankPtr == NULL)
         {

@@ -6972,7 +6972,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
                     currentMonPoint.reset();
                     continue;
                 }
-                subBusPtr->addDefaultPointResponses( );
+                subBusPtr->addDefaultPointResponses( requiredPointResponses );
                 pointid_subbus_map->insert(make_pair(currentMonPoint->getPointId(),subBusPtr));
                 subBusPtr->addPointId(currentPointId);
 

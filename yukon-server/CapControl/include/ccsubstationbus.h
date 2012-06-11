@@ -368,7 +368,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCMonitorPointPtr getMonitorPoint(long pointId);
     Cti::CapControl::PointResponsePtr getPointResponse(Cti::CapControl::PointResponseKey key);
     void updatePointResponse(Cti::CapControl::PointResponseKey key, Cti::CapControl::PointResponsePtr  pResponse);
-    void addDefaultPointResponses( );
+    void addDefaultPointResponses( std::set< std::pair<long, int> > &requiredPointResponses );
 
     std::vector<Cti::CapControl::PointResponse> getPointResponsesForDevice(const long deviceId);
 

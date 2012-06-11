@@ -9534,7 +9534,7 @@ PointResponsePtr CtiCCSubstationBus::getPointResponse(PointResponseKey key)
     return (iter == _pointResponses.end() ? PointResponsePtr() : iter->second);
 }
 
-void CtiCCSubstationBus::addDefaultPointResponses( )
+void CtiCCSubstationBus::addDefaultPointResponses( std::set< std::pair<long, int> > &requiredPointResponses)
 {
     for each (CtiCCMonitorPointPtr mPoint in getAllCapBankMonitorPoints() )
     {
@@ -9550,6 +9550,7 @@ void CtiCCSubstationBus::addDefaultPointResponses( )
             {
                 pResponse = boost::shared_ptr<PointResponse>(new PointResponse(responsePointId, bankId, 0, _IVVC_DEFAULT_DELTA, false, getPaoId()));
                 _pointResponses.insert(make_pair(prKey, pResponse));
+                requiredPointResponses.insert(make_pair(responsePointId, bankId));
             }
         }
     }
