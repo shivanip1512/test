@@ -212,7 +212,7 @@ INSERT INTO YukonRoleProperty VALUES(-11005,-110,'Lockout Threshold','5','The nu
 INSERT INTO YukonRoleProperty VALUES(-11006,-110,'Lockout Duration','20','The number of minutes a login is disabled when an account is locked out.');
 
 INSERT INTO YukonRoleProperty VALUES(-11050,-110,'Policy Quality Check','3','The number of policy rules that are required to be able to save a password.');
-INSERT INTO YukonRoleProperty VALUES(-11051,-110,'Policy Rule - Uppercase Characters','true','Uppercase characters count toward the required policy quality check.  (A, B, C, ... z)');
+INSERT INTO YukonRoleProperty VALUES(-11051,-110,'Policy Rule - Uppercase Characters','true','Uppercase characters count toward the required policy quality check.  (A, B, C, ... Z)');
 INSERT INTO YukonRoleProperty VALUES(-11052,-110,'Policy Rule - Lowercase Characters','true','Lowercase characters count toward the required policy quality check.  (a, b, c, ... z)');
 INSERT INTO YukonRoleProperty VALUES(-11053,-110,'Policy Rule - Base 10 Digits','true','Base 10 digits count toward the required policy quality check.  (0, 1, 2, ... 9)');
 INSERT INTO YukonRoleProperty VALUES(-11054,-110,'Policy Rule - Nonalphanumeric Characters','true','Nonalphanumic characters count toward the required password rules check.  (~, !, @, #, $, %, ^, &, *, _, -, +, =, `, |, (, ), {, }, [, ], :, ", '', <, >, ,, ., ?, /)');
@@ -220,17 +220,23 @@ INSERT INTO YukonRoleProperty VALUES(-11055,-110,'Policy Rule - Unicode Characte
 
 ALTER TABLE YukonUser
     ADD LastChangedDate DATETIME;
+GO
 UPDATE YukonUser
 SET LastChangedDate = GETDATE();
+GO
 ALTER TABLE YukonUser
     ALTER COLUMN LastChangedDate DATETIME NOT NULL;
+GO
 
 ALTER TABLE YukonUser
     ADD ForceReset CHAR(1);
+GO
 UPDATE YukonUser
 SET ForceReset = 'N';
+GO
 ALTER TABLE YukonUser
     ALTER COLUMN ForceReset CHAR(1) NOT NULL;
+GO
 
 CREATE TABLE PasswordHistory  (
     PasswordHistoryId    NUMERIC                        NOT NULL,
