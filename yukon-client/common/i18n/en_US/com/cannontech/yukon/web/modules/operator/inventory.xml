@@ -3,8 +3,8 @@
 <properties>
     
     <!-- /inventory/home.jsp -->
-    <entry key="yukon.web.modules.operator.inventory.home.pageName">Inventory Search</entry>
-    <entry key="yukon.web.modules.operator.inventory.home.pageDescription">Inventory Search</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.pageName">Inventory</entry>
+    <entry key="yukon.web.modules.operator.inventory.home.pageDescription">Inventory</entry>
     <entry key="yukon.web.modules.operator.inventory.home.deviceSelection.title">Collection Actions</entry>
     <entry key="yukon.web.modules.operator.inventory.home.selectInventoryButton.label">Select by Inventory</entry>
     <entry key="yukon.web.modules.operator.inventory.home.selectInventoryDescription">Choose inventory manually.</entry>
@@ -43,8 +43,8 @@
     <entry key="yukon.web.modules.operator.inventory.altTrackingNumber">Alt Tracking #</entry>
 
     <!-- /inventory/inventoryList.jsp -->
-    <entry key="yukon.web.modules.operator.inventory.list.pageName">Inventory</entry>
-    <entry key="yukon.web.modules.operator.inventory.list.inventorySearchContainer.title">Search Results</entry>
+    <entry key="yukon.web.modules.operator.inventory.list.pageName">Inventory Search</entry>
+    <entry key="yukon.web.modules.operator.inventory.list.inventorySearchContainer.title">Inventory Search Results</entry>
     <entry key="yukon.web.modules.operator.inventory.list.serialOrMeterNumber">Serial / Meter Number</entry>
     <entry key="yukon.web.modules.operator.inventory.list.hardwareType">Hardware Type</entry>
     <entry key="yukon.web.modules.operator.inventory.list.label">Label / Device Name</entry>
