@@ -239,7 +239,7 @@ public interface RolePropertyDao {
     public boolean checkFalseProperty(YukonRoleProperty property, LiteYukonUser user);
     
     /**
-     * This method returns true of the user has the specified role.
+     * This method returns true if the user has the specified role.
      * 
      * @param role any valid role, may not be null
      * @param user any valid user, may not be null
@@ -306,15 +306,6 @@ public interface RolePropertyDao {
      * @throws NotAuthorizedException
      */
     public void verifyCategory(YukonRoleCategory category, LiteYukonUser user) throws NotAuthorizedException;
-    
-    /**
-     * Returns the set of roles that are assigned to the user. This includes
-     * both user and group roles.
-     * 
-     * @param user any valid user, may not be null
-     * @return an unmodifiable Set, never null
-     */
-    public Set<YukonRole> getRolesForUser(LiteYukonUser user);
     
     /**
      * Returns the set of categories that are assigned to the user. This includes

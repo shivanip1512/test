@@ -2787,36 +2787,6 @@ public synchronized LiteYukonRole getARole(LiteYukonUser user, int roleID)
 	return specifiedRole;
 }
 
-/*This method takes a userid and a rolepropertyid.  It checks userRolePropertyValueMap
- *  to see if this role has been recovered from the db before.  If it has not, it will
- * be taken directly from the database.
- */
-public synchronized String getARolePropertyValue(LiteYukonUser user, int rolePropertyID) 
-{
-	MapKeyInts keyInts = new MapKeyInts(user.getLiteID(), rolePropertyID);
-	String specifiedPropVal = null;
-	//check cache for previous grabs
-	if(userRolePropertyValueMap == null)
-		userRolePropertyValueMap = new HashMap<MapKeyInts, String>();
-	else
-		specifiedPropVal = userRolePropertyValueMap.get(keyInts);
-	
-	//not in cache, go to DB.
-	if(specifiedPropVal == null)
-	{
-		specifiedPropVal = YukonUserRolePropertyLookup.loadSpecificRoleProperty(user, rolePropertyID);
-		//found it, put it in the cache for later searches
-		userRolePropertyValueMap.put(keyInts, specifiedPropVal);
-        /*
-         * This is useful for checking the map after a DBChangeMsg is received to see if
-         * this user exists in the map.  If it does, then the map should be reset.
-         */
-        userRolePropertyValueMap.put(new MapKeyInts(user.getLiteID(), CtiUtilities.NONE_ZERO_ID), null);
-	}
-		
-	return specifiedPropVal;
-}
-
 /*This method takes a userid to look for the relevant contact. It checks userContactMap
  *  to see if this contact has been recovered from the db before.  If it has not, it will
  * be taken directly from the database.

@@ -29,6 +29,7 @@ import com.cannontech.common.gui.tree.CTITreeModel;
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
+import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -42,7 +43,6 @@ import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.user.IDefinedYukonRole;
 import com.cannontech.database.db.user.YukonGroupRole;
-import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.application.WebClientRole;
@@ -50,7 +50,7 @@ import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
 
-public class UserRolePanel extends com.cannontech.common.gui.util.DataInputPanel implements TreeSelectionListener
+public class UserRolePanel extends DataInputPanel implements TreeSelectionListener
 {
 	private javax.swing.JPanel ivjJPanelLoginDescription = null;
 	private javax.swing.JTree ivjJTreeRoles = null;
@@ -444,18 +444,7 @@ private void createRoleEntry( LiteYukonRole role_, LiteYukonRoleProperty prop_, 
 	Integer roleEntryID = (Integer) ridMap_.get( new Integer(prop_.getRolePropertyID()) ); 
 	IDefinedYukonRole defRole = null;
 	
-	if( rc_ instanceof YukonUser )
-	{
-		defRole = new YukonUserRole( 
-						roleEntryID,
-						rc_.getID(),
-						new Integer(role_.getRoleID()),
-						new Integer(prop_.getRolePropertyID()),
-						" ");	//Default value for YukonUserRole is one single space
-
-	}
-	else if( rc_ instanceof YukonGroup )
-	{
+	if( rc_ instanceof YukonGroup ) {
 		defRole = new YukonGroupRole( 
 						roleEntryID,
 						rc_.getID(),
@@ -463,8 +452,7 @@ private void createRoleEntry( LiteYukonRole role_, LiteYukonRoleProperty prop_, 
 						new Integer(prop_.getRolePropertyID()),
 						" ");	//Default value for YukonGroupRole is one single space
 						
-	}	
-	else
+	} else
 		throw new IllegalArgumentException("Unable to create role entry for class : " + rc_.getClass().getName() );
 
 
@@ -495,10 +483,6 @@ public Object getValue(Object obj)
 			if (roleContainer.getYukonRoles().get(i) instanceof YukonGroupRole) {
 				YukonGroupRole groupRole = (YukonGroupRole) roleContainer.getYukonRoles().get(i);
 				roleEntryIDMap.put( groupRole.getRolePropertyID(), groupRole.getGroupRoleID() );
-			}
-			else if (roleContainer.getYukonRoles().get(i) instanceof YukonUserRole) {
-				YukonUserRole userRole = (YukonUserRole) roleContainer.getYukonRoles().get(i);
-				roleEntryIDMap.put( userRole.getRolePropertyID(), userRole.getUserRoleID() );
 			}
 		}
 		

@@ -212,8 +212,6 @@ public interface IDatabaseCache {
 
     public LiteYukonRole getARole(LiteYukonUser user, int roleID);
 
-    public String getARolePropertyValue(LiteYukonUser user, int rolePropertyID);
-
     public LiteContact getAContactByUserID(int userID);
 
     public LiteContact getAContactByContactID(int contactID);

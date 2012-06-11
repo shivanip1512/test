@@ -16,7 +16,6 @@ import com.cannontech.dbtools.DBCompare.DBCompare;
 import com.cannontech.dbtools.image.ImageInserter;
 import com.cannontech.dbtools.tools.ModifyConstraints;
 import com.cannontech.dbtools.updater.DBUpdater;
-import com.cannontech.tools.custom.Yukon3Migrator;
 
 /**
  * This is just a GUI interface for all tools that need an ouput panel
@@ -39,7 +38,6 @@ class DBToolsFrame extends javax.swing.JFrame implements IMessageFrame, java.awt
 		new DBConverter(),
 		new ModifyConstraints(),
 		new ImageInserter(),
-		new Yukon3Migrator(),
 		new DBCompare()
 	};
 	

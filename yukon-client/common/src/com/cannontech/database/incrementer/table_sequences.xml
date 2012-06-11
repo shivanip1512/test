@@ -253,7 +253,6 @@
       <sequence name="RoleProperties">
 		<table name="YukonGroup" identitycolumn="GroupId" initsequence="true"/>
         <table name="YukonGroupRole" identitycolumn="GroupRoleId" initsequence="true"/>
-        <table name="YukonUserRole" identitycolumn="UserRoleId" initsequence="true"/>
       </sequence>
       <sequence name="commandSchedule">
         <table name="commandSchedule" identitycolumn="commandScheduleId"/>

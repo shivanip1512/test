@@ -196,15 +196,10 @@ public class YukonGroup extends DBPersistent implements com.cannontech.database.
 		return msgs;
 	}
 
-	/**
-	 * Returns the yukonUserRoles.
-	 * @return Vector
-	 */
 	public Vector<YukonGroupRole> getYukonGroupRoles() {
 		if( yukonGroupRoles == null )
 			yukonGroupRoles = new Vector<YukonGroupRole>(10);
 
 		return yukonGroupRoles;
 	}
-
 }
