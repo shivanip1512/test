@@ -30,7 +30,10 @@ public class StaticAuthenticationThrottleServiceImpl implements StaticAuthentica
     @Override
     public synchronized void loginAttempted(String username) throws AuthenticationThrottleException {
         LiteYukonUser attemptedLoginUser = yukonUserDao.findUserByUsername(username);
-        PasswordPolicy passwordPolicy = passwordPolicyService.findPasswordPolicy(attemptedLoginUser);
+        PasswordPolicy passwordPolicy = null; 
+        if (attemptedLoginUser != null) {
+                passwordPolicyService.findPasswordPolicy(attemptedLoginUser);
+        }
         
         int lockoutThreshold = (passwordPolicy != null) ? passwordPolicy.getLockoutThreshold() : DEFAULT_LOCKOUT_THRESHOLD;
         Duration lockoutDuration = (passwordPolicy != null) ? passwordPolicy.getLockoutDuration() : DEFAULT_LOCKOUT_DURATION;

@@ -3,6 +3,7 @@ package com.cannontech.core.authentication.model;
 import java.util.regex.Pattern;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.RegexUtil;
 
 /**
  * This enum is used in conjunction with our role property system.  For this to work properly you will have to have a matching 
@@ -11,11 +12,11 @@ import com.cannontech.common.i18n.DisplayableEnum;
  * Ex.  POLICY_RULE_UPPERCASE_CHARACTERS is the matching role property for UPPERCASE_CHARACTERS.
  */
 public enum PolicyRuleEnum implements DisplayableEnum {
-    UPPERCASE_CHARACTERS("[A-Z]"), 
-    LOWERCASE_CHARACTERS("[a-z]"),
+    UPPERCASE_CHARACTERS("[\\p{Lu}&&["+RegexUtil.getEuropeanLanguageCharactersRegex()+"]]"), 
+    LOWERCASE_CHARACTERS("[\\p{Ll}&&["+RegexUtil.getEuropeanLanguageCharactersRegex()+"]]"),
     BASE_10_DIGITS("\\d"),
     NONALPHANUMERIC_CHARACTERS("[~!@#$%^&*_-`|(){}:;\"'<>,.?/]"), //"~!@#$%^&*_-+=`|(){}[]:;\"'<>,.?/"     Missing  -->  +=[]
-    UNICODE_CHARACTERS("\\d"),
+    UNICODE_CHARACTERS("[\\p{L}&&[^"+RegexUtil.getEuropeanLanguageCharactersRegex()+"]]"),
     ;
     
     private static final String formatKeyPrefix = "yukon.web.modules.policyRuleEnum..";

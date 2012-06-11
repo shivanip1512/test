@@ -4,7 +4,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -15,9 +14,11 @@ public class PasswordPolicyTest {
     private static final String PASSWORD_LOWER = "abcdefgh";
     private static final String PASSWORD_DIGITS = "12345678";
     private static final String PASSWORD_NONALPHA = "~!@#<>,.";
-//  private static final String PASSWORD_UNICODE = "ABCDabcd";
+    private static final String PASSWORD_UNICODE = "\u0E01\u0E02\u0E03\u0E04\u0E05\u0E06\u0E07\u0E08";
     private static final String PASSWORD_ONE = "ABCDabcd";
-    private static final String PASSWORD_TWO = "ABCabc!?@";
+    private static final String PASSWORD_TWO = "ABCabc123";
+    private static final String PASSWORD_THREE = "ABCabc123!?@";
+    private static final String PASSWORD_FOUR = "ABCabc123!?@\u0E01\u0E02\u0E03";
     
     private static final PasswordPolicy passwordPolicyOne = new PasswordPolicy(); {
         passwordPolicyOne.setPolicyRules(Lists.newArrayList(PolicyRuleEnum.values()));
@@ -56,17 +57,23 @@ public class PasswordPolicyTest {
     }
 
     @Test
-    @Ignore
     public void testNonalphanumericPasswordPolicy() throws Exception {
-        PasswordPolicy passwordPolicy = new PasswordPolicy();
-        passwordPolicy.setPolicyRules(Lists.newArrayList(PolicyRuleEnum.values()));
-        
         PolicyRuleEnum nonalphanumericCharacters = PolicyRuleEnum.NONALPHANUMERIC_CHARACTERS;
         
         Pattern nonalphanumericPattern = nonalphanumericCharacters.getRegexPattern();
         Matcher nonalphanumericMatcher = nonalphanumericPattern.matcher(PASSWORD_NONALPHA);
         
         Assert.assertTrue(nonalphanumericMatcher.find());
+    }
+
+    @Test
+    public void testUnicodePasswordPolicy() throws Exception {
+        PolicyRuleEnum unicodeCharacters = PolicyRuleEnum.UNICODE_CHARACTERS;
+        
+        Pattern unicodePattern = unicodeCharacters.getRegexPattern();
+        Matcher unicodeMatcher = unicodePattern.matcher(PASSWORD_UNICODE);
+        
+        Assert.assertTrue(unicodeMatcher.find());
     }
 
     @Test
@@ -86,4 +93,23 @@ public class PasswordPolicyTest {
         boolean isPasswordQualityCheckMet = passwordPolicyOne.isPasswordQualityCheckMet(PASSWORD_TWO);
         Assert.assertTrue(isPasswordQualityCheckMet);
     }
+
+    @Test
+    public void testPasswordThree() throws Exception {
+        int numberOfRulesMet = passwordPolicyOne.numberOfRulesMet(PASSWORD_THREE);
+        Assert.assertEquals(4, numberOfRulesMet);
+        
+        boolean isPasswordQualityCheckMet = passwordPolicyOne.isPasswordQualityCheckMet(PASSWORD_THREE);
+        Assert.assertTrue(isPasswordQualityCheckMet);
+    }
+    
+    @Test
+    public void testPasswordFour() throws Exception {
+        int numberOfRulesMet = passwordPolicyOne.numberOfRulesMet(PASSWORD_FOUR);
+        Assert.assertEquals(5, numberOfRulesMet);
+        
+        boolean isPasswordQualityCheckMet = passwordPolicyOne.isPasswordQualityCheckMet(PASSWORD_FOUR);
+        Assert.assertTrue(isPasswordQualityCheckMet);
+    }
+
 }
