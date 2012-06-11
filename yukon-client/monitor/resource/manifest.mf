@@ -10,5 +10,6 @@ Class-Path: ./
  monitor.jar 
  yukonappserver.jar 
  loadcontrol.jar 
+ servlet-api.jar 
  ../log/ 
  ../export/ 

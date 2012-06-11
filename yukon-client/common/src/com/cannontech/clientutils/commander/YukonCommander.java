@@ -610,7 +610,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	
 	/**
 	 * Returns the ivjClearPrintButtons.
-	 * @return com.cannontech.yc.gui.ClearPrintButtonPanel
+	 * @return com.cannontech.clientutils.commander.ClearPrintButtonPanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
 	private ClearPrintButtonPanel getClearPrintButtons() {
@@ -667,7 +667,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	
 	/**
 	 * Returns the ivjCommandLogPanel.
-	 * @return com.cannontech.yc.gui.CommandLogPanel
+	 * @return com.cannontech.clientutils.commander.CommandLogPanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
 	public CommandLogPanel getCommandLogPanel() {
@@ -689,7 +689,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	
 	/**
 	 * Returns the ivjCommandPanel.
-	 * @return com.cannontech.yc.gui.CommandPanel
+	 * @return com.cannontech.clientutils.commander.CommandPanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
 	private CommandPanel getCommandPanel() {
@@ -1024,7 +1024,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	
 	/**
 	 * Returns the ivjSerialRoutePanel.
-	 * @return com.cannontech.yc.gui.SerialRoutePanel
+	 * @return com.cannontech.clientutils.commander.SerialRoutePanel
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
 	private SerialRoutePanel getSerialRoutePanel() {
@@ -1104,7 +1104,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	
 	/**
 	 * Returns the ivjYCCommandMenu.
-	 * @return com.cannontech.yc.gui.menu.YCCommandMenu
+	 * @return com.cannontech.clientutils.commander.menu.YCCommandMenu
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
 	private YCCommandMenu getYCCommandMenu() {
@@ -1134,7 +1134,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	
 	/**
 	 * Returns the ivjYCFileMenu.
-	 * @return com.cannontech.yc.gui.menu.YCFileMenu
+	 * @return com.cannontech.clientutils.commander.menu.YCFileMenu
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
 	private YCFileMenu getYCFileMenu() {
@@ -1164,7 +1164,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	
 	/**
 	 * Returns the ivjYCHelpMenu.
-	 * @return com.cannontech.yc.gui.menu.YCHelpMenu
+	 * @return com.cannontech.clientutils.commander.menu.YCHelpMenu
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
 	private YCHelpMenu getYCHelpMenu() {
@@ -1195,7 +1195,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	
 	/**
 	 * Returns the ivjYCViewMenu.
-	 * @return com.cannontech.yc.gui.menu.YCViewMenu
+	 * @return com.cannontech.clientutils.commander.menu.YCViewMenu
 	 */
 	/* WARNING: THIS METHOD WILL BE REGENERATED. */
 	private YCViewMenu getYCViewMenu() {

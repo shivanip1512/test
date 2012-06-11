@@ -12,5 +12,6 @@ Class-Path:
  ojdbc6.jar 
  jtds.jar 
  SqlServer.jar 
+ servlet-api.jar 
  ../log/ 
  ../export/ 

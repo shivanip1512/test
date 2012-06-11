@@ -121,7 +121,7 @@
         <property name="path" value="commander.jnlp"/>
         <property name="appTitle" value="Commander"/>
         <property name="appDescription" value="Allows users to send commands to field devices."/>
-        <property name="appMainClass" value="com.cannontech.yc.gui.YukonCommander"/>
+        <property name="appMainClass" value="com.cannontech.clientutils.commander.YukonCommander"/>
         <property name="appMainClassJar" value="yc.jar"/>
         <property name="appIcon" value="/WebConfig/yukon/Icons/Commander64.gif" />
         <property name="userChecker">

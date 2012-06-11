@@ -80,7 +80,7 @@ public class YukonUser extends DBPersistent  {
 			setLoginStatus(LoginStatusEnum.retrieveLoginStatus((String) results[1]));
 			setAuthType(AuthType.valueOf((String) results[2]));
 			setLastChangedDate((Date) results[3]);
-			setForceReset(YNBoolean.valueOf((String) results[4]).getBoolean());
+			setForceReset("Y".equals((String) results[4]));
 //			setUserGroupId(((Integer) results[3]));
 		}
 	}

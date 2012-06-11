@@ -395,7 +395,7 @@ public class YC extends Observable implements MessageListener
 	
 	/**
 	 * Return the default properties.
-	 * @return com.cannontech.yc.gui.YCDefaults ycDefaults
+	 * @return com.cannontech.clientutils.commander.YCDefaults ycDefaults
 	 */
 	public YCDefaults getYCDefaults()
 	{
@@ -852,7 +852,7 @@ public class YC extends Observable implements MessageListener
     }
 	/**
      * Set the YCDefualts. The default properties for YC setup.
-     * @param defaults_ com.cannontech.yc.gui.YCDefaults
+     * @param defaults_ com.cannontech.clientutils.commander.YCDefaults
      */
 	public void setYCDefaults(YCDefaults defaults_)
 	{

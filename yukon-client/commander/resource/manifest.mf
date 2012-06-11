@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Main-Class: com.cannontech.yc.gui.YukonCommander
+Main-Class: com.cannontech.clientutils.commander.YukonCommander
 Class-Path: ./ 
  common.jar 
  jradius-client.jar 
@@ -9,6 +9,7 @@ Class-Path: ./
  SqlServer.jar 
  jtds.jar 
  ojdbc6.jar 
+ servlet-api.jar 
  ../log/ 
  ../export/ 
  

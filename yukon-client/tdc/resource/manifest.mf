@@ -15,5 +15,6 @@ Class-Path: ./
  jtds.jar 
  SqlServer.jar 
  batik.jar 
+ servlet-api.jar 
  ../log/ 
  ../export/ 
