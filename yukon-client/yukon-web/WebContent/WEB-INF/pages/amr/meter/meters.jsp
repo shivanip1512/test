@@ -11,17 +11,17 @@
     <script type="text/javascript">
     
     	function forwardToMeterHome(row, id) {
-    		$('deviceTable').removeClassName('activeResultsTable');
+    	    jQuery('#deviceTable').removeClass('activeResultsTable');
     		window.location = "${meterHomeUrl}?deviceId=" + id;
     	}
     
     	function clearFilter() {
     
     		<c:forEach var="filter" items="${filterByList}">
-    			$('${filter.name}').value = '';
+    		  jQuery('#${filter.name}').val('');
     		</c:forEach>
     		
-    		$('filterForm').submit();
+    		jQuery('#filterForm')[0].submit();
     	}
     	
     </script>
@@ -119,8 +119,7 @@
 
             <c:if test="${meterSearchResults.hitCount == 0}">
                 <tr>
-                    <td colspan="5"><i:inline key=".notFound" />
-                    </td>
+                    <td colspan="5"><i:inline key=".notFound" /></td>
                 </tr>
             </c:if>
 

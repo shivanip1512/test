@@ -36,7 +36,8 @@
 				</td>
 				
 				<td class="widgetColumnCell">
-					<ct:widget bean="meterSearchWidget" />
+                    <cti:msg2 key="yukon.web.widgets.meterSearchWidget.helpText" var="helpText"/>
+					<ct:widget bean="meterSearchWidget" helpText="${helpText}" />
 					<cti:checkRole role="DeviceActionsRole.ROLEID">
                         <ct:widget bean="systemActionsMenuWidget" />
                     </cti:checkRole>

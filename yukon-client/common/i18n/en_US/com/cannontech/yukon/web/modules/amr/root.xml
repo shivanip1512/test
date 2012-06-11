@@ -34,9 +34,9 @@
     <entry key="yukon.web.modules.amr.meterSearch.title">Advanced Meter Search</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.notFound">No Results Found</entry>
     <entry key="yukon.web.modules.amr.meterSearch.helpText"><![CDATA[
-        Returns inventory that matches the combination of all values provided. The search returns all inventory that has values which start with the provided text.
+        Returns meters that match the combination of all values provided.
         <br><br>Quick Search will search both Meter Number and Device Name fields.
-        <br><br>For example searching for any field with "12" will return any values that begin with "12" such as "1234".
+        <br><br>The search returns all meters that have values which start with the provided text. For example searching for any field with "12" will return any values that begin with "12" such as "1234".
     ]]></entry>
     <!-- meterHome.jsp -->
     <entry key="yukon.web.modules.amr.meterDetail.electric.pageName">Meter Detail</entry>

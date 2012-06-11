@@ -52,7 +52,8 @@
     <entry key="yukon.web.modules.operator.inventory.list.inventorySearch.title">Advanced Inventory Search</entry>
     <entry key="yukon.web.modules.operator.inventory.list.notFound">No Results Found</entry>
     <entry key="yukon.web.modules.operator.inventory.inventorySearch.helpText"><![CDATA[
-        Returns inventory that matches the combination of all values provided. The search returns all inventory that has values which start with the provided text.<br><br>For example searching for any field with "12" will return any values that begin with "12" such as "1234".
+        Returns inventory that matches the combination of all values provided.
+        <br><br>The search returns all inventory that has values which start with the provided text. For example searching for any field with "12" will return any values that begin with "12" such as "1234".
     ]]></entry>
     <entry key="yukon.web.modules.operator.inventory.noResultsForFilterItem">{0} starts with {1}</entry>
     <entry key="yukon.web.modules.operator.inventory.noResultsForFilter">No results for Filter:</entry>
