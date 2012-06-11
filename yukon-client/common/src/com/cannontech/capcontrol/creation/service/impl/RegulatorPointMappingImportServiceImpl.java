@@ -73,7 +73,7 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
             } else {
                 ImportAction action = ImportAction.valueOf(row.getValue("ACTION"));
                 String regulatorName = row.getValue("REGULATOR NAME");
-                YukonPao regulatorPao = regulatorImportHelper.retrieveRegulatorPao(regulatorName);
+                YukonPao regulatorPao = regulatorImportHelper.findRegulatorPao(regulatorName);
                 if(regulatorPao == null) {
                     //Error - no existing device with this name
                     result = new CsvImportResult(action, CsvImportResultType.NO_SUCH_OBJECT, regulatorName);

@@ -88,7 +88,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
     
     private CsvImportResult createRegulator(ImportRow row) {
         String name = row.getValue("NAME");
-        YukonPao pao = regulatorImportHelper.retrieveRegulatorPao(name);
+        YukonPao pao = regulatorImportHelper.findRegulatorPao(name);
         if(pao != null) {
             //Error - device already exists with this name
             return new CsvImportResult(ImportAction.ADD, CsvImportResultType.OBJECT_EXISTS, name);
@@ -116,7 +116,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
     
     private CsvImportResult updateRegulator(ImportRow row) {
         String name = row.getValue("NAME");
-        YukonPao pao = regulatorImportHelper.retrieveRegulatorPao(name);
+        YukonPao pao = regulatorImportHelper.findRegulatorPao(name);
         if(pao == null) {
             //Error - no existing device with this name
             return new CsvImportResult(ImportAction.UPDATE, CsvImportResultType.NO_SUCH_OBJECT, name);
@@ -142,7 +142,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
     
     private CsvImportResult removeRegulator(ImportRow row) {
         String name = row.getValue("NAME");
-        YukonPao pao = regulatorImportHelper.retrieveRegulatorPao(name);
+        YukonPao pao = regulatorImportHelper.findRegulatorPao(name);
         if(pao == null) {
             //Error - no existing device with this name
             return new CsvImportResult(ImportAction.REMOVE, CsvImportResultType.NO_SUCH_OBJECT, name);

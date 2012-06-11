@@ -16,7 +16,7 @@ public class RegulatorImportHelper {
     /**
      * Returns the pao for the regulator with this name, or null if no such regulator exists
      */
-    public YukonPao retrieveRegulatorPao(String name) {
+    public YukonPao findRegulatorPao(String name) {
         return paoDao.findYukonPao(name, PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL);
     }
     
