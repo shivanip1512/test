@@ -51,3 +51,4 @@ ALTER TABLE AcctThermostatScheduleEntry
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.4', 'Garrett D', '11-JUN-2012', 'Latest Update', 5 );
