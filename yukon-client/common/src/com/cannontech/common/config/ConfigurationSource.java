@@ -42,6 +42,7 @@ public interface ConfigurationSource {
     
     public int getInteger(String key, int defaultValue);
     public long getLong(String key, long defaultValue);
+    public Double getDouble(MasterConfigDoubleKeysEnum key);
     
     /**
      * Returns boolean value of key from the configuration file. Returns a defaultValue if

@@ -31,6 +31,8 @@
     <entry key="yukon.web.modules.adminSetup.groupEditor.error.required.groupName">Name is required.</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.error.unavailable.groupName">Name is already in use by another group.</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.noRoles">No roles assigned for this group.</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.expireAllPasswords.label">Expire All Passwords</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.expiredAllPasswords">All the passwords for the login group have been expired.</entry>
     
     <!-- Role Editor roles.jsp -->
     <entry key="yukon.web.modules.adminSetup.roles.pageName">Role Editor</entry>
@@ -81,6 +83,8 @@
     <entry key="yukon.web.modules.adminSetup.userEditor.changePasswordPopup">Change Password for User: {0}</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.changePassword.label">Change Password</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.changePassword.imageUrl">/WebConfig/yukon/Icons/key.png</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.unlockUser.label">Unlock User</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.loginUnlocked">The login is unlocked</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.rolesContainer.title">Roles Derived From Login Groups</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.noRoles">No roles assigned for this user.</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.required.username">Username is required</entry>

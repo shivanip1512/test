@@ -19,6 +19,7 @@ import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotLoggedInException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AuthDao;
@@ -30,6 +31,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.login.service.PasswordResetService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.LoginService;
@@ -53,21 +55,29 @@ public class LoginServiceImpl implements LoginService {
     private static final String LOGIN_FAILED_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_FAILED_ACTIVITY_LOG;
     private static final String OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_VOICE_ACTIVITY_ACTION;
     private static final String INBOUND_LOGIN_VOICE_ACTIVITY_ACTION = "LOG IN (INBOUND VOICE)";
-    private AuthenticationService authenticationService;
-    private AuthDao authDao;
-    private ContactDao contactDao;
-    private YukonUserDao yukonUserDao;
+
     private List<SessionInitializer> sessionInitializers;
-    private RolePropertyDao rolePropertyDao;
-    private SystemEventLogService systemEventLogService;
+
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired private AuthDao authDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private PasswordResetService passwordResetService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private SystemEventLogService systemEventLogService;
+    @Autowired private YukonUserDao yukonUserDao;
 
     @Override
-    public boolean login(HttpServletRequest request, String username, String password) 
-        throws AuthenticationThrottleException {
+    public boolean login(HttpServletRequest request, String username, String password) throws AuthenticationThrottleException {
         try {
             final LiteYukonUser user = authenticationService.login(username, password);
             
             rolePropertyDao.verifyRole(YukonRole.WEB_CLIENT, user);
+            
+            // The user's password has expired; redirect the user to the password reset page.
+            boolean passwordExpired = authenticationService.isPasswordExpired(user);
+            if (passwordExpired) {
+                throw new PasswordExpiredException();
+            }
             
             createSession(request, user);
 
@@ -97,6 +107,14 @@ public class LoginServiceImpl implements LoginService {
         
         try {
             LiteYukonUser user = authenticationService.login(username, password);
+
+            // The user's password has expired; redirect the user to the password reset page.
+            boolean passwordExpired = authenticationService.isPasswordExpired(user);
+            if (passwordExpired) {
+                String passwordResetUrl = passwordResetService.getPasswordResetUrl(username, request);
+                response.sendRedirect(passwordResetUrl);
+            }
+
             HttpSession session = request.getSession(true);
             initSession(user, session, request);
             ActivityLogger.logEvent(user.getUserID(), LOGIN_CLIENT_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
@@ -331,10 +349,5 @@ public class LoginServiceImpl implements LoginService {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
 	}
-
-    @Autowired
-    public void setSystemEventLogService(SystemEventLogService systemEventLogService) {
-        this.systemEventLogService = systemEventLogService;
-    }
 
 }

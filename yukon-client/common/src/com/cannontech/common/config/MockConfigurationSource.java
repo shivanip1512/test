@@ -74,4 +74,9 @@ public class MockConfigurationSource implements ConfigurationSource {
             DurationFieldType durationFieldType) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Double getDouble(MasterConfigDoubleKeysEnum key) {
+        throw new UnsupportedOperationException();
+    }
 }

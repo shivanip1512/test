@@ -17,6 +17,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
@@ -39,10 +40,11 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class GroupEditorController {
     
-    private YukonGroupDao yukonGroupDao;
-    private YukonUserDao yukonUserDao;
-    private RoleDao roleDao;
-    private RolePropertyEditorDao rolePropertyEditorDao;
+    @Autowired private AuthenticationService authService;
+    @Autowired private RoleDao roleDao;
+    @Autowired private RolePropertyEditorDao rolePropertyEditorDao;
+    @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private YukonUserDao yukonUserDao;
     
     private class YukonGroupValidator extends SimpleValidator<LiteYukonGroup> {
 
@@ -94,6 +96,18 @@ public class GroupEditorController {
         setupModelMap(model, group);
         
         return "userGroupEditor/group.jsp";
+    }
+    
+    /* Expire all users in this group */
+    @RequestMapping(value="edit", method=RequestMethod.POST, params="expireAllPasswords")
+    public String expireAllPasswords(ModelMap model, FlashScope flash, int groupId) {
+        model.addAttribute("mode", PageEditMode.EDIT);
+        LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(groupId);
+        setupModelMap(model, group);
+        
+        authService.expireAllPasswords(group.getGroupID());
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.groupEditor.expiredAllPasswords"));
+        return "redirect:view";
     }
     
     /* Update Group */
@@ -205,27 +219,4 @@ public class GroupEditorController {
         model.addAttribute("groupId", groupId);
         return "redirect:users";
     }
-    
-    /* Dependencies */
-    
-    @Autowired
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }
-    
-    @Autowired
-    public void setRolePropertyEditorDao(RolePropertyEditorDao rolePropertyEditorDao) {
-        this.rolePropertyEditorDao = rolePropertyEditorDao;
-    }
-    
 }

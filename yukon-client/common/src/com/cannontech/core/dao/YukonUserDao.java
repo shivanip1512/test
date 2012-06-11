@@ -143,5 +143,9 @@ public interface YukonUserDao {
      * Inserts or updates a lite yukon user.
      */
     public void save(LiteYukonUser user);
- 
+    
+    /**
+     * Changes all the forceReset values for a given group.
+     */
+    public void updateForceResetByGroupId(int groupId, boolean forceReset);
 }

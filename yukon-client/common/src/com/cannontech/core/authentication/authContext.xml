@@ -8,8 +8,8 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-    <bean id="authenticationThrottleHelper" class="com.cannontech.core.authentication.service.impl.AuthenticationThrottleHelperImpl"
-            scope="prototype" />
+    <bean id="staticAuthenticationThrottleService" class="com.cannontech.core.authentication.service.impl.StaticAuthenticationThrottleServiceImpl"/>
+    <bean id="increasingAuthenticationThrottleService" class="com.cannontech.core.authentication.service.impl.IncreasingAuthenticationThrottleServiceImpl"/>
 
     <bean id="authenticationService" class="com.cannontech.core.authentication.service.impl.AuthenticationServiceImpl">
       <property name="providerMap">
@@ -23,6 +23,10 @@
         </map>
       </property>
     </bean>
+    
+    <bean id="passwordPolicyService" class="com.cannontech.core.authentication.service.impl.PasswordPolicyServiceImpl"/>
+
+    <bean id="passwordHistoryDao" class="com.cannontech.core.authentication.dao.impl.PasswordHistoryDaoImpl"/>
 
     <bean id="yukonUserPasswordDao" class="com.cannontech.core.authentication.dao.impl.YukonUserPasswordDaoImpl"/>
 

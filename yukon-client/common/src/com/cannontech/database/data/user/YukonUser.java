@@ -13,10 +13,10 @@ import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.user.YukonGroup;
-import com.cannontech.database.db.user.YukonUserRole;
 import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -26,7 +26,7 @@ import com.cannontech.spring.YukonSpringHook;
 /*** 
  * @author alauinger
  */
-public class YukonUser extends DBPersistent implements com.cannontech.database.db.CTIDbChange, EditorPanel, IYukonRoleContainer
+public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 {	
     private static final Logger log = YukonLogManager.getLogger(YukonUser.class);
     private static final Integer[] immutableUserIds = new Integer[] {
@@ -37,7 +37,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
     
     private com.cannontech.database.db.user.YukonUser yukonUser;
 	private Vector<YukonGroup> yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
-	private Vector<YukonUserRole> yukonUserRoles;  //type = com.cannontech.database.db.user.YukonUserRole
 	private NativeIntVector yukonUserOwnedPAOs; //type = com.cannontech.database.db.user.UserPAOwner
 	private EnergyCompanyOperatorLoginList company;
 	/**
@@ -57,11 +56,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		super.setDbConnection( conn );
 		getYukonUser().setDbConnection( conn );
 		
-		for (int i = 0; i < getYukonUserRoles().size(); i++) 
-		{
-			((DBPersistent)getYukonUserRoles().get(i)).setDbConnection( conn );
-		}
-		
 		//This is not null if this login has been linked to an energy company
 		if(company != null)
 			company.setDbConnection( conn );
@@ -73,11 +67,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		return getUserID();
 	}
 	
-	public Vector<YukonUserRole> getYukonRoles()
-	{
-		return getYukonUserRoles();	
-	}
-
 	/**
 	 * This method was created in VisualAge.
 	 * @param pointID java.lang.Integer
@@ -127,11 +116,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			add( YukonGroup.TBL_YUKON_USER_GROUP, addValues );
 		}
 
-		for (int i = 0; i < getYukonUserRoles().size(); i++) 
-		{
-			((DBPersistent)getYukonUserRoles().get(i)).add();
-		}
-		
 		//This is not null if this login has been linked to an energy company
 		if(company != null)
 		{
@@ -146,7 +130,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	@Override
     public void delete() throws SQLException 
 	{
-		delete( YukonUserRole.TABLE_NAME, "UserID", getYukonUser().getUserID() );
 		delete( YukonGroup.TBL_YUKON_USER_GROUP, "UserID", getYukonUser().getUserID() );
         
 		YukonUserDao yukonUserDao =
@@ -170,20 +153,12 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		getYukonUser().retrieve();
 		
 		//add the role groups this user belongs to
-		YukonGroup[] groups = YukonGroup.getYukonGroups( 
-						getUserID().intValue(), getDbConnection() );
+		YukonGroup[] groups = YukonGroup.getYukonGroups(getUserID(), getDbConnection() );
 						
-		getYukonGroups().clear(); 
-		for( int i = 0; i < groups.length; i++ )
+		getYukonGroups().clear();
+		for( int i = 0; i < groups.length; i++ ) {
 			getYukonGroups().add( groups[i] );
-
-		//add the roles this user has
-		YukonUserRole[] roles = YukonUserRole.getYukonUserRoles( 
-						getUserID().intValue(), getDbConnection() );
- 
-		getYukonUserRoles().clear();
- 		for( int i = 0; i < roles.length; i++ )
- 			getYukonUserRoles().add( roles[i] );
+		}
 	}
 
 	/**
@@ -208,13 +183,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 			add( YukonGroup.TBL_YUKON_USER_GROUP, addValues );
 		}
 				
-		//first delete the current userRoles
-		delete( YukonUserRole.TABLE_NAME, "UserID", getYukonUser().getUserID() );		
-		for (int i = 0; i < getYukonUserRoles().size(); i++) 
-		{
-			((DBPersistent)getYukonUserRoles().get(i)).add();
-		}
-		
 		//This is not null if this login has been linked to an energy company
 		if(company != null)
 		{
@@ -311,11 +279,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	 */
 	public void setUserID( Integer userID_ ) {
 		getYukonUser().setUserID( userID_ );
-
-		for (int i = 0; i < getYukonUserRoles().size(); i++) 
-		{
-			getYukonUserRoles().get(i).setUserID( userID_ );
-		}
 	}
 
 	
@@ -343,17 +306,6 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 		return msgs;
 	}
 
-	/**
-	 * Returns the yukonUserRoles.
-	 * @return Vector
-	 */
-	public Vector<YukonUserRole> getYukonUserRoles() {
-		if( yukonUserRoles == null )
-			yukonUserRoles = new Vector<YukonUserRole>(10);
-
-		return yukonUserRoles;
-	}
-	
 	public NativeIntVector getUserOwnedPAOs()
 	{
 		if( yukonUserOwnedPAOs == null )

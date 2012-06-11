@@ -2,6 +2,8 @@ package com.cannontech.database.data.lite;
 
 import java.util.GregorianCalendar;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
@@ -415,7 +417,9 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			((YukonUser)val).getUserID().intValue(),
 			((YukonUser)val).getYukonUser().getUsername(),
 			((YukonUser)val).getYukonUser().getLoginStatus(),
-            ((YukonUser)val).getYukonUser().getAuthType());
+            ((YukonUser)val).getYukonUser().getAuthType(),
+            new Instant(((YukonUser)val).getYukonUser().getLastChangedDate()),
+            ((YukonUser)val).getYukonUser().isForceReset());
 	}
 	else if( val instanceof YukonGroup )
 	{

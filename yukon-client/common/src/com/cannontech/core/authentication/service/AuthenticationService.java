@@ -32,6 +32,12 @@ public interface AuthenticationService {
     public LiteYukonUser login(String username, String password) throws BadAuthenticationException;
 
     /**
+     * This method checks to see if the user's login is expired.  This can be done by an operator forcing a login's password to be expired
+     * or for the login's password age to be longer that the password policy's allowed age.
+     */
+    public boolean isPasswordExpired(LiteYukonUser user);
+    
+    /**
      * Indicates if the underlying authentication method for the user
      * supports setting the password to a new value. For example, LDAP 
      * and RADIUS do not support this.
@@ -62,4 +68,15 @@ public interface AuthenticationService {
      * @param username
      */
     public void removeAuthenticationThrottle(String username);
+
+    /**
+     * This method checks to see if the supplied password is being reused before it is valid to reuse it.  If the password is
+     * being used before it's allows this method will return true.
+     */
+    public boolean isPasswordBeingReused(LiteYukonUser yukonUser, String newPassword);
+
+    /**
+     * This method expires all the passwords for a given group.  This will then force the users to reset their password when they login.
+     */
+    public void expireAllPasswords(int groupId);
 }

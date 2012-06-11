@@ -7,9 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigDoubleKeysEnum;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
-import com.cannontech.core.authentication.service.AuthenticationThrottleHelper;
+import com.cannontech.core.authentication.service.IncreasingAuthenticationThrottleService;
 
 /**
  * Helper impl to maintain AuthenticationThottle data, so failed login attempts
@@ -17,21 +22,37 @@ import com.cannontech.core.authentication.service.AuthenticationThrottleHelper;
  * login attempts.
  * @author mmalekar
  */
-public class AuthenticationThrottleHelperImpl implements AuthenticationThrottleHelper {
+public class IncreasingAuthenticationThrottleServiceImpl implements IncreasingAuthenticationThrottleService, InitializingBean {
 
+    @Autowired private ConfigurationSource configurationSource;
+    
     // map of username and AuthenticationThrottle data
     private Map<String, AuthenticationThrottle> authThrottleMap = new HashMap<String, AuthenticationThrottle>();
 
-    // authThrottle Exponential Base, used to ramp up throttle duration slowly or rapidly
-    private double authThrottleExpBase = AuthenticationThrottleHelper.AUTH_THROTTLE_EXP_BASE;
+    private double authThrottleExpBase = Math.E/2; // used to ramp up throttle duration slowly or rapidly
+    private double authThrottleDelta =  0.0; // used to ramp up throttle duration slowly or rapidly    
+    private int abandonedAuthThrottleDays = -100;  //Cleanup any abandoned AuthenticationThrottle data that is older than X days
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+        // Check and see if we need to change the AUTH_THROTTLE_DELTA_KEY value.
+        Double authThrottleExpBase = configurationSource.getDouble(MasterConfigDoubleKeysEnum.AUTH_THROTTLE_EXP_BASE);
+        if (authThrottleExpBase != null) {
+            if (Math.abs(authThrottleExpBase) > 1.0) {
+                this.authThrottleExpBase = Math.abs(authThrottleExpBase);
+            }
+        }
+
+        // Check and see if we need to change the AUTH_THROTTLE_DELTA_KEY value.
+        Double authThrottleDeltaStr = configurationSource.getDouble(MasterConfigDoubleKeysEnum.AUTH_THROTTLE_DELTA);
+        if (authThrottleDeltaStr != null) {
+            if (Math.abs(authThrottleDelta) > 0.0) {
+                this.authThrottleDelta = Math.abs(authThrottleDelta);
+            }
+        }
+    }
     
-    // authThrottle static Delta, used to ramp up throttle duration slowly or rapidly
-    private double authThrottleDelta = AuthenticationThrottleHelper.AUTH_THROTTLE_DELTA;    
-
-    // Cleanup any abandoned AuthenticationThrottle data that is older than X
-    // days
-    private int abandonedAuthThrottleDays = AuthenticationThrottleHelper.ABANDONED_AUTH_THROTTLE_DAYS;
-
     @Override
     public synchronized void loginAttempted(String username) throws AuthenticationThrottleException {
         long waitSeconds = 0;
@@ -75,7 +96,6 @@ public class AuthenticationThrottleHelperImpl implements AuthenticationThrottleH
         authThrottleMap.remove(username);
     }
 
-    @Override
     public synchronized void cleanupAuthenticationThrottle() {
         Calendar oldCutoffCal = Calendar.getInstance();
         oldCutoffCal.add(Calendar.DAY_OF_MONTH, abandonedAuthThrottleDays);
@@ -98,19 +118,15 @@ public class AuthenticationThrottleHelperImpl implements AuthenticationThrottleH
         authThrottleMap = new HashMap<String, AuthenticationThrottle>();
     }
 
-    @Override
     public synchronized void setAuthThrottleExpBase(double authThrottleExpBase) {
         this.authThrottleExpBase = authThrottleExpBase;
     }
 
-    @Override
     public void setAuthThrottleDelta(double authThrottleDelta){
         this.authThrottleDelta = authThrottleDelta;
     }
     
-    @Override
-    public synchronized void setAbandonedAuthThrottleDays(
-            int abandonedAuthThrottleDays) {
+    public synchronized void setAbandonedAuthThrottleDays(int abandonedAuthThrottleDays) {
         this.abandonedAuthThrottleDays = abandonedAuthThrottleDays;
     }
 
@@ -138,8 +154,7 @@ public class AuthenticationThrottleHelperImpl implements AuthenticationThrottleH
         }
 
         public long getThrottleEndtime() {
-            return lastFailedLoginTime + (Math.round(Math.pow(authThrottleExpBase,
-                                                              retryCount) + authThrottleDelta) * 1000);
+            return lastFailedLoginTime + (Math.round(Math.pow(authThrottleExpBase, retryCount) + authThrottleDelta) * 1000);
         }
 
         public long getThrottleDurationSeconds() {
@@ -160,5 +175,4 @@ public class AuthenticationThrottleHelperImpl implements AuthenticationThrottleH
             return authThrottleDto;
         }
     }
-
 }

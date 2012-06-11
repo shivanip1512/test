@@ -127,6 +127,15 @@ public class MasterConfigMap implements ConfigurationSource {
         }
         return Long.parseLong(string);
     }
+
+    @Override
+    public Double getDouble(MasterConfigDoubleKeysEnum key) {
+        String string = getString(key.toString());
+        if (string == null) {
+            return null;
+        }
+        return Double.parseDouble(string);
+    }
     
     @Override
     public boolean getBoolean(String key, boolean defaultValue) {

@@ -120,7 +120,18 @@ public class UserEditorController {
         
         return "userGroupEditor/user.jsp";
     }
-    
+
+    /* Unlock User */
+    @RequestMapping(value="edit", method=RequestMethod.POST, params="unlockUser")
+    public String unlock(ModelMap model, FlashScope flash, int userId) {
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
+        authenticationService.removeAuthenticationThrottle(user.getUsername());
+        
+        model.addAttribute("userId", userId);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.loginUnlocked"));
+        return "redirect:view";
+    }
+
     /* Cancel Edit */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="cancel")
     public String cancel(ModelMap model, int userId) {

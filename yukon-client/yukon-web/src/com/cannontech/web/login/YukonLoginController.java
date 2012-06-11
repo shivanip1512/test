@@ -16,9 +16,11 @@ import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.login.service.PasswordResetService;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.access.UrlAccessChecker;
 
@@ -26,6 +28,7 @@ public class YukonLoginController extends MultiActionController {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private LoginCookieHelper loginCookieHelper;
     @Autowired private LoginService loginService;
+    @Autowired private PasswordResetService passwordResetService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UrlAccessChecker urlAccessChecker;
 
@@ -56,16 +59,17 @@ public class YukonLoginController extends MultiActionController {
         	CTILogger.info("Unable to log user in. Reason: " + e.getMessage());
         	redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
         	return new ModelAndView("redirect:" + redirect);
+        } catch (PasswordExpiredException e) {
+            CTILogger.debug("The password for the user is expired.");
+            String passwordResetUrl = passwordResetService.getPasswordResetUrl(username, request);
+            return new ModelAndView("redirect:"+passwordResetUrl);
         }
         
         if (success) {
             LiteYukonUser user = ServletUtil.getYukonUser(request);
 
-            ActivityLogger.logEvent(
-            		user.getUserID(), 
-            		LoginService.LOGIN_WEB_ACTIVITY_ACTION, 
-            		"User " + user.getUsername() + " (userid=" + user.getUserID() + 
-            			") has logged in from " + request.getRemoteAddr());
+            ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, 
+            		"User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
             
             if (createRememberMeCookie) {
                 String value = loginCookieHelper.createCookieValue(username, password);

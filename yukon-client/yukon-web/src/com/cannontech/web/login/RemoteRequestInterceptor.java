@@ -3,12 +3,14 @@ package com.cannontech.web.login;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.login.service.PasswordResetService;
 import com.cannontech.user.checker.UserChecker;
 
 /**
@@ -17,11 +19,11 @@ import com.cannontech.user.checker.UserChecker;
 public class RemoteRequestInterceptor extends HandlerInterceptorAdapter {
 
 	private AuthenticationService authenticationService;
+	@Autowired private PasswordResetService passwordResetService;
 	private UserChecker userChecker;
 
 	@Override
-	public boolean preHandle(HttpServletRequest request,
-			HttpServletResponse response, Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
 		String username = ServletRequestUtils.getStringParameter(request, LoginController.USERNAME);
         String password = ServletRequestUtils.getStringParameter(request, LoginController.PASSWORD);
@@ -31,13 +33,20 @@ public class RemoteRequestInterceptor extends HandlerInterceptorAdapter {
 		// Try to login using the username and password - if no exception is thrown, this is a
 		// valid user, proceed
 		LiteYukonUser yukonUser = authenticationService.login(username, password);
+		
+		// The user's password has expired; redirect the user to the password reset page.
+        boolean passwordExpired = authenticationService.isPasswordExpired(yukonUser);
+        if (passwordExpired) {
+            String passwordResetUrl = passwordResetService.getPasswordResetUrl(yukonUser.getUsername(), request);
+            response.sendRedirect(passwordResetUrl);
+        }
+
 		userChecker.verify(yukonUser);
 		
 		return true;
 	}
 	
-	public void setAuthenticationService(
-			AuthenticationService authenticationService) {
+	public void setAuthenticationService(AuthenticationService authenticationService) {
 		this.authenticationService = authenticationService;
 	}
 	

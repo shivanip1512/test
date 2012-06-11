@@ -30,6 +30,7 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
     COMMANDER(Application, ApplicationRoleDefs.COMMANDER_ROLEID),
     DATABASE_EDITOR(Application, ApplicationRoleDefs.DATABASE_EDITOR_ROLEID),
     APPLICATION_ESUBSTATION_EDITOR(Application, ApplicationRoleDefs.ESUBSTATION_EDITOR_ROLEID),
+    PASSWORD_POLICY(Application, ApplicationRoleDefs.PASSWORD_POLICY_ROLEID),
     REPORTING(Application, ApplicationRoleDefs.REPORTING_ROLEID),
     TABULAR_DISPLAY_CONSOLE(Application, ApplicationRoleDefs.TABULAR_DISPLAY_CONSOLE_ROLEID),
     TRENDING(Application, ApplicationRoleDefs.TRENDING_ROLEID),

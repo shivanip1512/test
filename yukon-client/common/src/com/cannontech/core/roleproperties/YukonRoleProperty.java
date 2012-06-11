@@ -53,6 +53,20 @@ public enum YukonRoleProperty {
     DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.OPTIONAL_PRODUCT_DEV, stringType()),
     ALLOW_MEMBER_PROGRAMS(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.ALLOW_MEMBER_PROGRAMS, stringType()),
     
+    LOCKOUT_DURATION(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.LOCKOUT_DURATION, integerType()),
+    LOCKOUT_THRESHOLD(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.LOCKOUT_THRESHOLD, integerType()),
+    MAXIMUM_PASSWORD_AGE(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.MAXIMUM_PASSWORD_AGE, integerType()),
+    MINIMUM_PASSWORD_AGE(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.MINIMUM_PASSWORD_AGE, integerType()),
+    MINIMUM_PASSWORD_LENGTH(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.MINIMUM_PASSWORD_LENGTH, integerType()),
+    PASSWORD_HISTORY(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.PASSWORD_HISTORY, integerType()),
+
+    POLICY_QUALITY_CHECK(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.POLICY_QUALITY_CHECK, integerType()),
+    POLICY_RULE_UPPERCASE_CHARACTERS(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.POLICY_RULE_UPPERCASE_CHARACTERS, booleanType()),
+    POLICY_RULE_LOWERCASE_CHARACTERS(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.POLICY_RULE_LOWERCASE_CHARACTERS, booleanType()),
+    POLICY_RULE_BASE_10_DIGITS(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.POLICY_RULE_BASE_10_DIGITS, booleanType()),
+    POLICY_RULE_NONALPHANUMERIC_CHARACTERS(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.POLICY_RULE_NONALPHANUMERIC_CHARACTERS, booleanType()),
+    POLICY_RULE_UNICODE_CHARACTERS(PASSWORD_POLICY, com.cannontech.roles.application.PasswordPolicyRole.POLICY_RULE_UNICODE_CHARACTERS, booleanType()),
+    
     ADMIN_REPORTS_GROUP(REPORTING, com.cannontech.roles.application.ReportingRole.ADMIN_REPORTS_GROUP, booleanType()),
     AMR_REPORTS_GROUP(REPORTING, com.cannontech.roles.application.ReportingRole.AMR_REPORTS_GROUP, booleanType()),
     STATISTICAL_REPORTS_GROUP(REPORTING, com.cannontech.roles.application.ReportingRole.STATISTICAL_REPORTS_GROUP, booleanType()),

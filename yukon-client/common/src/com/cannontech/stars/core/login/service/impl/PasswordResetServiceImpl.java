@@ -1,14 +1,19 @@
 package com.cannontech.stars.core.login.service.impl;
 
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.core.dao.ContactDao;
@@ -18,10 +23,11 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.login.model.PasswordResetInfo;
-import com.cannontech.stars.core.login.service.ForgottenPasswordService;
+import com.cannontech.stars.core.login.service.PasswordResetService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
@@ -31,11 +37,15 @@ import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
-public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
-    private Logger logger = YukonLogManager.getLogger(ForgottenPasswordServiceImpl.class);
+public class PasswordResetServiceImpl implements PasswordResetService {
+    private Logger logger = YukonLogManager.getLogger(PasswordResetServiceImpl.class);
+    private Cache<UUID, LiteYukonUser> userToPasswordSetCache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).build();
     
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private ContactDao contactDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
@@ -87,6 +97,45 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
                 throw new EmailException(e);
             }
         }
+    }
+    
+    @Override
+    public String getPasswordResetUrl(String username, HttpServletRequest request) {
+        LiteYukonUser user = yukonUserDao.findUserByUsername(username);
+        String passwordResetKey = getPasswordKey(user);
+
+        StringBuilder url = new StringBuilder();
+        url.append(request.getScheme()+"://");
+        
+        // Get the external base url.
+        StringBuilder defaultYukonExternalUrl = new StringBuilder();
+        defaultYukonExternalUrl.append(request.getServerName());
+        // We don't need to added 80 as a port since it is used by default
+        if (request.getServerPort() != 80) {
+            defaultYukonExternalUrl.append(":"+request.getServerPort());
+        }
+        String baseurl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, defaultYukonExternalUrl.toString());
+        url.append(baseurl);
+        url.append("/spring/login/changePassword?k="+passwordResetKey);
+        
+        return url.toString();
+    }
+
+    @Override
+    public String getPasswordKey(LiteYukonUser user) {
+        UUID passwordResetKey = UUID.randomUUID();
+        userToPasswordSetCache.put(passwordResetKey, user);
+        return passwordResetKey.toString();
+    }
+
+    @Override
+    public LiteYukonUser findUserFromPasswordKey(String passwordKey) {
+        return userToPasswordSetCache.getIfPresent(UUID.fromString(passwordKey));
+    }
+
+    @Override
+    public void invalidatePasswordKey(String passwordKey) {
+        userToPasswordSetCache.invalidate(UUID.fromString(passwordKey));
     }
     
     /**
@@ -149,4 +198,5 @@ public class ForgottenPasswordServiceImpl implements ForgottenPasswordService {
         
         return passwordResetInfo;
     }
+
 }

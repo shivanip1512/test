@@ -1375,13 +1375,7 @@
 
     <bean id="captchaService" class="com.cannontech.web.common.captcha.service.impl.CaptchaServiceImpl" />
 
-    <bean id="loginService"
-        class="com.cannontech.web.login.impl.LoginServiceImpl">
-        <property name="authenticationService" ref="authenticationService"/>
-        <property name="authDao" ref="authDao" />
-        <property name="contactDao" ref="contactDao" />
-        <property name="yukonUserDao" ref="yukonUserDao" />
-        <property name="rolePropertyDao" ref="rolePropertyDao" />
+    <bean id="loginService" class="com.cannontech.web.login.impl.LoginServiceImpl">
         <property name="sessionInitializers">
             <list>
                 <ref bean="starsSessionInitializer"/>   

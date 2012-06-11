@@ -3,23 +3,23 @@ package com.cannontech.database.data.lite;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.joda.time.Instant;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.db.user.YukonUser;
+import com.cannontech.database.YNBoolean;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.spring.YukonSpringHook;
 
-/**
- * @author alauinger
- */
 public class LiteYukonUser extends LiteBase {
     private String username;
     private LoginStatusEnum loginStatus;
     private AuthType authType;
+    private Instant lastChangedDate;
+    private boolean forceReset;
 
     public LiteYukonUser() {
         this(0,null,null);
@@ -30,79 +30,59 @@ public class LiteYukonUser extends LiteBase {
     }
 
     public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus) {
-        this(id, username, loginStatus, AuthType.PLAIN);
+        this(id, username, loginStatus, AuthType.PLAIN, null, false);
     }
 
-    public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus, AuthType authType) {
+    public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus, AuthType authType, Instant lastChangedDate, boolean forceReset) {
         setLiteType(LiteTypes.YUKON_USER);
         setUserID(id);
         setUsername(username);
         setLoginStatus(loginStatus);
         setAuthType(authType);
+        setLastChangedDate(lastChangedDate);
+        setForceReset(forceReset);
     }
 
-    public void retrieve( String dbAlias )
-    {
+    public void retrieve( String dbAlias ) {
+        
+        YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select", "Username,Status,AuthType");
-        sql.append("from", YukonUser.TABLE_NAME);
-        sql.append("where", "UserID = ?");
+        sql.append("SELECT Username, Status, AuthType, LastChangedDate, ForceReset");
+        sql.append("FROM YukonUser");
+        sql.append("WHERE  UserId").eq(getUserID());
 
-        JdbcOperations template = JdbcTemplateHelper.getYukonTemplate();
-
-        Object[] args = new Object[] {getUserID()};
-        template.query(sql.toString(), args, new ResultSetExtractor() {
-            public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+        yukonJdbcTemplate.query(sql, new ResultSetExtractor<LiteYukonUser>() {
+            public LiteYukonUser extractData(ResultSet rs) throws SQLException, DataAccessException {
                 rs.next();
                 setUsername(rs.getString("Username").trim() );
                 setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
                 setAuthType(AuthType.valueOf(rs.getString("AuthType")));
+                setLastChangedDate(new Instant(rs.getDate("lastChangedDate")));
+                setForceReset(YNBoolean.valueOf(rs.getString("ForceReset")).getBoolean());
                 return null;
             }
         });
 
     }
 
-    /**
-     * Returns the username.
-     * @return String
-     */
+    @Override
+    public String toString(){
+        return getUsername();
+    }
+    
     public String getUsername() {
         return username;
     }
-
-    /**
-     * Sets the username.
-     * @param username The username to set
-     */
     public void setUsername(String username) {
         this.username = username;
     }
 
-    /**
-     * Returns the userID.
-     * @return int
-     */
     public int getUserID() {
         return getLiteID();
     }
-
-    /**
-     * Sets the userID.
-     * @param userID The userID to set
-     */
     public void setUserID(int userID) {
         setLiteID(userID);
-    }
-
-    /**
-     * This method was created by Cannon Technologies Inc.
-     */
-    @Override
-    public String toString()
-    {
-        return getUsername();
     }
 
     public LoginStatusEnum getLoginStatus() {
@@ -115,9 +95,21 @@ public class LiteYukonUser extends LiteBase {
     public AuthType getAuthType() {
         return authType;
     }
-
     public void setAuthType(AuthType authType) {
         this.authType = authType;
     }
 
+    public Instant getLastChangedDate() {
+        return lastChangedDate;
+    }
+    public void setLastChangedDate(Instant lastChangedDate) {
+        this.lastChangedDate = lastChangedDate;
+    }
+
+    public boolean isForceReset() {
+        return forceReset;
+    }
+    public void setForceReset(boolean forceReset) {
+        this.forceReset = forceReset;
+    }
 }

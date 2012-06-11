@@ -89,6 +89,7 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                             <cti:button nameKey="changePassword" id="changePasswordButton" type="button"/>
                         </c:if>
                     </cti:displayForPageEditModes>
+                    <cti:button nameKey="unlockUser" name="unlockUser" id="unlockUser"  type="submit"/>
                 </div>
             </form:form>
                 

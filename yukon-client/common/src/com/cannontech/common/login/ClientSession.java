@@ -22,7 +22,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -179,13 +181,21 @@ public class ClientSession {
         try {
             // force load of the application context
             YukonSpringHook.getContext();
-
+            AuthenticationService authenticationService = YukonSpringHook.getBean("authenticationService", AuthenticationService.class);
+            
             LoginPanel lp = makeLocalLoginPanel();
             while(collectInfo(p, lp)) {
-            	LiteYukonUser u = DaoFactory.getAuthDao().login(lp.getUsername(), lp.getPassword());
-            	if(u != null) {
+            	LiteYukonUser loggingInUser = DaoFactory.getAuthDao().login(lp.getUsername(), lp.getPassword());
+
+                // The user's password has expired; redirect the user to the password reset page.
+                boolean passwordExpired = authenticationService.isPasswordExpired(loggingInUser);
+                if (passwordExpired) {
+                    throw new PasswordExpiredException("The user's password is expired.  Please login to the web interface to reset it. ("+loggingInUser.getUsername()+" )" );
+                }
+
+            	if(loggingInUser != null) {
             		//score! we found them
-            		setSessionInfo(u);
+            		setSessionInfo(loggingInUser);
             		boolean saveInfo = lp.isRememberPassword();
             		prefs.setDefaultRememberPassword(saveInfo);
             		if(saveInfo) {

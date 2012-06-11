@@ -10,6 +10,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class LocalHashAuthenticationService implements AuthenticationProvider, PasswordSetProvider {
     @Autowired protected YukonUserPasswordDao yukonUserPasswordDao;
+    
     private PasswordHasher passwordHasher;
 
     @Override
@@ -25,10 +26,16 @@ public class LocalHashAuthenticationService implements AuthenticationProvider, P
         yukonUserPasswordDao.setPassword(user, AuthType.HASH_SHA, newHash);
     }
 
+    @Override
+    public boolean comparePassword(LiteYukonUser yukonUser, String newPassword, String previousPassword) {
+        String newHashedPassword = passwordHasher.hashPassword(newPassword);
+        return newHashedPassword.equals(previousPassword);
+    }
+
     public void setPasswordHasher(PasswordHasher passwordHasher) {
         this.passwordHasher = passwordHasher;
     }
-
+    
     public void setYukonUserPasswordDao(YukonUserPasswordDao yukonUserPasswordDao) {
         this.yukonUserPasswordDao = yukonUserPasswordDao;
     }

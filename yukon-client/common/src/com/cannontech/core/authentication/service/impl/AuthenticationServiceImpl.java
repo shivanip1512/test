@@ -1,8 +1,8 @@
 package com.cannontech.core.authentication.service.impl;
 
+import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,37 +10,50 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.core.authentication.dao.PasswordHistoryDao;
+import com.cannontech.core.authentication.model.PasswordHistory;
+import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
-import com.cannontech.core.authentication.service.AuthenticationThrottleHelper;
+import com.cannontech.core.authentication.service.AuthenticationThrottleService;
+import com.cannontech.core.authentication.service.IncreasingAuthenticationThrottleService;
+import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
+import com.cannontech.core.authentication.service.StaticAuthenticationThrottleService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.primitives.Ints;
 
-public class AuthenticationServiceImpl implements AuthenticationService, InitializingBean  {
+public class AuthenticationServiceImpl implements AuthenticationService, InitializingBean {
     private final static Logger log = YukonLogManager.getLogger(AuthenticationServiceImpl.class);
     private Map<AuthType, AuthenticationProvider> providerMap;
-    @Autowired private YukonUserDao yukonUserDao;
+    
+    private AuthenticationThrottleService authenticationThrottleService;
+    @Autowired private StaticAuthenticationThrottleService staticAuthenticationThrottleService;
+    @Autowired private IncreasingAuthenticationThrottleService increasingAuthenticationThrottleService;
+    
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private PasswordHistoryDao passwordHistoryDao;
+    @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private RolePropertyDao rolePropertyDao;
-    @Autowired private AuthenticationThrottleHelper authenticationThrottleHelper;
+    @Autowired private YukonUserDao yukonUserDao;
 
     @Override
     public AuthType getDefaultAuthType(LiteYukonUser user) {
-        AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE,
-                                                                 AuthType.class, user);
+        AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, user);
         return authType;
     }
 
     @Override
     public synchronized LiteYukonUser login(String username, String password) throws BadAuthenticationException {
         // see if login attempt allowed and track the attempt
-        authenticationThrottleHelper.loginAttempted(username);
+        authenticationThrottleService.loginAttempted(username);
 
         // find user in database
         LiteYukonUser liteYukonUser = yukonUserDao.findUserByUsername(username);
@@ -51,8 +64,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
 
         // ensure that user is enabled
         if (liteYukonUser.getLoginStatus().isDisabled()) {
-            log.info("Authentication failed (disabled): username=" + username + ", id=" + 
-                     liteYukonUser.getUserID() + ", status=" + liteYukonUser.getLoginStatus());
+            log.info("Authentication failed (disabled): username=" + username + ", id=" + liteYukonUser.getUserID() + ", status=" + liteYukonUser.getLoginStatus());
             throw new BadAuthenticationException();
         }
 
@@ -61,14 +73,24 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         // attempt login; remove auth throttle if login successful
         if (provider.login(liteYukonUser, password)) {
             log.debug("Authentication succeeded: username=" + username);
-            authenticationThrottleHelper.loginSucceeded(username);
+            authenticationThrottleService.loginSucceeded(username);
             return liteYukonUser;
+            
         } else {
             // login must have failed
-            log.info("Authentication failed (auth failed): username=" + username + ", id=" +
-                     liteYukonUser.getUserID());
-            throw new BadAuthenticationException();            
+            log.info("Authentication failed (auth failed): username=" + username + ", id=" + liteYukonUser.getUserID());
+            throw new BadAuthenticationException();
         }
+    }
+
+    public boolean isPasswordExpired(LiteYukonUser user) {
+        PasswordPolicy passwordPolicy = passwordPolicyService.findPasswordPolicy(user);
+        if (user.isForceReset() || 
+            (passwordPolicy != null && passwordPolicy.getMaxPasswordAge().isShorterThan(passwordPolicy.getPasswordAge(user)))) {
+            return true;
+        }
+        
+        return false;
     }
 
     private AuthenticationProvider getProvder(LiteYukonUser user) {
@@ -93,21 +115,56 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     }
 
     @Override
+    public boolean isPasswordBeingReused(LiteYukonUser yukonUser, String newPassword) {
+
+        // Update to the current authentication type when password is changed.
+        AuthType authType = getDefaultAuthType(yukonUser);
+        boolean supportsSetPassword = supportsPasswordSet(authType);
+        if (!supportsSetPassword) {
+            throw new UnsupportedOperationException("setPassword not supported for type: " + authType);
+        }
+
+        List<PasswordHistory> passwordHistories = passwordHistoryDao.getPasswordHistory(yukonUser.getUserID());
+        PasswordPolicy passwordPolicy = passwordPolicyService.findPasswordPolicy(yukonUser);
+        
+        // Check the passwords to see if any of them are attempting to be reused
+        int numberOfPasswordToCheck = Ints.min(passwordHistories.size(), passwordPolicy.getPasswordHistory());
+        for (int i = 0; i < numberOfPasswordToCheck ; i++) {
+            PasswordHistory passwordHistory = passwordHistories.get(i);
+            String previousPassword = passwordHistory.getPassword(); 
+            AuthType passwordAuthType = passwordHistory.getAuthType();
+            
+            // Uses the old authtype to check if the submitted password is being reused.
+            PasswordSetProvider provider = (PasswordSetProvider) providerMap.get(passwordAuthType);
+            boolean isPasswordBeingReused = provider.comparePassword(yukonUser, newPassword, previousPassword);
+            if (isPasswordBeingReused){
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    @Override
+    public void expireAllPasswords(int groupId) {
+        yukonUserDao.updateForceResetByGroupId(groupId, true);
+    }
+    
+    @Override
     public boolean supportsPasswordSet(AuthType type) {
         AuthenticationProvider provider = providerMap.get(type);
         return provider instanceof PasswordSetProvider;
     }
 
     @Override
-    public AuthenticationThrottleDto getAuthenticationThrottleData(
-            String username) {
-        AuthenticationThrottleDto authThrottleDto = authenticationThrottleHelper.getAuthenticationThrottleData(username);
+    public AuthenticationThrottleDto getAuthenticationThrottleData(String username) {
+        AuthenticationThrottleDto authThrottleDto = authenticationThrottleService.getAuthenticationThrottleData(username);
         return authThrottleDto;
     }
 
     @Override
     public void removeAuthenticationThrottle(String username) {
-        authenticationThrottleHelper.removeAuthenticationThrottle(username);
+        authenticationThrottleService.removeAuthenticationThrottle(username);
     }
 
     @Required
@@ -117,30 +174,22 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
-        String authThrottleExpBaseStr = configSource.getString(AuthenticationThrottleHelper.AUTH_THROTTLE_EXP_BASE_KEY);
-        String authThrottleDeltaStr = configSource.getString(AuthenticationThrottleHelper.AUTH_THROTTLE_DELTA_KEY);
+        String authenticationTimeoutStyleEnumStr = configurationSource.getString(MasterConfigStringKeysEnum.AUTHENTICATION_TIMEOUT_STYLE, "STATIC");
+        AuthenticationTimeoutStyleEnum authenticationTimeoutStyle = AuthenticationTimeoutStyleEnum.valueOf(authenticationTimeoutStyleEnumStr);
+        
+        switch (authenticationTimeoutStyle) {
+            case STATIC:
+                this.authenticationThrottleService = staticAuthenticationThrottleService;
+                break;
+            case INCREMENTAL:
+                this.authenticationThrottleService = increasingAuthenticationThrottleService;
+                break;
+        }
+    }
 
-        double authThrottleExpBase = 0.0;
-        double authThrottleDelta = 0.0;
-        if (StringUtils.isNotBlank(authThrottleExpBaseStr)) {
-            try {
-                authThrottleExpBase = Math.abs(Double.parseDouble(authThrottleExpBaseStr.trim()));
-            } catch (NumberFormatException e) {
-                // use defaults
-            }
-        }
-        if (StringUtils.isNotBlank(authThrottleDeltaStr)) {
-            try {
-                authThrottleDelta = Math.abs(Double.parseDouble(authThrottleDeltaStr.trim()));
-            } catch (NumberFormatException e) {
-                // use defaults
-            }
-        }
-        // Use if correct values are provided, else use defaults
-        if (authThrottleExpBase > 1.0 || authThrottleDelta > 0.0) {
-            authenticationThrottleHelper.setAuthThrottleExpBase(authThrottleExpBase);
-            authenticationThrottleHelper.setAuthThrottleDelta(authThrottleDelta);
-        }
+    enum AuthenticationTimeoutStyleEnum {
+        STATIC,
+        INCREMENTAL,
+        ;
     }
 }

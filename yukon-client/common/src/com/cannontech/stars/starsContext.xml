@@ -265,7 +265,7 @@
         <property name="starsInventoryBaseDao" ref="starsInventoryBaseDao" />
     </bean>
 
-    <bean id="forgottenPasswordServce" class="com.cannontech.stars.core.login.service.impl.ForgottenPasswordServiceImpl" />
+    <bean id="passwordResetService" class="com.cannontech.stars.core.login.service.impl.PasswordResetServiceImpl" />
 
     <bean id="controlHistoryDao" class="com.cannontech.stars.dr.controlHistory.dao.impl.ControlHistoryDaoImpl"/>
     

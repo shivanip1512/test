@@ -8,4 +8,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public interface PasswordSetProvider {
     public void setPassword(LiteYukonUser user, String newPassword);
+    
+    /**
+     * This method allows us to compare a supplied password to another password that was previously used.  That way we can tell if
+     * they are trying to reuse a password.
+     */
+    public boolean comparePassword(LiteYukonUser yukonUser, String newPassword, String previousPassword);
 }

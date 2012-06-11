@@ -15,8 +15,8 @@ import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.InUseException;
+import com.cannontech.core.dao.impl.LiteYukonUserMapper;
 import com.cannontech.core.dao.impl.YukonGroupDaoImpl;
-import com.cannontech.core.dao.impl.YukonUserDaoImpl;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -440,7 +440,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         sql.append(  "AND ll.EnergyCompanyId").eq(childEnergyCompanyId);
         
         try {
-            return yukonJdbcTemplate.queryForObject(sql, YukonUserDaoImpl.rowMapper);
+            return yukonJdbcTemplate.queryForObject(sql, new LiteYukonUserMapper());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
