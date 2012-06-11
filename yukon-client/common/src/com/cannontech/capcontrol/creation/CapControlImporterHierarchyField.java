@@ -30,7 +30,7 @@ public enum CapControlImporterHierarchyField {
             ImmutableSet.Builder<CapControlImporterHierarchyField> requiredFieldsBuilder = ImmutableSet.builder();
             ImmutableSet.Builder<CapControlImporterHierarchyField> nonRequiredFieldsBuilder = ImmutableSet.builder();
         	for (CapControlImporterHierarchyField column : values()) {
-            	stringBuilder.put(column.getColumnName(), column);
+            	stringBuilder.put(column.getColumnName().toLowerCase(), column);
             	if (column.isRequired()) {
             		requiredFieldsBuilder.add(column);
             	} else {
@@ -51,7 +51,7 @@ public enum CapControlImporterHierarchyField {
 	}
 	
 	public static CapControlImporterHierarchyField getColumnByName(String columnName) throws IllegalArgumentException {
-		CapControlImporterHierarchyField column = lookupByString.get(columnName);
+		CapControlImporterHierarchyField column = lookupByString.get(columnName.toLowerCase());
 		Validate.notNull(column, columnName);
 		return column;
 	}
