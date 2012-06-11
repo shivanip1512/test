@@ -39,13 +39,6 @@
   <bean id="filterCacheFactory" class="com.cannontech.cbc.cache.FilterCacheFactory">
     <property name="cache" ref="cbcCache"/>
   </bean> 
-   
-  <bean id="parentStringPrinterFactory" class="com.cannontech.web.capcontrol.ParentStringPrinterFactory">
-    <property name="paoDao" ref="paoDao"/>
-    <property name="pointDao" ref="pointDao"/>
-    <property name="zoneDao" ref="zoneDao"/>
-    <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
-  </bean> 
 
     <bean id="zoneService" class="com.cannontech.capcontrol.service.impl.ZoneServiceImpl"/>
     

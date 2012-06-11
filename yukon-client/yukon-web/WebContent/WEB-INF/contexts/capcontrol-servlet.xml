@@ -13,5 +13,11 @@
 	</bean>
 
     <context:component-scan base-package="com.cannontech.web.capcontrol"/>
-    
+
+    <bean id="parentStringPrinterFactory" class="com.cannontech.web.capcontrol.ParentStringPrinterFactory">
+        <property name="paoDao" ref="paoDao"/>
+        <property name="pointDao" ref="pointDao"/>
+        <property name="zoneDao" ref="zoneDao"/>
+        <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
+    </bean> 
 </beans>
