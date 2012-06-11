@@ -1,4 +1,4 @@
-package com.cannontech.cbc.web;
+package com.cannontech.web.capcontrol;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -15,6 +15,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.web.CBCParamValues;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -26,7 +27,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.SystemLogData;
 import com.cannontech.database.db.capcontrol.CCEventLog;
-import com.cannontech.database.db.capcontrol.RecentControls;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;

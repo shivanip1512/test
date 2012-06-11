@@ -1,4 +1,4 @@
-package com.cannontech.cbc.web;
+package com.cannontech.web.capcontrol;
 
 import javax.servlet.http.HttpServletRequest;
 

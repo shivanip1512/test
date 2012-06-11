@@ -17,9 +17,6 @@
         <dependent-module archiveName="stars.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/stars/stars">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="servlet.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/servlet/servlet">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="cbc.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cbc/cbc">
             <dependency-type>uses</dependency-type>
         </dependent-module>

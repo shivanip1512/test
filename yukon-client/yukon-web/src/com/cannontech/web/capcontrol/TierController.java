@@ -19,8 +19,6 @@ import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CapControlUtils;
-import com.cannontech.cbc.web.CBCWebUtils;
-import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;

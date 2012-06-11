@@ -14,7 +14,6 @@ import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
 
-import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
@@ -28,6 +27,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.web.capcontrol.CCSessionInfo;
 import com.cannontech.web.editor.point.PointForm;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;

@@ -10,7 +10,7 @@ package com.cannontech.cbc.web;
  *
  *	TYPE_PF = parameter named "type", and this value is "pf"
  */
-interface CBCParamValues
+public interface CBCParamValues
 {
 	
 	public static final String TYPE_PF = "PF";

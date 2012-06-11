@@ -22,7 +22,6 @@ import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
 import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.util.CapControlUtils;
-import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
@@ -45,6 +44,7 @@ import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.web.capcontrol.CCSessionInfo;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 

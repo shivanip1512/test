@@ -24,13 +24,13 @@ import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.model.FeederPhaseData;
 import com.cannontech.capcontrol.model.SubstationBus;
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.SubBus;
+import com.cannontech.web.capcontrol.CBCWebUtils;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 
 @CheckFalseRoleProperty(YukonRoleProperty.HIDE_REPORTS)

@@ -18,7 +18,6 @@ import com.cannontech.cbc.oneline.CapControlSVGGenerator;
 import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
-import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.svg.SVGOptions;
@@ -28,6 +27,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.capcontrol.CBCWebUtils;
 
 @SuppressWarnings("serial")
 public class OnelineCBCServlet extends HttpServlet {
