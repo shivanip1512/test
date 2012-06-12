@@ -323,12 +323,10 @@ table.compactResultsTable {
 div.boxContainer table.compactResultsTable {
 	width: 100%;
 }
-
 /* This keeps nested tables from double-shrinking the text and double-padding. */
 table.compactResultsTable th th {
     font-size: 100%;
 }
-
 table.compactResultsTable th {
 	border-bottom: 1px solid #CCCCCC;
 	color: 	#000000;
@@ -2081,4 +2079,22 @@ table th.small_width {
 }
 .enabled_true{
 	background: transparent url(../Icons/green_circle.png) left top no-repeat;
+}
+.icon_datePicker {
+    width: 20px;
+    background: transparent url(../Icons/StartCalendar.png) top left no-repeat;
+}
+
+.icon_datePicker:hover {
+    background: transparent url(../Icons/StartCalendar_over.png) top left no-repeat;
+}
+
+.icon_datePicker_disabled {
+    width: 20px;
+    background: transparent url(../Icons/StartCalendar_disabled_gray.png) top left no-repeat;
+    cursor: not-allowed;
+}
+
+.inputWithIcon {
+    margin-right: 5px;
 }

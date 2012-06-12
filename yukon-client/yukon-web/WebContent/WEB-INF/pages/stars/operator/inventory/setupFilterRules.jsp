@@ -19,13 +19,16 @@
 	<cti:msg key="yukon.common.calendarcontrol.days" var="days" />
 	<cti:msg key="yukon.common.calendarcontrol.clear" var="clear" />
 	<cti:msg key="yukon.common.calendarcontrol.close" var="close" />
-    <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
 
 	<script>
         function removeRule(row) {
             $('removeRule').value = row;
             $('selectionForm').submit();
         }
+        jQuery(document).delegate('a.icon_datePicker', 'click', function(event) {
+            var inputId = jQuery(event.target).prev('input').attr('id');
+            showCalendarControl(inputId, '${months}', '${days}', '${clear}', '${close}');
+        });
     </script>
     
     <tags:simpleDialog id="addRuleDialog" styleClass="smallSimplePopup"/>
@@ -93,15 +96,14 @@
                                         </c:when>
 
                                         <c:when test="${rule.ruleType eq 'DEVICE_STATUS_DATE_RANGE'}">
-											<form:input path="filterRules[${row.index}].deviceStateDateFrom" id="filterRules[${row.index}].deviceStateDateFrom" size="10" maxlength="10"/>
-											<span onclick="javascript:showCalendarControl('filterRules[${row.index}].deviceStateDateFrom', '${months}', '${days}', '${clear}', '${close}');"
-												style="cursor: pointer;"> <img id="calImg_filterRules[${row.index}].deviceStateDateFrom" src="${calImgUrl}" width="20" height="15" border="0" /> </span>
-                                            <i:inline key=".deviceStateDateRangeSeperator"/>
-                                            
-                                            <form:input path="filterRules[${row.index}].deviceStateDateTo" id="filterRules[${row.index}].deviceStateDateTo" size="10" maxlength="10"/>
-											<span onclick="javascript:showCalendarControl('filterRules[${row.index}].deviceStateDateTo', '${months}', '${days}', '${clear}', '${close}');"
-												style="cursor: pointer;"> <img id="calImg_filterRules[${row.index}].deviceStateDateTo" src="${calImgUrl}" width="20" height="15" border="0" /> </span>
-                                            
+                                            <form:input path="filterRules[${row.index}].deviceStateDateFrom" id="deviceStateDateFrom_${row.index}" size="10" maxlength="10" cssClass="fl inputWithIcon"/>
+                                            <a href="javascript:void(0);" class="icon icon_datePicker"></a>
+                                                                                        
+                                            <div class="fl"><i:inline key=".deviceStateDateRangeSeperator"/>&nbsp;</div>
+                                                                                        
+                                            <form:input path="filterRules[${row.index}].deviceStateDateTo" id="deviceStateDateTo_${row.index}" size="10" maxlength="10" cssClass="fl inputWithIcon"/>
+                                            <a href="javascript:void(0);" class="icon icon_datePicker"></a>
+                                                                                        
                                             <div><form:errors path="filterRules[${row.index}].deviceStateDateFrom" cssClass="errorMessage"/></div>
                                             <div><form:errors path="filterRules[${row.index}].deviceStateDateTo" cssClass="errorMessage"/></div>
                                         </c:when>
