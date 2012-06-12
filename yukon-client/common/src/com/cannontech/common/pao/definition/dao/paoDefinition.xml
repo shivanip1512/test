@@ -8131,7 +8131,7 @@
             <point type="Analog" offset="10020">
                 <init>true</init>
                 <name>Average Line Voltage Time</name>
-                <multiplier value="0.1"/>
+                <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
