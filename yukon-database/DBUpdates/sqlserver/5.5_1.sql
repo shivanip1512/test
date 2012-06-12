@@ -247,7 +247,7 @@ CREATE TABLE PasswordHistory  (
     Password             VARCHAR(64)                    NOT NULL,
     AuthType             VARCHAR(16)                    NOT NULL,
     PasswordChangedDate  DATETIME                       NOT NULL,
-    CONSTRAINT PK_PasswordHistory PRIMARY KEY (UserId)
+    CONSTRAINT PK_PasswordHistory PRIMARY KEY (PasswordHistoryId)
 );
 
 ALTER TABLE PasswordHistory

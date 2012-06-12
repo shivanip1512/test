@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/11/2012 1:23:10 PM                         */
+/* Created on:     6/12/2012 5:29:22 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7114,7 +7114,7 @@ create table PasswordHistory (
    Password             varchar(64)          not null,
    AuthType             varchar(16)          not null,
    PasswordChangedDate  datetime             not null,
-   constraint PK_PasswordHistory primary key nonclustered (UserId)
+   constraint PK_PasswordHistory primary key nonclustered (PasswordHistoryId)
 )
 go
 

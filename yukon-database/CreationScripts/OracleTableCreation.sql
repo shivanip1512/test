@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/11/2012 1:41:10 PM                         */
+/* Created on:     6/12/2012 5:26:25 PM                         */
 /*==============================================================*/
 
 
@@ -6705,7 +6705,7 @@ create table PasswordHistory  (
    Password             VARCHAR2(64)                    not null,
    AuthType             VARCHAR2(16)                    not null,
    PasswordChangedDate  DATE                            not null,
-   constraint PK_PasswordHistory primary key (UserId)
+   constraint PK_PasswordHistory primary key (PasswordHistoryId)
 );
 
 /*==============================================================*/
