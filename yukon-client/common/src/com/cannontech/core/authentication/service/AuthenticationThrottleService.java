@@ -1,6 +1,7 @@
 package com.cannontech.core.authentication.service;
 
 import com.cannontech.common.exception.AuthenticationThrottleException;
+import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 
 public interface AuthenticationThrottleService {
     /**

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigDoubleKeysEnum;
 import com.cannontech.common.exception.AuthenticationThrottleException;
-import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
+import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.core.authentication.service.AuthenticationThrottleService;
 
 /**

@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.exception.AuthenticationThrottleException;
-import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
+import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 
 public class AuthenticationThrottleHelperImplTest {
 

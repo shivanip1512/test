@@ -1,4 +1,4 @@
-package com.cannontech.core.authentication.service;
+package com.cannontech.core.authentication.model;
 
 import java.util.Date;
 

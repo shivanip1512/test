@@ -7,8 +7,8 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.exception.AuthenticationThrottleException;
+import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.core.authentication.model.PasswordPolicy;
-import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
 import com.cannontech.core.authentication.service.AuthenticationThrottleService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.YukonUserDao;

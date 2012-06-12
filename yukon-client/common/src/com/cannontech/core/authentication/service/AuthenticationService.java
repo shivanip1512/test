@@ -1,6 +1,7 @@
 package com.cannontech.core.authentication.service;
 
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**

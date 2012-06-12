@@ -8,8 +8,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
