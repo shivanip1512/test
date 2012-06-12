@@ -23,7 +23,7 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
     public List<PolicyRuleEnum> getPolicyRules(LiteYukonUser user) {
         Validate.notNull(user);
         
-        // There is not a password policy for this user.  Returning null.
+        // There is not a password policy for this user.
         if (!rolePropertyDao.checkRole(YukonRole.PASSWORD_POLICY, user)) {
             throw new IllegalArgumentException("The user supplied does not have password rules since it does not have a password policy.");
         }

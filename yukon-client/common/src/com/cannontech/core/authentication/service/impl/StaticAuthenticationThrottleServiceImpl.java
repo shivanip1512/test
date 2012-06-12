@@ -9,14 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
+import com.cannontech.core.authentication.service.AuthenticationThrottleService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
-import com.cannontech.core.authentication.service.StaticAuthenticationThrottleService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-public class StaticAuthenticationThrottleServiceImpl implements StaticAuthenticationThrottleService {
+public class StaticAuthenticationThrottleServiceImpl implements AuthenticationThrottleService {
 
     @Autowired private PasswordPolicyService passwordPolicyService; 
     @Autowired private YukonUserDao yukonUserDao;

@@ -33,6 +33,7 @@
         <table name="DeliverySchedule" identitycolumn="ScheduleID" initsequence="true"/>
         <table name="Invoice" identitycolumn="InvoiceID" initsequence="true"/>
         <table name="PurchasePlan" identitycolumn="PurchaseID" initsequence="true"/>
+        <table name="PasswordHistory" identitycolumn="PasswordHistoryId" initsequence="true"/>
         <table name="ScheduleTimePeriod" identitycolumn="TimePeriodID" initsequence="true"/>
         <table name="Shipment" identitycolumn="ShipmentID" initsequence="true"/>
         <table name="CallReportBase" identitycolumn="CallID" initsequence="true"/>

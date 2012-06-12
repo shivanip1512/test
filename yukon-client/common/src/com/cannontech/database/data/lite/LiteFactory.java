@@ -413,13 +413,10 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 	}
 	else if( val instanceof YukonUser )
 	{
-		returnLite = new LiteYukonUser(
-			((YukonUser)val).getUserID().intValue(),
-			((YukonUser)val).getYukonUser().getUsername(),
-			((YukonUser)val).getYukonUser().getLoginStatus(),
-            ((YukonUser)val).getYukonUser().getAuthType(),
-            new Instant(((YukonUser)val).getYukonUser().getLastChangedDate()),
-            ((YukonUser)val).getYukonUser().isForceReset());
+	    YukonUser user = (YukonUser)val;
+	    
+		returnLite = new LiteYukonUser(user.getUserID().intValue(), user.getYukonUser().getUsername(), user.getYukonUser().getLoginStatus(),
+		                               user.getYukonUser().getAuthType(), new Instant(user.getYukonUser().getLastChangedDate()), user.getYukonUser().isForceReset());
 	}
 	else if( val instanceof YukonGroup )
 	{

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -20,10 +21,8 @@ import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
 import com.cannontech.core.authentication.service.AuthenticationThrottleService;
-import com.cannontech.core.authentication.service.IncreasingAuthenticationThrottleService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
-import com.cannontech.core.authentication.service.StaticAuthenticationThrottleService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -35,8 +34,8 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     private Map<AuthType, AuthenticationProvider> providerMap;
     
     private AuthenticationThrottleService authenticationThrottleService;
-    @Autowired private StaticAuthenticationThrottleService staticAuthenticationThrottleService;
-    @Autowired private IncreasingAuthenticationThrottleService increasingAuthenticationThrottleService;
+    @Autowired @Qualifier("static") private AuthenticationThrottleService staticAuthenticationThrottleService;
+    @Autowired @Qualifier("increasing") private AuthenticationThrottleService increasingAuthenticationThrottleService;
     
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PasswordHistoryDao passwordHistoryDao;

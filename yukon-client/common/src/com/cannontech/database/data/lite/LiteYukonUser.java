@@ -30,7 +30,7 @@ public class LiteYukonUser extends LiteBase {
     }
 
     public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus) {
-        this(id, username, loginStatus, AuthType.PLAIN, null, false);
+        this(id, username, loginStatus, AuthType.PLAIN, Instant.now(), false);
     }
 
     public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus, AuthType authType, Instant lastChangedDate, boolean forceReset) {

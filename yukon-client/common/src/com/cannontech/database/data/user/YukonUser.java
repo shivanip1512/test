@@ -99,8 +99,7 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
     public void add() throws SQLException 
 	{
 		if( getYukonUser().getUserID() == null )
-			setUserID(
-				com.cannontech.database.db.user.YukonUser.getNextUserID(getDbConnection()) );
+			setUserID(com.cannontech.database.db.user.YukonUser.getNextUserID(getDbConnection()) );
 
 		getYukonUser().add();
 

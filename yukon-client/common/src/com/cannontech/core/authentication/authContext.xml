@@ -8,8 +8,12 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
-    <bean id="staticAuthenticationThrottleService" class="com.cannontech.core.authentication.service.impl.StaticAuthenticationThrottleServiceImpl"/>
-    <bean id="increasingAuthenticationThrottleService" class="com.cannontech.core.authentication.service.impl.IncreasingAuthenticationThrottleServiceImpl"/>
+    <bean id="staticAuthenticationThrottleService" class="com.cannontech.core.authentication.service.impl.StaticAuthenticationThrottleServiceImpl">
+        <qualifier value="static"/>
+    </bean>
+    <bean id="increasingAuthenticationThrottleService" class="com.cannontech.core.authentication.service.impl.IncreasingAuthenticationThrottleServiceImpl">
+        <qualifier value="increasing"/>
+    </bean>
 
     <bean id="authenticationService" class="com.cannontech.core.authentication.service.impl.AuthenticationServiceImpl">
       <property name="providerMap">

@@ -5,7 +5,6 @@ import java.util.Date;
 
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
@@ -81,7 +80,6 @@ public class YukonUser extends DBPersistent  {
 			setAuthType(AuthType.valueOf((String) results[2]));
 			setLastChangedDate((Date) results[3]);
 			setForceReset("Y".equals((String) results[4]));
-//			setUserGroupId(((Integer) results[3]));
 		}
 	}
 

@@ -14,7 +14,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigDoubleKeysEnum;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.core.authentication.service.AuthenticationThrottleDto;
-import com.cannontech.core.authentication.service.IncreasingAuthenticationThrottleService;
+import com.cannontech.core.authentication.service.AuthenticationThrottleService;
 
 /**
  * Helper impl to maintain AuthenticationThottle data, so failed login attempts
@@ -22,7 +22,7 @@ import com.cannontech.core.authentication.service.IncreasingAuthenticationThrott
  * login attempts.
  * @author mmalekar
  */
-public class IncreasingAuthenticationThrottleServiceImpl implements IncreasingAuthenticationThrottleService, InitializingBean {
+public class IncreasingAuthenticationThrottleServiceImpl implements AuthenticationThrottleService, InitializingBean {
 
     @Autowired private ConfigurationSource configurationSource;
     
