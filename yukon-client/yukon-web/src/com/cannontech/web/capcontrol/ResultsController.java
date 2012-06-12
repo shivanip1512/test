@@ -25,17 +25,17 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.db.capcontrol.CCEventLog;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ParamUtil;
@@ -52,17 +52,18 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class ResultsController {
     
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private FilterCacheFactory cacheFactory;
-    private SubstationBusDao substationBusDao;
-    private SubstationDao substationDao;
-    private FeederDao feederDao;
-    private CapbankDao capbankDao;
-    private CapbankControllerDao cbcDao;
-    private PaoDao paoDao;
-    private ParentStringPrinterFactory printerFactory;
-    private DateFormattingService dateFormattingService;
-    private VoltageRegulatorDao voltageRegulatorDao; 
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private FilterCacheFactory cacheFactory;
+    @Autowired private SubstationBusDao substationBusDao;
+    @Autowired private SubstationDao substationDao;
+    @Autowired private FeederDao feederDao;
+    @Autowired private CapbankDao capbankDao;
+    @Autowired private CapbankControllerDao cbcDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private ParentStringPrinterFactory printerFactory;
+    @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private VoltageRegulatorDao voltageRegulatorDao; 
+    @Autowired private CapControlDao capControlDao; 
     
     private enum SearchType {
     	REGULATOR,
@@ -241,21 +242,26 @@ public class ResultsController {
     }
     
     @RequestMapping
-    public String recentEvents(HttpServletRequest request, ModelMap model, LiteYukonUser user, String value) {
-        CapControlCache cache = cacheFactory.createUserAccessFilteredCache(user);
-        YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);
+    public String recentEvents(ModelMap model, YukonUserContext context, String value, Integer dayCnt) {
+        
         Integer MAX_DAYS_CNT = 7;
+        dayCnt = dayCnt == null ? 1 : dayCnt;
+        
+        CapControlCache cache = cacheFactory.createUserAccessFilteredCache(context.getYukonUser());
         
         List<Integer> paoIds = ServletUtil.getIntegerListFromString(value);
         
-        int dayCnt = ParamUtil.getInteger(request, "dayCnt", 1);
-        List<ControlEventSet>  listOfEventSets = new ArrayList<ControlEventSet>();
+        List<ControlEventSet>  listOfEventSets = Lists.newArrayList();
         
         for (int id : paoIds) {
-            StreamableCapObject cbcPAO = cache.getCapControlPAO(id);
-
-            if (cbcPAO != null) {
-                List<CCEventLog> events= CBCWebUtils.getCCEventsForPAO(new Long (id), cbcPAO.getCcType(), cache, dayCnt);
+            StreamableCapObject streamable = cache.getCapControlPAO(id);
+            if (streamable != null) {
+                
+                if (PaoType.getForDbString(streamable.getCcType()) == PaoType.CAPBANK) {
+                    id = ((CapBankDevice)streamable).getStatusPointID();
+                }
+                
+                List<CCEventLog> events= capControlDao.getEventsForPao(streamable, dayCnt);
                 for (CCEventLog event : events) {
                     String formattedTimestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, context);
                     event.setFormattedTimestamp(formattedTimestamp);
@@ -272,61 +278,6 @@ public class ResultsController {
         model.addAttribute("paoIdString", value);
         model.addAttribute("listOfEventSets", listOfEventSets);
         return "search/recentEvents.jsp";
-    }
-    
-    @Autowired
-    public void setParentStringPrinterFactory(ParentStringPrinterFactory printerFactory) {
-        this.printerFactory = printerFactory;
-    }
-    
-    @Autowired
-    public void setSubstationDao(SubstationDao substationDao) {
-        this.substationDao = substationDao;
-    }
-
-    @Autowired
-    public void setSubstationBusDao(SubstationBusDao substationBusDao) {
-        this.substationBusDao = substationBusDao;
-    }
-    
-    @Autowired
-    public void setFeederDao(FeederDao feederDao) {
-        this.feederDao = feederDao;
-    }
-    
-    @Autowired
-    public void setCapbankDao(CapbankDao capbankDao) {
-        this.capbankDao = capbankDao;
-    }
-    
-    @Autowired
-    public void setCapbankControllerDao(CapbankControllerDao capbankControllerDao) {
-        this.cbcDao = capbankControllerDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setVoltageRegulatorDao(VoltageRegulatorDao voltageRegulatorDao){
-        this.voltageRegulatorDao = voltageRegulatorDao;
-    }
-    
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    
-    @Autowired
-    public void setFilterCacheFactory (FilterCacheFactory filterCacheFactory) {
-        this.cacheFactory = filterCacheFactory;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
     }
     
 }

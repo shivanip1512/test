@@ -106,7 +106,7 @@ function expandRow(itemId, imgId) {
 }
 
 function statusMsgAbove(elem, message) {
-    elem.onmouseout = function (e) {nd()};
+    elem.onmouseout = function (e) {nd();};
     overlib(message, ABOVE,  WIDTH, 260, CSSCLASS, TEXTFONTCLASS, 'flyover');
 }
 
@@ -198,29 +198,12 @@ function hideAlertMessage() {
 }
 
 //BANK MOVE JS
-//jQuery(function(){
-//    jQuery(document).delegate("li.toggle", 'click', function(){
-//        var li = jQuery(this);
-//        var childUl = li.find('ul')[0];
-//        if(childUl){
-//            childUl.toggle();
-//            if (childUl.attr('display') != 'none') {
-//                li.addClass("plus");
-//                li.removeClass("minus");
-//            } else {
-//                li.addClass("minus");
-//                li.removeClass("plus");
-//            }
-//        }
-//    });
-//});
-
-jQuery(function(){
-    jQuery(document).delegate("li.toggle", 'click', function(e){
-        if(e.target == e.currentTarget){
+jQuery(function() {
+    jQuery(document).delegate("li.toggle", 'click', function(e) {
+        if (e.target == e.currentTarget) {
             var li = jQuery(this);
-            var subMenu = li.find('ul:first')
-            if(subMenu[0]){
+            var subMenu = li.find('ul:first');
+            if (subMenu[0]) {
                 subMenu.toggle();
                 li.toggleClass("minus").toggleClass("plus");
             }

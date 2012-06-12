@@ -104,9 +104,11 @@
 	        			
                         <td>
                             <capTags:warningImg paoId="${thisAreaId}" type="${updaterType}"/>
-                            <a id="areaState_${thisAreaId}">
+                            <c:if test="${hasAreaControl}"><a id="areaState_${thisAreaId}" href="javascript:void(0);"></c:if>
+                            <c:if test="${!hasAreaControl}"><span id="areaState_${thisAreaId}"></c:if>
 								<cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="STATE" />
-							</a>
+							<c:if test="${hasAreaControl}"></a></c:if>
+							<c:if test="${!hasAreaControl}"></span></c:if>
                             <cti:dataUpdaterCallback function="updateStateColorGenerator('areaState_${thisAreaId}')" initialize="true" value="${updaterType}/${thisAreaId}/STATE"/>
 	        			</td>
                         

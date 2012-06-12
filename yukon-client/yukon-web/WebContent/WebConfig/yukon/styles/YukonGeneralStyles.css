@@ -1801,12 +1801,6 @@ table.tabular th {
 	text-decoration: underline;
 }
 
-.actsAsAnchor {
-    text-decoration: underline;
-    color: #0000EE;
-    cursor: pointer;
-}
-
 div.scrollingContainer {
     border-top:1px solid #CCC;
     border-bottom:1px solid #CCC;

@@ -59,7 +59,10 @@ public class BusViewController {
         model.addAttribute("subBusId", subBusId);
         
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
-        model.addAttribute("hasEditingRole",hasEditingRole);
+        model.addAttribute("hasEditingRole", hasEditingRole);
+        
+        boolean hasSubBusControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, userContext.getYukonUser());
+        model.addAttribute("hasSubBusControl", hasSubBusControl);
         
         List<LitePoint> allSubBusPoints = pointDao.getLitePointsByPaObjectId(subBusId);
         model.addAttribute("allSubBusPoints", allSubBusPoints);

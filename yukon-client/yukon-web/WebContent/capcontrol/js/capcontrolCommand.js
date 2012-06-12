@@ -92,9 +92,4 @@ function addCommandMenuBehavior(selector) {
 	jQuery(document).delegate(selector, "click", function (event) {
         getCommandMenu(jQuery(event.currentTarget).closest("a")[0].id.split('_')[1], event);
     });
-	jQuery(document).ready(function() {
-        jQuery(selector).each(function() {
-        	jQuery(this).addClass('actsAsAnchor');
-        });
-    });
 }

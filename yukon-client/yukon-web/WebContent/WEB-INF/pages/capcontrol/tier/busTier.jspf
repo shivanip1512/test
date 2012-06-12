@@ -78,9 +78,11 @@
                 <%-- State --%>
                 <td class="wsnw">
                     <capTags:warningImg paoId="${subbusId}" type="SUBBUS"/>
-                    <a id="subbusState_${subbusId}">
+                    <c:if test="${hasSubBusControl}"><a id="subbusState_${subbusId}" href="javascript:void(0);"></c:if>
+                    <c:if test="${!hasSubBusControl}"><span id="subbusState_${subbusId}" href="javascript:void(0);"></c:if>
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="STATE"/>
-                    </a>
+                    <c:if test="${hasSubBusControl}"></a></c:if>
+                    <c:if test="${!hasSubBusControl}"></span></c:if>
                     <cti:dataUpdaterCallback function="updateStateColorGenerator('subbusState_${subbusId}')" initialize="true" value="SUBBUS/${subbusId}/STATE"/>
                 </td>
                 
@@ -121,7 +123,7 @@
                 <td>
                     <c:choose>
                         <c:when test="${viewableSubBus.subBus.usePhaseData}">
-                            <a onmouseover="showDynamicPopup('subVarLoadPopup_${subbusId}');" 
+                            <span onmouseover="showDynamicPopup('subVarLoadPopup_${subbusId}');" 
                                onmouseout="nd();">
                                 <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="SUBBUS" identifier="${subbusId}/KVAR_LOAD_QUALITY">
@@ -129,17 +131,17 @@
                                 </cti:classUpdater>
                                 <i:inline key=".statSeparator"/> 
                                 <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
-                            </a>
+                            </span>
                         </c:when>
                         <c:otherwise>
-                            <a>
+                            <span>
                                 <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="SUBBUS" identifier="${subbusId}/KVAR_LOAD_QUALITY">
                                     <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
                                 </cti:classUpdater>
                                 <i:inline key=".statSeparator"/>  
                                 <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
-                            </a>
+                            </span>
                         </c:otherwise>
                     </c:choose>
                     <div class="ccVarLoadPopup" id="subVarLoadPopup_${subbusId}" style="display: none;" > 
@@ -149,17 +151,17 @@
                 
                 <%-- Date/Time --%>
                 <td>
-                    <a id="dateTime_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DATE_TIME"/></a>
+                    <span id="dateTime_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DATE_TIME"/></span>
                 </td>
                 
                 <%-- PFactor / Est. --%>
                 <td>
-                    <a id="pFactor_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="PFACTOR"/></a>
+                    <span id="pFactor_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="PFACTOR"/></span>
                 </td>
                 
                 <%-- kW / Volts --%>
                 <td>
-                    <a id="kwVolts_${subbusId}">
+                    <span id="kwVolts_${subbusId}">
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KW"/>
                         <cti:classUpdater type="SUBBUS" identifier="${subbusId}/WATT_QUALITY">
                             <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
@@ -169,12 +171,12 @@
                         <cti:classUpdater type="SUBBUS" identifier="${subbusId}/VOLT_QUALITY">
                             <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
                         </cti:classUpdater>
-                    </a>
+                    </span>
                 </td>
                 
                 <%-- Daily / Max Ops --%>
                 <td>
-                    <a id="dailyMaxOps_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DAILY_MAX_OPS"/></a>
+                    <span id="dailyMaxOps_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DAILY_MAX_OPS"/></span>
                 </td>
                 
             </tr>

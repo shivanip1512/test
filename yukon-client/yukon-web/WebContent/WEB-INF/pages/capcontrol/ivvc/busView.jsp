@@ -61,13 +61,12 @@
                 }
             };
 		}
+
+		if (${hasSubBusControl}) {
+		    addCommandMenuBehavior('a[id^="subbusState"]');
+		}
  	</script>
     
-    <cti:checkProperty property="CBCSettingsRole.ALLOW_SUBBUS_CONTROLS">
-        <script type="text/javascript">
-            addCommandMenuBehavior('a[id^="subbusState"]');
-        </script>
-    </cti:checkProperty>
 
 	<cti:dataGrid cols="2" tableClasses="ivvcGridLayout twoColumnLayout">
 	
@@ -190,9 +189,11 @@
                         <%-- State --%>
                         <td class="wsnw">
                             <capTags:warningImg paoId="${subBusId}" type="SUBBUS"/>
-                            <a id="subbusState_${subBusId}">
+                            <c:if test="${hasSubBusControl}"><a id="subbusState_${subBusId}" href="javascript:void(0);"></c:if>
+                            <c:if test="${!hasSubBusControl}"><span id="subbusState_${subBusId}"></c:if>
                                 <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="STATE"/>
-                            </a>
+                            <c:if test="${hasSubBusControl}"></a></c:if>
+                            <c:if test="${!hasSubBusControl}"></span></c:if>
                             <cti:dataUpdaterCallback function="updateStateColorGenerator('subbusState_${subBusId}')"
                                 initialize="true" value="SUBBUS/${subBusId}/STATE"/>
                         </td>

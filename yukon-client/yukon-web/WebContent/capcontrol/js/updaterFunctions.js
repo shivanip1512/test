@@ -3,7 +3,7 @@ function updateStateColorGenerator(id) {
     return function(data) {
         var anchorTag = $(id);
         var state = data.get('value');
-        var color;
+        var color = '#fff';
         if (state.indexOf('Pending') != -1) {
             color = '#F09100';
         } else if (state.startsWith('ENABLED')) {
@@ -29,7 +29,7 @@ function updateWarningImage(id) {
             alertSpan.hide();
             okSpan.show();
         }
-    }
+    };
 }
 
 function updateDualBusImage(id) {
@@ -50,7 +50,7 @@ function updateDualBusImage(id) {
             primarySpan.hide();
             alternateSpan.hide();           
         }
-    }
+    };
 }
 
 function updateCapBankWarningImage(id) {
@@ -84,7 +84,7 @@ function updateCapBankWarningImage(id) {
             greenLocalSpan.hide();
             greenSpan.hide();
         }
-    }
+    };
 }
 
 function updateRegulatorModeIndicator(id) {
@@ -109,7 +109,7 @@ function updateRegulatorModeIndicator(id) {
             greenLocalSpan.hide();
             greenNormalSpan.hide();
         }
-    }
+    };
 }
 
 function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
@@ -142,7 +142,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
             setTapIcon(tapIconA, modeA, divPhaseA, tapTooltipA);
             setTapIcon(tapIconB, modeB, divPhaseB, tapTooltipB);
             setTapIcon(tapIconC, modeC, divPhaseC, tapTooltipC);
-        }
+        };
     } else if (zoneType == 'GANG_OPERATED') {
         // assumes data is of type Hash
         return function(data) {
@@ -160,7 +160,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
             setTapIcon(icon, mode, divPhaseA, tapTooltip);
             setTapIcon(icon, mode, divPhaseB, tapTooltip);
             setTapIcon(icon, mode, divPhaseC, tapTooltip);
-        }
+        };
     } else if (zoneType == 'SINGLE_PHASE') {
         // assumes data is of type Hash
         return function(data) {
@@ -182,7 +182,7 @@ function updateRegulatorThreePhaseTapIndicator(zoneId, zoneType, phase) {
 
             setMode(mode, divPhase);
             setTapIcon(icon, mode, divPhase, tapTooltip);
-        }
+        };
     }
 
     function setMode(mode, div) {
@@ -297,5 +297,5 @@ function updateVerificationImage(spanId) {
         } else {
             $(spanId).hide();
         }
-    }
+    };
 }

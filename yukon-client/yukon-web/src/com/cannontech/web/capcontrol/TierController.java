@@ -44,9 +44,9 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class TierController {
 
-	private FilterCacheFactory filterCacheFactory;
-	private RolePropertyDao rolePropertyDao;
-	private SubstationDao substationDao;
+	@Autowired private FilterCacheFactory filterCacheFactory;
+	@Autowired private RolePropertyDao rolePropertyDao;
+	@Autowired private SubstationDao substationDao;
 	
 	@RequestMapping
 	public String areas(HttpServletRequest request, LiteYukonUser user, Boolean isSpecialArea, ModelMap model) {
@@ -103,7 +103,8 @@ public class TierController {
 			isSpecialArea = false;
 		}
 		
-		boolean hasSubstationControl = CBCWebUtils.hasSubstationControlRights(session);
+		boolean hasSubstationControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS, user);
+		model.addAttribute("hasSubstationControl", hasSubstationControl);
 	    
 		StreamableCapObject area = cache.getArea(areaId);
 		
@@ -117,7 +118,6 @@ public class TierController {
 	    model.addAttribute("bc_areaId", areaId);
 	    model.addAttribute("bc_areaName", area.getCcName());
 	    model.addAttribute("isSpecialArea", isSpecialArea);
-	    model.addAttribute("hasSubstationControl", hasSubstationControl);
 	    model.addAttribute("subStations", subStations);
 	    model.addAttribute("subStationParam", CCSessionInfo.STR_SUBID);
 	    
@@ -181,16 +181,16 @@ public class TierController {
 		List<ViewableCapBank> viewableCapBankList = CapControlWebUtils.createViewableCapBank(capBankList);
 		model.addAttribute("capBankList", viewableCapBankList);
 
-		boolean hasSubstationControl = CBCWebUtils.hasSubstationControlRights(session);
+		boolean hasSubstationControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBSTATION_CONTROLS, user);
 		model.addAttribute("hasSubstationControl", hasSubstationControl);
 		
-		boolean hasSubBusControl = CBCWebUtils.hasSubstationBusControlRights(session);
+		boolean hasSubBusControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
 		model.addAttribute("hasSubBusControl", hasSubBusControl);
 		
-		boolean hasFeederControl = CBCWebUtils.hasFeederControlRights(session);
+		boolean hasFeederControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_FEEDER_CONTROLS, user);
 		model.addAttribute("hasFeederControl", hasFeederControl);
 		
-		boolean hasCapbankControl = CBCWebUtils.hasCapbankControlRights(session);
+		boolean hasCapbankControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
 		model.addAttribute("hasCapbankControl", hasCapbankControl);
 		
 		boolean hideOneLine = rolePropertyDao.checkProperty(YukonRoleProperty.HIDE_ONELINE, user);
@@ -221,20 +221,5 @@ public class TierController {
 			info.updateState( request );
 		}
 	}
-	
-	@Autowired
-	public void setFilteredCapControlcache (FilterCacheFactory factory) {
-		this.filterCacheFactory = factory;
-	}
-	
-	@Autowired
-    public void setRolePropertyDao (RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-	
-	@Autowired
-	public void setSubstationDao(SubstationDao substationDao) {
-        this.substationDao = substationDao;
-    }
 	
 }

@@ -5,13 +5,12 @@ Event.observe(window, 'load', function() {
         var bankId = row.id.split('_')[2];
         
         // Add timestamp hover
-        var timestamp = row.down('a[id^="dateTime_"]');
+        var timestamp = row.down('span[id^="dateTime_"]');
         timestamp.observe('mouseover', function() {showDynamicPopupAbove('capBankStatusPopup_' + bankId, 250); return false});
         timestamp.observe('mouseout', function() {nd(); return false});
         
         if (${hasCapbankControl}) {
             var parentFeeder = row.down('a.parentFeeder');
-            parentFeeder.addClassName('actsAsAnchor');
             
             // Add move back link
             if (parentFeeder.hasClassName('warning')) {
@@ -26,11 +25,9 @@ Event.observe(window, 'load', function() {
             
             // Add menus
             var bankName = row.down('a[id^="bankName"]');
-            bankName.addClassName('actsAsAnchor');
             bankName.observe('click', function(event) {getCommandMenu(bankId, event); return false});
             
             var bankState = row.down('a[id^="capbankState"]');
-            bankState.addClassName('actsAsAnchor');
             bankState.observe('click', function(event) {getMenuFromURL('${stateMenuUrl}?id=' + bankId, event); return false});
         }
     })
@@ -105,9 +102,9 @@ Event.observe(window, 'load', function() {
                 
                 <%-- Bank Name --%>
                 <td>
-                    <a id="bankName_${bankId}">
+                    <c:if test="${hasCapbankControl}"><a id="bankName_${bankId}" href="javascript:void(0);"></c:if>
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_NAME"/>
-                    </a>
+                    <c:if test="${hasCapbankControl}"></a></c:if>
                 </td>
                 
                 <%-- Bank Actions --%>
@@ -130,9 +127,9 @@ Event.observe(window, 'load', function() {
                     <capTags:capBankWarningImg paoId="${bankId}" type="CAPBANK"/>
                     
                     <cti:capBankStateColor paoId="${bankId}" type="CAPBANK" format="CB_STATUS_COLOR">
-                        <a id="capbankState_${bankId}">
+                        <c:if test="${hasCapbankControl}"><a id="capbankState_${bankId}" href="javascript:void(0);"></c:if>
                            <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_STATUS"/>
-                        </a>
+                        <c:if test="${hasCapbankControl}"></a></c:if>
                     </cti:capBankStateColor>
                     <div id="capBankStatusPopup_${bankId}" style="display: none">
                         <table class='compactResultsTable'>
@@ -170,30 +167,24 @@ Event.observe(window, 'load', function() {
                 
                 <%-- Timestamp --%>
                 <td>
-                    <a id="dateTime_${bankId}">
+                    <span id="dateTime_${bankId}">
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DATE_TIME"/> 
-                    </a>
+                    </span>
                 </td>
                 
                 <%-- Bank Size --%>
-                <td>
-                    <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_SIZE"/>
-                </td>
+                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_SIZE"/></td>
                 
                 <%-- Parent Feeder --%>
                 <td class="wsnw">
-                    <a class="parentFeeder<c:if test="${viewableCapBank.capBankDevice.bankMoved}"> warning</c:if>">
+                    <c:if test="${hasCapbankControl}"><a class="parentFeeder<c:if test="${viewableCapBank.capBankDevice.bankMoved}"> warning</c:if>"  href="javascript:void(0);"></c:if>
                         <span class="dn moveBankTitle"><cti:msg2 key=".moveBankTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/></span>
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT"/>
-                    </a>
+                     <c:if test="${hasCapbankControl}"></a></c:if>
                 </td>
                 
                 <%-- Daily/Max/Total Ops --%>
-                <td>
-                    <a>
-                      <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DAILY_MAX_OPS"/>
-                    </a>
-                </td>
+                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DAILY_MAX_OPS"/></td>
             </tr>
             
         </c:forEach>

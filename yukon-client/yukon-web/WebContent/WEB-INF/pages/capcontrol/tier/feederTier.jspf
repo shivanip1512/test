@@ -50,9 +50,11 @@
                 <%-- State --%>
                 <td class="wsnw">
                     <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
-                    <a id="feederState_${feederId}">
+                    <c:if test="${hasFeederControl}"><a id="feederState_${feederId}" href="javascript:void(0);"></c:if>
+                    <c:if test="${!hasFeederControl}"><span id="feederState_${feederId}"></c:if>
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="STATE"/>
-                    </a>
+                    <c:if test="${hasFeederControl}"></a></c:if>
+                    <c:if test="${!hasFeederControl}"></span></c:if>
                     <cti:dataUpdaterCallback function="updateStateColorGenerator('feederState_${feederId}')" initialize="true" value="FEEDER/${feederId}/STATE"/>
                 </td>
                 
@@ -93,24 +95,24 @@
                 <td class="wsnw">
                     <c:choose>
                         <c:when test="${viewfeeder.feeder.usePhaseData}">
-                            <a onmouseover="showDynamicPopupAbove('feederVarLoadPopup_${feederId}');" onmouseout="nd();">
+                            <span onmouseover="showDynamicPopupAbove('feederVarLoadPopup_${feederId}');" onmouseout="nd();">
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
                                     <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
                                 </cti:classUpdater>    
                                 <i:inline key=".statSeparator"/> 
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
-                            </a>
+                            </span>
                           </c:when>
                           <c:otherwise>
-                            <a>
+                            <span>
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
                                     <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
                                  </cti:classUpdater>
                                 <i:inline key=".statSeparator"/>  
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
-                            </a>
+                            </span>
                           </c:otherwise>
                     </c:choose>
                     <div class="ccVarLoadPopup" id="feederVarLoadPopup_${feederId}" style="display: none;">
@@ -120,17 +122,17 @@
                 
                 <%-- Date/Time --%>
                 <td>
-                    <a id="dateTime_${feederId}"><cti:capControlValue paoId="${feederId}" type="FEEDER" format="DATE_TIME"/></a>
+                    <span id="dateTime_${feederId}"><cti:capControlValue paoId="${feederId}" type="FEEDER" format="DATE_TIME"/></span>
                 </td>
                 
                 <%-- PFactor / Est. --%>
                 <td>
-                    <a id="pFactor_${feederId}"><cti:capControlValue paoId="${feederId}" type="FEEDER" format="PFACTOR"/></a>
+                    <span id="pFactor_${feederId}"><cti:capControlValue paoId="${feederId}" type="FEEDER" format="PFACTOR"/></span>
                 </td>
                 
                 <%-- kW / Volts--%>
                 <td class="wsnw">
-                    <a id="kwVolts_${feederId}">
+                    <span id="kwVolts_${feederId}">
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KW"/> 
                         <cti:classUpdater type="FEEDER" identifier="${feederId}/WATT_QUALITY">
                             <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
@@ -140,14 +142,14 @@
                         <cti:classUpdater type="FEEDER" identifier="${feederId}/VOLT_QUALITY">
                             <cti:img nameKey="questionableQuality" styleClass="tierImg"/>
                         </cti:classUpdater>
-                    </a>
+                    </span>
                 </td>
                 
                 <%-- Daily / Max Ops --%>
                 <td>
-                    <a id="dailyMaxOps_${feederId}">
+                    <span id="dailyMaxOps_${feederId}">
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="DAILY_MAX_OPS"/>
-                    </a>
+                    </span>
                 </td>
             </tr>
         </c:forEach>

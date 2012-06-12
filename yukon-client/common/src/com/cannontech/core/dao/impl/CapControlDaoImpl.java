@@ -1,6 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,14 +7,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.joda.time.DateMidnight;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.capcontrol.CBCPointGroup;
 import com.cannontech.capcontrol.LiteCapBankAdditional;
 import com.cannontech.capcontrol.OrphanCBC;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -23,20 +26,27 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.db.capcontrol.CCEventLog;
+import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.google.common.collect.Lists;
 
 public class CapControlDaoImpl  implements CapControlDao{
 
-    private PointDao pointDao;
-    private PaoDao paoDao;
-    private JdbcTemplate jdbcOps;
-    List<OrphanCBC> cbcList;
-    private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private PointDao pointDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
     
+    private static final Logger log = YukonLogManager.getLogger(CapControlDaoImpl.class);
+
     private static MapQueue<CBCPointGroup, String> cbcPointGroupConfig = new MapQueue<CBCPointGroup, String>();
     
     // Initialize point group config
@@ -134,10 +144,6 @@ public class CapControlDaoImpl  implements CapControlDao{
     	
     }
     
-    public CapControlDaoImpl() {
-        super();
-    }
-    
     public Map<String, List<LitePoint>> getSortedCBCPointTimeStamps (Integer cbcId) {
 
         List<LitePoint> allPoints = pointDao.getLitePointsByPaObjectId(cbcId);
@@ -201,7 +207,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         return returnMap;
     }
     
-	static public String convertNeutralCurrent(Double value) {        
+	public String convertNeutralCurrent(Double value) {        
 		Integer pvalue = value.intValue();
         String neutralCurrent = "No";
         
@@ -212,7 +218,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         return neutralCurrent;
 	}
 	
-    static public String convertToOctalIp(Double value) {
+    public String convertToOctalIp(Double value) {
     	
     	Long ipvalue = new Long(value.longValue());
 
@@ -228,7 +234,8 @@ public class CapControlDaoImpl  implements CapControlDao{
        
         return sb.toString();
     }
-    static public String convertToFirmwareVersion(Double value) {
+    
+    public String convertToFirmwareVersion(Double value) {
         
         Long majorValue = new Long(value.longValue());
         Double minorValue = (value - majorValue) * 100;
@@ -254,53 +261,39 @@ public class CapControlDaoImpl  implements CapControlDao{
         return subList;
     }
 
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    public void setJdbcOps(JdbcTemplate jdbcOps) {
-        this.jdbcOps = jdbcOps;
-    }
-
     public List<LitePoint> getPaoPoints(YukonPAObject pao) {
         return  pointDao.getLitePointsByPaObjectId(pao.getPAObjectID());
     }
 
     public Integer getParentForController(int id) {
-        String sql = "select deviceid from capbank where controldeviceid = ?";
-        Integer parentID = 0;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DeviceId FROM Capbank WHERE ControlDeviceId").eq(id);
+        Integer parentId = 0;
         try{
-            parentID = jdbcOps.queryForInt(sql, new Object[] {id});
+            parentId = yukonJdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException dae) {
+            log.debug("Could not find parent for cbc:" + id);
         }
-        catch (EmptyResultDataAccessException dae)
-        {
-            CTILogger.debug("Could not find parent for cbc:" + id);
-        }
-        return parentID;
+        return parentId;
     }
 
     public Integer getParentForPoint(int id) {
-        String sql = "select paobjectid from point where pointid = ?";
-        Integer parentID = 0;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PAObjectId FROM Point WHERE PointId").eq(id);
+        Integer parentId = 0;
         try{
-            parentID = jdbcOps.queryForInt(sql, new Object[] {id});
+            parentId = yukonJdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException dae) {
+            log.debug("Could not find parent for cbc:" + id);
         }
-        catch (EmptyResultDataAccessException dae)
-        {
-            CTILogger.debug("Could not find parent for cbc:" + id);
-        }
-        return parentID;
+        return parentId;
     }
     
     public CapControlType getCapControlType(int id) {
-        String sql = "SELECT type FROM YukonPAObject WHERE PAObjectID = ?";
-        String typeStr = null;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT type FROM YukonPAObject WHERE PAObjectID").eq(id);
         
-    	typeStr = (String) jdbcOps.queryForObject(sql, new Integer[] {id}, String.class);
+    	String typeStr = yukonJdbcTemplate.queryForString(sql);
     	
     	return CapControlType.getCapControlType(typeStr);
     }
@@ -319,33 +312,34 @@ public class CapControlDaoImpl  implements CapControlDao{
         query.append("and p.pointoffset = 1  ");
         query.append("and p.pointtype = 'Status' "); 
         query.append("order by y.paoname ");
-        cbcList = new ArrayList<OrphanCBC>();
-        jdbcOps.query(query.toString(), new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
+        
+        List<OrphanCBC> cbcList = yukonJdbcTemplate.query(query, new YukonRowMapper<OrphanCBC>() {
+            public OrphanCBC mapRow(YukonResultSet rs) throws SQLException {
                 String deviceName = rs.getString("devicename");
                 Integer pointId = rs.getInt("pointid");
                 String pointName = rs.getString("pointname");
                 OrphanCBC cbc = new OrphanCBC(deviceName, pointId, pointName);
-                cbcList.add(cbc);
+                return cbc;
             }
         });
         return cbcList;
     }
     
     public List<LiteCapBankAdditional> getCapBankAdditional(List<Integer> deviceIds) {
-  
-    	final List<LiteCapBankAdditional> capbanks = new ArrayList<LiteCapBankAdditional>();
-    	SqlStatementBuilder query = new SqlStatementBuilder("SELECT ca.DeviceID,ca.DriveDirections, " 
-    			+ "cbc.SERIALNUMBER FROM CAPBANKADDITIONAL ca join CAPBANK bank on ca.DeviceID " 
-    			+ "= bank.DEVICEID left outer join DeviceCBC cbc on bank.CONTROLDEVICEID = cbc.deviceid ");
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT ca.DeviceID, ca.DriveDirections, cbc.SERIALNUMBER"); 
+    	sql.append("FROM CAPBANKADDITIONAL ca");
+    	sql.append("JOIN CAPBANK bank on ca.DeviceID = bank.DEVICEID"); 
+    	sql.append("left outer join DeviceCBC cbc on bank.CONTROLDEVICEID = cbc.deviceid");
     	
-    	if( deviceIds.size() > 0) {
-    		query.append(" WHERE bank.DeviceID IN ( ");
-    		query.appendList(deviceIds);
-    	 	query.append(")");
+    	List<LiteCapBankAdditional> capbanks = Lists.newArrayList();
+    	
+    	if (deviceIds.size() > 0) {
+    		sql.append("WHERE bank.DeviceID").in(deviceIds);
     	 	
-	        jdbcOps.query(query.getSql(), new RowCallbackHandler() {
-	            public void processRow(ResultSet rs) throws SQLException {
+    		capbanks = yukonJdbcTemplate.query(sql, new YukonRowMapper<LiteCapBankAdditional>() {
+	            public LiteCapBankAdditional mapRow(YukonResultSet rs) throws SQLException {
 	                int deviceId = rs.getInt("DeviceID");
 	                String drivingDirections = rs.getString("DriveDirections");
 	                Integer serialNumber = rs.getInt("SERIALNUMBER");
@@ -356,16 +350,57 @@ public class CapControlDaoImpl  implements CapControlDao{
 	                capBank.setDrivingDirections(drivingDirections);
 	                capBank.setSerialNumber(serialNumber);
 	                
-	                capbanks.add(capBank);
+	                return capBank;
 	            }
 	        });
     	
     	}
     	return capbanks;
     }
-
-    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
+    
+    @Override
+    public List<CCEventLog> getEventsForPao (StreamableCapObject streamable, int prevDaysCount) {
+        PaoType type = PaoType.getForDbString(streamable.getCcType());
+        int id = streamable.getCcId();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT LogId, PointId, DateTime, SubId, FeederId, EventType, SeqId, Value, Text, Username");
+        sql.append("FROM").append(CCEventLog.TABLE_NAME).append("WHERE");
+        
+        DateMidnight date = new DateMidnight(Instant.now().minus(Duration.standardDays(prevDaysCount)));
+        
+        if (type == PaoType.CAP_CONTROL_FEEDER) {
+            sql.append("FeederId").eq(id);
+        } else if (type == PaoType.CAP_CONTROL_SUBBUS) {
+            sql.append("SubId").eq(id);
+        } else if (type == PaoType.CAP_CONTROL_SUBSTATION) {
+            sql.append("StationId").eq(id);
+        } else if (type == PaoType.CAP_CONTROL_AREA) {
+            sql.append("AreaId").eq(id);
+        } else if (type == PaoType.CAP_CONTROL_SPECIAL_AREA) {
+            sql.append("SPAreaId").eq(id);
+        } else if (type == PaoType.CAPBANK) {
+            sql.append("PointId").eq(id);
+        }
+        sql.append("AND DateTime").gte(date.toDate());
+        
+        sql.append("ORDER BY " + CCEventLog.COLUMNS [CCEventLog.COL_DATETIME] + " DESC");
+        
+        return yukonJdbcTemplate.query(sql, new YukonRowMapper<CCEventLog>() {
+            public CCEventLog mapRow(YukonResultSet rs) throws SQLException {
+                CCEventLog row = new CCEventLog(); 
+                row.setLogId (rs.getLong("LogId"));
+                row.setPointId(rs.getLong("PointId"));
+                row.setDateTime( rs.getDate("DateTime"));
+                row.setSubId(rs.getLong("SubId"));
+                row.setFeederId(rs.getLong("FeederId"));
+                row.setEventType(rs.getInt("EventType"));
+                row.setSeqId(rs.getLong("SeqId"));
+                row.setValue(rs.getLong("Value"));
+                row.setText( rs.getString("Text"));
+                row.setUserName( rs.getString("Username"));
+                return row;                     
+            }
+        });
     }
-
+    
 }

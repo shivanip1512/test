@@ -26,15 +26,10 @@
   	<property name="authenticationService" ref="authenticationService" />
   	<property name="systemDateFormattingService" ref="systemDateFormattingService"/>
   </bean>
-   <bean id="capControlDao" class="com.cannontech.core.dao.impl.CapControlDaoImpl" >
-    <property name="pointDao" ref="pointDao" />
-    <property name="paoDao" ref="paoDao" />
-    <property name="paoAuthorizationService" ref="paoAuthorizationService" />
+  <bean id="capControlDao" class="com.cannontech.core.dao.impl.CapControlDaoImpl"/>
+  <bean id="macScheduleDao" class="com.cannontech.core.dao.impl.MACScheduleDaoImpl" >
     <property name="jdbcOps" ref="jdbcTemplate"/> 
- </bean>
-    <bean id="macScheduleDao" class="com.cannontech.core.dao.impl.MACScheduleDaoImpl" >
-        <property name="jdbcOps" ref="jdbcTemplate"/> 
-    </bean>
+  </bean>
   <bean id="commandDao" class="com.cannontech.core.dao.impl.CommandDaoImpl" >
   	<property name="databaseCache" ref="databaseCache" />
   	<property name="paoCommandAuthorizationService" ref="paoCommandAuthorizationService" />

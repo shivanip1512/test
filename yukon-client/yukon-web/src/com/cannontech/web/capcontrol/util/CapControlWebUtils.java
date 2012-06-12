@@ -99,8 +99,9 @@ public class CapControlWebUtils {
             
             viewable.setFeeder(feeder);
             viewable.setSubBusName(subBusName);
-            viewable.setIvvcControlled(feeder.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR);
-            viewable.setShowTargetTooltip(showToolTipAlgorithms.contains(feeder.getControlUnits()));
+            ControlAlgorithm algorithm = feeder.getControlUnits();
+            viewable.setIvvcControlled(algorithm == ControlAlgorithm.INTEGRATED_VOLT_VAR);
+            viewable.setShowTargetTooltip(showToolTipAlgorithms.contains(algorithm));
             
             if (feeder.getOriginalParentId() > 0) {
                 viewable.setMovedFeeder(true); 
