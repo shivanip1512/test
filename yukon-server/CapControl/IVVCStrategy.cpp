@@ -397,7 +397,7 @@ void IVVCStrategy::execute()
     {
 
         busPtr = store->findSubBusByPAObjectID( (*b)->getPaoId());
-        if (busPtr != NULL)
+        if (busPtr != NULL && busPtr->getStrategyId() == getStrategyId())
         {
             _ivvcAlgorithm.execute( *b, busPtr, this, true);
         }
