@@ -8,7 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonGroupDao;

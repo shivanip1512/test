@@ -8,7 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;

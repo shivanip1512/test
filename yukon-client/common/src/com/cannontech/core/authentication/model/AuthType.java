@@ -1,4 +1,4 @@
-package com.cannontech.core.authentication.service;
+package com.cannontech.core.authentication.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;

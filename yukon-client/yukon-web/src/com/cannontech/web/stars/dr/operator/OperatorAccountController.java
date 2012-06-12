@@ -44,7 +44,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;

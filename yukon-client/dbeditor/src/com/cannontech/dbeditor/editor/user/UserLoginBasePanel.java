@@ -17,7 +17,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.impl.LoginStatusEnum;

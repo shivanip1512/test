@@ -1,6 +1,6 @@
 package com.cannontech.core.authentication.dao;
 
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**

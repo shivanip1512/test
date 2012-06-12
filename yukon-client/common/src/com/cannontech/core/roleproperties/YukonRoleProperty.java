@@ -8,7 +8,7 @@ import java.math.RoundingMode;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.roleproperties.enums.CsrfTokenMode;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
 import com.cannontech.roles.yukon.EnergyCompanyRole;

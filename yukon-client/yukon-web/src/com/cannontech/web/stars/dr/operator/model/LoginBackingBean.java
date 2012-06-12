@@ -1,8 +1,7 @@
 package com.cannontech.web.stars.dr.operator.model;
 
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class LoginBackingBean {
     

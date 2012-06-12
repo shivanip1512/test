@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.dao.PasswordHistoryDao;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.PasswordHistory;
-import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;

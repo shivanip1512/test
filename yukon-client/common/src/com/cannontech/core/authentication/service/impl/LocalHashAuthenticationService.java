@@ -3,7 +3,7 @@ package com.cannontech.core.authentication.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.core.authentication.service.PasswordSetProvider;
 import com.cannontech.database.data.lite.LiteYukonUser;

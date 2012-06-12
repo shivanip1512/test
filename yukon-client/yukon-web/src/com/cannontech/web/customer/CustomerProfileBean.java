@@ -8,7 +8,7 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang.RandomStringUtils;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;

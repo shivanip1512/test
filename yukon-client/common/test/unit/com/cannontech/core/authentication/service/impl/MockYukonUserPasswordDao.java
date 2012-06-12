@@ -1,7 +1,7 @@
 package com.cannontech.core.authentication.service.impl;
 
 import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 final class MockYukonUserPasswordDao implements YukonUserPasswordDao {

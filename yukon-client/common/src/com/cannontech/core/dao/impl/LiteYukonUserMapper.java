@@ -2,7 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.SQLException;
 
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;

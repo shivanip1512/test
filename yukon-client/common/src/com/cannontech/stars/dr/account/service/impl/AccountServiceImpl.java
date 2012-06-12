@@ -16,7 +16,7 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.AuthDao;

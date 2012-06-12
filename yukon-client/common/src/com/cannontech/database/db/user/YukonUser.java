@@ -3,7 +3,7 @@ package com.cannontech.database.db.user;
 import java.sql.SQLException;
 import java.util.Date;
 
-import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;

@@ -3,8 +3,6 @@ package com.cannontech.core.authentication.model;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 
-import com.cannontech.core.authentication.service.AuthType;
-
 public class PasswordHistory {
     private int passwordHistoryId;
     private int userId;
