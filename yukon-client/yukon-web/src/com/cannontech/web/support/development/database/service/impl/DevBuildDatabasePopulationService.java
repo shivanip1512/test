@@ -2,6 +2,9 @@ package com.cannontech.web.support.development.database.service.impl;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.support.development.DevDbSetupTask;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
@@ -10,7 +13,8 @@ import com.cannontech.web.support.development.database.service.DevDatabasePopula
 public class DevBuildDatabasePopulationService {
 
     private static DevDatabasePopulationService devDatabasePopulationService;
-
+    private static Logger log = YukonLogManager.getLogger(DevBuildDatabasePopulationService.class);
+    
     public static void main(String[] args) {
         try {
             YukonSpringHook.setDefaultContext(YukonSpringHook.WEB_BEAN_FACTORY_KEY);
@@ -31,6 +35,7 @@ public class DevBuildDatabasePopulationService {
             // Execute database population
             devDatabasePopulationService.executeFullDatabasePopulation(task);
         } catch (Exception e) {
+            log.warn("An Exception was thrown during database population. Database population may not have successfully finished. ",e);
         } finally {
             YukonSpringHook.shutdownContext();
             System.exit(0);
