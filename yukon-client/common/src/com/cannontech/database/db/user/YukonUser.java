@@ -39,7 +39,7 @@ public class YukonUser extends DBPersistent  {
         // that column.
         String dummyPasswordValue = "";
         Object[] addValues = { getUserID(), getUsername(), dummyPasswordValue, getLoginStatus().getDatabaseRepresentation(), 
-                               getAuthType().name(), getLastChangedDate(), isForceReset()};
+                               getAuthType().name(), getLastChangedDate(), isForceReset() ? "Y":"N"};
 
         add(TABLE_NAME, addValues);
     }

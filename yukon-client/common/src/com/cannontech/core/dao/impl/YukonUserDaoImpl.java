@@ -27,6 +27,7 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -95,15 +96,14 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	        throw new NotAuthorizedException("Username with " + newUsername + " already exists");
 	    }
 	    
+	    
 	    final LiteYukonUser modifiedUser = getLiteYukonUser(modifiedUserId);
 	    modifiedUser.setUsername(newUsername);
 	    
 	    final String sql = "UPDATE YukonUser SET UserName = ? WHERE UserID = ?";
 	    yukonJdbcTemplate.update(sql, newUsername, modifiedUserId);
 
-	    systemEventLogService.usernameChanged(changingUser,
-	                                          modifiedUser.getUsername(),
-	                                          newUsername);
+	    systemEventLogService.usernameChanged(changingUser, modifiedUser.getUsername(), newUsername);
 	}
 	
 	@Override
@@ -122,6 +122,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
 
     @Override
 	@Transactional
+	@Deprecated
 	public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, List<LiteYukonGroup> groups) throws DataAccessException {
 	    user.setUserID(nextValueHelper.getNextValue("YukonUser"));
 	    
@@ -130,7 +131,10 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	        password = "";
 	    }
 	    
-	    simpleTableTemplate.insert(user);
+	    SqlStatementBuilder sqlAddUser = new SqlStatementBuilder();
+	    sqlAddUser.append("INSERT INTO YukonUser VALUES (?,?,?,?,?,?,?)");
+        yukonJdbcTemplate.update(sqlAddUser.toString(), user.getUserID(), user.getUsername(), SqlUtils.convertStringToDbValue(password), 
+                                 user.getLoginStatus().getDatabaseRepresentation(), user.getAuthType().name(), user.getLastChangedDate().toDate(), user.isForceReset() ? "Y" :"N");
 	    
 	    for(LiteYukonGroup group : groups) {
 	        SqlStatementBuilder sql = new SqlStatementBuilder();

@@ -20,7 +20,7 @@ public class PasswordPolicy {
     private int passwordHistory;
     private int minPasswordLength;
     private int passwordQualityCheck;
-    private List<PolicyRuleEnum> policyRules;
+    private List<PolicyRule> policyRules;
     
     public Duration getLockoutDuration() {
         return lockoutDuration;
@@ -71,10 +71,10 @@ public class PasswordPolicy {
         this.passwordQualityCheck = passwordQualityCheck;
     }
     
-    public List<PolicyRuleEnum> getPolicyRules() {
+    public List<PolicyRule> getPolicyRules() {
         return policyRules;
     }
-    public void setPolicyRules(List<PolicyRuleEnum> policyRules) {
+    public void setPolicyRules(List<PolicyRule> policyRules) {
         this.policyRules = policyRules;
     }
     
@@ -84,8 +84,8 @@ public class PasswordPolicy {
     public int numberOfRulesMet(String password) {
         int numberOfRulesMeet = 0;
         
-        for (PolicyRuleEnum policyRuleEnum :  this.policyRules) {
-            Pattern policyRolePattern = policyRuleEnum.getRegexPattern();
+        for (PolicyRule policyRule :  this.policyRules) {
+            Pattern policyRolePattern = policyRule.getRegexPattern();
             Matcher matcher = policyRolePattern.matcher(password);
 
             if (matcher.find()) {

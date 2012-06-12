@@ -7,7 +7,7 @@ import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.authentication.model.PasswordPolicy;
-import com.cannontech.core.authentication.model.PolicyRuleEnum;
+import com.cannontech.core.authentication.model.PolicyRule;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -20,7 +20,7 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
     @Autowired private RolePropertyDao rolePropertyDao;
 
     @Override
-    public List<PolicyRuleEnum> getPolicyRules(LiteYukonUser user) {
+    public List<PolicyRule> getPolicyRules(LiteYukonUser user) {
         Validate.notNull(user);
         
         // There is not a password policy for this user.
@@ -29,8 +29,8 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         }
         
         // Go through the available policies and see which ones are being use for this user. 
-        List<PolicyRuleEnum> results = Lists.newArrayList();
-        for (PolicyRuleEnum policyRule : PolicyRuleEnum.values()) {
+        List<PolicyRule> results = Lists.newArrayList();
+        for (PolicyRule policyRule : PolicyRule.values()) {
             YukonRoleProperty policyRoleProperty = YukonRoleProperty.valueOf("POLICY_RULE_"+policyRule.name());
             boolean isPolicyUsed = rolePropertyDao.getPropertyBooleanValue(policyRoleProperty, user);
             

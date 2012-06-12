@@ -11,7 +11,7 @@ import com.cannontech.common.util.RegexUtil;
  * 
  * Ex.  POLICY_RULE_UPPERCASE_CHARACTERS is the matching role property for UPPERCASE_CHARACTERS.
  */
-public enum PolicyRuleEnum implements DisplayableEnum {
+public enum PolicyRule implements DisplayableEnum {
     UPPERCASE_CHARACTERS("[\\p{Lu}&&["+RegexUtil.getEuropeanLanguageCharactersRegex()+"]]"), 
     LOWERCASE_CHARACTERS("[\\p{Ll}&&["+RegexUtil.getEuropeanLanguageCharactersRegex()+"]]"),
     BASE_10_DIGITS("\\d"),
@@ -23,7 +23,7 @@ public enum PolicyRuleEnum implements DisplayableEnum {
 
     private Pattern regexPattern;
 
-    PolicyRuleEnum(String regexExpressionStr) {
+    PolicyRule(String regexExpressionStr) {
         this.regexPattern = Pattern.compile(regexExpressionStr);  //, Pattern.UNICODE_CASE
     }
 

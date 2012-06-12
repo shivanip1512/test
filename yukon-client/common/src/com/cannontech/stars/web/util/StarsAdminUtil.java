@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.Instant;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
@@ -745,6 +747,8 @@ public class StarsAdminUtil {
 		userDB.setUsername( username );
         userDB.setAuthType(defaultAuthType);
 		userDB.setLoginStatus(status);
+		userDB.setLastChangedDate(Instant.now().toDate());
+		userDB.setForceReset(false);
 		
 		for (int i = 0; i < operGroups.length; i++) {
 			com.cannontech.database.db.user.YukonGroup group =

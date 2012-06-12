@@ -21,14 +21,14 @@ public class PasswordPolicyTest {
     private static final String PASSWORD_FOUR = "ABCabc123!?@\u0E01\u0E02\u0E03";
     
     private static final PasswordPolicy passwordPolicyOne = new PasswordPolicy(); {
-        passwordPolicyOne.setPolicyRules(Lists.newArrayList(PolicyRuleEnum.values()));
+        passwordPolicyOne.setPolicyRules(Lists.newArrayList(PolicyRule.values()));
         passwordPolicyOne.setPasswordQualityCheck(3);
 
     }
     
     @Test
     public void testUppercasePasswordPolicy() throws Exception {
-        PolicyRuleEnum uppercaseCharacters = PolicyRuleEnum.UPPERCASE_CHARACTERS;
+        PolicyRule uppercaseCharacters = PolicyRule.UPPERCASE_CHARACTERS;
         
         Pattern uppercasePattern = uppercaseCharacters.getRegexPattern();
         Matcher uppercaseMatcher = uppercasePattern.matcher(PASSWORD_UPPER);
@@ -38,7 +38,7 @@ public class PasswordPolicyTest {
 
     @Test
     public void testLowercasePasswordPolicy() throws Exception {
-        PolicyRuleEnum lowercaseCharacters = PolicyRuleEnum.LOWERCASE_CHARACTERS;
+        PolicyRule lowercaseCharacters = PolicyRule.LOWERCASE_CHARACTERS;
         
         Pattern lowercasePattern = lowercaseCharacters.getRegexPattern();
         Matcher lowercaseMatcher = lowercasePattern.matcher(PASSWORD_LOWER);
@@ -48,7 +48,7 @@ public class PasswordPolicyTest {
 
     @Test
     public void testDigitsPasswordPolicy() throws Exception {
-        PolicyRuleEnum digitsCharacters = PolicyRuleEnum.BASE_10_DIGITS;
+        PolicyRule digitsCharacters = PolicyRule.BASE_10_DIGITS;
         
         Pattern digitsPattern = digitsCharacters.getRegexPattern();
         Matcher digitsMatcher = digitsPattern.matcher(PASSWORD_DIGITS);
@@ -58,7 +58,7 @@ public class PasswordPolicyTest {
 
     @Test
     public void testNonalphanumericPasswordPolicy() throws Exception {
-        PolicyRuleEnum nonalphanumericCharacters = PolicyRuleEnum.NONALPHANUMERIC_CHARACTERS;
+        PolicyRule nonalphanumericCharacters = PolicyRule.NONALPHANUMERIC_CHARACTERS;
         
         Pattern nonalphanumericPattern = nonalphanumericCharacters.getRegexPattern();
         Matcher nonalphanumericMatcher = nonalphanumericPattern.matcher(PASSWORD_NONALPHA);
@@ -68,7 +68,7 @@ public class PasswordPolicyTest {
 
     @Test
     public void testUnicodePasswordPolicy() throws Exception {
-        PolicyRuleEnum unicodeCharacters = PolicyRuleEnum.UNICODE_CHARACTERS;
+        PolicyRule unicodeCharacters = PolicyRule.UNICODE_CHARACTERS;
         
         Pattern unicodePattern = unicodeCharacters.getRegexPattern();
         Matcher unicodeMatcher = unicodePattern.matcher(PASSWORD_UNICODE);
