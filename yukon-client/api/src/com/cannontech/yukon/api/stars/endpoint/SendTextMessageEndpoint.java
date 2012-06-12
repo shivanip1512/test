@@ -45,6 +45,7 @@ import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -148,17 +149,13 @@ public class SendTextMessageEndpoint {
     private List<String> removeUnsupportedSerialNumbers(DeviceTextMessage deviceTextMessage, Map<String, Integer> serialNumberToInventoryIdMap) {
     	List<String> unsupportedSerialNumbers = Lists.newArrayList();
     	Set<InventoryIdentifier> inventory = inventoryDao.getYukonInventory(serialNumberToInventoryIdMap.values());
-    	
-		for (InventoryIdentifier invIdentifier : inventory) {
-			//check if device accepts text messages
-			if (!invIdentifier.getHardwareType().isSupportsTextMessages()) {
-				for (String serialNumber : serialNumberToInventoryIdMap.keySet()) {
-					if (invIdentifier.getInventoryId() == serialNumberToInventoryIdMap.get(serialNumber)) {
-						unsupportedSerialNumbers.add(serialNumber);
-					}
-				}
-			}
-		}
+    	Map<Integer, String> serialNumberByInventoryId = HashBiMap.create(serialNumberToInventoryIdMap).inverse();
+            for (InventoryIdentifier invIdentifier : inventory) {
+                // check if device accepts text messages
+                if (!invIdentifier.getHardwareType().isSupportsTextMessages()) {
+                    unsupportedSerialNumbers.add(serialNumberByInventoryId.get(invIdentifier.getInventoryId()));
+                }
+            }
 		// remove devices which cannot accept messages
 		deviceTextMessage.getSerialNumbers().removeAll(unsupportedSerialNumbers);
 		return unsupportedSerialNumbers;

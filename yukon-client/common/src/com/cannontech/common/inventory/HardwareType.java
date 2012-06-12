@@ -303,11 +303,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
 	 * Returns true if this hardware type supports receiving messages
 	 */
 	public boolean isSupportsTextMessages() {
-		boolean isSupportsMessages = false;
-		if (isUtilityProType()) {
-			isSupportsMessages = isZigbee() || isExpressCom();
-		}
-		return isSupportsMessages;
+		return isUtilityProType();
 	}
 
     /**
