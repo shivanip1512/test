@@ -1,6 +1,7 @@
 #pragma once
 
 #include <rw/thr/thread.h>
+#include <rw/thr/recursiv.h>
 
 #include "pao_schedule.h"
 #include "pao_event.h"

@@ -794,7 +794,7 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
     CtiRequestMsg* reqMsg = NULL;
     if (cbc702)
     {
-        CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
+        CtiCCTwoWayPointsPtr points = capBank->getTwoWayPoints();
 
         int offset = 1;
         unsigned char voltageValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::VoltageControl);
@@ -894,7 +894,7 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
     CtiRequestMsg* reqMsg = NULL;
     if (cbc702)
     {
-        CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
+        CtiCCTwoWayPointsPtr points = capBank->getTwoWayPoints();
 
         int offset = 1;
         unsigned char voltageValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::VoltageControl);
@@ -985,7 +985,7 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
 
     //Actual Command Work
     //Compute new value.
-    CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
+    CtiCCTwoWayPointsPtr points = capBank->getTwoWayPoints();
 
     /* Hardware Code
     struct
@@ -1085,7 +1085,7 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
 
     //Actual Command Work
     //Compute new value.
-    CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
+    CtiCCTwoWayPointsPtr points = capBank->getTwoWayPoints();
 
     int offsetOne = 26;
     unsigned char seasonOneValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
@@ -1172,7 +1172,7 @@ void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg
 
     //Actual Command Work
     //Compute new value.
-    CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
+    CtiCCTwoWayPointsPtr points = capBank->getTwoWayPoints();
 
     int offset = 68;
     unsigned char varValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::VarControl);
@@ -1258,7 +1258,7 @@ void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMs
 
     //Actual Command Work
     //Compute new value.
-    CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
+    CtiCCTwoWayPointsPtr points = capBank->getTwoWayPoints();
 
     int offset = 68;
     unsigned char varValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::VarControl);
@@ -1345,7 +1345,7 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
 
     //Actual Command Work
     //Compute new value.
-    CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
+    CtiCCTwoWayPointsPtr points = capBank->getTwoWayPoints();
 
     /* Hardware Code
     struct
@@ -1446,7 +1446,7 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
 
     //Actual Command Work
     //Compute new value.
-    CtiCCTwoWayPoints* points = capBank->getTwoWayPoints();
+    CtiCCTwoWayPointsPtr points = capBank->getTwoWayPoints();
 
     int offsetOne = 26;
     unsigned char seasonOneValue = (unsigned char)points->getPointValueByAttribute(PointAttribute::TimeTempSeasonOne);
@@ -2647,7 +2647,7 @@ void CtiCCCommandExecutor::ControlAllCapBanks(long paoId, int control)
         for each(long subId in area->getSubstationIds())
         {
             station = store->findSubstationByPAObjectID(subId);
-            
+
             if (station != NULL && !station->getDisableFlag())
             {
                 for each (long busId in station->getCCSubIds())

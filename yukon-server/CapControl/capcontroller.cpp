@@ -1683,8 +1683,8 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
     {
         CtiPointRegistrationMsg* regMsg;// = new CtiPointRegistrationMsg();
         std::set<long> registrationIds;
-        
-        
+
+
         //register for each point specifically
         regMsg = new CtiPointRegistrationMsg();
 
@@ -2028,7 +2028,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                     }
                     if ( currentCapBank->isControlDeviceTwoWay() )
                     {
-                        CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
+                        CtiCCTwoWayPointsPtr twoWayPts = currentCapBank->getTwoWayPoints();
                         //registrationIds.push_back();//pass this down the chain.
                         twoWayPts->addAllCBCPointsToRegMsg(registrationIds);
                         //twoWayPts->addAllCBCPointsToRegMsg(regMsg);
@@ -2036,7 +2036,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
                 }
             }
-            
+
 
             if (CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId() > 0)
             {
@@ -2916,7 +2916,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
                    // if( timestamp > currentSpArea->getLastControlPointUpdateTime() )
                     {
                         const bool reduceVoltage = value;
-            
+
                         if (currentSpArea->getVoltReductionControlValue() != reduceVoltage &&
                             !currentSpArea->getDisableFlag())
                         {
@@ -3697,7 +3697,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                     }
                     else if (currentCapBank->isControlDeviceTwoWay() )
                     {
-                        CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
+                        CtiCCTwoWayPointsPtr twoWayPts = currentCapBank->getTwoWayPoints();
                         //NEED to check this value for a toggle, before setting status points.
                         if (currentCapBank->getPointIdByAttribute(PointAttribute::IgnoredIndicator) == pointID)
                         {
@@ -4088,7 +4088,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
 
 
 void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, CtiCCFeederPtr currentFeeder,
-                                                CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
+                                                CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -4186,7 +4186,7 @@ void CtiCapController::handleRejectionMessaging(CtiCCCapBankPtr currentCapBank, 
     currentCapBank->setControlRecentlySentFlag(false);
 }
 void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank, CtiCCFeederPtr currentFeeder,
-                                                  CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
+                                                  CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -4244,7 +4244,7 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank
 
 
 void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank, CtiCCFeederPtr currentFeeder,
-                                                  CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
+                                                  CtiCCSubstationBusPtr currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 

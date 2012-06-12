@@ -6672,7 +6672,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                             rdr["pointoffset"] >> tempPointOffset;
                             rdr["pointtype"] >> tempPointType;
 
-                            CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCCCapBank->getTwoWayPoints();
+                            CtiCCTwoWayPointsPtr twoWayPts = currentCCCapBank->getTwoWayPoints();
 
                             CtiPointType_t pointType = resolvePointType(tempPointType);
                             if (pointType == StatusPointType ||
@@ -6753,8 +6753,8 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 {
                     if (stringContainsIgnoreCase(currentCCCapBank->getControlDeviceType(), "CBC 702"))
                     {
-                        ((CtiCCTwoWayPoints*)currentCCCapBank->getTwoWayPoints())->setPAOId(currentCbcId);
-                        ((CtiCCTwoWayPoints*)currentCCCapBank->getTwoWayPoints())->setDynamicData(rdr, currentCCCapBank->getReportedCBCStateTime());
+                        currentCCCapBank->getTwoWayPoints()->setPAOId(currentCbcId);
+                        currentCCCapBank->getTwoWayPoints()->setDynamicData(rdr, currentCCCapBank->getReportedCBCStateTime());
                     }
                 }
             }
@@ -8167,12 +8167,12 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(long reloadId, BYTE reloadAc
         if (long oldBusId = findSubBusIDbyCapBankID(reloadId))
         {
             insertDBReloadList(CcDbReloadInfo(oldBusId, ChangeTypeUpdate, Cti::CapControl::SubBus));
-            
+
         }
         reloadCapBankFromDatabase(reloadId, &_paobject_capbank_map, &_paobject_feeder_map,
                                    &_paobject_subbus_map, &_pointid_capbank_map, &_capbank_subbus_map,
                                    &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
-         
+
          if (long busId = findSubBusIDbyCapBankID(reloadId))
          {
              reloadMonitorPointsFromDatabase(busId, &_paobject_capbank_map, &_paobject_feeder_map,
@@ -8476,7 +8476,7 @@ void CtiCCSubstationBusStore::registerForAdditionalPoints(PaoIdSet &modifiedBusI
                    cap->addAllCapBankPointsToMsg(pointList);
                    if ( cap->isControlDeviceTwoWay() )
                    {
-                       CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)cap->getTwoWayPoints();
+                       CtiCCTwoWayPointsPtr twoWayPts = cap->getTwoWayPoints();
                        twoWayPts->addAllCBCPointsToRegMsg(pointList);
                    }
                }

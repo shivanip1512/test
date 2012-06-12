@@ -19,14 +19,8 @@ namespace Database {
 
 class CtiCCTwoWayPoints
 {
-
 public:
-
-
     CtiCCTwoWayPoints(long paoid, std::string paotype);
-    CtiCCTwoWayPoints(const CtiCCTwoWayPoints& cap);
-
-    virtual ~CtiCCTwoWayPoints();
 
     long getPAOId() const;
 
@@ -36,7 +30,6 @@ public:
     LitePoint getPointByAttribute(const PointAttribute & attribute) const;
     int getPointIdByAttribute(const PointAttribute & attribute) const;
     double getPointValueByAttribute(PointAttribute pointAttribute);
-    CtiTime getPointTimeStampByAttribute(PointAttribute attribute);
 
 
     bool setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId);
@@ -45,22 +38,15 @@ public:
     bool setTwoWayPulseAccumulatorPointValue(long pointID, long value, CtiTime timestamp);
 
     CtiCCTwoWayPoints& addAllCBCPointsToRegMsg(std::set<long>& pointList);
-    bool isDirty();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     void restore(Cti::RowReader& rdr);
     void setDynamicData(Cti::RowReader& rdr, CtiTime timestamp);
-    CtiCCTwoWayPoints* replicate() const;
 
     CtiCCTwoWayPoints& operator=(const CtiCCTwoWayPoints& right);
 
     int operator==(const CtiCCTwoWayPoints& right) const;
     int operator!=(const CtiCCTwoWayPoints& right) const;
-
-
-    //Possible states
-    static int Open;
-    static int Closed;
 
 private:
 
@@ -89,7 +75,6 @@ private:
     //don't stream
     bool _insertDynamicDataFlag;
     bool _dirty;
-
 };
 
 typedef CtiCCTwoWayPoints* CtiCCTwoWayPointsPtr;

@@ -140,7 +140,7 @@ CtiCCCapBank::~CtiCCCapBank()
     }
 
 }
-CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
+CtiCCTwoWayPointsPtr CtiCCCapBank::getTwoWayPoints()
 {
     if ( _twoWayPoints == NULL )
           _twoWayPoints = new CtiCCTwoWayPoints(_controldeviceid, _controlDeviceType);
@@ -2334,7 +2334,7 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
     {
         if (stringContainsIgnoreCase(getControlDeviceType(), "CBC 702") )
         {
-            CtiCCTwoWayPoints* twoWayPts = getTwoWayPoints();
+            CtiCCTwoWayPointsPtr twoWayPts = getTwoWayPoints();
             twoWayPts->dumpDynamicData(conn,currentDateTime);
         }
     }

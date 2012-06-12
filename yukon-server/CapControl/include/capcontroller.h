@@ -52,11 +52,11 @@ class CtiCapController : public MessageListener
 
         void loadControlLoopCParms();
         void handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
+                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts);
         void handleUnexpectedUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
+                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts);
         void handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder,
-                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts);
+                                        CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPointsPtr twoWayPts);
 
         void analyzeVerificationBus(CtiCCSubstationBus* currentSubstationBus, const CtiTime& currentDateTime,
                                 CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages,

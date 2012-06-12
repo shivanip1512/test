@@ -1,36 +1,11 @@
-/*---------------------------------------------------------------------------
-        Filename:  cctwowaycbcpoints.cpp
-
-        Programmer:  Julie Richter
-
-        Description:    Source file for CtiCCTwoWayPoints.
-                        CtiCCTwoWayPoints maintains the state and handles
-                        the persistence of cap banks for Cap Control.
-
-        Initial Date:  8/30/2001
-
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-#include "dbaccess.h"
 #include "cctwowaycbcpoints.h"
-#include "cccapbank.h"
 #include "ccid.h"
-#include "dev_dnp.h"
 #include "dev_cbc7020.h"
 #include "dev_cbc8020.h"
-#include "pointdefs.h"
-#include "pointtypes.h"
-#include "logger.h"
-#include "resolvers.h"
-#include "msg_ptreg.h"
 #include "database_writer.h"
 #include "ccutil.h"
-#include "slctdev.h"
-#include "dev_base.h"
-#include "dev_single.h"
-
 
 using std::string;
 using std::endl;
@@ -120,20 +95,6 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(long paoid, string paotype)
 }
 
 
-CtiCCTwoWayPoints::CtiCCTwoWayPoints(const CtiCCTwoWayPoints& twoWayPt)
-{
-    operator=(twoWayPt);
-}
-
-/*---------------------------------------------------------------------------
-    Destructor
----------------------------------------------------------------------------*/
-CtiCCTwoWayPoints::~CtiCCTwoWayPoints()
-{
-
-    _attributes.clear();
-}
-
 long CtiCCTwoWayPoints::getPAOId() const
 {
     return _paoid;
@@ -147,215 +108,193 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::setPAOId(long paoId)
     return *this;
 }
 
-
-bool CtiCCTwoWayPoints::isDirty()
-{
-    return _dirty;
-}
 void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    if( _dirty )
+    if( ! _dirty )
     {
-        if( !_insertDynamicDataFlag )
+        return;
+    }
+
+    _lastControlReason = 0;
+    _lastControlReason |= 0x01 * !!getPointValueByAttribute(PointAttribute::LastControlLocal);
+    _lastControlReason |= 0x02 * !!getPointValueByAttribute(PointAttribute::LastControlRemote);
+    _lastControlReason |= 0x04 * !!getPointValueByAttribute(PointAttribute::LastControlOvUv);
+    _lastControlReason |= 0x08 * !!getPointValueByAttribute(PointAttribute::LastControlNeutralFault);
+    _lastControlReason |= 0x10 * !!getPointValueByAttribute(PointAttribute::LastControlScheduled);
+    _lastControlReason |= 0x20 * !!getPointValueByAttribute(PointAttribute::LastControlDigital);
+    _lastControlReason |= 0x40 * !!getPointValueByAttribute(PointAttribute::LastControlAnalog);
+    _lastControlReason |= 0x80 * !!getPointValueByAttribute(PointAttribute::LastControlTemperature);
+
+    int condition = 0;
+    condition |= 0x01 * !!getPointValueByAttribute(PointAttribute::UvCondition);
+    condition |= 0x02 * !!getPointValueByAttribute(PointAttribute::OvCondition);
+
+    if( !_insertDynamicDataFlag )
+    {
+        static const string updateSql = "update dynamiccctwowaycbc set "
+                                        "recloseblocked = ?, "
+                                        "controlmode = ?, "
+                                        "autovoltcontrol = ?, "
+                                        "lastcontrol = ?, "
+                                        "condition = ?, "
+                                        "opfailedneutralcurrent = ?, "
+                                        "neutralcurrentfault = ?, "
+                                        "badrelay = ?, "
+                                        "dailymaxops = ?, "
+                                        "voltagedeltaabnormal = ?, "
+                                        "tempalarm = ?, "
+                                        "dstactive = ?, "
+                                        "neutrallockout = ?, "
+                                        "ignoredindicator = ?, "
+                                        "voltage = ?, "
+                                        "highvoltage = ?, "
+                                        "lowvoltage = ?, "
+                                        "deltavoltage = ?, "
+                                        "analoginputone = ?, "
+                                        "temp = ?, "
+                                        "rssi = ?, "
+                                        "ignoredreason = ?, "
+                                        "totalopcount = ?, "
+                                        "uvopcount = ?, "
+                                        "ovopcount = ?, "
+                                        "ovuvcountresetdate = ?, "
+                                        "uvsetpoint = ?, "
+                                        "ovsetpoint = ?, "
+                                        "ovuvtracktime = ?, "
+                                        "lastovuvdatetime = ?, "
+                                        "neutralcurrentsensor = ?, "
+                                        "neutralcurrentalarmsetpoint = ?, "
+                                        "ipaddress = ?, "
+                                        "udpport = ?"
+                                        " where deviceid = ?";
+
+        Cti::Database::DatabaseWriter updater(conn, updateSql);
+
+        updater
+            << (string)(getPointValueByAttribute(PointAttribute::ReCloseBlocked)?"Y":"N")
+            << (string)(getPointValueByAttribute(PointAttribute::ControlMode)?"Y":"N")
+            << (string)(getPointValueByAttribute(PointAttribute::AutoVoltControl)?"Y":"N")
+            << _lastControlReason
+            << condition
+            << (string)(getPointValueByAttribute(PointAttribute::OpFailedNeutralCurrent)?"Y":"N")
+            << (string)(getPointValueByAttribute(PointAttribute::NeutralCurrentFault)?"Y":"N")
+            << (string)(getPointValueByAttribute(PointAttribute::BadRelay)?"Y":"N")
+            << (string)(getPointValueByAttribute(PointAttribute::DailyMaxOps)?"Y":"N")
+            << (string)(getPointValueByAttribute(PointAttribute::VoltageDeltaAbnormal)?"Y":"N")
+            << (string)(getPointValueByAttribute(PointAttribute::TempAlarm)?"Y":"N")
+            << (string)(getPointValueByAttribute(PointAttribute::DSTActive)?"Y":"N")
+            << (string)(getPointValueByAttribute(PointAttribute::NeutralLockout)?"Y":"N")
+            << (string)(getPointValueByAttribute(PointAttribute::IgnoredIndicator)?"Y":"N")
+            << getPointValueByAttribute(PointAttribute::CbcVoltage)
+            << getPointValueByAttribute(PointAttribute::HighVoltage)
+            << getPointValueByAttribute(PointAttribute::LowVoltage)
+            << getPointValueByAttribute(PointAttribute::DeltaVoltage)
+            << getPointValueByAttribute(PointAttribute::AnalogInput1)
+            << getPointValueByAttribute(PointAttribute::Temperature)
+            << getPointValueByAttribute(PointAttribute::RSSI)
+            << getPointValueByAttribute(PointAttribute::IgnoredReason)
+            << getPointValueByAttribute(PointAttribute::TotalOpCount)
+            << getPointValueByAttribute(PointAttribute::UvCount)
+            << getPointValueByAttribute(PointAttribute::OvCount)
+            << _ovuvCountResetDate
+            << getPointValueByAttribute(PointAttribute::UvThreshold)
+            << getPointValueByAttribute(PointAttribute::OvThreshold)
+            << getPointValueByAttribute(PointAttribute::OVUVTrackTime)
+            << _lastOvUvDateTime
+            << getPointValueByAttribute(PointAttribute::NeutralCurrentSensor)
+            << getPointValueByAttribute(PointAttribute::NeutralCurrentAlarmThreshold)
+            << getPointValueByAttribute(PointAttribute::UDPIpAddress)
+            << getPointValueByAttribute(PointAttribute::UDPPortNumber)
+            << _paoid;
+
+        if(updater.execute())    // No error occured!
         {
-            static const string updateSql = "update dynamiccctwowaycbc set "
-                                            "recloseblocked = ?, "
-                                            "controlmode = ?, "
-                                            "autovoltcontrol = ?, "
-                                            "lastcontrol = ?, "
-                                            "condition = ?, "
-                                            "opfailedneutralcurrent = ?, "
-                                            "neutralcurrentfault = ?, "
-                                            "badrelay = ?, "
-                                            "dailymaxops = ?, "
-                                            "voltagedeltaabnormal = ?, "
-                                            "tempalarm = ?, "
-                                            "dstactive = ?, "
-                                            "neutrallockout = ?, "
-                                            "ignoredindicator = ?, "
-                                            "voltage = ?, "
-                                            "highvoltage = ?, "
-                                            "lowvoltage = ?, "
-                                            "deltavoltage = ?, "
-                                            "analoginputone = ?, "
-                                            "temp = ?, "
-                                            "rssi = ?, "
-                                            "ignoredreason = ?, "
-                                            "totalopcount = ?, "
-                                            "uvopcount = ?, "
-                                            "ovopcount = ?, "
-                                            "ovuvcountresetdate = ?, "
-                                            "uvsetpoint = ?, "
-                                            "ovsetpoint = ?, "
-                                            "ovuvtracktime = ?, "
-                                            "lastovuvdatetime = ?, "
-                                            "neutralcurrentsensor = ?, "
-                                            "neutralcurrentalarmsetpoint = ?, "
-                                            "ipaddress = ?, "
-                                            "udpport = ?"
-                                            " where deviceid = ?";
-            _lastControlReason = ( ( (LONG) getPointValueByAttribute(PointAttribute::LastControlLocal) & 0x01)            |
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlRemote) & 0x01 )       << 1 ) |
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlOvUv) & 0x01 )         << 2 ) |
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlNeutralFault) & 0x01)  << 3 ) |
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlScheduled) & 0x01)     << 4 ) |
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlDigital) & 0x01)       << 5 ) |
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlAnalog) & 0x01 )       << 6 ) |
-                                ( ((LONG)getPointValueByAttribute(PointAttribute::LastControlTemperature) & 0x01 )  << 7 ) );
-            INT condition = 0;
-            if (getPointValueByAttribute(PointAttribute::UvCondition))
-                condition = 1;
-            else if (getPointValueByAttribute(PointAttribute::OvCondition))
-                condition = 2;
-            else
-                condition = 0;
-
-            Cti::Database::DatabaseWriter updater(conn, updateSql);
-
-            updater
-                << (string)(getPointValueByAttribute(PointAttribute::ReCloseBlocked)?"Y":"N")
-                << (string)(getPointValueByAttribute(PointAttribute::ControlMode)?"Y":"N")
-                << (string)(getPointValueByAttribute(PointAttribute::AutoVoltControl)?"Y":"N")
-                << _lastControlReason
-                << condition
-                << (string)(getPointValueByAttribute(PointAttribute::OpFailedNeutralCurrent)?"Y":"N")
-                << (string)(getPointValueByAttribute(PointAttribute::NeutralCurrentFault)?"Y":"N")
-                << (string)(getPointValueByAttribute(PointAttribute::BadRelay)?"Y":"N")
-                << (string)(getPointValueByAttribute(PointAttribute::DailyMaxOps)?"Y":"N")
-                << (string)(getPointValueByAttribute(PointAttribute::VoltageDeltaAbnormal)?"Y":"N")
-                << (string)(getPointValueByAttribute(PointAttribute::TempAlarm)?"Y":"N")
-                << (string)(getPointValueByAttribute(PointAttribute::DSTActive)?"Y":"N")
-                << (string)(getPointValueByAttribute(PointAttribute::NeutralLockout)?"Y":"N")
-                << (string)(getPointValueByAttribute(PointAttribute::IgnoredIndicator)?"Y":"N")
-                << getPointValueByAttribute(PointAttribute::CbcVoltage)
-                << getPointValueByAttribute(PointAttribute::HighVoltage)
-                << getPointValueByAttribute(PointAttribute::LowVoltage)
-                << getPointValueByAttribute(PointAttribute::DeltaVoltage)
-                << getPointValueByAttribute(PointAttribute::AnalogInput1)
-                << getPointValueByAttribute(PointAttribute::Temperature)
-                << getPointValueByAttribute(PointAttribute::RSSI)
-                << getPointValueByAttribute(PointAttribute::IgnoredReason)
-                << getPointValueByAttribute(PointAttribute::TotalOpCount)
-                << getPointValueByAttribute(PointAttribute::UvCount)
-                << getPointValueByAttribute(PointAttribute::OvCount)
-                << _ovuvCountResetDate
-                << getPointValueByAttribute(PointAttribute::UvThreshold)
-                << getPointValueByAttribute(PointAttribute::OvThreshold)
-                << getPointValueByAttribute(PointAttribute::OVUVTrackTime)
-                << _lastOvUvDateTime
-                << getPointValueByAttribute(PointAttribute::NeutralCurrentSensor)
-                << getPointValueByAttribute(PointAttribute::NeutralCurrentAlarmThreshold)
-                << getPointValueByAttribute(PointAttribute::UDPIpAddress)
-                << getPointValueByAttribute(PointAttribute::UDPPortNumber)
-                << _paoid;
-
-            if(updater.execute())    // No error occured!
-            {
-                _dirty = false;
-            }
-            else
-            {
-                string loggedSQLstring = updater.asString();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  " << loggedSQLstring << endl;
-                }
-            }
+            _dirty = false;
         }
         else
         {
+            string loggedSQLstring = updater.asString();
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted TwoWay CBC data into DynamicCCTwoWayCBC: " << getPAOId() << endl;
-            }
-            static const string insertSql = "insert into dynamiccctwowaycbc values ( "
-                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-                                            "?, ?, ?, ?, ?)";
-
-            Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
-
-            _lastControlReason = ( ( (LONG)getPointValueByAttribute(PointAttribute::LastControlLocal)    & 0x01)  |
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlRemote)       & 0x02)  |
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlOvUv)         & 0x04)  |
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlNeutralFault) & 0x08)  |
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlScheduled)    & 0x10)  |
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlDigital)      & 0x20)  |
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlAnalog)       & 0x40)  |
-                                ((LONG)getPointValueByAttribute(PointAttribute::LastControlTemperature)  & 0x80)  );
-            INT condition = 0;
-            if (getPointValueByAttribute(PointAttribute::UvCondition))
-                condition = 1;
-            else if (getPointValueByAttribute(PointAttribute::OvCondition))
-                condition = 2;
-            else
-                condition = 0;
-
-
-            dbInserter << _paoid
-                     << (string)(getPointValueByAttribute(PointAttribute::ReCloseBlocked)?"Y":"N")
-                     << (string)(getPointValueByAttribute(PointAttribute::ControlMode)?"Y":"N")
-                     << (string)(getPointValueByAttribute(PointAttribute::AutoVoltControl)?"Y":"N")
-                     << _lastControlReason
-                     << condition
-                     << (string)(getPointValueByAttribute(PointAttribute::OpFailedNeutralCurrent)?"Y":"N")
-                     << (string)(getPointValueByAttribute(PointAttribute::NeutralCurrentFault)?"Y":"N")
-                     << (string)(getPointValueByAttribute(PointAttribute::BadRelay)?"Y":"N")
-                     << (string)(getPointValueByAttribute(PointAttribute::DailyMaxOps)?"Y":"N")
-                     << (string)(getPointValueByAttribute(PointAttribute::VoltageDeltaAbnormal)?"Y":"N")
-                     << (string)(getPointValueByAttribute(PointAttribute::TempAlarm)?"Y":"N")
-                     << (string)(getPointValueByAttribute(PointAttribute::DSTActive)?"Y":"N")
-                     << (string)(getPointValueByAttribute(PointAttribute::NeutralLockout)?"Y":"N")
-                     << (string)(getPointValueByAttribute(PointAttribute::IgnoredIndicator)?"Y":"N")
-                     << getPointValueByAttribute(PointAttribute::CbcVoltage)
-                     << getPointValueByAttribute(PointAttribute::HighVoltage)
-                     << getPointValueByAttribute(PointAttribute::LowVoltage)
-                     << getPointValueByAttribute(PointAttribute::DeltaVoltage)
-                     << getPointValueByAttribute(PointAttribute::AnalogInput1)
-                     << getPointValueByAttribute(PointAttribute::Temperature)
-                     << getPointValueByAttribute(PointAttribute::RSSI)
-                     << getPointValueByAttribute(PointAttribute::IgnoredReason)
-                     << getPointValueByAttribute(PointAttribute::TotalOpCount)
-                     << getPointValueByAttribute(PointAttribute::UvCount)
-                     << getPointValueByAttribute(PointAttribute::OvCount)
-                     << _ovuvCountResetDate
-                     << getPointValueByAttribute(PointAttribute::UvThreshold)
-                     << getPointValueByAttribute(PointAttribute::OvThreshold)
-                     << getPointValueByAttribute(PointAttribute::OVUVTrackTime)
-                     << _lastOvUvDateTime
-                     << getPointValueByAttribute(PointAttribute::NeutralCurrentSensor)
-                     << getPointValueByAttribute(PointAttribute::NeutralCurrentAlarmThreshold)
-                     << getPointValueByAttribute(PointAttribute::UDPIpAddress)
-                     << getPointValueByAttribute(PointAttribute::UDPPortNumber);
-
-            if( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                string loggedSQLstring = dbInserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            if(dbInserter.execute())    // No error occured!
-            {
-                _insertDynamicDataFlag = false;
-                _dirty = false;
-            }
-            else
-            {
-                string loggedSQLstring = dbInserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  " << loggedSQLstring << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  " << loggedSQLstring << endl;
             }
         }
     }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Inserted TwoWay CBC data into DynamicCCTwoWayCBC: " << getPAOId() << endl;
+        }
+        static const string insertSql = "insert into dynamiccctwowaycbc values ( "
+                                        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                        "?, ?, ?, ?, ?)";
 
+        Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
+
+        dbInserter << _paoid
+                 << (string)(getPointValueByAttribute(PointAttribute::ReCloseBlocked)?"Y":"N")
+                 << (string)(getPointValueByAttribute(PointAttribute::ControlMode)?"Y":"N")
+                 << (string)(getPointValueByAttribute(PointAttribute::AutoVoltControl)?"Y":"N")
+                 << _lastControlReason
+                 << condition
+                 << (string)(getPointValueByAttribute(PointAttribute::OpFailedNeutralCurrent)?"Y":"N")
+                 << (string)(getPointValueByAttribute(PointAttribute::NeutralCurrentFault)?"Y":"N")
+                 << (string)(getPointValueByAttribute(PointAttribute::BadRelay)?"Y":"N")
+                 << (string)(getPointValueByAttribute(PointAttribute::DailyMaxOps)?"Y":"N")
+                 << (string)(getPointValueByAttribute(PointAttribute::VoltageDeltaAbnormal)?"Y":"N")
+                 << (string)(getPointValueByAttribute(PointAttribute::TempAlarm)?"Y":"N")
+                 << (string)(getPointValueByAttribute(PointAttribute::DSTActive)?"Y":"N")
+                 << (string)(getPointValueByAttribute(PointAttribute::NeutralLockout)?"Y":"N")
+                 << (string)(getPointValueByAttribute(PointAttribute::IgnoredIndicator)?"Y":"N")
+                 << getPointValueByAttribute(PointAttribute::CbcVoltage)
+                 << getPointValueByAttribute(PointAttribute::HighVoltage)
+                 << getPointValueByAttribute(PointAttribute::LowVoltage)
+                 << getPointValueByAttribute(PointAttribute::DeltaVoltage)
+                 << getPointValueByAttribute(PointAttribute::AnalogInput1)
+                 << getPointValueByAttribute(PointAttribute::Temperature)
+                 << getPointValueByAttribute(PointAttribute::RSSI)
+                 << getPointValueByAttribute(PointAttribute::IgnoredReason)
+                 << getPointValueByAttribute(PointAttribute::TotalOpCount)
+                 << getPointValueByAttribute(PointAttribute::UvCount)
+                 << getPointValueByAttribute(PointAttribute::OvCount)
+                 << _ovuvCountResetDate
+                 << getPointValueByAttribute(PointAttribute::UvThreshold)
+                 << getPointValueByAttribute(PointAttribute::OvThreshold)
+                 << getPointValueByAttribute(PointAttribute::OVUVTrackTime)
+                 << _lastOvUvDateTime
+                 << getPointValueByAttribute(PointAttribute::NeutralCurrentSensor)
+                 << getPointValueByAttribute(PointAttribute::NeutralCurrentAlarmThreshold)
+                 << getPointValueByAttribute(PointAttribute::UDPIpAddress)
+                 << getPointValueByAttribute(PointAttribute::UDPPortNumber);
+
+        if( _CC_DEBUG & CC_DEBUG_DATABASE )
+        {
+            string loggedSQLstring = dbInserter.asString();
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << loggedSQLstring << endl;
+            }
+        }
+
+        if(dbInserter.execute())    // No error occured!
+        {
+            _insertDynamicDataFlag = false;
+            _dirty = false;
+        }
+        else
+        {
+            string loggedSQLstring = dbInserter.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "  " << loggedSQLstring << endl;
+            }
+        }
+    }
 }
 
 LitePoint CtiCCTwoWayPoints::getPointByAttribute(const PointAttribute & attribute) const
@@ -404,7 +343,7 @@ PointAttribute CtiCCTwoWayPoints::getAttribute(int pointtype, int offset)
         {
             return getAccumulatorAttribute(offset);
             break;
-        }
+    }
         default:
         {
             return PointAttribute::Unknown;
@@ -455,13 +394,6 @@ double CtiCCTwoWayPoints::getPointValueByAttribute(PointAttribute attribute)
     double value = 0;
     _pointValues.getPointValue(getPointIdByAttribute(attribute), value);
     return value;
-}
-
-CtiTime CtiCCTwoWayPoints::getPointTimeStampByAttribute(PointAttribute attribute)
-{
-    CtiTime time = gInvalidCtiTime;
-    _pointValues.getPointTime(getPointIdByAttribute(attribute), time);
-    return time;
 }
 
 bool CtiCCTwoWayPoints::isTimestampNew(long pointID, CtiTime timestamp)
@@ -532,119 +464,100 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::set<long>& po
 }
 
 
+struct ColumnMapping
+{
+    enum
+    {
+        Boolean,
+        Long,
+        Double
+
+    } type;
+    const char *name;
+    const PointAttribute &attribute;
+}
+static const TwoWayColumns[] =
+{
+    { ColumnMapping::Boolean, "recloseblocked",         PointAttribute::ReCloseBlocked         },
+    { ColumnMapping::Boolean, "controlmode",            PointAttribute::ControlMode            },
+    { ColumnMapping::Boolean, "autovoltcontrol",        PointAttribute::AutoVoltControl        },
+    { ColumnMapping::Boolean, "opfailedneutralcurrent", PointAttribute::OpFailedNeutralCurrent },
+    { ColumnMapping::Boolean, "neutralcurrentfault",    PointAttribute::NeutralCurrentFault    },
+    { ColumnMapping::Boolean, "badrelay",               PointAttribute::BadRelay               },
+    { ColumnMapping::Boolean, "dailymaxops",            PointAttribute::DailyMaxOps            },
+    { ColumnMapping::Boolean, "voltagedeltaabnormal",   PointAttribute::VoltageDeltaAbnormal   },
+    { ColumnMapping::Boolean, "tempalarm",              PointAttribute::TempAlarm              },
+    { ColumnMapping::Boolean, "dstactive",              PointAttribute::DSTActive              },
+    { ColumnMapping::Boolean, "neutrallockout",         PointAttribute::NeutralLockout         },
+    { ColumnMapping::Boolean, "ignoredindicator",       PointAttribute::IgnoredIndicator       },
+    { ColumnMapping::Double,  "voltage",                PointAttribute::CbcVoltage             },
+    { ColumnMapping::Double,  "highvoltage",            PointAttribute::HighVoltage            },
+    { ColumnMapping::Double,  "lowvoltage",             PointAttribute::LowVoltage             },
+    { ColumnMapping::Double,  "deltavoltage",           PointAttribute::DeltaVoltage           },
+    { ColumnMapping::Long,    "analoginputone",         PointAttribute::AnalogInput1           },
+    { ColumnMapping::Long,    "temp",                   PointAttribute::Temperature            },
+    { ColumnMapping::Long,    "rssi",                   PointAttribute::RSSI                   },
+    { ColumnMapping::Long,    "ignoredreason",          PointAttribute::IgnoredReason          },
+    { ColumnMapping::Long,    "totalopcount",           PointAttribute::TotalOpCount           },
+    { ColumnMapping::Long,    "uvopcount",              PointAttribute::UvCount                },
+    { ColumnMapping::Long,    "ovopcount",              PointAttribute::OvCount                },
+    { ColumnMapping::Double,  "uvsetpoint",             PointAttribute::UvThreshold            },
+    { ColumnMapping::Double,  "ovsetpoint",             PointAttribute::OvThreshold            },
+    { ColumnMapping::Long,    "ovuvtracktime",          PointAttribute::OVUVTrackTime          },
+    { ColumnMapping::Long,    "neutralcurrentsensor",        PointAttribute::NeutralCurrentSensor         },
+    { ColumnMapping::Double,  "neutralcurrentalarmsetpoint", PointAttribute::NeutralCurrentAlarmThreshold },
+    { ColumnMapping::Long,    "ipaddress",              PointAttribute::UDPIpAddress           },
+    { ColumnMapping::Long,    "udpport",                PointAttribute::UDPPortNumber          },
+};
+
 void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, CtiTime timestamp)
 {
-    INT condition = 0;
-    string tempBoolString;
-    long tempLong;
+    for each( const ColumnMapping &cm in TwoWayColumns )
+    {
+        double value;
 
+        if( cm.type == ColumnMapping::Boolean )
+        {
+            string tempBoolString;
+            rdr[cm.name] >> tempBoolString;
+            value = ciStringEqual(tempBoolString, "y");
+        }
+        else if( cm.type == ColumnMapping::Long )
+        {
+            long tempLong;
+            rdr[cm.name] >> tempLong;
+            value = tempLong;
+        }
+        else  //  cm.type == ColumnMapping::Double
+        {
+            rdr[cm.name] >> value;
+        }
 
-    rdr["recloseblocked"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::ReCloseBlocked), tempBoolString=="y", timestamp);
-    rdr["controlmode"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::ControlMode), tempBoolString=="y", timestamp);
-    rdr["autovoltcontrol"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::AutoVoltControl), tempBoolString=="y", timestamp);
+        _pointValues.addPointValue(getPointIdByAttribute(cm.attribute), value, timestamp);
+    }
+
+    INT condition;
     rdr["lastcontrol"] >>_lastControlReason;
     rdr["condition"] >> condition;
-    rdr["opfailedneutralcurrent"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OpFailedNeutralCurrent), tempBoolString=="y", timestamp);
-    rdr["neutralcurrentfault"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentFault), tempBoolString=="y", timestamp);
-    rdr["badrelay"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::BadRelay), tempBoolString=="y", timestamp);
-    rdr["dailymaxops"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::DailyMaxOps), tempBoolString=="y", timestamp);
-    rdr["voltagedeltaabnormal"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::VoltageDeltaAbnormal), tempBoolString=="y", timestamp);
-    rdr["tempalarm"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::TempAlarm), tempBoolString=="y", timestamp);
-    rdr["dstactive"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::DSTActive), tempBoolString=="y", timestamp);
-    rdr["neutrallockout"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralLockout), tempBoolString=="y", timestamp);
-    rdr["ignoredindicator"] >> tempBoolString;
-    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::IgnoredIndicator), tempBoolString=="y", timestamp);
-    rdr["voltage"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::CbcVoltage), tempLong, timestamp);
-    rdr["highvoltage"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::HighVoltage), tempLong, timestamp);
-    rdr["lowvoltage"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LowVoltage), tempLong, timestamp);
-    rdr["deltavoltage"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::DeltaVoltage), tempLong, timestamp);
-    rdr["analoginputone"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::AnalogInput1), tempLong, timestamp);
-    rdr["temp"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::Temperature), tempLong, timestamp);
-    rdr["rssi"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::RSSI), tempLong, timestamp);
-    rdr["ignoredreason"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::IgnoredReason), tempLong, timestamp);
-    rdr["totalopcount"] >>tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::TotalOpCount), tempLong, timestamp);
-    rdr["uvopcount"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvCount), tempLong, timestamp);
-    rdr["ovopcount"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvCount), tempLong, timestamp);
+
     rdr["ovuvcountresetdate"] >> _ovuvCountResetDate; //toADD
-    rdr["uvsetpoint"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvThreshold), tempLong, timestamp);
-    rdr["ovsetpoint"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvThreshold), tempLong, timestamp);
-    rdr["ovuvtracktime"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OVUVTrackTime), tempLong, timestamp);
     rdr["lastovuvdatetime"] >> _lastOvUvDateTime; //toAdd
-    rdr["neutralcurrentsensor"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentSensor), tempLong, timestamp);
-    rdr["neutralcurrentalarmsetpoint"] >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::NeutralCurrentAlarmThreshold), tempLong, timestamp);
-    rdr["ipaddress"]  >> tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UDPIpAddress), tempLong, timestamp);
-    rdr["udpport"] >>  tempLong;
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UDPPortNumber), tempLong, timestamp);
 
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlLocal),        !!(_lastControlReason & 0x01), timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlRemote),       !!(_lastControlReason & 0x02), timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlOvUv),         !!(_lastControlReason & 0x04), timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlNeutralFault), !!(_lastControlReason & 0x08), timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlScheduled),    !!(_lastControlReason & 0x10), timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlDigital),      !!(_lastControlReason & 0x20), timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlAnalog),       !!(_lastControlReason & 0x40), timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlTemperature),  !!(_lastControlReason & 0x80), timestamp);
 
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlLocal), _lastControlReason & 0x01, timestamp);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlRemote), _lastControlReason & 0x02, timestamp);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlOvUv), _lastControlReason & 0x04, timestamp);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlNeutralFault), _lastControlReason & 0x08, timestamp);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlScheduled), _lastControlReason & 0x10, timestamp);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlDigital), _lastControlReason & 0x20, timestamp);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlAnalog), _lastControlReason & 0x40, timestamp);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::LastControlTemperature), _lastControlReason & 0x80, timestamp);
-
-
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvCondition), condition & 0x01, timestamp);
-    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvCondition), condition & 0x02, timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::UvCondition), !!(condition & 0x01), timestamp);
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::OvCondition), !!(condition & 0x02), timestamp);
 
     _insertDynamicDataFlag = false;
     _dirty = false;
-
-
 }
-/*---------------------------------------------------------------------------
-    replicate
-
-    Restores self's operation fields.
----------------------------------------------------------------------------*/
-CtiCCTwoWayPoints* CtiCCTwoWayPoints::replicate() const
-{
-    return(new CtiCCTwoWayPoints(*this));
-}
-
 
 CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
 {

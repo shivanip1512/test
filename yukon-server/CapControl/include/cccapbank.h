@@ -259,7 +259,7 @@ public:
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
 
-    CtiCCTwoWayPoints* getTwoWayPoints();
+    CtiCCTwoWayPointsPtr getTwoWayPoints();
 
     bool isDirty() const;
     void setDirty(const bool flag);
@@ -374,7 +374,7 @@ private:
     bool _porterRetFailFlag;
     bool _unsolicitedPendingFlag;
 
-    CtiCCTwoWayPoints* _twoWayPoints;
+    CtiCCTwoWayPointsPtr _twoWayPoints;
     std::string _ipAddress;
     long _udpPortNumber;
     long _reportedCBCLastControlReason;
