@@ -19,7 +19,6 @@ public class YukonUser extends DBPersistent  {
     private AuthType authType = AuthType.PLAIN;
     private Date lastChangedDate = null;
     private boolean forceReset = false;
-//    private Integer userGroupId = null;
 
 	private static final String[] SELECT_COLUMNS = 
 	{ 	
@@ -28,7 +27,6 @@ public class YukonUser extends DBPersistent  {
         "AuthType",
 		"LastChangedDate",
 		"ForceReset"
-//		"UserGroupId",
 	};
 	
 	
@@ -88,7 +86,7 @@ public class YukonUser extends DBPersistent  {
 	 */
 	public void update() throws SQLException {
 		Object[] setValues = { getUsername(), getLoginStatus().getDatabaseRepresentation(), 
-		                       getAuthType().name(), getLastChangedDate(), isForceReset()};
+		                       getAuthType().name(), getLastChangedDate(), isForceReset() ? 'Y': 'N'};
 		
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };

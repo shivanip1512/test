@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -59,7 +58,7 @@ public class LiteYukonUser extends LiteBase {
                 setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
                 setAuthType(AuthType.valueOf(rs.getString("AuthType")));
                 setLastChangedDate(new Instant(rs.getDate("lastChangedDate")));
-                setForceReset(YNBoolean.valueOf(rs.getString("ForceReset")).getBoolean());
+                setForceReset("Y".equals(rs.getString("ForceReset")));
                 return null;
             }
         });
