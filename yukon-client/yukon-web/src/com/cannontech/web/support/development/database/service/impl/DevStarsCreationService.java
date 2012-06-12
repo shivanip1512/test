@@ -48,7 +48,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     
     @Override
     protected void createAll() {
-        createEC();
+        createEC(devDbSetupTask.getDevStars());
         setupStarsAccounts(devDbSetupTask.getDevStars());
         createStars(devDbSetupTask.getDevStars());
     }
@@ -58,8 +58,8 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         log.info("Stars:");
     }
 
-    private void createEC() {
-        if (devDbSetupTask.getDevStars().isCreateCooperEC()) {
+    private void createEC(DevStars devStars) {
+        if (devStars.isCreateCooperEC()) {
             EnergyCompanyDto ecd = new EnergyCompanyDto();
             ecd.setName("Cooper EC");
             ecd.setEmail("info@cannontech.com");
@@ -70,20 +70,19 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             
             try {
                 LiteStarsEnergyCompany ec = energyCompanyService.createEnergyCompany(ecd,  yukonUserDao.getLiteYukonUser(-2), null);
-                devDbSetupTask.getDevStars().setEnergyCompany(ec);
+                devStars.setEnergyCompany(ec);
             } catch (Exception e) {
-                devDbSetupTask.getDevStars().setEnergyCompany(starsDatabaseCache.getDefaultEnergyCompany());
+                devStars.setEnergyCompany(starsDatabaseCache.getDefaultEnergyCompany());
                 log.warn("Cannot create new energy company. Setting to default", e);
             }
             
             try {
-                StarsAdminUtil.mapOperatorLogin(yukonUserDao.getLiteYukonUser(-2),devDbSetupTask.getDevStars().getEnergyCompany());
+                StarsAdminUtil.mapOperatorLogin(yukonUserDao.getLiteYukonUser(-2), devStars.getEnergyCompany());
                 log.info("Set user Yukon as operator login for Cooper EC");
             } catch (CommandExecutionException e) {
                 log.warn("Unable to link new energy company to yukon/yukon",e);
             }
         }
-
     }
 
     private void setupStarsAccounts(DevStars devStars) {

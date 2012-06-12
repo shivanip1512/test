@@ -9,6 +9,7 @@ import com.cannontech.core.roleproperties.GroupRolePropertyValueCollection;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.user.UserUtils;
 
 public class DevRolePropUpdaterService extends DevObjectCreationBase {
     private RoleDao roleDao;
@@ -17,7 +18,7 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
     @Override
     protected void createAll() {
         // feel free to make this sys admin group thing below better
-        LiteYukonGroup group = new LiteYukonGroup(-2, "System Administrator Grp");
+        LiteYukonGroup group = new LiteYukonGroup(UserUtils.USER_YUKON_ID, "System Administrator Grp");
         updateAllRolePropertiesForGroup(group);
     }
 

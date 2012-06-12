@@ -4,9 +4,7 @@ import java.util.List;
 
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.support.development.DevDbSetupTask;
-import com.cannontech.web.support.development.database.objects.DevAMR;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
-import com.cannontech.web.support.development.database.objects.DevStars;
 import com.cannontech.web.support.development.database.service.DevDatabasePopulationService;
 
 public class DevBuildDatabasePopulationService {
@@ -20,23 +18,20 @@ public class DevBuildDatabasePopulationService {
 
             // Setup task 
             DevDbSetupTask task = new DevDbSetupTask();
-            DevAMR da = new DevAMR();
-            List<DevPaoType> meters = da.getMeterTypes();
+            List<DevPaoType> meters = task.getDevAMR().getMeterTypes();
             //Select all meter types
             for (DevPaoType dpt : meters) {
                 dpt.setCreate(true);
             }
-            da.setMeterTypes(meters);
-            da.setNumAdditionalMeters(2);
-            task.setDevAMR(da);
-            DevStars ds = new DevStars();
-            ds.setCreateCooperEC(true);
-            task.setDevStars(ds);
+            task.getDevAMR().setMeterTypes(meters);
+            task.getDevAMR().setNumAdditionalMeters(2);
+            task.getDevStars().setCreateCooperEC(true);
             task.setBulkPointDataInject(true);
 
             // Execute database population
             devDatabasePopulationService.executeFullDatabasePopulation(task);
         } catch (Exception e) {
+            System.out.println();
         } finally {
             YukonSpringHook.shutdownContext();
             System.exit(0);
