@@ -31,7 +31,6 @@ public class DevBuildDatabasePopulationService {
             // Execute database population
             devDatabasePopulationService.executeFullDatabasePopulation(task);
         } catch (Exception e) {
-            System.out.println();
         } finally {
             YukonSpringHook.shutdownContext();
             System.exit(0);
