@@ -43075,7 +43075,7 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>PasswordHistory</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>UserId</i__columnName>
+                  <i__columnName>PasswordHistoryId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
