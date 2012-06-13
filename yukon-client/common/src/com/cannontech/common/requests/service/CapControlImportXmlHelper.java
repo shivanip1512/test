@@ -116,19 +116,27 @@ public class CapControlImportXmlHelper {
             cbcImportData.setCapBankName(capBankName);
         }
         
-        Boolean scanEnabled = cbcTemplate.evaluateAsBoolean("y:scanEnabled", false);
-        if (scanEnabled) {
-            cbcImportData.setScanEnabled(true);
-            
-            Integer scanInterval = cbcTemplate.evaluateAsInt("y:scanInterval");
-            if (scanInterval != null) {
-                cbcImportData.setScanInterval(scanInterval);
+        Boolean scanEnabled = cbcTemplate.evaluateAsBoolean("y:scanEnabled", null);
+        if (scanEnabled != null) {
+            if (scanEnabled.booleanValue()) {
+                cbcImportData.setScanEnabled(true);
+            } else {
+                cbcImportData.setScanEnabled(false);
             }
-            
-            Integer altInterval = cbcTemplate.evaluateAsInt("y:altInterval");
-            if (altInterval != null) {
-                cbcImportData.setAltInterval(altInterval);
-            }
+        }
+        
+        /*
+         * The user may request to change these values for a device that already has scan
+         * enabled, so we can't tie them to the scanEnabled element.
+         */
+        Integer scanInterval = cbcTemplate.evaluateAsInt("y:scanInterval");
+        if (scanInterval != null) {
+            cbcImportData.setScanInterval(scanInterval);
+        }
+        
+        Integer altInterval = cbcTemplate.evaluateAsInt("y:altInterval");
+        if (altInterval != null) {
+            cbcImportData.setAltInterval(altInterval);
         }
         
         return cbcImportData;

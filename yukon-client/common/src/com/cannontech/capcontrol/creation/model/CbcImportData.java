@@ -15,7 +15,7 @@ public class CbcImportData {
 	private Integer slaveAddress;
 	private Integer scanInterval;
 	private Integer altInterval;
-	private boolean scanEnabled;
+	private Boolean scanEnabled;
 	private final ImportAction importAction;
 	
 	public CbcImportData(String cbcName, ImportAction importAction, PaoType cbcType) {
@@ -112,7 +112,7 @@ public class CbcImportData {
         this.slaveAddress = slaveAddress;
     }
 
-    public boolean isScanEnabled() {
+    public Boolean getScanEnabled() {
         return scanEnabled;
     }
 

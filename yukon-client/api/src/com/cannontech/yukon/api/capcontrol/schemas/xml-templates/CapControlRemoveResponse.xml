@@ -4,6 +4,6 @@
            xsi:schemaLocation="http://yukon.cannontech.com/api ../CapControlRemoveResponse.xsd"
            version="1.0">
 
-     <token value="CCI:1337094569-0"/>
+     <token value="JOB:1337094569-0"/>
 
 </capControlRemoveResponse>

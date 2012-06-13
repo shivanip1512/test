@@ -177,7 +177,8 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             CompleteTwoWayCbc cbc = (CompleteTwoWayCbc)pao;
             cbc.setMasterAddress(cbcImportData.getMasterAddress());
             cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
-            if (cbcImportData.isScanEnabled()) {
+            
+            if (cbcImportData.getScanEnabled() != null && cbcImportData.getScanEnabled().booleanValue()) {
                 cbc.setScanEnabled(true);
                 if (cbcImportData.getAltInterval() != null) {
                     cbc.setAlternateRate(cbcImportData.getAltInterval());
@@ -262,17 +263,31 @@ public class CapControlImportServiceImpl implements CapControlImportService {
                 return;
             }
             
-            if (cbcImportData.isScanEnabled()) {
-                cbc.setScanEnabled(true);
+            if (cbcImportData.getScanEnabled() != null) {
+                if (cbcImportData.getScanEnabled().booleanValue()) {
+                    cbc.setScanEnabled(true);
+                    if (cbcImportData.getAltInterval() != null) {
+                        cbc.setAlternateRate(cbcImportData.getAltInterval());
+                    }
+                    if (cbcImportData.getScanInterval() != null) {
+                        cbc.setIntervalRate(cbcImportData.getScanInterval());
+                    }
+                } else {
+                    // The template may have had scan enabled, but the import says no!
+                    cbc.setScanEnabled(false);
+                }
+            } else if (cbc.isScanEnabled()) {
+                /* 
+                 * The user didn't specify if they wanted scanning turned on or off. They may,
+                 * however, have submitted values to update for a device with scanning already
+                 * enabled. We need to honor that request.
+                 */
                 if (cbcImportData.getAltInterval() != null) {
                     cbc.setAlternateRate(cbcImportData.getAltInterval());
                 }
                 if (cbcImportData.getScanInterval() != null) {
                     cbc.setIntervalRate(cbcImportData.getScanInterval());
                 }
-            } else {
-                // The template may have had scan enabled, but the import says no!
-                cbc.setScanEnabled(false);
             }
         } else {
             results.add(new CbcImportCompleteDataResult(cbcImportData, CbcImportResultType.INVALID_PARENT));
@@ -323,17 +338,31 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             if (cbcImportData.getSlaveAddress() != null) {
                 cbc.setSlaveAddress(cbcImportData.getSlaveAddress());
             }
-            if (cbcImportData.isScanEnabled()) {
-                cbc.setScanEnabled(true);
+            if (cbcImportData.getScanEnabled() != null) {
+                if (cbcImportData.getScanEnabled().booleanValue()) {
+                    cbc.setScanEnabled(true);
+                    if (cbcImportData.getAltInterval() != null) {
+                        cbc.setAlternateRate(cbcImportData.getAltInterval());
+                    }
+                    if (cbcImportData.getScanInterval() != null) {
+                        cbc.setIntervalRate(cbcImportData.getScanInterval());
+                    }
+                } else {
+                    // The import says scan should be disabled.
+                    cbc.setScanEnabled(false);
+                }
+            } else if (cbc.isScanEnabled()) {
+                /* 
+                 * The user didn't specify if they wanted scanning turned on or off. They may,
+                 * however, have submitted values to update for a device with scanning already
+                 * enabled. We need to honor that request.
+                 */
                 if (cbcImportData.getAltInterval() != null) {
                     cbc.setAlternateRate(cbcImportData.getAltInterval());
                 }
                 if (cbcImportData.getScanInterval() != null) {
                     cbc.setIntervalRate(cbcImportData.getScanInterval());
                 }
-            } else {
-                // The import says scan should be disabled.
-                cbc.setScanEnabled(false);
             }
             
             if (cbcImportData.getCommChannel() != null) {

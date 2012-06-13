@@ -9,7 +9,7 @@ public class CompleteDeviceScanRate {
     private int intervalRate = 300;
     private int scanGroup = 0;
     private int alternateRate = 300;
-    private DeviceScanType scanType = DeviceScanType.GENERAL;
+    private DeviceScanType scanType = DeviceScanType.INTEGRITY;
 
     @YukonPaoField
     public int getIntervalRate() {
