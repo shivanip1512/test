@@ -34,7 +34,6 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.db.capcontrol.CCEventLog;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
