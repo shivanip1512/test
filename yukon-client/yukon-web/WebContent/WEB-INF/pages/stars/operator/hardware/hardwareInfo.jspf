@@ -231,7 +231,7 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
         
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
-                <cti:button nameKey="save" type="submit" name="save"/>
+                <cti:button nameKey="save" type="submit" name="save" styleClass="f_disableAfterClick"/>
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="${editingRoleProperty}">
                 <cti:displayForPageEditModes modes="EDIT">
