@@ -73,7 +73,11 @@
 			
 			<%-- attribute/command --%>
 			<c:if test="${not empty jobWrapper.attributes}">
-				<tags:nameValue name="${attributeText}">${jobWrapper.attributeDescriptions}</tags:nameValue>
+				<tags:nameValue name="${attributeText}">
+					<c:forEach items="${jobWrapper.attributes}" var="attribute" >
+						<cti:msg2 key="${attribute.message}" />
+					</c:forEach>
+				</tags:nameValue>
 			</c:if>
 			<c:if test="${not empty jobWrapper.command}">
 				<tags:nameValue name="${commandText}">${jobWrapper.command}</tags:nameValue>

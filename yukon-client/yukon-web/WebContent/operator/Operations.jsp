@@ -67,19 +67,21 @@
                     <c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'true')}">
                         <c:set var="importUri" scope="page" value="/spring/stars/operator/account/accountImport" />
                         <c:set var="importLabel" scope="page" value="Import Account" />
+                        <cti:msg key="yukon.web.importAccount" var="importLabel"/>
                         <tags:sectionLink>
                             <a href="${pageScope.importUri}">${pageScope.importLabel}</a>
                         </tags:sectionLink>
                     </c:when>
                     <c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'EnrollMigration')}">
                         <c:set var="importUri" scope="page" value="MigrateEnrollment.jsp" />
-                        <c:set var="importLabel" scope="page" value="Migrate Enrollment Information" />
+                        <cti:msg key="yukon.web.migrateEnrollmentInformation" var="importLabel"/>
                         <tags:sectionLink>
                             <a href="Consumer/${pageScope.importUri}">${pageScope.importLabel}</a>
                         </tags:sectionLink>
                     </c:when>
                     <c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'upload')}">
                         <c:set var="importUri" scope="page" value="GenericUpload.jsp" />
+                        <cti:msg key="yukon.web.migrateEnrollmentInformation" var="importLabel"/>
                         <c:set var="importLabel" scope="page" value="Upload File" />
                     </c:when>
                 </c:choose>

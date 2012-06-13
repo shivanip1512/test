@@ -176,30 +176,30 @@ function checkDates(){
 	                	var startMinute = Number($F('startMinuteID')); 
 	                	var stopMinute = Number($F('stopMinuteID')); 
 	                	if(startMinute >= stopMinute){
-	                		alert("<cti:msg key="yukon.common.errors.time.startBeforeStop"/>");
+	                		alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
 	                        $('startCal').focus();
 	                        return false;
 	                	}else{
 	                		loadTarget(document.reportForm);
 	                	}
 	                }else {
-	                	alert("<cti:msg key="yukon.common.errors.time.startBeforeStop"/>");
+	                	alert("<cti:msg key="yukon.common.error.time.startBeforeStop"/>");
 	                    $('startCal').focus();
 	                    return false;
 	                }
 	            }else{
-	            	alert("<cti:msg key="yukon.common.errors.date.startBeforeStop"/>");
+	            	alert("<cti:msg key="yukon.common.error.date.startBeforeStop"/>");
 	                $('startCal').focus();
 	                return false;
 	            }
 			} else {
-				alert("<cti:msg key="yukon.common.errors.date.startBeforeStop"/>");
+				alert("<cti:msg key="yukon.common.error.date.startBeforeStop"/>");
 				$('startCal').focus();
 				return false;
 			}
 		}
 	} else {
-		alert("<cti:msg key="yukon.common.errors.date.oneInvalid"/>");
+		alert("<cti:msg key="yukon.common.error.date.oneInvalid"/>");
 		$('startCal').focus();
 		return false;
 	}
@@ -326,7 +326,7 @@ function makeFirstSelectedFilterValueVisible() {
 						  <%}%>
 						</select>
 					  </td>
-					  <td width="100%" class="columnHeader" align="center"><cti:msg key="yukon.web.min"/><BR>
+					  <td width="100%" class="columnHeader" align="center"><cti:msg key="yukon.common.time.min"/><BR>
 					    <select name="startMinute" id="startMinuteID">
 					    <% for (int i = 0; i < 60; i=i+5) {
 						    String iStr = String.valueOf(i);
@@ -354,7 +354,7 @@ function makeFirstSelectedFilterValueVisible() {
 					  <td valign="bottom">&nbsp</td>
 					  <% if( controller != null && controller.useStartStopTimes() ){%>
 
-					  <td class="columnHeader" align="center"><cti:msg key="yukon.web.min"/><BR>
+					  <td class="columnHeader" align="center"><cti:msg key="yukon.common.time.hour"/><BR>
 					    <select name="stopHour" id="stopHourID">
 					    <% for (int i = 0; i < 24; i++) {
 						    String iStr = String.valueOf(i);
@@ -363,7 +363,7 @@ function makeFirstSelectedFilterValueVisible() {
 						  <%}%>
 						</select>
 					  </td>
-					  <td width="100%" class="columnHeader" align="center"><cti:msg key="yukon.web.min"/><BR>
+					  <td width="100%" class="columnHeader" align="center"><cti:msg key="yukon.common.time.min"/><BR>
 					    <select name="stopMinute" id="stopMinuteID">
 					    <% for (int i = 0; i < 60; i=i+5) {
 						    String iStr = String.valueOf(i);

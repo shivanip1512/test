@@ -36,6 +36,6 @@
 			</c:if>
 		</c:forEach>
 		
-		<option value="${attr}" ${selected}>${attr.description}</option>
+		<option value="${attr}" ${selected}><cti:msg2 key="${attr.formatKey}"/></option>
 	</c:forEach>
 </select>

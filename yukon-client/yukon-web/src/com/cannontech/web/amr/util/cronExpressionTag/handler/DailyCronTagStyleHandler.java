@@ -3,9 +3,11 @@ package com.cannontech.web.amr.util.cronExpressionTag.handler;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExprTagDailyOptionEnum;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -14,6 +16,7 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
 public class DailyCronTagStyleHandler extends CronTagStyleHandlerBase {
 
 	public static final String CRONEXP_DAILY_OPTION = "CRONEXP_DAILY_OPTION";
+	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	
 	@Override
 	public CronTagStyleType getType() {
@@ -91,8 +94,8 @@ public class DailyCronTagStyleHandler extends CronTagStyleHandlerBase {
 	
 	// DESCRIPTION
 	public String generateDescription(CronExpressionTagState state, YukonUserContext userContext) {
-		
-		String desc = state.getCronExpressionDailyOption().getDescription() + ", at " + getTimeDescription(state, userContext);
+		String cronEnum = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(state.getCronExpressionDailyOption().getFormatKey());
+		String desc = cronEnum + ", at " + getTimeDescription(state, userContext);
 		return desc;
 	}
 }

@@ -3,7 +3,6 @@ package com.cannontech.web.group;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +34,6 @@ import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
@@ -45,12 +43,15 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.JsTreeNode;
 
 public class GroupEditorController extends MultiActionController {
 
+	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+	
     private DeviceGroupService deviceGroupService = null;
     private DeviceGroupUiService deviceGroupUiService = null;
     private DeviceGroupProviderDao deviceGroupDao = null;
@@ -132,9 +133,12 @@ public class GroupEditorController extends MultiActionController {
         // this path will be used to expand the tree to the selected node and ensure it is visible.
         final DeviceGroup selectedDeviceGroup = group;
         
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+        
         // ALL GROUPS TREE JSON
         HighlightSelectedGroupNodeAttributeSettingCallback callback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
-        JsTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(allGroupsGroupHierarchy, "Groups", callback);
+        JsTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(allGroupsGroupHierarchy, groupsLabel, callback);
         
         // selected node Ext path
         String extSelectedNodePath = callback.getJsTreeSelectedNodePath();
@@ -147,7 +151,7 @@ public class GroupEditorController extends MultiActionController {
         // MOVE GROUPS TREE JSON
         Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(selectedDeviceGroup);
         DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
-        JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, "Groups", null);
+        JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, null);
         
         JSONObject moveGroupJsonObj = new JSONObject(moveGroupRoot.toMap());
         mav.addObject("moveGroupDataJson", moveGroupJsonObj.toString()); 
@@ -159,7 +163,7 @@ public class GroupEditorController extends MultiActionController {
             }
         };
         DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
-        JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, "Groups", null);
+        JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, null);
         
         JSONObject copyGroupJson = new JSONObject(copyExtRoot.toMap());
         mav.addObject("copyGroupDataJson", copyGroupJson.toString()); 
@@ -342,7 +346,10 @@ public class GroupEditorController extends MultiActionController {
             }
         }
         
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, "Groups", new DisableCurrentGroup());
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+        
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new DisableCurrentGroup());
         JSONObject jsonObj = new JSONObject(root.toMap());
         String dataJson = jsonObj.toString();
         

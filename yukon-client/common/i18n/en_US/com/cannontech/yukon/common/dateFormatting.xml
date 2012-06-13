@@ -29,9 +29,14 @@
 <entry key="yukon.common.time.start">Start Time</entry>
 <entry key="yukon.common.time.stop">Stop Time</entry>
 
-<entry key="yukon.common.errors.time.startBeforeStop">The start time must occur before the stop time.</entry>
-<entry key="yukon.common.errors.date.startBeforeStop">The start date must occur before the stop date.</entry>
-<entry key="yukon.common.errors.date.invalid">The date entered is invalid.</entry>
-<entry key="yukon.common.errors.date.oneInvalid">One of the dates entered is not a valid date.</entry>
+<entry key="yukon.common.time.hour">Hour</entry>
+<entry key="yukon.common.time.minute">Minute</entry>
+<entry key="yukon.common.time.min">Min</entry>
+<entry key="yukon.common.time.second">second</entry>
+
+<entry key="yukon.common.error.time.startBeforeStop">The start time must occur before the stop time.</entry>
+<entry key="yukon.common.error.date.startBeforeStop">The start date must occur before the stop date.</entry>
+<entry key="yukon.common.error.date.invalid">The date entered is invalid.</entry>
+<entry key="yukon.common.error.date.oneInvalid">One of the dates entered is not a valid date.</entry>
 
 </properties>

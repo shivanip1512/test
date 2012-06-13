@@ -66,7 +66,7 @@
     <entry key="yukon.common.systemGroupEnum.TAMPER_FLAG_PROCESSING">/Meters/Monitors/Tamper Flag/</entry>
     <entry key="yukon.common.systemGroupEnum.SYSTEMMETERS_DISCONNECT">/System/Meters/Disconnect/</entry>
     <entry key="yukon.common.systemGroupEnum.SUBSTATION_NAME">/Meters/CIS Substation/</entry>
-    <entry key="yukon.common.systemGroupEnum._A">/System/Meters/Phase Detect/Last Results/A</entry>
+    <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_A">/System/Meters/Phase Detect/Last Results/A</entry>
     <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_B">/System/Meters/Phase Detect/Last Results/B</entry>
     <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_C">/System/Meters/Phase Detect/Last Results/C</entry>
     <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_AB">/System/Meters/Phase Detect/Last Results/AB</entry>
@@ -80,6 +80,16 @@
     <entry key="yukon.common.outageActionType.Restoration">Restoration</entry>
     <entry key="yukon.common.outageActionType.NoResponse">No Response</entry>
     
+    <!-- CronExprTagDailyOptionEnum -->
+    <entry key="yukon.common.cronExprTagDailyOptionEnum.EVERYDAY">Daily</entry>
+    <entry key="yukon.common.cronExprTagDailyOptionEnum.WEEKDAYS">Weekdays</entry>
     
+    <!-- PeakReportPeakType -->
+    <entry key="yukon.common.peakReportPeakType.DAY">Day</entry>
+    <entry key="yukon.common.peakReportPeakType.DAY.description">Peak Daily Usage</entry>
+    <entry key="yukon.common.peakReportPeakType.HOUR">Hour</entry>
+    <entry key="yukon.common.peakReportPeakType.HOUR.description">Peak Hourly Usage</entry>
+    <entry key="yukon.common.peakReportPeakType.INTERVAL">Interval</entry>
+    <entry key="yukon.common.peakReportPeakType.INTERVAL.description">Peak Interval</entry>
 
 </properties>

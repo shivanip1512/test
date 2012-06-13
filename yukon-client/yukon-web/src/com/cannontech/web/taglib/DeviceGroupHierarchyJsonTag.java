@@ -25,7 +25,7 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
     private DeviceGroupUiService deviceGroupUiService;
     
     private String predicates = "";
-    private String rootName = "Groups";
+    private String rootName = "";
     private String selectGroupName = null;
     private String selectedNodePathVar = null;
     private String var = null;
@@ -42,6 +42,10 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         if (!StringUtils.isBlank(selectGroupName)) {
         	DeviceGroup selectedDeviceGroup = deviceGroupService.resolveGroupName(selectGroupName);
         	nodeCallback = new HighlightSelectedGroupNodeAttributeSettingCallback(selectedDeviceGroup);
+        }
+        
+        if(StringUtils.isBlank(rootName)){
+        	rootName = getMessageSource().getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
         }
         
         JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, nodeCallback);

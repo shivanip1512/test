@@ -80,15 +80,15 @@
 <entry key="yukon.web.reportTypes.PROGRAM_AND_GEAR_CONTROL.description">Detailed report of load program, control area, or control scenario control events; includes gear information.</entry>
 
 <entry key="yukon.web.reportTypes.CAP_BANK_DETAILS">Cap Bank Details</entry>
-<entry key="yukon.web.reportTypes.CAP_BANK_DETAILS.description">Detailed report of the capbanks, including information on its location, size, cbc, feeder and substation bus.</entry>
+<entry key="yukon.web.reportTypes.CAP_BANK_DETAILS.description">Detailed report of the capbanks, including information on its location, size, CBC, feeder and substation bus.</entry>
 <entry key="yukon.web.reportTypes.CBC_INVENTORY">CBC Inventory</entry>
-<entry key="yukon.web.reportTypes.CBC_INVENTORY.description">Detailed report showing cbc information and attached parent objects.</entry>
+<entry key="yukon.web.reportTypes.CBC_INVENTORY.description">Detailed report showing CBC information and attached parent objects.</entry>
 <entry key="yukon.web.reportTypes.CBC_SPECIALAREA_ASSIGNMENT">CBC Special Area Assignment </entry>
-<entry key="yukon.web.reportTypes.CBC_SPECIALAREA_ASSIGNMENT.description">Report showing the special area assignment for a cbc.</entry>
+<entry key="yukon.web.reportTypes.CBC_SPECIALAREA_ASSIGNMENT.description">Report showing the special area assignment for a CBC.</entry>
 <entry key="yukon.web.reportTypes.STRATEGY_ASSIGNMENT">Strategy Assignment </entry>
 <entry key="yukon.web.reportTypes.STRATEGY_ASSIGNMENT.description">Report showing the devices assigned to each strategy.</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_UNSOLICITED_MESSAGES">Unsolicited Messages</entry>
-<entry key="yukon.web.reportTypes.CAP_CONTROL_UNSOLICITED_MESSAGES.description">Report showing unsolicited messages received from a cbc.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_UNSOLICITED_MESSAGES.description">Report showing unsolicited messages received from a CBC.</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_DISABLED_DEVICES">Disabled Devices</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_DISABLED_DEVICES.description">Report showing disabled capcontrol devices.</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_MAINTENANCE_PENDING">Maintenance Pending</entry>
@@ -106,7 +106,7 @@
 <entry key="yukon.web.reportTypes.CAP_CONTROL_CURRENT_STATUS">Current Status</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_CURRENT_STATUS.description">Detailed report of cap bank statuses, based on var response information</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_STATE_COMPARISON">State Comparisons</entry>
-<entry key="yukon.web.reportTypes.CAP_CONTROL_STATE_COMPARISON.description">Detailed report showing a comparison of capbank states set by var response against its two-way cbc reported state.</entry>
+<entry key="yukon.web.reportTypes.CAP_CONTROL_STATE_COMPARISON.description">Detailed report showing a comparison of capbank states set by var response against its two-way CBC reported state.</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_NEW_ACTIVITY">New Activity</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_NEW_ACTIVITY.description">Detailed report of capbank activity, including manual and automated controls, operation outcomes, and capcontrol database changes.</entry>
 <entry key="yukon.web.reportTypes.CAP_CONTROL_OPERATIONS">Operations</entry>

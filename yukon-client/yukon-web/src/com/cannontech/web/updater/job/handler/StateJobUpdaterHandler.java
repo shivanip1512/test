@@ -4,16 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionStatus;
 import com.cannontech.amr.scheduledGroupRequestExecution.service.ScheduledGroupRequestExecutionStatusService;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.job.JobUpdaterTypeEnum;
 
 public class StateJobUpdaterHandler implements JobUpdaterHandler {
     private ScheduledGroupRequestExecutionStatusService executionStatusService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	
 	@Override
 	public String handle(int jobId, YukonUserContext userContext) {
 	    ScheduledGroupRequestExecutionStatus status = executionStatusService.getStatus(jobId);
-		return status.name();
+		return messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(status.getFormatKey());
 	}
 	
 	@Override

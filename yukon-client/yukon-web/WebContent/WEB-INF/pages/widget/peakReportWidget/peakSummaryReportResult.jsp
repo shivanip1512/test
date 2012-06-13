@@ -15,7 +15,8 @@
 		<c:when test="${!peakResult.noData && peakResult.deviceError == ''}">
 			<table class="compactResultsTable">
 				<tr>
-					<th align="left"><i:inline key=".report" arguments="${peakResult.peakType.reportTypeDisplayName}"/></th>
+					<cti:msg2 key="${peakResult.peakType.reportTypeDisplayNameKey}" var="reportType"/>
+					<th align="left"><i:inline key=".report" arguments="${reportType}"/></th>
 					<th align="left" style="font-weight:normal;color:#666666;">
                         <cti:formatDate value="${peakResult.runDate}" type="DATE" />
                     </th>
@@ -33,7 +34,8 @@
 					<td>${avgVsTotal}</td>
 				</tr>
 				<tr>
-					<td class="label"><i:inline key=".peak" arguments="${peakResult.peakType.displayName}"/></td>
+					<cti:msg2 key="${peakResult.peakType.formatKey}" var="peakType"/>
+					<td class="label"><i:inline key=".peak" arguments="${peakType}"/></td>
 					<td>${peakResult.peakValue}</td>
 				</tr>
 				<c:choose>

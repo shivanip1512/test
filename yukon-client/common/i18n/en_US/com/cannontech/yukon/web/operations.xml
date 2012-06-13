@@ -11,8 +11,8 @@
 <entry key="yukon.web.module.operations.pageTitle">Energy Services Operations Center</entry>
 
 <entry key="yukon.web.operations.searchForExistingServiceOrder">Search for existing service order:</entry>
-<entry key="yukon.web.operations.confirmDeleteEnergyCompany">Are you sure you want to delete the energy company and all customer account information belongs to it?</entry>
-<entry key="yukon.web.operations.secondConfirmDeleteEnergyCompany">Are you really sure you want to delete the energy company?</entry>
+<entry key="yukon.web.operations.confirmDeleteEnergyCompany">Are you sure you want to delete the Energy Company and all Customer Account information belonging to it?</entry>
+<entry key="yukon.web.operations.secondConfirmDeleteEnergyCompany">Are you really sure you want to delete the Energy Company?</entry>
 
 <entry key="yukon.web.administration">Administration</entry>
 <entry key="yukon.web.allTrends">All Trends</entry>
@@ -37,10 +37,13 @@
 
 <entry key="yukon.web.hardwareInventory">Hardware Inventory</entry>
 
+<entry key="yukon.web.importAccount">Import Account</entry>
+
 <entry key="yukon.web.loadResponse">Load Response</entry>
 
 <entry key="yukon.web.manageIndexes">Manage Indexes</entry>
 <entry key="yukon.web.metering">Metering</entry>
+<entry key="yukon.web.migrateEnrollmentInformation">Migrate Enrollment Information</entry>
 
 <entry key="yukon.web.oddsForControl">Odds for Control</entry>
 <entry key="yukon.web.options">Options</entry>
@@ -53,6 +56,8 @@
 
 <entry key="yukon.web.serviceOrderList">Service Order List</entry>
 <entry key="yukon.web.support">Support</entry>
+
+<entry key="yukon.web.uploadFile">Upload File</entry>
 
 <entry key="yukon.web.viewBatchCommands">View Batch Commands</entry>
 <entry key="yukon.web.viewLogs">View Logs</entry>

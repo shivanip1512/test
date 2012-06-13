@@ -56,8 +56,8 @@
     <entry key="yukon.web.modules.amr.billing.DETAIL.errors.fieldsNotEmpty">Selected Fields must contain at least 1 available field</entry>
     <entry key="yukon.web.modules.amr.billing.DETAIL.errors.nameNotEmpty">Name cannot be empty</entry>
     <entry key="yukon.web.modules.amr.billing.DETAIL.errors.nameMaxLength">Name cannot be longer than 100 characters</entry>
-    <entry key="yukon.web.modules.amr.billing.DETAIL.errors.invalidPattern">invalid pattern detected. please check the pattern</entry>
-    <entry key="yukon.web.modules.amr.billing.DETAIL.errors.invalidFormat">invalid format information detected. please check the format information</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.errors.invalidPattern">Invalid pattern detected. Please check the pattern</entry>
+    <entry key="yukon.web.modules.amr.billing.DETAIL.errors.invalidFormat">Invalid format information detected. Please check the format information</entry>
     <entry key="yukon.web.modules.amr.billing.DETAIL.errors.errorSaving">Error saving format:</entry>
 
 <!-- overview.jsp -->

@@ -7,27 +7,27 @@
 <cti:url var="viewUrl" value="/spring/macsscheduler/schedules/view" />
 <cti:url var="toggleUrl" value="/spring/macsscheduler/schedules/toggleState" />
 
-    <h2>Scheduled Scripts</h2><BR>
+<cti:msgScope paths="yukon.web.modules.amr.macsscheduler.innerView">
+
+    <h2><cti:msg2 key=".pageName"/></h2><BR>
     <div id="schedules">
         <table class="resultsTable">
         <tr>
             <th id="Schedule Name">
                 <form id="form_scheduleName" action="${viewUrl}" method="POST">
-                    <a
-                        href="javascript:document.getElementById('form_scheduleName').submit();">Schedule
-                        Name</a>
+                    <a href="javascript:document.getElementById('form_scheduleName').submit();">
+                    	<cti:msg2 key=".scheduleName"/>
+                    </a>
                     <c:choose>
                         <c:when test="${sortBy == 'Schedule Name'}">
                             <c:choose>
                                 <c:when test="${descending}">
-                                    <span title="Sorted descending">&#9660;</span>
-                                    <input type="hidden"
-                                        name="descending" value="false" />
+                                    <span title="<cti:msg2 key=".sortedDescending"/>">&#9660;</span>
+                                    <input type="hidden" name="descending" value="false" />
                                 </c:when>
                                 <c:otherwise>
-                                    <span title="Sorted ascending">&#9650;</span>
-                                    <input type="hidden"
-                                        name="descending" value="true" />
+                                    <span title="<cti:msg2 key=".sortedAscending"/>">&#9650;</span>
+                                    <input type="hidden" name="descending" value="true" />
                                 </c:otherwise>
                             </c:choose>
                         </c:when>
@@ -36,25 +36,24 @@
                                 value="false" />
                         </c:otherwise>
                     </c:choose>
-                    <input type="hidden" name="sortBy"
-                        value="Schedule Name" />
+                    <input type="hidden" name="sortBy" value="Schedule Name" />
                 </form>
             </th>
             <th id="Category Name">
                 <form id="form_categoryName" action="${viewUrl}" method="POST">
-                    <a
-                        href="javascript:document.getElementById('form_categoryName').submit();">Category
-                        Name</a>
+                    <a href="javascript:document.getElementById('form_categoryName').submit();">
+                    	<cti:msg2 key=".categoryName"/>
+                    </a>
                     <c:choose>
                         <c:when test="${sortBy == 'Category Name'}">
                             <c:choose>
                                 <c:when test="${descending}">
-                                    <span title="Sorted descending">&#9660;</span>
+                                    <span title="<cti:msg2 key=".sortedDescending"/>">&#9660;</span>
                                     <input type="hidden"
                                         name="descending" value="false" />
                                 </c:when>
                                 <c:otherwise>
-                                    <span title="Sorted ascending">&#9650;</span>
+                                    <span title="<cti:msg2 key=".sortedAscending"/>">&#9650;</span>
                                     <input type="hidden"
                                         name="descending" value="true" />
                                 </c:otherwise>
@@ -71,19 +70,19 @@
             </th>
             <th id="Current State">
                 <form id="form_currentState" action="${viewUrl}" method="POST">
-                    <a
-                        href="javascript:document.getElementById('form_currentState').submit();">Current
-                        State</a>
+                    <a href="javascript:document.getElementById('form_currentState').submit();">
+                    	<cti:msg2 key=".currentState"/>
+                    </a>
                     <c:choose>
                         <c:when test="${sortBy == 'Current State'}">
                             <c:choose>
                                 <c:when test="${descending}">
-                                    <span title="Sorted descending">&#9660;</span>
+                                    <span title="<cti:msg2 key=".sortedDescending"/>">&#9660;</span>
                                     <input type="hidden"
                                         name="descending" value="false" />
                                 </c:when>
                                 <c:otherwise>
-                                    <span title="Sorted ascending">&#9650;</span>
+                                    <span title="<cti:msg2 key=".sortedAscending"/>">&#9650;</span>
                                     <input type="hidden"
                                         name="descending" value="true" />
                                 </c:otherwise>
@@ -100,19 +99,19 @@
             </th>
             <th id="Start Date/Time">
                 <form id="form_startDate" action="${viewUrl}" method="POST">
-                    <a
-                        href="javascript:document.getElementById('form_startDate').submit();">Start
-                        Date/Time</a>
+                    <a href="javascript:document.getElementById('form_startDate').submit();">
+                    	<cti:msg2 key=".startDateTime"/>
+                    </a>
                     <c:choose>
                         <c:when test="${sortBy == 'Start Date/Time'}">
                             <c:choose>
                                 <c:when test="${descending}">
-                                    <span title="Sorted descending">&#9660;</span>
+                                    <span title="<cti:msg2 key=".sortedDescending"/>">&#9660;</span>
                                     <input type="hidden"
                                         name="descending" value="false" />
                                 </c:when>
                                 <c:otherwise>
-                                    <span title="Sorted ascending">&#9650;</span>
+                                    <span title="<cti:msg2 key=".sortedAscending"/>">&#9650;</span>
                                     <input type="hidden"
                                         name="descending" value="true" />
                                 </c:otherwise>
@@ -129,19 +128,19 @@
             </th>
             <th id="Stop Date/Time">
                 <form id="form_stopDate" action="${viewUrl}" method="POST">
-                    <a
-                        href="javascript:document.getElementById('form_stopDate').submit();">Stop
-                        Date/Time</a>
+                    <a href="javascript:document.getElementById('form_stopDate').submit();">
+                    	<cti:msg2 key=".stopDateTime"/>
+                    </a>
                     <c:choose>
                         <c:when test="${sortBy == 'Stop Date/Time'}">
                             <c:choose>
                                 <c:when test="${descending}">
-                                    <span title="Sorted descending">&#9660;</span>
+                                    <span title="<cti:msg2 key=".sortedDescending"/>">&#9660;</span>
                                     <input type="hidden"
                                         name="descending" value="false" />
                                 </c:when>
                                 <c:otherwise>
-                                    <span title="Sorted ascending">&#9650;</span>
+                                    <span title="<cti:msg2 key=".sortedAscending"/>">&#9650;</span>
                                     <input type="hidden"
                                         name="descending" value="true" />
                                 </c:otherwise>
@@ -208,7 +207,7 @@
             <td>
                 <c:choose>
                     <c:when test="${scheduleInfo.updatingState}">
-                        Updating...
+                        <cti:msg2 key=".updating"/>
                     </c:when>
                     <c:otherwise>
                         ${scheduleInfo.schedule.currentState}                        
@@ -244,10 +243,10 @@
                         	<c:choose>
                         		<c:when
                                     test="${scheduleInfo.disabledState}">
-                                	Enable
+                                	<cti:msg2 key=".enable"/>
                             	</c:when>
                             	<c:otherwise>
-                            		Disable
+                                	<cti:msg2 key=".disable"/>
                             	</c:otherwise>
                             </c:choose>
                         </button>
@@ -265,5 +264,4 @@
         </c:forEach>
     </table>
     </div>
-
-
+</cti:msgScope>

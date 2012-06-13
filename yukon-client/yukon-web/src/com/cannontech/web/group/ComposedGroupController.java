@@ -40,6 +40,9 @@ import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.JsTreeNode;
 
@@ -47,6 +50,7 @@ import com.cannontech.web.util.JsTreeNode;
 @RequestMapping("/composedGroup/*")
 public class ComposedGroupController {
     
+	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupService deviceGroupService;
     private DeviceGroupUiService deviceGroupUiService;
@@ -134,7 +138,10 @@ public class ComposedGroupController {
         
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);
-        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, "Groups", null);
+        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+        JsTreeNode groupExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, null);
         
         JSONObject chooseGrouptreeJsonObj = new JSONObject(groupExtRoot.toMap());
         String chooseGroupTreeJson = chooseGrouptreeJsonObj.toString();

@@ -70,7 +70,9 @@ public class PeakReportWidget extends WidgetControllerBase {
         channelAttributes.put(4,BuiltInAttribute.VOLTAGE_PROFILE);
         
         Map<Integer, String> channelDisplayNames = new HashMap<Integer, String>();
-        channelDisplayNames.put(1,"Channel 1 (Usage)");
+        
+        String channel1 = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.widgets.peakReportWidget.channel1");
+        channelDisplayNames.put(1, channel1);
         
         // no channel 4 (Voltage) support for now
         //channelDisplayNames.put(4,"Channel 4 (Voltage)");
@@ -112,7 +114,8 @@ public class PeakReportWidget extends WidgetControllerBase {
             
             Map<String, String> peakTypeInfo = new HashMap<String, String>();
             peakTypeInfo.put("peakType",peakType.toString());
-            peakTypeInfo.put("peakTypeDisplayName",peakType.getReportTypeDisplayName());
+            String peakTypeDisplayName = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(peakType.getReportTypeDisplayNameKey()); 
+            peakTypeInfo.put("peakTypeDisplayName",peakTypeDisplayName);
             if (peakType.equals(prevPeakType)) {
                 peakTypeInfo.put("selected","selected");
             }

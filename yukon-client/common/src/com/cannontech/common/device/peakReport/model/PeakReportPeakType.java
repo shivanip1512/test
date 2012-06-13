@@ -1,25 +1,25 @@
 package com.cannontech.common.device.peakReport.model;
 
-public enum PeakReportPeakType {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum PeakReportPeakType implements DisplayableEnum {
     
-    DAY("Day","Peak Daily Usage"), 
-    HOUR("Hour","Peak Hourly Usage"), 
-    INTERVAL("Interval", "Peak Interval");
+    DAY, 
+    HOUR, 
+    INTERVAL;
     
-    private String displayName;
-    private String reportTypeDisplayName;
-    
-    PeakReportPeakType(String displayName, String reportTypeDisplayName){
-        
-        this.displayName = displayName;
-        this.reportTypeDisplayName = reportTypeDisplayName;
-    }
+    private String baseKey = "yukon.common.peakReportPeakType.";
     
     public String getDisplayName(){
-        return displayName;
+        return name();
     }
     
-    public String getReportTypeDisplayName(){
-        return reportTypeDisplayName;
+    public String getReportTypeDisplayNameKey(){
+        return baseKey + name() + ".description";
     }
+
+	@Override
+	public String getFormatKey() {
+		return getDisplayName();
+	}
 }

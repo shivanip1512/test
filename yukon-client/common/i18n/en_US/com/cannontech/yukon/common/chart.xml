@@ -20,5 +20,5 @@
     <entry key="yukon.common.chart.model.converterType.DELTA_WATER">{0} / {1}</entry>
     <entry key="yukon.common.chart.model.converterType.DELTA_WATER.label">Delta</entry>
 	<entry key="yukon.common.chart.model.converterType.POWERFACTOR">{0}</entry>
-	<entry key="yukon.common.chart.model.converterType.POWERFACTOR.label">PowerFactor</entry>
+	<entry key="yukon.common.chart.model.converterType.POWERFACTOR.label">Power Factor</entry>
 </properties>

@@ -128,10 +128,10 @@
                 <td class="label">
                     <c:choose>
                         <c:when test="${attributeGraphType.attribute == 'USAGE' || attributeGraphType.attribute == 'USAGE_WATER'}">
-                            <i:inline key=".archivedUsageData"/>:
+                            <i:inline key=".archivedUsageData"/>
                         </c:when>
                         <c:otherwise>
-                            <i:inline key=".tabularUsageData"/>:
+                            <i:inline key=".tabularUsageData"/>
                         </c:otherwise>
                     </c:choose>
                 </td>

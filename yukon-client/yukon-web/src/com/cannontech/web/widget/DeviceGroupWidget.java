@@ -27,6 +27,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
@@ -47,6 +48,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private MeterDao meterDao;
     private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     /**
      * This method renders the default deviceGroupWidget
@@ -96,7 +98,9 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             }
         }
         
-        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, "Groups", new AddGroupIdInfoAndDisableCurrentGroups());
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new AddGroupIdInfoAndDisableCurrentGroups());
         
         JSONObject jsonObj = new JSONObject(root.toMap());
         String dataJson = jsonObj.toString();

@@ -6,7 +6,7 @@
 <cti:msgScope paths="modules.amr.billing.HOME">
 <cti:msg2 key=".pageName" var="pageName"/>
 
-<cti:standardPage title="Billing Formats Setup" module="amr">
+<cti:standardPage title="${pageName}" module="amr">
 	<cti:standardMenu menuSelection="billing|setup"/>
 	<cti:breadCrumbs>
 		<cti:msg key="yukon.web.components.button.home.label" var="homeLabel"/>

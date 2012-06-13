@@ -5,12 +5,16 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
 
-<cti:standardPage title="Groups Home" module="amr">
+
+<cti:msg key="yukon.web.deviceGroups.editor.pageName" var="pageName"/>
+<cti:standardPage title="${pageName}" module="amr">
 <cti:standardMenu menuSelection="devicegroups|home"/>
 
     <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <cti:crumbLink title="Device Groups" />
+    	<cti:msg key="yukon.web.components.button.home.label" var="homeLabel"/>
+        <cti:crumbLink url="/operator/Operations.jsp" title="${homeLabel}" />
+        <cti:msg key="yukon.web.deviceGroups.editor.title" var="deviceGroupsLabel"/>
+        <cti:crumbLink title="${deviceGroupsLabel}" />
     </cti:breadCrumbs>
     
     <cti:msg var="removeGroupAreYouSure" key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure" javaScriptEscape="true"/>
@@ -113,7 +117,7 @@
         
     </script>
 
-    <h2>Groups Home</h2>
+    <h2><cti:msg key="yukon.web.deviceGroups.editor.pageName"/></h2>
     <br>
 
     <c:if test="${not empty param.errorMessage}">
@@ -412,15 +416,15 @@
                     </cti:url>
                     <c:choose>
                         <c:when test="${childDeviceCount > 0}">
-                            <a href="${htmlUrl}">HTML</a>
+                            <a href="${htmlUrl}"><cti:msg key="yukon.web.modules.amr.fileFormatHtml"/></a>
                             |
-                            <cti:simpleReportLinkFromNameTag definitionName="deviceGroupDefinition" viewType="csvView" deviceGroup="${group}">CSV</cti:simpleReportLinkFromNameTag>
+                            <cti:simpleReportLinkFromNameTag definitionName="deviceGroupDefinition" viewType="csvView" deviceGroup="${group}"><cti:msg key="yukon.web.modules.amr.fileFormatCsv"/></cti:simpleReportLinkFromNameTag>
                             |
-                            <cti:simpleReportLinkFromNameTag definitionName="deviceGroupDefinition" viewType="pdfView" deviceGroup="${group}">PDF</cti:simpleReportLinkFromNameTag>
+                            <cti:simpleReportLinkFromNameTag definitionName="deviceGroupDefinition" viewType="pdfView" deviceGroup="${group}"><cti:msg key="yukon.web.modules.amr.fileFormatPdf"/></cti:simpleReportLinkFromNameTag>
                        
                         </c:when>
                         <c:otherwise>
-                            No devices
+                            <cti:msg key="yukon.web.deviceGroups.editor.membersContainer.noDevices"/>
                         </c:otherwise>
                     </c:choose>
                     </div>
@@ -489,7 +493,7 @@
     
                     <%--############################### SUBGROUPS ##############################--%>
                     <%--########################################################################--%>
-                   	<h4>Subgroups</h4>
+                   	<h4><cti:msg key="yukon.web.deviceGroups.editor.memberContainer.subGroups"/></h4>
                    	<div class="groupEditorContentDetail">
                     <table style="width: 95%; padding-bottom: 10px;" >
                         <c:choose>
@@ -554,7 +558,7 @@
                 
                     <%--################################ DEVICES ###############################--%>
                     <%--########################################################################--%>
-                    <h4>Group Members</h4>
+                    <h4><cti:msg key="yukon.web.deviceGroups.editor.memberContainer.groupMembers"/></h4>
                    	<div class="groupEditorContentDetail">
                    	
                     <div id="deviceMembers">

@@ -166,4 +166,15 @@
     <entry key="yukon.web.modules.amr.validationEditor.EDIT.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.amr.validationEditor.CREATE.pageName">Create Validation Monitor</entry>
     
+    <entry key="yukon.web.modules.amr.macsscheduler.pageName">Scheduled Scripts</entry>
+    <entry key="yukon.web.modules.amr.macsscheduler.innerView.pageName">Scheduled Scripts</entry>
+    <entry key="yukon.web.modules.amr.macsscheduler.innerView.scheduleName">Schedule Name</entry>
+    <entry key="yukon.web.modules.amr.macsscheduler.innerView.categoryName">Category Name</entry>
+    <entry key="yukon.web.modules.amr.macsscheduler.innerView.currentState">Current State</entry>
+    <entry key="yukon.web.modules.amr.macsscheduler.innerView.startDateTime">Start Date/Time</entry>
+    <entry key="yukon.web.modules.amr.macsscheduler.innerView.stopDateTime">Stop Date/Time</entry>
+    <entry key="yukon.web.modules.amr.macsscheduler.innerView.sortedAscending">Sorted ascending/Time</entry>
+    <entry key="yukon.web.modules.amr.macsscheduler.innerView.sortedDescending">Sorted descending</entry>
+    <entry key="yukon.web.modules.amr.macsscheduler.innerView.updating">Updating...</entry>
+    
 </properties>

@@ -117,7 +117,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 channelInfo.put("channelProfilingOn", profilingService.isProfilingOnNow(deviceId, attrChanEnum.getChannel()));
                 channelInfo.put("jobInfos", profilingService.getToggleJobInfos(deviceId, attrChanEnum.getChannel()));
                 channelInfo.put("channelNumber", Integer.toString(attrChanEnum.getChannel()));
-                channelInfo.put("channelDescription", attrChanEnum.getAttribute().getDescription());
+                channelInfo.put("channelDescription", messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(attrChanEnum.getAttribute().getMessage()));
                 channelInfo.put("channelProfileRate", calcIntervalStr(attrChanEnum.getRate(deviceLoadProfile), userContext));
 
                 availableChannels.add(channelInfo);

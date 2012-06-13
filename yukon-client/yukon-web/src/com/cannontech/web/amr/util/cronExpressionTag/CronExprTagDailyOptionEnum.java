@@ -1,17 +1,20 @@
 package com.cannontech.web.amr.util.cronExpressionTag;
 
-public enum CronExprTagDailyOptionEnum {
+import com.cannontech.common.i18n.DisplayableEnum;
 
-	EVERYDAY("Daily"),
-	WEEKDAYS("Weekdays");
+public enum CronExprTagDailyOptionEnum implements DisplayableEnum {
+
+	EVERYDAY,
+	WEEKDAYS;
 	
-	private String description;
-	
-	CronExprTagDailyOptionEnum(String description) {
-		this.description = description;
-	}
+	private String baseKey = "yukon.common.cronExprTagDailyOptionEnum.";
 	
 	public String getDescription() {
-		return description;
+		return name();
+	}
+
+	@Override
+	public String getFormatKey() {
+		return baseKey + name();
 	}
 }

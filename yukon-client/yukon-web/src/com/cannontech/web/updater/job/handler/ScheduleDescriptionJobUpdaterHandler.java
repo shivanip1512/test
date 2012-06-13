@@ -3,6 +3,7 @@ package com.cannontech.web.updater.job.handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.user.YukonUserContext;
@@ -13,11 +14,12 @@ public class ScheduleDescriptionJobUpdaterHandler implements JobUpdaterHandler {
 
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
 	private CronExpressionTagService cronExpressionTagService;
+	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	
 	@Override
 	public String handle(int jobId, YukonUserContext userContext) {
 
-		String scheduleDescription = "N/A";
+		String scheduleDescription = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.defaults.na");
 		
 		try {
 			

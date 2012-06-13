@@ -46,11 +46,11 @@
 		</div>
 		
 		<div id="noStatsDiv_${id}" <c:if test="${hasStatsInitially}">style="display:none;"</c:if>>
-			N/A
+			<cti:msg2 key="yukon.web.defaults.na"/>
 		</div>
 		
 	</c:when>
 	<c:otherwise>
-		N/A
+			<cti:msg2 key="yukon.web.defaults.na"/>
 	</c:otherwise>
 </c:choose>
