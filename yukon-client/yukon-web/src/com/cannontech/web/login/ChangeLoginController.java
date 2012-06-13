@@ -9,12 +9,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.YukonUserDao;
@@ -22,6 +25,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.core.login.service.PasswordResetService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -30,10 +34,11 @@ public class ChangeLoginController {
     public static final String LOGIN_CHANGE_MESSAGE_PARAM = "loginChangeMsg";
     public static final String LOGIN_CHANGE_SUCCESS_PARAM = "success";
     
-    private AuthenticationService authenticationService;
-    private RolePropertyDao rolePropertyDao;
-    private SystemEventLogService systemEventLogService;
-    private YukonUserDao yukonUserDao;
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired private PasswordResetService passwordResetService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private SystemEventLogService systemEventLogService;
+    @Autowired private YukonUserDao yukonUserDao;
     
     @RequestMapping(value = "/changelogin", method = RequestMethod.GET)
     public String view(String redirectUrl, HttpServletRequest request, HttpServletResponse response, ModelMap map) {
@@ -51,9 +56,8 @@ public class ChangeLoginController {
     }
     
     @RequestMapping(value = "/changelogin/updatepassword", method = RequestMethod.POST)
-    public String updatePassword(String oldPassword, String newPassword, 
-            String confirm, String redirectUrl, HttpServletRequest request) 
-                throws Exception {
+    public ModelAndView updatePassword(String oldPassword, String newPassword, String confirm, String redirectUrl, HttpServletRequest request) 
+    throws Exception {
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         
@@ -69,6 +73,10 @@ public class ChangeLoginController {
             isValidPassword = isValidPassword(user.getUsername(), oldPassword);
         } catch (AuthenticationThrottleException e){
             retrySeconds = e.getThrottleSeconds();
+        } catch (PasswordExpiredException e) {
+            CTILogger.debug("The password for "+user.getUsername()+" is expired.", e);
+            String passwordResetUrl = passwordResetService.getPasswordResetUrl(user.getUsername(), request);
+            return new ModelAndView("redirect:"+passwordResetUrl);
         }
         boolean supportsPasswordChange = authenticationService.supportsPasswordSet(type);
         boolean hasRequiredFields = hasRequiredFields(oldPassword, newPassword, confirm);
@@ -96,8 +104,7 @@ public class ChangeLoginController {
     }
     
     @RequestMapping(value = "/changelogin/updateusername", method = RequestMethod.POST)
-    public String updateUsername(String username, String oldPassword,
-                                 String redirectUrl, HttpServletRequest request) 
+    public ModelAndView updateUsername(String username, String oldPassword, String redirectUrl, HttpServletRequest request) 
     throws Exception {
 
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -166,7 +173,7 @@ public class ChangeLoginController {
         session.setAttribute(LoginController.YUKON_USER, user);
     }
     
-    private String sendRedirect(HttpServletRequest request, String redirectUrl, ChangeLoginMessage loginMessage,
+    private ModelAndView sendRedirect(HttpServletRequest request, String redirectUrl, ChangeLoginMessage loginMessage,
                                 long retrySeconds, boolean success) {
         String safeRedirectUrl = ServletUtil.createSafeRedirectUrl(request, redirectUrl);
         if (loginMessage != null) {
@@ -189,28 +196,6 @@ public class ChangeLoginController {
             safeRedirectUrl += msgParams.toString();
         }
         
-        String redirect = "redirect:" + safeRedirectUrl; 
-        return redirect;
-    }
-    
-    @Autowired
-    public void setAuthenticationService(
-            AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setSystemEventLogService(SystemEventLogService systemEventLogService) {
-        this.systemEventLogService = systemEventLogService;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
+        return new ModelAndView("redirect:"+safeRedirectUrl);
     }
 }

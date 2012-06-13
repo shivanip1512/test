@@ -1,4 +1,4 @@
-package com.cannontech.common.util;
+package com.cannontech.core.authentication.model;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.apache.commons.lang.ArrayUtils;
 import com.google.common.collect.Lists;
 
 
-public class RegexUtil {
+public class PolicyRuleRegexSupport {
     public static String[] LATIN = {
         "Basic Latin",
         "Latin-1 Supplement",
@@ -18,14 +18,18 @@ public class RegexUtil {
     public static String[] GREEK = {
         "Greek and Coptic",
         "Greek Extended"
-        
     };
     public static String[] CYRILLIC = {
         "Cyrillic"
     };
     
-    public static String getEuropeanLanguageCharactersRegex() {
-        List<String> europeanLanguages = addAll(LATIN, GREEK, CYRILLIC);
+    public static String EUROPEAN_LANG_CHAR_REGEX = buildCharacterRegex(LATIN, GREEK, CYRILLIC);
+    
+    /**
+     * This method returns a regex expression of the languages passed in.
+     */
+    private static String buildCharacterRegex(String[] firstLanguageSet, String[]... extraLanguageSets) {
+        List<String> europeanLanguages = addAll(firstLanguageSet, extraLanguageSets);
         
         StringBuilder results = new StringBuilder(200);
         for (String europeanLanguage : europeanLanguages) {
@@ -37,6 +41,9 @@ public class RegexUtil {
         return results.toString();
     }
     
+    /**
+     * This method collapses several arrays into one list.
+     */
     private static List<String> addAll(String[] first, String[]... arrays){
         String[] results = first;
         for (String[] array :  arrays) {

@@ -73,12 +73,6 @@ public class LoginServiceImpl implements LoginService {
             
             rolePropertyDao.verifyRole(YukonRole.WEB_CLIENT, user);
             
-            // The user's password has expired; redirect the user to the password reset page.
-            boolean passwordExpired = authenticationService.isPasswordExpired(user);
-            if (passwordExpired) {
-                throw new PasswordExpiredException();
-            }
-            
             createSession(request, user);
 
             return true;

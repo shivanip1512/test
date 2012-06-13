@@ -14,6 +14,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.AbstractLoginRequestHandler;
@@ -31,25 +32,25 @@ public class CookieLoginRequestHandler extends AbstractLoginRequestHandler {
 
         Cookie rememberMeCookie = ServletUtil.getCookie(request, LoginController.REMEMBER_ME_COOKIE);
         if (rememberMeCookie != null) {
+            UserPasswordHolder holder = null;
             try {
                 String encryptedValue = rememberMeCookie.getValue();
-                UserPasswordHolder holder = loginCookieHelper.decodeCookieValue(encryptedValue);
+                holder = loginCookieHelper.decodeCookieValue(encryptedValue);
 
                 boolean success = loginService.login(request, holder.getUsername(), holder.getPassword());
                 if (success) {
                     LiteYukonUser user = ServletUtil.getYukonUser(request);
 
-                    ActivityLogger.logEvent(
-                    		user.getUserID(), 
-                    		LoginService.LOGIN_WEB_ACTIVITY_ACTION, 
-                    		"User " + user.getUsername() + " (userid=" + user.getUserID() + 
-                    			") has logged in from " + request.getRemoteAddr() + " (cookie)");
+                    ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, 
+                    		"User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr() + " (cookie)");
                 	
                     log.info("Proceeding with request after successful Remember Me login");
                     return true;
                 }
                 
                 log.info("Remember Me login failed");
+            } catch (PasswordExpiredException e) {
+                log.error("The password for "+holder.getUsername()+" is expired.");
             } catch (AuthenticationThrottleException e) {
                 log.error("AuthenticationThrottleException: " + e.getThrottleSeconds(), e);
             } catch (GeneralSecurityException e) {

@@ -10,6 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
@@ -49,6 +50,9 @@ public class UserLoginRequestEndpoint {
 
             //success!
             response.addContent(new Element("success", ns));
+        } catch (PasswordExpiredException e) {
+            Element fe = XMLFailureGenerator.generateFailure(userLoginRequest, e, "PasswordExpired", e.getMessage());
+            response.addContent(fe);
         } catch (BadAuthenticationException e) {
             Element fe = XMLFailureGenerator.generateFailure(userLoginRequest, e, "UserNotAuthenticated", e.getMessage());
             response.addContent(fe);

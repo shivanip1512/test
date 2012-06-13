@@ -28,7 +28,6 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
-import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -189,13 +188,7 @@ public class MultispeakFuncs
 //            username = "yukon";
 //            password = "yukon";
         	LiteYukonUser user = authenticationService.login(username, password);
-        	
-            // The user's password has expired.
-            boolean passwordExpired = authenticationService.isPasswordExpired(user);
-            if (passwordExpired) {
-                throw new PasswordExpiredException("The user's password is expired.  Please login to the web interface to reset it. ("+user.getUsername()+" )" );
-            }
-        	
+
             return user;
         } catch(BadAuthenticationException e) {
         	throw new RemoteException(e.getMessage());

@@ -15,6 +15,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authorization.service.PaoPermissionService;
@@ -55,6 +56,8 @@ public class AuthDaoImpl implements AuthDao {
 	public LiteYukonUser login(String username, String password) {
         try {
             return authenticationService.login(username, password);
+        } catch (PasswordExpiredException e) {
+            throw e;
         } catch (Exception e) {
             CTILogger.info(e);
             return null;

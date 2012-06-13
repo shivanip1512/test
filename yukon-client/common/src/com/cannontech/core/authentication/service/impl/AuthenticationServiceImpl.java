@@ -13,6 +13,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.authentication.dao.PasswordHistoryDao;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
@@ -73,6 +74,13 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         if (provider.login(liteYukonUser, password)) {
             log.debug("Authentication succeeded: username=" + username);
             authenticationThrottleService.loginSucceeded(username);
+            
+            // Check to see if the user's password is expired.
+            boolean passwordExpired = isPasswordExpired(liteYukonUser);
+            if (passwordExpired) {
+                throw new PasswordExpiredException("The user's password is expired.  Please login to the web interface to reset it. ("+liteYukonUser.getUsername()+")" );
+            }
+
             return liteYukonUser;
             
         } else {

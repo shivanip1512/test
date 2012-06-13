@@ -185,34 +185,34 @@ public class ClientSession {
             
             LoginPanel lp = makeLocalLoginPanel();
             while(collectInfo(p, lp)) {
-            	LiteYukonUser loggingInUser = DaoFactory.getAuthDao().login(lp.getUsername(), lp.getPassword());
-
-                // The user's password has expired; redirect the user to the password reset page.
-                boolean passwordExpired = authenticationService.isPasswordExpired(loggingInUser);
-                if (passwordExpired) {
-                    throw new PasswordExpiredException("The user's password is expired.  Please login to the web interface to reset it. ("+loggingInUser.getUsername()+" )" );
+                try {
+                    
+                	LiteYukonUser loggingInUser = DaoFactory.getAuthDao().login(lp.getUsername(), lp.getPassword());
+    
+                	if(loggingInUser != null) {
+                		//score! we found them
+                		setSessionInfo(loggingInUser);
+                		boolean saveInfo = lp.isRememberPassword();
+                		prefs.setDefaultRememberPassword(saveInfo);
+                		if(saveInfo) {
+                			prefs.setDefaultUsername(lp.getUsername());
+                			prefs.setDefaultPassword(lp.getPassword());
+                		}
+                		else {
+                			prefs.setDefaultUsername("");
+                			prefs.setDefaultPassword("");
+                		}
+                		
+                		return true;
+                	}
+                	else {
+                		// bad username or password
+                		displayMessage(p, "Invalid Username or Password.  Usernames and Passwords are case sensitive, be sure to use correct upper and lower case.", "Error");
+                	}
+                } catch (PasswordExpiredException e) {
+                    CTILogger.debug("The password for "+lp.getUsername()+" is expired.", e);
+                    displayMessage(p, "The password for "+lp.getUsername()+" is expired.  Please login to the web to reset it.", "Error");
                 }
-
-            	if(loggingInUser != null) {
-            		//score! we found them
-            		setSessionInfo(loggingInUser);
-            		boolean saveInfo = lp.isRememberPassword();
-            		prefs.setDefaultRememberPassword(saveInfo);
-            		if(saveInfo) {
-            			prefs.setDefaultUsername(lp.getUsername());
-            			prefs.setDefaultPassword(lp.getPassword());
-            		}
-            		else {
-            			prefs.setDefaultUsername("");
-            			prefs.setDefaultPassword("");
-            		}
-            		
-            		return true;
-            	}
-            	else {
-            		// bad username or password
-            		displayMessage(p, "Invalid Username or Password.  Usernames and Passwords are case sensitive, be sure to use correct upper and lower case.", "Error");
-            	}
             }
         } catch (RuntimeException e) {
             handleOtherExceptions(p, e);

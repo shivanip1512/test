@@ -15,7 +15,6 @@ import com.cannontech.billing.SimpleBillingFormatFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.exception.BadAuthenticationException;
-import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.impl.AuthenticationServiceImpl;
@@ -279,12 +278,6 @@ public class BillingFile extends java.util.Observable implements Runnable
 				AuthenticationService authenticationService = YukonSpringHook.getBean("authenticationService", AuthenticationServiceImpl.class);
 				liteYukonUser = authenticationService.login(username, password);
 				
-                // The user's password has expired; redirect the user to the password reset page.
-                boolean passwordExpired = authenticationService.isPasswordExpired(liteYukonUser);
-                if (passwordExpired) {
-                    throw new PasswordExpiredException("The user's password is expired.  Please login to the web interface to reset it. ("+liteYukonUser.getUsername()+" )" );
-                }
-
 			}catch(BadAuthenticationException e) {
 				CTILogger.info("Username/Password not supplied, using system authentication");
 				CTILogger.info(e);
