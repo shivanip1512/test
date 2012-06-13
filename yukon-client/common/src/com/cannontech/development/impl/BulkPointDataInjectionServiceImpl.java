@@ -36,7 +36,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
     @Override
     public void executeInjection() {
         BulkFakePointInjectionDto dto = new BulkFakePointInjectionDto();
-        dto.setAttribute(BuiltInAttribute.DEMAND);
+        dto.setAttribute(BuiltInAttribute.USAGE);
         dto.setIncremental(true);
         dto.setValueLow(2);
         dto.setValueHigh(4);

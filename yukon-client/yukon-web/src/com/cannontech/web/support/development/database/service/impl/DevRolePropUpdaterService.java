@@ -28,6 +28,12 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
 
     private void updateAllRolePropertiesForGroup(LiteYukonGroup group) {
 
+        // ODDS_FOR_CONTROL
+        setRole(group, YukonRoleProperty.ODDS_FOR_CONTROL_LABEL, "Odds for Control");
+
+        // CI_CURTAILMENT
+        setRole(group, YukonRoleProperty.CURTAILMENT_LABEL, "CI Curtailment");
+
         // Demand Response
         setRoleTrue(group, YukonRoleProperty.DEMAND_RESPONSE);
 
@@ -183,9 +189,6 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
         setRoleTrue(group, YukonRoleProperty.OPERATOR_SURVEY_EDIT);
         setRoleTrue(group, YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT);
 
-        // CI_CURTAILMENT
-        setRole(group, YukonRoleProperty.CURTAILMENT_LABEL, "CI Curtailment");
-
         // CONSUMER_INFO
         setRoleTrue(group, YukonRoleProperty.OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE);
         setRoleTrue(group, YukonRoleProperty.OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING);
@@ -255,9 +258,6 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
         setRoleTrue(group, YukonRoleProperty.VALIDATION_ENGINE);
         setRoleTrue(group, YukonRoleProperty.STATUS_POINT_MONITORING);
         setRoleTrue(group, YukonRoleProperty.PORTER_RESPONSE_MONITORING);
-
-        // ODDS_FOR_CONTROL
-        setRole(group, YukonRoleProperty.ODDS_FOR_CONTROL_LABEL, "Odds for Control");
 
         // SCHEDULER
         setRoleTrue(group, YukonRoleProperty.ENABLE_DISABLE_SCRIPTS);
