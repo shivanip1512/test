@@ -134,6 +134,13 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
+    public void addEnergyCompanyOperatorLoginListMapping(LiteYukonUser liteYukonUsr,
+                                     LiteStarsEnergyCompany liteStarsEnergyCompany) {
+        String sql = "INSERT INTO EnergyCompanyOperatorLoginList VALUES (?,?)";
+        yukonJdbcTemplate.update(sql, liteStarsEnergyCompany.getEnergyCompanyId(), liteYukonUsr.getUserID());
+    }
+    
+    @Override
     @Transactional    
     public void deleteECToAccountMapping(Integer accountId) {
         String sql = "DELETE FROM ECToAccountMapping WHERE AccountId = ?";

@@ -714,18 +714,6 @@ public class StarsAdminUtil {
 		
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
-	
-	public static void mapOperatorLogin(LiteYukonUser yu, LiteStarsEnergyCompany ec) throws CommandExecutionException {
-	    if (yu != null && ec != null ) {
-            SqlStatement stmt = new SqlStatement(
-                    "INSERT INTO EnergyCompanyOperatorLoginList VALUES(" +
-                        ec.getEnergyCompanyId() + ", " + yu.getUserID() + ")",
-                    CtiUtilities.getDatabaseAlias()
-                    );
-            stmt.execute();
-            ServerUtils.handleDBChange(ec, DbChangeType.UPDATE );
-        }
-	}
 
 	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status, LiteYukonGroup[] operGroups,
 		LiteStarsEnergyCompany energyCompany) throws TransactionException, WebClientException, CommandExecutionException

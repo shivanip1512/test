@@ -10,7 +10,6 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareHistory;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.Address;
-import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -28,7 +27,7 @@ import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.stars.web.util.StarsAdminUtil;
+import com.cannontech.user.UserUtils;
 import com.cannontech.web.support.development.database.objects.DevCCU;
 import com.cannontech.web.support.development.database.objects.DevHardwareType;
 import com.cannontech.web.support.development.database.objects.DevStars;
@@ -77,9 +76,9 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             }
             
             try {
-                StarsAdminUtil.mapOperatorLogin(yukonUserDao.getLiteYukonUser(-2), devStars.getEnergyCompany());
+                ecMappingDao.addEnergyCompanyOperatorLoginListMapping(yukonUserDao.getLiteYukonUser(UserUtils.USER_YUKON_ID), devStars.getEnergyCompany());
                 log.info("Set user Yukon as operator login for Cooper EC");
-            } catch (CommandExecutionException e) {
+            } catch (Exception e) {
                 log.warn("Unable to link new energy company to yukon/yukon",e);
             }
         }

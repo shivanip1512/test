@@ -5,20 +5,22 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.GroupRolePropertyValueCollection;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.user.UserUtils;
 
 public class DevRolePropUpdaterService extends DevObjectCreationBase {
-    private RoleDao roleDao;
-    private RolePropertyEditorDao rolePropertyEditorDao;
+    @Autowired private RoleDao roleDao;
+    @Autowired private RolePropertyEditorDao rolePropertyEditorDao;
+    @Autowired private YukonGroupDao yukonGroupDao;
+
 
     @Override
     protected void createAll() {
         // feel free to make this sys admin group thing below better
-        LiteYukonGroup group = new LiteYukonGroup(UserUtils.USER_YUKON_ID, "System Administrator Grp");
+        LiteYukonGroup group = yukonGroupDao.getLiteYukonGroupByName("System Administrator Grp");
         updateAllRolePropertiesForGroup(group);
     }
 
@@ -281,15 +283,5 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
         propertyValues.putAll(valueMap);
         rolePropertyEditorDao.save(propertyValues);
         log.info("YukonRole " + property.getRole().name() + " and YukonRoleProperty " + property.name() + " set to true");
-    }
-    
-    @Autowired
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
-    }
-    
-    @Autowired
-    public void setRolePropertyEditorDao(RolePropertyEditorDao rolePropertyEditorDao) {
-        this.rolePropertyEditorDao = rolePropertyEditorDao;
     }
 }

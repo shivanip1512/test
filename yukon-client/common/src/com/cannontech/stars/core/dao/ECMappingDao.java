@@ -63,6 +63,13 @@ public interface ECMappingDao {
 
     /**
      * Method to add an energy company to account mapping
+     * @param liteYukonUsr
+     * @param liteStarsEnergyCompany
+     */
+    public void addEnergyCompanyOperatorLoginListMapping(LiteYukonUser liteYukonUser, LiteStarsEnergyCompany liteStarsEnergyCompany);
+    
+    /**
+     * Method to add a yukon user to energy company as an operator login
      * @param ecToAccountMapping
      */
     public void addECToAccountMapping(ECToAccountMapping ecToAccountMapping);
