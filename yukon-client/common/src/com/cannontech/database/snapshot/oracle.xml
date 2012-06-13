@@ -40465,7 +40465,7 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>PASSWORDHISTORY</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>USERID</i__columnName>
+                  <i__columnName>PASSWORDHISTORYID</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
