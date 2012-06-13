@@ -41,7 +41,7 @@
         // ugly? but we can't sumbit a real form since the tag will most likely appear within a form already.
         // this should be safe though, it is the same way that a redirecting ext tree works (ha).
         var url = '<cti:url value="/spring/group/editor/home"/>' + '?groupName=' + encodeURIComponent($('${fieldName}').value);
-        window.location = url;
+        window.location.href = url;
     });
     
     jQuery(document).delegate(".chooseGroupIcon_${uniqueId}", "click", function() {

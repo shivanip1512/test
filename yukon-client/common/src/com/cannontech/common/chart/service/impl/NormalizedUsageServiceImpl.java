@@ -50,11 +50,7 @@ public class NormalizedUsageServiceImpl implements NormalizedUsageService {
         if (attribute == BuiltInAttribute.USAGE_WATER) {
             return new ChartDeltaWaterConverter();
         }
-        if (attribute == BuiltInAttribute.USAGE) {
-            return new ChartNormalizedDeltaConverter();
-        } else { // default to regular normalized converter
-            return new ChartNormalizedDeltaConverter();
-        }
+        return new ChartNormalizedDeltaConverter();
     }
 
 }

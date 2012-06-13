@@ -11,10 +11,13 @@ import com.cannontech.web.taglib.YukonTagSupport;
 public class PrintMsgScopeTag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
-        List<String> fullKeys = MessageScopeHelper.forRequest(getRequest()).getFullKeys(".xxx", "yukon.web");
+        List<String> fullKeys = MessageScopeHelper.forRequest(getRequest()).getFullKeys(".xxx", "yukon.web.");
+        System.out.println();
+        getJspContext().getOut().println("<br>");
         getJspContext().getOut().print("<ul>");
         for (String fullKey : fullKeys) {
             getJspContext().getOut().print("<li>" + fullKey + "</li>");
+            System.out.println(fullKey);
         }
         getJspContext().getOut().print("</ul>");
     }

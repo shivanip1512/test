@@ -91,22 +91,30 @@
 				<a href="javascript:void(0);" class="f_open_filter_dialog"><i:inline key=".clickHere"/></a>
 			</c:set>
 			<div class="page_help">
-				<cti:msg2 key=".firstVisit"
-					arguments="${detection_algorithm},${click_here}"
-					argumentSeparator="," htmlEscape="false"/>
+			    <cti:list var="arguments">
+			        <cti:item value="${detection_algorithm}"/>
+			        <cti:item value="${click_here}"/>
+			    </cti:list>
+				<cti:msg2 key=".firstVisit" arguments="${arguments}" htmlEscape="false"/>
 			</div>
 		</c:when>
 		<c:when test="${filterResult.hitCount == 0}">
 			<div class="page_warning">
-				<cti:msg2 key=".noResults"
-					arguments="${detection_algorithm},${current_filter}"
-					argumentSeparator="," htmlEscape="false"/>
+                <cti:list var="arguments">
+                    <cti:item value="${detection_algorithm}"/>
+                    <cti:item value="${current_filter}"/>
+                </cti:list>
+				<cti:msg2 key=".noResults" arguments="${arguments}" htmlEscape="false"/>
 			</div>
 		</c:when>
 		<c:when test="${filterResult.hitCount > 0}">
 			<div class="page_help">
-				<cti:msg2 key=".foundLeaks" arguments="${filterResult.hitCount},${detection_algorithm},${current_filter}"
-					argumentSeparator="," htmlEscape="false"/>
+                <cti:list var="arguments">
+                    <cti:item value="${filterResult.hitCount}"/>
+                    <cti:item value="${detection_algorithm}"/>
+                    <cti:item value="${current_filter}"/>
+                </cti:list>
+				<cti:msg2 key=".foundLeaks" arguments="${arguments}" htmlEscape="false"/>
 			</div>
 		</c:when>
 	</c:choose>
@@ -119,12 +127,6 @@
 	</c:if>
 
     <c:set var="actionsMenu">
-        <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
-            <form:form id="intervalDataForm" action="intervalData" method="get" commandName="backingBean" cssClass="">
-                <%@ include file="reportFilterFormValues.jspf"%>
-                <button type="submit" title="<cti:msg2 key=".viewIntervalDataTitle"/>"><cti:msg2 key=".viewIntervalData"/></button>
-            </form:form>
-        </c:if>
         <tags:dropdownActions>
             <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
                 <li>
@@ -146,6 +148,13 @@
                 </a>
             </li>
         </tags:dropdownActions>
+        
+        <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
+            <form:form id="intervalDataForm" action="intervalData" method="get" commandName="backingBean" cssClass="">
+                <%@ include file="reportFilterFormValues.jspf"%>
+                <button type="submit" title="<cti:msg2 key=".viewIntervalDataTitle"/>"><cti:msg2 key=".viewIntervalData"/></button>
+            </form:form>
+        </c:if>
     </c:set>
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${actionsMenu}">
@@ -177,10 +186,10 @@
 						<td class="small_width"><input type="checkbox" class="f_check_single"></td>
 						<td>
                             <cti:paoDetailUrl yukonPao="${row.meter}">
-								<spring:escapeBody>${row.meter.name}</spring:escapeBody>
+                                ${fn:escapeXml(row.meter.name)}
 							</cti:paoDetailUrl>
                         </td>
-						<td><spring:escapeBody>${row.meter.meterNumber}</spring:escapeBody></td>
+						<td>${fn:escapeXml(row.meter.meterNumber)}</td>
 						<td><tags:paoType yukonPao="${row.meter}"/></td>
 						<td><i:inline key=".leakRateLabel" arguments="${row.leakRate}"/></td>
 						<td>

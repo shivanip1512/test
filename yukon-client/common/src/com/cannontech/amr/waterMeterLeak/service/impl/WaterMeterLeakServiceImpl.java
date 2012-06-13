@@ -27,6 +27,7 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.base.Function;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -38,7 +39,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
     @Autowired private RawPointHistoryDao rawPointHistoryDao;
     @Autowired private NormalizedUsageService normalizedUsageService;
 
-    private class MeterPointValueHolder {
+    private static class MeterPointValueHolder {
         private Meter meter;
         private PointValueHolder pointValueHolder;
 
@@ -48,7 +49,7 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         }
     }
 
-    private class PointIdTimestamp {
+    private static class PointIdTimestamp {
         private int pointId;
         private Date timestamp;
 
@@ -61,7 +62,6 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + getOuterType().hashCode();
             result = prime * result + pointId;
             result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
             return result;
@@ -76,8 +76,6 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
             if (getClass() != obj.getClass())
                 return false;
             PointIdTimestamp other = (PointIdTimestamp) obj;
-            if (!getOuterType().equals(other.getOuterType()))
-                return false;
             if (pointId != other.pointId)
                 return false;
             if (timestamp == null) {
@@ -87,16 +85,12 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
                 return false;
             return true;
         }
-
-        private WaterMeterLeakServiceImpl getOuterType() {
-            return WaterMeterLeakServiceImpl.this;
-        }
     }
 
     @Override
     public List<WaterMeterLeak> getWaterMeterLeakIntervalData(Set<SimpleDevice> devices,
-                                                              Date fromDate,
-                                                              Date toDate,
+                                                              Instant fromDate,
+                                                              Instant toDate,
                                                               boolean includeDisabledPaos,
                                                               double threshold,
                                                               YukonUserContext userContext) {
@@ -105,8 +99,8 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
 
     @Override
     public List<WaterMeterLeak> getWaterMeterLeaks(Set<SimpleDevice> devices,
-                                                   Date fromDate,
-                                                   Date toDate,
+                                                   Instant fromDate,
+                                                   Instant toDate,
                                                    boolean includeDisabledPaos,
                                                    double threshold,
                                                    YukonUserContext userContext) {
@@ -114,8 +108,8 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
     }
 
     private List<WaterMeterLeak> getLeaks(Set<SimpleDevice> devices,
-                                          Date fromDate,
-                                          Date toDate,
+                                          Instant fromDate,
+                                          Instant toDate,
                                           boolean includeDisabledPaos,
                                           double threshold,
                                           YukonUserContext userContext,
@@ -129,8 +123,8 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
         List<MeterPointValueHolder> intervalReadings = Lists.newArrayList();
         Set<Meter> reportingMeters = Sets.newHashSet();
         populateMeterSetAndIntervalReadings(meters,
-                                            fromDate,
-                                            toDate,
+                                            fromDate.toDate(),
+                                            toDate.toDate(),
                                             includeDisabledPaos,
                                             reportingMeters,
                                             intervalReadings);
@@ -220,22 +214,21 @@ public class WaterMeterLeakServiceImpl implements WaterMeterLeakService {
             pvhs.add(pvqh);
         }
 
+        Map<PaoIdentifier, Meter> metersByPaoId =
+            Maps.uniqueIndex(allMeters, new Function<Meter, PaoIdentifier>() {
+                @Override
+                public PaoIdentifier apply(Meter input) {
+                    return input.getPaoIdentifier();
+                }
+            });
+
         List<PointValueHolder> normalizedUsage = normalizedUsageService.getNormalizedUsage(pvhs, BuiltInAttribute.USAGE_WATER);
         for (PointValueHolder pvh : normalizedUsage) {
             PaoIdentifier paoIdentifier = idToPaoIdentifierMap.get(new PointIdTimestamp(pvh.getId(), pvh.getPointDataTimeStamp()));
-            Meter meter = getMeterFromPaoIdentifier(allMeters, paoIdentifier);
+            Meter meter = metersByPaoId.get(paoIdentifier);
             reportingMeters.add(meter);
             intervalReadings.add(new MeterPointValueHolder(meter, pvh));
         }
-    }
-
-    private Meter getMeterFromPaoIdentifier(List<Meter> meters, PaoIdentifier paoIdentifier) {
-        for (Meter meter : meters) {
-            if (meter.getDeviceId() == paoIdentifier.getPaoId()) {
-                return meter;
-            }
-        }
-        return null;
     }
 
 }

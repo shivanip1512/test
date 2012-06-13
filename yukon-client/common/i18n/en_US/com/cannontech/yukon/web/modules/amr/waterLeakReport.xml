@@ -14,7 +14,7 @@
         Welcome to the Water Leak Report! Below is a report based on default filter values using our {0}
         <ul>
         <li>To change the filter click the cog button on the right or {1}</li>
-        <li>To view interval data check the respetive checkbox in the table below, then click the "View Interval Data" button</li>
+        <li>To view interval data check the respective checkbox in the table below, then click the "View Interval Data" button</li>
         </ul>
     ]]></entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.noResults"><![CDATA[
@@ -62,7 +62,7 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.viewIntervalData">View Interval Data</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.viewIntervalDataTitle">View interval data for the selected devices</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.performCollectionAction">Collection Action (All Devices)</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.leakRateLabel">{0} gal/hr</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.leakRateLabel">{0,number,0.00} gal/hr</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.exportCSV">Export to CSV</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.results.deviceCollectionDescription">Water Leak Report Results</entry>
 
@@ -97,17 +97,13 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.thresholdNegative">Threshold cannot be negative</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromDateAfterToDate">From date must be before to date</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourAfterToHour">From hour must be before to hour</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourTooLow">From Hour must be greater than 0</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toHourTooLow">To Hour must be greater than 0</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourTooHigh">From Hour must be less than 24</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toHourTooHigh">To Hour must be less than 24</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourInFuture">From Hour must be in the past</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourTooLow">From hour must be greater than 0</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toHourTooLow">To hour must be greater than 0</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourTooHigh">From hour must be less than 24</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toHourTooHigh">To hour must be less than 24</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourInFuture">From hour must be in the past</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromDateInFuture">From date must be in the past</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toHourInFuture">To Hour must be in the past</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toHourInFuture">To hour must be in the past</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toDateInFuture">To date must be in the past</entry>
     
-    <entry key="yukon.web.modules.amr.waterLeakReport.bulkActionContainer.header">Select Devices</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.bulkActionContainer.noteLabel"></entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.bulkActionContainer.noteText"></entry>
-
 </properties>

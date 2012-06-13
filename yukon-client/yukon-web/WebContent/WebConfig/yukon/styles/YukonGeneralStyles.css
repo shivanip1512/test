@@ -648,6 +648,7 @@ div.pagedBox .title, div.pagedBox .footer, div.boxContainerFooter .footer {
 div.pagedBox .title,
 div.pagedBox .footer {
     padding: 9px 8px;
+    overflow: hidden;
 }
 div.pagedBox .footer {
     height: 1.5em;
@@ -824,29 +825,41 @@ div.pagedBox table.boxTable {
 
 .pagedBox .contextArea {
     float: right;
+    margin: -4px 0;
+    height: 27px;
+    position: relative;
 }
 
 .pagedBox .contextArea button {
     position: relative;
-    top: -3px;
     font-size: 13px!important;
     border: solid 1px #777;
-    background: -moz-linear-gradient(#efefef, #ddd);
+	background-color: #efefef; /* Old browsers */
+	background-image: -webkit-linear-gradient(top, #efefef, #ddd); /* Chrome10+, Safari5.1+ */
+	background-image:    -moz-linear-gradient(top, #efefef, #ddd); /* FF3.6+ */
+	background-image:     -ms-linear-gradient(top, #efefef, #ddd); /* IE10+ */
+	background-image:      -o-linear-gradient(top, #efefef, #ddd); /* Opera 11.10+ */
+	background-image:         linear-gradient(top, #efefef, #ddd); /* W3C */
     color: #555;
     border-radius: 3px;
     padding: 4px 8px 4px 8px !important;
     margin: 0 7px 0 0;
     text-shadow: 0 1px 0 #EFEFEF;
-    cursor: pointer;
 }
 
 .pagedBox .contextArea button:hover {
     background-color: #ddd;
     color: #333;
     border-color: #666 !important;
+    cursor: pointer;
 }
 .pagedBox .contextArea button:active {
-    background: -moz-linear-gradient(#ddd, #efefef);
+    background-color: #ddd; /* Old browsers */
+    background-image: -webkit-linear-gradient(top, #ddd, #efefef); /* Chrome10+, Safari5.1+ */
+    background-image:    -moz-linear-gradient(top, #ddd, #efefef); /* FF3.6+ */
+    background-image:     -ms-linear-gradient(top, #ddd, #efefef); /* IE10+ */
+    background-image:      -o-linear-gradient(top, #ddd, #efefef); /* Opera 11.10+ */
+    background-image:         linear-gradient(top, #ddd, #efefef); /* W3C */
     user-select:none !important;
     outline: none !important;
 }
@@ -856,8 +869,6 @@ div.pagedBox table.boxTable {
     color: #999 !important;
     border: solid 1px #ccc !important;
     cursor: default;
-}
-.pagedBox .contextArea button:disabled:active {
 }
 
 .pagedBox .contextArea button:focus {
@@ -1862,9 +1873,9 @@ div.scrollingContainer {
 
 /* dropdown cog menu start */
 .dropdown-container {
-	display: inline-block;
-	position: relative;
-	width: 25px;
+	float: right;
+	width: 30px;
+	margin-top: 5px;
 }
 
 .dropdown-menu::before {
@@ -1918,9 +1929,7 @@ div.scrollingContainer {
 	-webkit-background-clip: padding-box;
 	   -moz-background-clip: padding;
 	        background-clip: padding-box;
-	-webkit-margin-before: 0px;
-	
-	-webkit-margin-after: 0px;
+    font-size: 13px;
 }
 .dropdown-menu a {
 	display: block;
@@ -1955,17 +1964,12 @@ div.scrollingContainer {
     top: 7px;
 }
 .dropdown-container .actions_link {
-    position: absolute;
-    top: -11px;
-    right: 0px;
+    position: relative;
+    top: 9px;
+    right: 3px;
 }
 .dropdown-container .actions_link:hover {
 	cursor: pointer;
-}
-.dropdown-container .actions_link .cog {
-    position: absolute;
-    right: 3px;
-    top: -10px;
 }
 
 .dropdown-menu {

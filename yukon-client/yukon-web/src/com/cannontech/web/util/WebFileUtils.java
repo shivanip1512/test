@@ -76,12 +76,11 @@ public class WebFileUtils {
         return new CSVReader(bufferedReader);
     }
     
-    public static void writeToCSV(HttpServletResponse response, String[] headerRow, List<String[]> dataRows)
+    public static void writeToCSV(HttpServletResponse response, String[] headerRow, List<String[]> dataRows, String fileName)
             throws IOException {
         // set up output for CSV
         response.setContentType("text/csv");
         response.setHeader("Content-Type", "application/force-download");
-        String fileName = "WaterLeakReport.csv";
         fileName = ServletUtil.makeWindowsSafeFileName(fileName);
         response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName);
         OutputStream outputStream = response.getOutputStream();

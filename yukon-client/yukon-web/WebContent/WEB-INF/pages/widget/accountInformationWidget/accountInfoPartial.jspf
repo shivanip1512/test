@@ -7,14 +7,14 @@
     	<td>
     		<tags:nameValueContainer2>
 	    		<tags:nameValue2 nameKey=".name">
-					${mspCustomer.firstName} 
-            		<c:if test="${not empty mspCustomer.MName}">${mspCustomer.MName}</c:if>
-            		${mspCustomer.lastName}
+                    ${fn:escapeXml(mspCustomer.firstName)}
+            		<c:if test="${not empty mspCustomer.MName}">${fn:escapeXml(mspCustomer.MName)}</c:if>
+                    ${fn:escapeXml(mspCustomer.lastName)}
 				</tags:nameValue2>
 				<tags:nameValueGap2 gapHeight="6px" />
 			    <c:if test="${not empty mspCustomer.DBAName}">
     	    		<tags:nameValue2 nameKey=".dba" >
-					     ${mspCustomer.DBAName}
+                        ${fn:escapeXml(mspCustomer.DBAName)}
 			        </tags:nameValue2>
 				    <tags:nameValueGap2 gapHeight="6px" />
 			    </c:if>
@@ -26,7 +26,7 @@
 	                <c:when test="${not empty mspPhoneNumbers}">
 	                    <c:forEach items="${mspPhoneNumbers}" var="phoneNumber">
 		                    <tags:nameValue2 nameKey=".phoneNumber" >
-		                         ${phoneNumber}
+                                ${fn:escapeXml(phoneNumber)}
 		                    </tags:nameValue2>
 		                    <tags:nameValueGap2 gapHeight="6px" />
 	                    </c:forEach>
@@ -40,7 +40,7 @@
 	                <c:when test="${not empty mspEmailAddresses}">
 	                    <c:forEach items="${mspEmailAddresses}" var="emailAddress">
 		                    <tags:nameValue2 nameKey=".emailAddress" >
-		                         ${emailAddress}
+                                ${fn:escapeXml(emailAddress)}
 		                    </tags:nameValue2>
 		                    <tags:nameValueGap2 gapHeight="6px" />
 	                    </c:forEach>
@@ -66,7 +66,7 @@
     		<tags:nameValueContainer2>
     			<c:if test="${not empty mspServLoc.objectID}">
 			    	<tags:nameValue2 nameKey=".serviceLocation">
-			    		${mspServLoc.objectID}
+                        ${fn:escapeXml(mspServLoc.objectID)}
 			    	</tags:nameValue2>
 			    	<tags:nameValueGap2 gapHeight="6px" />
 			    </c:if>

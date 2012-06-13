@@ -17,19 +17,9 @@
         var opts = $.extend({}, $.fn.showWhenChecked.defaults, options),
             $to_show = this,
             $checkboxes = $(group),
-            selector,
-            groupSize,
             onClick = typeof opts.onClick === 'function' ? opts.onClick : null,
             reportTo = typeof opts.reportTo === 'function' ? opts.reportTo : null;
 
-        selector = $checkboxes.selector;
-        groupSize = $checkboxes.length;
-        
-        if (groupSize === 0) {
-            // this is kind of a problem
-            groupSize = -1;
-        }
-        
         function _countChecked() {
             return $checkboxes.filter(':checked').length;
         }
@@ -52,8 +42,7 @@
             }
         });
 
-        
-        $(selector).die('click.showWhenChecked').live('click.showWhenChecked', function () {
+        $($checkboxes.selector).die('click.showWhenChecked').live('click.showWhenChecked', function () {
             _show_hide();
             if (onClick) {
                 onClick.apply(this);

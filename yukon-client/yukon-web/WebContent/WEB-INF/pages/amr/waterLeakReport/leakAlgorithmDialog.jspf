@@ -1,8 +1,10 @@
+<cti:msgScope paths="modules.amr.waterLeakReport.report">
 <dialog:inline id="algorithmDialog" options="{width: 600}"
-	okEvent="none" nameKey="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm"
+	okEvent="none" nameKey="leakDetectionAlgorithm"
 	on=".f_open_detection_algorithm">
 	<ul>
-		<li><i:inline key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason1"/></li>
-		<li><i:inline key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason2"/></li>
+		<li><i:inline key=".leakDetectionAlgorithmReason1"/></li>
+		<li><i:inline key=".leakDetectionAlgorithmReason2"/></li>
 	</ul>
 </dialog:inline>
+</cti:msgScope>

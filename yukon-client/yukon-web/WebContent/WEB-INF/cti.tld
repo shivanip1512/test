@@ -2053,7 +2053,7 @@
         <name>cssClass</name>
         <required>false</required>
         <rtexprvalue>true</rtexprvalue>
-        <description>Css class of the tab div</description>
+        <description>CSS class of the tab div</description>
     </attribute>
     <attribute>
         <name>initiallySelected</name>

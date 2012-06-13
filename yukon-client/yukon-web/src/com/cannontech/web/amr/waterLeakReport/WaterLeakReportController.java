@@ -263,8 +263,8 @@ public class WaterLeakReportController {
 
         // data rows
         List<WaterMeterLeak> waterLeaks = waterMeterLeakService.getWaterMeterLeaks(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                                                                   backingBean.getFromInstant().toDate(),
-                                                                                   backingBean.getToInstant().toDate(),
+                                                                                   backingBean.getFromInstant(),
+                                                                                   backingBean.getToInstant(),
                                                                                    backingBean.isIncludeDisabledPaos(),
                                                                                    backingBean.getThreshold(),
                                                                                    userContext);
@@ -287,8 +287,8 @@ public class WaterLeakReportController {
             dataRow[3] = String.valueOf(waterLeak.getLeakRate());
             dataRows.add(dataRow);
         }
-
-        WebFileUtils.writeToCSV(response, headerRow, dataRows);
+        String dateStr = dateFormattingService.format(new LocalDate(userContext.getJodaTimeZone()), DateFormatEnum.DATE, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "WaterLeakReport_" + dateStr + ".csv");
 
         return "";
     }
@@ -314,8 +314,8 @@ public class WaterLeakReportController {
         // data rows
         List<WaterMeterLeak> waterLeaks = waterMeterLeakService
                 .getWaterMeterLeakIntervalData(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                               backingBean.getFromInstant().toDate(),
-                                               backingBean.getToInstant().toDate(),
+                                               backingBean.getFromInstant(),
+                                               backingBean.getToInstant(),
                                                backingBean.isIncludeDisabledPaos(),
                                                backingBean.getThreshold(),
                                                userContext);
@@ -343,7 +343,8 @@ public class WaterLeakReportController {
             dataRows.add(dataRow);
         }
 
-        WebFileUtils.writeToCSV(response, headerRow, dataRows);
+        String dateStr = dateFormattingService.format(new LocalDate(userContext.getJodaTimeZone()), DateFormatEnum.DATE, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "WaterLeakReportIntervalData_" + dateStr + ".csv");
 
         return "";
     }
@@ -388,8 +389,8 @@ public class WaterLeakReportController {
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         List<WaterMeterLeak> waterLeaks =
             waterMeterLeakService.getWaterMeterLeaks(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                                     backingBean.getFromInstant().toDate(),
-                                                     backingBean.getToInstant().toDate(),
+                                                     backingBean.getFromInstant(),
+                                                     backingBean.getToInstant(),
                                                      backingBean.isIncludeDisabledPaos(),
                                                      backingBean.getThreshold(),
                                                      userContext);
@@ -400,8 +401,8 @@ public class WaterLeakReportController {
                                                   YukonUserContext userContext, ModelMap model) {
         List<WaterMeterLeak> waterLeaks = 
                 waterMeterLeakService.getWaterMeterLeakIntervalData(Sets.newHashSet(backingBean.getDeviceCollection().getDeviceList()),
-                                                                    backingBean.getFromInstant().toDate(),
-                                                                    backingBean.getToInstant().toDate(),
+                                                                    backingBean.getFromInstant(),
+                                                                    backingBean.getToInstant(),
                                                                     backingBean.isIncludeDisabledPaos(),
                                                                     backingBean.getThreshold(),
                                                                     userContext);

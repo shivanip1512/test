@@ -12,7 +12,7 @@
 
 <c:choose>
 	<c:when test="${fn:length(deviceInfoList) == 0}">
-	    <div class="errorRed">
+	    <div class="errorMessage">
 	        <i:inline key="yukon.common.device.bulk.selectedDevicesEmpty"/>
 	    </div>
 	</c:when>

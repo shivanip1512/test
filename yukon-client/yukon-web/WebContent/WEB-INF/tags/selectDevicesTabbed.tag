@@ -15,7 +15,7 @@
 
 <c:choose>
 	<c:when test="${not empty nameKey}">
-        <c:set var="the_paths" value="${nameKey},.${nameKey},device.bulk.selectDevicesTabbed.${nameKey},device.bulk.selectDevicesTabbed"/>
+        <c:set var="the_paths" value=".${nameKey},device.bulk.selectDevicesTabbed.${nameKey},device.bulk.selectDevicesTabbed"/>
 	</c:when>
 	<c:otherwise>
         <c:set var="the_paths" value="device.bulk.selectDevicesTabbed"/>
@@ -78,7 +78,7 @@
 			</cti:tabbedContentSelector>
 		</c:when>
 		<c:otherwise>
-			<div class="errorRed">deviceCollection must be initialized</div>
+			<div class="errorMessage">deviceCollection must be initialized</div>
 		</c:otherwise>
 	</c:choose>
 </cti:msgScope>

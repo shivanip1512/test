@@ -14,7 +14,7 @@
 
 <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
 
-<cti:msgScope paths="${nameKey},.${nameKey},components.dialog.${nameKey},components.dialog">
+<cti:msgScope paths=".${nameKey},components.dialog.${nameKey},components.dialog">
     <cti:msg2 var="titleMsg" key=".title"/>
     <cti:msg2 var="okBtnMsg" key=".ok"/>
     <cti:msg2 var="cancelBtnMsg" key=".cancel"/>

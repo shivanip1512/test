@@ -76,10 +76,10 @@
 				<tr class="<tags:alternateRow odd="" even="altRow"/> ${disabledClass} ${leakRowClass}">
 					<td>
                         <cti:paoDetailUrl yukonPao="${row.meter}">
-							<spring:escapeBody>${row.meter.name}</spring:escapeBody>
+                            ${fn:escapeXml(row.meter.name)}
 						</cti:paoDetailUrl>
                     </td>
-					<td><spring:escapeBody>${row.meter.meterNumber}</spring:escapeBody></td>
+					<td>${fn:escapeXml(row.meter.meterNumber)}</td>
 					<td><tags:paoType yukonPao="${row.meter}" /></td>
 					<td><cti:pointValueFormatter value="${row.pointValueHolder}" format="VALUE" /></td>
 					<td><cti:formatDate type="BOTH" value="${row.pointValueHolder.pointDataTimeStamp}" /></td>
