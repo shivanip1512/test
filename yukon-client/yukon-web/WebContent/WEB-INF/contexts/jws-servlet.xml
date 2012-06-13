@@ -50,13 +50,10 @@
     <bean id="jnlpTemplate" abstract="true">
         <property name="excludedJars">
             <set>
-                <value>mail.jar</value>
                 <value>activation.jar</value>
                 <value>jsp-api.jar</value>
                 <value>lucene-core-2.0.0.jar</value>
                 <value>yukon-web.jar</value>
-                <value>servlet-api.jar</value>
-                <value>servlets.jar</value>
             </set>
         </property>
     </bean>
