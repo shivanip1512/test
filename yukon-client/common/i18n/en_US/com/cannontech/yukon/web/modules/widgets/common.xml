@@ -8,7 +8,7 @@
 <entry key="yukon.web.widgets.meterSearchWidget.helpText"><![CDATA[
         Returns meters that match the combination of all values provided.
         Quick Search will search both Meter Number and Device Name fields.
-        The search returns all meters that have values which start with the provided text. For example searching for any field with "12" will return any values that begin with "12" such as "1234".
+        The search returns all meters that have values which start with the provided text. For example searching for any field that begins with "12" will return values such as 12, 1234 but will not return 1, 1123, or 112.
 ]]></entry>
 <entry key="yukon.web.widgets.accountInformationWidget">CIS Information</entry>
 <entry key="yukon.web.widgets.cayentaAccountInformationWidget">CIS Information (Cayenta)</entry>

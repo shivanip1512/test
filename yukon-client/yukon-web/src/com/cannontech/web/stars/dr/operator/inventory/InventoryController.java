@@ -267,39 +267,6 @@ public class InventoryController {
         }
     }
     
-    /**
-     * Builds warning for search results that were not found
-     *
-     * @param inventorySearch
-     * @return 
-     */
-    private List<Map<String, String>> buildNotFoundFieldList(InventorySearch inventorySearch, MessageSourceAccessor messageSourceAccessor) {
-        List<Map<String, String>> notFoundList = new ArrayList<Map<String, String>>();
-        buildNotFoundKeyValue(inventorySearch.getSerialNumber(), OperatorInventorySearchBy.serialNumber,  messageSourceAccessor, notFoundList);
-        buildNotFoundKeyValue(inventorySearch.getMeterNumber(), OperatorInventorySearchBy.meterNumber,  messageSourceAccessor, notFoundList);
-        buildNotFoundKeyValue(inventorySearch.getAccountNumber(), OperatorInventorySearchBy.accountNumber, messageSourceAccessor, notFoundList);
-        buildNotFoundKeyValue(inventorySearch.getPhoneNumber(), OperatorInventorySearchBy.phoneNumber,  messageSourceAccessor, notFoundList);
-        buildNotFoundKeyValue(inventorySearch.getLastName(), OperatorInventorySearchBy.lastName, messageSourceAccessor, notFoundList);
-        buildNotFoundKeyValue(inventorySearch.getWorkOrderNumber(), OperatorInventorySearchBy.workOrderNumber, messageSourceAccessor, notFoundList);
-        buildNotFoundKeyValue(inventorySearch.getAltTrackingNumber(), OperatorInventorySearchBy.altTrackingNumber, messageSourceAccessor, notFoundList);
-        return notFoundList;
-    }
-    
-    /**
-     * Builds warning for search field that was not found
-     *
-     * @param value
-     * @param searchBy
-     * @param notFoundList
-     */
-    private void buildNotFoundKeyValue(String value, OperatorInventorySearchBy searchBy,  MessageSourceAccessor messageSourceAccessor, List<Map<String,String>> notFoundList) {
-        if (StringUtils.isNotBlank(value)) {
-            Map<String,String> keyValue = new HashMap<String,String>();
-            keyValue.put(messageSourceAccessor.getMessage(searchBy.getFormatKey()), "'"+value+"'");
-            notFoundList.add(keyValue);
-        }
-    }
-    
     /* VIEW page for a particular hardware device */
     @RequestMapping
     public String view(ModelMap model, YukonUserContext context, int inventoryId) {
