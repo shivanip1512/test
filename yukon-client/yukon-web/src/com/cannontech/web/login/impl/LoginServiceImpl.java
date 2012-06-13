@@ -67,7 +67,7 @@ public class LoginServiceImpl implements LoginService {
     @Autowired private YukonUserDao yukonUserDao;
 
     @Override
-    public boolean login(HttpServletRequest request, String username, String password) throws AuthenticationThrottleException {
+    public boolean login(HttpServletRequest request, String username, String password) throws AuthenticationThrottleException, PasswordExpiredException {
         try {
             final LiteYukonUser user = authenticationService.login(username, password);
             

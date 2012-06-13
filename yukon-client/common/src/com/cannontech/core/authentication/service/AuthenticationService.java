@@ -1,6 +1,7 @@
 package com.cannontech.core.authentication.service;
 
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -30,8 +31,9 @@ public interface AuthenticationService {
      * @param password
      * @return LiteYukonUser after user has been authenticated
      * @throws BadAuthenticationException
+     * @throws PasswordExpiredException 
      */
-    public LiteYukonUser login(String username, String password) throws BadAuthenticationException;
+    public LiteYukonUser login(String username, String password) throws BadAuthenticationException, PasswordExpiredException;
 
     /**
      * This method checks to see if the user's login is expired.  This can be done by an operator forcing a login's password to be expired

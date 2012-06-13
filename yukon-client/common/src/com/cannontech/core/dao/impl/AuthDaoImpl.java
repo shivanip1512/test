@@ -53,7 +53,7 @@ public class AuthDaoImpl implements AuthDao {
     private SystemDateFormattingService systemDateFormattingService;
     private RolePropertyDao rolePropertyDao;
     
-	public LiteYukonUser login(String username, String password) {
+	public LiteYukonUser login(String username, String password) throws PasswordExpiredException {
         try {
             return authenticationService.login(username, password);
         } catch (PasswordExpiredException e) {

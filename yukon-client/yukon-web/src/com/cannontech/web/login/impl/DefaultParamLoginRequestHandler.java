@@ -12,6 +12,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.web.login.AbstractLoginRequestHandler;
 
 public class DefaultParamLoginRequestHandler extends AbstractLoginRequestHandler {
@@ -35,6 +36,8 @@ public class DefaultParamLoginRequestHandler extends AbstractLoginRequestHandler
             }
         } catch (AuthenticationThrottleException e) {
             log.error("AuthenticationThrottleException: " + e.getThrottleSeconds(), e);
+        } catch (PasswordExpiredException e) {
+            log.debug("The password for "+username+" is expired.");
         }         
         return false;
     }

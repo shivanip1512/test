@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.exception.YukonSecurityException;
 import com.cannontech.common.util.StringFilters;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -73,13 +74,14 @@ public class CsrfTokenService {
             return e.getMessageKey();
         } catch (YukonSecurityException e) {
             return e.getMessageKey();
+        } catch (PasswordExpiredException e) {
+            return e.getMessageKey();
         }
         
         return null;
     }
 
-    
-    public void validateRequest(HttpServletRequest request) throws BadAuthenticationException, YukonSecurityException {
+    public void validateRequest(HttpServletRequest request) throws BadAuthenticationException, YukonSecurityException, PasswordExpiredException {
         CsrfTokenMode mode = getTokenMode(request);
         if (mode == CsrfTokenMode.OFF) {
             return;

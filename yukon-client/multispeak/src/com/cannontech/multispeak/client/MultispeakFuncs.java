@@ -28,6 +28,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -190,6 +191,8 @@ public class MultispeakFuncs
         	LiteYukonUser user = authenticationService.login(username, password);
 
             return user;
+        } catch (PasswordExpiredException e) {
+            throw new RemoteException(e.getMessage());
         } catch(BadAuthenticationException e) {
         	throw new RemoteException(e.getMessage());
         }

@@ -15,6 +15,7 @@ import com.cannontech.billing.SimpleBillingFormatFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.impl.AuthenticationServiceImpl;
@@ -271,7 +272,7 @@ public class BillingFile extends java.util.Observable implements Runnable
 		return simpleBillingFormat;
 	}
     
-    private LiteYukonUser getLiteYukonUser(String username, String password) {
+    private LiteYukonUser getLiteYukonUser(String username, String password) throws PasswordExpiredException {
 		LiteYukonUser liteYukonUser = null;
 		if (username != null && password != null) {
 			try {

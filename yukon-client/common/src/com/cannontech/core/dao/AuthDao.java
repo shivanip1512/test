@@ -5,6 +5,7 @@ import java.util.TimeZone;
 
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -18,10 +19,11 @@ public interface AuthDao {
      * @param username
      * @param password
      * @return LiteYukonUser
+     * @throws PasswordExpiredException 
      * @deprecated Please call AuthenticationService.login() directly
      */
     @Deprecated
-    public LiteYukonUser login(String username, String password);
+    public LiteYukonUser login(String username, String password) throws PasswordExpiredException;
 
     /**
      * Returns LiteYukonRole if the given user 

@@ -51,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     }
 
     @Override
-    public synchronized LiteYukonUser login(String username, String password) throws BadAuthenticationException {
+    public synchronized LiteYukonUser login(String username, String password) throws BadAuthenticationException, PasswordExpiredException {
         // see if login attempt allowed and track the attempt
         authenticationThrottleService.loginAttempted(username);
 

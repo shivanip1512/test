@@ -152,7 +152,7 @@ public class ChangeLoginController {
     }
     
     private boolean isValidPassword(String username, String password) 
-        throws AuthenticationThrottleException {
+    throws AuthenticationThrottleException, PasswordExpiredException {
         try {
             authenticationService.login(username, password);
             return true;
