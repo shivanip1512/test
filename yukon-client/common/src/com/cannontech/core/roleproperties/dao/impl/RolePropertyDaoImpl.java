@@ -346,7 +346,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         }
         
         // We didn't find the entry in the cache, so we'll need to retrieve it from the database.
-        String stringValue = getPropertyValue(property, user);
+        String stringValue = findPropertyValue(property, user);
         Object convertedValue = convertPropertyValue(property, stringValue);
         if (convertedValue == null) {
             log.debug("convertedValue was null, using default");
@@ -458,7 +458,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         return convertedValue;
     }
 
-    public String getPropertyValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
+    private String findPropertyValue(YukonRoleProperty property, LiteYukonUser user) throws UserNotInRoleException {
         totalDbHits.incrementAndGet();
 
         // Check to see if the role property we are looking at is a system role property.
@@ -518,7 +518,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
             // the only way this can happen is if the user has exactly one user property
             // and zero or one group property, any other combination is invalid (and the 0 group case is somewhat sketchy)
             String firstValue = values.get(0);
-            // the following exception should be removed before 4.3 is released
             BadConfigurationException configurationException = new BadConfigurationException("Invalid role property combination found of " + property + " for " + user + " (groupCount=" + values.size() + ")");
             if (allowRoleConflicts) {
                 log.warn("handling role conflict exception because ROLE_PROPERTY_CONFLICTS_ALLOWED is set", configurationException);
