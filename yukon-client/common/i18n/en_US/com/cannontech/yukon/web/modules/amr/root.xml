@@ -31,7 +31,7 @@
     <entry key="yukon.web.modules.amr.meterSearchResults.editFilters">Edit Filters</entry>
     <entry key="yukon.web.modules.amr.deviceSelection.performCollectionAction">Perform Collection Action</entry>
     <entry key="yukon.web.modules.amr.deviceSelection.performCollectionAction.title">Click to perform a bulk operation on these devices</entry>
-    <entry key="yukon.web.modules.amr.meterSearch.title">Advanced Meter Search</entry>
+    <entry key="yukon.web.modules.amr.meterSearch.title">Meter Search</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.notFound">No Results Found</entry>
     <entry key="yukon.web.modules.amr.meterSearch.helpText"><![CDATA[
         Returns meters that match the combination of all values provided.
