@@ -2753,7 +2753,6 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
     try
     {
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
         CapControlPointDataHandler pointHandler = store->getPointDataHandler();
         pointHandler.processIncomingPointData(message);
 
