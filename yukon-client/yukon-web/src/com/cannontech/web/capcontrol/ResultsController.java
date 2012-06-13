@@ -257,10 +257,6 @@ public class ResultsController {
             StreamableCapObject streamable = cache.getCapControlPAO(id);
             if (streamable != null) {
                 
-                if (PaoType.getForDbString(streamable.getCcType()) == PaoType.CAPBANK) {
-                    id = ((CapBankDevice)streamable).getStatusPointID();
-                }
-                
                 List<CCEventLog> events= capControlDao.getEventsForPao(streamable, dayCnt);
                 for (CCEventLog event : events) {
                     String formattedTimestamp = dateFormattingService.format(event.getTimestamp(), DateFormatEnum.BOTH, context);
