@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/12/2012 5:26:25 PM                         */
+/* Created on:     6/13/2012 5:36:15 PM                         */
 /*==============================================================*/
 
 
@@ -7824,18 +7824,8 @@ create table YukonGroup  (
    constraint PK_YUKONGROUP primary key (GroupID)
 );
 
-insert into YukonGroup values(-1,'Yukon Grp','The default system user group that allows limited user interaction.');
-insert into YukonGroup values(-2,'System Administrator Grp','A set of roles that allow administrative access to the system.');
-insert into YukonGroup values(-3, 'DefaultCTI Login Grp', 'The defaultCTI login group settings');
-INSERT INTO YukonGroup VALUES(-4, 'Administrator Grp', 'The administrator login group settings');
-insert into YukonGroup values(-100,'Operators Grp', 'The default group of yukon operators');
-insert into yukongroup values(-200,'Esub Users Grp', 'The default group of esubstation users');
-insert into yukongroup values(-201,'Esub Operators Grp', 'The default group of esubstation operators');
-insert into yukongroup values (-301,'Web Client Operators Grp','The default group of web client operators');
-insert into yukongroup values (-300,'Residential Customers Grp','The default group of residential customers');
-insert into yukongroup values (-302, 'Web Client Customers Grp', 'The default group of web client customers');
-insert into yukongroup values (-303,'STARS Operators Grp','The default group for STARS operators');
-insert into yukongroup values (-304,'STARS Residential Customers Grp','The default group for STARS residential customers');
+INSERT INTO YukonGroup VALUES (-1,'Yukon Grp','The default system user group that allows limited user interaction.');
+INSERT INTO YukonGroup VALUES (-2,'System Administrator Grp','A set of roles that allow administrative access to the system.');
 
 /*==============================================================*/
 /* Index: Indx_YukonGroup_groupName_UNQ                         */
@@ -7894,45 +7884,6 @@ insert into YukonGroupRole values(-90,-1,-4,-1305,' ');
 insert into YukonGroupRole values(-91,-1,-4,-1306,' ');
 insert into YukonGroupRole values(-92,-1,-4,-1307,' ');
 
-/* Assign roles to the default operator group to allow them to use all the main rich Yukon applications */
-/* Database Editor */
-insert into YukonGroupRole values(-100,-100,-100,-10000,' ');
-insert into YukonGroupRole values(-102,-100,-100,-10002,' ');
-insert into YukonGroupRole values(-104,-100,-100,-10004,' ');
-insert into YukonGroupRole values(-105,-100,-100,-10005,' ');
-insert into YukonGroupRole values(-107,-100,-100,-10007,' ');
-insert into YukonGroupRole values(-108,-100,-100,-10008,' ');
-insert into YukonGroupRole values(-109,-100,-100,-10009,' ');
-insert into YukonGroupRole values(-110,-100,-100,-10010,' ');
-insert into YukonGroupRole values(-111,-100,-100,-10011,' ');
-
-/* TDC */
-insert into YukonGroupRole values(-120,-100,-101,-10100,' ');
-insert into YukonGroupRole values(-121,-100,-101,-10101,' ');
-insert into YukonGroupRole values(-122,-100,-101,-10102,' ');
-insert into YukonGroupRole values(-123,-100,-101,-10103,' ');
-insert into YukonGroupRole values(-124,-100,-101,-10104,' ');
-insert into YukonGroupRole values(-127,-100,-101,-10107,' ');
-insert into YukonGroupRole values(-128,-100,-101,-10108,' ');
-insert into YukonGroupRole values(-130,-100,-101,-10111,' ');
-
-/* Trending */
-insert into YukonGroupRole values(-150,-100,-102,-10200,' ');
-insert into YukonGroupRole values(-152,-100,-102,-10202,' ');
-insert into YukonGroupRole values(-153,-100,-102,-10203,' ');
-insert into YukonGroupRole values(-155,-100,-102,-10205,' ');
-insert into YukonGroupRole values(-156,-100,-102,-10206,' ');
-
-/* Commander */
-insert into YukonGroupRole values(-170,-100,-103,-10300,' ');
-insert into YukonGroupRole values(-171,-100,-103,-10301,'true');
-insert into YukonGroupRole values(-172,-100,-103,-10302,'true');
-insert into YukonGroupRole values(-173,-100,-103,-10303,'false');
-insert into YukonGroupRole values(-174,-100,-103,-10304,'false');
-insert into YukonGroupRole values(-175,-100,-103,-10305,' ');
-
-insert into YukonGroupRole values(-180,-100,-106,-10600,' ');
-
 /* Calc Historical for Yukon Group */
 insert into YukonGroupRole values(-190,-1,-104,-10400,' ');
 insert into YukonGroupRole values(-191,-1,-104,-10401,' ');
@@ -7958,123 +7909,6 @@ INSERT INTO YukonGroupRole VALUES(-274,-1,-7,-1604,' ');
 
 /* Configuration (Device) */
 INSERT INTO YukonGroupRole VALUES(-280,-1,-8,-1700,' ');
-
-/* Esubstation Editor */
-INSERT INTO YukonGroupRole VALUES(-250,-100,-107,-10700,' ');
-
-/* Assign roles to the default Esub Users */
-insert into YukonGroupRole values(-300,-200,-206,-20600,' ');
-insert into YukonGroupRole values(-301,-200,-206,-20601,' ');
-insert into YukonGroupRole values(-302,-200,-206,-20602,' ');
-
-/* Assign roles to the default Esub Operators */
-INSERT INTO YukonGroupRole VALUES(-350,-201,-206,-20600,' ');
-INSERT INTO YukonGroupRole VALUES(-351,-201,-206,-20601,'true');
-INSERT INTO YukonGroupRole VALUES(-352,-201,-206,-20602,'true');
-
-/* Web Client Customers Web Client role */
-insert into yukongrouprole values (-400, -302, -108, -10800, '/user/CILC/user_trending.jsp');
-insert into yukongrouprole values (-402, -302, -108, -10802, ' ');
-insert into yukongrouprole values (-403, -302, -108, -10803, ' ');
-insert into yukongrouprole values (-404, -302, -108, -10804, ' ');
-insert into yukongrouprole values (-405, -302, -108, -10805, ' ');
-insert into yukongrouprole values (-406, -302, -108, -10806, ' ');
-insert into yukongrouprole values (-40700, -302, -108, -10807, ' ');
-insert into yukongrouprole values (-40701, -302, -108, -10808, ' ');
-insert into yukongrouprole values (-40704, -302, -108, -10811, ' ');
-
-/* Web Client Customers Commercial Metering role */
-insert into yukongrouprole values (-413, -302, -102, -10202, ' ');
-insert into yukongrouprole values (-414, -302, -102, -10203, 'true');
-
-/* Web Client Customers Administrator role */
-insert into YukonGroupRole values (-416, -302, -102, -10205, ' ');
-insert into YukonGroupRole values (-417, -302, -102, -10206, ' ');
-insert into yukongrouprole values (-500,-300,-108,-10800,'/spring/stars/consumer/general');
-insert into yukongrouprole values (-502,-300,-108,-10802,' ');
-insert into yukongrouprole values (-503,-300,-108,-10803,' ');
-insert into yukongrouprole values (-504,-300,-108,-10804,' ');
-insert into yukongrouprole values (-505,-300,-108, -10805,'yukon/DemoHeaderCES.gif');
-insert into yukongrouprole values (-506,-300,-108,-10806,' ');
-insert into yukongrouprole values (-507,-300,-108,-10807,' ');
-insert into yukongrouprole values (-508,-300,-108,-10808,' ');
-insert into yukongrouprole values (-511,-300,-108,-10811,' ');
-
-insert into yukongrouprole values (-521,-300,-400,-40001,'true');
-insert into yukongrouprole values (-523,-300,-400,-40003,'true');
-insert into yukongrouprole values (-524,-300,-400,-40004,'true');
-insert into yukongrouprole values (-525,-300,-400,-40005,'true');
-insert into yukongrouprole values (-526,-300,-400,-40006,'true');
-insert into yukongrouprole values (-527,-300,-400,-40007,'true');
-insert into yukongrouprole values (-528,-300,-400,-40008,'true');
-insert into yukongrouprole values (-529,-300,-400,-40009,'true');
-insert into yukongrouprole values (-530,-300,-400,-40010,'true');
-
-insert into yukongrouprole values (-551,-300,-400,-40051,'false');
-insert into yukongrouprole values (-555,-300,-400,-40055,' ');
-insert into yukongrouprole values (-600,-300,-400,-40100,' ');
-insert into yukongrouprole values (-602,-300,-400,-40102,' ');
-
-insert into yukongrouprole values (-700,-301,-108,-10800,'/operator/Operations.jsp');
-insert into yukongrouprole values (-702,-301,-108,-10802,' ');
-insert into yukongrouprole values (-703,-301,-108,-10803,' ');
-insert into yukongrouprole values (-704,-301,-108,-10804,' ');
-insert into yukongrouprole values (-705,-301,-108,-10805,' ');
-insert into yukongrouprole values (-706,-301,-108,-10806,' ');
-insert into yukongrouprole values (-707,-301,-108,-10807,' ');
-insert into yukongrouprole values (-708,-301,-108,-10808,' ');
-insert into yukongrouprole values (-711,-301,-108,-10811,' ');
-
-insert into yukongrouprole values (-722,-301,-201,-20102,'true');
-insert into yukongrouprole values (-723,-301,-201,-20103,'true');
-insert into yukongrouprole values (-724,-301,-201,-20104,'false');
-insert into yukongrouprole values (-726,-301,-201,-20106,'true');
-insert into yukongrouprole values (-727,-301,-201,-20107,'true');
-insert into yukongrouprole values (-728,-301,-201,-20108,'true');
-insert into yukongrouprole values (-729,-301,-201,-20109,'true');
-insert into yukongrouprole values (-730,-301,-201,-20110,'true');
-insert into yukongrouprole values (-731,-301,-201,-20111,'true');
-insert into yukongrouprole values (-732,-301,-201,-20112,'true');
-insert into yukongrouprole values (-733,-301,-201,-20113,'true');
-insert into yukongrouprole values (-734,-301,-201,-20114,'true');
-insert into yukongrouprole values (-735,-301,-201,-20115,'true');
-insert into yukongrouprole values (-736,-301,-201,-20116,'true');
-insert into yukongrouprole values (-737,-301,-201,-20117,'true');
-insert into yukongrouprole values (-738,-301,-201,-20118,'true');
-
-insert into yukongrouprole values (-751,-301,-201,-20151,'true');
-insert into yukongrouprole values (-752,-301,-201,-20152,' ');
-insert into yukongrouprole values (-753,-301,-201,-20153,' ');
-insert into yukongrouprole values (-755,-301,-201,-20155,'true');
-insert into yukongrouprole values (-756,-301,-201,-20156,'true');
-insert into yukongrouprole values (-757,-301,-201,-20157,' ');
-insert into yukongrouprole values (-758,-301,-201,-20158,' ');
-insert into yukongrouprole values (-759,-301,-201,-20159,' ');
-insert into yukongrouprole values (-760,-301,-201,-20160,' ');
-
-insert into yukongrouprole values (-765,-301,-210,-21000,' ');
-insert into yukongrouprole values (-766,-301,-210,-21001,' ');
-insert into yukongrouprole values (-767,-301,-210,-21002,' ');
-insert into yukongrouprole values (-776,-301,-900,-90001,' ');
-insert into yukongrouprole values (-777,-301,-900,-90002,' ');
-insert into yukongrouprole values (-778,-301,-900,-90003,' ');
-insert into yukongrouprole values (-779,-301,-900,-90004,' ');
-insert into yukongrouprole values (-781,-301,-900,-90005,' ');
-insert into yukongrouprole values (-782,-301,-900,-90006,' ');
-insert into yukongrouprole values (-783,-301,-900,-90007,' ');
-insert into yukongrouprole values (-790,-301,-207,-20700,' ');
-insert into yukongrouprole values (-791,-301,-209,-20900,' ');
-insert into yukongrouprole values (-792,-301,-209,-20901,' ');
-insert into yukongrouprole values (-793,-301,-209,-20902,' ');
-insert into yukongrouprole values (-794,-301,-209,-20903,' ');
-insert into yukongrouprole values (-795,-301,-209,-20904,' ');
-insert into yukongrouprole values (-796,-301,-209,-20905,' ');
-insert into yukongrouprole values (-797,-301,-209,-20906,' ');
-
-insert into yukongrouprole values (-800,-301,-201,-20800,' ');
-insert into yukongrouprole values (-801,-301,-201,-20801,' ');
-
-insert into yukongrouprole values (-893,-301,-201,-20893,' ');
 
 /* START the System Administrator role Group */
 /* Database Editor */
@@ -8131,89 +7965,10 @@ insert into YukonGroupRole values (-1094,-2, -108, -10805, ' ');
 insert into YukonGroupRole values (-1095,-2, -108, -10806, ' ');
 insert into YukonGroupRole values (-1096,-2, -108, -10807, ' ');
 insert into YukonGroupRole values (-1097,-2, -108, -10808, ' ');
-insert into YukonGroupRole values (-10991,-2, -108, -10811, ' ');
+insert into YukonGroupRole values (-1098,-2, -108, -10811, ' ');
 
-/* Give yukon login access to View Logs, */
-insert into YukonGroupRole values (-4000, -2, -200, -20009, ' ');
-insert into yukongrouprole values (-2000,-303,-108,-10800,'/operator/Operations.jsp');
-insert into yukongrouprole values (-2002,-303,-108,-10802,' ');
-insert into yukongrouprole values (-2003,-303,-108,-10803,' ');
-insert into yukongrouprole values (-2004,-303,-108,-10804,' ');
-insert into yukongrouprole values (-2005,-303,-108,-10805,' ');
-insert into yukongrouprole values (-2006,-303,-108,-10806,' ');
-insert into yukongrouprole values (-2007,-303,-108,-10807,' ');
-insert into yukongrouprole values (-2008,-303,-108,-10808,' ');
-insert into yukongrouprole values (-2011,-303,-108,-10811,' ');
-
-insert into yukongrouprole values (-2022,-303,-201,-20102,'true');
-insert into yukongrouprole values (-2023,-303,-201,-20103,' ');
-insert into yukongrouprole values (-2024,-303,-201,-20104,' ');
-insert into yukongrouprole values (-2026,-303,-201,-20106,' ');
-insert into yukongrouprole values (-2027,-303,-201,-20107,' ');
-insert into yukongrouprole values (-2028,-303,-201,-20108,' ');
-insert into yukongrouprole values (-2029,-303,-201,-20109,' ');
-insert into yukongrouprole values (-2030,-303,-201,-20110,' ');
-insert into yukongrouprole values (-2031,-303,-201,-20111,' ');
-insert into yukongrouprole values (-2032,-303,-201,-20112,' ');
-insert into yukongrouprole values (-2033,-303,-201,-20113,' ');
-insert into yukongrouprole values (-2034,-303,-201,-20114,'true');
-insert into yukongrouprole values (-2035,-303,-201,-20115,'false');
-insert into yukongrouprole values (-2036,-303,-201,-20116,' ');
-insert into yukongrouprole values (-2037,-303,-201,-20117,' ');
-insert into yukongrouprole values (-2038,-303,-201,-20118,' ');
-
-insert into yukongrouprole values (-2051,-303,-201,-20151,' ');
-insert into yukongrouprole values (-2052,-303,-201,-20152,' ');
-insert into yukongrouprole values (-2053,-303,-201,-20153,' ');
-insert into yukongrouprole values (-2055,-303,-201,-20155,'true');
-insert into yukongrouprole values (-2056,-303,-201,-20156,' ');
-insert into yukongrouprole values (-2057,-303,-201,-20157,' ');
-insert into yukongrouprole values (-2058,-303,-201,-20158,' ');
-insert into yukongrouprole values (-2059,-303,-201,-20159,' ');
-insert into yukongrouprole values (-2060,-303,-201,-20160,' ');
-
-insert into yukongrouprole values (-2070,-303,-210,-21000,' ');
-insert into yukongrouprole values (-2071,-303,-210,-21001,' ');
-insert into yukongrouprole values (-2072,-303,-210,-21002,' ');
-
-insert into yukongrouprole values (-2080,-303,-209,-20900,' ');
-insert into yukongrouprole values (-2081,-303,-209,-20901,' ');
-insert into yukongrouprole values (-2082,-303,-209,-20902,' ');
-insert into yukongrouprole values (-2083,-303,-209,-20903,' ');
-insert into yukongrouprole values (-2084,-303,-209,-20904,' ');
-insert into yukongrouprole values (-2085,-303,-209,-20905,' ');
-insert into yukongrouprole values (-2086,-303,-209,-20906,' ');
-insert into yukongrouprole values (-2088,-303,-209,-20908,' ');
-
-insert into yukongrouprole values (-2100,-303,-201,-20800,' ');
-insert into yukongrouprole values (-2101,-303,-201,-20801,' ');
-
-insert into yukongrouprole values (-2193,-303,-201,-20893,' ');
-
-insert into yukongrouprole values (-2200,-304,-108,-10800,'/spring/stars/consumer/general');
-insert into yukongrouprole values (-2202,-304,-108,-10802,' ');
-insert into yukongrouprole values (-2203,-304,-108,-10803,' ');
-insert into yukongrouprole values (-2204,-304,-108,-10804,' ');
-insert into yukongrouprole values (-2205,-304,-108,-10805,'yukon/DemoHeaderCES.gif');
-insert into yukongrouprole values (-2206,-304,-108,-10806,' ');
-insert into yukongrouprole values (-2207,-304,-108,-10807,' ');
-insert into yukongrouprole values (-2208,-304,-108,-10808,' ');
-insert into yukongrouprole values (-2211,-304,-108,-10811,' ');
-
-insert into yukongrouprole values (-2221,-304,-400,-40001,' ');
-insert into yukongrouprole values (-2223,-304,-400,-40003,' ');
-insert into yukongrouprole values (-2224,-304,-400,-40004,' ');
-insert into yukongrouprole values (-2225,-304,-400,-40005,' ');
-insert into yukongrouprole values (-2226,-304,-400,-40006,' ');
-insert into yukongrouprole values (-2227,-304,-400,-40007,' ');
-insert into yukongrouprole values (-2228,-304,-400,-40008,' ');
-insert into yukongrouprole values (-2229,-304,-400,-40009,' ');
-insert into yukongrouprole values (-2230,-304,-400,-40010,' ');
-
-insert into yukongrouprole values (-2251,-304,-400,-40051,' ');
-insert into yukongrouprole values (-2255,-304,-400,-40055,' ');
-insert into yukongrouprole values (-2300,-304,-400,-40100,' ');
-insert into yukongrouprole values (-2302,-304,-400,-40102,' ');
+/* Give admin super user access to system administrator group */
+insert into YukonGroupRole values (-2000, -2, -200, -20019, 'true');
 
 /* Device Actions role */ 
 INSERT INTO YukonGroupRole VALUES (-2500, -2, -213, -21300, ' '); 
@@ -8225,95 +7980,8 @@ INSERT INTO YukonGroupRole VALUES (-2505, -2, -213, -21305, ' ');
 INSERT INTO YukonGroupRole VALUES (-2506, -2, -213, -21306, ' '); 
 INSERT INTO YukonGroupRole VALUES (-2507, -2, -213, -21307, ' '); 
 
-INSERT INTO YukonGroupRole VALUES (-2600, -3, -108, -10800, '/operator/Operations.jsp');
-INSERT INTO YukonGroupRole VALUES (-2602, -3, -108, -10802, ' ');
-INSERT INTO YukonGroupRole VALUES (-2603, -3, -108, -10803, ' ');
-INSERT INTO YukonGroupRole VALUES (-2604, -3, -108, -10804, ' ');
-INSERT INTO YukonGroupRole VALUES (-2605, -3, -108, -10805, ' ');
-INSERT INTO YukonGroupRole VALUES (-2606, -3, -108, -10806, ' ');
-INSERT INTO YukonGroupRole VALUES (-2607, -3, -108, -10811, ' ');
-INSERT INTO YukonGroupRole VALUES (-2610, -3, -200, -20000, ' ');
-INSERT INTO YukonGroupRole VALUES (-2611, -3, -200, -20001, 'true');
-
-INSERT INTO YukonGroupRole VALUES (-2613, -3, -200, -20003, ' ');
-INSERT INTO YukonGroupRole VALUES (-2614, -3, -200, -20004, ' ');
-INSERT INTO YukonGroupRole VALUES (-2615, -3, -200, -20005, ' ');
-INSERT INTO YukonGroupRole VALUES (-2616, -3, -200, -20006, ' ');
-INSERT INTO YukonGroupRole VALUES (-2617, -3, -200, -20007, ' ');
-INSERT INTO YukonGroupRole VALUES (-2619, -3, -200, -20009, ' ');
-INSERT INTO YukonGroupRole VALUES (-2620, -3, -200, -20019, 'true');
-
-/* Adding the Energy Company Role to DefaultCTI */
-INSERT INTO YukonGroupRole VALUES (-2700, -3, -2, -1100, ' ');
-INSERT INTO YukonGroupRole VALUES (-2701, -3, -2, -1101, ' ');
-INSERT INTO YukonGroupRole VALUES (-2702, -3, -2, -1102, ' ');
-INSERT INTO YukonGroupRole VALUES (-2707, -3, -2, -1107, ' ');
-INSERT INTO YukonGroupRole VALUES (-2708, -3, -2, -1108, ' ');
-INSERT INTO YukonGroupRole VALUES (-2709, -3, -2, -1109, ' ');
-INSERT INTO YukonGroupRole VALUES (-2710, -3, -2, -1110, ' ');
-INSERT INTO YukonGroupRole VALUES (-2711, -3, -2, -1111, ' ');
-INSERT INTO YukonGroupRole VALUES (-2712, -3, -2, -1112, ' ');
-INSERT INTO YukonGroupRole VALUES (-2714, -3, -2, -1114, ' ');
-
-/* Adding the IVR role to DefaultCTI */
-INSERT INTO YukonGroupRole VALUES (-2800, -100, -801, -80100, ' '); 
-
-/* Database Editor */
-INSERT INTO YukonGroupRole VALUES (-2900,-4,-100,-10000,' ');
-INSERT INTO YukonGroupRole VALUES (-2902,-4,-100,-10002,' ');
-INSERT INTO YukonGroupRole VALUES (-2904,-4,-100,-10004,' ');
-INSERT INTO YukonGroupRole VALUES (-2905,-4,-100,-10005,' ');
-INSERT INTO YukonGroupRole VALUES (-2907,-4,-100,-10007,'true');
-INSERT INTO YukonGroupRole VALUES (-2908,-4,-100,-10008,' ');
-INSERT INTO YukonGroupRole VALUES (-2909,-4,-100,-10009,' ');
-
-/* TDC */
-INSERT INTO YukonGroupRole VALUES (-2920,-4,-101,-10100,' ');
-INSERT INTO YukonGroupRole VALUES (-2921,-4,-101,-10101,' ');
-INSERT INTO YukonGroupRole VALUES (-2922,-4,-101,-10102,' ');
-INSERT INTO YukonGroupRole VALUES (-2923,-4,-101,-10103,' ');
-INSERT INTO YukonGroupRole VALUES (-2924,-4,-101,-10104,' ');
-INSERT INTO YukonGroupRole VALUES (-2927,-4,-101,-10107,' ');
-INSERT INTO YukonGroupRole VALUES (-2928,-4,-101,-10108,' ');
-INSERT INTO YukonGroupRole VALUES (-2930,-4,-101,-10111,' ');
-
-/* Trending */
-INSERT INTO YukonGroupRole VALUES (-2950,-4,-102,-10200,' ');
-INSERT INTO YukonGroupRole VALUES (-2952,-4,-102,-10202,' ');
-INSERT INTO YukonGroupRole VALUES (-2953,-4,-102,-10203,' ');
-INSERT INTO YukonGroupRole VALUES (-2955,-4,-102,-10205,' ');
-INSERT INTO YukonGroupRole VALUES (-2956,-4,-102,-10206,' ');
-
-/* Commander */
-INSERT INTO YukonGroupRole VALUES (-2970,-4,-103,-10300,' ');
-INSERT INTO YukonGroupRole VALUES (-2971,-4,-103,-10301,'true');
-INSERT INTO YukonGroupRole VALUES (-2972,-4,-103,-10302,'true');
-INSERT INTO YukonGroupRole VALUES (-2973,-4,-103,-10303,'false');
-INSERT INTO YukonGroupRole VALUES (-2974,-4,-103,-10304,'false');
-INSERT INTO YukonGroupRole VALUES (-2975,-4,-103,-10305,' ');
-
-/* Esubstation Editor */
-INSERT INTO YukonGroupRole VALUES (-3050,-4,-107,-10700,' ');
-
-/* Esub Drawings */
-INSERT INTO YukonGroupRole VALUES (-3100,-4,-206,-20600,' ');
-INSERT INTO YukonGroupRole VALUES (-3101,-4,-206,-20601,' ');
-INSERT INTO YukonGroupRole VALUES (-3102,-4,-206,-20602,' ');
-
-/* Web Client Customers Web Client role */
-INSERT INTO YukonGroupRole VALUES (-3200, -4,-108,-10800,'/operator/Operations.jsp');
-INSERT INTO YukonGroupRole VALUES (-3202, -4,-108,-10802,' ');
-INSERT INTO YukonGroupRole VALUES (-3203, -4,-108,-10803,' ');
-INSERT INTO YukonGroupRole VALUES (-3204, -4,-108,-10804,' ');
-INSERT INTO YukonGroupRole VALUES (-3205, -4,-108,-10805,' ');
-INSERT INTO YukonGroupRole VALUES (-3206, -4,-108,-10806,' ');
-INSERT INTO YukonGroupRole VALUES (-3207, -4,-108,-10807,' ');
-INSERT INTO YukonGroupRole VALUES (-3208, -4,-108,-10808,' ');
-INSERT INTO YukonGroupRole VALUES (-43801,-4,-108,-10811,' ');
-
-/* Give admin login access to View Logs, */
-INSERT INTO YukonGroupRole VALUES (-4800,-4,-200,-20009,' ');
-INSERT INTO YukonGroupRole VALUES (-4801,-4,-200,-20019,'true');
+/* Add IVR role to system administrator group */
+insert into YukonGroupRole values (-3000, -2, -801, -80100, ' ');
 
 /*==============================================================*/
 /* Table: YukonImage                                            */
@@ -9559,10 +9227,9 @@ create table YukonUser  (
    constraint PK_YUKONUSER primary key (UserID)
 );
 
-insert into yukonuser values ( -9999, '(none)', '(none)', 'Disabled', 'PLAIN', '01-JAN-2000', 'N');
-insert into yukonuser values ( -100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
-insert into yukonuser values ( -2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
-insert into yukonuser values ( -1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
+INSERT INTO yukonuser VALUES (-9999, '(none)', '(none)', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
+INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
+INSERT INTO yukonuser VALUES (-1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
 
 /*==============================================================*/
 /* Index: Indx_YkUsIDNm                                         */
@@ -9581,10 +9248,9 @@ create table YukonUserGroup  (
 );
 
 INSERT INTO YukonUserGroup VALUES(-1,-1);
-INSERT INTO YukonUserGroup VALUES(-1,-4);
+INSERT INTO YukonUserGroup VALUES(-1,-2);
 INSERT INTO YukonUserGroup VALUES(-2,-1);
 INSERT INTO YukonUserGroup VALUES(-2,-2);
-INSERT INTO YukonUserGroup VALUES(-100,-3);
 
 /*==============================================================*/
 /* Table: YukonWebConfiguration                                 */

@@ -261,7 +261,23 @@ END;
 /
 /* @end-block */
 /* End YUK-11013 */
-    
+
+/* Start YUK-11041 */
+DELETE FROM YukonGroupRole 
+WHERE GroupId < -2 
+AND GroupId NOT IN (SELECT DISTINCT GroupId FROM YukonUserGroup)
+AND GroupId NOT IN (SELECT DISTINCT GroupId FROM ECToOperatorGroupMapping)
+AND GroupId NOT IN (SELECT DISTINCT GroupId FROM ECToResidentialGroupMapping)
+AND GroupId NOT IN (SELECT DISTINCT GroupId FROM GroupPaoPermission);
+
+DELETE FROM YukonGroup
+WHERE GroupId < -2 
+AND GroupId NOT IN (SELECT DISTINCT GroupId FROM YukonUserGroup)
+AND GroupId NOT IN (SELECT DISTINCT GroupId FROM ECToOperatorGroupMapping)
+AND GroupId NOT IN (SELECT DISTINCT GroupId FROM ECToResidentialGroupMapping)
+AND GroupId NOT IN (SELECT DISTINCT GroupId FROM GroupPaoPermission);
+/* End YUK-11041 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
