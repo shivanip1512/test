@@ -196,7 +196,7 @@
 <script type="text/javascript">
 	jQuery(document).ready(function() {
 	    jQuery('.setupDevDatabaseButton').click(function() {
-	    	jQuery('#setupDevDatabaseButtonId').disable();
+	    	jQuery('#setupDevDatabaseButtonId').attr("disabled",true);
 	        var displayCancelBtn = false;
 	        if (jQuery('#createAMR').is(':checked')) {
 	        	jQuery('#setupDbAMRProgressBar').show();
