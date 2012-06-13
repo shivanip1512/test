@@ -350,6 +350,10 @@ public enum PaoType implements DatabaseRepresentationSource {
         return this.paoClass == PaoClass.RFMESH;
     }
 
+    public boolean isWaterMeter() {
+        return this == PaoType.RFWMETER;
+    }
+
     private PaoType(int deviceTypeId, String dbString, PaoCategory paoCategory,
             PaoClass paoClass) {
         this.deviceTypeId = deviceTypeId;

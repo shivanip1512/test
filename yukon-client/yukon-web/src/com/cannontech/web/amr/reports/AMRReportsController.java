@@ -12,6 +12,8 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.simplereport.SimpleReportService;
@@ -22,8 +24,9 @@ public class AMRReportsController extends MultiActionController  {
     
     private PointDao pointDao;
     private SimpleReportService simpleReportService;
-    private DeviceGroupService deviceGroupService;
-    private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
+    @Autowired private DeviceDao deviceDao;
     
     /**
      * For viewing the Archived Data report crumbs back to high bill complaint page
@@ -84,9 +87,12 @@ public class AMRReportsController extends MultiActionController  {
         BareReportModel reportModel = reportDefinition.createBean();
         mav.addObject("reportTitle", reportModel.getTitle());
         
-        // device id for crumbs
+        // information for bread crumbs
         LitePoint point = pointDao.getLitePoint(pointId);
         Integer deviceId = point.getPaobjectID();
+        PaoType type = deviceDao.getYukonDevice(deviceId).getDeviceType();
+        
+        mav.addObject("isWaterMeter", type.isWaterMeter());
         mav.addObject("deviceId", deviceId);
     }
     
@@ -149,15 +155,5 @@ public class AMRReportsController extends MultiActionController  {
     @Required
     public void setSimpleReportService(SimpleReportService simpleReportService) {
         this.simpleReportService = simpleReportService;
-    }
-    
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-		this.deviceGroupService = deviceGroupService;
-	}
-    
-    @Autowired
-    public void setReportDefinitionFactory(YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory) {
-        this.reportDefinitionFactory = reportDefinitionFactory;
     }
 }

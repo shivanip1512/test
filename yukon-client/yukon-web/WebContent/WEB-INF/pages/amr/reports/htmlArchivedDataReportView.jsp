@@ -14,9 +14,16 @@
 		<c:if test="${searchResults != null}">
 			<cti:crumbLink url="${searchResults}" title="Search" />
 		</c:if>
-        <cti:crumbLink url="/spring/meter/home?deviceId=${deviceId}">
-            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
-        </cti:crumbLink>
+		<c:if test="${isWaterMeter}">
+	        <cti:crumbLink url="/spring/meter/water/home?deviceId=${deviceId}">
+	            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+	        </cti:crumbLink>
+        </c:if>
+        <c:if test="${!isWaterMeter}">
+	        <cti:crumbLink url="/spring/meter/home?deviceId=${deviceId}">
+	            <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+	        </cti:crumbLink>
+        </c:if>
         <cti:crumbLink>${reportTitle}</cti:crumbLink>
     </cti:breadCrumbs>
 
