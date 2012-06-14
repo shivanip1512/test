@@ -22,8 +22,8 @@
     <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.deviceType.linkText">Device Type</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.address.linkText">Address</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.columnHeader.route.linkText">Route</entry>
-    <entry key="yukon.web.modules.amr.meterSearchResults.pageName">Meter Search</entry>
-    <entry key="yukon.web.modules.amr.meterSearchResults.pageDescription">Meter Search</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.pageName">Meters</entry>
+    <entry key="yukon.web.modules.amr.meterSearchResults.pageDescription">Meters</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.showAll.label">Show All</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.showAll">Show All</entry>
     <entry key="yukon.web.modules.amr.meterSearchResults.filter">Filter:</entry>
