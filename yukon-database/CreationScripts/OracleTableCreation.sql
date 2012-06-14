@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/13/2012 5:36:15 PM                         */
+/* Created on:     6/14/2012 9:28:10 AM                         */
 /*==============================================================*/
 
 
@@ -9228,6 +9228,7 @@ create table YukonUser  (
 );
 
 INSERT INTO yukonuser VALUES (-9999, '(none)', '(none)', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
+INSERT INTO yukonuser VALUES (-100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
 INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
 INSERT INTO yukonuser VALUES (-1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
 
@@ -9251,6 +9252,8 @@ INSERT INTO YukonUserGroup VALUES(-1,-1);
 INSERT INTO YukonUserGroup VALUES(-1,-2);
 INSERT INTO YukonUserGroup VALUES(-2,-1);
 INSERT INTO YukonUserGroup VALUES(-2,-2);
+INSERT INTO YukonUserGroup VALUES(-100,-1);
+INSERT INTO YukonUserGroup VALUES(-100,-2);
 
 /*==============================================================*/
 /* Table: YukonWebConfiguration                                 */
