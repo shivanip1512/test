@@ -11,7 +11,6 @@ import com.cannontech.common.inventory.HardwareHistory;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.Address;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -46,7 +45,6 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private StarsInventoryBaseDao starsInventoryBaseDao;
-    @Autowired private RoleDao roleDao;
     
     @Override
     protected void createAll() {
@@ -94,9 +92,9 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         setRoleProperty(group, YukonRoleProperty.MAXIMUM_DAILY_SCANS, " ");
 
         setRoleProperty(group, YukonRoleProperty.VERSACOM_SERIAL_MODEL, " ");
-        setRoleProperty(group, YukonRoleProperty.EXPRESSCOM_SERIAL_MODEL, "true");
-        setRoleProperty(group, YukonRoleProperty.DCU_SA205_SERIAL_MODEL, "true");
-        setRoleProperty(group, YukonRoleProperty.DCU_SA305_SERIAL_MODEL, "false");
+        setRoleTrue(group, YukonRoleProperty.EXPRESSCOM_SERIAL_MODEL);
+        setRoleTrue(group, YukonRoleProperty.DCU_SA205_SERIAL_MODEL);
+        setRoleTrue(group, YukonRoleProperty.DCU_SA305_SERIAL_MODEL);
         setRoleProperty(group, YukonRoleProperty.LC_REDUCTION_COL, "false");
         setRoleProperty(group, YukonRoleProperty.COMMANDS_GROUP, " ");
         
@@ -149,22 +147,22 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             setRoleProperty(group, YukonRoleProperty.NAV_CONNECTOR_MIDDLE, " ");
             setRoleProperty(group, YukonRoleProperty.INBOUND_VOICE_HOME_URL, " ");
             
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL, "true");
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY, "true");
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT, "true");
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT, "true");
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT, "true");
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ, "true");
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL, "true");
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, "true");
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL, "true");
+            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL);
+            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY);
+            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT);
+            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT);
+            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT);
+            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ);
+            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL);
+            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME);
+            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL);
             
             setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_HIDE_OPT_OUT_BOX, "false");
             setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD, " ");
             setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_WEB_LINK_FAQ, " ");
             setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_WEB_LINK_THERM_INSTRUCTIONS, " ");
 
-            setRoleProperty(group, YukonRoleProperty.CSRF_TOKEN_MODE, "true");
+            setRoleProperty(group, YukonRoleProperty.CSRF_TOKEN_MODE, " ");
             
             ecMappingDao.addECToResidentialGroupMapping(energyCompanyId, Lists.newArrayList(group.getGroupID()));
             devStars.setLiteYukonGroupResidential(group);
@@ -364,10 +362,5 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             return false;
         }
         return true;
-    }
-    
-    private void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, String newVal) {
-        roleDao.updateGroupRoleProperty(group,yukonRoleProperty.getRole().getRoleId(),yukonRoleProperty.getPropertyId(),newVal);
-        log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }
 }

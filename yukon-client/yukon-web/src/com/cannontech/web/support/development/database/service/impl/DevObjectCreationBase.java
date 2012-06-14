@@ -1,6 +1,7 @@
 package com.cannontech.web.support.development.database.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,12 @@ import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PaoScheduleDao;
-import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.roleproperties.GroupRolePropertyValueCollection;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
@@ -25,15 +29,15 @@ import com.cannontech.web.support.development.database.service.DevObjectCreation
 
 public abstract class DevObjectCreationBase implements DevObjectCreationInterface {
     protected static final Logger log = YukonLogManager.getLogger(DevObjectCreationBase.class);
-    protected PaoDefinitionService paoDefinitionService;
-    protected PaoDao paoDao;
-    protected DeviceDao deviceDao;
-    protected PaoScheduleDao paoScheduleDao;
-    protected YukonUserDao yukonUserDao;
     protected DevDbSetupTask devDbSetupTask;
-    protected DeviceCreationService deviceCreationService;
-    protected DBPersistentDao dbPersistentDao;
-    protected ConfigurationSource configurationSource;
+    @Autowired protected ConfigurationSource configurationSource;
+    @Autowired protected PaoDao paoDao;
+    @Autowired protected DeviceDao deviceDao;
+    @Autowired protected DeviceCreationService deviceCreationService;
+    @Autowired protected DBPersistentDao dbPersistentDao;
+    @Autowired private PaoDefinitionService paoDefinitionService;
+    @Autowired private RolePropertyEditorDao rolePropertyEditorDao;
+    @Autowired private RoleDao roleDao;
 
     @Override
     public void createAll(DevDbSetupTask devDbSetupTask) {
@@ -97,36 +101,19 @@ public abstract class DevObjectCreationBase implements DevObjectCreationInterfac
         return smartDB;
     }
     
-    @Autowired
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
+
+    protected void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, String newVal) {
+        roleDao.updateGroupRoleProperty(group,yukonRoleProperty.getRole().getRoleId(),yukonRoleProperty.getPropertyId(),newVal);
+        log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }
-    @Autowired
-    public void setPaoDefinitionService(PaoDefinitionService paoDefinitionService) {
-        this.paoDefinitionService = paoDefinitionService;
+
+    protected void setRoleTrue(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty) {
+        GroupRolePropertyValueCollection propertyValues = rolePropertyEditorDao.getForGroupAndRole(group, yukonRoleProperty.getRole(), true);
+        Map<YukonRoleProperty, Object> valueMap = propertyValues.getValueMap();
+        valueMap.put(yukonRoleProperty, true);
+        propertyValues.putAll(valueMap);
+        rolePropertyEditorDao.save(propertyValues);
+        log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to true");
     }
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    @Autowired
-    public void setPaoScheduleDao(PaoScheduleDao paoScheduleDao) {
-        this.paoScheduleDao = paoScheduleDao;
-    }
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    @Autowired
-    public void setDeviceCreationService(DeviceCreationService deviceCreationService) {
-        this.deviceCreationService = deviceCreationService;
-    }
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
+    
 }

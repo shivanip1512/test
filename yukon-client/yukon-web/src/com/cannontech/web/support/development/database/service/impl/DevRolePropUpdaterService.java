@@ -1,21 +1,13 @@
 package com.cannontech.web.support.development.database.service.impl;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
-import com.cannontech.core.roleproperties.GroupRolePropertyValueCollection;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyEditorDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 
 public class DevRolePropUpdaterService extends DevObjectCreationBase {
-    @Autowired private RoleDao roleDao;
-    @Autowired private RolePropertyEditorDao rolePropertyEditorDao;
     @Autowired private YukonGroupDao yukonGroupDao;
-
 
     @Override
     protected void createAll() {
@@ -269,19 +261,5 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
         setRoleTrue(group, YukonRoleProperty.WORK_ORDER_SHOW_ALL);
         setRoleTrue(group, YukonRoleProperty.WORK_ORDER_CREATE_NEW);
         setRoleTrue(group, YukonRoleProperty.WORK_ORDER_REPORT);
-    }
-
-    private void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, String newVal) {
-        roleDao.updateGroupRoleProperty(group,yukonRoleProperty.getRole().getRoleId(),yukonRoleProperty.getPropertyId(),newVal);
-        log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
-    }
-
-    private void setRoleTrue(LiteYukonGroup group, YukonRoleProperty property) {
-        GroupRolePropertyValueCollection propertyValues = rolePropertyEditorDao.getForGroupAndRole(group, property.getRole(), true);
-        Map<YukonRoleProperty, Object> valueMap = propertyValues.getValueMap();
-        valueMap.put(property, true);
-        propertyValues.putAll(valueMap);
-        rolePropertyEditorDao.save(propertyValues);
-        log.info("Group " + group.getGroupName() + " YukonRole " + property.getRole().name() + " and YukonRoleProperty " + property.name() + " set to true");
     }
 }

@@ -38,9 +38,9 @@ public class SupportBundleServiceImpl implements SupportBundleService {
     private Logger log = YukonLogManager.getLogger(SupportBundleServiceImpl.class);
 
     private static final int PAST_BUNDLES_TO_KEEP = 5; // -1 to never delete old bundles
-    private static final String DEFAULT_FTP_USER = "yukwrite"; 
-    private static final String DEFAULT_FTP_PASSWORD = "P4ssw0rd"; 
-    private static final String DEFAULT_FTP_HOST = "sftp.cooperpowereas.net"; 
+    private static final String DEFAULT_FTP_USER = "yukwrite";
+    private static final String DEFAULT_FTP_PASSWORD = "P4ssw0rd";
+    private static final String DEFAULT_FTP_HOST = "sftp.cooperpowereas.net";
 
     private ConfigurationSource configurationSource;
     private Executor executor;
