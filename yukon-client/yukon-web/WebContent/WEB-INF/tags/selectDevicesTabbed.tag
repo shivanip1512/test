@@ -10,6 +10,12 @@
 <%@ attribute name="hideGroup" type="java.lang.Boolean"%>
 <%@ attribute name="hideIndividual" type="java.lang.Boolean"%>
 <%@ attribute name="showCount" type="java.lang.Boolean"%>
+<%@ attribute name="individualPickerType" type="java.lang.String" description="The type of the Individual picker. This defaults to meterPicker."%>
+
+<c:set var="pickerType" value="${individualPickerType}"/>
+<c:if test="${empty pickerType}">
+	<c:set var="pickerType" value="meterPicker"/>
+</c:if>
 
 <%@ tag body-content="empty" trimDirectiveWhitespaces="true"%>
 
@@ -58,7 +64,7 @@
 							<tags:nameValue2 nameKey=".devices">
 							    <input type="hidden" id="picker_meters" name="idList.ids" value="${deviceCollection.collectionParameters['idList.ids']}"/>
 								<tags:pickerDialog id="selectDevicesPicker" 
-	                                type="meterPicker"
+	                                type="${pickerType}"
 	                                destinationFieldId="picker_meters"
 									destinationFieldName="idList.ids"
 									multiSelectMode="true"

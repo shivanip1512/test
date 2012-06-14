@@ -51,7 +51,7 @@
 	function setSelectedGroupName_${uniqueId}() {
 		
 		<c:if test="${empty pageScope.fieldValue}">
-			jQuery('#noGroupSelectedTextSpan_${uniqueId}').hide();
+			jQuery('#noGroupSelectedText_${uniqueId}').hide();
 		</c:if>
 		jQuery('#deviceGroupName_${uniqueId}').html(jQuery(document.getElementById("${fieldName}")).val());
 
@@ -68,13 +68,11 @@
 
 <%-- NO GROUP SELECTED TEXT --%>
 <c:if test="${empty pageScope.fieldValue}">
-	<span id="noGroupSelectedTextSpan_${uniqueId}" class="subtleGray fl" style="font-style:italic;">${noGroupSelectedText}</span>
+	<a id="noGroupSelectedText_${uniqueId}" href="javascript:void(0);"
+		class="fl simpleLink leftOfImageLabel chooseGroupIcon_${uniqueId}">
+		<span class="noSelectionPickerLabel">${noGroupSelectedText}</span>
+	</a>
 </c:if>
-
-<c:set var="the_edit_folder">
-    <a href="javascript:void(0);" title="${selectDeviceGroupChooseText}" 
-        class="chooseGroupIcon_${uniqueId} icon icon_folder_edit"></a>
-</c:set>
 
 <c:choose>
 
@@ -85,7 +83,6 @@
            class="chooseGroupIcon_${uniqueId} fl simpleLink leftOfImageLabel">
            ${pageScope.fieldValue}
         </a>
-        ${the_edit_folder}
 	</c:when>
 
 	<%-- LINKED GROUP NAME --%>
@@ -94,10 +91,11 @@
             class="deviceGroupLink_${uniqueId} fl leftOfImageLabel">
             ${pageScope.fieldValue}
         </a>
-		${the_edit_folder}
 	</c:otherwise>
-
 </c:choose>
+<%-- EDIT FOLDER --%>
+<a href="javascript:void(0);" title="${selectDeviceGroupChooseText}"
+	class="chooseGroupIcon_${uniqueId} icon icon_folder_edit"></a>
 
 <%-- MAGNIFIER ICON --%>
 <c:if test="${pageScope.showSelectedDevicesIcon}">

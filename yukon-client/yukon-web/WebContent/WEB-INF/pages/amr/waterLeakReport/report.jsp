@@ -28,7 +28,7 @@
                                           {text: '${cancelButton}', click: function() { jQuery(this).dialog('close'); }, title: '${cancelButtonTitle}', 'class': 'naked leakFilterCancelButton anchorUnderlineHover' }]}">
 		<form:form id="filterForm" action="report" method="get" commandName="backingBean">
 			<tags:sortFields backingBean="${backingBean}"/>
-			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab"/>
+			<tags:selectDevicesTabbed deviceCollection="${backingBean.deviceCollection}" tabClass="waterLeakFilterTab" individualPickerType="waterMeterPicker"/>
 			<div class="under_tabs">
 				<tags:nameValueContainer2>
 					<tags:nameValue2 nameKey=".filter.fromDate">

@@ -1682,6 +1682,12 @@
 	<bean name="availableVoltageRegulatorGangPicker" class="com.cannontech.web.picker.v2.AvailableVoltageRegulatorGangPicker"/>
     <bean name="availableVoltageRegulatorPhasePicker" class="com.cannontech.web.picker.v2.AvailableVoltageRegulatorPhasePicker"/>
 
+    <bean name="waterMeterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.WaterUsageCriteria"/>
+        </property>
+    </bean>
+
     <bean name="userPicker" class="com.cannontech.web.picker.v2.UserPicker">
         <property name="searcher" ref="userSearcherLucene"/>
     </bean>
