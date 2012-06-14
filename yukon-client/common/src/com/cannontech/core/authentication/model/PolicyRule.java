@@ -14,7 +14,7 @@ public enum PolicyRule implements DisplayableEnum {
     UPPERCASE_CHARACTERS("[\\p{Lu}&&["+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]"), 
     LOWERCASE_CHARACTERS("[\\p{Ll}&&["+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]"),
     BASE_10_DIGITS("\\d"),
-    NONALPHANUMERIC_CHARACTERS("[~!@#$%^&*_-`|(){}:;\"'<>,.?/]"), //"~!@#$%^&*_-+=`|(){}[]:;\"'<>,.?/"     Missing  -->  +=[]
+    NONALPHANUMERIC_CHARACTERS("\\p{Punct}"),
     UNICODE_CHARACTERS("[\\p{L}&&[^"+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]"),
     ;
     

@@ -24,7 +24,6 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -181,7 +180,6 @@ public class ClientSession {
         try {
             // force load of the application context
             YukonSpringHook.getContext();
-            AuthenticationService authenticationService = YukonSpringHook.getBean("authenticationService", AuthenticationService.class);
             
             LoginPanel lp = makeLocalLoginPanel();
             while(collectInfo(p, lp)) {

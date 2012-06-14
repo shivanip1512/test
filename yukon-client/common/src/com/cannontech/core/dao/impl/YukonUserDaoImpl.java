@@ -122,7 +122,6 @@ public class YukonUserDaoImpl implements YukonUserDao {
 
     @Override
 	@Transactional
-	@Deprecated
 	public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, List<LiteYukonGroup> groups) throws DataAccessException {
 	    user.setUserID(nextValueHelper.getNextValue("YukonUser"));
 	    

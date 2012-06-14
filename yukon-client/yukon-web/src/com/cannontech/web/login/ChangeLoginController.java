@@ -19,7 +19,9 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -36,6 +38,7 @@ public class ChangeLoginController {
     
     @Autowired private AuthenticationService authenticationService;
     @Autowired private PasswordResetService passwordResetService;
+    @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SystemEventLogService systemEventLogService;
     @Autowired private YukonUserDao yukonUserDao;
@@ -78,29 +81,56 @@ public class ChangeLoginController {
             String passwordResetUrl = passwordResetService.getPasswordResetUrl(user.getUsername(), request);
             return new ModelAndView("redirect:"+passwordResetUrl);
         }
-        boolean supportsPasswordChange = authenticationService.supportsPasswordSet(type);
-        boolean hasRequiredFields = hasRequiredFields(oldPassword, newPassword, confirm);
-
-        ChangeLoginMessage loginMsg;
-        if (!isValidPassword) {
-            loginMsg = ChangeLoginMessage.INVALID_CREDENTIALS_PASSWORD_CHANGE;
-        }
-        else if (!supportsPasswordChange) {
-            loginMsg = ChangeLoginMessage.PASSWORD_CHANGE_NOT_SUPPORTED;
-        }
-        else if (!hasRequiredFields) {
-            loginMsg = ChangeLoginMessage.REQUIRED_FIELDS_MISSING;
-        }
-        else if (!newPassword.equals(confirm)) {
-            loginMsg = ChangeLoginMessage.NO_PASSWORDMATCH;
-        }
-        else {
+        ChangeLoginMessage loginMsg = validatePassword(oldPassword, newPassword, confirm, user, type, isValidPassword);
+        
+        if (loginMsg.equals(ChangeLoginMessage.LOGIN_PASSWORD_CHANGED)) {
             authenticationService.setPassword(user, newPassword);
-            loginMsg = ChangeLoginMessage.LOGIN_PASSWORD_CHANGED;
             success = true;
         }
         
         return sendRedirect(request, redirectUrl, loginMsg, retrySeconds, success);
+    }
+
+    /**
+     * This method validates the password and makes sure it follows the password policy if one exists.
+     */
+    private ChangeLoginMessage validatePassword(String oldPassword, String newPassword, String confirmPassword, final LiteYukonUser user,
+                                               final AuthType type, boolean isValidPassword) {
+        
+        boolean supportsPasswordChange = authenticationService.supportsPasswordSet(type);
+        boolean hasRequiredFields = hasRequiredFields(oldPassword, newPassword, confirmPassword);
+
+        if (!isValidPassword) {
+            return ChangeLoginMessage.INVALID_CREDENTIALS_PASSWORD_CHANGE;
+        } else if (!supportsPasswordChange) {
+            return ChangeLoginMessage.PASSWORD_CHANGE_NOT_SUPPORTED;
+        } else if (!hasRequiredFields) {
+            return ChangeLoginMessage.REQUIRED_FIELDS_MISSING;
+        } else if (!newPassword.equals(confirmPassword)) {
+            return ChangeLoginMessage.NO_PASSWORDMATCH;
+        } else {
+            // Check the password against the password policy.
+            PasswordPolicy passwordPolicy = passwordPolicyService.findPasswordPolicy(user);
+            if (passwordPolicy != null) {
+                if (newPassword.length() < passwordPolicy.getMinPasswordLength()) {
+                   return ChangeLoginMessage.MIN_PASSWORD_LENGTH_NOT_MET;
+                }
+                
+                if (!passwordPolicy.isPasswordAgeRequirementMet(user)) {
+                    return ChangeLoginMessage.MIN_PASSWORD_AGE_NOT_MET;
+                }
+                
+                if (authenticationService.isPasswordBeingReused(user, newPassword)) {
+                    return ChangeLoginMessage.PASSWORD_USED_TOO_RECENTLY;
+                }
+                
+                if (!passwordPolicy.isPasswordQualityCheckMet(newPassword)) {
+                    return ChangeLoginMessage.PASSWORD_DOES_NOT_MET_POLICY_QUALITY;
+                }
+            }
+        }
+        
+        return ChangeLoginMessage.LOGIN_PASSWORD_CHANGED;
     }
     
     @RequestMapping(value = "/changelogin/updateusername", method = RequestMethod.POST)

@@ -31,7 +31,7 @@ public class IncreasingAuthenticationThrottleServiceImpl implements Authenticati
 
     private double authThrottleExpBase = Math.E/2; // used to ramp up throttle duration slowly or rapidly
     private double authThrottleDelta =  0.0; // used to ramp up throttle duration slowly or rapidly    
-    private int abandonedAuthThrottleDays = -100;  //Cleanup any abandoned AuthenticationThrottle data that is older than X days
+    private int abandonedAuthThrottleDays = 100;  //Cleanup any abandoned AuthenticationThrottle data that is older than X days
 
     @Override
     public void afterPropertiesSet() throws Exception {
