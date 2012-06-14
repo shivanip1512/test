@@ -19,6 +19,7 @@ import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -38,12 +39,13 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 public class ServiceCompanyController {
     
     private static final String baseUrl = "/spring/adminSetup/energyCompany/serviceCompany";
-    private EnergyCompanyService energyCompanyService;
-    private RolePropertyDao rolePropertyDao;
-    private ServiceCompanyService serviceCompanyService;
-    private ServiceCompanyDao serviceCompanyDao;
-    private ServiceCompanyDtoValidator serviceCompanyDtoValidator;
-    private YukonUserDao yukonUserDao;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ServiceCompanyService serviceCompanyService;
+    @Autowired private ServiceCompanyDao serviceCompanyDao;
+    @Autowired private ServiceCompanyDtoValidator serviceCompanyDtoValidator;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     
     private void checkPermissionsAndSetupModel(EnergyCompanyInfoFragment energyCompanyInfoFragment,
                       ModelMap modelMap,
@@ -121,6 +123,12 @@ public class ServiceCompanyController {
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
+        // Remove formatting so 11 digit phone number's don't take 16 char's in DB (Max is 14)
+        String faxNumber = phoneNumberFormattingService.removeNonDigits(serviceCompany.getMainFaxNumber());
+        String phoneNumber = phoneNumberFormattingService.removeNonDigits(serviceCompany.getMainPhoneNumber());
+        serviceCompany.setMainFaxNumber(faxNumber);
+        serviceCompany.setMainPhoneNumber(phoneNumber);
+        
         //verify the object
         serviceCompanyDtoValidator.validate(serviceCompany, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -172,9 +180,11 @@ public class ServiceCompanyController {
       //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
-       // Remove formatting so 11 digit phone number's don't take 16 char's in DB, which only hold 14
-       serviceCompany.setMainFaxNumber(serviceCompany.getMainFaxNumber().replaceAll("\\D", ""));
-       serviceCompany.setMainPhoneNumber(serviceCompany.getMainPhoneNumber().replaceAll("\\D", ""));
+       // Remove formatting so 11 digit phone number's don't take 16 char's in DB (Max is 14)
+       String faxNumber = phoneNumberFormattingService.removeNonDigits(serviceCompany.getMainFaxNumber());
+       String phoneNumber = phoneNumberFormattingService.removeNonDigits(serviceCompany.getMainPhoneNumber());
+       serviceCompany.setMainFaxNumber(faxNumber);
+       serviceCompany.setMainPhoneNumber(phoneNumber);
         
       //verify the object
         serviceCompanyDtoValidator.validate(serviceCompany, bindingResult);
@@ -225,36 +235,5 @@ public class ServiceCompanyController {
     @ModelAttribute("baseUrl")
     public String getBaseUrl() {
         return baseUrl;
-    }
-    
-    // DI Setters
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setServiceCompanyDao(ServiceCompanyDao serviceCompanyDao) {
-        this.serviceCompanyDao = serviceCompanyDao;
-    }
-    
-    @Autowired
-    public void setServiceCompanyDtoValidator(ServiceCompanyDtoValidator serviceCompanyDtoValidator) {
-        this.serviceCompanyDtoValidator = serviceCompanyDtoValidator;
-    }
-
-    @Autowired
-    public void setWarehouseService(ServiceCompanyService serviceCompanyService) {
-        this.serviceCompanyService = serviceCompanyService;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
     }
 }

@@ -16,4 +16,7 @@ public interface PhoneNumberFormattingService {
     public boolean isHasInvalidCharacters(String phoneNumber);
     
     public String strip(String phoneNumber);
+    
+    public String removeNonDigits(String phoneNumber);
+    
 }

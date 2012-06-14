@@ -49,7 +49,8 @@ public class PhoneNumberFormattingServiceImpl implements PhoneNumberFormattingSe
         return PhoneNumber.strip(phoneNumber);
     }
     
-    private String removeNonDigits(String phoneNumber) {
+    @Override
+    public String removeNonDigits(String phoneNumber) {
         String result = phoneNumber.replaceAll("\\D", "");
         return result;
     }
