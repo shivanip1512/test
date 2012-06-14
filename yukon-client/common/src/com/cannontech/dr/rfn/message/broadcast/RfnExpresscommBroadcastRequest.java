@@ -12,11 +12,20 @@ public class RfnExpresscommBroadcastRequest implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
+    private short messageId;
     private int messagePriority;
     private RfnMessageClass rfnMessageClass;
     private long expirationTime;
     private byte[] payload;
 
+    public short getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(short messageId) {
+        this.messageId = messageId;
+    }
+    
     public int getMessagePriority() {
         return messagePriority;
     }
@@ -52,7 +61,8 @@ public class RfnExpresscommBroadcastRequest implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("RfnExpresscommBroadcastRequest [messagePriority=%s, rfnMessageClass=%s, expirationTime=%s, payload=%s]",
+            .format("RfnExpresscommBroadcastRequest [messageId=%s, messagePriority=%s, rfnMessageClass=%s, expirationTime=%s, payload=%s]",
+                    messageId,
                     messagePriority,
                     rfnMessageClass,
                     expirationTime,
