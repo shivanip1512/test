@@ -41,9 +41,7 @@ public class AuthenticationThrottleHelperImplTest {
         for (int i = 0; i < 10; i++) {
             try {
                 authenticationThrottleServiceImpl.loginAttempted(testUser1);
-            } catch (AuthenticationThrottleException e){
-                //do nothing, continue
-            }
+            } catch (AuthenticationThrottleException e) { /* do nothing, continue */ }
         }
         
         AuthenticationThrottleDto throttleData2 = authenticationThrottleServiceImpl.getAuthenticationThrottleData(testUser1);
@@ -109,23 +107,19 @@ public class AuthenticationThrottleHelperImplTest {
         for (int i = 0; i < 10; i++) {
             try {
               authenticationThrottleServiceImpl.loginAttempted(testUser1);
-            } catch (AuthenticationThrottleException e) {
-                // do nothing, continue
-            }
+            } catch (AuthenticationThrottleException e) {  /* do nothing, continue */ }
+            
             AuthenticationThrottleDto throttleData1 = authenticationThrottleServiceImpl.getAuthenticationThrottleData(testUser1);
-            assertTrue("Throttle duration incorrect",
-                       throttleData1.getActualThrottleDuration() > 0);
+            assertTrue("Throttle duration incorrect", throttleData1.getActualThrottleDuration() > 0);
         }
         
         for (int i = 0; i < 10; i++) {
             try {
               authenticationThrottleServiceImpl.loginAttempted(testUser2);
-            } catch (AuthenticationThrottleException e) {
-                // do nothing, continue
-            }
+            } catch (AuthenticationThrottleException e) { /* do nothing, continue */ }
+
             AuthenticationThrottleDto throttleData2 = authenticationThrottleServiceImpl.getAuthenticationThrottleData(testUser2);
-            assertTrue("Throttle duration incorrect",
-                       throttleData2.getActualThrottleDuration() > 0);
+            assertTrue("Throttle duration incorrect", throttleData2.getActualThrottleDuration() > 0);
         }
 
         AuthenticationThrottleDto authThrottleDto1 = authenticationThrottleServiceImpl.getAuthenticationThrottleData(testUser1);
@@ -135,15 +129,5 @@ public class AuthenticationThrottleHelperImplTest {
         AuthenticationThrottleDto authThrottleDto2 = authenticationThrottleServiceImpl.getAuthenticationThrottleData(testUser2);
         assertTrue("Throttle duration incorrect", authThrottleDto2 != null);
         assertTrue("Throttle duration incorrect", authThrottleDto2.getActualThrottleDuration() > 0);
-
-        // artificial abadonedAuthThrottleDays to test cleanup
-        authenticationThrottleServiceImpl.setAbandonedAuthThrottleDays(1);
-        authenticationThrottleServiceImpl.cleanupAuthenticationThrottle();
-
-        AuthenticationThrottleDto authThrottleDto3 = authenticationThrottleServiceImpl.getAuthenticationThrottleData(testUser1);
-        assertTrue("Throttle duration incorrect", authThrottleDto3 == null);
-
-        AuthenticationThrottleDto authThrottleDto4 = authenticationThrottleServiceImpl.getAuthenticationThrottleData(testUser2);
-        assertTrue("Throttle duration incorrect", authThrottleDto4 == null);
     }
 }

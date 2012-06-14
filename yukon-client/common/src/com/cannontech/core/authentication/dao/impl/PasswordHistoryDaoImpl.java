@@ -27,7 +27,6 @@ public class PasswordHistoryDaoImpl implements PasswordHistoryDao, InitializingB
     private FieldMapper<PasswordHistory> passwordHistoryFieldMapper = new FieldMapper<PasswordHistory>() {
         @Override
         public void extractValues(MapSqlParameterSource p, PasswordHistory passwordHistory) {
-            p.addValue("PasswordHistoryId", passwordHistory.getPasswordHistoryId());
             p.addValue("UserId", passwordHistory.getUserId());
             p.addValue("Password", passwordHistory.getPassword());
             p.addValue("AuthType", passwordHistory.getAuthType());
