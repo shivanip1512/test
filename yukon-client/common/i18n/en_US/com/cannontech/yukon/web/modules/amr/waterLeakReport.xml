@@ -62,7 +62,7 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.viewIntervalData">View Interval Data</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.viewIntervalDataTitle">View interval data for the selected devices</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.performCollectionAction">Collection Action (All Devices)</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.leakRateLabel">{0,number,0.00} gal/hr</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.leakRateLabel">{0,number,0.000} gal/hr</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.exportCSV">Export to CSV</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.results.deviceCollectionDescription">Water Leak Report Results</entry>
 

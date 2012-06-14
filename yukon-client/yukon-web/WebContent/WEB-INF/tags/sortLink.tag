@@ -41,9 +41,11 @@ attribute to true on the field which is the default sort field.
 
 <cti:url var="sortUrl" value="${baseUrl}">
     <%-- keep all parameters except sort and page number --%>
-    <c:forEach var="aParam" items="${param}">
+    <c:forEach var="aParam" items="${paramValues}">
         <c:if test="${aParam.key != sortParam && aParam.key != descendingParam && aParam.key != 'page'}">
-            <cti:param name="${aParam.key}" value="${aParam.value}"/>
+			<c:forEach var="theValue" items="${aParam.value}">
+				<cti:param name="${aParam.key}" value="${theValue}"/>
+			</c:forEach>
         </c:if>
     </c:forEach>
     <cti:param name="${sortParam}" value="${fieldName}"/>
