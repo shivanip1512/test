@@ -72,7 +72,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
             parameterHolder.addValue("Status", user.getLoginStatus());
             parameterHolder.addValue("AuthType", user.getAuthType());
             parameterHolder.addValue("LastChangedDate", user.getLastChangedDate());
-            parameterHolder.addValue("ForceReset", user.isForceReset());
+            parameterHolder.addValue("ForceReset", YNBoolean.valueOf(user.isForceReset()));
         }
     };
     

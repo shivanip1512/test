@@ -36,12 +36,12 @@ public class PasswordHistoryDaoImpl implements PasswordHistoryDao, InitializingB
         
         @Override
         public Number getPrimaryKey(PasswordHistory passwordHistory) {
-            return passwordHistory.getUserId();
+            return passwordHistory.getPasswordHistoryId();
         }
         
         @Override
-        public void setPrimaryKey(PasswordHistory passwordHistory, int newID) {
-            passwordHistory.setUserId(newID);
+        public void setPrimaryKey(PasswordHistory passwordHistory, int newId) {
+            passwordHistory.setPasswordHistoryId(newId);
         }
     };
     

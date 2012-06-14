@@ -4,7 +4,7 @@ import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 
 public class PasswordHistory {
-    private Integer passwordHistoryId;
+    private int passwordHistoryId;
     private int userId;
     private String password;
     private AuthType authType;
@@ -18,10 +18,10 @@ public class PasswordHistory {
         this.passwordChangedDate = passwordChangedDate;
     }
 
-    public Integer getPasswordHistoryId() {
+    public int getPasswordHistoryId() {
         return passwordHistoryId;
     }
-    public void setPasswordHistoryId(Integer passwordHistoryId) {
+    public void setPasswordHistoryId(int passwordHistoryId) {
         this.passwordHistoryId = passwordHistoryId;
     }
 
