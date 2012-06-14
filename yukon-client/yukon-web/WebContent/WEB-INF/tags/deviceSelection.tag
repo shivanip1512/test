@@ -115,7 +115,7 @@
         }
         
         function clearErrors(){
-            jQuery(".undefinedStartAddress, .undefinedEndAddress, .lessThanZero, .outOfRange").removeClass('error');
+            jQuery(".undefinedStartAddress, .undefinedEndAddress, .lessThanZero, .outOfRange, .startTooHigh, .endTooHigh").removeClass('error');
             jQuery(".rangeMsg").hide();
         }
         
@@ -124,6 +124,7 @@
             var start = parseInt(jQuery("#${byAddrPopupId}_startRange").val());
             var end = parseInt(jQuery("#${byAddrPopupId}_endRange").val());
             var errors = [];
+            var MAX_INT = 2147483648; //Maximum 32-bit integer, which is how the range values are eventually interpreted
             
             //separate errors
             if(isNaN(start)){
@@ -138,6 +139,14 @@
                 errors.push(".lessThanZero");
             }
             
+            if(start > MAX_INT){
+                errors.push(".startTooHigh");
+            }
+            
+            if(end > MAX_INT){
+                errors.push(".endTooHigh");
+            }
+                  
             if(start > end){
                 errors.push(".outOfRange");
             }
@@ -242,6 +251,8 @@
                         <cti:msg key="yukon.common.device.bulk.deviceSelection.errOutOfRange" var="outOfRange"/>
                         <cti:msg key="yukon.common.device.bulk.deviceSelection.errNoStart" var="noStart"/>
                         <cti:msg key="yukon.common.device.bulk.deviceSelection.errNoEnd" var="noEnd"/>
+                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errBigStart" var="startTooHigh"/>
+                        <cti:msg key="yukon.common.device.bulk.deviceSelection.errBigEnd" var="endTooHigh"/>
                         
                         <li class="dn rangeMsg lessThanZero">${lessThanZero}</li>
                         
@@ -250,16 +261,20 @@
                         <li class="dn rangeMsg undefinedStartAddress">${noStart}</li>
                         
                         <li class="dn rangeMsg undefinedEndAddress">${noEnd}</li>
+                        
+                        <li class="dn rangeMsg startTooHigh">${startTooHigh}</li>
+                        
+                        <li class="dn rangeMsg endTooHigh">${endTooHigh}</li>
                     </ul>
                     
                     <input type="hidden" name="collectionType" value="addressRange" />
                     
                     <tags:nameValueContainer>
                         <tags:nameValue name="Start of Range">
-                            <input type="text" id="${byAddrPopupId}_startRange" name="addressRange.start" class="undefinedStartAddress lessThanZero" />
+                            <input type="text" id="${byAddrPopupId}_startRange" name="addressRange.start" class="undefinedStartAddress outOfRange lessThanZero startTooHigh" />
                         </tags:nameValue>
                         <tags:nameValue name="End of Range">
-                            <input type="text" id="${byAddrPopupId}_endRange" name="addressRange.end" class="undefinedEndAddress outOfRange" />
+                            <input type="text" id="${byAddrPopupId}_endRange" name="addressRange.end" class="undefinedEndAddress outOfRange endTooHigh" />
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     

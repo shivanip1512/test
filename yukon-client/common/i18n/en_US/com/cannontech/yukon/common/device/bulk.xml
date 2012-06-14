@@ -73,8 +73,11 @@
 
     <entry key="yukon.common.device.bulk.deviceSelection.errNoEnd">Missing End of Range</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.errNoStart">Missing Start of Range</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.errBigStart">Start of range must be less than 2147483648</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.errBigEnd">End of range must be less than 2147483648</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.errLessThanZero">Negative Start value</entry>
-    <entry key="yukon.common.device.bulk.deviceSelection.errOutOfRange">Invalid Range: Start must be lower than End</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.errOutOfRange">Invalid Range: Start cannot be greater than End</entry>
+    
 
     <!-- COLLECTION ACTIONS collectionActions.jsp -->
     <entry key="yukon.common.device.bulk.collectionActions.pageTitle">Collection Actions</entry>
