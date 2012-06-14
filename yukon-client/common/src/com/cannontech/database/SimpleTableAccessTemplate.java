@@ -169,7 +169,7 @@ public final class SimpleTableAccessTemplate<T> {
 
         // validation to warn if the primary key field has been passed in as a normal field in the fieldmapper.  
         if(parameterSource.getValues().keySet().contains(this.primaryKeyField)) {
-            throw new IllegalArgumentException("Primary key field \"" + this.primaryKeyField + "\" should not beincluded in the FieldMapper.");
+            throw new IllegalArgumentException("Primary key field \"" + this.primaryKeyField + "\" should not be included in the FieldMapper.");
         }
         
         int nextId;
