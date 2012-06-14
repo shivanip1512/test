@@ -101,7 +101,7 @@
                             <ul>
                                 <li>
                                     <tags:nameValueContainer2>
-                                    	<tags:checkbox path="devStars.createCooperEC" id="createNewEC"/>
+                                    	<tags:checkbox path="devStars.createEnergyCompany" id="createEnergyCompany"/>
                                     	<span><i:inline key=".setupDevDatabase.option.stars.createNewEC" /></span>
                                     	<tags:selectNameValue path="devStars.energyCompany" nameKey=".setupDevDatabase.option.stars.parentEnergyCompany" items="${allEnergyCompanies}" itemLabel="name" itemValue="energyCompanyId" inputClass="f_ec_select"/>
                                         <tags:inputNameValue path="devStars.devStarsAccounts.numAccounts" nameKey=".setupDevDatabase.option.stars.numAccounts" size="4"/>
@@ -216,7 +216,7 @@
 	        jQuery('#setupDbForm').submit();
 	    });
 	    
-	    jQuery("#createNewEC").change(function() {
+	    jQuery("#createEnergyCompany").change(function() {
 	    	if (jQuery(this).is(':checked')) {
 	    		jQuery(".f_ec_select").attr("disabled", true);
 	    	} else {

@@ -3,7 +3,6 @@ package com.cannontech.web.support.development.database.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.development.BulkPointDataInjectionService;
 import com.cannontech.web.support.development.DevDbSetupTask;
 import com.cannontech.web.support.development.database.service.DevDatabasePopulationService;
 
@@ -12,7 +11,6 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
     @Autowired private DevAMRCreationService devAMRCreationService;
     @Autowired private DevCapControlCreationService devCapControlCreationService;
     @Autowired private DevStarsCreationService devStarsCreationService;
-    @Autowired private BulkPointDataInjectionService bulkPointDataInjectionService;
     private DevDbSetupTask devDbSetupTask;
 
     @Transactional
@@ -47,9 +45,6 @@ public class DevDatabasePopulationServiceImpl implements DevDatabasePopulationSe
             }
             if (devDbSetupTask.getDevStars().isCreate()) {
                 devStarsCreationService.createAll(devDbSetupTask);
-            }
-            if (devDbSetupTask.isBulkPointDataInject()) {
-                bulkPointDataInjectionService.executeInjection();
             }
         } catch (Exception e) {
             devDbSetupTask.setHasRun(false);

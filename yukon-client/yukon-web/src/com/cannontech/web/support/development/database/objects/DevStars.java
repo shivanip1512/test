@@ -1,12 +1,15 @@
 package com.cannontech.web.support.development.database.objects;
 
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 
 public class DevStars extends DevObject {
+    private LiteYukonGroup liteYukonGroupResidential;
+    private LiteYukonGroup liteYukonGroupOperator;
     private LiteStarsEnergyCompany energyCompany;
     private DevStarsAccounts devStarsAccounts = new DevStarsAccounts();
     private DevStarsHardware devStarsHardware = new DevStarsHardware();
-    private boolean createCooperEC = false;
+    private boolean createEnergyCompany = false;
 
     public LiteStarsEnergyCompany getEnergyCompany() {
         return energyCompany;
@@ -44,11 +47,27 @@ public class DevStars extends DevObject {
         return total;
     }
 
-    public boolean isCreateCooperEC() {
-        return createCooperEC;
+    public boolean isCreateEnergyCompany() {
+        return createEnergyCompany;
     }
 
-    public void setCreateCooperEC(boolean createCooperEC) {
-        this.createCooperEC = createCooperEC;
+    public void setCreateEnergyCompany(boolean createEnergyCompany) {
+        this.createEnergyCompany = createEnergyCompany;
+    }
+
+    public LiteYukonGroup getLiteYukonGroupResidential() {
+        return liteYukonGroupResidential;
+    }
+
+    public void setLiteYukonGroupResidential(LiteYukonGroup liteResidentialYukonGroup) {
+        this.liteYukonGroupResidential = liteResidentialYukonGroup;
+    }
+
+    public LiteYukonGroup getLiteYukonGroupOperator() {
+        return liteYukonGroupOperator;
+    }
+
+    public void setLiteYukonGroupOperator(LiteYukonGroup liteYukonGroupOperator) {
+        this.liteYukonGroupOperator = liteYukonGroupOperator;
     }
 }

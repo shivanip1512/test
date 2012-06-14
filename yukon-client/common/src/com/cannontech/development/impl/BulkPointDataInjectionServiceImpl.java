@@ -15,7 +15,6 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -33,17 +32,6 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private AttributeService attributeService;
 
-    @Override
-    public void executeInjection() {
-        BulkFakePointInjectionDto dto = new BulkFakePointInjectionDto();
-        dto.setAttribute(BuiltInAttribute.USAGE);
-        dto.setIncremental(true);
-        dto.setValueLow(2);
-        dto.setValueHigh(4);
-        dto.setAlgorithm("normal");
-        excecuteInjection(dto);
-    }
-    
     @Override
     public void excecuteInjection(BulkFakePointInjectionDto bulkInjection) {
         

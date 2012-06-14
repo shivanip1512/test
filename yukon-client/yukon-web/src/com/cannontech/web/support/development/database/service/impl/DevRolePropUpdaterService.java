@@ -31,10 +31,10 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
     private void updateAllRolePropertiesForGroup(LiteYukonGroup group) {
 
         // ODDS_FOR_CONTROL
-        setRole(group, YukonRoleProperty.ODDS_FOR_CONTROL_LABEL, "Odds for Control");
+        setRoleProperty(group, YukonRoleProperty.ODDS_FOR_CONTROL_LABEL, "Odds for Control");
 
         // CI_CURTAILMENT
-        setRole(group, YukonRoleProperty.CURTAILMENT_LABEL, "CI Curtailment");
+        setRoleProperty(group, YukonRoleProperty.CURTAILMENT_LABEL, "CI Curtailment");
 
         // Demand Response
         setRoleTrue(group, YukonRoleProperty.DEMAND_RESPONSE);
@@ -80,7 +80,7 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
         setRoleTrue(group, YukonRoleProperty.CI_CURTAILMENT_REPORTS_GROUP);
 
         // TABULAR_DISPLAY_CONSOLE
-        setRole(group, YukonRoleProperty.TDC_MAX_ROWS, "500");
+        setRoleProperty(group, YukonRoleProperty.TDC_MAX_ROWS, "500");
 
         // TRENDING
         setRoleTrue(group, YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION);
@@ -116,14 +116,14 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
         setRoleTrue(group, YukonRoleProperty.CAP_BANK_SIZE);
         setRoleTrue(group, YukonRoleProperty.CAP_CBC_NAME);
         setRoleTrue(group, YukonRoleProperty.CAP_TIMESTAMP);
-        setRole(group, YukonRoleProperty.CAP_BANK_FIXED_TEXT, "Fixed");
+        setRoleProperty(group, YukonRoleProperty.CAP_BANK_FIXED_TEXT, "Fixed");
         setRoleTrue(group, YukonRoleProperty.CAP_DAILY_MAX_TOTAL_OPCNT);
 
         // CBC_SETTINGS
         setRoleTrue(group, YukonRoleProperty.CAP_CONTROL_ACCESS);
-        setRole(group, YukonRoleProperty.HIDE_REPORTS, "false");
-        setRole(group, YukonRoleProperty.HIDE_GRAPHS, "false");
-        setRole(group, YukonRoleProperty.HIDE_ONELINE, "false");
+        setRoleProperty(group, YukonRoleProperty.HIDE_REPORTS, "false");
+        setRoleProperty(group, YukonRoleProperty.HIDE_GRAPHS, "false");
+        setRoleProperty(group, YukonRoleProperty.HIDE_ONELINE, "false");
         setRoleTrue(group, YukonRoleProperty.CBC_ALLOW_OVUV);
         setRoleTrue(group, YukonRoleProperty.CBC_DATABASE_EDIT);
         setRoleTrue(group, YukonRoleProperty.SHOW_FLIP_COMMAND);
@@ -271,9 +271,9 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
         setRoleTrue(group, YukonRoleProperty.WORK_ORDER_REPORT);
     }
 
-    private void setRole(LiteYukonGroup group, YukonRoleProperty property, String newVal) {
-        roleDao.updateGroupRoleProperty(group, property.getRole().getRoleId(), property.getPropertyId(), newVal);
-        log.info("YukonRole " + property.getRole().name() + " and YukonRoleProperty " + property.name() + " set to " + newVal);
+    private void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, String newVal) {
+        roleDao.updateGroupRoleProperty(group,yukonRoleProperty.getRole().getRoleId(),yukonRoleProperty.getPropertyId(),newVal);
+        log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }
 
     private void setRoleTrue(LiteYukonGroup group, YukonRoleProperty property) {
@@ -282,6 +282,6 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
         valueMap.put(property, true);
         propertyValues.putAll(valueMap);
         rolePropertyEditorDao.save(propertyValues);
-        log.info("YukonRole " + property.getRole().name() + " and YukonRoleProperty " + property.name() + " set to true");
+        log.info("Group " + group.getGroupName() + " YukonRole " + property.getRole().name() + " and YukonRoleProperty " + property.name() + " set to true");
     }
 }

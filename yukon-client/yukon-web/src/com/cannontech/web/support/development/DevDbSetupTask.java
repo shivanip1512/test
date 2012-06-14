@@ -12,7 +12,6 @@ public class DevDbSetupTask {
     private boolean running = false;
     private boolean hasRun = false;
     private boolean cancelled = false;
-    private boolean bulkPointDataInject = false;
 
     public boolean isUpdateRoleProperties() {
         return updateRoleProperties;
@@ -55,11 +54,5 @@ public class DevDbSetupTask {
     }
     public void setCancelled(boolean cancelled) {
         this.cancelled = cancelled;
-    }
-    public void setBulkPointDataInject(boolean bulkPointDataInject) {
-        this.bulkPointDataInject = bulkPointDataInject;
-    }
-    public boolean isBulkPointDataInject() {
-        return bulkPointDataInject;
     }
 }

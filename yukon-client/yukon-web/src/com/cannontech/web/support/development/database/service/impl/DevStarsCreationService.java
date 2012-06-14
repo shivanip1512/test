@@ -11,8 +11,10 @@ import com.cannontech.common.inventory.HardwareHistory;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.Address;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
@@ -44,10 +46,15 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private StarsInventoryBaseDao starsInventoryBaseDao;
+    @Autowired private RoleDao roleDao;
     
     @Override
     protected void createAll() {
-        createEC(devDbSetupTask.getDevStars());
+        if (devDbSetupTask.getDevStars().isCreateEnergyCompany()) {
+            createOperatorsGroup(devDbSetupTask.getDevStars());
+            createEnergyCompany(devDbSetupTask.getDevStars());
+        }
+        createResidentialGroup(devDbSetupTask.getDevStars());
         setupStarsAccounts(devDbSetupTask.getDevStars());
         createStars(devDbSetupTask.getDevStars());
     }
@@ -56,31 +63,113 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     protected void logFinalExecutionDetails() {
         log.info("Stars:");
     }
+    
+    private void createOperatorsGroup(DevStars devStars) {
+        LiteYukonGroup group = new LiteYukonGroup();
+        group.setGroupDescription("Cooper Operators Grp");
+        group.setGroupName("Cooper Operators Grp");
+        yukonGroupDao.save(group);
+        
+        setRoleProperty(group, YukonRoleProperty.POINT_ID_EDIT, " ");
+        setRoleProperty(group, YukonRoleProperty.DBEDITOR_LM, " ");
+        setRoleProperty(group, YukonRoleProperty.DBEDITOR_SYSTEM, " ");
+        setRoleProperty(group, YukonRoleProperty.UTILITY_ID_RANGE, " ");
+        setRoleProperty(group, YukonRoleProperty.PERMIT_LOGIN_EDIT, " ");
+        setRoleProperty(group, YukonRoleProperty.ALLOW_USER_ROLES, " ");
+        setRoleProperty(group, YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, " ");
+        
+        setRoleProperty(group, YukonRoleProperty.LOADCONTROL_EDIT, " ");
+        setRoleProperty(group, YukonRoleProperty.MACS_EDIT, " ");
+        setRoleProperty(group, YukonRoleProperty.TDC_EXPRESS, " ");
+        setRoleProperty(group, YukonRoleProperty.TDC_MAX_ROWS, " ");
+        setRoleProperty(group, YukonRoleProperty.TDC_RIGHTS, " ");
+        setRoleProperty(group, YukonRoleProperty.TDC_ALARM_COUNT, " ");
+        setRoleProperty(group, YukonRoleProperty.DECIMAL_PLACES, " ");
+        setRoleProperty(group, YukonRoleProperty.LC_REDUCTION_COL, " ");
+        
+        setRoleProperty(group, YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION, " ");
+        setRoleProperty(group, YukonRoleProperty.TRENDING_DISCLAIMER, " ");
+        setRoleProperty(group, YukonRoleProperty.SCAN_NOW_ENABLED, " ");
+        setRoleProperty(group, YukonRoleProperty.MINIMUM_SCAN_FREQUENCY, " ");
+        setRoleProperty(group, YukonRoleProperty.MAXIMUM_DAILY_SCANS, " ");
 
-    private void createEC(DevStars devStars) {
-        if (devStars.isCreateCooperEC()) {
-            EnergyCompanyDto ecd = new EnergyCompanyDto();
-            ecd.setName("Cooper EC");
-            ecd.setEmail("info@cannontech.com");
-            ecd.setPrimaryOperatorGroupId(-100);
-            ecd.setAdminUsername("op");
-            ecd.setAdminPassword1("op");
-            ecd.setAdminPassword2("op");
+        setRoleProperty(group, YukonRoleProperty.VERSACOM_SERIAL_MODEL, " ");
+        setRoleProperty(group, YukonRoleProperty.EXPRESSCOM_SERIAL_MODEL, "true");
+        setRoleProperty(group, YukonRoleProperty.DCU_SA205_SERIAL_MODEL, "true");
+        setRoleProperty(group, YukonRoleProperty.DCU_SA305_SERIAL_MODEL, "false");
+        setRoleProperty(group, YukonRoleProperty.LC_REDUCTION_COL, "false");
+        setRoleProperty(group, YukonRoleProperty.COMMANDS_GROUP, " ");
+        
+        setRoleProperty(group, YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP, "false");
+        
+        devStars.setLiteYukonGroupOperator(group);
+    }
+    
+    private void createEnergyCompany(DevStars devStars) {
+        EnergyCompanyDto ecd = new EnergyCompanyDto();
+        ecd.setName("Cooper EC");
+        ecd.setEmail("info@cannontech.com");
+        ecd.setPrimaryOperatorGroupId(devStars.getLiteYukonGroupOperator().getGroupID());
+        ecd.setAdminUsername("op");
+        ecd.setAdminPassword1("op");
+        ecd.setAdminPassword2("op");
+        
+        try {
+            LiteStarsEnergyCompany ec = energyCompanyService.createEnergyCompany(ecd,  yukonUserDao.getLiteYukonUser(UserUtils.USER_YUKON_ID), null);
+            devStars.setEnergyCompany(ec);
+        } catch (Exception e) {
+            devStars.setEnergyCompany(starsDatabaseCache.getDefaultEnergyCompany());
+            log.warn("Cannot create new energy company. Setting to default", e);
+        }
+        
+        try {
+            ecMappingDao.addEnergyCompanyOperatorLoginListMapping(yukonUserDao.getLiteYukonUser(UserUtils.USER_YUKON_ID), devStars.getEnergyCompany());
+            log.info("Set user Yukon as operator login for Cooper EC");
+        } catch (Exception e) {
+            log.warn("Unable to link new energy company to yukon/yukon",e);
+        }
+    }
+    
+    private void createResidentialGroup(DevStars devStars) {
+        int energyCompanyId = devStars.getEnergyCompany().getEnergyCompanyId();
+        List<LiteYukonGroup> residentialGroups = ecMappingDao.getResidentialGroups(energyCompanyId);
+        if (residentialGroups.isEmpty()) {
+            LiteYukonGroup group = new LiteYukonGroup();
+            group.setGroupDescription("Cooper Residential Grp");
+            group.setGroupName("Cooper Residential Grp");
+            yukonGroupDao.save(group);
             
-            try {
-                LiteStarsEnergyCompany ec = energyCompanyService.createEnergyCompany(ecd,  yukonUserDao.getLiteYukonUser(-2), null);
-                devStars.setEnergyCompany(ec);
-            } catch (Exception e) {
-                devStars.setEnergyCompany(starsDatabaseCache.getDefaultEnergyCompany());
-                log.warn("Cannot create new energy company. Setting to default", e);
-            }
+            setRoleProperty(group, YukonRoleProperty.HOME_URL, "/spring/stars/consumer/general");
+            setRoleProperty(group, YukonRoleProperty.STYLE_SHEET, " ");
+            setRoleProperty(group, YukonRoleProperty.NAV_BULLET_EXPAND, " ");
+            setRoleProperty(group, YukonRoleProperty.NAV_BULLET_SELECTED, " ");
+            setRoleProperty(group, YukonRoleProperty.HEADER_LOGO, "yukon/DemoHeaderCES.gif");
+            setRoleProperty(group, YukonRoleProperty.LOG_IN_URL, " ");
+            setRoleProperty(group, YukonRoleProperty.NAV_CONNECTOR_BOTTOM, " ");
+            setRoleProperty(group, YukonRoleProperty.NAV_CONNECTOR_MIDDLE, " ");
+            setRoleProperty(group, YukonRoleProperty.INBOUND_VOICE_HOME_URL, " ");
             
-            try {
-                ecMappingDao.addEnergyCompanyOperatorLoginListMapping(yukonUserDao.getLiteYukonUser(UserUtils.USER_YUKON_ID), devStars.getEnergyCompany());
-                log.info("Set user Yukon as operator login for Cooper EC");
-            } catch (Exception e) {
-                log.warn("Unable to link new energy company to yukon/yukon",e);
-            }
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL, "true");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY, "true");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT, "true");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT, "true");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT, "true");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ, "true");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL, "true");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, "true");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL, "true");
+            
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_HIDE_OPT_OUT_BOX, "false");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD, " ");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_WEB_LINK_FAQ, " ");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_WEB_LINK_THERM_INSTRUCTIONS, " ");
+
+            setRoleProperty(group, YukonRoleProperty.CSRF_TOKEN_MODE, "true");
+            
+            ecMappingDao.addECToResidentialGroupMapping(energyCompanyId, Lists.newArrayList(group.getGroupID()));
+            devStars.setLiteYukonGroupResidential(group);
+        } else {
+            devStars.setLiteYukonGroupResidential(residentialGroups.get(0));
         }
     }
 
@@ -102,15 +191,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             accountDto.setBillingAddress(new Address("1234 Fake Street", "5678 Really Fake Street", "Fakeland", "MN", "55555", "Fake County"));
             accountDto.setUserName(accountNumString);
             accountDto.setPassword(accountNumString);
-            int energyCompanyId = devStars.getEnergyCompany().getEnergyCompanyId();
-            List<LiteYukonGroup> residentialGroups = ecMappingDao.getResidentialGroups(energyCompanyId);
-            if (residentialGroups.isEmpty()) {
-                LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroupByName("Residential Customers Grp");
-                ecMappingDao.addECToResidentialGroupMapping(energyCompanyId, Lists.newArrayList(liteYukonGroup.getGroupID()));
-                accountDto.setLoginGroup(liteYukonGroup.getGroupName());
-            } else {
-                accountDto.setLoginGroup(residentialGroups.get(0).getGroupName());
-            }
+            accountDto.setLoginGroup(devStars.getLiteYukonGroupResidential().getGroupName());
             accountDto.setMapNumber(accountNumString);
             accountDto.setAltTrackingNumber(accountNumString);
             accountDto.setIsCommercial(false);
@@ -283,5 +364,10 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             return false;
         }
         return true;
+    }
+    
+    private void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, String newVal) {
+        roleDao.updateGroupRoleProperty(group,yukonRoleProperty.getRole().getRoleId(),yukonRoleProperty.getPropertyId(),newVal);
+        log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }
 }
