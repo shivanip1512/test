@@ -40,6 +40,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.roleproperties.enums.SerialNumberValidation;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -61,7 +62,6 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -95,6 +95,7 @@ public class InventoryController {
     @Autowired private HardwareValidator hardwareValidator;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private HardwareModelHelper helper;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
     
     /* Home - Landing Page */
     @RequestMapping
@@ -176,14 +177,13 @@ public class InventoryController {
         }
         
         boolean hasWarnings = false;
+        
         if (StringUtils.isNotBlank(inventorySearch.getPhoneNumber())) {
-            try {
-                String phoneNo = ServletUtils.formatPhoneNumberForSearch(inventorySearch.getPhoneNumber());
-                inventorySearch.setPhoneNumber(phoneNo);
-            } catch (WebClientException e) {
+            String phoneNo =  phoneNumberFormattingService.strip(inventorySearch.getPhoneNumber());
+            if("".equals(phoneNo)){
                 MessageSourceResolvable invalidPhoneNumberWarning = new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.invalidPhoneNumber");
-                flashScope.setWarning(Collections.singletonList(invalidPhoneNumberWarning));
-                hasWarnings = true;
+                flashScope.setError(Collections.singletonList(invalidPhoneNumberWarning));
+                hasWarnings = true;   
             }
         }
                 
