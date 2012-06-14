@@ -4,6 +4,11 @@ import java.sql.SQLException;
 
 import com.cannontech.common.util.SimpleCallback;
 
+/**
+ * This is a YukonRowMapper version of the MappingRowCallbackHandler, which allows
+ * you to pass in a callback/function to be processed over the data set instead of actually
+ * retrieving everything like you would with a rowMapper.
+ */
 public class YukonMappingRowCallbackHandler<I> implements YukonRowCallbackHandler {
 
     private final YukonRowMapper<I> mapper;

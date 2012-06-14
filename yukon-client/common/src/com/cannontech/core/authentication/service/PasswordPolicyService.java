@@ -16,5 +16,5 @@ public interface PasswordPolicyService {
     /**
      * This method returns the password policy for the supplied yukon user or null if the user doesn't not have a password policy.
      */
-    public PasswordPolicy findPasswordPolicy(LiteYukonUser user);
+    public PasswordPolicy getPasswordPolicy(LiteYukonUser user);
 }

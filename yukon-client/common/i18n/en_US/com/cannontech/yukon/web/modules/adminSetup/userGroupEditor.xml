@@ -32,6 +32,8 @@
     <entry key="yukon.web.modules.adminSetup.groupEditor.error.unavailable.groupName">Name is already in use by another group.</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.noRoles">No roles assigned for this group.</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.expireAllPasswords.label">Expire All Passwords</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.confirmExpireAllPasswords.title">Expire All Passwords {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.groupEditor.confirmExpireAllPasswords.message">Are you sure you would like to expire All Passwords for the group {0}?</entry>
     <entry key="yukon.web.modules.adminSetup.groupEditor.expiredAllPasswords">All the passwords for the login group have been expired.</entry>
     
     <!-- Role Editor roles.jsp -->

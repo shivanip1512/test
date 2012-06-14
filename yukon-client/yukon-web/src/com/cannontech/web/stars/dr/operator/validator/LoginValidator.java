@@ -55,7 +55,7 @@ public class LoginValidator extends SimpleValidator<LoginBackingBean> {
             }
             
             // Check the password against the password policy.
-            PasswordPolicy passwordPolicy = passwordPolicyService.findPasswordPolicy(user);
+            PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
             if (passwordPolicy != null) {
                 String password = loginBackingBean.getPassword1();
                 

@@ -37,7 +37,7 @@ import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.util.YukonUserContextResolver;
 
 @Controller
-public class ForgottenPasswordController {
+public class PasswordResetController {
 
     @Autowired private AuthenticationService authenticationService;
     @Autowired private CaptchaService captchaService;

@@ -43,12 +43,12 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
     }
     
     @Override
-    public PasswordPolicy findPasswordPolicy(LiteYukonUser user) {
+    public PasswordPolicy getPasswordPolicy(LiteYukonUser user) {
         Validate.notNull(user);
         
         // There is not a password policy for this user.  Returning null.
         if (!rolePropertyDao.checkRole(YukonRole.PASSWORD_POLICY, user)) {
-            return null;
+            return getDefaultPasswordPolicy();
         }
         
         PasswordPolicy passwordPolicy = new PasswordPolicy();
@@ -63,6 +63,21 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         passwordPolicy.setPasswordHistory(rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.PASSWORD_HISTORY, user));
         passwordPolicy.setPasswordQualityCheck(rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.POLICY_QUALITY_CHECK, user));
         passwordPolicy.setPolicyRules(getPolicyRules(user));
+        
+        return passwordPolicy;
+    }
+    
+    private PasswordPolicy getDefaultPasswordPolicy() {
+        PasswordPolicy passwordPolicy = new PasswordPolicy();
+
+        passwordPolicy.setLockoutDuration(Duration.standardMinutes(5));
+        passwordPolicy.setLockoutThreshold(5);
+        passwordPolicy.setMaxPasswordAge(Duration.standardDays(180));
+        passwordPolicy.setMinPasswordAge(Duration.standardDays(0));
+        passwordPolicy.setMinPasswordLength(8);
+        passwordPolicy.setPasswordHistory(5);
+        passwordPolicy.setPasswordQualityCheck(3);
+        passwordPolicy.setPolicyRules(Lists.newArrayList(PolicyRule.values()));
         
         return passwordPolicy;
     }

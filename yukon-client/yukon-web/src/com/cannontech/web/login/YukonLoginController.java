@@ -15,6 +15,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
+import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -49,12 +50,21 @@ public class YukonLoginController extends MultiActionController {
 
         String redirect;
 
-        boolean success = false;
         long retrySeconds = 0;
         try {
-            success = loginService.login(request, username, password);
+            loginService.login(request, username, password);
         } catch (AuthenticationThrottleException e) {
             retrySeconds = e.getThrottleSeconds();
+            
+        } catch (BadAuthenticationException e) {
+            ServletUtil.deleteAllCookies(request, response);
+
+            String referer = request.getHeader("Referer");
+            referer = (referer != null) ? referer : LoginController.LOGIN_URL;
+            redirect = ServletUtil.createSafeRedirectUrl(request, referer);
+            redirect = appendParams(redirect, retrySeconds, redirectedFrom);
+
+            return new ModelAndView("redirect:" + redirect);
         } catch (NotAuthorizedException e) {
         	CTILogger.info("Unable to log user in. Reason: " + e.getMessage());
         	redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
@@ -65,40 +75,29 @@ public class YukonLoginController extends MultiActionController {
             return new ModelAndView("redirect:"+passwordResetUrl);
         }
         
-        if (success) {
-            LiteYukonUser user = ServletUtil.getYukonUser(request);
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
 
-            ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, 
-            		"User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
-            
-            if (createRememberMeCookie) {
-                String value = loginCookieHelper.createCookieValue(username, password);
-                ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
-            }
-
-            if (redirectedFrom != null && !redirectedFrom.equals("")) {
-                redirect = redirectedFrom;
-            } else {
-        		String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
-        		redirect = ServletUtil.createSafeUrl(request, homeUrl);
-            }
+        ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, 
+        		"User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
         
-            boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);
-            if (!hasUrlAccess) {
-            	loginService.invalidateSession(request, "No access to URL (" + redirect + ")");
-                redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
-            }
-	          
-	            
-        } else {
-            ServletUtil.deleteAllCookies(request, response);
-
-            String referer = request.getHeader("Referer");
-            referer = (referer != null) ? referer : LoginController.LOGIN_URL;
-
-            redirect = ServletUtil.createSafeRedirectUrl(request, referer);
-            redirect = appendParams(redirect, retrySeconds, redirectedFrom);
+        if (createRememberMeCookie) {
+            String value = loginCookieHelper.createCookieValue(username, password);
+            ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
         }
+
+        if (redirectedFrom != null && !redirectedFrom.equals("")) {
+            redirect = redirectedFrom;
+        } else {
+    		String homeUrl = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
+    		redirect = ServletUtil.createSafeUrl(request, homeUrl);
+        }
+    
+        boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);
+        if (!hasUrlAccess) {
+        	loginService.invalidateSession(request, "No access to URL (" + redirect + ")");
+            redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
+        }
+	          
         return new ModelAndView("redirect:" + redirect);
     }
 

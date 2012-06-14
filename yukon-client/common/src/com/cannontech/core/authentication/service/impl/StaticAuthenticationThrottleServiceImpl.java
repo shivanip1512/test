@@ -32,7 +32,7 @@ public class StaticAuthenticationThrottleServiceImpl implements AuthenticationTh
         LiteYukonUser attemptedLoginUser = yukonUserDao.findUserByUsername(username);
         PasswordPolicy passwordPolicy = null; 
         if (attemptedLoginUser != null) {
-                passwordPolicyService.findPasswordPolicy(attemptedLoginUser);
+                passwordPolicyService.getPasswordPolicy(attemptedLoginUser);
         }
         
         int lockoutThreshold = (passwordPolicy != null) ? passwordPolicy.getLockoutThreshold() : DEFAULT_LOCKOUT_THRESHOLD;

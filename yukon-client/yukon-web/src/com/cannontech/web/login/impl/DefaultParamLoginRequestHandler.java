@@ -12,6 +12,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.AuthenticationThrottleException;
+import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.web.login.AbstractLoginRequestHandler;
 
@@ -29,17 +30,17 @@ public class DefaultParamLoginRequestHandler extends AbstractLoginRequestHandler
         if (username == null || password == null) return false;
         
         try {
-            boolean success = loginService.login(request, username, password);
-            if (success) {
-                log.info("Proceeding with request after successful Param login");
-                return true;
-            }
+            loginService.login(request, username, password);
+            
+            log.info("Proceeding with request after successful Param login");
+            return true;
         } catch (AuthenticationThrottleException e) {
             log.error("AuthenticationThrottleException: " + e.getThrottleSeconds(), e);
+        } catch (BadAuthenticationException e) {
+            log.error(e);
         } catch (PasswordExpiredException e) {
             log.debug("The password for "+username+" is expired.");
-        }         
+        }
         return false;
     }
-
 }

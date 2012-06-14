@@ -1,5 +1,6 @@
 package com.cannontech.web.login.impl;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -67,7 +69,8 @@ public class LoginServiceImpl implements LoginService {
     @Autowired private YukonUserDao yukonUserDao;
 
     @Override
-    public boolean login(HttpServletRequest request, String username, String password) throws AuthenticationThrottleException, PasswordExpiredException {
+    public void login(HttpServletRequest request, String username, String password) 
+    throws AuthenticationThrottleException, BadAuthenticationException, PasswordExpiredException {
         try {
             final LiteYukonUser user = authenticationService.login(username, password);
             
@@ -75,14 +78,13 @@ public class LoginServiceImpl implements LoginService {
             
             createSession(request, user);
 
-            return true;
         } catch (AuthenticationThrottleException e) {
             ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG,
                                     "Login attempt as " + username + " failed from " + request.getRemoteAddr() + ", throttleSeconds=" + e.getThrottleSeconds());
             throw e;
         } catch (BadAuthenticationException e) {
             ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + request.getRemoteAddr());
-            return false;
+            throw e;
         }
     }
     
@@ -95,19 +97,12 @@ public class LoginServiceImpl implements LoginService {
     }
     
     @Override
-    public void clientLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void clientLogin(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, IOException {
         String username = ServletRequestUtils.getRequiredStringParameter(request, USERNAME);
         String password = ServletRequestUtils.getRequiredStringParameter(request, PASSWORD);
         
         try {
             LiteYukonUser user = authenticationService.login(username, password);
-
-            // The user's password has expired; redirect the user to the password reset page.
-            boolean passwordExpired = authenticationService.isPasswordExpired(user);
-            if (passwordExpired) {
-                String passwordResetUrl = passwordResetService.getPasswordResetUrl(username, request);
-                response.sendRedirect(passwordResetUrl);
-            }
 
             HttpSession session = request.getSession(true);
             initSession(user, session, request);
@@ -116,6 +111,9 @@ public class LoginServiceImpl implements LoginService {
         } catch (BadAuthenticationException e) {
             ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + request.getRemoteAddr());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
+        } catch (PasswordExpiredException e) {
+            String passwordResetUrl = passwordResetService.getPasswordResetUrl(username, request);
+            response.sendRedirect(passwordResetUrl);
         }
     }
 
@@ -130,14 +128,13 @@ public class LoginServiceImpl implements LoginService {
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String redirect = this.getRedirect(request);
         
         try {
             LiteYukonUser user = ServletUtil.getYukonUser(request);
             HttpSession session = request.getSession(false);
-            Pair p = (Pair) session.getAttribute(SAVED_YUKON_USERS);
+            Pair<?,?> p = (Pair<?,?>) session.getAttribute(SAVED_YUKON_USERS);
             session.invalidate();
             
             redirect = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.LOG_IN_URL, user);
@@ -149,7 +146,7 @@ public class LoginServiceImpl implements LoginService {
                 
                 // Restore saved session context
                 session = request.getSession( true );
-                Enumeration attNames = oldContext.propertyNames();
+                Enumeration<?> attNames = oldContext.propertyNames();
                 while (attNames.hasMoreElements()) {
                     String attName = (String) attNames.nextElement();
                     session.setAttribute( attName, oldContext.get(attName) );
@@ -256,7 +253,6 @@ public class LoginServiceImpl implements LoginService {
         }
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public LiteYukonUser internalLogin(HttpServletRequest request, HttpSession session, String username, boolean saveCurrentUser) {
         LiteYukonUser user = yukonUserDao.findUserByUsername(username);
@@ -266,7 +262,7 @@ public class LoginServiceImpl implements LoginService {
         Properties oldContext = null;
         if (saveCurrentUser && session.getAttribute(YUKON_USER) != null) {
             oldContext = new Properties();
-            Enumeration attNames = session.getAttributeNames();
+            Enumeration<?> attNames = session.getAttributeNames();
             while (attNames.hasMoreElements()) {
                 String attName = (String) attNames.nextElement();
                 oldContext.put( attName, session.getAttribute(attName) );
@@ -282,9 +278,10 @@ public class LoginServiceImpl implements LoginService {
             referer = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.HOME_URL, user);
         
         // Save the old session context and where to direct the browser when the new user logs off
-        if (oldContext != null)
-            session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, referer) );
-
+        if (oldContext != null) {
+            session.setAttribute( SAVED_YUKON_USERS, new Pair<Properties, String>(oldContext, referer) );
+        }
+        
         initSession(user, session, request);
         ActivityLogger.logEvent(user.getUserID(), LoginService.LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
         systemEventLogService.loginWeb(user, request.getRemoteAddr());

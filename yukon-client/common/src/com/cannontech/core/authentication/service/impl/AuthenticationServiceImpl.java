@@ -91,7 +91,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     }
 
     public boolean isPasswordExpired(LiteYukonUser user) {
-        PasswordPolicy passwordPolicy = passwordPolicyService.findPasswordPolicy(user);
+        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
         if (user.isForceReset() || 
             (passwordPolicy != null && passwordPolicy.getMaxPasswordAge().isShorterThan(passwordPolicy.getPasswordAge(user)))) {
             return true;
@@ -132,7 +132,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         }
 
         List<PasswordHistory> passwordHistories = passwordHistoryDao.getPasswordHistory(yukonUser.getUserID());
-        PasswordPolicy passwordPolicy = passwordPolicyService.findPasswordPolicy(yukonUser);
+        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
         
         // Check the passwords to see if any of them are attempting to be reused
         int numberOfPasswordToCheck = Ints.min(passwordHistories.size(), passwordPolicy.getPasswordHistory());

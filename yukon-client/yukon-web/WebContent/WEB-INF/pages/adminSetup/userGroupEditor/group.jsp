@@ -45,7 +45,9 @@
                     <cti:displayForPageEditModes modes="VIEW">
                         <cti:button nameKey="edit" name="edit" type="submit"/>
                     </cti:displayForPageEditModes>
-                    <cti:button nameKey="expireAllPasswords" name="expireAllPasswords" type="submit" />
+                    <cti:button nameKey="expireAllPasswords" id="expireAllPasswordsButton" name="expireAllPasswords"/>
+                    <tags:confirmDialog nameKey=".confirmExpireAllPasswords" on="#expireAllPasswordsButton"  argument="${group.groupName}" submitName="expireAllPasswords" />
+                    
                 </div>
             </form:form>
                 

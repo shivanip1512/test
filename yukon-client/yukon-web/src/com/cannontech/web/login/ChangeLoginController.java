@@ -110,7 +110,7 @@ public class ChangeLoginController {
             return ChangeLoginMessage.NO_PASSWORDMATCH;
         } else {
             // Check the password against the password policy.
-            PasswordPolicy passwordPolicy = passwordPolicyService.findPasswordPolicy(user);
+            PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
             if (passwordPolicy != null) {
                 if (newPassword.length() < passwordPolicy.getMinPasswordLength()) {
                    return ChangeLoginMessage.MIN_PASSWORD_LENGTH_NOT_MET;
