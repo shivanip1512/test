@@ -67,6 +67,9 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         return passwordPolicy;
     }
     
+    /**
+     * This method returns the system wide password policy.
+     */
     private PasswordPolicy getDefaultPasswordPolicy() {
         PasswordPolicy passwordPolicy = new PasswordPolicy();
 

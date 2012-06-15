@@ -8,7 +8,7 @@ import org.junit.Test;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 
-public class AuthenticationThrottleHelperImplTest {
+public class StaticAuthenticationThrottleImplTest {
 
     IncreasingAuthenticationThrottleServiceImpl authenticationThrottleServiceImpl;
     String testUser1 = "TestUser1";
@@ -129,5 +129,16 @@ public class AuthenticationThrottleHelperImplTest {
         AuthenticationThrottleDto authThrottleDto2 = authenticationThrottleServiceImpl.getAuthenticationThrottleData(testUser2);
         assertTrue("Throttle duration incorrect", authThrottleDto2 != null);
         assertTrue("Throttle duration incorrect", authThrottleDto2.getActualThrottleDuration() > 0);
+        
+        // artificial abadonedAuthThrottleDays to test cleanup
+        authenticationThrottleServiceImpl.setAbandonedAuthThrottleDays(-1);  // We're setting this to a day in the future to wipe out everything.
+        authenticationThrottleServiceImpl.cleanupAuthenticationThrottle();
+
+        AuthenticationThrottleDto authThrottleDto3 =authenticationThrottleServiceImpl.getAuthenticationThrottleData(testUser1);
+        assertTrue("Throttle duration incorrect", authThrottleDto3 == null);
+
+        AuthenticationThrottleDto authThrottleDto4 = authenticationThrottleServiceImpl.getAuthenticationThrottleData(testUser2);
+        assertTrue("Throttle duration incorrect", authThrottleDto4 == null);
+
     }
 }

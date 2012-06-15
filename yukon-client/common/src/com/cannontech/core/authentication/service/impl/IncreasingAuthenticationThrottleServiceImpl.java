@@ -1,7 +1,9 @@
 package com.cannontech.core.authentication.service.impl;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -12,6 +14,7 @@ import com.cannontech.common.config.MasterConfigDoubleKeysEnum;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
 import com.cannontech.core.authentication.service.AuthenticationThrottleService;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -29,7 +32,8 @@ public class IncreasingAuthenticationThrottleServiceImpl implements Authenticati
 
     private double authThrottleExpBase = Math.E/2; // used to ramp up throttle duration slowly or rapidly
     private double authThrottleDelta =  0.0; // used to ramp up throttle duration slowly or rapidly    
-
+    private int abandonedAuthThrottleDays = 100;
+    
     @Override
     public void afterPropertiesSet() throws Exception {
 
@@ -93,6 +97,23 @@ public class IncreasingAuthenticationThrottleServiceImpl implements Authenticati
         authThrottleMap.remove(username);
     }
 
+    public synchronized void cleanupAuthenticationThrottle() {
+        Calendar oldCutoffCal = Calendar.getInstance();
+        oldCutoffCal.add(Calendar.DAY_OF_MONTH, -abandonedAuthThrottleDays);
+        long oldCutoffTimeout = oldCutoffCal.getTimeInMillis();
+
+        List<String> authThrottleRemoveList = Lists.newArrayList();
+        for (Map.Entry<String, AuthenticationThrottle> authThrottle : authThrottleMap.entrySet()) {
+
+            if (authThrottle.getValue().getThrottleEndtime() < oldCutoffTimeout) {
+                authThrottleRemoveList.add(authThrottle.getKey());
+            }
+        }
+        for (String username : authThrottleRemoveList) {
+            authThrottleMap.remove(username);
+        }
+    }
+    
     @Override
     public synchronized void resetAll() {
         authThrottleMap = new HashMap<String, AuthenticationThrottle>();
@@ -104,6 +125,10 @@ public class IncreasingAuthenticationThrottleServiceImpl implements Authenticati
 
     public void setAuthThrottleDelta(double authThrottleDelta){
         this.authThrottleDelta = authThrottleDelta;
+    }
+    
+    public void setAbandonedAuthThrottleDays(int abandonedAuthThrottleDays) {
+        this.abandonedAuthThrottleDays = abandonedAuthThrottleDays;
     }
     
     public class AuthenticationThrottle {
