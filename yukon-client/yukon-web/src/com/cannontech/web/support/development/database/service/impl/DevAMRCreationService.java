@@ -235,7 +235,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
     }
     
     private List<YukonPao> createRfnTemplateMeters(DevAMR devAMR) {
-        if (!devAMR.isCreateRfnTemplates()) Lists.newArrayList();
+        if (!devAMR.isCreateRfnTemplates()) return Lists.newArrayList();
         
         List<YukonPao> createdMeters = Lists.newArrayList();
         log.info("Creating Rfn Template Meters ...");
