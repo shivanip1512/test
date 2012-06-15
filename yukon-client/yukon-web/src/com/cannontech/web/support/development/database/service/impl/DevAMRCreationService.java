@@ -1,11 +1,14 @@
 package com.cannontech.web.support.development.database.service.impl;
 
+import java.util.List;
+
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
@@ -35,8 +38,24 @@ import com.cannontech.web.support.development.database.objects.DevCommChannel;
 import com.cannontech.web.support.development.database.objects.DevMeter;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
 import com.cannontech.web.support.development.database.objects.DevRfnTemplateMeter;
+import com.google.common.collect.Lists;
 
 public class DevAMRCreationService extends DevObjectCreationBase {
+    
+    public List<YukonPao> createTestMeters(List<PaoType> types, int numToCreate) {
+        DevAMR devAMR = new DevAMR();
+        devAMR.setCreateCartObjects(false);
+        devAMR.setCreateRfnTemplates(false);
+        devAMR.setNumAdditionalMeters(numToCreate);
+        
+        List<DevPaoType> devPaoTypes = Lists.newArrayListWithCapacity(types.size());
+        for (PaoType paoType: types) {
+            DevPaoType devPaoType = new DevPaoType(paoType);
+            devPaoType.setCreate(true);
+        }
+        devAMR.setMeterTypes(devPaoTypes);
+        return createAllMeters(devAMR);
+    }
     
     @Override
     protected void createAll() {
@@ -181,10 +200,11 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         log.info("CCU with name " + devCCU.getName() + " created.");
     }
 
-    private void createAllMeters(DevAMR devAMR) {
+    private List<YukonPao> createAllMeters(DevAMR devAMR) {
         log.info("Creating Meters ...");
-        createCartMeters(devAMR);
-        createRfnTemplateMeters(devAMR);
+        List<YukonPao> createdMeters = Lists.newArrayList();
+        createdMeters.addAll(createCartMeters(devAMR));
+        createdMeters.addAll(createRfnTemplateMeters(devAMR));
         int addressCount = 0;
         int address = devAMR.getAddressRangeMin();
         for (DevPaoType meterType: devAMR.getMeterTypes()) {
@@ -192,30 +212,38 @@ public class DevAMRCreationService extends DevObjectCreationBase {
                 for (int i = 0; i < devAMR.getNumAdditionalMeters(); i++) {
                     address = devAMR.getAddressRangeMin() + addressCount;
                     String meterName = meterType.getPaoType().getPaoTypeName() + " " + address;
-                    createPlcMeter(devAMR, meterType.getPaoType(), meterName, address, devAMR.getRouteId(), true);
+                    YukonPao meter = createPlcMeter(devAMR, meterType.getPaoType(), meterName, address, devAMR.getRouteId(), true);
+                    if (meter != null) createdMeters.add(meter);
                     addressCount++;
                 }
             }
         }
+        return createdMeters;
     }
     
-    private void createCartMeters(DevAMR devAMR) {
-        if (!devAMR.isCreateCartObjects()) return;
+    private List<YukonPao> createCartMeters(DevAMR devAMR) {
+        if (!devAMR.isCreateCartObjects()) return Lists.newArrayList();
 
+        List<YukonPao> createdMeters = Lists.newArrayList();
         log.info("Creating Software Cart Meters ...");
         for (DevMeter meter : DevMeter.values()) {
             int routeId = getRouteIdForMeter(meter);
-            createPlcMeter(devAMR, meter.getPaoType(), meter.getName(), meter.getAddress(), routeId, true);
+            YukonPao createdMeter = createPlcMeter(devAMR, meter.getPaoType(), meter.getName(), meter.getAddress(), routeId, true);
+            if (createdMeter != null) createdMeters.add(createdMeter);
         }
+        return createdMeters;
     }
     
-    private void createRfnTemplateMeters(DevAMR devAMR) {
-        if (!devAMR.isCreateRfnTemplates()) return;
+    private List<YukonPao> createRfnTemplateMeters(DevAMR devAMR) {
+        if (!devAMR.isCreateRfnTemplates()) Lists.newArrayList();
         
+        List<YukonPao> createdMeters = Lists.newArrayList();
         log.info("Creating Rfn Template Meters ...");
         for (DevRfnTemplateMeter meter : DevRfnTemplateMeter.values()) {
-            createRfnMeter(devAMR, meter.getPaoType(), meter.getName(), null, null, null, true);
+            YukonPao rfnMeter = createRfnMeter(devAMR, meter.getPaoType(), meter.getName(), null, null, null, true);
+            if (rfnMeter != null) createdMeters.add(rfnMeter);
         }
+        return createdMeters;
     }
     
     private boolean canCreateMeter(DevAMR devAMR, String name, Integer address) {
@@ -240,8 +268,8 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         return true;
     }
 
-    private void createPlcMeter(DevAMR devAMR, PaoType type, String name, int address, int routeId, boolean createPoints) {
-        if (!canCreateMeter(devAMR, name, address)) return;
+    private YukonPao createPlcMeter(DevAMR devAMR, PaoType type, String name, int address, int routeId, boolean createPoints) {
+        if (!canCreateMeter(devAMR, name, address)) return null;
         
         if (routeId <= 0) {
             routeId = getDefaultRouteId();
@@ -251,14 +279,16 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         deviceDao.changeMeterNumber(yukonDevice, Integer.toString(address));
         devAMR.incrementSuccessCount();
         log.info("Plc Meter with name " + name + " created.");
+        return yukonDevice;
     }
     
-    private void createRfnMeter(DevAMR devAMR, PaoType type, String name, String model, String manufacturer, String serialNumber, boolean createPoints) {
-        if (!canCreateMeter(devAMR, name, null)) return;
+    private YukonPao createRfnMeter(DevAMR devAMR, PaoType type, String name, String model, String manufacturer, String serialNumber, boolean createPoints) {
+        if (!canCreateMeter(devAMR, name, null)) return null;
         
-        deviceCreationService.createRfnDeviceByDeviceType(type, name, model, manufacturer, serialNumber, createPoints);
+        YukonDevice yukonDevice = deviceCreationService.createRfnDeviceByDeviceType(type, name, model, manufacturer, serialNumber, createPoints);
         devAMR.incrementSuccessCount();
         log.info("Rfn Meter with name " + name + " created.");
+        return yukonDevice;
     }
     
     private int getDefaultRouteId() {
