@@ -1316,7 +1316,10 @@
         <tags>
             <tag name="DEVICE_CONFIGURATION_430"/>
             <tag name="DLC_ADDRESS_RANGE">
-            	<value>620000-620199, 620200-700000, 701001-799999</value>
+            	<value>620000-620199, 
+            			620200-700000,
+            			700001-700356, 
+            			701001-799999</value>	<!-- end should possibly be 750000. Since its a lower value, not changing. -->
             </tag>
         </tags>
    </pao>
@@ -1397,7 +1400,8 @@
         <displayName>MCT-420CL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
-            	<value>1600001-2796201</value>
+            	<value>700901-701000,
+            			1600001-2796201</value>
             </tag>
         </tags>
     </pao>
@@ -1893,7 +1897,8 @@
         <displayName>MCT-410FL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
-            	<value>3797700-3996927</value>
+            	<value>3597701-3797699,
+            			3797700-3996927</value>
             </tag>
         </tags>
     </pao>
