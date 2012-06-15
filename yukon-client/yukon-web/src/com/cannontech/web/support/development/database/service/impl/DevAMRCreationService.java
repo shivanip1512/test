@@ -212,7 +212,12 @@ public class DevAMRCreationService extends DevObjectCreationBase {
                 for (int i = 0; i < devAMR.getNumAdditionalMeters(); i++) {
                     address = devAMR.getAddressRangeMin() + addressCount;
                     String meterName = meterType.getPaoType().getPaoTypeName() + " " + address;
-                    YukonPao meter = createPlcMeter(devAMR, meterType.getPaoType(), meterName, address, devAMR.getRouteId(), true);
+                    YukonPao meter;
+                    if (meterType.getPaoType().isRfn()) {
+                        meter = createRfnMeter(devAMR, meterType.getPaoType(), meterName, null, null, null, true);
+                    } else {
+                        meter = createPlcMeter(devAMR, meterType.getPaoType(), meterName, address, devAMR.getRouteId(), true);
+                    }
                     if (meter != null) createdMeters.add(meter);
                     addressCount++;
                 }

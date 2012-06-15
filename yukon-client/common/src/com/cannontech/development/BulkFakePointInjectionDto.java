@@ -7,11 +7,13 @@ import org.joda.time.Instant;
 import org.joda.time.Period;
 
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
 import com.google.common.collect.Lists;
 
 public class BulkFakePointInjectionDto {
+    private List<YukonPao> yukonPaos;
     private String groupName = SystemGroupEnum.ROOT.getFullPath();
     private Attribute attribute;
     private boolean archive = true;
@@ -27,6 +29,12 @@ public class BulkFakePointInjectionDto {
     private int decimalPlaces;
     private int injectionCount = 0;
 
+    public List<YukonPao> getYukonPaos() {
+        return yukonPaos;
+    }
+    public void setYukonPaos(List<YukonPao> yukonPaos) {
+        this.yukonPaos = yukonPaos;
+    }
     public String getGroupName() {
         return groupName;
     }

@@ -9,12 +9,14 @@ import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -31,11 +33,15 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
     @Autowired private PaoDao paoDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private AttributeService attributeService;
-
+    
     @Override
     public void excecuteInjection(BulkFakePointInjectionDto bulkInjection) {
-        
-        List<LitePoint> litePoints = getLitePointListOfDevicesInGroupWithAttribute(bulkInjection);
+        List<LitePoint> litePoints;
+        if (!CollectionUtils.isEmpty(bulkInjection.getYukonPaos())) {
+            litePoints = getLitePointsFromPaosWithAttribute(bulkInjection.getYukonPaos(), bulkInjection.getAttribute());
+        } else {
+            litePoints = getLitePointListOfDevicesInGroupWithAttribute(bulkInjection);
+        }
         bulkInjection.setInjectionCount(0);
         Map<Integer, Double> valueMap = Maps.newHashMap();
         Random rand = new Random();
@@ -90,14 +96,27 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
     }
 
     private List<LitePoint> getLitePointListOfDevicesInGroupWithAttribute(BulkFakePointInjectionDto bulkInjection) {
-        List<LitePoint> litePoints = Lists.newArrayList();
         DeviceGroup group = deviceGroupService.resolveGroupName(bulkInjection.getGroupName());
         List<SimpleDevice> supportedDevices =
             attributeService.getDevicesInGroupThatSupportAttribute(group,
                                                                    bulkInjection.getAttribute());
-        for (SimpleDevice simpleDevice : supportedDevices) {
+        return getLitePointsFromSimpleDevicesWithAttribute(supportedDevices, bulkInjection.getAttribute());
+    }
+
+    private List<LitePoint> getLitePointsFromSimpleDevicesWithAttribute(List<SimpleDevice> simpleDevices, Attribute attribute) {
+        List<LitePoint> litePoints = Lists.newArrayList();
+        for (SimpleDevice simpleDevice : simpleDevices) {
             YukonPao yukonPao = paoDao.getYukonPao(simpleDevice.getDeviceId());
-            LitePoint point = attributeService.getPointForAttribute(yukonPao, bulkInjection.getAttribute());
+            LitePoint point = attributeService.getPointForAttribute(yukonPao, attribute);
+            litePoints.add(point);
+        }
+        return litePoints;
+    }
+
+    private List<LitePoint> getLitePointsFromPaosWithAttribute(List<YukonPao> yukonPaos, Attribute attribute) {
+        List<LitePoint> litePoints = Lists.newArrayList();
+        for (YukonPao yukonPao : yukonPaos) {
+            LitePoint point = attributeService.getPointForAttribute(yukonPao, attribute);
             litePoints.add(point);
         }
         return litePoints;
