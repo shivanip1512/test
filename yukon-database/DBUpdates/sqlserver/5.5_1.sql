@@ -188,7 +188,7 @@ BEGIN
     SET @v_MaxGroupId = (SELECT MAX(GroupId)+1
                          FROM YukonGroup);
               
-    INSERT INTO YukonGroup VALUES (@v_MaxGroupId, @v_Username + ' Login Group'), 'Generated login group');
+    INSERT INTO YukonGroup VALUES (@v_MaxGroupId, @v_Username + ' Login Group', 'Generated login group');
     INSERT INTO YukonUserGroup VALUES (@v_userId, @v_MaxGroupId);
                    
     INSERT INTO YukonGroupRole
