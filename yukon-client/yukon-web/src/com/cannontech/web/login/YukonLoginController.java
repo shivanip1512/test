@@ -55,22 +55,22 @@ public class YukonLoginController extends MultiActionController {
             loginService.login(request, username, password);
         } catch (AuthenticationThrottleException e) {
             retrySeconds = e.getThrottleSeconds();
-            
+
+            redirect = getBadAuthenticationRedirectUrl(request, redirectedFrom, retrySeconds);
+            return new ModelAndView("redirect:" + redirect);
         } catch (BadAuthenticationException e) {
             ServletUtil.deleteAllCookies(request, response);
 
-            String referer = request.getHeader("Referer");
-            referer = (referer != null) ? referer : LoginController.LOGIN_URL;
-            redirect = ServletUtil.createSafeRedirectUrl(request, referer);
-            redirect = appendParams(redirect, retrySeconds, redirectedFrom);
-
+            redirect = getBadAuthenticationRedirectUrl(request, redirectedFrom, retrySeconds);
             return new ModelAndView("redirect:" + redirect);
         } catch (NotAuthorizedException e) {
         	CTILogger.info("Unable to log user in. Reason: " + e.getMessage());
+
         	redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
         	return new ModelAndView("redirect:" + redirect);
         } catch (PasswordExpiredException e) {
             CTILogger.debug("The password for "+username+" is expired.", e);
+
             String passwordResetUrl = passwordResetService.getPasswordResetUrl(username, request);
             return new ModelAndView("redirect:"+passwordResetUrl);
         }
@@ -99,6 +99,20 @@ public class YukonLoginController extends MultiActionController {
         }
 	          
         return new ModelAndView("redirect:" + redirect);
+    }
+
+    /**
+     * Gets the redirect url when the authentication fails
+     */
+    private String getBadAuthenticationRedirectUrl(HttpServletRequest request, final String redirectedFrom, long retrySeconds) {
+        String redirect;
+
+        String referer = request.getHeader("Referer");
+        referer = (referer != null) ? referer : LoginController.LOGIN_URL;
+        redirect = ServletUtil.createSafeRedirectUrl(request, referer);
+        redirect = appendParams(redirect, retrySeconds, redirectedFrom);
+
+        return redirect;
     }
 
     // appends params to the redirect url provided
