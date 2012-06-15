@@ -618,6 +618,7 @@
         <property name="paoDao" ref="paoDao"/>
         <property name="pointDao" ref="pointDao"/>
         <property name="dateFormattingService" ref="dateFormattingService"/>
+        <property name="normalizedUsageService" ref="normalizedUsageService"/>
     </bean>
     
     <bean id="normalizedUsageDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
