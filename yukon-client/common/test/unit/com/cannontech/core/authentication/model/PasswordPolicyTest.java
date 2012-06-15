@@ -3,9 +3,12 @@ package com.cannontech.core.authentication.model;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
 
 public class PasswordPolicyTest {
@@ -20,9 +23,24 @@ public class PasswordPolicyTest {
     private static final String PASSWORD_THREE = "ABCabc123!?@";
     private static final String PASSWORD_FOUR = "ABCabc123!?@\u0E01\u0E02\u0E03";
     
+    private static final LiteYukonUser USER_JUST_CHANGED = new LiteYukonUser();
+    {
+        USER_JUST_CHANGED.setLastChangedDate(Instant.now().minus(Duration.standardHours(18)));
+    }
+    private static final LiteYukonUser USER_CHANGED_TWO_DAYS_AGO = new LiteYukonUser();
+    {
+        USER_CHANGED_TWO_DAYS_AGO.setLastChangedDate(Instant.now().minus(Duration.standardDays(2)));
+    }
+    private static final LiteYukonUser USER_CHANGED_THREE_MONTHS_AGO = new LiteYukonUser();
+    {
+        USER_CHANGED_THREE_MONTHS_AGO.setLastChangedDate(Instant.now().minus(Duration.standardDays(90)));
+    }
+
     private static final PasswordPolicy passwordPolicyOne = new PasswordPolicy(); {
         passwordPolicyOne.setPolicyRules(Lists.newArrayList(PolicyRule.values()));
         passwordPolicyOne.setPasswordQualityCheck(3);
+        passwordPolicyOne.setMaxPasswordAge(Duration.standardDays(30));
+        passwordPolicyOne.setMinPasswordAge(Duration.standardDays(1));
 
     }
     
@@ -112,4 +130,27 @@ public class PasswordPolicyTest {
         Assert.assertTrue(isPasswordQualityCheckMet);
     }
 
+    @Test
+    public void testPasswordAge_JustChanged() {
+        Duration passwordAge = passwordPolicyOne.getPasswordAge(USER_JUST_CHANGED);
+        Assert.assertTrue(passwordAge.equals(Duration.standardHours(18)));
+        
+        Assert.assertFalse(passwordPolicyOne.isPasswordAgeRequirementMet(USER_JUST_CHANGED));
+    }
+    
+    @Test
+    public void testPasswordAge_TwoDaysAgo() {
+        Duration passwordAge = passwordPolicyOne.getPasswordAge(USER_CHANGED_TWO_DAYS_AGO);
+        Assert.assertTrue(passwordAge.equals(Duration.standardDays(2)));
+        
+        Assert.assertTrue(passwordPolicyOne.isPasswordAgeRequirementMet(USER_CHANGED_TWO_DAYS_AGO));
+    }    
+
+    @Test
+    public void testPasswordAge_ThreeMonthsAgo() {
+        Duration passwordAge = passwordPolicyOne.getPasswordAge(USER_CHANGED_THREE_MONTHS_AGO);
+        Assert.assertTrue(passwordAge.equals(Duration.standardDays(90)));
+        
+        Assert.assertTrue(passwordPolicyOne.isPasswordAgeRequirementMet(USER_CHANGED_THREE_MONTHS_AGO));
+    }    
 }
