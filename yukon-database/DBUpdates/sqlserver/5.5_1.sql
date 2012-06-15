@@ -147,18 +147,28 @@ END;
 /* @end-block */
 
 /* Taking care of the system role properties first.  Lets Migrate the Admin user role settings to the Admin login group and the DefaultCTI user to its own login group */
-INSERT INTO YukonGroup VALUES(-4, 'Administrator Grp', 'The administrator login group settings');
-INSERT INTO YukonGroupRole 
-SELECT (UserRoleId-2800), -4, RoleId, RolePropertyId, Value 
-FROM YukonUserRole
-WHERE UserId = -1;
+ALTER TABLE YukonUserRole ADD RowId INT IDENTITY(1,1);
+GO
+INSERT INTO YukonGroup VALUES(-4, 'Administrator Group', 'The administrator login group settings');
+INSERT INTO YukonGroupRole
+    SELECT (SELECT MIN(GroupRoleID) FROM YukonGroupRole)-RowId
+           ,-4
+           ,RoleId
+           ,RolePropertyId
+           ,Value 
+    FROM YukonUserRole 
+    WHERE UserID = -1 ORDER BY RowId DESC;
 INSERT INTO YukonUserGroup VALUES (-1, -4);
 
-INSERT INTO YukonGroup VALUES(-3, 'DefaultCTI Login Grp', 'The defaultCTI login group settings');
-INSERT INTO YukonGroupRole 
-SELECT (UserRoleId-1600), -3, RoleId, RolePropertyId, Value 
-FROM YukonUserRole
-WHERE UserId = -100;
+INSERT INTO YukonGroup VALUES (-3, 'DefaultCTI Login Group', 'The defaultCTI login group settings');
+INSERT INTO YukonGroupRole
+    SELECT (SELECT MIN(GroupRoleID) FROM YukonGroupRole)-RowId
+           ,-3
+           ,RoleId
+           ,RolePropertyId
+           ,Value 
+    FROM YukonUserRole 
+    WHERE UserID = -100 ORDER BY RowId DESC;
 INSERT INTO YukonUserGroup VALUES (-100, -3);
 
 /* Migrating the rest of the YukonUserRole data */
@@ -177,22 +187,26 @@ WHILE @@FETCH_STATUS = 0
 BEGIN
     SET @v_MaxGroupId = (SELECT MAX(GroupId)+1
                          FROM YukonGroup);
-    INSERT INTO YukonGroup VALUES (@v_MaxGroupId, @v_Username + ' login group', 'Generated login group');
-
+              
+    INSERT INTO YukonGroup VALUES (@v_MaxGroupId, @v_Username + ' Login Group'), 'Generated login group');
+    INSERT INTO YukonUserGroup VALUES (@v_userId, @v_MaxGroupId);
+                   
     INSERT INTO YukonGroupRole
-        SELECT (SELECT MAX(GroupRoleId) FROM YukonGroupRole)
+        SELECT (SELECT MAX(GroupRoleID) FROM YukonGroupRole)+RowId
                ,@v_MaxGroupId
                ,RoleId
                ,RolePropertyId
-               ,Value
-               FROM YukonUserRole YUR
-               WHERE YUR.UserId = @v_UserId;
+               ,Value 
+        FROM YukonUserRole 
+        WHERE UserID = @v_userId ORDER BY RowId DESC;
     
     FETCH NEXT FROM userId_curs INTO @v_UserId, @v_Username;
 END;    
 CLOSE userId_curs;
 DEALLOCATE userId_curs;
 /* @end-block */
+ALTER TABLE YukonUserRole DROP COLUMN RowId;
+GO
 
 ALTER TABLE YukonUserRole
     DROP CONSTRAINT FK_YkUsRl_RlPrp;

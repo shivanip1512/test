@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/14/2012 9:28:10 AM                         */
+/* Created on:     6/15/2012 10:40:14 AM                        */
 /*==============================================================*/
 
 
@@ -4449,7 +4449,7 @@ create table EnergyCompany  (
    constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID)
 );
 
-insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-100);
+insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-1);
 
 /*==============================================================*/
 /* Index: Indx_EnCmpName                                        */
@@ -4483,7 +4483,7 @@ create table EnergyCompanyOperatorLoginList  (
    constraint PK_ENERGYCOMPANYOPERATORLOGINL primary key (EnergyCompanyID, OperatorLoginID)
 );
 
-INSERT INTO EnergyCompanyOperatorLoginList VALUES (-1,-100);
+INSERT INTO EnergyCompanyOperatorLoginList VALUES (-1,-1);
 
 /*==============================================================*/
 /* Table: EsubDisplayIndex                                      */
@@ -7966,6 +7966,9 @@ insert into YukonGroupRole values (-1095,-2, -108, -10806, ' ');
 insert into YukonGroupRole values (-1096,-2, -108, -10807, ' ');
 insert into YukonGroupRole values (-1097,-2, -108, -10808, ' ');
 insert into YukonGroupRole values (-1098,-2, -108, -10811, ' ');
+
+/* Give energy company role to system admin group */
+insert into YukonGroupRole values (-1500,-2, -2, -1100, ' ');
 
 /* Give admin super user access to system administrator group */
 insert into YukonGroupRole values (-2000, -2, -200, -20019, 'true');
