@@ -18,7 +18,7 @@ public enum PolicyRule implements DisplayableEnum {
     UNICODE_CHARACTERS("[\\p{L}&&[^"+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]"),
     ;
     
-    private static final String formatKeyPrefix = "yukon.web.modules.policyRuleEnum..";
+    private static final String formatKeyPrefix = "yukon.web.modules.passwordPolicy.policyRule.";
 
     private Pattern regexPattern;
 

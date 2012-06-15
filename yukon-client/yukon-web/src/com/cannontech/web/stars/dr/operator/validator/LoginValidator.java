@@ -1,5 +1,7 @@
 package com.cannontech.web.stars.dr.operator.validator;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -12,6 +14,7 @@ import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
+import com.google.common.collect.Lists;
 
 public class LoginValidator extends SimpleValidator<LoginBackingBean> {
 
@@ -52,34 +55,46 @@ public class LoginValidator extends SimpleValidator<LoginBackingBean> {
             
             if (!loginBackingBean.getPassword1().equals(loginBackingBean.getPassword2())) {
                 passwordError(errors, "yukon.web.modules.operator.account.loginInfoError.passwordNoMatch");
+                return;
             }
             
             // Check the password against the password policy.
             PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
-            if (passwordPolicy != null) {
+            if (passwordPolicy != null && !errors.hasErrors()) {
                 String password = loginBackingBean.getPassword1();
                 
                 if (password.length() < passwordPolicy.getMinPasswordLength()) {
                    passwordError(errors, "yukon.web.modules.passwordPolicy.minPasswordLengthNotMet");
+                   return;
                 }
                 
                 if (!passwordPolicy.isPasswordAgeRequirementMet(user)) {
                     passwordError(errors, "yukon.web.modules.passwordPolicy.minPasswordAgeNotMet");
+                    return;
                 }
                 
                 if (authenticationService.isPasswordBeingReused(user, password)) {
                     passwordError(errors, "yukon.web.modules.passwordPolicy.passwordUsedTooRecently");
+                    return;
                 }
                 
                 if (!passwordPolicy.isPasswordQualityCheckMet(password)) {
-                    passwordError(errors, "yukon.web.modules.passwordPolicy.passwordDoesNotMetPolicyQuality");
+                    List<Object> errorArgs = Lists.newArrayList();
+                    errorArgs.add(passwordPolicy.numberOfRulesMet(password));
+                    errorArgs.add(passwordPolicy.getPasswordQualityCheck());
+                    
+                    passwordError(errors, "yukon.web.modules.passwordPolicy.passwordDoesNotMetPolicyQuality", errorArgs.toArray());
+                    return;
                 }
             }
         }
     }
 
     private void passwordError(Errors errors, String errorMessageKey) {
-        errors.rejectValue("password1", errorMessageKey);
-        errors.rejectValue("password2", errorMessageKey);
+        passwordError(errors, errorMessageKey, null);
+    }
+
+    private void passwordError(Errors errors, String errorMessageKey, Object[] errorArgs) {
+        YukonValidationUtils.rejectValues(errors, errorMessageKey, errorArgs, "password1", "password2");
     }
 }
