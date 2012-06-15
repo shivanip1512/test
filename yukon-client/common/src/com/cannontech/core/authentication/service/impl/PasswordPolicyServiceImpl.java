@@ -25,7 +25,7 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         
         // There is not a password policy for this user.
         if (!rolePropertyDao.checkRole(YukonRole.PASSWORD_POLICY, user)) {
-            throw new IllegalArgumentException("The user supplied does not have password rules since it does not have a password policy.");
+            return getDefaultPasswordPolicy().getPolicyRules();
         }
         
         // Go through the available policies and see which ones are being use for this user. 

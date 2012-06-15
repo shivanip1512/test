@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -93,7 +94,9 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     public boolean isPasswordExpired(LiteYukonUser user) {
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
         if (user.isForceReset() || 
-            (passwordPolicy != null && passwordPolicy.getMaxPasswordAge().isShorterThan(passwordPolicy.getPasswordAge(user)))) {
+            (passwordPolicy != null &&
+             passwordPolicy.getMaxPasswordAge() != Duration.ZERO && 
+             passwordPolicy.getMaxPasswordAge().isShorterThan(passwordPolicy.getPasswordAge(user)))) {
             return true;
         }
         
