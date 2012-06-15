@@ -305,6 +305,17 @@ public class SimpleXPathTemplateTest {
         simpleXPathTemplate.evaluateAsLong(null);
     }
 
+    /**
+     * A empty longElement element passed into evaluateAsFloat.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testEvaluateAsLong_emptyExpression() {
+        Element testElement = new Element("longElement", "");
+
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        simpleXPathTemplate.evaluateAsLong(null);
+    }
+    
 /************************ evaluateAsFloat Tests ***************/
     /**
      * <testElement>
@@ -345,6 +356,16 @@ public class SimpleXPathTemplateTest {
         simpleXPathTemplate.evaluateAsFloat(null);
     }
     
+    /**
+     * A empty floatElement element passed into evaluateAsFloat.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testEvaluateAsFloat_emptyExpression() {
+        Element testElement = new Element("floatElement", "");
+
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        simpleXPathTemplate.evaluateAsFloat(null);
+    }
     
 /************************ evaluateAsInt Tests ***************/
     /**
@@ -378,7 +399,7 @@ public class SimpleXPathTemplateTest {
     
     /**
      * <testElement>
-     *      <intElement>42</intElement>
+     *      <intElement>42.0</intElement>
      * </testElement>
      */
     @Test
@@ -397,6 +418,17 @@ public class SimpleXPathTemplateTest {
     @Test(expected=IllegalArgumentException.class)
     public void testEvaluateAsInt_noExpression() {
         Element testElement = new Element("testElement");
+
+        SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
+        simpleXPathTemplate.evaluateAsInt(null);
+    }
+    
+    /**
+     * A empty intElement element passed into evaluateAsFloat.
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testEvaluateAsInt_emptyExpression() {
+        Element testElement = new Element("intElement", "");
 
         SimpleXPathTemplate simpleXPathTemplate = YukonXml.getXPathTemplateForElement(testElement);
         simpleXPathTemplate.evaluateAsInt(null);
