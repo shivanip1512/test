@@ -45,7 +45,11 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
         }
         
         if(StringUtils.isBlank(rootName)){
-        	rootName = getMessageSource().getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+        	try{
+        		rootName = getMessageSource().getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+        	}catch(Exception e){
+        		rootName = "Groups";
+        	}
         }
         
         JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, rootName, nodeCallback);

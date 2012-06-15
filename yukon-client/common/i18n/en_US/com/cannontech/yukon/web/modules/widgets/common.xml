@@ -43,9 +43,10 @@
 <entry key="yukon.web.widgets.systemActionsMenuWidget">Actions</entry>
 <entry key="yukon.web.widgets.operatorAccountSearchWidget">Account Search</entry>
 <entry key="yukon.web.widgets.electricTrendWidget">Trend</entry>
-<entry key="yukon.web.widgets.waterTrendWidget">Trend</entry>
 <entry key="yukon.web.widgets.csrTrendWidget">Trend</entry>
 <entry key="yukon.web.widgets.hbcTrendWidget">Trend</entry>
+<entry key="yukon.web.widgets.waterTrendWidget">Trend</entry>
+<entry key="yukon.web.widgets.waterCsrTrendWidget">Trend</entry>
 
 <entry key="yukon.web.widgets.validationMonitorsWidget.widgetIdentity">Validation Monitors {0}</entry>
 <entry key="yukon.web.widgets.meterSearchWidget.widgetIdentity">Meter Search {0}</entry>
@@ -85,6 +86,7 @@
 <entry key="yukon.web.widgets.waterTrendWidget.widgetIdentity">Trend {0}</entry>
 <entry key="yukon.web.widgets.csrTrendWidget.widgetIdentity">Trend {0}</entry>
 <entry key="yukon.web.widgets.hbcTrendWidget.widgetIdentity">Trend {0}</entry>
+<entry key="yukon.web.widgets.waterCsrTrendWidget.widgetIdentity">Trend {0}</entry>
 
 <entry key="yukon.web.widgets.outageMonitorsWidget.exception.notFound">Outage Monitor Does Not Exist.</entry>
 <entry key="yukon.web.widgets.statusPointMonitorsWidget.exception.notFound">Status Point Monitor not found.</entry>
@@ -94,6 +96,7 @@
 <entry key="yukon.web.widgetClasses.TrendWidget.noPeriod">{0} {1}: {2} - {3}</entry>
 <entry key="yukon.web.widgetClasses.TrendWidget.noData">No data for selected period</entry>
 <entry key="yukon.web.widgetClasses.TrendWidget.showAll">Show All</entry>
+
 
 
 </properties>
