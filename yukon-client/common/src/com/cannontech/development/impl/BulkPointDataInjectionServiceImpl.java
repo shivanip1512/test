@@ -80,7 +80,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
             Duration duration = bulkInjection.getPeriod().toStandardDuration();
             iterableInstant = iterableInstant.plus(duration);
         }
-        
+        log.info("Number of points sent from bulk injector: " + bulkInjection.getInjectionCount());
     }
     
     private double getRoundedValue(double value, int decimalPlaces) {

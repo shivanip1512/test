@@ -17,7 +17,6 @@ public class DevAMR extends DevObject {
             .newArrayList(new DevPaoType(PaoType.MCT410CL),
                           new DevPaoType(PaoType.MCT410FL),
                           new DevPaoType(PaoType.MCT410IL),
-                          new DevPaoType(PaoType.MCT410GL),
                           new DevPaoType(PaoType.MCT420CL),
                           new DevPaoType(PaoType.MCT420FL),
                           new DevPaoType(PaoType.MCT430A),

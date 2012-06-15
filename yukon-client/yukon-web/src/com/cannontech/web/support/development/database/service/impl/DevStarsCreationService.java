@@ -91,14 +91,14 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         setRoleProperty(group, YukonRoleProperty.MINIMUM_SCAN_FREQUENCY, " ");
         setRoleProperty(group, YukonRoleProperty.MAXIMUM_DAILY_SCANS, " ");
 
-        setRoleProperty(group, YukonRoleProperty.VERSACOM_SERIAL_MODEL, " ");
+        setRoleTrue(group, YukonRoleProperty.VERSACOM_SERIAL_MODEL);
         setRoleTrue(group, YukonRoleProperty.EXPRESSCOM_SERIAL_MODEL);
-        setRoleTrue(group, YukonRoleProperty.DCU_SA205_SERIAL_MODEL);
-        setRoleTrue(group, YukonRoleProperty.DCU_SA305_SERIAL_MODEL);
-        setRoleProperty(group, YukonRoleProperty.LC_REDUCTION_COL, "false");
+        setRoleProperty(group, YukonRoleProperty.DCU_SA205_SERIAL_MODEL,"false");
+        setRoleProperty(group, YukonRoleProperty.DCU_SA305_SERIAL_MODEL,"false");
+        setRoleProperty(group, YukonRoleProperty.LC_REDUCTION_COL, " ");
         setRoleProperty(group, YukonRoleProperty.COMMANDS_GROUP, " ");
         
-        setRoleProperty(group, YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP, "false");
+        setRoleProperty(group, YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP, " ");
         
         devStars.setLiteYukonGroupOperator(group);
     }

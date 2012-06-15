@@ -18,6 +18,7 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
 
     @Override
     protected void logFinalExecutionDetails() {
+        log.info("Finished setting role propertys for System Administrator Grp");
     }
 
     private void updateAllRolePropertiesForGroup(LiteYukonGroup group) {

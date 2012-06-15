@@ -5,10 +5,12 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.CCU711;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.IDLCBase;
@@ -94,7 +96,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         terminalServerSharedPort.setPortID(directPort.getCommPort().getPortID());
         terminalServerSharedPort.setPortName(commChannel.getName());
 
-        dbPersistentDao.performDBChange(terminalServerSharedPort, Transaction.INSERT);
+        dbPersistentDao.performDBChange(terminalServerSharedPort, TransactionType.INSERT);
         log.info("Comm Channel with name " + commChannel.getName() + " created.");
     }
 
@@ -175,7 +177,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         SmartMultiDBPersistent newVal = createSmartDBPersistent((DeviceBase) ccu);
         newVal.addDBPersistent(route);
 
-        dbPersistentDao.performDBChange(newVal, Transaction.INSERT);
+        dbPersistentDao.performDBChange(newVal, TransactionType.INSERT);
         log.info("CCU with name " + devCCU.getName() + " created.");
     }
 
@@ -245,7 +247,8 @@ public class DevAMRCreationService extends DevObjectCreationBase {
             routeId = getDefaultRouteId();
         }
 
-        deviceCreationService.createCarrierDeviceByDeviceType(type.getDeviceTypeId(), name, address, routeId, createPoints);
+        YukonDevice yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(type.getDeviceTypeId(), name, address, routeId, createPoints);
+        deviceDao.changeMeterNumber(yukonDevice, Integer.toString(address));
         devAMR.incrementSuccessCount();
         log.info("Plc Meter with name " + name + " created.");
     }
