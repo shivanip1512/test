@@ -3,6 +3,7 @@ package com.cannontech.web.support.development.database.service.impl;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.constants.YukonListEntry;
@@ -15,9 +16,10 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -25,6 +27,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -36,11 +39,11 @@ import com.cannontech.web.support.development.database.objects.DevStarsAccounts;
 import com.google.common.collect.Lists;
 
 public class DevStarsCreationService extends DevObjectCreationBase {
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private ECMappingDao ecMappingDao;
-    @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private AccountService accountService;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private HardwareUiService hardwareUiService;
@@ -48,7 +51,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     
     @Override
     protected void createAll() {
-        if (devDbSetupTask.getDevStars().isCreateEnergyCompany()) {
+        if (devDbSetupTask.getDevStars().getEnergyCompany() == null) {
             createOperatorsGroup(devDbSetupTask.getDevStars());
             createEnergyCompany(devDbSetupTask.getDevStars());
         }
@@ -64,8 +67,8 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     
     private void createOperatorsGroup(DevStars devStars) {
         LiteYukonGroup group = new LiteYukonGroup();
-        group.setGroupDescription("Cooper Operators Grp");
-        group.setGroupName("Cooper Operators Grp");
+        group.setGroupDescription(devStars.getNewEnergyCompanyName() + " Operators Grp");
+        group.setGroupName(devStars.getNewEnergyCompanyName() + " Operators Grp");
         yukonGroupDao.save(group);
         
         setRoleProperty(group, YukonRoleProperty.POINT_ID_EDIT, " ");
@@ -104,25 +107,34 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     }
     
     private void createEnergyCompany(DevStars devStars) {
-        EnergyCompanyDto ecd = new EnergyCompanyDto();
-        ecd.setName("Cooper EC");
-        ecd.setEmail("info@cannontech.com");
-        ecd.setPrimaryOperatorGroupId(devStars.getLiteYukonGroupOperator().getGroupID());
-        ecd.setAdminUsername("op");
-        ecd.setAdminPassword1("op");
-        ecd.setAdminPassword2("op");
+        
+        EnergyCompanyDto energyCompanyDto = new EnergyCompanyDto();
+        energyCompanyDto.setName(devStars.getNewEnergyCompanyName());
+        energyCompanyDto.setEmail("info@cannontech.com");
+        energyCompanyDto.setPrimaryOperatorGroupId(devStars.getLiteYukonGroupOperator().getGroupID());
+        String username = StringUtils.deleteWhitespace(devStars.getNewEnergyCompanyName()).toLowerCase() + "_op";
+        energyCompanyDto.setAdminUsername(username);
+        energyCompanyDto.setAdminPassword1(username);
+        energyCompanyDto.setAdminPassword2(username);
+        
+        LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(UserUtils.USER_YUKON_ID);
         
         try {
-            LiteStarsEnergyCompany ec = energyCompanyService.createEnergyCompany(ecd,  yukonUserDao.getLiteYukonUser(UserUtils.USER_YUKON_ID), null);
+            LiteStarsEnergyCompany ec = energyCompanyService.createEnergyCompany(energyCompanyDto,  yukonUser, null);
             devStars.setEnergyCompany(ec);
         } catch (Exception e) {
-            devStars.setEnergyCompany(starsDatabaseCache.getDefaultEnergyCompany());
-            log.warn("Cannot create new energy company. Setting to default", e);
+            log.error("Unable to create new energycompany " + energyCompanyDto.getName());
+            throw new RuntimeException(e);
         }
         
         try {
-            ecMappingDao.addEnergyCompanyOperatorLoginListMapping(yukonUserDao.getLiteYukonUser(UserUtils.USER_YUKON_ID), devStars.getEnergyCompany());
-            log.info("Set user Yukon as operator login for Cooper EC");
+            if (!energyCompanyService.isOperator(yukonUser)) {
+                ecMappingDao.addEnergyCompanyOperatorLoginListMapping(yukonUser, devStars.getEnergyCompany());
+                log.info("Set user yukon as operator login for " + devStars.getNewEnergyCompanyName());
+            } else {
+                YukonEnergyCompany yukonOperator = yukonEnergyCompanyService.getEnergyCompanyByOperator(yukonUser);
+                log.warn("Yukon user already set as operator login for " + yukonOperator.getName());
+            }
         } catch (Exception e) {
             log.warn("Unable to link new energy company to yukon/yukon",e);
         }
@@ -132,11 +144,17 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         int energyCompanyId = devStars.getEnergyCompany().getEnergyCompanyId();
         List<LiteYukonGroup> residentialGroups = ecMappingDao.getResidentialGroups(energyCompanyId);
         if (residentialGroups.isEmpty()) {
-            LiteYukonGroup group = new LiteYukonGroup();
-            group.setGroupDescription("Cooper Residential Grp");
-            group.setGroupName("Cooper Residential Grp");
-            yukonGroupDao.save(group);
-            
+            LiteYukonGroup group = null;
+
+            try {        
+                group = yukonGroupDao.getLiteYukonGroupByName(devStars.getNewEnergyCompanyName() + " Residential Grp");
+            } catch(Exception e) {
+                group = new LiteYukonGroup();
+                group.setGroupDescription(devStars.getNewEnergyCompanyName() + " Residential Grp");
+                group.setGroupName(devStars.getNewEnergyCompanyName() + " Residential Grp");
+                yukonGroupDao.save(group);
+            }
+
             setRoleProperty(group, YukonRoleProperty.HOME_URL, "/spring/stars/consumer/general");
             setRoleProperty(group, YukonRoleProperty.STYLE_SHEET, " ");
             setRoleProperty(group, YukonRoleProperty.NAV_BULLET_EXPAND, " ");

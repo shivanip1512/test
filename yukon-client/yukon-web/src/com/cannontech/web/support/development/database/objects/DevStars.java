@@ -9,7 +9,7 @@ public class DevStars extends DevObject {
     private LiteStarsEnergyCompany energyCompany;
     private DevStarsAccounts devStarsAccounts = new DevStarsAccounts();
     private DevStarsHardware devStarsHardware = new DevStarsHardware();
-    private boolean createEnergyCompany = false;
+    private String newEnergyCompanyName;
 
     public LiteStarsEnergyCompany getEnergyCompany() {
         return energyCompany;
@@ -47,14 +47,6 @@ public class DevStars extends DevObject {
         return total;
     }
 
-    public boolean isCreateEnergyCompany() {
-        return createEnergyCompany;
-    }
-
-    public void setCreateEnergyCompany(boolean createEnergyCompany) {
-        this.createEnergyCompany = createEnergyCompany;
-    }
-
     public LiteYukonGroup getLiteYukonGroupResidential() {
         return liteYukonGroupResidential;
     }
@@ -69,5 +61,13 @@ public class DevStars extends DevObject {
 
     public void setLiteYukonGroupOperator(LiteYukonGroup liteYukonGroupOperator) {
         this.liteYukonGroupOperator = liteYukonGroupOperator;
+    }
+
+    public String getNewEnergyCompanyName() {
+        return newEnergyCompanyName;
+    }
+
+    public void setNewEnergyCompanyName(String newEnergyCompanyName) {
+        this.newEnergyCompanyName = newEnergyCompanyName;
     }
 }

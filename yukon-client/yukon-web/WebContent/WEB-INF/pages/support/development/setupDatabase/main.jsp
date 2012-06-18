@@ -101,9 +101,15 @@
                             <ul>
                                 <li>
                                     <tags:nameValueContainer2>
-                                    	<tags:checkbox path="devStars.createEnergyCompany" id="createEnergyCompany"/>
-                                    	<span><i:inline key=".setupDevDatabase.option.stars.createNewEC" /></span>
-                                    	<tags:selectNameValue path="devStars.energyCompany" nameKey=".setupDevDatabase.option.stars.parentEnergyCompany" items="${allEnergyCompanies}" itemLabel="name" itemValue="energyCompanyId" inputClass="f_ec_select"/>
+                                    	<tags:nameValue2 nameKey=".setupDevDatabase.option.stars.parentEnergyCompany">
+	                                    	<form:select path="devStars.energyCompany" cssClass="f_ec_select">
+	                                    		<c:forEach items="${allEnergyCompanies}" var="energyCompany">
+	                                    			<form:option value="${energyCompany.energyCompanyId}">${energyCompany.name}</form:option>
+	                                    		</c:forEach>
+	                                    		<option value="0" id="createNewEnergyCompanyOpt">*Create New Energy Company</option>
+	                                    	</form:select>
+                                    	</tags:nameValue2>
+                                        <tags:inputNameValue path="devStars.newEnergyCompanyName" nameKey=".setupDevDatabase.option.stars.createNewEC" size="10" inputClass="newEnergyCompanyInput" rowClass="newEnergyCompanyRow dn"/>
                                         <tags:inputNameValue path="devStars.devStarsAccounts.numAccounts" nameKey=".setupDevDatabase.option.stars.numAccounts" size="4"/>
                                         <tags:inputNameValue path="devStars.devStarsHardware.numPerAccount" nameKey=".setupDevDatabase.option.stars.numHardwarePerAccount" size="2"/>
                                         <tags:inputNameValue path="devStars.devStarsHardware.numExtra" nameKey=".setupDevDatabase.option.stars.numExtra" size="2"/>
@@ -216,11 +222,13 @@
 	        jQuery('#setupDbForm').submit();
 	    });
 	    
-	    jQuery("#createEnergyCompany").change(function() {
-	    	if (jQuery(this).is(':checked')) {
-	    		jQuery(".f_ec_select").attr("disabled", true);
+	    jQuery(".f_ec_select").change(function() {
+	    	if (jQuery('#createNewEnergyCompanyOpt').is(':selected')) {
+	    		jQuery('.newEnergyCompanyRow').show(800, function() {
+	    			jQuery('.newEnergyCompanyInput').focus();
+	    		});
 	    	} else {
- 	    		jQuery(".f_ec_select").removeAttr("disabled");
+	    		jQuery('.newEnergyCompanyRow').hide(500);
 	    	}
 	    });
 	    

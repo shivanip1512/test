@@ -50,6 +50,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         for (PaoType paoType: types) {
             DevPaoType devPaoType = new DevPaoType(paoType);
             devPaoType.setCreate(true);
+            devPaoTypes.add(devPaoType);
         }
         devAMR.setMeterTypes(devPaoTypes);
         return createAllMeters(devAMR);
