@@ -21,6 +21,7 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.core.dao.DeviceDao;
@@ -124,13 +125,15 @@ public class RfnBasePanel extends DataInputPanel implements CaretListener {
         String manufacturer = getManufacturerTextField().getText();
         String model = getModelTextField().getText();
         
-        /* Valid: 
+        /*
+         * Valid: 
          *     1. All fields are blank.
          *     2. All fields are filled in.
          * Invalid: 
          *     1. One or two of the three fields are blank.
          */
         boolean allBlank = StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer) && StringUtils.isBlank(model);
+        
         boolean allFilledIn = StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer) && StringUtils.isNotBlank(model);
         if(!allBlank && !allFilledIn) {
             setErrorString("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
@@ -146,40 +149,51 @@ public class RfnBasePanel extends DataInputPanel implements CaretListener {
 
     @Override
     public Object getValue(Object o) throws EditorInputValidationException {
-        /* Check for duplicates */
+        RfnBase rfnBase = (RfnBase)o;
+        RfnDeviceDao rfnDeviceDao = YukonSpringHook.getBean("rfnDeviceDao", RfnDeviceDao.class);
+        
         String serialNumber = StringUtils.trimToNull(getSerialNumberTextField().getText()); // Don't respect leading or trailing spaces
         String manufacturer = StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText();
         String model = StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText();
         
-        RfnDeviceDao rfnDeviceDao = YukonSpringHook.getBean("rfnDeviceDao", RfnDeviceDao.class);
+        boolean allBlank = StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer) && StringUtils.isBlank(model);
+        
+        PaoType type = PaoType.getForDbString(rfnBase.getPAOType());
+        if (!type.isMeter()) {
+            // For DR devices, only templates are creatable so all fields must be blank.
+            if (!allBlank) {
+                throw new EditorInputValidationException("For demand response device, only templates are creatable here.  Serial Number, Manufacturer and Model fields must be left blank.");
+            }
+        }
+        
+        /* Check for duplicates */
         try {
             rfnDeviceDao.getDeviceForExactIdentifier(new RfnIdentifier(serialNumber, manufacturer, model));
-            throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must be unique among RFN Meters.");
+            throw new EditorInputValidationException("Serial Number, Manufacturer, and Model fields must be unique among RFN devices.");
         } catch (NotFoundException e) { /* IGNORE */ };
         
-        RfnBase rfnMeter = (RfnBase)o;
-        rfnMeter.getRfnAddress().setManufacturer(manufacturer);
-        rfnMeter.getRfnAddress().setModel(model);
-        rfnMeter.getRfnAddress().setSerialNumber(serialNumber);
+        rfnBase.getRfnAddress().setManufacturer(manufacturer);
+        rfnBase.getRfnAddress().setModel(model);
+        rfnBase.getRfnAddress().setSerialNumber(serialNumber);
         
         if (createPointsCheckBox.isSelected()) {
             PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
-            rfnMeter.setDeviceID(paoDao.getNextPaoId());
+            rfnBase.setDeviceID(paoDao.getNextPaoId());
 
             PaoDefinitionService paoDefinitionService = (PaoDefinitionService) YukonSpringHook.getBean("paoDefinitionService");
             DeviceDao deviceDao = (DeviceDao) YukonSpringHook.getBean("deviceDao");
-            SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(rfnMeter);
+            SimpleDevice yukonDevice = deviceDao.getYukonDeviceForDevice(rfnBase);
             List<PointBase> defaultPoints = paoDefinitionService.createDefaultPointsForPao(yukonDevice);
 
             SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
-            persistant.addOwnerDBPersistent(rfnMeter);
+            persistant.addOwnerDBPersistent(rfnBase);
             for (PointBase point : defaultPoints) {
                 persistant.addDBPersistent(point);
             }
             return persistant;
         }
 
-        return rfnMeter;
+        return rfnBase;
     }
 
     @Override

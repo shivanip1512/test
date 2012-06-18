@@ -14,6 +14,8 @@ public enum DevRfnTemplateMeter {
     RFN_TEMPLATE_LGYR_FOCUS_AXR_SD(PaoType.RFN420FD, "*RfnTemplate_LGYR_FocusAXR-SD"),
     RFN_TEMPLATE_ITRN_C2SX(PaoType.RFN420CL, "*RfnTemplate_ITRN_C2SX"),
     RFN_TEMPLATE_ITRN_C2SX_SD(PaoType.RFN420CD, "*RfnTemplate_ITRN_C2SX-SD"),
+    RFN_TEMPLATE_CPS_LCR_6200(PaoType.LCR6200_RFN, "*RfnTemplate_CPS_RFN-LCR6200"),
+    RFN_TEMPLATE_CPS_LCR_6600(PaoType.LCR6600_RFN, "*RfnTemplate_CPS_RFN-LCR6600"),
     ;
     
     private final PaoType paoType;
