@@ -293,3 +293,4 @@ AND GroupId NOT IN (SELECT DISTINCT GroupId FROM GroupPaoPermission);
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.5', 'Garrett D', '18-JUN-2012', 'Latest Update', 1 );
