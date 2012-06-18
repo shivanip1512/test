@@ -11,8 +11,6 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.CCU711;
 import com.cannontech.database.data.device.DeviceBase;
@@ -160,13 +158,7 @@ public class DevAMRCreationService extends DevObjectCreationBase {
         ((RemoteBase) ccu).getDeviceDirectCommSettings().setPortID(portID);
 
         DirectPort port = (DirectPort) LiteFactory.createDBPersistent((LiteBase) commChan);
-        Transaction<DirectPort> t = Transaction.createTransaction(Transaction.RETRIEVE, port);
-
-        try {
-            port = t.execute();
-        } catch (TransactionException e) {
-            throw new RuntimeException(e);
-        }
+        dbPersistentDao.performDBChange(port, TransactionType.RETRIEVE);
 
         ((RemoteBase) ccu).getDeviceDialupSettings().setBaudRate(port.getPortSettings().getBaudRate());
         ((IDLCBase) ccu).getDeviceIDLCRemote().setPostCommWait(new Integer(0));
