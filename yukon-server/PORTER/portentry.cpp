@@ -456,7 +456,9 @@ INT ValidatePort(OUTMESS *&OutMessage)
 
                 string error_string = "Error " + CtiNumStr(error) + ": " + FormatError(error);
 
-                CtiReturnMsg *info = new CtiReturnMsg(OutMessage->DeviceID, OutMessage->Request, error_string, error);
+                const long error_id = OutMessage->TargetID ? OutMessage->TargetID : OutMessage->DeviceID;
+
+                CtiReturnMsg *info = new CtiReturnMsg(error_id, OutMessage->Request, error_string, error);
 
                 //  This isn't the last you'll hear from this request.
                 info->setExpectMore(true);
