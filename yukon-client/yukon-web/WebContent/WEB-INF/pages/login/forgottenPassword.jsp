@@ -87,7 +87,7 @@
                         <br>
                         
                         <cti:button type="submit" nameKey="resetPassword" name="resetPassword" styleClass="f_disableAfterClick"/>
-                        <cti:button nameKey="cancel" name="cancel" type="submit"/>
+                        <cti:button type="submit" nameKey="cancel" name="cancel"/>
                     </form:form>
                 </tags:abstractContainer>
             </div>
