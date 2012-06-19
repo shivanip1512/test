@@ -107,6 +107,11 @@ public class PasswordResetController {
         return "redirect:/login.jsp";
     }
 
+    @RequestMapping(value = "/forgottenPassword", method = RequestMethod.POST, params="cancel")
+    public String cancel() {
+        return "redirect:/login.jsp";
+    }
+    
     @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
     public String changePassword(ModelMap model, FlashScope flashScope, String k) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null);

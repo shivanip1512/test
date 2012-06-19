@@ -87,7 +87,7 @@
                         <br>
                         
                         <cti:button type="submit" nameKey="resetPassword" name="resetPassword" styleClass="f_disableAfterClick"/>
-                        <cti:button href="/login.jsp" nameKey="cancel" name="cancel"/>
+                        <cti:button href="/login.jsp" nameKey="cancel" name="cancel" type="submit"/>
                     </form:form>
                 </tags:abstractContainer>
             </div>
