@@ -107,13 +107,13 @@ public abstract class DevObjectCreationBase implements DevObjectCreationInterfac
         log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }
 
-    protected void setRoleTrue(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty) {
+    protected void setRoleProperty(LiteYukonGroup group, YukonRoleProperty yukonRoleProperty, boolean newVal) {
         GroupRolePropertyValueCollection propertyValues = rolePropertyEditorDao.getForGroupAndRole(group, yukonRoleProperty.getRole(), true);
         Map<YukonRoleProperty, Object> valueMap = propertyValues.getValueMap();
-        valueMap.put(yukonRoleProperty, true);
+        valueMap.put(yukonRoleProperty, newVal);
         propertyValues.putAll(valueMap);
         rolePropertyEditorDao.save(propertyValues);
-        log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to true");
+        log.info("Group " + group.getGroupName() + " YukonRole " + yukonRoleProperty.getRole().name() + " and YukonRoleProperty " + yukonRoleProperty.name() + " set to " + newVal);
     }
     
 }

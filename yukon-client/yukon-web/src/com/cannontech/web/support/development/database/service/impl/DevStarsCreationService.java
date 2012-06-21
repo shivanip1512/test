@@ -93,10 +93,10 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         setRoleProperty(group, YukonRoleProperty.MINIMUM_SCAN_FREQUENCY, " ");
         setRoleProperty(group, YukonRoleProperty.MAXIMUM_DAILY_SCANS, " ");
 
-        setRoleTrue(group, YukonRoleProperty.VERSACOM_SERIAL_MODEL);
-        setRoleTrue(group, YukonRoleProperty.EXPRESSCOM_SERIAL_MODEL);
-        setRoleProperty(group, YukonRoleProperty.DCU_SA205_SERIAL_MODEL,"false");
-        setRoleProperty(group, YukonRoleProperty.DCU_SA305_SERIAL_MODEL,"false");
+        setRoleProperty(group, YukonRoleProperty.VERSACOM_SERIAL_MODEL,true);
+        setRoleProperty(group, YukonRoleProperty.EXPRESSCOM_SERIAL_MODEL,true);
+        setRoleProperty(group, YukonRoleProperty.DCU_SA205_SERIAL_MODEL,false);
+        setRoleProperty(group, YukonRoleProperty.DCU_SA305_SERIAL_MODEL,false);
         setRoleProperty(group, YukonRoleProperty.LC_REDUCTION_COL, " ");
         setRoleProperty(group, YukonRoleProperty.COMMANDS_GROUP, " ");
         
@@ -164,17 +164,17 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             setRoleProperty(group, YukonRoleProperty.NAV_CONNECTOR_MIDDLE, " ");
             setRoleProperty(group, YukonRoleProperty.INBOUND_VOICE_HOME_URL, " ");
             
-            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL);
-            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY);
-            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT);
-            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT);
-            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT);
-            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ);
-            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL);
-            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME);
-            setRoleTrue(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL);
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL,true);
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY,true);
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT,true);
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT,true);
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT,true);
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ,true);
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL,true);
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME,true);
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL,true);
             
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_HIDE_OPT_OUT_BOX, "false");
+            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_HIDE_OPT_OUT_BOX, false);
             setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD, " ");
             setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_WEB_LINK_FAQ, " ");
             setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_WEB_LINK_THERM_INSTRUCTIONS, " ");
