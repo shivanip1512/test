@@ -104,12 +104,7 @@ if(typeof(WaterLeakReport) === 'undefined'){
             jQuery("button.leakFilterSubmitButton").before('<span class="filter_shortcut">'+filter_text+'</span>');
 
             // if there are filter errors... set the focus to the first one of these
-            var error_field = jQuery("input.error").first();
-            if (error_field.length === 1) {
-                jQuery("input.f_focus").removeClass("f_focus");
-                error_field.addClass("f_focus");
-            }
-            Yukon.ui._autofocus();
+            Yukon.ui.focusFirstError();
         },
         
         _store_filter_values: function() {

@@ -22,19 +22,14 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
          init: function(){
              if(!this._initialized){
                  //setup select elements
-                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('blur', this.blurSelect);
                  jQuery('.focusableFieldHolder select').bind('change', this.focusSelect);
-                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('focus', this.focusSelect);
-                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('active', this.focusSelect);
-                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('mouseenter', this.showTooltip);
-                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('mouseleave', this.blurSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('focus active', this.focusSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('blur mouseleave', this.blurSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a, .focusableFieldHolder input').bind('mouseenter', this.showTooltip);
                  
                  //setup input elements
-                 jQuery('.focusableFieldHolder input').bind('blur', this.blurInput);
-                 jQuery('.focusableFieldHolder input').bind('change', this.blurInput);
+                 jQuery('.focusableFieldHolder input').bind('blur change mouseleave', this.blurInput);
                  jQuery('.focusableFieldHolder input').bind('focus', this.focusInput);
-                 jQuery('.focusableFieldHolder input').bind('mouseenter', this.showTooltip);
-                 jQuery('.focusableFieldHolder input').bind('mouseleave', this.blurInput);
                  
                  //trigger a blur event on each element -> performs an initial render
                  jQuery('.focusableFieldHolder select, .focusableFieldHolder input').trigger('blur');

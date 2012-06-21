@@ -119,6 +119,8 @@ Yukon.ui = {
             });
         });
         
+        Yukon.ui._setFocusFirstError();
+        
         /*
          * Focus the designated input element
          */
@@ -140,6 +142,25 @@ Yukon.ui = {
                     setTimeout('Yukon.ui._autofocus()', 100);
                 }
             }
+        }
+    },
+    
+    /*
+     * Sets the focus to the first input/textarea found on the page having a class of "error"
+     */
+    focusFirstError: function(){
+        Yukon.ui._setFocusFirstError();
+        Yukon.ui._autofocus();
+    },
+    
+    /*
+     * Applies the "f_focus" class to the first input/textarea element having a class of "error"
+     */
+    _setFocusFirstError: function(){
+        var error_field = jQuery("input.error, textarea.error").first();
+        if (error_field.length === 1) {
+            jQuery(".f_focus").removeClass("f_focus");
+            error_field.addClass("f_focus");
         }
     },
     
