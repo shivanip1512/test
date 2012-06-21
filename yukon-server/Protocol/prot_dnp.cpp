@@ -608,15 +608,35 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 }
             }
 
-            if( _app_layer.hasDeviceRestarted() && _command != Command_ResetDeviceRestartBit )
+            if( _app_layer.hasDeviceRestarted() ) 
             {
-                _string_results.push_back(new string("Attempting to clear Device Restart bit"));
+                if (_command != Command_ResetDeviceRestartBit )
+                {
+                    _string_results.push_back(new string("Attempting to clear Device Restart bit"));
+                    setCommand(Command_ResetDeviceRestartBit);
+                }
 
-                setCommand(Command_ResetDeviceRestartBit);
-            }
-            else
+                Command_vec_itr itr = std::find(_additional_commands.begin(), 
+                                                _additional_commands.end(), 
+                                                Command_UnsolicitedEnable);
+
+                if( itr == _additional_commands.end() ) // && gConfigParms.getValueAsInt("DNP_THING") )
+                {
+                    // Device restarted, so let's tell it to enabled unsolicited commands.
+                    _additional_commands.push_back(Command_UnsolicitedEnable);
+                }
+            } 
+            else 
             {
-                setCommand(Command_Complete);
+                if ( !_additional_commands.empty() )
+                {
+                    setCommand(_additional_commands.front());
+                    _additional_commands.erase(_additional_commands.begin());
+                }
+                else
+                {
+                    setCommand(Command_Complete);
+                }
             }
         }
     }

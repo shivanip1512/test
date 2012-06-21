@@ -27,7 +27,12 @@ private:
     int              _options;
     unsigned long    _last_complaint;
 
-    Command              _command;
+    typedef std::vector<Command>  Command_vec;
+    typedef Command_vec::iterator Command_vec_itr;
+
+    Command     _command;
+    Command_vec _additional_commands;
+
     std::vector<output_point> _command_parameters;
 
     DNP::ApplicationLayer::object_block_queue _object_blocks;
