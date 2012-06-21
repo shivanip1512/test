@@ -1,8 +1,9 @@
 package com.cannontech.core.authentication.service.impl;
 
-import java.util.List;
+import static com.cannontech.core.roleproperties.YukonRoleProperty.*;
+import static com.cannontech.core.roleproperties.YukonRole.*;
 
-import javax.management.RuntimeErrorException;
+import java.util.List;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -13,11 +14,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.model.PolicyRule;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
-import com.cannontech.core.roleproperties.UserNotInRoleException;
-import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.roleproperties.dao.impl.RolePropertyDaoImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
 
@@ -47,135 +43,60 @@ public class PasswordPolicyServiceImplTest {
         USER_SYSTEM_POLICY.setUserID(4);
         USER_SYSTEM_POLICY.setLastChangedDate(FIFTY_DAYS_AGO);        
     }
-    
+
     PasswordPolicyService passwordPolicyService = new PasswordPolicyServiceImpl(); {
-        RolePropertyDao rolePropertyDaoMock = new RolePropertyDaoImpl() {
-            @Override
-            public boolean checkRole(YukonRole role, LiteYukonUser user) {
-                if (user.equals(USER_ONE) || user.equals(USER_TWO) || user.equals(USER_NO_POLICY)) {
-                    return true;
-                }
-                return false;
-            }
-            
-            @Override
-            public int getPropertyIntegerValue(YukonRoleProperty rolePropertyValue, LiteYukonUser user)
-            throws UserNotInRoleException {
-                if (user.equals(USER_ONE)) {
-                    switch (rolePropertyValue) {
-                        case LOCKOUT_DURATION:
-                            return 6;
-                        case LOCKOUT_THRESHOLD:
-                            return 3;
-                        case MAXIMUM_PASSWORD_AGE:
-                            return 20;
-                        case MINIMUM_PASSWORD_AGE:
-                            return 1;
-                        case MINIMUM_PASSWORD_LENGTH:
-                            return 6;
-                        case PASSWORD_HISTORY:
-                            return 3;
-                        case POLICY_QUALITY_CHECK:
-                            return 2;
-                    }
-                }
-                
-                if (user.equals(USER_TWO)) {
-                    switch (rolePropertyValue) {
-                        case LOCKOUT_DURATION:
-                            return 120;
-                        case LOCKOUT_THRESHOLD:
-                            return 10;
-                        case MAXIMUM_PASSWORD_AGE:
-                            return 15;
-                        case MINIMUM_PASSWORD_AGE:
-                            return 0;
-                        case MINIMUM_PASSWORD_LENGTH:
-                            return 9;
-                        case PASSWORD_HISTORY:
-                            return 10;
-                        case POLICY_QUALITY_CHECK:
-                            return 1;
-                    }
-                }
 
-                if (user.equals(USER_NO_POLICY)) {
-                    switch (rolePropertyValue) {
-                        case LOCKOUT_DURATION:
-                            return 0;
-                        case LOCKOUT_THRESHOLD:
-                            return 0;
-                        case MAXIMUM_PASSWORD_AGE:
-                            return 0;
-                        case MINIMUM_PASSWORD_AGE:
-                            return 0;
-                        case MINIMUM_PASSWORD_LENGTH:
-                            return 0;
-                        case PASSWORD_HISTORY:
-                            return 0;
-                        case POLICY_QUALITY_CHECK:
-                            return 0;
-                    }
-                }
-
-                // Role Property Does Not Yet Exist
-                throw new RuntimeErrorException(null, "The role property does not exist in the mock role property dao.");
-            }
-
-            @Override
-            public boolean getPropertyBooleanValue(YukonRoleProperty rolePropertyValue, LiteYukonUser user)
-            throws UserNotInRoleException {
-                if (user.equals(USER_ONE)) {
-                    switch (rolePropertyValue) {
-                        case POLICY_RULE_UPPERCASE_CHARACTERS:
-                            return true;
-                        case POLICY_RULE_LOWERCASE_CHARACTERS:
-                            return false;
-                        case POLICY_RULE_BASE_10_DIGITS:
-                            return true;
-                        case POLICY_RULE_NONALPHANUMERIC_CHARACTERS:
-                            return true;
-                        case POLICY_RULE_UNICODE_CHARACTERS:
-                            return false;
-                    }
-                }
- 
-                if (user.equals(USER_TWO)) {
-                    switch (rolePropertyValue) {
-                        case POLICY_RULE_UPPERCASE_CHARACTERS:
-                            return false;
-                        case POLICY_RULE_LOWERCASE_CHARACTERS:
-                            return true;
-                        case POLICY_RULE_BASE_10_DIGITS:
-                            return false;
-                        case POLICY_RULE_NONALPHANUMERIC_CHARACTERS:
-                            return false;
-                        case POLICY_RULE_UNICODE_CHARACTERS:
-                            return true;
-                    }
-                }
-
-                if (user.equals(USER_NO_POLICY)) {
-                    switch (rolePropertyValue) {
-                        case POLICY_RULE_UPPERCASE_CHARACTERS:
-                            return true;
-                        case POLICY_RULE_LOWERCASE_CHARACTERS:
-                            return true;
-                        case POLICY_RULE_BASE_10_DIGITS:
-                            return true;
-                        case POLICY_RULE_NONALPHANUMERIC_CHARACTERS:
-                            return true;
-                        case POLICY_RULE_UNICODE_CHARACTERS:
-                            return true;
-                    }
-                }
-
-                // Role Property Does Not Yet Exist
-                throw new RuntimeErrorException(null, "The role property does not exist in the mock role property dao.");
-            }
-        };
-        
+        MockRolePropertyDaoImpl rolePropertyDaoMock = new MockRolePropertyDaoImpl();
         ReflectionTestUtils.setField(passwordPolicyService, "rolePropertyDao", rolePropertyDaoMock);
+        
+        rolePropertyDaoMock.setupRolesFor(USER_ONE)
+            .withRoleProperty(LOCKOUT_DURATION, 6)
+            .withRoleProperty(LOCKOUT_THRESHOLD, 3)
+            .withRoleProperty(MAXIMUM_PASSWORD_AGE, 20)
+            .withRoleProperty(MINIMUM_PASSWORD_AGE, 1)
+            .withRoleProperty(MINIMUM_PASSWORD_LENGTH, 6)
+            .withRoleProperty(PASSWORD_HISTORY, 3)
+            .withRoleProperty(POLICY_QUALITY_CHECK, 2)
+
+            .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true)
+            .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, false)
+            .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true)
+            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true)
+            .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, false);
+
+        rolePropertyDaoMock.setupRolesFor(USER_TWO)
+            .withRoleProperty(LOCKOUT_DURATION, 120)
+            .withRoleProperty(LOCKOUT_THRESHOLD, 10)
+            .withRoleProperty(MAXIMUM_PASSWORD_AGE, 15)
+            .withRoleProperty(MINIMUM_PASSWORD_AGE, 0)
+            .withRoleProperty(MINIMUM_PASSWORD_LENGTH, 9)
+            .withRoleProperty(PASSWORD_HISTORY, 10)
+            .withRoleProperty(POLICY_QUALITY_CHECK, 1)
+
+            .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, false)
+            .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, true)
+            .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, false)
+            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, false)
+            .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, true);
+        
+        rolePropertyDaoMock.setupRolesFor(USER_NO_POLICY)
+            .withRoleProperty(LOCKOUT_DURATION, 0)
+            .withRoleProperty(LOCKOUT_THRESHOLD, 0)
+            .withRoleProperty(MAXIMUM_PASSWORD_AGE, 0)
+            .withRoleProperty(MINIMUM_PASSWORD_AGE, 0)
+            .withRoleProperty(MINIMUM_PASSWORD_LENGTH, 0)
+            .withRoleProperty(PASSWORD_HISTORY, 0)
+            .withRoleProperty(POLICY_QUALITY_CHECK, 0)
+
+            .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true)
+            .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, true)
+            .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true)
+            .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true)
+            .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, true);
+
+        rolePropertyDaoMock.setupRolesFor(USER_SYSTEM_POLICY)
+            .withRole(PASSWORD_POLICY, false);
+
     }
     
     @Test
