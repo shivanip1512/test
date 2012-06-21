@@ -63,24 +63,22 @@ public class LoginGroupWizardPanel extends com.cannontech.common.wizard.WizardPa
 	 */
 	protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(com.cannontech.common.gui.util.DataInputPanel currentInputPanel) {
 	
-		if( currentInputPanel == null )
-		{
+		if( currentInputPanel == null ) {
 			getGroupRoleBasePanel().setFirstFocus();
             return getGroupRoleBasePanel();
-		}		
-		else if( currentInputPanel == getGroupRoleBasePanel() )
-		{
+		
+		} else if( currentInputPanel == getGroupRoleBasePanel()) {
 			getUserRolePanel().setFirstFocus();
             return getUserRolePanel();
-		}
-		else
+
+		} else {
 			throw new Error(getClass() + "::getNextInputPanel - Unable to determine next DataInputPanel");
+		}
 	}
 	/**
 	 * isLastInputPanel method comment.
 	 */
 	protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) {
-	
 		return ( currentPanel == getUserRolePanel() );
 	}
 }

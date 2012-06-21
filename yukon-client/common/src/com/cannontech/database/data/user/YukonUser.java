@@ -58,13 +58,12 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 		getYukonUser().setDbConnection( conn );
 		
 		//This is not null if this login has been linked to an energy company
-		if(company != null)
-			company.setDbConnection( conn );
-		
+		if(company != null) {
+			company.setDbConnection(conn);
+		}
 	}
 
-	public Integer getID()
-	{
+	public Integer getID() {
 		return getUserID();
 	}
 	
@@ -72,8 +71,7 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 	 * This method was created in VisualAge.
 	 * @param pointID java.lang.Integer
 	 */
-	public final static boolean isUsedByContact(int loginID_, String databaseAlias) 
-	{
+	public final static boolean isUsedByContact(int loginID_, String databaseAlias) {
 		com.cannontech.database.SqlStatement stmt =
 			new com.cannontech.database.SqlStatement(
 				"SELECT LoginID FROM " + 
@@ -92,22 +90,20 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 		}
 	}
 	
-	
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	@Override
-    public void add() throws SQLException 
-	{
-		if( getYukonUser().getUserID() == null )
+    public void add() throws SQLException {
+		if( getYukonUser().getUserID() == null ) {
 			setUserID(com.cannontech.database.db.user.YukonUser.getNextUserID(getDbConnection()) );
+		}
 
 		getYukonUser().setLastChangedDate(Instant.now().toDate());
 		getYukonUser().add();
 
 		
-		for (int i = 0; i < getYukonGroups().size(); i++) 
-		{
+		for (int i = 0; i < getYukonGroups().size(); i++) {
 			Object[] addValues = 
 			{
 				getYukonUser().getUserID(), 

@@ -29,8 +29,7 @@ public class RoleGroupEditorPanel extends com.cannontech.common.editor.PropertyP
 	{
 		Object[] objs = new Object[PANEL_COUNT];
 		
-		switch( panelIndex )
-		{
+		switch( panelIndex ) {
 			case 0: 
 				objs[0] = new GroupRoleBasePanel();
 				objs[1] = "General";

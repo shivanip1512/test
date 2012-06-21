@@ -665,8 +665,7 @@ public class YukonSwitchCommandAction {
                     }
                 };
     
-                YukonSpringHook.getGlobalTimer().schedule(sendCfgTask,
-                                                          300 * 1000);
+                YukonSpringHook.getGlobalTimer().schedule(sendCfgTask, 300 * 1000);
                 CTILogger.info("*** Send config command a while later ***");
             }
         } else {
