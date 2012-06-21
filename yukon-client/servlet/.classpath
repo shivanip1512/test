@@ -24,7 +24,7 @@
 	<classpathentry kind="src" path="/tools"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="src" path="/multispeak"/>
-	<classpathentry kind="lib" path="/third-party/axis.jar"/>
+    <classpathentry kind="lib" path="/third-party/axis.jar" sourcepath="/third-party/linked-sources/axis-1_4-with-mods.zip"/>
 	<classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
 	<classpathentry kind="lib" path="/third-party/jsp-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
