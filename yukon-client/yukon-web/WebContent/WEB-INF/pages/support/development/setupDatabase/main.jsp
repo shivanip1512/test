@@ -12,9 +12,11 @@
         <form:form commandName="devDbSetupTask" action="setupDatabase" method="post" id="setupDbForm">
             <ul class="hideRevealTree">
                 <li class="box">
-                    <span title="<i:inline key=".setupDevDatabase.option.roleProperties.title"/>">
-                        <tags:checkbox path="updateRoleProperties" descriptionNameKey=".setupDevDatabase.option.roleProperties"/>
-                    </span>
+                	<label>
+                    	<span title="<i:inline key=".setupDevDatabase.option.roleProperties.title"/>">
+                        	<tags:checkbox path="updateRoleProperties" descriptionNameKey=".setupDevDatabase.option.roleProperties"/>
+                    	</span>
+                	</label>
                 </li>
                 <li class="box">
                     <form:checkbox path="devAMR.create" id="createAMR"/>
@@ -22,8 +24,12 @@
                         <ul>
                             <li>
                                 <tags:nameValueContainer2>
+                  					<label>
                                     <tags:checkbox path="devAMR.createCartObjects" descriptionNameKey=".setupDevDatabase.option.amr.createCartObjects"/><br>
+                                    </label>
+                                    <label>
                                     <tags:checkbox path="devAMR.createRfnTemplates" descriptionNameKey=".setupDevDatabase.option.amr.createRfnTemplateMeters"/>
+                                    </label>
                                     <tags:inputNameValue path="devAMR.numAdditionalMeters" nameKey=".setupDevDatabase.option.amr.numAdditionalMeters" size="4"/>
                                     <tags:selectNameValue path="devAMR.routeId" nameKey=".setupDevDatabase.option.amr.routeId" items="${allRoutes}" itemLabel="paoName" itemValue="liteID"/>
                                     <tags:inputNameValue path="devAMR.addressRangeMin" nameKey=".setupDevDatabase.option.amr.addressRangeMin" size="10"/>
@@ -33,10 +39,18 @@
                             <li>
                                 <tags:hideReveal2 titleKey=".setupDevDatabase.option.amr.meterTypes" showInitially="false" slide="true">
                                     <ul>
+										<li>
+											<label>
+												<input id="f_check_all_meters" type="checkbox"/>
+												<b>Check All</b>
+											</label>
+										</li>
                                         <c:forEach items="${devDbSetupTask.devAMR.meterTypes}" var="meterType" varStatus="status">
                                             <li>
-                                                <tags:checkbox path="devAMR.meterTypes[${status.index}].create"/>
-                                                <span>${devDbSetupTask.devAMR.meterTypes[status.index].paoType}</span>
+                                            	<label>
+                                                	<tags:checkbox path="devAMR.meterTypes[${status.index}].create" styleClass="f_check_single_meter"/>
+                                                	<span>${devDbSetupTask.devAMR.meterTypes[status.index].paoType}</span>
+                                            	</label>
                                             </li>
                                         </c:forEach>
                                     </ul>
@@ -83,8 +97,10 @@
                                         <ul>
                                             <c:forEach items="${devDbSetupTask.devCapControl.regulatorTypes}" var="cbcType" varStatus="status">
                                                 <li>
-                                                    <tags:checkbox path="devCapControl.regulatorTypes[${status.index}].create"/>
-                                                    <span>${devDbSetupTask.devCapControl.regulatorTypes[status.index].paoType}</span>
+                                                	<label>
+                                                    	<tags:checkbox path="devCapControl.regulatorTypes[${status.index}].create"/>
+                                                    	<span>${devDbSetupTask.devCapControl.regulatorTypes[status.index].paoType}</span>
+                                                	</label>
                                                 </li>
                                             </c:forEach>
                                         </ul>
@@ -122,10 +138,18 @@
                                 <li>
                                     <tags:hideReveal2 titleKey=".setupDevDatabase.option.stars.hardwareTypes" showInitially="false" slide="true">
                                         <ul>
+                                        	<li>
+                                               	<label>
+                                                   <input id="f_check_all_hardware" type="checkbox"/>
+                                                   <b>Check All</b>
+                                               	</label>
+                                            </li>
                                             <c:forEach items="${devDbSetupTask.devStars.devStarsHardware.hardwareTypes}" var="hardwareType" varStatus="status">
                                                 <li>
-                                                    <tags:checkbox path="devStars.devStarsHardware.hardwareTypes[${status.index}].create"/>
+                                                	<label>
+                                                    <tags:checkbox path="devStars.devStarsHardware.hardwareTypes[${status.index}].create" styleClass="f_check_single_hardware"/>
                                                     <span><i:inline key="${devDbSetupTask.devStars.devStarsHardware.hardwareTypes[status.index].hardwareType}" /></span>
+                                                	</label>
                                                 </li>
                                             </c:forEach>
                                         </ul>
@@ -201,6 +225,9 @@
 
 <script type="text/javascript">
 	jQuery(document).ready(function() {
+	    jQuery("input#f_check_all_meters:checkbox").checkAll("input.f_check_single_meter:checkbox");
+	    jQuery("input#f_check_all_hardware:checkbox").checkAll("input.f_check_single_hardware:checkbox");
+		
 	    jQuery('.setupDevDatabaseButton').click(function() {
 	    	jQuery('#setupDevDatabaseButtonId').attr("disabled",true);
 	        var displayCancelBtn = false;
