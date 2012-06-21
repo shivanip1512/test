@@ -1619,13 +1619,16 @@ a.icon {
     background: transparent url(../Icons/wand_over.png) top left no-repeat;
 }
 
+.icon_with_chevron {
+	width: 30px; /* this style has a down chevron with it*/
+}
+
 .cog {
 	background-color: transparent;
 	background-image: url(../Icons/cog.png);
 	background-position: top left;
 	background-repeat: no-repeat;
 }
-.cog_hovered,
 .cog:hover {
 	background-image: url(../Icons/cog_over.png);
 }
@@ -1866,9 +1869,13 @@ div.scrollingContainer {
     border-right: 5px solid transparent;
     border-top: 5px solid #999;
 }
-.arrow-down:hover,
-.arrow-down_hovered {
+.icon_with_chevron:hover .arrow-down {
     border-top: 5px solid #444;
+}
+.icon_with_chevron .arrow-down {
+	position: relative;
+    top: -6px;
+    left: 18px; /* icon width + 3px space*/
 }
 
 /* dropdown cog menu start */
@@ -1879,7 +1886,7 @@ div.scrollingContainer {
 }
 
 .dropdown-menu::before {
-	right: 12px;
+	right: 14px;
 	left: auto;
 	position: absolute;
 	top: -7px;
@@ -1893,7 +1900,7 @@ div.scrollingContainer {
 .dropdown-menu::after {
   position: absolute;
   top: -6px;
-  right: 13px;
+  right: 15px;
   left: auto;
   display: inline-block;
   border-right: 6px solid transparent;
@@ -1963,12 +1970,7 @@ div.scrollingContainer {
     right: 1px;
     top: 7px;
 }
-.dropdown-container .actions_link {
-    position: relative;
-    top: 9px;
-    right: 3px;
-}
-.dropdown-container .actions_link:hover {
+.dropdown-container a {
 	cursor: pointer;
 }
 

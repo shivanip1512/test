@@ -21,22 +21,20 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
          //Initializer
          init: function(){
              if(!this._initialized){
-                 var self = Yukon.FieldHelper;
-                 
                  //setup select elements
-                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('blur', self.blurSelect);
-                 jQuery('.focusableFieldHolder select').bind('change', self.focusSelect);
-                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('focus', self.focusSelect);
-                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('active', self.focusSelect);
-                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('mouseenter', self.showTooltip);
-                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('mouseleave', self.blurSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('blur', this.blurSelect);
+                 jQuery('.focusableFieldHolder select').bind('change', this.focusSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('focus', this.focusSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('active', this.focusSelect);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('mouseenter', this.showTooltip);
+                 jQuery('.focusableFieldHolder select, .focusableFieldHolder a').bind('mouseleave', this.blurSelect);
                  
                  //setup input elements
-                 jQuery('.focusableFieldHolder input').bind('blur', self.blurInput);
-                 jQuery('.focusableFieldHolder input').bind('change', self.blurInput);
-                 jQuery('.focusableFieldHolder input').bind('focus', self.focusInput);
-                 jQuery('.focusableFieldHolder input').bind('mouseenter', self.showTooltip);
-                 jQuery('.focusableFieldHolder input').bind('mouseleave', self.blurInput);
+                 jQuery('.focusableFieldHolder input').bind('blur', this.blurInput);
+                 jQuery('.focusableFieldHolder input').bind('change', this.blurInput);
+                 jQuery('.focusableFieldHolder input').bind('focus', this.focusInput);
+                 jQuery('.focusableFieldHolder input').bind('mouseenter', this.showTooltip);
+                 jQuery('.focusableFieldHolder input').bind('mouseleave', this.blurInput);
                  
                  //trigger a blur event on each element -> performs an initial render
                  jQuery('.focusableFieldHolder select, .focusableFieldHolder input').trigger('blur');
@@ -68,7 +66,11 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
              if (!defaultField.length) {
                  return;
              }
-             inputField.toggleClass("usingNonDefaultVaule", inputField.val() != defaultField.val());
+             if (inputField.val() === defaultField.val()) {
+                 inputField.removeClass('usingNonDefaultValue');
+             } else {
+                 inputField.addClass('usingNonDefaultValue');
+             }
          },
          
          focusInput: function(event){

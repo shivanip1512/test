@@ -82,7 +82,8 @@ if(typeof(WaterLeakReport) === 'undefined'){
         
         _init_open_filter_key_binding: function(e) {
             if (e.keyCode == 70 /* f (for "filter") */ &&
-                !jQuery("#leakFilterDialog").is(":visible")) {
+                    !jQuery(e.target).is("input") && /* don't open the dialog if the user is typing in an input field */
+                    !jQuery("#leakFilterDialog").is(":visible")) {
                 open_leakFilterDialog();
             }
         },

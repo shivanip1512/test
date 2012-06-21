@@ -8,26 +8,28 @@ jQuery(function() {
         if (menu[0]) {
             target.data({'menu': menu});
             jQuery('body').prepend(menu);
-            var container_offset = target.offset();
-            menu.css({top: container_offset.top + target.height() + 4, right: (window.innerWidth - container_offset.left - target.width())});
         } else {
             menu = target.data('menu');
         }
         
+        //reposition when showing to ensure the menu follows the element even
+        //if the page changed since the last time it was shown
+        var container_offset = target.offset();
+        menu.css({top: container_offset.top + target.height() + 4, right: (jQuery(window).width() - container_offset.left - target.width())});
         menu.toggle();
         e.stopPropagation();
+        return false;
     });
-    jQuery(document.body).click(function() {
+    
+    //close on document click
+    jQuery(document).click(function() {
         jQuery('ul.dropdown-menu').hide();
     });
+    
+    //close on escape key
     jQuery(document).keyup(function(e) {
         if (e.keyCode == 27) { // esc
             jQuery('ul.dropdown-menu').hide();
         }
-    });
-    jQuery(".dropdown-container .arrow-down").mouseenter(function() {
-        jQuery(this).find(".cog").addClass("cog_hovered");
-    }).mouseleave(function() {
-        jQuery(this).find(".cog").removeClass("cog_hovered");
     });
 });

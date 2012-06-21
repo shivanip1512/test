@@ -9,10 +9,10 @@
 <cti:includeScript link="/JavaScript/dropdown_actions.js"/>
 
 <div class="dropdown-container">
-    <i class="arrow-down actions_link">
-        <a class="icon cog"></a>
-    </i>
-	<ul class="dropdown-menu">
+    <a class="icon icon_with_chevron cog">
+		<span class="arrow-down actions_link"></span>
+    </a>
+	<ul class="dropdown-menu dn">
 	    <jsp:doBody/>
 	</ul>
 </div>
