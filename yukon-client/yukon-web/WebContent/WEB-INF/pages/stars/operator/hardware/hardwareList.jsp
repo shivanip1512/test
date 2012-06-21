@@ -366,7 +366,7 @@
 <%-- SWITCHES TABLE --%>
 <c:set var="switchTypes" value="${deviceTypeMap['SWITCH']}"/>
 <c:if test="${fn:length(switchTypes) > 0}">
-    <tags:boxContainer2 nameKey="switches" styleClass="hardwareContainer">
+    <tags:boxContainer2 nameKey="switches" styleClass="hardwareListContainer">
         <c:choose>
             <c:when test="${empty switches}">
                 <i:inline key=".switches.none"/>
@@ -447,7 +447,7 @@
 <%-- THERMOSTATS TABLE --%>
 <c:set var="tstatTypes" value="${deviceTypeMap['THERMOSTAT']}"/>
 <c:if test="${fn:length(tstatTypes) > 0}">
-    <tags:boxContainer2 nameKey="thermostats" styleClass="hardwareContainer">
+    <tags:boxContainer2 nameKey="thermostats" styleClass="hardwareListContainer">
         <c:choose>
             <c:when test="${empty thermostats}">
                 <i:inline key=".thermostats.none"/>
@@ -553,7 +553,7 @@
 <%-- METERS TABLE --%>
 <c:set var="meterTypes" value="${deviceTypeMap['METER']}"/>
 <c:if test="${fn:length(meterTypes) > 0}">
-    <tags:boxContainer2 nameKey="meters" styleClass="hardwareContainer">
+    <tags:boxContainer2 nameKey="meters" styleClass="hardwareListContainer">
         <c:choose>
             <c:when test="${empty meters}">
                 <i:inline key=".meters.none"/>
@@ -670,7 +670,7 @@
 <%-- GATEWAYS TABLE --%>
 <c:set var="gatewayTypes" value="${deviceTypeMap['GATEWAY']}"/>
 <c:if test="${fn:length(gatewayTypes) > 0}">
-    <tags:boxContainer2 nameKey="gateways" styleClass="hardwareContainer">
+    <tags:boxContainer2 nameKey="gateways" styleClass="hardwareListContainer">
         <c:choose>
             <c:when test="${empty gateways}">
                 <i:inline key=".gateways.none"/>

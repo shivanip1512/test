@@ -44,11 +44,11 @@ public class HardwareModelHelper {
         hardwareValidator.validate(hardware, result);
     }
     
-    public int create(LiteYukonUser user, Integer accountId, Hardware hardware, BindingResult result, HttpSession session) {
+    public int create(LiteYukonUser user, Hardware hardware, BindingResult result, HttpSession session) {
 
         int inventoryId = -1;
         try {
-            inventoryId = hardwareUiService.createHardware(hardware, accountId, user);
+            inventoryId = hardwareUiService.createHardware(hardware, user);
 
             /* If the device status was set, spawn an event for it. */
             /* This is within the try block because it relies on inventoryId being set */

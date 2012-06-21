@@ -14,14 +14,14 @@ import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.RfnIdentifingMessage;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnArchiveRequestService;
 import com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 
-public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifingMessage> {
+public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifyingMessage> {
 
     private static final Logger log = YukonLogManager.getLogger(RfnArchiveRequestListenerBase.class);
 

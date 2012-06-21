@@ -4,17 +4,17 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.RfnIdentifingMessage;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.RfnMessageClass;
 
 /**
  * JMS Queue names:
  * <ul>
- * <li>yukon.qr.obj.dr.rfn.ExpresscommUnicastRequest</li>
- * <li>yukon.qr.obj.dr.rfn.ExpresscommBulkUnicastRequest</li>
+ * <li>yukon.qr.obj.dr.rfn.ExpressComUnicastRequest</li>
+ * <li>yukon.qr.obj.dr.rfn.ExpressComBulkUnicastRequest</li>
  * </ul>
  */
-public class RfnExpresscommUnicastRequest implements RfnIdentifingMessage, Serializable {
+public class RfnExpressComUnicastRequest implements RfnIdentifyingMessage, Serializable {
     
     private static final long serialVersionUID = 1L;
 
@@ -27,7 +27,10 @@ public class RfnExpresscommUnicastRequest implements RfnIdentifingMessage, Seria
     private byte[] payload;
     private boolean responseExpected;
 
-
+    public RfnExpressComUnicastRequest(RfnIdentifier rfnIdentifier) {
+        this.rfnIdentifier = rfnIdentifier;
+    }
+    
     public String getMessageId() {
         return messageId;
     }
@@ -96,7 +99,7 @@ public class RfnExpresscommUnicastRequest implements RfnIdentifingMessage, Seria
     @Override
     public String toString() {
         return String
-            .format("RfnExpresscommUnicastRequest [messageId=%s, groupId=%s, rfnIdentifier=%s, messagePriority=%s, rfnMessageClass=%s, expirationTime=%s, payload=%s, responseExpected=%s]",
+            .format("RfnExpressComUnicastRequest [messageId=%s, groupId=%s, rfnIdentifier=%s, messagePriority=%s, rfnMessageClass=%s, expirationTime=%s, payload=%s, responseExpected=%s]",
                     messageId,
                     groupId,
                     rfnIdentifier,

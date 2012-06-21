@@ -49,8 +49,8 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
         
     <form:form id="updateForm" commandName="hardware" action="${action}">
     
-        <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="inventoryId" value="${inventoryId}">
+        <form:hidden path="accountId"/>
         <form:hidden path="energyCompanyId"/>
         <form:hidden path="displayType"/>
         <form:hidden path="displayName"/>

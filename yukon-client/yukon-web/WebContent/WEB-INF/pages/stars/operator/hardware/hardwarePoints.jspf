@@ -1,0 +1,59 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
+<script type="text/javascript">
+jQuery(function() {
+    jQuery(document).delegate('#rfReadNow', 'click', function(event) {
+        var url = '/spring/stars/operator/hardware/rf/readNow';
+        
+        var elementToBlock = event.currentTarget;
+        Yukon.ui.block(elementToBlock);
+        
+        jQuery.ajax({
+            url: url,
+            method: 'get',
+            data: {'deviceId': '${hardware.deviceId}'},
+            success: function(data) {
+                jQuery('#rfCommandStatus').html(data.message);
+                jQuery('#rfCommandStatus').show();
+                if (data.success ==  true) {
+                    jQuery('#rfCommandStatus').addClass('successMessage').removeClass('errorMessage');
+                 } else {
+                     jQuery('#rfCommandStatus').removeClass('successMessage').addClass('errorMessage');
+                 }
+                Yukon.ui.unblock(elementToBlock);
+             },
+             error: function() {
+                 Yukon.ui.unblock(elementToBlock);
+             }
+        });
+    });
+});
+</script>
+
+<tags:boxContainer2 nameKey="hardwarePoints" styleClass="f_block_this">
+    <c:forEach var="entry" items="${points}">
+        <c:if test="${fn:length(entry.value) > 0}">
+            <span class="crtHeader"><i:inline key="${entry.key}" /></span>
+            <div class="hardwarePageContainer pointsList">
+                <table class="compactResultsTable">
+                    <c:forEach var="point" items="${entry.value}">
+                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                            <td class="wsnw"><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
+                            <td class="last"><cti:pointValue pointId="${point.liteID}" cssClass="wsnw" colorForStatus="true"/></td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </div>
+        </c:if>
+    </c:forEach>
+    <c:if test="${hardware.hardwareType.rf}">
+        <div id="rfCommandStatus" class="dn errorMessage rfCommandMsg"></div>
+        <div class="actionArea">
+            <cti:button id="rfReadNow" nameKey="readNow"/>
+        </div>
+    </c:if>
+</tags:boxContainer2>

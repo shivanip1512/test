@@ -1,13 +1,23 @@
-div.hardwareContainer {
+div.hardwareListContainer {
     padding-bottom: 18px;
     padding-right: 8px;
 }
 
-div.historyContainer {
+div.hardwarePageContainer {
     max-height: 112px;
     overflow: auto;
     overflow-x: hidden;
     min-width: 280px;
+    margin-bottom: 18px;
+}
+
+div.pointsList {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+div.hardwarePageContainer td.last {
+    padding-right: 20px !important;
 }
 
 tr.notesRow td.value {
@@ -99,15 +109,11 @@ tr.pickerRow td.name {
     vertical-align: middle;
 }
 
-td.lastColumn {
-    padding-right: 20px !important;
-}
-
 .statusContainer {
     min-width: 400px;
 }
 
-.zbCommandMsg {
+.zbCommandMsg, .rfCommandMsg {
     margin-top: 15px;
 }
 

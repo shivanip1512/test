@@ -5,16 +5,16 @@ import java.io.Serializable;
 /**
  * JMS Queue names:
  * <ul>
- * <li>JMSReplyTo of yukon.qr.obj.dr.rfn.ExpresscommUnicastRequest</li>
- * <li>yukon.qr.obj.dr.rfn.ExpresscommBulkUnicastResponse</li>
+ * <li>JMSReplyTo of yukon.qr.obj.dr.rfn.ExpressComUnicastRequest</li>
+ * <li>yukon.qr.obj.dr.rfn.ExpressComBulkUnicastResponse</li>
  * </ul>
  */
-public class RfnExpresscommUnicastReply implements Serializable {
+public class RfnExpressComUnicastReply implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
     private String messageId;
-    private RfnExpresscommUnicastReplyType replyType;
+    private RfnExpressComUnicastReplyType replyType;
 
     public String getMessageId() {
         return messageId;
@@ -24,19 +24,23 @@ public class RfnExpresscommUnicastReply implements Serializable {
         this.messageId = messageId;
     }
 
-    public void setReplyType(RfnExpresscommUnicastReplyType replyType) {
+    public void setReplyType(RfnExpressComUnicastReplyType replyType) {
         this.replyType = replyType;
     }
 
-    public RfnExpresscommUnicastReplyType getReplyType() {
+    public RfnExpressComUnicastReplyType getReplyType() {
         return replyType;
     }
 
     @Override
     public String toString() {
-        return String.format("RfnExpresscommUnicastReply [messageId=%s, replyType=%s]",
+        return String.format("RfnExpressComUnicastReply [messageId=%s, replyType=%s]",
                              messageId,
                              replyType);
+    }
+    
+    public boolean isSuccess() {
+        return replyType == RfnExpressComUnicastReplyType.OK;
     }
     
 }

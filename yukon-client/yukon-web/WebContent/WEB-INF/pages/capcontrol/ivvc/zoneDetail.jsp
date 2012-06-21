@@ -248,7 +248,7 @@
 									<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 										<td><spring:escapeBody htmlEscape="true">${ccEvent.deviceName}</spring:escapeBody></td>
                                         <td><spring:escapeBody htmlEscape="true">${ccEvent.text}</spring:escapeBody></td>
-                                        <td><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
+                                        <td class="last"><cti:formatDate value="${ccEvent.dateTime}" type="BOTH"/></td>
 									</tr>
 					            </c:forEach>
 							</table>

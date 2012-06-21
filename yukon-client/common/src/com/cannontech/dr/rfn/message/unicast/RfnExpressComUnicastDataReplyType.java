@@ -1,6 +1,6 @@
 package com.cannontech.dr.rfn.message.unicast;
 
-public enum RfnExpresscommUnicastDataReplyType {
+public enum RfnExpressComUnicastDataReplyType {
     
     OK,
     FAILURE,

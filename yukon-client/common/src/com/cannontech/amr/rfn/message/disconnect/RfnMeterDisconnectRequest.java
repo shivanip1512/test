@@ -3,12 +3,12 @@ package com.cannontech.amr.rfn.message.disconnect;
 import java.io.Serializable;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.RfnIdentifingMessage;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 
 /**
  * JMS Queue name: yukon.qr.obj.amr.rfn.MeterDisconnectRequest
  */
-public class RfnMeterDisconnectRequest implements RfnIdentifingMessage, Serializable {
+public class RfnMeterDisconnectRequest implements RfnIdentifyingMessage, Serializable {
 
     private static final long serialVersionUID = 2L;
 

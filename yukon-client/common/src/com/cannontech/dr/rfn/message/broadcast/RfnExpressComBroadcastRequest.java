@@ -6,9 +6,9 @@ import java.util.Arrays;
 import com.cannontech.common.rfn.message.RfnMessageClass;
 
 /**
- * JMS Queue name: yukon.qr.obj.dr.rfn.ExpresscommBroadcastRequest
+ * JMS Queue name: yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest
  */
-public class RfnExpresscommBroadcastRequest implements Serializable {
+public class RfnExpressComBroadcastRequest implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
@@ -61,7 +61,7 @@ public class RfnExpresscommBroadcastRequest implements Serializable {
     @Override
     public String toString() {
         return String
-            .format("RfnExpresscommBroadcastRequest [messageId=%s, messagePriority=%s, rfnMessageClass=%s, expirationTime=%s, payload=%s]",
+            .format("RfnExpressComBroadcastRequest [messageId=%s, messagePriority=%s, rfnMessageClass=%s, expirationTime=%s, payload=%s]",
                     messageId,
                     messagePriority,
                     rfnMessageClass,

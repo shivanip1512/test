@@ -97,6 +97,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         
         /* Set Hardware Basics */
         LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
+        hardware.setAccountId(liteInventoryBase.getAccountID());
         
         int categoryId = liteInventoryBase.getCategoryID();
         YukonListEntry categoryNameYLE = yukonListDao.getYukonListEntry(categoryId);
@@ -417,7 +418,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     
     @Override
     @Transactional
-    public int createHardware(Hardware hardware, Integer accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
+    public int createHardware(Hardware hardware, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         int inventoryId;
@@ -438,11 +439,11 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         if (hardwareType.isMeter()) {
             if (hardwareType.getInventoryCategory() == InventoryCategory.MCT) {
                 /* InventoryBase */
-                LiteInventoryBase inventoryBase = buildInventoryBase(hardware, accountId, energyCompany);
+                LiteInventoryBase inventoryBase = buildInventoryBase(hardware, energyCompany);
                 
                 inventoryId = starsInventoryBaseDao.saveInventoryBase(inventoryBase, energyCompany.getEnergyCompanyId()).getInventoryID();
                 
-                if (accountId != null) {
+                if (hardware.getAccountId() > 0) {
                     starsInventoryBaseService.addInstallHardwareEvent(inventoryBase, energyCompany, user);
                 }
                 
@@ -450,7 +451,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 deviceLabel = inventoryBase.getDeviceLabel();
             } else {
                 /* MeterHardwareBase */
-                LiteMeterHardwareBase meterHardwareBase = buildMeterHardwareBase(hardware, accountId, energyCompany); 
+                LiteMeterHardwareBase meterHardwareBase = buildMeterHardwareBase(hardware, energyCompany); 
                 
                 inventoryId = starsInventoryBaseDao.saveMeterHardware(meterHardwareBase, hardware.getEnergyCompanyId()).getInventoryID();
                 
@@ -468,7 +469,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             }
         } else {
             /* LMHardwareBase and InventoryBase */
-            LiteStarsLMHardware lmHardware = buildLmHardware(hardware, accountId, energyCompany); 
+            LiteStarsLMHardware lmHardware = buildLmHardware(hardware, energyCompany); 
             inventoryId = starsInventoryBaseDao.saveLmHardware(lmHardware, energyCompany.getEnergyCompanyId()).getInventoryID();
             
             /* Create two-way device if need be */
@@ -482,7 +483,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 starsInventoryBaseService.initStaticLoadGroup(lmHardware, energyCompany);
             }
             
-            if (accountId != null) {
+            if (hardware.getAccountId() > 0) {
                 starsInventoryBaseService.addInstallHardwareEvent(lmHardware, energyCompany, user);
             }
             
@@ -519,6 +520,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     
     @Override
     public int addYukonMeter(int meterId, Integer accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException {
+        accountId = accountId == null ? 0 : accountId;
+        
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
         try {
@@ -546,11 +549,11 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             /* This meter has never been added to a stars account before.  Add it to InventoryBase */
             Hardware hardware = new Hardware();
             hardware.setDeviceId(meterId);
-            if (accountId != null) {
+            if (accountId > 0) {
                 hardware.setFieldInstallDate(new Date());
             }
             hardware.setHardwareTypeEntryId(HardwareType.YUKON_METER.getDefinitionId());
-            return createHardware(hardware, accountId, user);
+            return createHardware(hardware, user);
         }
         
     }
@@ -627,9 +630,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         return false;
     }
     
-    private LiteStarsLMHardware buildLmHardware(Hardware hardware, Integer accountId, LiteStarsEnergyCompany energyCompany) {
+    private LiteStarsLMHardware buildLmHardware(Hardware hardware, LiteStarsEnergyCompany energyCompany) {
         LiteStarsLMHardware lmHardware = new LiteStarsLMHardware();
-        lmHardware.setAccountID(accountId == null ? 0 : accountId);
         
         /* InventoryBase fields */
         int categoryId = inventoryDao.getCategoryIdForTypeId(hardware.getHardwareTypeEntryId(), energyCompany);
@@ -650,9 +652,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         return lmHardware;
     }
     
-    private LiteMeterHardwareBase buildMeterHardwareBase(Hardware hardware, Integer accountId, LiteStarsEnergyCompany energyCompany) {
+    private LiteMeterHardwareBase buildMeterHardwareBase(Hardware hardware, LiteStarsEnergyCompany energyCompany) {
         LiteMeterHardwareBase meterHardware = new LiteMeterHardwareBase();
-        meterHardware.setAccountID(accountId == null ? 0 : accountId);
         
         /* InventoryBase fields */
         int categoryId = inventoryDao.getCategoryIdForTypeId(hardware.getHardwareTypeEntryId(), energyCompany);
@@ -670,9 +671,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         return meterHardware;
     }
     
-    private LiteInventoryBase buildInventoryBase(Hardware hardware, Integer accountId, LiteStarsEnergyCompany energyCompany) {
+    private LiteInventoryBase buildInventoryBase(Hardware hardware, LiteStarsEnergyCompany energyCompany) {
         LiteInventoryBase liteInventoryBase = new LiteInventoryBase();
-        liteInventoryBase.setAccountID(accountId == null ? 0 : accountId);
         
         /* InventoryBase fields */
         int categoryId = inventoryDao.getCategoryIdForTypeId(hardware.getHardwareTypeEntryId(), energyCompany);
@@ -689,6 +689,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
      * Populates LiteInventoryBase with update fields of the HardwareDto object.
      */
     private void setInventoryFieldsFromDto(LiteInventoryBase liteInventoryBase, Hardware hardware) {
+        liteInventoryBase.setAccountID(hardware.getAccountId());
         liteInventoryBase.setDeviceLabel(hardware.getDisplayLabel());
         liteInventoryBase.setAlternateTrackingNumber(hardware.getAltTrackingNumber());
         

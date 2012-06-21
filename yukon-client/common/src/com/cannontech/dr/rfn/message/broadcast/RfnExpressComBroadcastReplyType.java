@@ -1,6 +1,6 @@
 package com.cannontech.dr.rfn.message.broadcast;
 
-public enum RfnExpresscommBroadcastReplyType {
+public enum RfnExpressComBroadcastReplyType {
     
     SUCCESS,
     FAILURE,

@@ -76,17 +76,17 @@ public class ZigBeeHardwareController {
     
     private static final String keyPrefix = "yukon.web.modules.operator.hardware.";
     
-    private @Autowired ZigbeeWebService zigbeeWebService;
-    private @Autowired ZigbeeStateUpdaterService zigbeeStateUpdaterService;
-    private @Autowired ZigbeeDeviceDao zigbeeDeviceDao;
-    private @Autowired LMHardwareBaseDao lmHardwareBaseDao;
-    private @Autowired GatewayDeviceDao gatewayDeviceDao;
-    private @Autowired DatePropertyEditorFactory datePropertyEditorFactory;
-    private @Autowired InventoryDao inventoryDao;
-    private @Autowired YukonUserContextMessageSourceResolver messageSourceResolver;
-    private @Autowired ZigbeeEventLogService zigbeeEventLogService;
-    private @Autowired PaoDao paoDao;
-    private @Autowired NextValueHelper nextValueHelper;
+    @Autowired private ZigbeeWebService zigbeeWebService;
+    @Autowired private ZigbeeStateUpdaterService zigbeeStateUpdaterService;
+    @Autowired private ZigbeeDeviceDao zigbeeDeviceDao;
+    @Autowired private LMHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private GatewayDeviceDao gatewayDeviceDao;
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ZigbeeEventLogService zigbeeEventLogService;
+    @Autowired private PaoDao paoDao;
+    @Autowired private NextValueHelper nextValueHelper;
     // @Autowired by setter
     private JmsTemplate jmsTemplate;
     

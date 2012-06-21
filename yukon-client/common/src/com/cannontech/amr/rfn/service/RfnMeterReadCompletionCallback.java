@@ -4,7 +4,7 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.core.dynamic.PointValueHolder;
 
-public interface RfnMeterReadCompletionCallback extends RfnMeterCallback {
+public interface RfnMeterReadCompletionCallback extends RfnCallback {
 	
 	/**
 	 * Method to keep track of received point values.

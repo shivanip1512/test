@@ -2,13 +2,13 @@ package com.cannontech.dr.rfn.message.archive;
 
 import java.io.Serializable;
 
-import com.cannontech.common.rfn.message.RfnIdentifingMessage;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
  * JMS Queue name: yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest
  */
-public class RfnLcrArchiveRequest implements RfnIdentifingMessage, Serializable {
+public class RfnLcrArchiveRequest implements RfnIdentifyingMessage, Serializable {
 
     private static final long serialVersionUID = 1L;
 

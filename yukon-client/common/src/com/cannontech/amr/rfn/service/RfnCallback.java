@@ -1,6 +1,6 @@
 package com.cannontech.amr.rfn.service;
 
-public interface RfnMeterCallback {
+public interface RfnCallback {
     
     /**
      * Method to keep track of processing exceptions that occur.

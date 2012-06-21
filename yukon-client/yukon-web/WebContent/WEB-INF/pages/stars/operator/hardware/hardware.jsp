@@ -429,14 +429,14 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                 
                 <c:if test="${showAssignedDevices}">
                     <tags:boxContainer2 nameKey="assignedDevices" id="assignedDevices" styleClass="f_block_this">
-                        <div class="historyContainer">
+                        <div class="hardwarePageContainer">
                             <c:choose>
                                 <c:when test="${not empty assignedDevices}">
                                     <table class="compactResultsTable">
                                         <tr>
-                                            <th class="nonwrapping"><i:inline key=".serialNumber"/></th>
-                                            <th class="nonwrapping"><i:inline key=".status"/></th>
-                                            <th class="nonwrapping"><i:inline key=".actions"/></th>
+                                            <th class="wsnw"><i:inline key=".serialNumber"/></th>
+                                            <th class="wsnw"><i:inline key=".status"/></th>
+                                            <th class="wsnw"><i:inline key=".actions"/></th>
                                         </tr>
                                         <c:forEach var="device" items="${assignedDevices}">
                                             <tr>
@@ -450,7 +450,7 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                                                         <cti:pointValue pointId="${device.commissionId}" format="VALUE"/>
                                                     </cti:pointStatusColor>
                                                 </td>
-                                                <td class="nonwrapping">
+                                                <td class="wsnw last">
                                                     <cti:button nameKey="assignedDevices.commission" renderMode="image" styleClass="assignedDevicesCommission" id="assignedDevicesCommission_${device.deviceId}"/>
                                                     <cti:button nameKey="assignedDevices.decommission" renderMode="image" styleClass="assignedDevicesDecommission" id="assignedDevicesDecommission_${device.deviceId}"/>
                                                     <cti:msgScope paths=".commissionConfirmation,">
@@ -513,7 +513,13 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                     </tags:boxContainer2>
                 </c:if>
                 
-                <br>
+                <c:if test="${showPoints}">
+                    
+                    <%@ include file="hardwarePoints.jspf" %>
+                    
+                    <br>
+                
+                </c:if>
                     
                 <%-- COMMON HARDWARE HISTORY --%>
                 <%@ include file="hardwareHistory.jspf" %>

@@ -267,12 +267,13 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         checkIsCancelled();
         LiteStarsEnergyCompany energyCompany = devStars.getEnergyCompany();
         Hardware hardware = getHardwareDto(devHardwareType, energyCompany, inventoryIdIterator);
+        hardware.setAccountId(accountId);
         if (!canAddStarsHardware(devStars, hardware)) {
             devStars.incrementFailureCount();
             return;
         }
         try {
-            hardwareUiService.createHardware(hardware, accountId, energyCompany.getUser());
+            hardwareUiService.createHardware(hardware, energyCompany.getUser());
             devStars.incrementSuccessCount();
             if (accountId == 0) {
                 log.info("STARS Hardware added: " + hardware.getDisplayName() + " to warehouse");

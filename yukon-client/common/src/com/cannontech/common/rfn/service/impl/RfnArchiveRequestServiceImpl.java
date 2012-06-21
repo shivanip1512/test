@@ -153,7 +153,7 @@ public class RfnArchiveRequestServiceImpl implements RfnArchiveRequestService{
                         List<YukonListEntry> statusTypeEntries = yukonListDao.getYukonListEntry(YukonDefinition.DEV_STAT_INSTALLED.getDefinitionId(), lsec);
                         h.setDeviceStatusEntryId(statusTypeEntries.get(0).getEntryID());
                         
-                        hardwareSevice.createHardware(h, 0, lsec.getUser());
+                        hardwareSevice.createHardware(h, lsec.getUser());
                     }
                     
                     rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier().getCombinedIdentifier(), templateName, deviceName);

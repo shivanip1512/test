@@ -1033,9 +1033,7 @@
         <property name="dataUpdaterService" ref="dataUpdaterService"/>
     </bean>
 
-    <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag">
-        <property name="registrationService" ref="pointDataUpdateRegistrationService"/>
-    </bean>
+    <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag"/>
 
     <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag">
         <property name="deviceDao" ref="deviceDao"/>

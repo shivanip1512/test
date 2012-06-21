@@ -33,7 +33,7 @@ import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
-import com.cannontech.common.rfn.message.RfnIdentifingMessage;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
@@ -313,7 +313,7 @@ public class RfnMeterArchiveTestController {
         rfnEventMap.put(RfnConditionDataType.UOM_MODIFIERS, rfnUomModifierSet);
     }
     
-    private <R extends RfnIdentifingMessage> void sendArchiveRequest(String queueName, R archiveRequest) {
+    private <R extends RfnIdentifyingMessage> void sendArchiveRequest(String queueName, R archiveRequest) {
         JmsTemplate jmsTemplate;
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(false);

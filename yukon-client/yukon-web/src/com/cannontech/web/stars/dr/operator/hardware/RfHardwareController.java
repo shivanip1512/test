@@ -1,0 +1,90 @@
+package com.cannontech.web.stars.dr.operator.hardware;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.jsonOLD.JSONObject;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
+import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
+import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
+import com.cannontech.dr.rfn.service.RfnUnicastCompletionCallback;
+import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
+import com.cannontech.dr.rfn.service.WaitableRfnUnicastCompletionCallback;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
+
+@Controller
+@RequestMapping("/operator/hardware/rf/*")
+@CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
+public class RfHardwareController {
+
+    private static final Logger log = YukonLogManager.getLogger(RfHardwareController.class);
+    private static final String keyBase = "yukon.web.modules.hardware.";
+    
+    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private RfnExpressComMessageService rfnExpressComMessageService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    @RequestMapping
+    public void readNow(HttpServletResponse resp, YukonUserContext context, int deviceId) throws IOException {
+        final MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+        final RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        final JSONObject json = new JSONObject();
+        
+        /* Using a waitable, this will block for the initial response to the read request or until the intial response timeout expires. */
+        WaitableRfnUnicastCompletionCallback waitableCallback = new WaitableRfnUnicastCompletionCallback(new RfnUnicastCompletionCallback() {
+            @Override
+            public void receivedStatus(RfnExpressComUnicastReplyType status) {
+                boolean success = status == RfnExpressComUnicastReplyType.OK ? true : false;
+                json.put("success", success);
+                if (success) {
+                    log.debug("Read now initiated for " + device);
+                    json.put("message", accessor.getMessage(keyBase + "readNowSuccess"));
+                } else {
+                    log.debug("Read now failed for " + device);
+                    json.put("message", accessor.getMessage(keyBase + "readNowFailed", status));
+                }
+            }
+            
+            @Override
+            public void processingExceptionOccured(String message) {
+                log.error(message);
+                json.put("success", false);
+                json.put("message", accessor.getMessage(keyBase + "readNowProcessingException", message));
+            }
+            
+            /* Don't care */
+            @Override public void receivedData(Object data) {}
+            @Override public void receivedDataError(RfnExpressComUnicastDataReplyType replyType) {}
+            @Override public void receivedStatusError(RfnExpressComUnicastReplyType replyType) {}
+            @Override public void complete() {}
+        });
+        
+        //TODO use service to build reqeust
+        RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(device.getRfnIdentifier());
+        
+        rfnExpressComMessageService.sendUnicast(request, waitableCallback);
+        
+        try {
+            waitableCallback.waitForStatusResponse();
+        } catch (InterruptedException e) {/* ignore */};
+        
+        resp.setContentType("application/json");
+        resp.getWriter().print(json.toString());
+        resp.getWriter().close();
+    }
+    
+}

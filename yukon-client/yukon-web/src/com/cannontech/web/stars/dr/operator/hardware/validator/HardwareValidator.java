@@ -75,10 +75,8 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
             YukonValidationUtils.checkExceedsMaxLength(errors, "installNotes", hardware.getInstallNotes(), 500);
         }
         
-        /* Two Way LCR's */
-        if (hardwareType.isSwitch() 
-                && hardwareType.isTwoWay() 
-                && !hardwareType.isZigbee()) {
+        /* LCR-3102 */
+        if (hardwareType == HardwareType.LCR_3102) {
             
             if (!hardware.isCreatingNewTwoWayDevice()) {
                 /* Using the picker to choose a two way device */

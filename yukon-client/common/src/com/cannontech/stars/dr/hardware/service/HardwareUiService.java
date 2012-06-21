@@ -54,9 +54,9 @@ public interface HardwareUiService {
 
     /**
      * Creates hardware based on hardwareDto settings and returns
-     * the resulting inventoryId. If accountId is not null, will assign hardware to that account.
+     * the resulting inventoryId.
      */
-    public int createHardware(Hardware hardware, Integer accountId, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException;
+    public int createHardware(Hardware hardware, LiteYukonUser user) throws ObjectInOtherEnergyCompanyException;
 
     /**
      * Adds a device to an acccount.  If fromAccount is true, removes it from it's

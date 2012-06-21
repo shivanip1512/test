@@ -13,14 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
@@ -80,7 +78,6 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired private PaoDao paoDao;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private YukonListDao yukonListDao;
-    @Autowired private DeviceDao deviceDao;
     
     @Override
     @Transactional
@@ -265,7 +262,7 @@ public class HardwareServiceImpl implements HardwareService {
             hardware.setTwoWayDeviceName("LCR2W " + sn);
         }
         
-        int id = hardwareUiService.createHardware(hardware, null, user);
+        int id = hardwareUiService.createHardware(hardware, user);
         
         return new InventoryIdentifier(id, type);
     }

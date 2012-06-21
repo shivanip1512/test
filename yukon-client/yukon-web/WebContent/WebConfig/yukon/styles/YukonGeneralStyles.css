@@ -329,12 +329,16 @@ table.compactResultsTable th th {
 }
 table.compactResultsTable th {
 	border-bottom: 1px solid #CCCCCC;
-	color: 	#000000;
-	font-size: 12px !important;
-	font-weight: 600;
+	padding: 3px;
 	text-align:left;
 	vertical-align:bottom;
-	padding: 3px;
+}
+
+table.compactResultsTable th,
+.crtHeader {
+    color:  #000000;
+    font-size: 12px !important;
+    font-weight: 600;
 }
 
 table.compactResultsTable .padded {

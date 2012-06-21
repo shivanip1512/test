@@ -50,8 +50,8 @@ jQuery(document).delegate('#cancelDeleteBtn', 'click', function() {
     
     <form:form commandName="hardware" action="${action}" method="post">
     
-        <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="inventoryId" value="${hardware.inventoryId}">
+        <form:hidden path="accountId"/>
         <form:hidden path="hardwareType"/>
         <form:hidden path="hardwareTypeEntryId"/>
         

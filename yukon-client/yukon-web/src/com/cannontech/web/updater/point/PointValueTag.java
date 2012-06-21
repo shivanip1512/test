@@ -5,19 +5,28 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.web.taglib.YukonTagSupport;
 import com.cannontech.web.updater.UpdateValue;
 
-@Configurable("pointValueTagPrototype")
+@Configurable(value="pointValueTagPrototype", autowire=Autowire.BY_NAME)
 public class PointValueTag extends YukonTagSupport {
-    private PointDataRegistrationService registrationService;
+    
+    @Autowired private PointDataRegistrationService registrationService;
+    @Autowired private PointDao pointDao;
+
     private String format = Format.FULL.toString();
     private int pointId = 0;
     private boolean pointIdSet;
     private String unavailableValue = null;
+    private boolean colorForStatus;
+    private String cssClass;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -29,8 +38,8 @@ public class PointValueTag extends YukonTagSupport {
         
         String outputText;
         if (value.isUnavailable()) {
-        	if (getUnavailableValue() != null) {
-        		outputText = getUnavailableValue();
+        	if (unavailableValue != null) {
+        		outputText = unavailableValue;
         	} else {
         		outputText = getMessageSource().getMessage("yukon.common.point.pointFormatting.unavailablePlaceholder");
         	}
@@ -39,24 +48,28 @@ public class PointValueTag extends YukonTagSupport {
         }
         
         JspWriter out = getJspContext().getOut();
-        out.print("<span title=\"pointId:" + pointId + "\" cannonUpdater=\"" + value.getFullIdentifier() + "\" class=\"pointValueTagSpan\" >");
+        
+        PointType type = pointDao.getPaoPointIdentifier(pointId).getPointIdentifier().getPointType();
+        boolean useColor = colorForStatus && type.isStatus();
+        if (useColor) {
+            final UpdateValue latestValue = registrationService.getLatestValue(pointId, "{stateColor|#%02X%02X%02X}", getUserContext());
+            final String color = latestValue.isUnavailable() ? "black" :  latestValue.getValue();
+            out.print("<span style=\"color: " + color + " !important;\" cannonColorUpdater=\"" + latestValue.getFullIdentifier() + "\">");
+        }
+        
+        out.print("<span title=\"pointId:" + pointId + "\" cannonUpdater=\"" + value.getFullIdentifier() + "\" class=\"pointValueTagSpan " + cssClass +"\" >");
         out.print(outputText);
         out.print("</span>");
+        if (useColor) {
+            out.print("</span>");
+        }
     }
 
-    public int getPointId() {
-        return pointId;
-    }
     public void setPointId(int pointId) {
         pointIdSet = true;
         this.pointId = pointId;
     }
 
-    public void setRegistrationService(
-            PointDataRegistrationService registrationService) {
-        this.registrationService = registrationService;
-    }
-    
     /**
      * @param format either a Format enum value or a string compatible with the PointFormattingService
      */
@@ -68,8 +81,12 @@ public class PointValueTag extends YukonTagSupport {
 		this.unavailableValue = unavailableValue;
 	}
 
-	public String getUnavailableValue() {
-		return unavailableValue;
-	}
-
+	public void setColorForStatus(boolean colorForStatus) {
+        this.colorForStatus = colorForStatus;
+    }
+	
+	public void setCssClass(String cssClass) {
+        this.cssClass = cssClass;
+    }
+	
 }

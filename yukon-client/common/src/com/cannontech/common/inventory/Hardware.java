@@ -10,6 +10,7 @@ import com.cannontech.common.util.LazyList;
 
 public class Hardware {
     
+    private int accountId;
     private Integer inventoryId;
     private Integer deviceId = 0;
     private int energyCompanyId;
@@ -50,6 +51,14 @@ public class Hardware {
     private String macAddress;
     private String firmwareVersion;
     private int commissionedId;
+    
+    public int getAccountId() {
+        return accountId;
+    }
+    
+    public void setAccountId(int accountId) {
+        this.accountId = accountId;
+    }
 
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;

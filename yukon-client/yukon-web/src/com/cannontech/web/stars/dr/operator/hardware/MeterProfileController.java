@@ -192,7 +192,7 @@ public class MeterProfileController {
             
             return "operator/hardware/meterProfile.jsp";
         }
-        int inventoryId = helper.create(user, accountId, hardware, result, request.getSession());
+        int inventoryId = helper.create(user, hardware, result, request.getSession());
         
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));

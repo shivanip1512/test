@@ -2,6 +2,7 @@ package com.cannontech.web.stars.dr.operator.hardware;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +43,7 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -50,8 +52,10 @@ import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -113,6 +117,7 @@ public class OperatorHardwareController {
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private EnergyCompanyDao energyCompanyDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private PointDao pointDao;
     @Autowired private ServiceCompanyDao serviceCompanyDao;
     @Autowired private AddressDao addressDao;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -472,7 +477,7 @@ public class OperatorHardwareController {
         helper.creationAttempted(user, fragment.getAccountNumber(), hardware, verifyProperties, result);
 
         if (!result.hasErrors()) {
-            int inventoryId = helper.create(user, accountId, hardware, result, request.getSession());
+            int inventoryId = helper.create(user, hardware, result, request.getSession());
             
             if (result.hasErrors()) {
                 return returnToCreateWithErrors(model, hardware, context, flash, fragment, result);
@@ -721,7 +726,7 @@ public class OperatorHardwareController {
         model.addAttribute("showVoltage", showVoltage);
         
         /* Hide route for meters and zigbee devices */
-        if (!clazz.isMeter() && !type.isZigbee()) {
+        if (!clazz.isMeter() && !type.isZigbee() && !type.isRf()) {
             model.addAttribute("showRoute", true);
         }
         
@@ -766,6 +771,28 @@ public class OperatorHardwareController {
         int accountId = fragment.getAccountId();
         int inventoryId = hardware.getInventoryId();
         model.addAttribute("inventoryId", inventoryId);
+        
+        /*  Add Pao Specifics */
+        Integer deviceId = hardware.getDeviceId();
+        if (deviceId != null && deviceId > 0 && !type.isZigbee()) {  // points for ZigBee device have their own special box
+            List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
+            if (!points.isEmpty()) {
+                ListMultimap<PointType, LitePoint> pointsMap = ArrayListMultimap.create();
+                for (LitePoint point : points) {
+                    pointsMap.put(point.getPointTypeEnum(), point);
+                }
+                for (PointType pointTypeKey : pointsMap.keySet()) {
+                    Collections.sort(pointsMap.get(pointTypeKey), new Comparator<LitePoint>() {
+                        @Override
+                        public int compare(LitePoint o1, LitePoint o2) {
+                            return o1.getPointName().compareTo(o2.getPointName());
+                        }
+                    });
+                }
+                model.addAttribute("showPoints", true);
+                model.addAttribute("points", pointsMap.asMap());
+            }
+        }
 
         /* Device Status History */
         List<EventInventory> deviceStatusHistory = EventInventory.retrieveEventInventories(inventoryId);
@@ -871,7 +898,7 @@ public class OperatorHardwareController {
         }
         
         if (type.isZigbee() && !type.isGateway()) {
-            InventoryIdentifier gateway = gatewayDeviceDao.findGatewayByDeviceMapping(hardware.getDeviceId());
+            InventoryIdentifier gateway = gatewayDeviceDao.findGatewayByDeviceMapping(deviceId);
             if (gateway == null) {
                 model.addAttribute("showDisabledCommissionActions", true);
                 model.addAttribute("showDisabledRefresh", true);

@@ -51,14 +51,22 @@ Yukon.ui = {
         
      // Disable a form element after clicked
         jQuery(document).delegate('.f_disableAfterClick', 'click', function(){
-            if(jQuery(this).is(":input")){
+        	var button = jQuery(this);
+            if(button.is(":input")){
                 this.disabled = true;
               
                 //if this is a submit button, trigger the submit event on the form
-                if(jQuery(this).is(":submit")){
-                    jQuery(this.form).trigger("submit");
+                if(button.is(":submit")){
+                	var form = jQuery(this.form);
+                	
+                	//insert the name and or value of the button into the form action
+                	if(button.attr("name").length != 0){
+                		form.prepend('<input name="'+ button.attr("name") + '" value="' + button.attr("value") + '" type="hidden"/>');
+                	}
+                    form.trigger("submit");
                 }
             }
+            return false;
         });
         
         // close popup on submit event

@@ -382,7 +382,7 @@ public class InventoryController {
         helper.creationAttempted(user, null, hardware, Sets.newHashSet(YukonRoleProperty.INVENTORY_CREATE_HARDWARE), result);
         
         if (!result.hasErrors()) {
-            int inventoryId = helper.create(user, null, hardware, result, request.getSession());
+            int inventoryId = helper.create(user, hardware, result, request.getSession());
             
             if (result.hasErrors()) {
                 return returnToCreateWithErrors(model, hardware, context, flash, result);
