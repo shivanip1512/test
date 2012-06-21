@@ -49,7 +49,6 @@ public enum YukonRoleProperty {
     UTILITY_ID_RANGE(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.UTILITY_ID_RANGE, stringType()),
     TRANS_EXCLUSION(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.TRANS_EXCLUSION, stringType()),
     PERMIT_LOGIN_EDIT(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.PERMIT_LOGIN_EDIT, stringType()),
-    ALLOW_USER_ROLES(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.ALLOW_USER_ROLES, stringType()),
     DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.OPTIONAL_PRODUCT_DEV, stringType()),
     ALLOW_MEMBER_PROGRAMS(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.ALLOW_MEMBER_PROGRAMS, stringType()),
     

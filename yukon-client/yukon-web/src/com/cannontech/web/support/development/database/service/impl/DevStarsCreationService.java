@@ -76,7 +76,6 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         setRoleProperty(group, YukonRoleProperty.DBEDITOR_SYSTEM, " ");
         setRoleProperty(group, YukonRoleProperty.UTILITY_ID_RANGE, " ");
         setRoleProperty(group, YukonRoleProperty.PERMIT_LOGIN_EDIT, " ");
-        setRoleProperty(group, YukonRoleProperty.ALLOW_USER_ROLES, " ");
         setRoleProperty(group, YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, " ");
         
         setRoleProperty(group, YukonRoleProperty.LOADCONTROL_EDIT, " ");

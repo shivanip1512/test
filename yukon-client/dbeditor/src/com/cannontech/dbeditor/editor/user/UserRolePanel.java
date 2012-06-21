@@ -92,11 +92,7 @@ private javax.swing.JPanel getJPanelLoginDescription() {
 			ivjJPanelLoginDescription.setBorder(ivjLocalBorder);
 			ivjJPanelLoginDescription.setLayout(new java.awt.BorderLayout());
 			getJPanelLoginDescription().add(getJScrollPaneDescr(), "Center");
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -120,12 +116,7 @@ private javax.swing.JPanel getJPanelProperties() {
 			ivjJPanelProperties.setBorder(ivjLocalBorder1);
 			ivjJPanelProperties.setLayout(new java.awt.BorderLayout());
 			getJPanelProperties().add(getJScrollPaneTable(), "Center");
-			// user code begin {1}
-
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -143,11 +134,7 @@ private javax.swing.JScrollPane getJScrollJTree() {
 			ivjJScrollJTree = new javax.swing.JScrollPane();
 			ivjJScrollJTree.setName("JScrollJTree");
 			getJScrollJTree().setViewportView(getJTreeRoles());
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -165,11 +152,7 @@ private javax.swing.JScrollPane getJScrollPaneDescr() {
 			ivjJScrollPaneDescr = new javax.swing.JScrollPane();
 			ivjJScrollPaneDescr.setName("JScrollPaneDescr");
 			getJScrollPaneDescr().setViewportView(getJTextPaneDescription());
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -190,11 +173,7 @@ private javax.swing.JScrollPane getJScrollPaneTable() {
 			ivjJScrollPaneTable.setVerticalScrollBarPolicy(javax.swing.JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 			ivjJScrollPaneTable.setHorizontalScrollBarPolicy(javax.swing.JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			getJScrollPaneTable().setViewportView(getJTableProperties());
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -215,7 +194,6 @@ private javax.swing.JTable getJTableProperties() {
 			ivjJTableProperties.setAutoResizeMode(0);
 			ivjJTableProperties.setPreferredSize(new java.awt.Dimension(115, 168));
 			ivjJTableProperties.setBounds(0, 0, 132, 269);
-			// user code begin {1}
 
 			//do this to force the table to layout completely in the ScrollPane
 			//  VAJ puts the above setting on automatically
@@ -239,25 +217,6 @@ private javax.swing.JTable getJTableProperties() {
 			ivjJTableProperties.setModel( getJTablePropertyModel() );
 			ivjJTableProperties.setDefaultRenderer( Object.class, new RolePropertyRenderer() );
 			
-			
-/*
-			//create our editor for the Integer fields
-			javax.swing.JComboBox combo = new javax.swing.JComboBox();
-			combo.setEditable( true );
-			//try to center our editor text when editing
-			if( combo.getEditor().getEditorComponent() instanceof JTextField )
-			{
-				JTextField txtEditor = (JTextField)combo.getEditor().getEditorComponent();
-				txtEditor.setHorizontalAlignment( JTextField.CENTER );
-			}
-
-			DefaultCellEditor ed = new DefaultCellEditor(combo);
-			ed.setClickCountToStart(1);
-			ivjJTableProperties.setDefaultEditor( Object.class, ed );                  
-*/
-            
-            
-            
             TableColumnModel tcm = ivjJTableProperties.getColumnModel();
             TableColumn tc = tcm.getColumn(RolePropertyTableModel.COL_VALUE);
               
@@ -274,10 +233,7 @@ private javax.swing.JTable getJTableProperties() {
             JComboCellEditor jc = new JComboCellEditor(combo);              
             tc.setCellEditor( jc );
                           
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -307,16 +263,8 @@ private javax.swing.JTextPane getJTextPaneDescription() {
 			ivjJTextPaneDescription.setDisabledTextColor(java.awt.Color.black);
 			ivjJTextPaneDescription.setBounds(0, 0, 224, 60);
 			ivjJTextPaneDescription.setEditable(false);
-			// user code begin {1}
-
 			ivjJTextPaneDescription.setBackground( this.getBackground() );
-			
-			
-
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -345,7 +293,6 @@ private javax.swing.JTree getJTreeRoles() {
 			ivjJTreeRoles = new javax.swing.JTree();
 			ivjJTreeRoles.setName("JTreeRoles");
 			ivjJTreeRoles.setBounds(0, 0, 165, 243);
-			// user code begin {1}
 			
 			DefaultMutableTreeNode root = 
 				new DefaultMutableTreeNode("Role Categories");
@@ -422,11 +369,7 @@ private javax.swing.JTree getJTreeRoles() {
             });
 
             //setRoleTabledEnabled(false);            
-
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -873,8 +816,7 @@ public static void main(java.lang.String[] args) {
 
 
 		}
-		if(o instanceof YukonUser)
-		{
+		if(o instanceof YukonUser) {
 			if(((YukonUser)o).getUserID().intValue() == UserUtils.USER_ADMIN_ID)
 				setRoleTabledEnabled(false);
 		}

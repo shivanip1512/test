@@ -59,7 +59,6 @@ public class DevRolePropUpdaterService extends DevObjectCreationBase {
         setRoleTrue(group, YukonRoleProperty.DBEDITOR_LM);
         setRoleTrue(group, YukonRoleProperty.DBEDITOR_SYSTEM);
         setRoleTrue(group, YukonRoleProperty.PERMIT_LOGIN_EDIT);
-        setRoleTrue(group, YukonRoleProperty.ALLOW_USER_ROLES);
         setRoleTrue(group, YukonRoleProperty.ALLOW_MEMBER_PROGRAMS);
 
         // REPORTING
