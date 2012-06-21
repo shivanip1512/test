@@ -100,8 +100,8 @@
 <entry key="yukon.web.modules.adminSetup.applianceCategory.unassignProgram.title">Remove Program</entry>
 
 <!-- validation errors -->
-<entry key="yukon.web.modules.adminSetup.applianceCategory.empty.name">Name cannot be empty.</entry>
-<entry key="yukon.web.modules.adminSetup.applianceCategory.empty.displayName">Display name cannot be empty.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.empty.name">Name cannot be empty.</entry>
+<entry key="yukon.web.modules.adminSetup.applianceCategory.EDIT.empty.displayName">Display name cannot be empty.</entry>
 
 <!-- Appliance Category Assigned Programs -->
 <entry key="yukon.web.modules.adminSetup.applianceCategory.editAssignedProgram.editingMultiple">

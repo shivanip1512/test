@@ -313,10 +313,11 @@
 </cti:displayForPageEditModes>
 
 <div class="pageActionArea">
+    <c:set var="ecId" value="${applianceCategory.energyCompanyId}"/>
     <cti:displayForPageEditModes modes="VIEW">
         <c:if test="${isEditable}">
             <cti:url var="editUrl" value="edit">
-                <cti:param name="ecId" value="${param.ecId}"/>
+                <cti:param name="ecId" value="${ecId}"/>
                 <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
             </cti:url>
             <cti:button nameKey="edit" href="${editUrl}"/>
@@ -325,19 +326,18 @@
 
     <cti:displayForPageEditModes modes="CREATE,EDIT">
         <cti:button nameKey="save" name="save" type="submit"/>
-        <c:if test="${empty applianceCategoryId}">
+        <c:set var="isCreate" value="${empty applianceCategoryId || applianceCategoryId == 0}"/>
+        <c:if test="${isCreate}">
             <cti:url var="backUrl" value="list">
-                <cti:param name="ecId" value="${param.ecId}"/>
+                <cti:param name="ecId" value="${ecId}"/>
             </cti:url>
         </c:if>
-        <c:if test="${!empty applianceCategoryId}">
+        <c:if test="${!isCreate}">
             <cti:button id="deleteButton" nameKey="delete"/>
             <tags:confirmDialog nameKey=".deleteConfirmation" argument="${applianceCategory.name}"
                 on="#deleteButton" submitName="delete"/>
-        </c:if>
-        <c:if test="${!empty applianceCategoryId}">
             <cti:url var="backUrl" value="view">
-                <cti:param name="ecId" value="${param.ecId}"/>
+                <cti:param name="ecId" value="${ecId}"/>
                 <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
             </cti:url>
         </c:if>
