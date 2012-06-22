@@ -22,6 +22,7 @@ import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -39,6 +40,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     private ChunkingSqlTemplate chunkyJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
 	public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
@@ -220,6 +222,17 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     @Override
     public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, ContactNotificationType contactNotificationType) {
         return getNotificationsForContactByType(liteContact.getContactID(), contactNotificationType);
+    }
+    
+    @Override
+    public List<LiteContactNotification> getNotificationsForNotificationByType(String notification,  ContactNotificationType contactNotificationType) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT cn.*");
+        sql.append("FROM ContactNotification cn");
+        sql.append("WHERE cn.NotificationCategoryID").eq(contactNotificationType.getDatabaseRepresentation());
+        sql.append("AND UPPER(cn.notification)").eq(notification.toUpperCase());
+        
+        return yukonJdbcTemplate.query(sql,  new LiteContactNotificationRowMapper());
     }
     
     @Override

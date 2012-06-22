@@ -81,4 +81,13 @@ public interface ContactNotificationDao {
      * @return
      */
     public List<Integer> getNotificationIdsForContact(int contactId);
+
+    /**
+     * Method to get a list of contact notifications for a notification of a specific type.
+     * @param notification
+     * @param contactNotificationType
+     * @return List of notifications
+     */
+    public List<LiteContactNotification> getNotificationsForNotificationByType(String notification,
+                                                                  ContactNotificationType contactNotificationType);
 }

@@ -1,5 +1,6 @@
 package com.cannontech.stars.core.login.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +41,7 @@ import com.google.common.base.Function;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class PasswordResetServiceImpl implements PasswordResetService {
     private Logger logger = YukonLogManager.getLogger(PasswordResetServiceImpl.class);
@@ -162,13 +164,21 @@ public class PasswordResetServiceImpl implements PasswordResetService {
      */
     private PasswordResetInfo getPasswordResetInfoByEmailAddress(String forgottenPasswordField) {
         PasswordResetInfo passwordResetInfo = new PasswordResetInfo();
-        
-        // getContactByEmailNotif is more of a find method.  It returns null if it doesn't exist.
-        passwordResetInfo.setContact(contactDao.getContactByEmailNotif(forgottenPasswordField));
-        if (passwordResetInfo.isValidContact()) {
-            passwordResetInfo.setUser(yukonUserDao.getLiteYukonUser(passwordResetInfo.getContact().getLoginID()));
+        //get all contact notifications by email address
+        List<LiteContactNotification> contactNotifications = contactNotificationDao.getNotificationsForNotificationByType(forgottenPasswordField, ContactNotificationType.EMAIL);
+        HashSet<Integer> contactIDs = Sets.newHashSet();
+        //make sure if more then 1 email found it is for the same contact
+        for (LiteContactNotification contactNotification : contactNotifications) {
+            contactIDs.add(contactNotification.getContactID());
         }
-        
+        //if one only contact found attempt to get a user
+        if (contactIDs.size() == 1) {
+            int contactId = contactDao.getContact(contactIDs.iterator().next()).getContactID();
+            passwordResetInfo.setContact(contactDao.getContact(contactId));
+            if (passwordResetInfo.isValidContact()) {
+                passwordResetInfo.setUser(yukonUserDao.getLiteYukonUser(passwordResetInfo.getContact().getLoginID()));
+            }
+        }
         return passwordResetInfo;
     }
 

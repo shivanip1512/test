@@ -60,7 +60,7 @@
     <entry key="yukon.web.modules.login.forgottenPassword.forgottenPasswordFields">Email, Username, or Account Number</entry>
     <entry key="yukon.web.modules.login.forgottenPassword.resetPassword.label">Reset Password</entry>
     <entry key="yukon.web.modules.login.forgottenPassword.passwordChangeNotSupported">Password changes are not supported for this authentication type.</entry>
-    <entry key="yukon.web.modules.login.forgottenPassword.invalidProvidedInformation">We were unable to verify the provided information.</entry>
+    <entry key="yukon.web.modules.login.forgottenPassword.invalidProvidedInformation">We were unable to verify the provided information, please contact your energy company.</entry>
     <entry key="yukon.web.modules.login.forgottenPassword.emailNotFound">There is currently no email attached to this login.</entry>
     <entry key="yukon.web.modules.login.forgottenPassword.emailConnectionIssues">Unable to connect to mail server, please contact your energy company or try again later.</entry>
     
