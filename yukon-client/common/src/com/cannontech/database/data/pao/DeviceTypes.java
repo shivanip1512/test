@@ -149,9 +149,9 @@ public interface DeviceTypes extends TypeBase
     //public final static int RFN_AL    = DEVICE_OFFSET + 113;
     public final static int RDS_TERMINAL    = DEVICE_OFFSET + 114;
     public final static int MCT420FL        = DEVICE_OFFSET + 115;
-    public final static int MCT420FLD        = DEVICE_OFFSET + 116;
+    public final static int MCT420FD        = DEVICE_OFFSET + 116;
     public final static int MCT420CL        = DEVICE_OFFSET + 117;
-    public final static int MCT420CLD        = DEVICE_OFFSET + 118;
+    public final static int MCT420CD        = DEVICE_OFFSET + 118;
     //public final static int RFN_AXSD    = DEVICE_OFFSET + 119;
     public final static int RFN410FL = DEVICE_OFFSET + 120;
     public final static int RFN410FX = DEVICE_OFFSET + 121;
@@ -175,10 +175,10 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN420CL = DEVICE_OFFSET + 135;
     public final static int RFN420CD = DEVICE_OFFSET + 136;
     
-    public final static int IPC430S4 = DEVICE_OFFSET + 137;
+    public final static int IPC430S4E = DEVICE_OFFSET + 137;
     public final static int IPC430SL = DEVICE_OFFSET + 138;
-    public final static int IPC420AD = DEVICE_OFFSET + 139;
-    public final static int IPC410AL = DEVICE_OFFSET + 140;
+    public final static int IPC420FD = DEVICE_OFFSET + 139;
+    public final static int IPC410FL = DEVICE_OFFSET + 140;
     public final static int LCR6200_RFN = DEVICE_OFFSET + 141;
     public final static int LCR6600_RFN = DEVICE_OFFSET + 142;
     
@@ -214,10 +214,10 @@ public interface DeviceTypes extends TypeBase
    	public static final String[] STRING_MCT_310CT = {"MCT-310CT", "MCT310CT"};
    	public static final String[] STRING_MCT_310IM = {"MCT-310IM", "MCT310IM"};   
 	public static final String[] STRING_MCT_310 = {"MCT-310", "MCT310"};
-	public static final String[] STRING_MCT_410IL = {"MCT-410IL", "MCT410IL", "MCT-410iLE", "MCT-410 kWh Only"};
-	public static final String[] STRING_MCT_410CL = {"MCT-410CL", "MCT410CL"};
-	public static final String[] STRING_MCT_410FL = {"MCT-410FL"};
-	public static final String[] STRING_MCT_410GL = {"MCT-410GL"};
+	public static final String[] STRING_MCT_410IL = {"MCT-410iL", "MCT410IL", "MCT-410iLE", "MCT-410 kWh Only"};
+	public static final String[] STRING_MCT_410CL = {"MCT-410cL", "MCT410CL"};
+	public static final String[] STRING_MCT_410FL = {"MCT-410fL"};
+	public static final String[] STRING_MCT_410GL = {"MCT-410gL"};
 	
 	public static final String[] STRING_MCT_470 = {"MCT-470", "MCT470"};
     public static final String[] STRING_MCT_430A = {"MCT-430A"};
@@ -306,14 +306,14 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_CBC_DNP  = {"CBC DNP"};
     public static final String[] STRING_NEUTRAL_MONITOR = { "Capacitor Bank Neutral Monitor" };
     public static final String[] STRING_FAULT_CI = { "Faulted Circuit Indicator" };
-    public static final String[] STRING_MCT_420FL = {"MCT-420FL"};
-    public static final String[] STRING_MCT_420FLD = {"MCT-420FLD"};
-    public static final String[] STRING_MCT_420CL = {"MCT-420CL"};
-    public static final String[] STRING_MCT_420CLD = {"MCT-420CLD"};
+    public static final String[] STRING_MCT_420FL = {"MCT-420fL"};
+    public static final String[] STRING_MCT_420FD = {"MCT-420fD"};
+    public static final String[] STRING_MCT_420CL = {"MCT-420cL"};
+    public static final String[] STRING_MCT_420CD = {"MCT-420cD"};
     public static final String[] STRING_IPC_430S4 = {"IPC-430S4"};
     public static final String[] STRING_IPC_430SL = {"IPC-430SL"};
-    public static final String[] STRING_IPC_420AD = {"IPC-420AD"};
-    public static final String[] STRING_IPC_410AL = {"IPC-410AL"};
+    public static final String[] STRING_IPC_420FD = {"IPC-420fD"};
+    public static final String[] STRING_IPC_410FL = {"IPC-410fL"};
     public static final String[] STRING_RFN_420ELO = {"RFN-420ELO"};
     public static final String[] STRING_RFN_430ELO = {"RFN-430ELO"};
     

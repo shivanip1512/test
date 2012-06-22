@@ -173,9 +173,9 @@ public final static boolean isLoopable(int intType)
 		intType == MCT410FL ||
 		intType == MCT410GL ||
 		intType == MCT420FL ||
-		intType == MCT420FLD ||
+		intType == MCT420FD ||
 		intType == MCT420CL ||
-		intType == MCT420CLD ||
+		intType == MCT420CD ||
         intType == MCT430A ||
         intType == MCT430S4 ||
         intType == MCT430SL ||
@@ -274,9 +274,9 @@ public final static boolean isCarrier(int deviceType)
 		case MCT410FL:
 		case MCT410GL:
 		case MCT420FL:
-		case MCT420FLD:
+		case MCT420FD:
 		case MCT420CL:
-		case MCT420CLD:
+		case MCT420CD:
         case MCT430A:
         case MCT430S4:
         case MCT430SL:
@@ -520,9 +520,9 @@ public final static boolean isLoadProfile4Channel(int deviceType)
 		case MCT410FL:
 		case MCT410GL:
 		case MCT420FL:
-        case MCT420FLD:
+        case MCT420FD:
         case MCT420CL:
-        case MCT420CLD:
+        case MCT420CD:
         case MCT430A:
         case MCT430S4:
         case MCT430SL:
@@ -569,9 +569,9 @@ public final static boolean isLoadProfileVoltage(int deviceType)
 		case MCT410FL:
 		case MCT410GL:
 		case MCT420FL:
-        case MCT420FLD:
+        case MCT420FD:
         case MCT420CL:
-        case MCT420CLD:
+        case MCT420CD:
 		case MCT470:
 			return true;
 		default:
@@ -606,9 +606,9 @@ public final static boolean isMCTOnly(int deviceType)
 		case MCT410FL:
 		case MCT410GL:
 		case MCT420FL:
-        case MCT420FLD:
+        case MCT420FD:
         case MCT420CL:
-        case MCT420CLD:
+        case MCT420CD:
         case MCT430A:
         case MCT430S4:
         case MCT430SL:
@@ -653,9 +653,9 @@ public final static boolean isMCT(int deviceType)
 		case MCT410FL:
 		case MCT410GL:
 		case MCT420FL:
-        case MCT420FLD:
+        case MCT420FD:
         case MCT420CL:
-        case MCT420CLD:
+        case MCT420CD:
         case MCT430A:
         case MCT430S4:
         case MCT430SL:
@@ -733,9 +733,9 @@ public static boolean isMCT4XX( int type )
 		case MCT410FL:
 		case MCT410GL:
 		case MCT420FL:
-        case MCT420FLD:
+        case MCT420FD:
         case MCT420CL:
-        case MCT420CLD:
+        case MCT420CD:
         case MCT430A:
         case MCT430S4:
         case MCT430SL:
@@ -794,9 +794,9 @@ public static boolean isMCT420( int type )
     switch (type)
     {
         case MCT420FL:
-        case MCT420FLD:
+        case MCT420FD:
         case MCT420CL:
-        case MCT420CLD:
+        case MCT420CD:
             return true;
         default:
             return false;
@@ -810,8 +810,8 @@ public static boolean isDisconnectMCT( int type)
 		case MCT213:
 		case MCT310ID:
         case MCT310IDL:
-        case MCT420FLD:
-        case MCT420CLD:
+        case MCT420FD:
+        case MCT420CD:
 			return true;
 		default:
 			return false;
@@ -827,9 +827,9 @@ public final static boolean isTouMCT(int deviceType)
         case MCT410FL:
         case MCT410GL:
         case MCT420FL:
-        case MCT420FLD:
+        case MCT420FD:
         case MCT420CL:
-        case MCT420CLD:
+        case MCT420CD:
         case MCT430A:
         case MCT430S4:
         case MCT430SL:
@@ -871,9 +871,9 @@ public final static boolean isMeter(int deviceType)
 		case ALPHA_A3:
 		case DAVISWEATHER:
         case IPC430SL:
-        case IPC430S4:
-        case IPC420AD:
-        case IPC410AL:
+        case IPC430S4E:
+        case IPC420FD:
+        case IPC410FL:
 			return true;
 	
 		default:

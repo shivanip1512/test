@@ -1391,13 +1391,13 @@
     
 	<!-- MCT 420s -->
 	<pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT">
-        <displayName>MCT-420FL</displayName>
+        <displayName>MCT-420fL</displayName>
     </pao>
-    <pao id="MCT420FLD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT">
-        <displayName>MCT-420FLD</displayName>
+    <pao id="MCT420FD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT">
+        <displayName>MCT-420fD</displayName>
     </pao>
     <pao id="MCT420CL" inherits="MCT_420_BASE"> <!-- This doesn't support a disconnect collar either -->
-        <displayName>MCT-420CL</displayName>
+        <displayName>MCT-420cL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
             	<value>700901-701000,
@@ -1405,8 +1405,8 @@
             </tag>
         </tags>
     </pao>
-    <pao id="MCT420CLD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT">
-        <displayName>MCT-420CLD</displayName>
+    <pao id="MCT420CD" inherits="MCT_420_BASE, SUPPORTS_INTEGRATED_DISCONNECT">
+        <displayName>MCT-420cD</displayName>
     </pao>
 	
     <!-- MCT 410 BASE -->
@@ -1869,7 +1869,7 @@
         
     <!-- MCT 410s -->
     <pao id="MCT410IL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_ALARM">
-        <displayName>MCT-410IL</displayName>
+        <displayName>MCT-410iL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
             	<value>700001-700900,
@@ -1879,7 +1879,7 @@
         </tags>
     </pao>
     <pao id="MCT410CL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_ALARM">
-        <displayName>MCT-410CL</displayName>
+        <displayName>MCT-410cL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
             	<value>310000-313555,
@@ -1894,7 +1894,7 @@
         </tags>
     </pao>
     <pao id="MCT410FL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_EVENT">
-        <displayName>MCT-410FL</displayName>
+        <displayName>MCT-410fL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
             	<value>3597701-3797699,
@@ -1903,7 +1903,7 @@
         </tags>
     </pao>
     <pao id="MCT410GL" inherits="MCT_410_BASE, SUPPORTS_MCT_DISCONNECT, REVERSE_POWER_ALARM" enabled="false">
-        <displayName>MCT-410GL</displayName>
+        <displayName>MCT-410gL</displayName>
     </pao>
     
     <!-- MCT 360/370 BASE -->
@@ -4678,8 +4678,8 @@
         </tags>
     </pao>
     
-    <pao id="IPC430S4" inherits="IPC_POLYPHASE_BASE">
-        <displayName>IPC-430S4</displayName>
+    <pao id="IPC430S4E" inherits="IPC_POLYPHASE_BASE">
+        <displayName>IPC-430S4e</displayName>
         <changeGroup>ipc</changeGroup>
          
     </pao>
@@ -4687,12 +4687,12 @@
         <displayName>IPC-430SL</displayName>
         <changeGroup>ipc</changeGroup>
     </pao>
-    <pao id="IPC420AD" inherits="IPC_METER_BASE">
-        <displayName>IPC-420AD</displayName>
+    <pao id="IPC420FD" inherits="IPC_METER_BASE">
+        <displayName>IPC-420fD</displayName>
         <changeGroup>ipc</changeGroup>
     </pao>
-    <pao id="IPC410AL" inherits="IPC_METER_BASE">
-        <displayName>IPC-410AL</displayName>
+    <pao id="IPC410FL" inherits="IPC_METER_BASE">
+        <displayName>IPC-410fL</displayName>
         <changeGroup>ipc</changeGroup>
     </pao>
     

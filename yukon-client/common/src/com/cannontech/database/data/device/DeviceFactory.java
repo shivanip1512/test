@@ -128,9 +128,9 @@ public final class DeviceFactory {
             returnDevice = new TransdataMarkV();
             break;
         case IPC430SL:
-        case IPC430S4:
-        case IPC420AD:
-        case IPC410AL:
+        case IPC430S4E:
+        case IPC420FD:
+        case IPC410FL:
             IPCMeter meter = new IPCMeter();
             meter.setDeviceType(paoType.getDbString());
             //set up comm channel
@@ -203,14 +203,14 @@ public final class DeviceFactory {
         case MCT420FL:
             returnDevice = new MCT420FL();
             break;
-        case MCT420FLD:
-            returnDevice = new MCT420FLD();
+        case MCT420FD:
+            returnDevice = new MCT420FD();
             break;
         case MCT420CL:
             returnDevice = new MCT420CL();
             break;
-        case MCT420CLD:
-            returnDevice = new MCT420CLD();
+        case MCT420CD:
+            returnDevice = new MCT420CD();
             break;
         case MCT430A:
             returnDevice = new MCT430A();

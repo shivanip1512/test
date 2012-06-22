@@ -55,10 +55,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     TRANSDATA_MARKV(DeviceTypes.TRANSDATA_MARKV, "TRANSDATA MARK-V", PaoCategory.DEVICE, PaoClass.METER),
     VECTRON(DeviceTypes.VECTRON, "VECTRON", PaoCategory.DEVICE, PaoClass.METER),
     
-    IPC430S4(DeviceTypes.IPC430S4, "IPC-430S4", PaoCategory.DEVICE, PaoClass.METER),
+    IPC430S4E(DeviceTypes.IPC430S4E, "IPC-430S4e", PaoCategory.DEVICE, PaoClass.METER),
     IPC430SL(DeviceTypes.IPC430SL, "IPC-430SL", PaoCategory.DEVICE, PaoClass.METER),
-    IPC420AD(DeviceTypes.IPC420AD, "IPC-420AD", PaoCategory.DEVICE, PaoClass.METER),
-    IPC410AL(DeviceTypes.IPC410AL, "IPC-410AL", PaoCategory.DEVICE, PaoClass.METER),
+    IPC420FD(DeviceTypes.IPC420FD, "IPC-420fD", PaoCategory.DEVICE, PaoClass.METER),
+    IPC410FL(DeviceTypes.IPC410FL, "IPC-410fL", PaoCategory.DEVICE, PaoClass.METER),
     
     DAVISWEATHER(DeviceTypes.DAVISWEATHER, "DAVIS WEATHER", PaoCategory.DEVICE, PaoClass.IED),
 
@@ -83,14 +83,14 @@ public enum PaoType implements DatabaseRepresentationSource {
     MCT318L(DeviceTypes.MCT318L, "MCT-318L", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT360(DeviceTypes.MCT360, "MCT-360", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT370(DeviceTypes.MCT370, "MCT-370", PaoCategory.DEVICE, PaoClass.CARRIER),
-    MCT410CL(DeviceTypes.MCT410CL, "MCT-410CL", PaoCategory.DEVICE, PaoClass.CARRIER),
-    MCT410FL(DeviceTypes.MCT410FL, "MCT-410FL", PaoCategory.DEVICE, PaoClass.CARRIER),
-    MCT410GL(DeviceTypes.MCT410GL, "MCT-410GL", PaoCategory.DEVICE, PaoClass.CARRIER),
-    MCT410IL(DeviceTypes.MCT410IL, "MCT-410IL", PaoCategory.DEVICE, PaoClass.CARRIER),
-    MCT420CL(DeviceTypes.MCT420CL, "MCT-420CL", PaoCategory.DEVICE, PaoClass.CARRIER),
-    MCT420CLD(DeviceTypes.MCT420CLD, "MCT-420CLD", PaoCategory.DEVICE, PaoClass.CARRIER),
-    MCT420FL(DeviceTypes.MCT420FL, "MCT-420FL", PaoCategory.DEVICE, PaoClass.CARRIER),
-    MCT420FLD(DeviceTypes.MCT420FLD, "MCT-420FLD", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT410CL(DeviceTypes.MCT410CL, "MCT-410cL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT410FL(DeviceTypes.MCT410FL, "MCT-410fL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT410GL(DeviceTypes.MCT410GL, "MCT-410gL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT410IL(DeviceTypes.MCT410IL, "MCT-410iL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT420CL(DeviceTypes.MCT420CL, "MCT-420cL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT420CD(DeviceTypes.MCT420CD, "MCT-420cD", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT420FL(DeviceTypes.MCT420FL, "MCT-420fL", PaoCategory.DEVICE, PaoClass.CARRIER),
+    MCT420FD(DeviceTypes.MCT420FD, "MCT-420fD", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT430A(DeviceTypes.MCT430A, "MCT-430A", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT430A3(DeviceTypes.MCT430A3, "MCT-430A3", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT430S4(DeviceTypes.MCT430S4, "MCT-430S4", PaoCategory.DEVICE, PaoClass.CARRIER),
@@ -221,7 +221,7 @@ public enum PaoType implements DatabaseRepresentationSource {
             ImmutableMap.Builder<String, PaoType> dbBuilder = ImmutableMap.builder();
             for (PaoType deviceType : values()) {
                 idBuilder.put(deviceType.deviceTypeId, deviceType);
-                dbBuilder.put(deviceType.dbString, deviceType);
+                dbBuilder.put(deviceType.dbString.toUpperCase(), deviceType);
             }
             lookupById = idBuilder.build();
             lookupByDbString = dbBuilder.build();
@@ -262,10 +262,10 @@ public enum PaoType implements DatabaseRepresentationSource {
         meterTypesBuilder.add(SIXNET);
         meterTypesBuilder.add(TRANSDATA_MARKV);
         meterTypesBuilder.add(VECTRON);
-        meterTypesBuilder.add(IPC430S4);
+        meterTypesBuilder.add(IPC430S4E);
         meterTypesBuilder.add(IPC430SL);
-        meterTypesBuilder.add(IPC420AD);
-        meterTypesBuilder.add(IPC410AL);
+        meterTypesBuilder.add(IPC420FD);
+        meterTypesBuilder.add(IPC410FL);
         meterTypesBuilder.add(MCTBROADCAST);
         meterTypesBuilder.add(MCT210);
         meterTypesBuilder.add(MCT213);
@@ -287,9 +287,9 @@ public enum PaoType implements DatabaseRepresentationSource {
         meterTypesBuilder.add(MCT410GL);
         meterTypesBuilder.add(MCT410IL);
         meterTypesBuilder.add(MCT420CL);
-        meterTypesBuilder.add(MCT420CLD);
+        meterTypesBuilder.add(MCT420CD);
         meterTypesBuilder.add(MCT420FL);
-        meterTypesBuilder.add(MCT420FLD);
+        meterTypesBuilder.add(MCT420FD);
         meterTypesBuilder.add(MCT430A);
         meterTypesBuilder.add(MCT430A3);
         meterTypesBuilder.add(MCT430S4);
@@ -333,7 +333,7 @@ public enum PaoType implements DatabaseRepresentationSource {
      * @throws IllegalArgumentException - if no match
      */
     public static PaoType getForDbString(String dbString) throws IllegalArgumentException {
-        PaoType deviceType = lookupByDbString.get(dbString);
+        PaoType deviceType = lookupByDbString.get(dbString.toUpperCase());
         Validate.notNull(deviceType, dbString);
         return deviceType;
     }
