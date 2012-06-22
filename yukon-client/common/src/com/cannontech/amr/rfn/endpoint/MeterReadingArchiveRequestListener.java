@@ -47,7 +47,7 @@ public class MeterReadingArchiveRequestListener extends RfnArchiveRequestListene
             archivedReadings.addAndGet(messagesToSend.size());
 
             sendAcknowledgement(archiveRequest);
-            rfnArchiveRequestService.incrementProcessedArchiveRequest();
+            incrementProcessedArchiveRequest();
             LogHelper.debug(log, "%d PointDatas generated for RfnMeterReadingArchiveRequest", messagesToSend.size());
         }
     }
@@ -56,8 +56,8 @@ public class MeterReadingArchiveRequestListener extends RfnArchiveRequestListene
     public void init() {
         // setup as many workers as requested
         ImmutableList.Builder<Worker> workerBuilder = ImmutableList.builder();
-        int workerCount = rfnArchiveRequestService.getWorkerCount();
-        int queueSize = rfnArchiveRequestService.getQueueSize();
+        int workerCount = getWorkerCount();
+        int queueSize = getQueueSize();
         for (int i = 0; i < workerCount; ++i) {
             Worker worker = new Worker(i, queueSize);
             workerBuilder.add(worker);

@@ -37,7 +37,7 @@ public class Hardware {
     private int destinationEndPointId;
     private int nodeId;
     
-    /* Non-ZigBee two way LCR fields */
+    /* LCR-3102 fields */
     private String twoWayDeviceName;
     private boolean creatingNewTwoWayDevice;
     

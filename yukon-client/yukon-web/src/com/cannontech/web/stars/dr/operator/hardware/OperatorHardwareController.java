@@ -100,6 +100,7 @@ import com.cannontech.web.stars.dr.operator.hardware.model.SerialNumber;
 import com.cannontech.web.stars.dr.operator.hardware.service.ZigbeeDeviceService;
 import com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
+import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
@@ -137,12 +138,11 @@ public class OperatorHardwareController {
     @Autowired private ZigbeeDeviceService zigbeeDeviceService;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private HardwareModelHelper helper;
+    @Autowired private OperatorAccountService operatorAccountService;
 
     /* HARDWARE LIST PAGE */
     @RequestMapping
-    public String list(YukonUserContext userContext, 
-                       ModelMap model, 
-                       AccountInfoFragment fragment) 
+    public String list(YukonUserContext userContext, ModelMap model, AccountInfoFragment fragment) 
     throws ServletRequestBindingException {
         
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
@@ -310,6 +310,7 @@ public class OperatorHardwareController {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, context.getYukonUser());
         
         Hardware hardware = new Hardware();
+        hardware.setAccountId(fragment.getAccountId());
         hardware.setHardwareTypeEntryId(hardwareTypeId);
         hardware.setFieldInstallDate(new Date());
         YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeId);
@@ -382,8 +383,8 @@ public class OperatorHardwareController {
                                  YukonUserContext context,
                                  HttpServletRequest request,
                                  FlashScope flash,
-                                 AccountInfoFragment fragment,
                                  int inventoryId) throws ServletRequestBindingException {
+        AccountInfoFragment fragment = operatorAccountService.getAccountInfoFragment(hardware.getAccountId());
         hardwareUiService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), fragment.getAccountId());
         LiteYukonUser user = context.getYukonUser();
         
@@ -458,9 +459,9 @@ public class OperatorHardwareController {
                                  ModelMap model, 
                                  YukonUserContext context,
                                  HttpServletRequest request,
-                                 FlashScope flash,
-                                 AccountInfoFragment fragment) throws ServletRequestBindingException {
+                                 FlashScope flash) throws ServletRequestBindingException {
         
+        AccountInfoFragment fragment = operatorAccountService.getAccountInfoFragment(hardware.getAccountId());
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
         int accountId = fragment.getAccountId();
         
@@ -927,7 +928,6 @@ public class OperatorHardwareController {
         
         for (YukonListEntry deviceTypeEntry : deviceTypeList) {
             HardwareType type = HardwareType.valueOf(deviceTypeEntry.getYukonDefID());
-            if (type.isRf()) continue; /** Rf devices should not be creatable here yet.  This means that cannot yet be attached to accounts. */
             DeviceTypeOption option = new DeviceTypeOption();
             option.setDisplayName(deviceTypeEntry.getEntryText());
             option.setHardwareTypeEntryId(deviceTypeEntry.getEntryID());

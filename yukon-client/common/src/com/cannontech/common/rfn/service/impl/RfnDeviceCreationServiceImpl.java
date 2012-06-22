@@ -31,13 +31,14 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.service.RfnArchiveRequestService;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -48,8 +49,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.ImmutableSet;
 
-public class RfnArchiveRequestServiceImpl implements RfnArchiveRequestService{
-    private static final Logger log = YukonLogManager.getLogger(RfnArchiveRequestServiceImpl.class);
+public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
+    
+    private static final Logger log = YukonLogManager.getLogger(RfnDeviceCreationServiceImpl.class);
 
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceCreationService deviceCreationService;
@@ -68,11 +70,9 @@ public class RfnArchiveRequestServiceImpl implements RfnArchiveRequestService{
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
     private ConcurrentHashMultiset<RfnIdentifier> uncreatableDevices = ConcurrentHashMultiset.create();
     private Set<String> templatesToIgnore;
-    private int workerCount;
-    private int queueSize;
+    
     private AtomicInteger deviceLookupAttempt = new AtomicInteger();
     private AtomicInteger newDeviceCreated = new AtomicInteger();
-    private AtomicInteger processedArchiveRequest = new AtomicInteger();
 
     @PostConstruct
     public void init() {
@@ -96,14 +96,28 @@ public class RfnArchiveRequestServiceImpl implements RfnArchiveRequestService{
             }
         });
         
-        workerCount = configurationSource.getInteger("RFN_METER_DATA_WORKER_COUNT", 5);
-        queueSize = configurationSource.getInteger("RFN_METER_DATA_WORKER_QUEUE_SIZE", 500);
-        
         templatePrefix = configurationSource.getString("RFN_METER_TEMPLATE_PREFIX", "*RfnTemplate_");
     }
     
     @Transactional
-    public RfnDevice createDevice(final RfnIdentifier rfnIdentifier) {
+    public RfnDevice create(final RfnIdentifier rfnIdentifier) {
+        return createDevice(rfnIdentifier, null, null);
+    }
+    
+    @Transactional
+    public RfnDevice create(final RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) {
+        return createDevice(rfnIdentifier, hardware, user);
+    }
+    
+    /**
+     * Creates an rf devices, if the device is a dr device and create call is spawned from a NM archive request the 
+     * hardware argument (and user) is expected to be null the stars tables will be stubbed out with defaults.  Otherwise 
+     * callers of the create(final RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) method are expected to
+     * pass in a fully filled out (not null) hardware (and user).  This allows a single creation service for both types of 
+     * users: rf message listeners {@link LcrReadingArchiveRequestListener} and 
+     * stars operator controllers {@link OperatorHardwareController}, {@link InventoryController}.
+     */
+    private RfnDevice createDevice(final RfnIdentifier rfnIdentifier, final Hardware hardware, final LiteYukonUser user) {
         RfnDevice result = TransactionTemplateHelper.execute(transactionTemplate, new Callable<RfnDevice>() {
 
             @Override
@@ -130,30 +144,9 @@ public class RfnArchiveRequestServiceImpl implements RfnArchiveRequestService{
                     
                     List<HardwareType> hardwareTypes = HardwareType.getForPaoType(newDevice.getPaoIdentifier().getPaoType());
                     
-                    if (!CollectionUtils.isEmpty(hardwareTypes) && hardwareTypes.size() == 1) {
-                        String ecName = configurationSource.getString("RFN_ENERGY_COMPANY_NAME");
-                        if (StringUtils.isEmpty(ecName)) {
-                            throw new DeviceCreationException("RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg");
-                        }
-                        final LiteEnergyCompany ec = energyCompanyDao.getEnergyCompanyByName(ecName);
-                        LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ec.getEnergyCompanyID());
-                        
-                        HardwareType ht = hardwareTypes.get(0);
-                        
-                        List<YukonListEntry> typeEntries = yukonListDao.getYukonListEntry(ht.getDefinitionId(), lsec);
-                        
-                        if (typeEntries.isEmpty()) throw new DeviceCreationException("Energy company " + ecName + " has no device for type: " + newDevice.getPaoIdentifier().getPaoType());
-                        
-                        Hardware h = new Hardware();
-                        h.setHardwareTypeEntryId(typeEntries.get(0).getEntryID());
-                        h.setSerialNumber(rfnIdentifier.getSensorSerialNumber());
-                        h.setDeviceId(newDevice.getPaoIdentifier().getPaoId());
-                        h.setEnergyCompanyId(ec.getEnergyCompanyID());
-                        
-                        List<YukonListEntry> statusTypeEntries = yukonListDao.getYukonListEntry(YukonDefinition.DEV_STAT_INSTALLED.getDefinitionId(), lsec);
-                        h.setDeviceStatusEntryId(statusTypeEntries.get(0).getEntryID());
-                        
-                        hardwareSevice.createHardware(h, lsec.getUser());
+                    boolean isStars = !CollectionUtils.isEmpty(hardwareTypes) && hardwareTypes.size() == 1;
+                    if (isStars) {
+                        createStarsDevice(hardwareTypes.get(0), newDevice, rfnIdentifier, hardware, user);
                     }
                     
                     rfnDeviceEventLogService.createdNewDeviceAutomatically(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier().getCombinedIdentifier(), templateName, deviceName);
@@ -185,8 +178,33 @@ public class RfnArchiveRequestServiceImpl implements RfnArchiveRequestService{
         return result;
     }
     
-    public void incrementProcessedArchiveRequest() {
-        processedArchiveRequest.incrementAndGet();
+    private void createStarsDevice(HardwareType type, YukonDevice device, RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) {
+        if (hardware == null) {
+            /** Attempt to stub out a stars devices for lcr archive messages */ 
+            String ecName = configurationSource.getString("RFN_ENERGY_COMPANY_NAME");
+            if (StringUtils.isEmpty(ecName)) {
+                throw new DeviceCreationException("RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg");
+            }
+            final LiteEnergyCompany ec = energyCompanyDao.getEnergyCompanyByName(ecName);
+            LiteStarsEnergyCompany lsec = starsDatabaseCache.getEnergyCompany(ec.getEnergyCompanyID());
+            
+            List<YukonListEntry> typeEntries = yukonListDao.getYukonListEntry(type.getDefinitionId(), lsec);
+            
+            if (typeEntries.isEmpty()) throw new DeviceCreationException("Energy company " + ecName + " has no device for type: " + device.getPaoIdentifier().getPaoType());
+            
+            hardware = new Hardware();
+            hardware.setHardwareTypeEntryId(typeEntries.get(0).getEntryID());
+            hardware.setSerialNumber(rfnIdentifier.getSensorSerialNumber());
+            hardware.setDeviceId(device.getPaoIdentifier().getPaoId());
+            hardware.setEnergyCompanyId(ec.getEnergyCompanyID());
+            
+            List<YukonListEntry> statusTypeEntries = yukonListDao.getYukonListEntry(YukonDefinition.DEV_STAT_INSTALLED.getDefinitionId(), lsec);
+            hardware.setDeviceStatusEntryId(statusTypeEntries.get(0).getEntryID());
+            user = lsec.getUser();
+        }
+        
+        hardware.setDeviceId(device.getPaoIdentifier().getPaoId());
+        hardwareSevice.createHardware(hardware, user);
     }
     
     public void incrementDeviceLookupAttempt() {
@@ -195,16 +213,6 @@ public class RfnArchiveRequestServiceImpl implements RfnArchiveRequestService{
     
     public void incrementNewDeviceCreated() {
         newDeviceCreated.incrementAndGet();
-    }
-    
-    @ManagedAttribute
-    public int getWorkerCount() {
-        return workerCount;
-    }
-    
-    @ManagedAttribute
-    public int getQueueSize() {
-        return queueSize;
     }
     
     @ManagedAttribute
@@ -220,11 +228,6 @@ public class RfnArchiveRequestServiceImpl implements RfnArchiveRequestService{
     @ManagedAttribute
     public int getNewDeviceCreated() {
         return newDeviceCreated.get();
-    }
-    
-    @ManagedAttribute
-    public int getProcessedArchiveRequest() {
-        return processedArchiveRequest.get();
     }
     
 }

@@ -2,6 +2,7 @@ package com.cannontech.common.rfn.endpoint;
 
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PreDestroy;
 import javax.jms.ConnectionFactory;
@@ -9,15 +10,17 @@ import javax.jms.ConnectionFactory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.service.RfnArchiveRequestService;
-import com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
+import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 
@@ -27,10 +30,12 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifyingMess
 
     @Autowired protected DynamicDataSource dynamicDataSource;
     @Autowired protected RfnMeterReadService rfnMeterReadService;
-    @Autowired protected RfnArchiveRequestService rfnArchiveRequestService;
-    @Autowired private RfnDeviceLookupServiceImpl rfnDeviceLookupServiceImpl;
+    @Autowired protected RfnDeviceCreationService rfnDeviceCreationService;
+    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
+    @Autowired private ConfigurationSource configurationSource;
 
     protected JmsTemplate jmsTemplate;
+    private AtomicInteger processedArchiveRequest = new AtomicInteger();
 
     protected abstract class WorkerBase extends Thread {
         private ArrayBlockingQueue<T> inQueue;
@@ -79,8 +84,8 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifyingMess
             RfnIdentifier rfnIdentifier = archiveRequest.getRfnIdentifier();
             RfnDevice rfnDevice;
             try {
-                rfnArchiveRequestService.incrementDeviceLookupAttempt();
-                rfnDevice = rfnDeviceLookupServiceImpl.getDevice(rfnIdentifier);
+                rfnDeviceCreationService.incrementDeviceLookupAttempt();
+                rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
             } catch (NotFoundException e1) {
                 // looks like we need to create the device
                 rfnDevice = processCreation(archiveRequest, rfnIdentifier);
@@ -90,8 +95,8 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifyingMess
 
         protected RfnDevice processCreation(T archiveRequest, RfnIdentifier rfnIdentifier) {
             try {
-                RfnDevice rfnDevice = rfnArchiveRequestService.createDevice(rfnIdentifier);
-                rfnArchiveRequestService.incrementNewDeviceCreated();
+                RfnDevice rfnDevice = rfnDeviceCreationService.create(rfnIdentifier);
+                rfnDeviceCreationService.incrementNewDeviceCreated();
                 LogHelper.debug(log, "Created new device: %s", rfnDevice);
                 return rfnDevice;
             } catch (IgnoredTemplateException e) {
@@ -111,12 +116,31 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifyingMess
             drainQueue();
         }
     }
-
+    
+    @ManagedAttribute
+    public int getProcessedArchiveRequest() {
+        return processedArchiveRequest.get();
+    }
+    
+    public void incrementProcessedArchiveRequest() {
+        processedArchiveRequest.incrementAndGet();
+    }
+    
+    @ManagedAttribute
+    public int getWorkerCount() {
+        return configurationSource.getInteger("RFN_METER_DATA_WORKER_COUNT", 5);
+    }
+    
+    @ManagedAttribute
+    public int getQueueSize() {
+        return configurationSource.getInteger("RFN_METER_DATA_WORKER_QUEUE_SIZE", 500);
+    }
+    
     public abstract void init();
     protected abstract List<? extends WorkerBase> getWorkers();
     protected abstract Object getRfnArchiveResponse(T archiveRequest);
     protected abstract String getRfnArchiveResponseQueueName();
-
+    
     @PreDestroy
     protected abstract void shutdown();
 

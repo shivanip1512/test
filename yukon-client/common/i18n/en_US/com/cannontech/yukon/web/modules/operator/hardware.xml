@@ -156,6 +156,8 @@
     <entry key="yukon.web.modules.operator.hardware.error.format.installCode">Invalid Install Code format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui48.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui64.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>
+    <!-- Rf errors -->
+    <entry key="yukon.web.modules.operator.hardware.error.rfCreationError">Unable to creat rf devices.</entry>
     
     <!-- Swiches -->
     <entry key="yukon.web.modules.operator.hardware.switches.title">Switches</entry>

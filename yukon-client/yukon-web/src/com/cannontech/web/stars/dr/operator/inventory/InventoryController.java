@@ -137,7 +137,7 @@ public class InventoryController {
             @Override
             public boolean apply(YukonListEntry input) {
                 HardwareType type = HardwareType.valueOf(input.getYukonDefID());
-                return type != HardwareType.YUKON_METER && type != HardwareType.NON_YUKON_METER && !type.isRf();
+                return type != HardwareType.YUKON_METER && type != HardwareType.NON_YUKON_METER;
             }
         });
         model.addAttribute("addHardwareTypes", addHardwareTypes.iterator());

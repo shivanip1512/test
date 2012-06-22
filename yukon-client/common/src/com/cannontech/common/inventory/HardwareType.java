@@ -377,4 +377,11 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         return starsToPaoMap.get(type);
     }
     
+    public static PaoType getForHardwareType(HardwareType type) {
+        for (PaoType paoType : starsToPaoMap.keySet()) {
+            if (starsToPaoMap.get(paoType).contains(type)) return paoType;
+        }
+        throw new IllegalArgumentException("Unknown PaoType for HardwareType: " + type);
+    }
+    
 }
