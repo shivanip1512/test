@@ -5,7 +5,7 @@ import java.util.List;
 import com.cannontech.common.pao.PaoType;
 import com.google.common.collect.Lists;
 
-public enum RfnManufaturerModel {
+public enum RfnManufacturerModel {
     
     RFN_LCR_6200(PaoType.LCR6200_RFN, "CPS", "RFN-LCR6200"),
     RFN_LCR_6600(PaoType.LCR6600_RFN, "CPS", "RFN-LCR6600"),
@@ -33,15 +33,15 @@ public enum RfnManufaturerModel {
     private String manufacturer;
     private String model;
     
-    private RfnManufaturerModel(PaoType type, String manufacturer, String model) {
+    private RfnManufacturerModel(PaoType type, String manufacturer, String model) {
         this.type = type;
         this.manufacturer = manufacturer;
         this.model = model;
     }
     
-    public static List<RfnManufaturerModel> getForType(PaoType type) {
-        List<RfnManufaturerModel> list = Lists.newArrayList();
-        for (RfnManufaturerModel item : values()) {
+    public static List<RfnManufacturerModel> getForType(PaoType type) {
+        List<RfnManufacturerModel> list = Lists.newArrayList();
+        for (RfnManufacturerModel item : values()) {
             if (item.type == type) list.add(item);
         }
         

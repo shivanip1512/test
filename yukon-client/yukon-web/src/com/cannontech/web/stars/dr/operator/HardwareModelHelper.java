@@ -15,7 +15,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.endpoint.IgnoredTemplateException;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.model.RfnManufaturerModel;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -62,7 +62,7 @@ public class HardwareModelHelper {
                 /** For rf devices the {@link RfnDeviceCreationService} will end up calling {@link HardwareUiService} createHardware method 
                  * after it creates the pao part of the device using the {@link DeviceCreationService}. */
                 PaoType paoType = HardwareType.getForHardwareType(type);
-                RfnManufaturerModel templateSettings = RfnManufaturerModel.getForType(paoType).get(0);
+                RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(paoType).get(0);
                 RfnIdentifier rfId = new RfnIdentifier(hardware.getSerialNumber(), templateSettings.getManufacturer(), templateSettings.getModel());
                 rfnDeviceCreationService.create(rfId, hardware, user);
                 inventoryId = hardware.getInventoryId();
