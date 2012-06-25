@@ -534,7 +534,10 @@ ccconfirmationstats.obj:	precompiled.h msg_signal.h message.h \
 		optional.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h pointtypes.h msg_pdata.h pointdefs.h logger.h \
 		thread.h CtiPCPtrQueue.h resolvers.h db_entry_defines.h \
-		ccconfirmationstats.h msg_cmd.h observe.h ccoperationstats.h
+		ccconfirmationstats.h msg_cmd.h observe.h ccoperationstats.h \
+		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
+		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
+		pao_event.h dbmemobject.h
 ccexecutor.obj:	precompiled.h AttributeService.h LitePoint.h dlldefs.h \
 		pointtypes.h PointAttribute.h yukon.h types.h ctidbgmem.h \
 		ccclientlistener.h ccclientconn.h ctdpcptrq.h CtiPCPtrQueue.h \
@@ -672,14 +675,21 @@ ccoperationstats.obj:	precompiled.h msg_signal.h message.h ctitime.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
 		pointtypes.h msg_pdata.h pointdefs.h logger.h thread.h \
 		CtiPCPtrQueue.h resolvers.h db_entry_defines.h ccid.h \
-		ccoperationstats.h msg_cmd.h observe.h database_writer.h \
-		row_writer.h
+		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
+		mgr_paosched.h pao_schedule.h ctibase.h ctinexus.h \
+		pao_event.h dbmemobject.h ccoperationstats.h msg_cmd.h \
+		observe.h database_writer.h row_writer.h
 ccoriginalparent.obj:	precompiled.h ccoriginalparent.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
 		optional.h logger.h thread.h CtiPCPtrQueue.h row_reader.h \
-		ccid.h database_writer.h database_connection.h row_writer.h
+		ccid.h ccutil.h pointattribute.h devicetypes.h \
+		msg_pcrequest.h message.h collectable.h rwutil.h \
+		database_connection.h database_reader.h boost_time.h \
+		boostutil.h mgr_paosched.h pao_schedule.h ctibase.h \
+		ctinexus.h pao_event.h dbmemobject.h database_writer.h \
+		row_writer.h
 ccserver.obj:	precompiled.h ccserver.h ccclientlistener.h \
 		ccclientconn.h ctdpcptrq.h dlldefs.h CtiPCPtrQueue.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
@@ -925,37 +935,32 @@ ccsubstationbusstore.obj:	precompiled.h ccsubstationbusstore.h \
 		ccexecutor.h ctdpcptrq.h mgr_holiday.h thread_monitor.h \
 		smartmap.h thread_register_data.h ctistring.h \
 		ThreadStatusKeeper.h ExecutorFactory.h
-cctwowaycbcpoints.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
-		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
-		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
-		os2_2w32.h numstr.h dsm2err.h words.h optional.h \
-		cctwowaycbcpoints.h msg_cmd.h message.h collectable.h \
-		rwutil.h database_connection.h database_reader.h row_reader.h \
+cctwowaycbcpoints.obj:	precompiled.h cctwowaycbcpoints.h msg_cmd.h \
+		message.h ctitime.h dlldefs.h ctidbgmem.h collectable.h \
+		rwutil.h yukon.h types.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
+		words.h optional.h database_reader.h row_reader.h \
 		boost_time.h boostutil.h msg_ptreg.h observe.h \
 		AttributeService.h LitePoint.h pointtypes.h PointAttribute.h \
-		PointValueHolder.h msg_pdata.h pointdefs.h cccapbank.h \
-		ccmonitorpoint.h ctidate.h logger.h thread.h CtiPCPtrQueue.h \
-		ccutil.h devicetypes.h msg_pcrequest.h mgr_paosched.h \
-		pao_schedule.h ctibase.h ctinexus.h pao_event.h dbmemobject.h \
-		ccoperationstats.h ccConfirmationStats.h ccoriginalparent.h \
-		cctypes.h CapControlPao.h PointResponse.h \
-		PointResponseManager.h Exceptions.h ccid.h dev_dnp.h \
-		dev_remote.h dev_single.h dev_base.h cmdparse.h \
-		ctitokenizer.h parsevalue.h dev_exclusion.h \
-		tbl_paoexclusion.h config_device.h hashkey.h hash_functions.h \
-		rte_base.h tbl_pao_lite.h tbl_rtcomm.h resolvers.h \
-		db_entry_defines.h desolvers.h msg_signal.h string_utility.h \
-		tbl_static_paoinfo.h tbl_base.h tbl_stats.h tbl_scanrate.h \
-		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h tbl_pt_property.h \
-		tbl_pt_trigger.h msg_pcreturn.h msg_multi.h tbl_dv_scandata.h \
+		PointValueHolder.h msg_pdata.h pointdefs.h ccid.h \
+		dev_cbc7020.h dev_dnp.h dev_remote.h dev_single.h dev_base.h \
+		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		tbl_paoexclusion.h config_device.h logger.h thread.h \
+		CtiPCPtrQueue.h hashkey.h hash_functions.h rte_base.h \
+		dbmemobject.h ctibase.h ctinexus.h tbl_pao_lite.h \
+		tbl_rtcomm.h resolvers.h db_entry_defines.h desolvers.h \
+		msg_signal.h string_utility.h tbl_static_paoinfo.h tbl_base.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		msg_pcrequest.h msg_pcreturn.h msg_multi.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h prot_base.h xfer.h \
 		tbl_dialup.h tbl_direct.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h dev_cbc7020.h \
-		config_data_cbc.h dev_cbc8020.h database_writer.h \
-		row_writer.h slctdev.h
+		dnp_object_binaryoutput.h tbl_dv_address.h config_data_cbc.h \
+		dev_cbc8020.h database_writer.h row_writer.h ccutil.h \
+		devicetypes.h mgr_paosched.h pao_schedule.h pao_event.h
 ccutil.obj:	precompiled.h ccutil.h pointattribute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h devicetypes.h msg_pcrequest.h message.h \
 		ctitime.h collectable.h rwutil.h database_connection.h \

@@ -7,11 +7,6 @@
 #define SCANRATE_STATUS       "status"
 #define SCANRATE_INVALID      "invalid"
 
-#define STATTYPE_MONTHLY      "monthly"
-#define STATTYPE_DAILY        "daily"
-#define STATTYPE_HOURLY       "hourly"
-#define STATTYPE_INVALID      "invalid"
-
 #define AMPUSE_ATLTERNATE     "alternating"
 #define AMPUSE_WITHFAIL       "alt w/failover"
 #define AMPUSE_DEFAULTONE     "default 1 fail 2"

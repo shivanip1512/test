@@ -64,31 +64,6 @@ string desolveDeviceWindowType( long aType )
 }
 
 
-string desolveStatisticsType( int statType )
-{
-    string Ret;
-
-    switch( statType )
-    {
-        case StatTypeMonthly:   Ret = STATTYPE_MONTHLY;     break;
-        case StatTypeHourly:    Ret = STATTYPE_HOURLY;      break;
-        case StatType24Hour:    Ret = STATTYPE_DAILY;       break;
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unsupported statistics collection type " << endl;
-            }
-
-            Ret = STATTYPE_INVALID;
-
-            break;
-        }
-    }
-
-    return Ret;
-}
-
 string desolveDeviceType( int aType )
 {
     string Ret;
@@ -139,7 +114,7 @@ string desolveDeviceType( int aType )
         case TYPE_FOCUS:        Ret = "focus";          break;
         case TYPE_IPC_410FL:    Ret = "ipc-410fl";      break;
         case TYPE_IPC_420FD:    Ret = "ipc-420fd";      break;
-        case TYPE_IPC_430S4E:   Ret = "ipc-430s4";      break;
+        case TYPE_IPC_430S4E:   Ret = "ipc-430s4e";     break;
         case TYPE_IPC_430SL:    Ret = "ipc-430sl";      break;
 
         case TYPEDCT501:        Ret = "dct-501";        break;
