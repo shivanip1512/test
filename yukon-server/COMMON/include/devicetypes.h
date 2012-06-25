@@ -30,9 +30,9 @@
 #define TYPEMCT410GL                         84
 #define TYPEMCT410IL                         85
 #define TYPEMCT420CL                         86
-#define TYPEMCT420CLD                        87
+#define TYPEMCT420CD                         87
 #define TYPEMCT420FL                         88
-#define TYPEMCT420FLD                        89
+#define TYPEMCT420FD                         89
 #define TYPEMCT470                           90
 #define TYPEMCT430A                          91
 #define TYPEMCT430A3                         92
@@ -97,9 +97,9 @@
 
 #define TYPE_SIXNET                          1850  // Sixnet VersaTrak/SiteTrak firmware > 7/1/01
 
-#define TYPE_IPC_410AL                       1860
-#define TYPE_IPC_420AD                       1861
-#define TYPE_IPC_430S4                       1862
+#define TYPE_IPC_410FL                       1860
+#define TYPE_IPC_420FD                       1861
+#define TYPE_IPC_430S4E                      1862
 #define TYPE_IPC_430SL                       1863
 
 #define TYPE_TAPTERM                         1900

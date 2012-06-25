@@ -7,7 +7,6 @@
 
 #include "dev_base.h"
 #include "tbl_base.h"
-#include "tbl_stats.h"
 #include "tbl_scanrate.h"
 #include "yukon.h"
 #include "msg_pcrequest.h"

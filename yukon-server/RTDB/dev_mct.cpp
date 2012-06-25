@@ -3106,9 +3106,9 @@ INT MctDevice::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow, Ct
         case TYPEMCT410GL:
         case TYPEMCT410IL:
         //case TYPEMCT420CL:  //  the MCT-420CL does not support the disconnect collar
-        case TYPEMCT420CLD:
+        case TYPEMCT420CD:
         case TYPEMCT420FL:
-        case TYPEMCT420FLD:
+        case TYPEMCT420FD:
         {
             switch( DSt.Message[0] & 0x03 )
             {
@@ -3654,9 +3654,9 @@ bool MctDevice::isMct420(int type)
     switch(type)
     {
         case TYPEMCT420CL:
-        case TYPEMCT420CLD:
+        case TYPEMCT420CD:
         case TYPEMCT420FL:
-        case TYPEMCT420FLD:
+        case TYPEMCT420FD:
         {
             return true;
         }

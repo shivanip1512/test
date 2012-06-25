@@ -54,9 +54,9 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPE_ALPHA_A3]    = "ALPHA A3";
     type_lookups[TYPE_SENTINEL]    = "SENTINEL";
     type_lookups[TYPE_FOCUS]       = "FOCUS";
-    type_lookups[TYPE_IPC_410AL]   = "IPC-410AL";
-    type_lookups[TYPE_IPC_420AD]   = "IPC-420AD";
-    type_lookups[TYPE_IPC_430S4]   = "IPC-430S4";
+    type_lookups[TYPE_IPC_410FL]   = "IPC-410FL";
+    type_lookups[TYPE_IPC_420FD]   = "IPC-420FD";
+    type_lookups[TYPE_IPC_430S4E]  = "IPC-430S4E";
     type_lookups[TYPE_IPC_430SL]   = "IPC-430SL";
 
     type_lookups[TYPEDCT501]       = "DCT-501";
@@ -83,9 +83,9 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPEMCT410IL]     = "MCT-410IL";
 
     type_lookups[TYPEMCT420CL]     = "MCT-420CL";
-    type_lookups[TYPEMCT420CLD]    = "MCT-420CLD";
+    type_lookups[TYPEMCT420CD]     = "MCT-420CD";
     type_lookups[TYPEMCT420FL]     = "MCT-420FL";
-    type_lookups[TYPEMCT420FLD]    = "MCT-420FLD";
+    type_lookups[TYPEMCT420FD]     = "MCT-420FD";
 
     type_lookups[TYPEMCT430A]      = "MCT-430A";
     type_lookups[TYPEMCT430A3]     = "MCT-430A3";

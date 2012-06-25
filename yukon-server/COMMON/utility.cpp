@@ -1768,7 +1768,7 @@ USHORT  CCITT16CRC(INT Id, UCHAR* buffer, LONG length, BOOL bAdd)
 
             break;
          }
-      case TYPE_IPC_430S4:
+      case TYPE_IPC_430S4E:
       case TYPE_LGS4:
          {
             // check sum is addition of messages 9 bytes
@@ -1807,8 +1807,8 @@ USHORT  CCITT16CRC(INT Id, UCHAR* buffer, LONG length, BOOL bAdd)
               break;
           }
 
-      case TYPE_IPC_410AL:
-      case TYPE_IPC_420AD:
+      case TYPE_IPC_410FL:
+      case TYPE_IPC_420FD:
       case TYPE_FOCUS:
           {
 
@@ -1840,7 +1840,7 @@ INT     CheckCCITT16CRC(INT Id,BYTE *InBuffer,ULONG InCount)
 
    switch(Id)
    {
-   case TYPE_IPC_430S4:
+   case TYPE_IPC_430S4E:
    case TYPE_LGS4:
       {
          CRC.sh = CCITT16CRC(Id, InBuffer, InCount - 2, FALSE);

@@ -193,9 +193,9 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPEMCT410IL:      NewDevice = CTIDBG_new Mct410Device;     break;
 
         case TYPEMCT420CL:
-        case TYPEMCT420CLD:
+        case TYPEMCT420CD:
         case TYPEMCT420FL:
-        case TYPEMCT420FLD:     NewDevice = CTIDBG_new Mct420Device;     break;
+        case TYPEMCT420FD:      NewDevice = CTIDBG_new Mct420Device;     break;
 
         case TYPEMCT430A:
         case TYPEMCT430A3:
@@ -223,7 +223,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_ALPHA_A1:     NewDevice = CTIDBG_new CtiDeviceAlphaA1;    break;
 
-        case TYPE_IPC_430S4:
+        case TYPE_IPC_430S4E:
         case TYPE_LGS4:         NewDevice = CTIDBG_new CtiDeviceLandisGyrS4; break;
 
         case TYPE_DR87:         NewDevice = CTIDBG_new CtiDeviceDR87;       break;
@@ -234,8 +234,8 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPE_IPC_430SL:
         case TYPE_SENTINEL:     NewDevice = CTIDBG_new CtiDeviceSentinel;   break;
 
-        case TYPE_IPC_410AL:    NewDevice = CTIDBG_new Ipc410ALDevice;      break;
-        case TYPE_IPC_420AD:    NewDevice = CTIDBG_new Ipc420ADDevice;      break;
+        case TYPE_IPC_410FL:    NewDevice = CTIDBG_new Ipc410ALDevice;      break;
+        case TYPE_IPC_420FD:    NewDevice = CTIDBG_new Ipc420ADDevice;      break;
         case TYPE_FOCUS:        NewDevice = CTIDBG_new CtiDeviceFocus;      break;
 
         case TYPE_SIXNET:       NewDevice = CTIDBG_new CtiDeviceSixnet;     break;
@@ -451,9 +451,9 @@ DLLEXPORT bool isCarrierLPDevice(CtiDeviceSPtr &pDevice)
         case TYPEMCT410GL:
         case TYPEMCT410IL:
         case TYPEMCT420CL:
-        case TYPEMCT420CLD:
+        case TYPEMCT420CD:
         case TYPEMCT420FL:
-        case TYPEMCT420FLD:
+        case TYPEMCT420FD:
         case TYPEMCT430A:
         case TYPEMCT430A3:
         case TYPEMCT430S4:

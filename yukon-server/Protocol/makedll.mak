@@ -688,10 +688,9 @@ prot_gpuff.obj:	precompiled.h prot_gpuff.h dlldefs.h msg_pdata.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h \
-		packet_finder.h pt_base.h dbmemobject.h resolvers.h \
-		db_entry_defines.h tbl_pt_base.h desolvers.h \
-		tbl_pt_property.h tbl_pt_trigger.h cparms.h configkey.h \
-		configval.h logger.h thread.h CtiPCPtrQueue.h
+		packet_finder.h pt_base.h dbmemobject.h tbl_pt_base.h \
+		resolvers.h db_entry_defines.h desolvers.h cparms.h \
+		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h
 prot_idlc.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h prot_idlc.h dsm2.h \

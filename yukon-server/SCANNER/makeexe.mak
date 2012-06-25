@@ -147,17 +147,13 @@ mgr_device_scannable.obj:	precompiled.h mgr_device_scannable.h \
 		ctinexus.h message.h collectable.h tbl_pao_lite.h \
 		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h msg_signal.h tbl_static_paoinfo.h pointdefs.h \
-		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h \
-		slctdev.h smartmap.h readers_writer_lock.h critical_section.h \
-		dev_single.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
-		msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
-		exchange.h msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h prot_base.h xfer.h debug_timer.h
-pexec.obj:	precompiled.h yukon.h types.h ctidbgmem.h logger.h \
-		dlldefs.h thread.h mutex.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h numstr.h CtiPCPtrQueue.h \
-		scanglob.h netports.h dsm2err.h
+		tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h slctdev.h smartmap.h readers_writer_lock.h \
+		critical_section.h dev_single.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
+		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h prot_base.h xfer.h \
+		debug_timer.h
 scanglob.obj:	precompiled.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
@@ -186,9 +182,8 @@ scanner.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
 		msg_signal.h tbl_static_paoinfo.h pointdefs.h tbl_base.h \
-		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h slctdev.h \
-		smartmap.h readers_writer_lock.h critical_section.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		slctdev.h smartmap.h readers_writer_lock.h critical_section.h \
 		mgr_point.h mgr_config.h dev_single.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \

@@ -105,7 +105,6 @@ tbl_scanrate.obj \
 tbl_static_paoinfo.obj \
 tbl_state.obj \
 tbl_state_grp.obj \
-tbl_stats.obj \
 tbl_tag.obj \
 tbl_taglog.obj \
 tbl_unitmeasure.obj \
@@ -598,12 +597,7 @@ tbl_pt_alarm.obj:	precompiled.h row_reader.h ctitime.h dlldefs.h \
 		dbmemobject.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h
 tbl_pt_analog.obj:	precompiled.h tbl_pt_analog.h row_reader.h \
-		ctitime.h dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h \
-		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
-		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
-		optional.h dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h logger.h thread.h \
-		CtiPCPtrQueue.h
+		ctitime.h dlldefs.h dbmemobject.h
 tbl_pt_base.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h resolvers.h pointtypes.h \
@@ -725,13 +719,6 @@ tbl_static_paoinfo.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		ctinexus.h dbmemobject.h pointdefs.h database_connection.h \
 		rwutil.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h database_writer.h row_writer.h
-tbl_stats.obj:	precompiled.h tbl_stats.h row_reader.h ctitime.h \
-		dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
-		ctidbgmem.h netports.h mutex.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
-		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h logger.h thread.h \
-		CtiPCPtrQueue.h ctidate.h
 tbl_tag.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \

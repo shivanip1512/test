@@ -7,7 +7,6 @@
 #include "config_device.h"
 #include "rte_base.h"
 #include "tbl_base.h"
-#include "tbl_stats.h"
 #include "tbl_scanrate.h"
 #include "tbl_pao_lite.h"
 #include "tbl_paoexclusion.h"

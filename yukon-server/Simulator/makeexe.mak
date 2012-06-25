@@ -226,9 +226,8 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		ctinexus.h message.h collectable.h tbl_pao_lite.h \
 		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h msg_signal.h string_utility.h \
-		tbl_static_paoinfo.h pointdefs.h tbl_base.h tbl_stats.h \
-		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
-		tbl_pt_property.h tbl_pt_trigger.h msg_pcrequest.h \
+		tbl_static_paoinfo.h pointdefs.h tbl_base.h tbl_scanrate.h \
+		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h prot_base.h xfer.h \

@@ -284,7 +284,7 @@ lmcontrolareastore.obj:	precompiled.h mgr_holiday.h ctidate.h \
 		ctibase.h ctinexus.h msg_dbchg.h loadmanager.h executor.h \
 		ctdpcptrq.h msg_server_req.h lmmessage.h \
 		ConstraintViolation.h lmfactory.h tbl_paoexclusion.h \
-		database_writer.h row_writer.h debug_timer.h
+		database_writer.h row_writer.h debug_timer.h clistener.h
 lmcontrolareatrigger.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \

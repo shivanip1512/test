@@ -350,9 +350,9 @@ device_lookup_t init_device_lookups()
     device_types.insert(make_pair("mct-410gl",          TYPEMCT410GL));
     device_types.insert(make_pair("mct-410il",          TYPEMCT410IL));
     device_types.insert(make_pair("mct-420cl",          TYPEMCT420CL));
-    device_types.insert(make_pair("mct-420cld",         TYPEMCT420CLD));
+    device_types.insert(make_pair("mct-420cd",          TYPEMCT420CD));
     device_types.insert(make_pair("mct-420fl",          TYPEMCT420FL));
-    device_types.insert(make_pair("mct-420fld",         TYPEMCT420FLD));
+    device_types.insert(make_pair("mct-420fd",          TYPEMCT420FD));
     device_types.insert(make_pair("mct-430a",           TYPEMCT430A));
     device_types.insert(make_pair("mct-430a3",          TYPEMCT430A3));
     device_types.insert(make_pair("mct-430s4",          TYPEMCT430S4));
@@ -441,9 +441,9 @@ device_lookup_t init_device_lookups()
     device_types.insert(make_pair("dct-501",            TYPEDCT501));
     device_types.insert(make_pair("dr-87",              TYPE_DR87));
     device_types.insert(make_pair("focus",              TYPE_FOCUS));
-    device_types.insert(make_pair("ipc-410al",          TYPE_IPC_410AL));
-    device_types.insert(make_pair("ipc-420ad",          TYPE_IPC_420AD));
-    device_types.insert(make_pair("ipc-430s4",          TYPE_IPC_430S4));
+    device_types.insert(make_pair("ipc-410fl",          TYPE_IPC_410FL));
+    device_types.insert(make_pair("ipc-420fd",          TYPE_IPC_420FD));
+    device_types.insert(make_pair("ipc-430s4e",         TYPE_IPC_430S4E));
     device_types.insert(make_pair("ipc-430sl",          TYPE_IPC_430SL));
     device_types.insert(make_pair("fulcrum",            TYPE_FULCRUM));
     device_types.insert(make_pair("ion-7330",           TYPE_ION7330));
@@ -718,61 +718,6 @@ INT resolvePAOClass(const string& _rwsTemp)
     return nRet;
 }
 
-INT resolveStatisticsType(const string& _rwsTemp)
-{
-    INT nRet = 0;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
-
-
-    if(rwsTemp == "monthly")
-    {
-        nRet = StatTypeMonthly;
-    }
-    else if(rwsTemp == "hourly")
-    {
-        nRet = StatTypeHourly;
-    }
-    else if(rwsTemp == "daily")
-    {
-        nRet = StatType24Hour;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported statistics collection type \"" << rwsTemp << "\" " << endl;
-        nRet = StatTypeInvalid;
-    }
-
-    return nRet;
-}
-
-CtiFilter_t resolveFilterType(const string& _rwsTemp)
-{
-    CtiFilter_t Ret = InvalidFilter;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
-
-    if(rwsTemp == "none")
-    {
-        Ret = NoFilter;
-    }
-    else if(rwsTemp == "lastvalue")
-    {
-        Ret = LastValueFilter;
-    }
-    else if(rwsTemp == "defaultvalue")
-    {
-        Ret = DefaultValueFilter;
-    }
-
-    return Ret;
-}
-
-
-
 INT resolveProtocol(const string& _str)
 {
     INT nRet = 0;
@@ -892,15 +837,15 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_QUANTUM:
         case TYPE_VECTRON:
         case TYPE_LGS4:
-        case TYPE_IPC_430S4:
+        case TYPE_IPC_430S4E:
         case TYPE_DR87:
         case TYPE_KV2:
         case TYPE_ALPHA_A3:
         case TYPE_SENTINEL:
         case TYPE_IPC_430SL:
         case TYPE_FOCUS:
-        case TYPE_IPC_410AL:
-        case TYPE_IPC_420AD:
+        case TYPE_IPC_410FL:
+        case TYPE_IPC_420FD:
         case TYPE_SIXNET:
         case TYPEDCT501:
         case TYPEMCT210:
@@ -925,9 +870,9 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPEMCT410GL:
         case TYPEMCT410IL:
         case TYPEMCT420CL:
-        case TYPEMCT420CLD:
+        case TYPEMCT420CD:
         case TYPEMCT420FL:
-        case TYPEMCT420FLD:
+        case TYPEMCT420FD:
         case TYPEMCT430A:
         case TYPEMCT430A3:
         case TYPEMCT430S4:
@@ -1438,7 +1383,7 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
             break;
         }
     case TYPE_LGS4:
-    case TYPE_IPC_430S4:
+    case TYPE_IPC_430S4E:
     case TYPE_DR87:
     case TYPE_TAPTERM:
     case TYPE_WCTP:
@@ -1450,8 +1395,8 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
     case TYPE_SENTINEL:
     case TYPE_IPC_430SL:
     case TYPE_FOCUS:
-    case TYPE_IPC_410AL:
-    case TYPE_IPC_420AD:
+    case TYPE_IPC_410FL:
+    case TYPE_IPC_420FD:
     case TYPE_SERIESVRTU:
     case TYPE_SERIESVLMIRTU:
     case TYPE_ION7330:
@@ -1516,7 +1461,7 @@ CtiControlType_t  resolveControlType(const string& _str)
     }
 
     return Ret;
-}
+    }
 
 INT resolveUomToCalcType(const string& _str)
 {

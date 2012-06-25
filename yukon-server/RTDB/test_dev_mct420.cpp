@@ -118,9 +118,9 @@ struct test_Mct420CL : test_Mct420Device
     test_Mct420CL() : test_Mct420Device(TYPEMCT420CL, "Test MCT-420CL")  {}
 };
 
-struct test_Mct420CLD : test_Mct420Device
+struct test_Mct420CD : test_Mct420Device
 {
-    test_Mct420CLD() : test_Mct420Device(TYPEMCT420CLD, "Test MCT-420CLD")  {}
+    test_Mct420CD() : test_Mct420Device(TYPEMCT420CD, "Test MCT-420CD")  {}
 };
 
 struct test_Mct420FL : test_Mct420Device
@@ -128,9 +128,9 @@ struct test_Mct420FL : test_Mct420Device
     test_Mct420FL() : test_Mct420Device(TYPEMCT420FL, "Test MCT-420FL")  {}
 };
 
-struct test_Mct420FLD : test_Mct420Device
+struct test_Mct420FD : test_Mct420Device
 {
-    test_Mct420FLD() : test_Mct420Device(TYPEMCT420FLD, "Test MCT-420FLD")  {}
+    test_Mct420FD() : test_Mct420Device(TYPEMCT420FD, "Test MCT-420FD")  {}
 };
 
 
@@ -140,15 +140,15 @@ BOOST_AUTO_TEST_CASE(test_isSupported_DisconnectCollar)
 
     BOOST_CHECK_EQUAL(true,  test_Mct420FL().test_isSupported(test_Mct420Device::test_Feature_DisconnectCollar));
 
-    BOOST_CHECK_EQUAL(false, test_Mct420CLD().test_isSupported(test_Mct420Device::test_Feature_DisconnectCollar));
+    BOOST_CHECK_EQUAL(false, test_Mct420CD().test_isSupported(test_Mct420Device::test_Feature_DisconnectCollar));
 
-    BOOST_CHECK_EQUAL(false, test_Mct420FLD().test_isSupported(test_Mct420Device::test_Feature_DisconnectCollar));
+    BOOST_CHECK_EQUAL(false, test_Mct420FD().test_isSupported(test_Mct420Device::test_Feature_DisconnectCollar));
 }
 
 BOOST_AUTO_TEST_CASE(test_decodeDisconnectConfig)
 {
     //  Test case permutations:
-    //    MCT type:  MCT420CL, MCT420CLD, MCT420FL, MCT420FLD
+    //    MCT type:  MCT420CL, MCT420CD, MCT420FL, MCT420FD
     //    Config byte: autoreconnect disabled, autoreconnect enabled
     //  Config byte cannot be missing when the SSPEC is > ConfigReadEnhanced, since it returns the config byte
 
@@ -170,12 +170,12 @@ BOOST_AUTO_TEST_CASE(test_decodeDisconnectConfig)
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
 
-        //  MCT-420CLD
-        {TYPEMCT420CLD, 0x00, "Disconnect load limit connect delay: 34 minutes\n"
+        //  MCT-420CD
+        {TYPEMCT420CD,  0x00, "Disconnect load limit connect delay: 34 minutes\n"
                               "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
-        {TYPEMCT420CLD, 0x04, "Disconnect load limit connect delay: 34 minutes\n"
+        {TYPEMCT420CD,  0x04, "Disconnect load limit connect delay: 34 minutes\n"
                               "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
@@ -193,12 +193,12 @@ BOOST_AUTO_TEST_CASE(test_decodeDisconnectConfig)
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
 
-        //  MCT-420FLD
-        {TYPEMCT420FLD, 0x00, "Disconnect load limit connect delay: 34 minutes\n"
+        //  MCT-420FD
+        {TYPEMCT420FD,  0x00, "Disconnect load limit connect delay: 34 minutes\n"
                               "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},
-        {TYPEMCT420FLD, 0x04, "Disconnect load limit connect delay: 34 minutes\n"
+        {TYPEMCT420FD,  0x04, "Disconnect load limit connect delay: 34 minutes\n"
                               "Disconnect verification threshold: 12.300 kW (205 Wh/minute)\n"
                               "Disconnect demand threshold disabled\n"
                               "Disconnect cycling mode disabled\n"},

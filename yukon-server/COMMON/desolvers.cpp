@@ -137,9 +137,9 @@ string desolveDeviceType( int aType )
         case TYPE_ALPHA_A3:     Ret = "alpha a3";       break;
         case TYPE_SENTINEL:     Ret = "sentinel";       break;
         case TYPE_FOCUS:        Ret = "focus";          break;
-        case TYPE_IPC_410AL:    Ret = "ipc-410al";      break;
-        case TYPE_IPC_420AD:    Ret = "ipc-420ad";      break;
-        case TYPE_IPC_430S4:    Ret = "ipc-430s4";      break;
+        case TYPE_IPC_410FL:    Ret = "ipc-410fl";      break;
+        case TYPE_IPC_420FD:    Ret = "ipc-420fd";      break;
+        case TYPE_IPC_430S4E:   Ret = "ipc-430s4";      break;
         case TYPE_IPC_430SL:    Ret = "ipc-430sl";      break;
 
         case TYPEDCT501:        Ret = "dct-501";        break;
@@ -164,9 +164,9 @@ string desolveDeviceType( int aType )
         case TYPEMCT410GL:      Ret = "mct-410gl";      break;
         case TYPEMCT410IL:      Ret = "mct-410il";      break;
         case TYPEMCT420CL:      Ret = "mct-420cl";      break;
-        case TYPEMCT420CLD:     Ret = "mct-420cld";     break;
+        case TYPEMCT420CD:      Ret = "mct-420cd";      break;
         case TYPEMCT420FL:      Ret = "mct-420fl";      break;
-        case TYPEMCT420FLD:     Ret = "mct-420fld";     break;
+        case TYPEMCT420FD:      Ret = "mct-420fd";      break;
         case TYPEMCT430A:       Ret = "mct-430a";       break;
         case TYPEMCT430A3:      Ret = "mct-430a3";      break;
         case TYPEMCT430S4:      Ret = "mct-430s4";      break;

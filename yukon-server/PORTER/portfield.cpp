@@ -1358,8 +1358,8 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     case TYPE_SENTINEL:
                     case TYPE_IPC_430SL:
                     case TYPE_FOCUS:
-                    case TYPE_IPC_410AL:
-                    case TYPE_IPC_420AD:
+                    case TYPE_IPC_410FL:
+                    case TYPE_IPC_420FD:
                     {
 
                        // extern CtiConnection VanGoghConnection;
@@ -1692,7 +1692,7 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     case TYPE_ALPHA_PPLUS:
                     case TYPE_DR87:
                     case TYPE_LGS4:
-                    case TYPE_IPC_430S4:
+                    case TYPE_IPC_430S4E:
                     {
                         try
                         {
@@ -2053,14 +2053,14 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     case TYPE_QUANTUM:
                     case TYPE_DR87:
                     case TYPE_LGS4:
-                    case TYPE_IPC_430S4:
+                    case TYPE_IPC_430S4E:
                     case TYPE_KV2:
                     case TYPE_ALPHA_A3:
                     case TYPE_SENTINEL:
                     case TYPE_IPC_430SL:
                     case TYPE_FOCUS:
-                    case TYPE_IPC_410AL:
-                    case TYPE_IPC_420AD:
+                    case TYPE_IPC_410FL:
+                    case TYPE_IPC_420FD:
                     case TYPE_TDMARKV:
                     case TYPE_CCU721:
                     default:
@@ -2086,14 +2086,14 @@ INT CommunicateDevice(const CtiPortSPtr &Port, INMESS *InMessage, OUTMESS *OutMe
                     case TYPE_QUANTUM:
                     case TYPE_DR87:
                     case TYPE_LGS4:
-                    case TYPE_IPC_430S4:
+                    case TYPE_IPC_430S4E:
                     case TYPE_KV2:
                     case TYPE_ALPHA_A3:
                     case TYPE_SENTINEL:
                     case TYPE_IPC_430SL:
                     case TYPE_FOCUS:
-                    case TYPE_IPC_410AL:
-                    case TYPE_IPC_420AD:
+                    case TYPE_IPC_410FL:
+                    case TYPE_IPC_420FD:
                     case TYPE_TDMARKV:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:

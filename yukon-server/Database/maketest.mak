@@ -109,9 +109,8 @@ dllyukon.obj:	precompiled.h tbl_route.h dllbase.h dsm2.h cticonnect.h \
 		tbl_rtmacro.h tbl_rtroute.h tbl_rtrepeater.h tbl_rtversacom.h \
 		msg_pcrequest.h message.h collectable.h rwutil.h \
 		database_connection.h database_reader.h boost_time.h \
-		boostutil.h pt_base.h pointdefs.h tbl_pt_base.h \
-		tbl_pt_property.h tbl_pt_trigger.h tbl_state_grp.h \
-		tbl_state.h
+		boostutil.h pt_base.h tbl_pt_base.h pointdefs.h \
+		tbl_state_grp.h tbl_state.h
 invalidreaderexception.obj:	precompiled.h InvalidReaderException.h \
 		dlldefs.h database_reader.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
@@ -504,12 +503,7 @@ tbl_pt_alarm.obj:	precompiled.h row_reader.h ctitime.h dlldefs.h \
 		dbmemobject.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h
 tbl_pt_analog.obj:	precompiled.h tbl_pt_analog.h row_reader.h \
-		ctitime.h dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h \
-		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
-		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
-		optional.h dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h logger.h thread.h \
-		CtiPCPtrQueue.h
+		ctitime.h dlldefs.h dbmemobject.h
 tbl_pt_base.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h CtiPCPtrQueue.h resolvers.h pointtypes.h \
@@ -631,13 +625,6 @@ tbl_static_paoinfo.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		ctinexus.h dbmemobject.h pointdefs.h database_connection.h \
 		rwutil.h database_reader.h row_reader.h boost_time.h \
 		boostutil.h database_writer.h row_writer.h
-tbl_stats.obj:	precompiled.h tbl_stats.h row_reader.h ctitime.h \
-		dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h types.h \
-		ctidbgmem.h netports.h mutex.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
-		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h logger.h thread.h \
-		CtiPCPtrQueue.h ctidate.h
 tbl_tag.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \

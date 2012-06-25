@@ -118,9 +118,9 @@ test_gen_reply.obj:	trx_711.h trx_info.h logger.h dlldefs.h thread.h \
 		tbl_rtcomm.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h msg_signal.h tbl_static_paoinfo.h pointdefs.h \
 		port_base.h dev_base.h dev_exclusion.h tbl_paoexclusion.h \
-		tbl_base.h tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h tbl_port_base.h xfer.h counter.h \
-		cparms.h configkey.h configval.h
+		tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
+		tbl_pt_base.h tbl_port_base.h xfer.h counter.h cparms.h \
+		configkey.h configval.h
 test_lantronixencryption.obj:	encryption_lantronix.h EncodingFilter.h
 test_paostatisticsrecord.obj:	PaoStatisticsRecord.h ctitime.h \
 		dlldefs.h ctidate.h logger.h thread.h mutex.h guard.h \
