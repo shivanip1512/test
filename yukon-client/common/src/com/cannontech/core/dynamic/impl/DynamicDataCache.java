@@ -66,7 +66,8 @@ class DynamicDataCache implements MessageListener {
         pointSignals.clear();
         categorySignalsMap.clear();
     }
-    
+
+    @Override
     public void messageReceived(MessageEvent e) {
         handleIncoming(e.getMessage());
     }

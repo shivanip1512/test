@@ -1,6 +1,7 @@
 package com.cannontech.common.pao.attribute.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -42,7 +43,13 @@ public interface AttributeService {
      */
     public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
     
-    
+
+    /**
+     * Get a list of point ids for the given attribute on the list of PAOs.  If there is no point
+     * for the given attribute on any given PAO, it will be excluded from the return value.
+     */
+    public <T extends YukonPao> Map<T, Integer> findPointIdsForAttribute(Iterable<T> paos, Attribute attribute);
+
     /**
      * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
      * for at least one of the specified attributes.

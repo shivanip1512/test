@@ -39,13 +39,16 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
@@ -53,23 +56,23 @@ import com.google.common.collect.Sets;
 
 
 public class AttributeServiceImpl implements AttributeService {
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PointService pointService;
+    @Autowired private PointDao pointDao;
+    @Autowired private PointCreationService pointCreationService;
+    @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
-    private DBPersistentDao dbPersistentDao;
-    private PaoDefinitionDao paoDefinitionDao;
-    private PointService pointService;
-    private PointCreationService pointCreationService;
-    private DeviceGroupService deviceGroupService;
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    
     private Logger log = YukonLogManager.getLogger(AttributeServiceImpl.class);
     
     private Set<Attribute> readableAttributes;
     {
-        Set<BuiltInAttribute> nonReadableEvents = Sets.difference(BuiltInAttribute.getRfnEventTypes(), EnumSet.of(
-                                                                                                                  BuiltInAttribute.POWER_FAIL_FLAG,
-                                                                                                                  BuiltInAttribute.REVERSE_POWER_FLAG,
-                                                                                                                  BuiltInAttribute.TAMPER_FLAG,
-                                                                                                                  BuiltInAttribute.OUTAGE_STATUS));
+        Set<BuiltInAttribute> nonReadableEvents =
+                Sets.difference(BuiltInAttribute.getRfnEventTypes(), EnumSet.of(BuiltInAttribute.POWER_FAIL_FLAG,
+                                                                                BuiltInAttribute.REVERSE_POWER_FLAG,
+                                                                                BuiltInAttribute.TAMPER_FLAG,
+                                                                                BuiltInAttribute.OUTAGE_STATUS));
     	EnumSet<BuiltInAttribute> readableAttributes = EnumSet.noneOf(BuiltInAttribute.class);
     	for (BuiltInAttribute attribute : BuiltInAttribute.values()) {
     	    // Exclude profile attributes and event attributes that are not readable
@@ -99,7 +102,37 @@ public class AttributeServiceImpl implements AttributeService {
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
         return attributeDefinition.getPointIdentifier(pao);
     }
-    
+
+    @Override
+    public <T extends YukonPao> Map<T, Integer> findPointIdsForAttribute(Iterable<T> paos,
+                                                                         Attribute att) {
+        BuiltInAttribute attribute = (BuiltInAttribute) att;
+
+        Map<T, PaoPointIdentifier> paoPointIdsByPaoId = Maps.newHashMap();
+        Multimap<PointIdentifier, T> paosByPointIdentifier = ArrayListMultimap.create();
+        for (T pao : paos) {
+            try {
+                AttributeDefinition attributeDefinition =
+                        paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(),
+                                                            attribute);
+                PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPointIdentifier(pao);
+                paosByPointIdentifier.put(paoPointIdentifier.getPointIdentifier(), pao);
+                paoPointIdsByPaoId.put(pao, paoPointIdentifier);
+            } catch (IllegalUseOfAttribute e) {
+                // As per this methods documentation, we'll ignore this.
+            }
+        }
+
+        Map<T, Integer> retVal = Maps.newHashMap();
+        for (PointIdentifier pointIdentifier : paosByPointIdentifier.keySet()) {
+            Map<T, Integer> pointIdsByPao =
+                    pointDao.getPointIdsByPao(paosByPointIdentifier.get(pointIdentifier), pointIdentifier);
+            retVal.putAll(pointIdsByPao);
+        }
+
+        return retVal;
+    }
+
     @Override
     public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
         return getPaoMultiPointIdentifiersForNonMappedAttributes(devices,attributes,false);
@@ -302,30 +335,4 @@ public class AttributeServiceImpl implements AttributeService {
     public Set<Attribute> getReadableAttributes() {
     	return readableAttributes;
     }
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-    @Autowired
-    public void setPointService(PointService pointService) {
-        this.pointService = pointService;
-    }
-    @Autowired
-    public void setPointCreationService(PointCreationService pointCreationService) {
-		this.pointCreationService = pointCreationService;
-	}
-    @Autowired
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
 }

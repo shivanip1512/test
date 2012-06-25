@@ -76,6 +76,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_WATER">Water Usage Reading</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZERO_USAGE_FLAG">Zero Usage Flag</entry>
     <entry key="yukon.common.attribute.builtInAttribute.ZIGBEE_LINK_STATUS">ZigBee Link Status</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.IED_DEMAND_RESET_COUNT">IED Demand Reset Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RF_DEMAND_RESET">RF Demand Reset</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CONFIGURATION_ERROR">Configuration Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CLOCK_ERROR">Clock Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CRYSTAL_OSCILLATOR_ERROR">Crystal Oscillator Error</entry>

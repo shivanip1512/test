@@ -16,17 +16,15 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.deploy.service.ControlEventType;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
-import com.cannontech.multispeak.deploy.service.LoadManagementEventStrategy;
 import com.cannontech.multispeak.deploy.service.ObjectRef;
 import com.cannontech.multispeak.deploy.service.ScadaAnalog;
 import com.cannontech.multispeak.deploy.service.Strategy;
 import com.cannontech.multispeak.service.MspValidationService;
 
 public class MspValidationServiceImpl implements MspValidationService {
+    @Autowired private MeterDao meterDao;
+    @Autowired private MspObjectDao mspObjectDao;
 
-    public MeterDao meterDao;
-    public MspObjectDao mspObjectDao;
-    
     @Override
     public FormattedBlockProcessingService<Block> getProcessingServiceByReadingType(Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
             String readingType) throws RemoteException {
@@ -115,14 +113,16 @@ public class MspValidationServiceImpl implements MspValidationService {
 		}
 		return errorObject;
     }
-    
-    @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    @Autowired
-    public void setMspObjectDao(MspObjectDao mspObjectDao) {
-		this.mspObjectDao = mspObjectDao;
-	}
 
+    @Override
+    public ErrorObject isValidResponseURL(String responseURL, String nounType, String method) {
+        ErrorObject retVal = null;
+
+        if (StringUtils.isBlank(responseURL)) {
+            retVal = mspObjectDao.getErrorObject("n/a", "responseURL is blank", nounType, method,
+                                                 null);
+        }
+
+        return retVal;
+    }
 }

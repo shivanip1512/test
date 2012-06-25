@@ -63,7 +63,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     USAGE_WATER("Water Usage Reading"),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
-    
+    IED_DEMAND_RESET_COUNT("IED Demand Reset Count"),
+    RF_DEMAND_RESET("RF Demand Reset"),
+
     // Rfn Events that map to Event Status points (this list must be kept in sync with both 
     // our rfn set below AND its version in RfnConditionType.java. Outages and restores are
     // the only exception to this rule (as in the names don't exactly match))

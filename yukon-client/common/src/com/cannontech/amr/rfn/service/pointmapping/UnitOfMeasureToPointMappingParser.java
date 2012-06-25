@@ -230,9 +230,9 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
                                                 baseUnitOfMeasure, 
                                                 baseUnitOfMeasureModifiers);
 
-        // Attepts to get the value, or load it if necessary.  getUnchecked is only appropriate since
-        // the cache loader is not expected to throw a checked exception, getUnchecked will actually 
-        // handle checked exceptions and re-throw them as unchecked exceptions.
+        // Attempts to get the value, or load it if necessary. getUnchecked is only appropriate
+        // since the cache loader is not expected to throw a checked exception, getUnchecked will
+        // actually handle checked exceptions and re-throw them as unchecked exceptions.
         CachedPointValue value = computingCache.getUnchecked(key);
 
         if (value == nullCachedPointValue) {
@@ -294,7 +294,7 @@ public class UnitOfMeasureToPointMappingParser implements UnitOfMeasureToPointMa
                 continue;
             }
             
-            // Check base uom and base modifiers incase of coincidental measurement points
+            // Check base UOM and base modifiers in case of coincidental measurement points.
             if (baseUnitOfMeasure == null) {
                 if (baseUom != null) {
                     continue;

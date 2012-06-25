@@ -31,6 +31,7 @@ import com.cannontech.multispeak.deploy.service.DomainMember;
 import com.cannontech.multispeak.deploy.service.EA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LM_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.MDM_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.MR_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OD_ServerSoap_BindingStub;
@@ -389,6 +390,10 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
                 objects = port.getMethods();
             }
+            else if(mspServer.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
+                MDM_ServerSoap_PortType port = MultispeakPortFactory.getMDM_ServerPort(mspVendor);
+                objects = port.getMethods();
+            }
             else if(mspServer.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
                 MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor);
                 objects = port.getMethods();
@@ -528,6 +533,10 @@ public class MspObjectDaoImpl implements MspObjectDao {
             OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
             objects = port.pingURL();
         }
+        else if(service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
+            MDM_ServerSoap_PortType port = MultispeakPortFactory.getMDM_ServerPort(mspVendor);
+            objects = port.pingURL();
+        }
         else if(service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
             MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor);
             objects = port.pingURL();
@@ -568,6 +577,10 @@ public class MspObjectDaoImpl implements MspObjectDao {
         }
         else if(service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
             OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
+            objects = port.getMethods();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
+            MDM_ServerSoap_PortType port = MultispeakPortFactory.getMDM_ServerPort(mspVendor);
             objects = port.getMethods();
         }
         else if(service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {

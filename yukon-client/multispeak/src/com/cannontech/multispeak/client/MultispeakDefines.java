@@ -32,6 +32,7 @@ public class MultispeakDefines
     public static final String CB_Server_STR = "CB_Server";
     public static final String EA_Server_STR = "EA_Server";
     public static final String OA_Server_STR = "OA_Server";
+    public static final String MDM_Server_STR = "MDM_Server";
     public static final String CB_CD_STR = "CB_CD";		//Still need to use this legacy guy.
 
     /** These are the Server side interfaces, the ones that Yukon supports.
@@ -45,7 +46,7 @@ public class MultispeakDefines
      * and are implmented by the other vendor.
      */
     public static final String[] MSP_CLIENT_INTERFACE_ARRAY = new String[]{
-        CB_Server_STR, OA_Server_STR, EA_Server_STR, CB_CD_STR
+        CB_Server_STR, OA_Server_STR, EA_Server_STR, MDM_Server_STR, CB_CD_STR
     };
     
     public static String[] getMSP_SERVER_INTERFACE_ARRAY() {

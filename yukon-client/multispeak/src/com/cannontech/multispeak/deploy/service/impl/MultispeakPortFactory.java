@@ -17,6 +17,9 @@ import com.cannontech.multispeak.deploy.service.EA_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.LM_ServerLocator;
 import com.cannontech.multispeak.deploy.service.LM_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.LM_ServerSoap_PortType;
+import com.cannontech.multispeak.deploy.service.MDM_ServerLocator;
+import com.cannontech.multispeak.deploy.service.MDM_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.MDM_ServerSoap_PortType;
 import com.cannontech.multispeak.deploy.service.MR_ServerLocator;
 import com.cannontech.multispeak.deploy.service.MR_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.MR_ServerSoap_PortType;
@@ -28,17 +31,22 @@ import com.cannontech.multispeak.deploy.service.OD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OD_ServerSoap_PortType;
 
 public class MultispeakPortFactory {
-    
+    /**
+     * Get a new CB_Server port instance using the endpoint URL configured in Yukon.
+     */
+    public static CB_ServerSoap_BindingStub getCB_ServerPort(MultispeakVendor mspVendor) {
+        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+        return getCB_ServerPort(mspVendor, endpointURL);
+    }
+
 	/**
-	 * Returns a new CB_Server port instance. 
-	 * @param mspVendor
-	 * @return
-	 * @throws ServiceException
+	 * Get a new CB_Server port instance using the specified endpoint URL. 
 	 */
-	public static CB_ServerSoap_BindingStub getCB_ServerPort(MultispeakVendor mspVendor) {
+	public static CB_ServerSoap_BindingStub getCB_ServerPort(MultispeakVendor mspVendor,
+	                                                         String endpointURL) {
 
 		CB_ServerLocator service = new CB_ServerLocator();
-        service.setCB_ServerSoapEndpointAddress(mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR));
+        service.setCB_ServerSoapEndpointAddress(endpointURL);
         
         CB_ServerSoap_PortType port = null;
         try {
@@ -238,4 +246,37 @@ public class MultispeakPortFactory {
         }
         return (LM_ServerSoap_BindingStub)port;
 	}
+
+    /**
+     * Get a new MDM_Server port instance using the endpoint URL configured in Yukon.
+     */
+    public static MDM_ServerSoap_PortType getMDM_ServerPort(MultispeakVendor mspVendor) {
+        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.MDM_Server_STR);
+        return getMDM_ServerPort(mspVendor, endpointURL);
+   }
+
+    /**
+     * Get a new MDM_Server port instance using the specified endpoint URL.
+     */
+    public static MDM_ServerSoap_PortType getMDM_ServerPort(MultispeakVendor mspVendor,
+                                                            String endpointURL) {
+        MDM_ServerLocator service = new MDM_ServerLocator();
+        service.setMDM_ServerSoapEndpointAddress(endpointURL);
+
+        MDM_ServerSoap_PortType port = null;
+        try {
+            port = service.getMDM_ServerSoap();
+            MDM_ServerSoap_BindingStub bindingStub = (MDM_ServerSoap_BindingStub) port;
+            // bindingStub.setUsername(mspVendor.getOutUserName());
+            // bindingStub.setPassword(mspVendor.getOutPassword());
+            bindingStub.setHeader(mspVendor.getHeader());
+            bindingStub.setTimeout((int) mspVendor.getRequestMessageTimeout());
+        } catch (ServiceException e) {
+            CTILogger.error("MDM_Server service is not defined for company("
+                            + mspVendor.getCompanyName() + ") - method failed.");
+            CTILogger.error("ServiceException Detail: " + e);
+        }
+
+        return port;
+    }
 }

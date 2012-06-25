@@ -2,7 +2,6 @@ package com.cannontech.core.dynamic.impl;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -14,7 +13,6 @@ import com.cannontech.dynamic.MockDispatchConnection;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class AsyncDynamicDataSourceImplTest {
     private AsyncDynamicDataSourceImpl impl;

@@ -1520,4 +1520,18 @@
             </modifiers>
         </point>
     </pointGroup>
+
+    <!-- DEMAND RESET POINT MAPPING -->
+    <pointGroup>
+        <paoType value="RFN420FX"/>
+        <paoType value="RFN420FD"/>
+        <paoType value="RFN420CL"/>
+        <paoType value="RFN420CD"/>
+        <paoType value="RFN430A3"/>
+        <point name="RF Demand Reset">
+            <uom>Demand Reset</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+      </pointGroup>
 </pointMappings>

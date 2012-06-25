@@ -8,9 +8,11 @@
 package com.cannontech.multispeak.deploy.service.impl;
 
 import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,15 +20,17 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
@@ -38,6 +42,7 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.data.MspBlockReturnList;
@@ -72,25 +77,32 @@ import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.ServiceType;
 import com.cannontech.multispeak.service.MspValidationService;
 import com.cannontech.multispeak.service.MultispeakMeterService;
+import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.BasicServerConnection;
+import com.google.common.base.Function;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
-    private MultispeakMeterService multispeakMeterService;
-    private MspMeterDao mspMeterDao;
-    private MultispeakFuncs multispeakFuncs;
-    private MspRawPointHistoryDao mspRawPointHistoryDao;
+    @Autowired private MultispeakMeterService multispeakMeterService;
+    @Autowired private MspMeterDao mspMeterDao;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private MspRawPointHistoryDao mspRawPointHistoryDao;
+    @Autowired private MspValidationService mspValidationService;
+    @Autowired private AttributeService attributeService;
+    @Autowired private MeterReadProcessingService meterReadProcessingService;
+    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private DemandResetService demandResetService;
+    @Autowired private MspObjectDao mspObjectDao;
     private BasicServerConnection porterConnection;
-    private MspValidationService mspValidationService;
-    public Map<String, FormattedBlockProcessingService<Block>> readingTypesMap;
-    public MeterDao meterDao;
-    public AttributeService attributeService;
-    public MeterReadProcessingService meterReadProcessingService;
-    public DynamicDataSource dynamicDataSource;
-    public PaoDefinitionDao paoDefinitionDao;
-    
+    private Map<String, FormattedBlockProcessingService<Block>> readingTypesMap;
+
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
-    
+
     private void init() throws RemoteException {
         multispeakFuncs.init();
     }
@@ -107,6 +119,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         String [] methods = new String[]{"pingURL", "getMethods",
                                          "initiateMeterReadByMeterNumber",
                                          "initiateMeterReadByMeterNoAndType",
+                                         "initiateDemandReset",
                                          "isAMRMeter",
                                          "getReadingsByDate",
                                          "getAMRSupportedMeters",
@@ -731,58 +744,6 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         return null;
     }
 
-    @Autowired
-    public void setMspMeterDao(MspMeterDao mspMeterDao) {
-        this.mspMeterDao = mspMeterDao;
-    }
-    @Autowired
-    public void setMultispeakMeterService(
-			MultispeakMeterService multispeakMeterService) {
-		this.multispeakMeterService = multispeakMeterService;
-	}
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    @Autowired
-    public void setMspRawPointHistoryDao(MspRawPointHistoryDao mspRawPointHistoryDao) {
-        this.mspRawPointHistoryDao = mspRawPointHistoryDao;
-    }
-    @Required
-    public void setPorterConnection(BasicServerConnection porterConnection) {
-        this.porterConnection = porterConnection;
-    }
-    @Autowired
-    public void setMspValidationService(
-            MspValidationService mspValidationService) {
-        this.mspValidationService = mspValidationService;
-    }
-    @Required
-    public void setReadingTypesMap(
-            Map<String, FormattedBlockProcessingService<Block>> readingTypesMap) {
-        this.readingTypesMap = readingTypesMap;
-    }
-    @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    @Autowired
-    public void setMeterReadProcessingService(MeterReadProcessingService meterReadProcessingService) {
-        this.meterReadProcessingService = meterReadProcessingService;
-    }
-    @Autowired
-    public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
-        this.dynamicDataSource = dynamicDataSource;
-    }
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-		this.paoDefinitionDao = paoDefinitionDao;
-	}
-
     @Override
     public ErrorObject[] meterBaseExchangeNotification(
             MeterBaseExchange[] MBChangeout) throws RemoteException {
@@ -892,10 +853,64 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
     @Override
     public ErrorObject[] initiateDemandReset(MeterIdentifier[] meterIDs,
-            String responseURL, String transactionID, float expirationTime)
+            String responseURL, String transactionId, float expirationTime)
             throws RemoteException {
         init();
-        return null;
+
+        List<ErrorObject> errors = Lists.newArrayList();
+        boolean hasFatalErrors = false;
+        // Do a basic URL check. This only validates that it's not empty.
+        ErrorObject errorObject = mspValidationService.isValidResponseURL(responseURL, "Meter",
+                                                                          "InitiateDemandReset");
+        if (errorObject != null) {
+            errors.add(errorObject);
+            hasFatalErrors = true;
+        }
+
+        List<MeterIdentifier> meterIdentifierList = Arrays.asList(meterIDs);
+        Function<MeterIdentifier, String> meterNumberFromIdentifier =
+            new Function<MeterIdentifier, String>() {
+                @Override
+                public String apply(MeterIdentifier meterIdentifier) {
+                    return meterIdentifier.getMeterNo();
+                }
+            };
+        Set<String> meterNumbers =
+                Sets.newHashSet(Lists.transform(meterIdentifierList, meterNumberFromIdentifier));
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        Map<String, PaoIdentifier> paoIdsByMeterNumber =
+                paoDao.findPaoIdentifiersByMeterNumber(meterNumbers);
+        Map<PaoIdentifier, String> meterNumbersByPaoId =
+                HashBiMap.create(paoIdsByMeterNumber).inverse();
+        Set<String> invalidMeterNumbers = Sets.difference(meterNumbers, paoIdsByMeterNumber.keySet());
+        for (String invalidMeterNumber : invalidMeterNumbers) {
+            errors.add(mspObjectDao.getNotFoundErrorObject(invalidMeterNumber, "MeterNumber", "Meter",
+                                                           "initiateDemandReset", vendor.getCompanyName()));
+        }
+
+        Set<PaoIdentifier> meterIdentifiers = Sets.newHashSet(paoIdsByMeterNumber.values());
+        Set<PaoIdentifier> validMeters =
+                Sets.newHashSet(demandResetService.filterDevices(meterIdentifiers));
+        Set<PaoIdentifier> unsupportedMeters = Sets.difference(meterIdentifiers, validMeters);
+        for (PaoIdentifier unsupportedMeter : unsupportedMeters) {
+            String errorMsg = unsupportedMeter.getPaoIdentifier().getPaoType()
+                    + " does not support demand reset";
+            String meterNumber = meterNumbersByPaoId.get(unsupportedMeter);
+            errors.add(mspObjectDao.getErrorObject(meterNumber, errorMsg, "Meter",
+                                                   "initiateDemandReset", vendor.getCompanyName()));
+        }
+
+        if (hasFatalErrors || validMeters.isEmpty()) {
+            return errors.toArray(new ErrorObject[errors.size()]);
+        }
+
+        MRServerDemandResetCallback callback =
+                new MRServerDemandResetCallback(mspObjectDao, vendor, meterNumbersByPaoId,
+                                                responseURL, transactionId);
+        demandResetService.sendDemandReset(validMeters, callback, UserUtils.getYukonUser());
+        errors.addAll(callback.getErrors());
+
+        return errors.toArray(new ErrorObject[errors.size()]);
     }
 
     @Override
@@ -991,5 +1006,16 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             throws RemoteException {
         init();
         return null;
+    }
+
+    @Required
+    public void setPorterConnection(BasicServerConnection porterConnection) {
+        this.porterConnection = porterConnection;
+    }
+
+    @Required
+    public void setReadingTypesMap(
+            Map<String, FormattedBlockProcessingService<Block>> readingTypesMap) {
+        this.readingTypesMap = readingTypesMap;
     }
 }

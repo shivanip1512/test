@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -481,7 +482,42 @@ public final class PointDaoImpl implements PointDao {
 	        throw new NotFoundException("unable to find pointId for " + paoPointIdentifier, e);
 	    }
 	}
-    
+
+    @Override
+    public <T extends YukonPao> Map<T, Integer> getPointIdsByPao(Iterable<T> paos,
+                                                                 final PointIdentifier pointIdentifier) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("select paobjectId, pointId from point");
+                sql.append("where paobjectId").in(subList);
+                sql.append(  "and pointOffset").eq(pointIdentifier.getOffset());
+                sql.append(  "and pointType").eq_k(pointIdentifier.getPointType());
+                return sql;
+            }
+        };
+
+        YukonRowMapper<Map.Entry<Integer, Integer>> rowMapper = new YukonRowMapper<Map.Entry<Integer, Integer>>() {
+            @Override
+            public Entry<Integer, Integer> mapRow(YukonResultSet rs) throws SQLException {
+                int paoId = rs.getInt("paobjectId");
+                int pointId = rs.getInt("pointId");
+                return Maps.immutableEntry(paoId, pointId);
+            }
+        };
+
+        Function<T, Integer> yukonPaoToPaoIdFunction = new Function<T, Integer>() {
+            public Integer apply(T from) {
+                return from.getPaoIdentifier().getPaoId();
+            }
+        };
+
+        return template.mappedQuery(sqlGenerator, paos, rowMapper, yukonPaoToPaoIdFunction);
+    }
+
     @Override
     public List<PointBase> getPointsForPao(int paoId) {
         

@@ -38,9 +38,22 @@ public class DemandResetRequestEndpoint {
         List<Element> errorElems = Collections.emptyList();
 
         @Override
-        public void completed(Results results) {
+        public void initiated(Results results) {
             Map<SimpleDevice, SpecificDeviceErrorDescription> errors = results.getErrors();
             errorElems = PaoSelectionUtil.makePaoErrorElements(errors);
+        }
+
+        // For now we're not doing verification except in MultiSpeak.
+        @Override
+        public void verified(SimpleDevice device) {
+        }
+
+        @Override
+        public void failed(SimpleDevice device) {
+        }
+
+        @Override
+        public void cannotVerify(SimpleDevice device, String reason) {
         }
     }
 

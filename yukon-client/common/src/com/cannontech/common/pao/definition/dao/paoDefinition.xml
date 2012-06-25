@@ -66,6 +66,18 @@
         </tags>
     </pao>
     <pao id="SUPPORTS_RFN_DEMAND_RESET_TAG" abstract="true">
+        <points>
+            <point type="Status" offset="59">
+                <init>true</init>
+                <name>RF Demand Reset</name>
+                <stategroup value="RF Demand Reset"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="RF_DEMAND_RESET">
+                <basicLookup point="RF Demand Reset" />
+            </attribute>
+        </attributes>     
         <tags>
             <tag name="RFN_DEMAND_RESET"/>
         </tags>
@@ -901,6 +913,10 @@
         	<attribute name="TOU_RATE_D_PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate D kW)"/>
         	</attribute>
+            <!-- Should this just be DEMAND_RESET_COUNT?? -->
+            <attribute name="IED_DEMAND_RESET_COUNT">
+                <basicLookup point="IED Demand Reset Count"/>
+            </attribute>
         </attributes>
         <tags>
             <tag name="DEVICE_CONFIGURATION_470"/>
@@ -1311,6 +1327,9 @@
         	</attribute>
         	<attribute name="TOU_RATE_D_PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate D kW)" />
+        	</attribute>
+        	<attribute name="IED_DEMAND_RESET_COUNT">
+        		<basicLookup point="IED Demand Reset Count" />
         	</attribute>
         </attributes>
         <tags>

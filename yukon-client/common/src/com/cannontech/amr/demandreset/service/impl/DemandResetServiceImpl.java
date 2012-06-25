@@ -15,6 +15,7 @@ import com.cannontech.amr.demandreset.service.DemandResetCallback.Results;
 import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.MutableDuration;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -25,13 +26,32 @@ public class DemandResetServiceImpl implements DemandResetService {
     private static final Logger log = YukonLogManager.getLogger(DemandResetServiceImpl.class);
 
     private final static class Callback implements DemandResetCallback {
+        DemandResetCallback callerCallback;
         AtomicBoolean finished = new AtomicBoolean(false);
         Results results;
 
         @Override
-        public void completed(Results results) {
+        public void initiated(Results results) {
+            // These get aggregated (from all strategies) so we only make a single call back to
+            // the the caller of sendDemandReset.
             this.results = results;
             finished.set(true);
+        }
+
+        // These go out one at a time to the caller so we can just proxy.
+        @Override
+        public void verified(SimpleDevice device) {
+            callerCallback.verified(device);
+        }
+
+        @Override
+        public void failed(SimpleDevice device) {
+            callerCallback.failed(device);
+        }
+
+        @Override
+        public void cannotVerify(SimpleDevice device, String reason) {
+            callerCallback.cannotVerify(device, reason);
         }
     }
 
@@ -65,6 +85,7 @@ public class DemandResetServiceImpl implements DemandResetService {
             Set<? extends YukonPao> strategyDevices = strategy.filterDevices(devices);
             if (strategyDevices.iterator().hasNext()) {
                 Callback strategyCallback = new Callback();
+                strategyCallback.callerCallback = callback;
                 callbacks.add(strategyCallback);
                 strategy.sendDemandReset(strategyDevices, strategyCallback, user);
             }
@@ -98,6 +119,6 @@ public class DemandResetServiceImpl implements DemandResetService {
             }
         }
 
-        callback.completed(finalResults);
+        callback.initiated(finalResults);
     }
 }

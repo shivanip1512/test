@@ -11,7 +11,7 @@
 
 	<c:set var="interfaceListLength" value="${fn:length(possibleInterfaces)}" />
 	
-	<script language="JavaScript">
+	<script type="text/javascript">
 		function confirmDelete(){
 			var confirmDelete = confirm("Are you sure you want to delete this interface?");
 			return confirmDelete;
