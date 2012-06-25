@@ -142,8 +142,10 @@ void ZoneDBLoader::loadBankParameters(const long Id, ZoneManager::ZoneMap &zones
 
 void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zones)
 {
-    static const std::string sql =   "SELECT PointId, ZoneId, Phase FROM PointToZoneMapping";
-    static const std::string where = " WHERE ZoneId = ?";
+    static const std::string sql =   "SELECT PZM.PointId, PZM.ZoneId, MBL.Phase"
+                                     " FROM PointToZoneMapping PZM LEFT OUTER JOIN ccmonitorbanklist MBL"
+                                     " ON PZM.PointId = MBL.PointId";
+    static const std::string where = " WHERE PZM.ZoneId = ?";
 
     Cti::Database::DatabaseConnection   connection;
     Cti::Database::DatabaseReader       rdr(connection);
@@ -179,14 +181,36 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
 
         if ( zone != zones.end() )
         {
-            std::string phase;
+            Phase   phase = Phase_Unknown;
 
             rdr["PointId"] >> Id;
-            rdr["Phase"]   >> phase;
+
+            if ( ! rdr["Phase"].isNull() )
+            {
+                std::string phaseStr;
+
+                rdr["Phase"] >> phaseStr;
+
+                phase = resolvePhase( phaseStr );
+            }
+
+            /*
+                The ccmonitorbanklist table allows NULL entries for the Phase column.  The UI shouldn't allow a
+                    NULL entry to be created or a polyphase assignment.  Check and warn if either of these conditions
+                    occur as it is likely a misconfiguration of some sort.
+            */
+            if ( phase == Phase_Unknown || phase == Phase_Poly )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+
+                dout << CtiTime() << " - Zone: " << zone->second->getName() << " has assigned voltage point ID: " << Id
+                     << " assigned with phase: " << std::string( phase == Phase_Unknown ? "(?) unknown" : "(*) polyphase" )
+                     << std::endl;
+            }
 
             if ( rdr.isValid() )                    // reader is ~still~ valid
             {
-                zone->second->addPointId( resolvePhase( phase ), Id );
+                zone->second->addPointId( phase, Id );
             }
         }
     }
@@ -196,8 +220,10 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
 void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &zones)
 {
 
-    static const std::string sql =   "SELECT RegulatorId, ZoneId, Phase FROM RegulatorToZoneMapping";
-    static const std::string where = " WHERE ZoneId = ?";
+    static const std::string sql =   "SELECT RZM.RegulatorId, RZM.ZoneId, MBL.Phase"
+                                     " FROM RegulatorToZoneMapping RZM LEFT OUTER JOIN ccmonitorbanklist MBL"
+                                     " ON RZM.RegulatorId = MBL.DeviceId";
+    static const std::string where = " WHERE RZM.ZoneId = ?";
 
     Cti::Database::DatabaseConnection   connection;
     Cti::Database::DatabaseReader       rdr(connection);

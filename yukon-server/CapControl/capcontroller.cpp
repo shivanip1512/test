@@ -2139,13 +2139,6 @@ CcDbReloadInfo CtiCapController::resolveCapControlType(CtiDBChangeMsg *dbChange)
                 CtiPAOScheduleManager::getInstance()->setValid(false);
                 break;
             }
-        case TYPE_CC_MONITORBANKLIST:
-            {
-                reloadInfo.objecttype = Cti::CapControl::MonitorPoint;
-
-                CtiPAOScheduleManager::getInstance()->setValid(false);
-                break;
-            }
         case TYPE_VIRTUAL_SYSTEM: 
             break;
         default: 
