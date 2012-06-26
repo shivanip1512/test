@@ -80,10 +80,8 @@ public class PaoDefinitionServiceImplTest {
 
         // Create the attribute service for testing
         attributeService = new AttributeServiceImpl();
-        ReflectionTestUtils.invokeSetterMethod(attributeService,
-                                               "paoDefinitionDao",
-                                               paoDefinitionDao);
-        ReflectionTestUtils.invokeSetterMethod(attributeService, "pointService", pointService);
+        ReflectionTestUtils.setField(attributeService, "paoDefinitionDao", paoDefinitionDao);
+        ReflectionTestUtils.setField(attributeService, "pointService", pointService);
 
         device = new SimpleDevice(1, DeviceTypes.MCT310);
 

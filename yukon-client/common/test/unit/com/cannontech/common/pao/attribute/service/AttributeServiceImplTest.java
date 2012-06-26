@@ -37,13 +37,13 @@ public class AttributeServiceImplTest extends TestCase {
                 return null;
             }
         });
-        ReflectionTestUtils.invokeSetterMethod(service, "paoDefinitionDao", paoDefinitionDao);
+        ReflectionTestUtils.setField(service, "paoDefinitionDao", paoDefinitionDao);
 
         PointServiceImpl pointService = new PointServiceImpl();
 
         pointDao = new MockPointDao();
         pointService.setPointDao(pointDao);
-        ReflectionTestUtils.invokeSetterMethod(service, "pointService", pointService);
+        ReflectionTestUtils.setField(service, "pointService", pointService);
 
         device = new SimpleDevice(1, 1019);
         device.setType(1019);
