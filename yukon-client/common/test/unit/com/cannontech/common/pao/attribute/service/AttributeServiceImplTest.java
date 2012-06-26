@@ -6,6 +6,7 @@ import java.util.Set;
 import junit.framework.TestCase;
 
 import org.springframework.core.io.Resource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.config.ConfigResourceLoader;
 import com.cannontech.common.config.retrieve.ConfigFile;
@@ -25,22 +26,24 @@ public class AttributeServiceImplTest extends TestCase {
     private MockPointDao pointDao = null;
     private SimpleDevice device = null;
 
+    @Override
     protected void setUp() throws Exception {
 
         service = new AttributeServiceImpl();
 
         paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new ConfigResourceLoader() {
+            @Override
             public Resource getResource(ConfigFile config) {
                 return null;
             }
         });
-        service.setPaoDefinitionDao(paoDefinitionDao);
+        ReflectionTestUtils.invokeSetterMethod(service, "paoDefinitionDao", paoDefinitionDao);
 
         PointServiceImpl pointService = new PointServiceImpl();
 
         pointDao = new MockPointDao();
         pointService.setPointDao(pointDao);
-        service.setPointService(pointService);
+        ReflectionTestUtils.invokeSetterMethod(service, "pointService", pointService);
 
         device = new SimpleDevice(1, 1019);
         device.setType(1019);
@@ -92,6 +95,5 @@ public class AttributeServiceImplTest extends TestCase {
         } catch (Exception e) {
             fail("Threw wrong type of exception: " + e.getClass());
         }
-
     }
 }

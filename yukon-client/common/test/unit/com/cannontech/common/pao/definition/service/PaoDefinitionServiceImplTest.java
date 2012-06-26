@@ -1,8 +1,6 @@
 package com.cannontech.common.pao.definition.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -12,6 +10,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.Resource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.config.ConfigResourceLoader;
 import com.cannontech.common.config.retrieve.ConfigFile;
@@ -57,6 +56,7 @@ public class PaoDefinitionServiceImplTest {
 
         service = new PaoDefinitionServiceImpl();
         paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao(new ConfigResourceLoader() {
+            @Override
             public Resource getResource(ConfigFile config) {
                 return null;
             }
@@ -70,6 +70,7 @@ public class PaoDefinitionServiceImplTest {
         // Create the point service for testing
         pointService.setPointDao(pointDao);
         pointCreationService.setNextValueHelper(new NextValueHelper() {
+            @Override
             public int getNextValue(String tableName) {
                 return 1;
             }
@@ -79,8 +80,10 @@ public class PaoDefinitionServiceImplTest {
 
         // Create the attribute service for testing
         attributeService = new AttributeServiceImpl();
-        attributeService.setPaoDefinitionDao(paoDefinitionDao);
-        attributeService.setPointService(pointService);
+        ReflectionTestUtils.invokeSetterMethod(attributeService,
+                                               "paoDefinitionDao",
+                                               paoDefinitionDao);
+        ReflectionTestUtils.invokeSetterMethod(attributeService, "pointService", pointService);
 
         device = new SimpleDevice(1, DeviceTypes.MCT310);
 
