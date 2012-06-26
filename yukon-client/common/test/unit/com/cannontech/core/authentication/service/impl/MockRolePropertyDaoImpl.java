@@ -6,6 +6,7 @@ import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.impl.RolePropertyDaoImpl;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -20,7 +21,15 @@ public class MockRolePropertyDaoImpl extends RolePropertyDaoImpl {
             throw new IllegalArgumentException(" The user does not have any roles or role properties setup.");
         }
     });
-    
+ 
+    private LoadingCache<LiteYukonGroup, RolePropertyHolder> groupRolePropertyHolders = CacheBuilder.newBuilder().build(new CacheLoader<LiteYukonGroup, RolePropertyHolder>() {
+        @Override
+        public RolePropertyHolder load(LiteYukonGroup key) throws Exception {
+            throw new IllegalArgumentException(" The login group does not have any roles or role properties setup.");
+        }
+    });
+
+    /******  Role Property Methods Associated With Users ***********/
     public RolePropertyHolder setupRolesFor(LiteYukonUser user) {
         // The user already exists.  Lets just add to it.
         RolePropertyHolder rolePropertyHolder = userRolePropertyHolders.getIfPresent(user);
@@ -41,7 +50,6 @@ public class MockRolePropertyDaoImpl extends RolePropertyDaoImpl {
         return roleValue;
     }
 
-    
     @Override
     public int getPropertyIntegerValue(YukonRoleProperty roleProperty, LiteYukonUser user)
     throws UserNotInRoleException {
@@ -58,6 +66,27 @@ public class MockRolePropertyDaoImpl extends RolePropertyDaoImpl {
         return (Boolean) rolePropertyValue;
     }
     
+    /******  Role Property Methods Associated With Groups ***********/
+    public RolePropertyHolder setupRolesFor(LiteYukonGroup liteYukonGroup) {
+        // The user already exists.  Lets just add to it.
+        RolePropertyHolder rolePropertyHolder = groupRolePropertyHolders.getIfPresent(liteYukonGroup);
+        if (rolePropertyHolder != null) {
+            return rolePropertyHolder;
+        }
+        
+        // This group doesn't have roles/role properties yet.  Add the group and create a role property holder for it.
+        rolePropertyHolder = new RolePropertyHolder();
+        groupRolePropertyHolders.put(liteYukonGroup, rolePropertyHolder);
+        return rolePropertyHolder;
+    }
+
+    @Override
+    public String getPropertyStringValue(LiteYukonGroup liteYukonGroup, YukonRoleProperty roleProperty) {
+        RolePropertyHolder rolePropertyHolder = groupRolePropertyHolders.getUnchecked(liteYukonGroup);
+        Object rolePropertyValue = rolePropertyHolder.getRolePropertyValue(roleProperty);
+        return (String) rolePropertyValue;
+    }
+
     public class RolePropertyHolder {
         private Map<YukonRole, Boolean> roleValueMap = Maps.newHashMap();
         private Map<YukonRoleProperty, Object> rolePropertyValueMap = Maps.newHashMap();
