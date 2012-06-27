@@ -102,7 +102,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     private Map<String, FormattedBlockProcessingService<Block>> readingTypesMap;
 
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
-    private final static String[] methods = new String[] { "pingURL", "getMethods",
+    private final static String[] methods = new String[] {
+        "pingURL",
+        "getMethods",
         "initiateMeterReadByMeterNumber",
         "initiateMeterReadByMeterNoAndType",
         "initiateDemandReset",
