@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.PhaseId;
@@ -107,7 +108,9 @@ import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.model.Season;
 import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.editor.data.CBCSpecialAreaData;
 import com.cannontech.web.editor.model.CBCSpecialAreaDataModel;
@@ -133,6 +136,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private String childLabel = "Children";
 	private boolean editingCBCStrategy = false;
 	private boolean editingController = false;
+	private boolean hasEditingRole = false;
 	private int itemId = -1;
 	private int editorType = -1;
 	private HashMap<Integer, CapControlStrategy> cbcStrategiesMap;
@@ -512,6 +516,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		if (retrieveDBPersistent() == null) {
 			return;
         }
+
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        HttpServletRequest request = (HttpServletRequest)context.getRequest();
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
+
         scheduleId = -1000;
         holidayScheduleId = -1000;
         holidayStrategyId = -1000;
@@ -592,6 +602,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         isDualSubBusEdited = false;
         pointTreeForm = null; 
         scheduleId = -1000;
+        hasEditingRole = false;
         holidayScheduleId = -1000;
         holidayStrategyId = -1000;
         unassignedBanks = null;
@@ -1474,7 +1485,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		editingCBCStrategy = b;
 	}
 
-	public SelectItem[] getTimeInterval() {
+	public boolean isHasEditingRole() {
+        return hasEditingRole;
+    }
+
+    public void setHasEditingRole(boolean hasEditingRole) {
+        this.hasEditingRole = hasEditingRole;
+    }
+
+    public SelectItem[] getTimeInterval() {
 		return CBCSelectionLists.TIME_INTERVAL;
 	}
 
