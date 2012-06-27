@@ -81,9 +81,11 @@ if(typeof(WaterLeakReport) === 'undefined'){
         },
         
         _init_open_filter_key_binding: function(e) {
+            var filter_dialog = jQuery("#leakFilterDialog");
             if (e.keyCode == 70 /* f (for "filter") */ &&
                     !jQuery(e.target).is("input") && /* don't open the dialog if the user is typing in an input field */
-                    !jQuery("#leakFilterDialog").is(":visible")) {
+                    filter_dialog.length === 1 &&
+                    !filter_dialog.is(":visible")) {
                 open_leakFilterDialog();
             }
         },
