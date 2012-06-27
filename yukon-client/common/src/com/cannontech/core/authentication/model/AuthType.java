@@ -1,39 +1,17 @@
 package com.cannontech.core.authentication.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum AuthType implements DatabaseRepresentationSource, DisplayableEnum {
-    PLAIN("Normal"),
-    HASH_SHA("Hashed"),
-    RADIUS("Radius"),
-    NONE("No Login"),
-    AD("Active Directory"),
-    LDAP("LDAP");
-    
-    private final String title;
+public enum AuthType implements DisplayableEnum {
+    PLAIN,
+    HASH_SHA,
+    RADIUS,
+    NONE,
+    AD,
+    LDAP;
 
-    private AuthType(String title) {
-        this.title = title;
-    }
-    
-    @Override
-    public String toString() {
-        return title;
-    }
-    
     @Override
     public String getFormatKey() {
         return "yukon.common.authType." + name();
     }
-    
-    @Override
-    public Object getDatabaseRepresentation() {
-        return name();
-    }
-
-    public String getTitle() {
-        return title;
-    }
-    
 }

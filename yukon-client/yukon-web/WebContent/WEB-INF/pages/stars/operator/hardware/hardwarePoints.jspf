@@ -7,7 +7,7 @@
 <script type="text/javascript">
 jQuery(function() {
     jQuery(document).delegate('#rfReadNow', 'click', function(event) {
-        var url = '/spring/stars/operator/hardware/rf/readNow';
+        var url = '<cti:url value="/spring/stars/operator/hardware/rf/readNow"/>';
         
         var elementToBlock = event.currentTarget;
         Yukon.ui.block(elementToBlock);

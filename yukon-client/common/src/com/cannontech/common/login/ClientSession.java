@@ -1,6 +1,3 @@
-/*
- * Created on Jul 1, 2003
- */
 package com.cannontech.common.login;
 
 import java.awt.Frame;
@@ -42,15 +39,11 @@ import com.cannontech.user.YukonUserContext;
  * 
  * In either case if there is a currentuserid,currentsessionid an attempt will be made to
  * use it, if that fails the user will be asked for their credentials.
- * @author aaron
  */
 public class ClientSession {
 		
 	private LiteYukonUser user;
 	
-	private static int INVALID_CURRENT_USERID = Integer.MIN_VALUE;
-	private static int DEF_PORT = 8080;
-
 	/**
 	 * Return the user associated with this session.
 	 * @return

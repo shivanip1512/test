@@ -77,7 +77,7 @@ public class StaticAuthenticationThrottleServiceImpl implements AuthenticationTh
         authThrottleMap.invalidateAll();
     }
 
-    public class AuthenticationThrottle {
+    public static class AuthenticationThrottle {
 
         private Duration lockoutDuration;
         private int lockoutThreshold;

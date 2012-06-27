@@ -14,8 +14,6 @@
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.analysis.list.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
     
-    <cti:includeScript link="/JavaScript/yukon/ui/general.js"/>
-    
     <script>
     var deleteConfirmAnalysisId;
     
