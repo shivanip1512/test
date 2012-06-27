@@ -45,6 +45,7 @@ import com.google.common.collect.Sets.SetView;
 public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDataListener {
     private static final Logger log = YukonLogManager.getLogger(RfnDemandResetServiceImpl.class);
 
+    private final static String configurationName = "RFN_METER_DEMAND_RESET";
     private final static String queueName = "yukon.qr.obj.amr.rfn.MeterDemandResetRequest";
 
     @Autowired private ConfigurationSource configurationSource;
@@ -74,7 +75,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
     @PostConstruct
     public void initialize() {
         qrTemplate = new RequestReplyTemplate<RfnMeterDemandResetReply>();
-        qrTemplate.setConfigurationName("RFN_METER_DEMAND_RESET");
+        qrTemplate.setConfigurationName(configurationName);
         qrTemplate.setConfigurationSource(configurationSource);
         qrTemplate.setConnectionFactory(connectionFactory);
         qrTemplate.setRequestQueueName(queueName, false);
@@ -158,13 +159,13 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                 attributeService.findPointIdsForAttribute(devices, BuiltInAttribute.RF_DEMAND_RESET);
 
         // Add devices to list of ones we need to send out notifications for.
+        Instant now = new Instant();
         synchronized (devicesAwaitingVerification) {
             for (Entry<? extends YukonPao, Integer> entry : pointIdsByDevice.entrySet()) {
                 YukonPao device = entry.getKey();
                 Integer pointId = entry.getValue();
                 DeviceVerificationInfo dvi =
-                        new DeviceVerificationInfo(callback, new Instant(),
-                                                   new SimpleDevice(device));
+                        new DeviceVerificationInfo(callback, now, new SimpleDevice(device));
                 devicesAwaitingVerification.put(pointId, dvi);
             }
         }

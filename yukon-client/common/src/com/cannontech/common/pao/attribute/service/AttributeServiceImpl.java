@@ -108,7 +108,6 @@ public class AttributeServiceImpl implements AttributeService {
                                                                          Attribute att) {
         BuiltInAttribute attribute = (BuiltInAttribute) att;
 
-        Map<T, PaoPointIdentifier> paoPointIdsByPaoId = Maps.newHashMap();
         Multimap<PointIdentifier, T> paosByPointIdentifier = ArrayListMultimap.create();
         for (T pao : paos) {
             try {
@@ -117,7 +116,6 @@ public class AttributeServiceImpl implements AttributeService {
                                                             attribute);
                 PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPointIdentifier(pao);
                 paosByPointIdentifier.put(paoPointIdentifier.getPointIdentifier(), pao);
-                paoPointIdsByPaoId.put(pao, paoPointIdentifier);
             } catch (IllegalUseOfAttribute e) {
                 // As per this methods documentation, we'll ignore this.
             }

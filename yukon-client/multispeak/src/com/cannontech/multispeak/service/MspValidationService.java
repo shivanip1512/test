@@ -44,5 +44,5 @@ public interface MspValidationService {
      * Returns an ErrorObject when the given responseURL is empty.  Does not guarantee the URL
      * is valid or that it is live.
      */
-    public ErrorObject isValidResponseURL(String responseURL, String nounType, String method);
+    public ErrorObject validateResponseURL(String responseURL, String nounType, String method);
 }

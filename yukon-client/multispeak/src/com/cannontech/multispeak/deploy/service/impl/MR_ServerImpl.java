@@ -102,6 +102,33 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     private Map<String, FormattedBlockProcessingService<Block>> readingTypesMap;
 
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
+    private final static String[] methods = new String[] { "pingURL", "getMethods",
+        "initiateMeterReadByMeterNumber",
+        "initiateMeterReadByMeterNoAndType",
+        "initiateDemandReset",
+        "isAMRMeter",
+        "getReadingsByDate",
+        "getAMRSupportedMeters",
+        "getLatestReadingByMeterNo",
+        "getLatestReadings",
+        "getLatestReadingByMeterNoAndType",
+        "getLatestReadingByType",
+        "getReadingsByMeterNo",
+        "getReadingsByDateAndType",
+        "getReadingsByMeterNoAndType",
+        "getSupportedReadingTypes",
+        "meterAddNotification",
+        "meterRemoveNotification",
+        "meterChangedNotification",
+        "initiateUsageMonitoring",
+        "cancelUsageMonitoring",
+        "initiateDisconnectedStatus",
+        "cancelDisconnectedStatus",
+        "serviceLocationChangedNotification",
+        "deleteMeterGroup",
+        "establishMeterGroup",
+        "insertMeterInMeterGroup",
+        "removeMetersFromMeterGroup" };
 
     private void init() throws RemoteException {
         multispeakFuncs.init();
@@ -116,33 +143,6 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     @Override
     public String[] getMethods() throws java.rmi.RemoteException {
         init();
-        String [] methods = new String[]{"pingURL", "getMethods",
-                                         "initiateMeterReadByMeterNumber",
-                                         "initiateMeterReadByMeterNoAndType",
-                                         "initiateDemandReset",
-                                         "isAMRMeter",
-                                         "getReadingsByDate",
-                                         "getAMRSupportedMeters",
-                                         "getLatestReadingByMeterNo",
-                                         "getLatestReadings",
-                                         "getLatestReadingByMeterNoAndType",
-                                         "getLatestReadingByType",
-                                         "getReadingsByMeterNo",
-                                         "getReadingsByDateAndType",
-                                         "getReadingsByMeterNoAndType",
-                                         "getSupportedReadingTypes",
-                                         "meterAddNotification",
-                                         "meterRemoveNotification",
-                                         "meterChangedNotification",
-                                         "initiateUsageMonitoring",
-                                         "cancelUsageMonitoring",
-                                         "initiateDisconnectedStatus",
-                                         "cancelDisconnectedStatus",
-                                         "serviceLocationChangedNotification",
-                                         "deleteMeterGroup",
-                                         "establishMeterGroup",
-                                         "insertMeterInMeterGroup",
-                                         "removeMetersFromMeterGroup"};
         return multispeakFuncs.getMethods(MultispeakDefines.MR_Server_STR , methods);
     }
     
@@ -860,7 +860,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         List<ErrorObject> errors = Lists.newArrayList();
         boolean hasFatalErrors = false;
         // Do a basic URL check. This only validates that it's not empty.
-        ErrorObject errorObject = mspValidationService.isValidResponseURL(responseURL, "Meter",
+        ErrorObject errorObject = mspValidationService.validateResponseURL(responseURL, "Meter",
                                                                           "InitiateDemandReset");
         if (errorObject != null) {
             errors.add(errorObject);

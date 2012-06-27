@@ -115,7 +115,7 @@ public class MspValidationServiceImpl implements MspValidationService {
     }
 
     @Override
-    public ErrorObject isValidResponseURL(String responseURL, String nounType, String method) {
+    public ErrorObject validateResponseURL(String responseURL, String nounType, String method) {
         ErrorObject retVal = null;
 
         if (StringUtils.isBlank(responseURL)) {
