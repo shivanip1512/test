@@ -40,12 +40,16 @@
 			<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 				<td>
 					<span class="gutter"><strong>Device: </strong></span>
-					<a href="/editor/cbcBase.jsf?type=2&amp;itemid=${voltagePoint.parentPaoIdentifier.paoId}">
-						<spring:escapeBody htmlEscape="true">${voltagePoint.paoName}</spring:escapeBody>
-					</a>
+					<spring:escapeBody htmlEscape="true">${voltagePoint.paoName}</spring:escapeBody>
 					<br>
 					<span class="gutter"><strong>Point: </strong></span>
-					<spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody>
+					<cti:url value="/editor/pointBase.jsf" var="pointLink">
+					   <cti:param name="parentId" value="${voltagePoint.parentPaoIdentifier.paoId}"/>
+					   <cti:param name="itemid" value="${voltagePoint.pointId}"/>
+					</cti:url>
+					<a href="${pointLink}">
+					   <spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody>
+					</a>
 				</td>
 				<td><i:inline key="yukon.common.phase.phase${voltagePoint.phase}"/></td>
 				<td title="<cti:msg2 key=".table.header.lowerLimitTitle"/>" class="${overrideStrategyClass}">

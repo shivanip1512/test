@@ -64,18 +64,16 @@
 					</c:if>
 				
 					<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
+						<td><spring:escapeBody htmlEscape="true">${voltagePoint.paoName}</spring:escapeBody></td>
 						<td>
-	                        <cti:url var="parentPaoUrl" value="/editor/cbcBase.jsf">
-	                            <cti:param name="type" value="2"/>
-	                            <cti:param name="itemid" value="${voltagePoint.parentPaoIdentifier.paoId}"/>
-	                        </cti:url>
-							<a href="${parentPaoUrl}">
-								<spring:escapeBody htmlEscape="true">
-									${voltagePoint.paoName}
-								</spring:escapeBody>
-							</a>
-						</td>
-						<td><spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody></td>
+		                    <cti:url value="/editor/pointBase.jsf" var="pointLink">
+		                       <cti:param name="parentId" value="${voltagePoint.parentPaoIdentifier.paoId}"/>
+		                       <cti:param name="itemid" value="${voltagePoint.pointId}"/>
+		                    </cti:url>
+		                    <a href="${pointLink}">
+		                       <spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody>
+		                    </a>
+                        </td>
 						<td>
 							<c:choose>
 								<c:when test="${!voltagePoint.regulator}">
