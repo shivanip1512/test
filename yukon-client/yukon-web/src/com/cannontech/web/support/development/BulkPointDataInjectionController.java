@@ -20,11 +20,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
@@ -46,10 +41,8 @@ import com.cannontech.web.security.annotation.CheckDevelopmentMode;
 @RequestMapping("/development/bulkPointInjection/*")
 @CheckDevelopmentMode
 public class BulkPointDataInjectionController {
-    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private AttributeService attributeService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private BulkPointDataInjectionService bulkPointDataInjectionSerivce;
 
     private BulkFakePointInjectionDto bulkInjection;
@@ -107,11 +100,6 @@ public class BulkPointDataInjectionController {
         // attributes
         Set<Attribute> allAttributes = attributeService.getReadableAttributes();
         model.addAttribute("allAttributes", allAttributes);
-
-        DeviceGroup group = deviceGroupService.resolveGroupName(SystemGroupEnum.ROOT.getFullPath());
-        DeviceCollection deviceCollection =
-            deviceGroupCollectionHelper.buildDeviceCollection(group);
-        model.addAttribute("deviceCollection", deviceCollection);
         model.addAttribute("qualities", PointQuality.values());
     }
 
