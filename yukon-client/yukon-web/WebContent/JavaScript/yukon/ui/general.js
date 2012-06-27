@@ -119,8 +119,6 @@ Yukon.ui = {
             });
         });
         
-        Yukon.ui._setFocusFirstError();
-        
         /*
          * Focus the designated input element
          */

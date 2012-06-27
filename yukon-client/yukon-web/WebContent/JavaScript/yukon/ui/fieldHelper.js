@@ -108,7 +108,7 @@ if(typeof(Yukon.FieldHelper) === "undefined"){
                  jQuery('body').append(popupString.join(''));
              }
              
-             var target = jQuery(event.currentTarget);
+             var target = jQuery(event.target);
              var popupLeft = target.offset().left + target.width() + 4;
              var left = popupLeft + 'px';
              var top = (target.offset().top -20) + 'px';
