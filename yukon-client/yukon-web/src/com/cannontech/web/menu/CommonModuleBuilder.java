@@ -234,9 +234,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
         String beanName = element.getAttributeValue("bean");
         DynamicMenuOptionProducer menuOptionProducer = menuOptionProducerFactory.createMenuOptions(beanName);
         UserChecker checker = getCheckerForElement(element);
-        
-        menuOptionProducer.addUserChecker(checker);
-        
+
+        menuOptionProducer.setUserChecker(checker);
+
         return menuOptionProducer;
     }
 
