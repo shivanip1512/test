@@ -4,9 +4,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.LogHelper;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class AggregateAndUserChecker extends UserCheckerBase {
+    private final static Logger log = YukonLogManager.getLogger(AggregateAndUserChecker.class);
+
     private Collection<UserChecker> checkerList = Collections.emptyList();
 
     public AggregateAndUserChecker(Collection<UserChecker> checkerList) {
@@ -18,7 +24,7 @@ public class AggregateAndUserChecker extends UserCheckerBase {
     }
 
     public boolean check(LiteYukonUser user) {
-        System.out.println(toString());
+        LogHelper.debug(log, "check %s", toString());
         for (UserChecker checker : checkerList) {
             if (!checker.check(user)) {
                 return false;
