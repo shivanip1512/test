@@ -10,6 +10,7 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.BadServerResponseException;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.db.MspLoadControl;
@@ -154,5 +155,5 @@ public interface MultispeakLMService {
 	 *           2way load control switches.
 	 * @return
 	 */
-	public SubstationLoadControlStatus[] getActiveLoadControlStatus();
+	public SubstationLoadControlStatus[] getActiveLoadControlStatus() throws ConnectionException, NotFoundException;
 }

@@ -278,7 +278,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     	return null;
 	}
 	@Override
-	public SubstationLoadControlStatus[] getActiveLoadControlStatus() {
+	public SubstationLoadControlStatus[] getActiveLoadControlStatus() throws ConnectionException, NotFoundException{
         List<SubstationLoadControlStatus> substationLoadControlStatusList = new ArrayList<SubstationLoadControlStatus>();
         List<SubstationLoadControlStatusControlledItemsControlItem> controlledItemsList = new ArrayList<SubstationLoadControlStatusControlledItemsControlItem>();
         
@@ -324,7 +324,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 	        	int paobjectId = mspLMInterfaceMapping.getPaobjectId();
 				LiteYukonPAObject liteYukonPAObject = paoDao.getLiteYukonPAO(paobjectId);
 				if (paoDefinitionDao.isTagSupported(liteYukonPAObject.getPaoType(), PaoTag.LM_PROGRAM)) {
-					LMProgramBase program = loadControlClientConnection.getProgram(paobjectId);
+					LMProgramBase program = loadControlClientConnection.getProgramSafe(paobjectId);
 					lmProgramBases.add(program);
 	        	} else if ( liteYukonPAObject.getPaoType() == PaoType.LM_SCENARIO) {
 	        		List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(paobjectId);

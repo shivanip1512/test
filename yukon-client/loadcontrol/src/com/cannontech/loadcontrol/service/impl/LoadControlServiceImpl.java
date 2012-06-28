@@ -45,6 +45,7 @@ import com.cannontech.loadcontrol.service.data.ProgramStatus;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.BadServerResponseException;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -169,13 +170,14 @@ public class LoadControlServiceImpl implements LoadControlService {
     
     // START CONTROL BY SCENAIO NAME
     @Override
-	public ScenarioStatus startControlByScenarioName(String scenarioName,
-													Date startTime, 
-													Date stopTime, 
-													boolean forceStart,
-													boolean observeConstraintsAndExecute, 
-													LiteYukonUser user)
-													throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException {
+    public ScenarioStatus startControlByScenarioName(String scenarioName,
+                                                     Date startTime,
+                                                     Date stopTime,
+                                                     boolean forceStart,
+                                                     boolean observeConstraintsAndExecute,
+                                                     LiteYukonUser user)
+            throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException,
+            ConnectionException {
 
 		int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
 		validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
@@ -186,17 +188,21 @@ public class LoadControlServiceImpl implements LoadControlService {
 	
     // ASYNC START CONTROL BY SCENARIO NAME@Override
     @Override
-	public void asynchStartControlByScenarioName(final String scenarioName,
-												final Date startTime, 
-												final Date stopTime,
-												final boolean forceStart,
-												final boolean observeConstraintsAndExecute, 
-												final LiteYukonUser user)
-												throws NotFoundException, NotAuthorizedException {
-
+    public void asynchStartControlByScenarioName(final String scenarioName,
+                                                 final Date startTime,
+                                                 final Date stopTime,
+                                                 final boolean forceStart,
+                                                 final boolean observeConstraintsAndExecute,
+                                                 final LiteYukonUser user)
+            throws NotFoundException, NotAuthorizedException, ConnectionException {
+                   
 		final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
 		validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
 		final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+		
+        if (!loadControlClientConnection.isValid()) {
+            throw new ConnectionException("The Load Management server connection is not valid.");
+        }
 
 		executor.execute(new Runnable() {
 			public void run() {
@@ -211,7 +217,11 @@ public class LoadControlServiceImpl implements LoadControlService {
 		});
 	}
 	
-	private ScenarioStatus doStartProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException, NotAuthorizedException, BadServerResponseException {
+    private ScenarioStatus doStartProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName,
+                                                     Date startTime, Date stopTime, boolean forceStart,
+                                                     boolean observeConstraintsAndExecute, LiteYukonUser user)
+            throws TimeoutException, NotAuthorizedException, BadServerResponseException, ConnectionException,
+            NotFoundException {
 		List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         Map<Integer, ScenarioProgram> scenarioPrograms =
@@ -233,12 +243,13 @@ public class LoadControlServiceImpl implements LoadControlService {
     
     // STOP CONTROL BY SCENAIO NAME
 	@Override
-	public ScenarioStatus stopControlByScenarioName(String scenarioName,
-													Date stopTime, 
-													boolean forceStop,
-													boolean observeConstraintsAndExecute, 
-													LiteYukonUser user)
-													throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException {
+    public ScenarioStatus stopControlByScenarioName(String scenarioName,
+                                                    Date stopTime,
+                                                    boolean forceStop,
+                                                    boolean observeConstraintsAndExecute,
+                                                    LiteYukonUser user)
+            throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException,
+            ConnectionException {
 
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
@@ -249,16 +260,20 @@ public class LoadControlServiceImpl implements LoadControlService {
 	
 	// ASYNC STOP CONTROL BY SCENARIO NAME
 	@Override
-	public void asynchStopControlByScenarioName(final String scenarioName,
-												final Date stopTime, 
-												final boolean forceStop,
-												final boolean observeConstraintsAndExecute, 
-												final LiteYukonUser user)
-												throws NotFoundException, NotAuthorizedException {
+    public void asynchStopControlByScenarioName(final String scenarioName,
+                                                final Date stopTime,
+                                                final boolean forceStop,
+                                                final boolean observeConstraintsAndExecute,
+                                                final LiteYukonUser user)
+            throws NotFoundException, NotAuthorizedException, ConnectionException {
 
         final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
         final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
+        
+        if (!loadControlClientConnection.isValid()) {
+            throw new ConnectionException("The Load Management server connection is not valid.");
+        }
         
         executor.execute(new Runnable() {
     		public void run() {
@@ -270,8 +285,12 @@ public class LoadControlServiceImpl implements LoadControlService {
     		}
     	});
     }
-	
-	private ScenarioStatus doStopProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException, NotAuthorizedException, BadServerResponseException {
+
+    private ScenarioStatus doStopProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName,
+                                                    Date stopTime, boolean forceStop,
+                                                    boolean observeConstraintsAndExecute, LiteYukonUser user)
+            throws TimeoutException, NotAuthorizedException, BadServerResponseException, ConnectionException,
+            NotFoundException {
 
 		List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);

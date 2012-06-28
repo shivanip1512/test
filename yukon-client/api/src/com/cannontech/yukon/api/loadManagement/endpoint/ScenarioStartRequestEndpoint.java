@@ -76,35 +76,30 @@ public class ScenarioStartRequestEndpoint {
         	} else {
         		loadControlService.asynchStartControlByScenarioName(scenarioName, startTime, stopTime, false, true, user);
         	}
+            // build response
+            resp.addContent(XmlUtils.createStringElement("success", ns, ""));
+            
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "InvalidScenarioName", "No scenario named: " + scenarioName);
             resp.addContent(fe);
-            return resp;
         } catch (TimeoutException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "Timeout", "Timeout wating for program update response.");
             resp.addContent(fe);
-            return resp;
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "UserNotAuthorized", "The user is not authorized to start scenario.");
             resp.addContent(fe);
-            return resp;
         } catch (BadServerResponseException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "ServerCommunicationError", e.getMessage());
             resp.addContent(fe);
-            return resp;
         } catch (ConnectionException e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "ServerCommunicationError", e.getMessage());
             resp.addContent(fe);
-            return resp;
         } catch (Exception e) {
             Element fe = XMLFailureGenerator.generateFailure(scenarioStartRequest, e, "OtherException", "An exception has been caught.");
             resp.addContent(fe);
             log.error(e.getMessage(), e);
         }
-        
-        // build response
-        resp.addContent(XmlUtils.createStringElement("success", ns, ""));
-        
+                
         return resp;
     }
     

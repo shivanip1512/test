@@ -237,11 +237,12 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         return programSet;
     }
 
-    public List<LMProgramBase> getProgramsForProgramIds(List<Integer> programIds) {
-        
+    public List<LMProgramBase> getProgramsForProgramIds(List<Integer> programIds) throws ConnectionException,
+            NotFoundException {
+
         List<LMProgramBase> programs = new ArrayList<LMProgramBase>(programIds.size());
         for (int programId : programIds) {
-            LMProgramBase program = getProgram(programId);
+            LMProgramBase program = getProgramSafe(programId);
             if (program != null) {
                 programs.add(program);
             }
