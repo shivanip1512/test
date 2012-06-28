@@ -178,6 +178,10 @@ public class LoadControlServiceImpl implements LoadControlService {
                                                      LiteYukonUser user)
             throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException,
             ConnectionException {
+        
+        if (!loadControlClientConnection.isValid()) {
+            throw new ConnectionException("The Load Management server connection is not valid.");
+        }
 
 		int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
 		validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
@@ -195,7 +199,11 @@ public class LoadControlServiceImpl implements LoadControlService {
                                                  final boolean observeConstraintsAndExecute,
                                                  final LiteYukonUser user)
             throws NotFoundException, NotAuthorizedException, ConnectionException {
-                   
+        
+        if (!loadControlClientConnection.isValid()) {
+            throw new ConnectionException("The Load Management server connection is not valid.");
+        }
+             
 		final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
 		validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
 		final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
@@ -251,6 +259,10 @@ public class LoadControlServiceImpl implements LoadControlService {
             throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException,
             ConnectionException {
 
+        if (!loadControlClientConnection.isValid()) {
+            throw new ConnectionException("The Load Management server connection is not valid.");
+        }
+
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
         List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
@@ -266,15 +278,15 @@ public class LoadControlServiceImpl implements LoadControlService {
                                                 final boolean observeConstraintsAndExecute,
                                                 final LiteYukonUser user)
             throws NotFoundException, NotAuthorizedException, ConnectionException {
+        
+	    if (!loadControlClientConnection.isValid()) {
+            throw new ConnectionException("The Load Management server connection is not valid.");
+        }
 
         final int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
         validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
         final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
-        
-        if (!loadControlClientConnection.isValid()) {
-            throw new ConnectionException("The Load Management server connection is not valid.");
-        }
-        
+                
         executor.execute(new Runnable() {
     		public void run() {
     			try {
