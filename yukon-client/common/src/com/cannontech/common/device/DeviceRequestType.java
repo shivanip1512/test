@@ -20,6 +20,7 @@ public enum DeviceRequestType {
     DISCONNECT_STATUS_ATTRIBUTE_READ("Disconnect Status Attribute Read", "Disconnect Status Attribute Read", false),
     
     GROUP_COMMAND("Group Command", "A command sent to a group of devices.", false),
+    GROUP_COMMAND_VERIFY("Group Command Verify", "A command sent to a group of devices to verify.", false),
     GROUP_ATTRIBUTE_READ("Group Attribute Read", "An attribute read command sent to a group of devices.", false),
     SCHEDULED_GROUP_COMMAND("Scheduled Group Command", "A command sent to a group of devices periodically.", true),
     SCHEDULED_GROUP_ATTRIBUTE_READ("Scheduled Group Attribute Read", "An attribute read command sent to a group of devices periodically.", true),

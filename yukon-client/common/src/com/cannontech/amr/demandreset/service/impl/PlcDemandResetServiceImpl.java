@@ -15,6 +15,7 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.DemandResetCallback.Results;
 import com.cannontech.amr.demandreset.service.PlcDemandResetService;
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
@@ -97,24 +98,23 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         // Use midnight in the local (server) time.  This assumes the meters use the same timezone
         // as the server.  (The reset time for a 470 is always at midnight of the previous night
         // (morning) of the reset.)
-        final DateMidnight whenRequested = new DateMidnight();
+        DateMidnight whenRequested = new DateMidnight();
 
         SimpleCallback<GroupCommandResult> gceCallback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult item) throws Exception {
                 Results results = new Results(item.getResultHolder().getErrors());
                 callback.initiated(results);
-                retreiveLastResetTime(deviceCollection, callback, whenRequested.toInstant(), user);
             }
         };
         groupCommandExecutor.execute(deviceCollection, DEMAND_RESET_COMMAND,
                                      DeviceRequestType.GROUP_COMMAND, gceCallback, user);
+        retreiveLastResetTime(deviceCollection, callback, whenRequested.toInstant(), user);
     }
 
     private void retreiveLastResetTime(DeviceCollection deviceCollection,
                                        final DemandResetCallback demandResetCallback,
                                        final Instant whenRequested, LiteYukonUser user) {
-        // TODO: needs to go out at the same time but with a lower priority than the reset request
         final Set<SimpleDevice> devicesLeft = Sets.newHashSet(deviceCollection.getDeviceList());
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
@@ -150,6 +150,9 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                                                          "\"IED Demand Reset Count\" point value missing");
                     } else {
                         Instant lastResetInstant = new Instant(lastResetTime);
+                        LogHelper.debug(log, "demand reset for %s; "
+                                + "requested at %tc and last verified at %tc",
+                                device, whenRequested.toDate(), lastResetInstant.toDate());
                         if (lastResetInstant.isBefore(whenRequested)) {
                             demandResetCallback.failed(device);
                         } else {
@@ -161,6 +164,6 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             }
         };
         groupCommandExecutor.execute(deviceCollection, LAST_RESET_TIME_COMMAND,
-                                     DeviceRequestType.GROUP_COMMAND, callback, user);
+                                     DeviceRequestType.GROUP_COMMAND_VERIFY, callback, user);
     }
 }

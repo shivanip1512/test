@@ -54,7 +54,10 @@ public final class CommandRequestExecutionDefaults {
         b.put(SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ,            new ExecutionInfo(false, 14, false));
         b.put(TOU_WIDGET_ATTRIBUTE_READ,                          new ExecutionInfo(false, 14, false));
         b.put(DISCONNECT_STATUS_ATTRIBUTE_READ,                   new ExecutionInfo(false, 14, false));
+        // It is important that GROUP_COMMAND_VERIFY have a lower priority than GROUP_COMMAND.
+        // This is used to ensure that a verification gets sent out after the request.
         b.put(GROUP_COMMAND,                                      new ExecutionInfo(false, 8, false));
+        b.put(GROUP_COMMAND_VERIFY,                               new ExecutionInfo(false, 7, false));
         b.put(GROUP_ATTRIBUTE_READ,                               new ExecutionInfo(false, 8, false));
         b.put(SCHEDULED_GROUP_COMMAND,                            new ExecutionInfo(false, 8, true));
         b.put(SCHEDULED_GROUP_ATTRIBUTE_READ,                     new ExecutionInfo(false, 8, true));
