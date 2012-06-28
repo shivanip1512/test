@@ -51,7 +51,7 @@
                     </c:otherwise>
                 </c:choose>
                 <li>
-                     <span class="${fontColor}"><i:inline key="${result.message}"/></span>
+                     <span class="${fontColor}"><i:inline key="${result.importResultMessage}"/></span>
                 </li>
             </c:forEach>
         </ol>
