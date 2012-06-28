@@ -208,10 +208,6 @@ public class LoadControlServiceImpl implements LoadControlService {
 		validateScenarioIsVisibleToUser(scenarioName, scenarioId, user);
 		final List<Integer> programIds = loadControlProgramDao.getProgramIdsByScenarioId(scenarioId);
 		
-        if (!loadControlClientConnection.isValid()) {
-            throw new ConnectionException("The Load Management server connection is not valid.");
-        }
-
 		executor.execute(new Runnable() {
 			public void run() {
 				try {
