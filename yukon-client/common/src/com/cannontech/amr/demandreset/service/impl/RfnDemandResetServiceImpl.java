@@ -79,8 +79,6 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         qrTemplate.setConfigurationSource(configurationSource);
         qrTemplate.setConnectionFactory(connectionFactory);
         qrTemplate.setRequestQueueName(queueName, false);
-
-        asyncDynamicDataSource.registerForAllPointData(this);
     }
 
     @Override
@@ -176,6 +174,9 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         for (YukonPao device : devicesWithoutPoint) {
             callback.cannotVerify(new SimpleDevice(device), "\"RF Demand Reset\" point missing");
         }
+        asyncDynamicDataSource.registerForPointData(this,
+                                                    Sets.newHashSet(pointIdsByDevice.values()));
+        // TODO: Unregister for these points when we're done with them.
 
         // The set returned by keySet isn't serializable, so we have to make a copy.
         Set<RfnIdentifier> meterIds = Sets.newHashSet(devicesByRfnMeterIdentifier.keySet());
