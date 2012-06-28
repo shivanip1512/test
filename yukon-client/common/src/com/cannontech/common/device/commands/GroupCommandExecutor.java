@@ -12,19 +12,18 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * Interface used to execute a command for a group of devices
  */
 public interface GroupCommandExecutor {
-
 	/**
 	 * Execute a command on a collection of devices.
      * Will send standard {@link CommandRequestDevice} requests.
-	 * @param commandRequestExecutionType defaults to CommandRequestExecutionType.GROUP_COMMAND if null
 	 * @param callback custom code to be called on command completion
 	 */
-    public String execute(DeviceCollection deviceCollection, String command, DeviceRequestType commandRequestExecutionType, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
-    
+    public String execute(DeviceCollection deviceCollection, String command,
+                          DeviceRequestType commandRequestExecutionType,
+                          SimpleCallback<GroupCommandResult> callback, LiteYukonUser user);
+
     /**
      * Execute a command on a collection of devices.
      * May take custom {@link CommandRequestDevice} requests as parameter.
-     * @param commandRequestExecutionType defaults to CommandRequestExecutionType.GROUP_COMMAND if null
      * @param callback custom code to be called on command completion
      */
     public String execute(DeviceCollection deviceCollection, String command,
@@ -39,6 +38,6 @@ public interface GroupCommandExecutor {
     public List<GroupCommandResult> getPendingByType(DeviceRequestType type);
 
     public GroupCommandResult getResult(String id) throws ResultResultExpiredException;
-    
+
     public long cancelExecution(String resultId, LiteYukonUser user) throws ResultResultExpiredException;
 }

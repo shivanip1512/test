@@ -34,14 +34,14 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * Implementation class for GroupCommandExecutor
  */
 public class GroupCommandExecutorImpl implements GroupCommandExecutor {
-    private Logger log = YukonLogManager.getLogger(GroupCommandExecutorImpl.class);
+    private final static Logger log = YukonLogManager.getLogger(GroupCommandExecutorImpl.class);
 
     @Autowired private CommandRequestDeviceExecutor commandRequestExecutor;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 
-    private RecentResultsCache<GroupCommandResult> resultsCache
+    private final RecentResultsCache<GroupCommandResult> resultsCache
         = new RecentResultsCache<GroupCommandResult>();
 
     @Override
@@ -54,6 +54,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
 
         ObjectMapper<YukonDevice, CommandRequestDevice> objectMapper =
             new ObjectMapper<YukonDevice, CommandRequestDevice>() {
+            @Override
             public CommandRequestDevice map(YukonDevice from) throws ObjectMappingException {
                 return buildStandardRequest(from, command);
             }
