@@ -19,6 +19,15 @@
 <entry key="yukon.common.dateFormatting.LONG_DATE">MMMM d, yyyy</entry>
 <entry key="yukon.common.dateFormatting.VERY_SHORT">MM/dd HH:mm</entry>
 
+<!-- 
+     Please see http://keith-wood.name/datetimeEntryRef.html for the following formats
+-->
+<entry key="yukon.common.dateFormatting.TIME.js">h:M a</entry>
+<!--DO NOT change the value of TIME24H.js - 3Tier depends on 24 time -->
+<entry key="yukon.common.dateFormatting.TIME24H.js">H:M</entry>
+<entry key="yukon.common.dateFormatting.DATE.js">O/D/Y</entry>
+<entry key="yukon.common.dateFormatting.BOTH.js">O/D/Y H:M</entry>
+
 <entry key="yukon.common.dateFormatting.parserImplementation">MDY</entry>
 
 <entry key="yukon.common.dateFormatting.intervalSeparator">&#160;to&#160;</entry>
@@ -38,5 +47,47 @@
 <entry key="yukon.common.error.date.startBeforeStop">The start date must occur before the stop date.</entry>
 <entry key="yukon.common.error.date.invalid">The date entered is invalid.</entry>
 <entry key="yukon.common.error.date.oneInvalid">One of the dates entered is not a valid date.</entry>
+
+<!-- http://trentrichardson.com/examples/timepicker/ -->
+<entry key="yukon.common.js.timePicker.timeOnlyTitle">Choose Time</entry>
+<entry key="yukon.common.js.timePicker.timeText">Time</entry>
+<entry key="yukon.common.js.timePicker.hourText">Hour</entry>
+<entry key="yukon.common.js.timePicker.minuteText">Minute</entry>
+<entry key="yukon.common.js.timePicker.secondText">Second</entry>
+<entry key="yukon.common.js.timePicker.millisecText">Millisecond</entry>
+<entry key="yukon.common.js.timePicker.currentText">Now</entry>
+<entry key="yukon.common.js.timePicker.closeText">Close</entry>
+<entry key="yukon.common.js.timePicker.ampm">false</entry>
+
+<!-- Please refer to: http://docs.jquery.com/UI/Datepicker/Localization for more details -->
+<entry key="yukon.common.js.dateTimePicker.clearText">Clear</entry>
+<entry key="yukon.common.js.dateTimePicker.clearStatus">Erase the current date</entry>
+<entry key="yukon.common.js.dateTimePicker.closeText">Close</entry>
+<entry key="yukon.common.js.dateTimePicker.closeStatus">Close without change</entry>
+<entry key="yukon.common.js.dateTimePicker.prevText">Prev</entry>
+<entry key="yukon.common.js.dateTimePicker.prevBigText"></entry>
+<entry key="yukon.common.js.dateTimePicker.prevStatus">Show the previous month</entry>
+<entry key="yukon.common.js.dateTimePicker.prevBigStatus">Show the previous year</entry>
+<entry key="yukon.common.js.dateTimePicker.nextText">Next</entry>
+<entry key="yukon.common.js.dateTimePicker.nextBigText"></entry>
+<entry key="yukon.common.js.dateTimePicker.nextStatus">Show the next month</entry>
+<entry key="yukon.common.js.dateTimePicker.nextBigStatus">Show the next year</entry>
+<entry key="yukon.common.js.dateTimePicker.currentText">Today</entry>
+<entry key="yukon.common.js.dateTimePicker.currentStatus">Show the current month</entry>
+<entry key="yukon.common.js.dateTimePicker.monthNames">['January','February','March','April','May','June', 'July','August','September','October','November','December']</entry>
+<entry key="yukon.common.js.dateTimePicker.monthNamesShort">['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']</entry>
+<entry key="yukon.common.js.dateTimePicker.monthStatus">Show a different month</entry>
+<entry key="yukon.common.js.dateTimePicker.yearStatus">Show a different year</entry>
+<entry key="yukon.common.js.dateTimePicker.weekHeader">Wk</entry>
+<entry key="yukon.common.js.dateTimePicker.weekStatus">Week of the year</entry>
+<entry key="yukon.common.js.dateTimePicker.dayNames">['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']</entry>
+<entry key="yukon.common.js.dateTimePicker.dayNamesShort">['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']</entry>
+<entry key="yukon.common.js.dateTimePicker.dayNamesMin">['Su','Mo','Tu','We','Th','Fr','Sa']</entry>
+<entry key="yukon.common.js.dateTimePicker.dayStatus">Set DD as first week day</entry>
+<entry key="yukon.common.js.dateTimePicker.dateStatus">Select D, M d</entry>
+<entry key="yukon.common.js.dateTimePicker.dateFormat">mm/dd/yy</entry>
+<entry key="yukon.common.js.dateTimePicker.firstDay">0</entry>
+<entry key="yukon.common.js.dateTimePicker.initStatus">Select a date</entry>
+<entry key="yukon.common.js.dateTimePicker.isRTL">false</entry>
 
 </properties>

@@ -11,6 +11,8 @@ a img {
     border: none; /* for IE's sake */
 }
 
+a {cursor: pointer}
+
 .altTableCell {
     background-color: #eeeeee;
 }
@@ -2101,4 +2103,26 @@ table th.small_width {
 
 .inputWithIcon {
     margin-right: 5px;
+}
+
+.datetimeEntry_wrap {
+	display: inline-block;
+	overflow: hidden;
+	background: #ccc;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	border: solid 1px #999;
+}
+
+.datetimeEntry_wrap input {
+	padding: 2px;
+	float: left;
+	border: solid 1px white;
+}
+.datetimeEntry_wrap img {
+	margin: 3px;
+}
+.datetimeEntry_wrap .datetimeEntry_control {
+	display: none !important;
 }
