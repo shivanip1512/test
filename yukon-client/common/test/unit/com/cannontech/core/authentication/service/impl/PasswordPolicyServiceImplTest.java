@@ -24,31 +24,28 @@ public class PasswordPolicyServiceImplTest {
     private static final Instant FIFTY_DAYS_AGO = Instant.now().minus(Duration.standardDays(50));
     private static final Instant ONE_HUNDRED_DAYS_AGO = Instant.now().minus(Duration.standardDays(80));
     
-    LiteYukonUser USER_ONE = new LiteYukonUser();{
-        USER_ONE.setUserID(1);
+    private static final LiteYukonUser USER_ONE = new LiteYukonUser(1, "userOne");
+    {
         USER_ONE.setLastChangedDate(EIGHTEN_HOURS_AGO);        
     }
 
-    LiteYukonUser USER_TWO = new LiteYukonUser();{
-        USER_TWO.setUserID(2);
+    private static final LiteYukonUser USER_TWO = new LiteYukonUser(2, "userTwo");
+    {
         USER_TWO.setLastChangedDate(TWO_DAYS_AGO);        
     }
 
-    LiteYukonUser USER_NO_POLICY = new LiteYukonUser();{
-        USER_NO_POLICY.setUserID(3);
+    private static final LiteYukonUser USER_NO_POLICY = new LiteYukonUser(3, "userNoPolicy");
+    {
         USER_NO_POLICY.setLastChangedDate(ONE_HUNDRED_DAYS_AGO);        
     }
 
-    LiteYukonUser USER_SYSTEM_POLICY = new LiteYukonUser();{
-        USER_SYSTEM_POLICY.setUserID(4);
+    private static final LiteYukonUser USER_SYSTEM_POLICY = new LiteYukonUser(4, "userSystemPolicy");
+    {
         USER_SYSTEM_POLICY.setLastChangedDate(FIFTY_DAYS_AGO);        
     }
 
-    PasswordPolicyService passwordPolicyService = new PasswordPolicyServiceImpl(); {
-
-        MockRolePropertyDaoImpl rolePropertyDaoMock = new MockRolePropertyDaoImpl();
-        ReflectionTestUtils.setField(passwordPolicyService, "rolePropertyDao", rolePropertyDaoMock);
-        
+    private static final MockRolePropertyDaoImpl rolePropertyDaoMock = new MockRolePropertyDaoImpl();
+    { 
         rolePropertyDaoMock.setupRolesFor(USER_ONE)
             .withRoleProperty(LOCKOUT_DURATION, 6)
             .withRoleProperty(LOCKOUT_THRESHOLD, 3)
@@ -57,13 +54,13 @@ public class PasswordPolicyServiceImplTest {
             .withRoleProperty(MINIMUM_PASSWORD_LENGTH, 6)
             .withRoleProperty(PASSWORD_HISTORY, 3)
             .withRoleProperty(POLICY_QUALITY_CHECK, 2)
-
+    
             .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, false)
             .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true)
             .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, false);
-
+    
         rolePropertyDaoMock.setupRolesFor(USER_TWO)
             .withRoleProperty(LOCKOUT_DURATION, 120)
             .withRoleProperty(LOCKOUT_THRESHOLD, 10)
@@ -72,7 +69,7 @@ public class PasswordPolicyServiceImplTest {
             .withRoleProperty(MINIMUM_PASSWORD_LENGTH, 9)
             .withRoleProperty(PASSWORD_HISTORY, 10)
             .withRoleProperty(POLICY_QUALITY_CHECK, 1)
-
+    
             .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, false)
             .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, false)
@@ -87,16 +84,20 @@ public class PasswordPolicyServiceImplTest {
             .withRoleProperty(MINIMUM_PASSWORD_LENGTH, 0)
             .withRoleProperty(PASSWORD_HISTORY, 0)
             .withRoleProperty(POLICY_QUALITY_CHECK, 0)
-
+    
             .withRoleProperty(POLICY_RULE_UPPERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_LOWERCASE_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_BASE_10_DIGITS, true)
             .withRoleProperty(POLICY_RULE_NONALPHANUMERIC_CHARACTERS, true)
             .withRoleProperty(POLICY_RULE_UNICODE_CHARACTERS, true);
-
+    
         rolePropertyDaoMock.setupRolesFor(USER_SYSTEM_POLICY)
             .withRole(PASSWORD_POLICY, false);
+    }
 
+    public static final PasswordPolicyService passwordPolicyService = new PasswordPolicyServiceImpl(); 
+    {
+        ReflectionTestUtils.setField(passwordPolicyService, "rolePropertyDao", rolePropertyDaoMock);
     }
     
     @Test

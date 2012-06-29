@@ -44,10 +44,8 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
     
     @Override
     public PasswordPolicy getPasswordPolicy(LiteYukonUser user) {
-        Validate.notNull(user);
-        
-        // There is not a password policy for this user.  Returning null.
-        if (!rolePropertyDao.checkRole(YukonRole.PASSWORD_POLICY, user)) {
+        // There is not a password policy for this user the default password policy will be returned.
+        if (user == null || !rolePropertyDao.checkRole(YukonRole.PASSWORD_POLICY, user)) {
             return getDefaultPasswordPolicy();
         }
         

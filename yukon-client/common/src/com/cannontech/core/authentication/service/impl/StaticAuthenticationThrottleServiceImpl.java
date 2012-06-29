@@ -24,26 +24,17 @@ public class StaticAuthenticationThrottleServiceImpl implements AuthenticationTh
     // map of username and AuthenticationThrottle data
     private Cache<String, AuthenticationThrottle> authThrottleMap = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
 
-    private static final int DEFAULT_LOCKOUT_THRESHOLD = 5;
-    private Duration DEFAULT_LOCKOUT_DURATION = Duration.standardMinutes(20);
-    
     @Override
     public synchronized void loginAttempted(String username) throws AuthenticationThrottleException {
         LiteYukonUser attemptedLoginUser = yukonUserDao.findUserByUsername(username);
-        PasswordPolicy passwordPolicy = null; 
-        if (attemptedLoginUser != null) {
-                passwordPolicyService.getPasswordPolicy(attemptedLoginUser);
-        }
-        
-        int lockoutThreshold = (passwordPolicy != null) ? passwordPolicy.getLockoutThreshold() : DEFAULT_LOCKOUT_THRESHOLD;
-        Duration lockoutDuration = (passwordPolicy != null) ? passwordPolicy.getLockoutDuration() : DEFAULT_LOCKOUT_DURATION;
-        
+        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(attemptedLoginUser);
+
         AuthenticationThrottle authThrottle = authThrottleMap.getIfPresent(username);
         if (authThrottle != null && authThrottle.isLockedOut()) {
             throw new AuthenticationThrottleException(authThrottle.getThrottleDurationSeconds());
         } else {
             if (authThrottle == null) {
-                authThrottle = new AuthenticationThrottle(lockoutDuration, lockoutThreshold);
+                authThrottle = new AuthenticationThrottle(passwordPolicy.getLockoutDuration(), passwordPolicy.getLockoutThreshold());
                 authThrottleMap.put(username, authThrottle);
             } else {
                 authThrottle.updateAuthLockout();
@@ -88,7 +79,7 @@ public class StaticAuthenticationThrottleServiceImpl implements AuthenticationTh
             this.lockoutDuration = lockoutDuration;
             this.lockoutThreshold = lockoutThreshold;
             this.lastFailedLoginTime = Instant.now();
-            this.retryCount = 0;
+            this.retryCount = 1;
         }
 
         public Instant getLastFailedLoginTime() {
@@ -107,7 +98,7 @@ public class StaticAuthenticationThrottleServiceImpl implements AuthenticationTh
         }
 
         public boolean isLockedOut() {
-            return retryCount >= lockoutThreshold;
+            return retryCount >= lockoutThreshold && lastFailedLoginTime.plus(lockoutDuration).isAfter(Instant.now());
         }
         
         public Instant getThrottleEndtime() {

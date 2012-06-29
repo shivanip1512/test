@@ -28,6 +28,10 @@ public class LiteYukonUser extends LiteBase {
         this(id,null,null);
     }
 
+    public LiteYukonUser(int id, String username) {
+        this(id, username, null);
+    }
+
     public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus) {
         this(id, username, loginStatus, AuthType.PLAIN, Instant.now(), false);
     }
