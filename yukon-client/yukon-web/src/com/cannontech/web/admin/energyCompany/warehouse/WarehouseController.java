@@ -39,9 +39,9 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class WarehouseController {
     public StarsDatabaseCache starsDatabaseCache;
     
-    private EnergyCompanyService energyCompanyService;
-    private StarsEventLogService starsEventLogService;
-    private WarehouseService warehouseService;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private StarsEventLogService starsEventLogService;
+    @Autowired private WarehouseService warehouseService;
     
     private final String baseUrl = "/spring/adminSetup/energyCompany/warehouse";
     
@@ -175,12 +175,20 @@ public class WarehouseController {
         
         starsEventLogService.deleteWarehouseAttemptedByOperator(userContext.getYukonUser(),
                                                                 warehouseDto.getWarehouse().getWarehouseName());
-        
-        warehouseService.deleteWarehouse(warehouseDto);
-        
         modelMap.addAttribute("ecId", ecId);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.warehouse.warehouseDeleted", warehouseDto.getWarehouse().getWarehouseName()));
-        return "redirect:home";
+        List<Integer> inventory = Warehouse.getAllInventoryInAWarehouse(warehouseDto.getWarehouse().getWarehouseID());
+        //Only warehouse that contains no inventory may be deleted.
+        if(inventory.isEmpty()){
+            warehouseService.deleteWarehouse(warehouseDto);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.warehouse.warehouseDeleted", warehouseDto.getWarehouse().getWarehouseName()));
+            return "redirect:home";
+        }else{
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.warehouse.warehouse.warehouseNotEmpty", warehouseDto.getWarehouse().getWarehouseName()));
+            modelMap.addAttribute("warehouseId", warehouseDto.getWarehouse().getWarehouseID());
+            modelMap.addAttribute("ecId", ecId);
+            return "redirect:view";
+        }
+
     }
     
     private static class WarehouseDtoValidator extends SimpleValidator<WarehouseDto> {
@@ -210,21 +218,5 @@ public class WarehouseController {
     @ModelAttribute("baseUrl")
     public String getBaseUrl() {
         return this.baseUrl;
-    }
-    
-    // DI Setters
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-    
-    @Autowired
-    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
-        this.starsEventLogService = starsEventLogService;
-    }
-
-    @Autowired
-    public void setWarehouseService(WarehouseService warehouseService) {
-        this.warehouseService = warehouseService;
     }
 }

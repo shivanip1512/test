@@ -17,6 +17,7 @@
     <!--  Validation -->
     <entry key="yukon.web.modules.adminSetup.warehouse.warehouseDto.warehouse.nameRequired">The warehouse name cannot be empty.</entry>
     <entry key="yukon.web.modules.adminSetup.warehouse.warehouseDto.warehouse.notes">Please limit the notes to 300 characters.</entry>
+    <entry key="yukon.web.modules.adminSetup.warehouse.warehouse.warehouseNotEmpty">There was a problem deleting {0}. Before the warehouse can be deleted, all inventory items must be removed from it.</entry>
     
     <!--  General success/fail messages -->
     <entry key="yukon.web.modules.adminSetup.warehouse.warehouseCreated">Successfully saved {0}.</entry>
