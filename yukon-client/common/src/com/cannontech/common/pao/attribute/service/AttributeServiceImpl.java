@@ -39,16 +39,13 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
@@ -59,7 +56,6 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PointService pointService;
-    @Autowired private PointDao pointDao;
     @Autowired private PointCreationService pointCreationService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -101,34 +97,6 @@ public class AttributeServiceImpl implements AttributeService {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
         return attributeDefinition.getPointIdentifier(pao);
-    }
-
-    @Override
-    public <T extends YukonPao> Map<T, Integer> findPointIdsForAttribute(Iterable<T> paos,
-                                                                         Attribute att) {
-        BuiltInAttribute attribute = (BuiltInAttribute) att;
-
-        Multimap<PointIdentifier, T> paosByPointIdentifier = ArrayListMultimap.create();
-        for (T pao : paos) {
-            try {
-                AttributeDefinition attributeDefinition =
-                        paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(),
-                                                            attribute);
-                PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPointIdentifier(pao);
-                paosByPointIdentifier.put(paoPointIdentifier.getPointIdentifier(), pao);
-            } catch (IllegalUseOfAttribute e) {
-                // As per this methods documentation, we'll ignore this.
-            }
-        }
-
-        Map<T, Integer> retVal = Maps.newHashMap();
-        for (PointIdentifier pointIdentifier : paosByPointIdentifier.keySet()) {
-            Map<T, Integer> pointIdsByPao =
-                    pointDao.getPointIdsByPao(paosByPointIdentifier.get(pointIdentifier), pointIdentifier);
-            retVal.putAll(pointIdsByPao);
-        }
-
-        return retVal;
     }
 
     @Override

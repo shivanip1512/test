@@ -62,12 +62,6 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public <T extends YukonPao> Map<T, Integer> getPointIdsByPao(Iterable<T> paos,
-                                                                 PointIdentifier pointIdentifier) {
-        return null;
-    }
-
-    @Override
     public java.util.List<PointBase> getPointsForPao(int paoId) {
         return null;
     };

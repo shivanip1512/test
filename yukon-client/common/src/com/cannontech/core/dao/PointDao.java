@@ -110,12 +110,6 @@ public interface PointDao {
     public int getPointId(PaoPointIdentifier paoPointIdentifier);
 
     /**
-     * Look up point ids for the list of PAOs.
-     */
-    public <T extends YukonPao> Map<T, Integer> getPointIdsByPao(Iterable<T> paos,
-                                                                 PointIdentifier pointIdentifier);
-
-    /**
      * Similar to getPointIDByDeviceID_Offset_PointType, but will returns the actual LitePoint
      * and throws a NotFoundException if the point doesn't exist (instead of returning 0).
      * @throws NotFoundException if no point matches

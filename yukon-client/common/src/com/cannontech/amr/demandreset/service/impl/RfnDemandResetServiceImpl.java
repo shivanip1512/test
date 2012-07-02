@@ -1,8 +1,8 @@
 package com.cannontech.amr.demandreset.service.impl;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -25,22 +25,29 @@ import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetRequest;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.collect.Sets.SetView;
 
 public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDataListener {
     private static final Logger log = YukonLogManager.getLogger(RfnDemandResetServiceImpl.class);
@@ -55,6 +62,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private PointDao pointDao;
     private RequestReplyTemplate<RfnMeterDemandResetReply> qrTemplate;
 
     private static class DeviceVerificationInfo {
@@ -70,7 +78,8 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         }
     }
     // pointId -> DeviceAwaitingVerification
-    private final Map<Integer, DeviceVerificationInfo> devicesAwaitingVerification = Maps.newHashMap();
+    private final Map<PointIdentifier, DeviceVerificationInfo> devicesAwaitingVerification =
+            Maps.newHashMap();
 
     @PostConstruct
     public void initialize() {
@@ -113,7 +122,6 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
 
         JmsReplyHandler<RfnMeterDemandResetReply> handler =
                 new JmsReplyHandler<RfnMeterDemandResetReply>() {
-
             @Override
             public void complete() {
                 callback.initiated(new Results(errors));
@@ -153,29 +161,35 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
             }
         };
 
-        Map<? extends YukonPao, Integer> pointIdsByDevice =
-                attributeService.findPointIdsForAttribute(devices, BuiltInAttribute.RF_DEMAND_RESET);
+        List<PaoMultiPointIdentifier> paoMultipointIds =
+            attributeService.findPaoMultiPointIdentifiersForNonMappedAttributes(devices,
+                    ImmutableSet.of(BuiltInAttribute.RF_DEMAND_RESET));
 
         // Add devices to list of ones we need to send out notifications for.
         Instant now = new Instant();
+        // We can't verify devices which don't have a point.
+        Set<PaoIdentifier> devicesWithoutPoint =
+                Sets.newHashSet(Iterables.transform(devices,
+                        PaoUtils.getYukonPaoToPaoIdentifierFunction()));
+        Set<Integer> pointIds = Sets.newHashSet();
         synchronized (devicesAwaitingVerification) {
-            for (Entry<? extends YukonPao, Integer> entry : pointIdsByDevice.entrySet()) {
-                YukonPao device = entry.getKey();
-                Integer pointId = entry.getValue();
+            for (PaoMultiPointIdentifier paoMultiPointId : paoMultipointIds) {
+                YukonPao device = paoMultiPointId.getPao();
                 DeviceVerificationInfo dvi =
-                        new DeviceVerificationInfo(callback, now, new SimpleDevice(device));
-                devicesAwaitingVerification.put(pointId, dvi);
+                    new DeviceVerificationInfo(callback, now, new SimpleDevice(device));
+                // Should be a loop of one since we requested only one attribute.
+                for (PaoPointIdentifier paoPointIdentifier : paoMultiPointId.getPaoPointIdentifiers()) {
+                    devicesAwaitingVerification.put(paoPointIdentifier.getPointIdentifier(), dvi);
+                    devicesWithoutPoint.remove(device.getPaoIdentifier());
+                    pointIds.add(pointDao.getPointId(paoPointIdentifier));
+                }
             }
         }
 
-        // We can't verify devices which are missing the point.  :-)
-        SetView<? extends YukonPao> devicesWithoutPoint =
-                Sets.difference(devices, pointIdsByDevice.keySet());
         for (YukonPao device : devicesWithoutPoint) {
             callback.cannotVerify(new SimpleDevice(device), "\"RF Demand Reset\" point missing");
         }
-        asyncDynamicDataSource.registerForPointData(this,
-                                                    Sets.newHashSet(pointIdsByDevice.values()));
+        asyncDynamicDataSource.registerForPointData(this, pointIds);
         // TODO: Unregister for these points when we're done with them.
 
         // The set returned by keySet isn't serializable, so we have to make a copy.

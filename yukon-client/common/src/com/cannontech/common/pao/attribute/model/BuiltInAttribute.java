@@ -31,6 +31,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     ENERGY_GENERATED("Energy Generated"),
     FAULT_STATUS("Fault Status"),
     GENERAL_ALARM_FLAG("General Alarm Flag"),
+    IED_DEMAND_RESET_COUNT("IED Demand Reset Count"),
     KVAR("kVAr"),
     KVARH("kVArh"),
     LM_GROUP_STATUS("LM Group Status"),
@@ -45,6 +46,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     PROFILE_CHANNEL_2("Profile Channel 2"),
     PROFILE_CHANNEL_3("Profile Channel 3"),
     REVERSE_POWER_FLAG("Reverse Power Flag"),
+    RF_DEMAND_RESET("RF Demand Reset"),
     TAMPER_FLAG("Tamper Flag"),
     TOU_RATE_A_PEAK_DEMAND("Tou Rate A Peak"),
     TOU_RATE_B_PEAK_DEMAND("Tou Rate B Peak"),
@@ -63,8 +65,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     USAGE_WATER("Water Usage Reading"),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ZIGBEE_LINK_STATUS("ZigBee Link Status"),
-    IED_DEMAND_RESET_COUNT("IED Demand Reset Count"),
-    RF_DEMAND_RESET("RF Demand Reset"),
 
     // Rfn Events that map to Event Status points (this list must be kept in sync with both 
     // our rfn set below AND its version in RfnConditionType.java. Outages and restores are

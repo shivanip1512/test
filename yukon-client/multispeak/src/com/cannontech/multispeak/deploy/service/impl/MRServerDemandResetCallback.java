@@ -13,15 +13,17 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventDomain;
+import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventDomainPart;
+import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventIndex;
+import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventType;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.deploy.service.Action;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_PortType;
-import com.cannontech.multispeak.deploy.service.EndDeviceEventDomain;
-import com.cannontech.multispeak.deploy.service.EndDeviceEventDomainPart;
-import com.cannontech.multispeak.deploy.service.EndDeviceEventIndex;
-import com.cannontech.multispeak.deploy.service.EndDeviceEventType;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.EventInstance;
+import com.cannontech.multispeak.deploy.service.ExtensionsItem;
+import com.cannontech.multispeak.deploy.service.ExtensionsItemExtType;
 import com.cannontech.multispeak.deploy.service.MeterEvent;
 import com.cannontech.multispeak.deploy.service.MeterEventList;
 import com.cannontech.multispeak.deploy.service.ServiceType;
@@ -85,9 +87,6 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
             return;
         }
         String meterNumber = meterNumbersByPaoId.get(device.getPaoIdentifier());
-        // TODO:  What should I be using here?  Are the fields on MeterEvent properly populated?
-        // Anything else in the EventInstance?
-        // TODO:  where does transactionId go?
         MeterEvent meterEvent = new MeterEvent();
         meterEvent.setDomain(EndDeviceEventDomain.ELECTRICT_METER.code);
         meterEvent.setDomainPart(EndDeviceEventDomainPart.DEMAND.code);
@@ -96,9 +95,11 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
         EventInstance eventInstance = new EventInstance(null, meterNumber,
                                                         ServiceType.Electric,
                                                         null, meterEvent);
+        ExtensionsItem extensionItem = new ExtensionsItem("transactionId", transactionId,
+            ExtensionsItemExtType.value40);
         MeterEventList events = new MeterEventList(meterNumber, Action.Change, null, null,
-                                                   null, null, null, null,
-                                                   new EventInstance[] { eventInstance });
+            null, null, null, new ExtensionsItem[] { extensionItem },
+            new EventInstance[] { eventInstance });
         try {
             port.meterEventNotification(events);
         } catch (RemoteException re) {
