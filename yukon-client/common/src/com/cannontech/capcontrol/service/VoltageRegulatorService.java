@@ -53,7 +53,7 @@ public class VoltageRegulatorService {
             mapping.setPaoName(CtiUtilities.STRING_NONE);
             mapping.setPointName(CtiUtilities.STRING_NONE);
         }
-        mapping.setFilterType(FilterType.getForPointType(regulatorMapping.getPointType()));
+        mapping.setFilterType(FilterType.getForPointType(regulatorMapping.getFilterPointType()));
         
         return mapping;
     }

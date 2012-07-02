@@ -290,12 +290,17 @@ public class ImportFileValidator {
         for(ImportValueDependentColumnDefinition dependentColumn : dependentColumns) {
             String dependedUponColumnName = dependentColumn.getDependedUponColumn().getName();
             Set<String> dependedUponValues = dependentColumn.getDependedUponValue();
-            //if there is a value for the depended-upon column, and the value is one of the
-            //depended-upon values, but there is no value in the dependent column, it's an error.
-            if(row.hasValue(dependedUponColumnName) 
-               && dependedUponValues.contains(row.getValue(dependedUponColumnName))
-               && !row.hasValue(dependentColumn.getName())) {
-                missingValues.add(dependentColumn.getName());
+
+            //The depended-upon column contains a value...
+            if(row.hasValue(dependedUponColumnName)) {
+                String valueInDependedUponColumn = row.getValue(dependedUponColumnName);
+                //...and the value is one of the depended-upon values...
+                if(dependedUponValues.contains(valueInDependedUponColumn) || dependedUponValues.contains(valueInDependedUponColumn.toUpperCase())) {
+                    //...then the dependent column must have a value, or its an error.
+                    if(!row.hasValue(dependentColumn.getName())) {
+                        missingValues.add(dependentColumn.getName());
+                    }
+                }
             }
         }
         return missingValues;
@@ -327,8 +332,14 @@ public class ImportFileValidator {
                     continue;
                 } catch(InvocationTargetException ite) {
                     //method exists, but conversion fails
-                    invalidValues.add(columnName);
-                    continue;
+                    //try uppercasing the value before giving up
+                    try {
+                        column.getType().getMethod("valueOf", String.class).invoke(null, value.toUpperCase());
+                    } catch(Exception e) {
+                        //still unable to convert
+                        invalidValues.add(columnName);
+                        continue;
+                    }
                 } catch (Exception e) {
                     //method doesn't exist
                 }

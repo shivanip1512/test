@@ -9,16 +9,16 @@ import com.google.common.collect.ImmutableSet.Builder;
 
 public enum RegulatorPointMapping implements DisplayableEnum {
     
-    AUTO_REMOTE_CONTROL(PointType.Status, "Auto/Remote Control"),
-    AUTO_BLOCK_ENABLE(PointType.Status, "Auto Block Enable"),
-    TAP_UP(PointType.Status, "Raise Tap Position"),
-    TAP_DOWN(PointType.Status, "Lower Tap Position"),
-    TAP_POSITION(PointType.Analog, "Tap Position"),
-    TERMINATE(PointType.Status, "Terminate"),
-    VOLTAGE_X(PointType.Analog, "Voltage X"),
-    VOLTAGE_Y(PointType.Analog, "Voltage Y"),
-    KEEP_ALIVE(PointType.Analog, "Keep Alive"),
-    KEEP_ALIVE_TIMER(PointType.Analog, "Keep Alive Timer");
+    AUTO_REMOTE_CONTROL("Auto/Remote Control", PointType.Status, PointType.CalcStatus),
+    AUTO_BLOCK_ENABLE("Auto Block Enable", PointType.Status, PointType.CalcStatus),
+    TAP_UP("Raise Tap Position", PointType.Status, PointType.CalcStatus),
+    TAP_DOWN("Lower Tap Position", PointType.Status, PointType.CalcStatus),
+    TAP_POSITION("Tap Position", PointType.Analog, PointType.CalcAnalog),
+    TERMINATE("Terminate", PointType.Status, PointType.CalcStatus),
+    VOLTAGE_X("Voltage X", PointType.Analog, PointType.CalcAnalog),
+    VOLTAGE_Y("Voltage Y", PointType.Analog, PointType.CalcAnalog),
+    KEEP_ALIVE("Keep Alive", PointType.Analog, PointType.CalcAnalog),
+    KEEP_ALIVE_TIMER("Keep Alive Timer", PointType.Analog, PointType.CalcAnalog);
     
     private final static ImmutableSet<RegulatorPointMapping> phaseAndGangRegulatorMappings;
     private final static ImmutableSet<RegulatorPointMapping> ltcRegulatorMappings;
@@ -45,16 +45,20 @@ public enum RegulatorPointMapping implements DisplayableEnum {
                                                                   PaoType.GANG_OPERATED, phaseAndGangRegulatorMappings);
     }
     
-    private PointType pointType;
+    private PointType[] pointTypes;
     private String description;
     
-    private RegulatorPointMapping(PointType pointType, String description) {
-        this.pointType = pointType;
+    private RegulatorPointMapping(String description, PointType... pointTypes) {
+        this.pointTypes = pointTypes;
         this.description = description;
     }
     
-    public PointType getPointType() {
-        return pointType;
+    public PointType[] getPointTypes() {
+        return pointTypes;
+    }
+    
+    public PointType getFilterPointType() {
+        return pointTypes[0];
     }
     
     /**

@@ -17,6 +17,7 @@ import com.cannontech.common.csvImport.ImportFileValidator;
 import com.cannontech.common.csvImport.ImportResult;
 import com.cannontech.common.csvImport.ImportRow;
 import com.cannontech.common.csvImport.ImportValidationResult;
+import com.cannontech.common.pao.ImportPaoType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
@@ -44,7 +45,7 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
         importFormat.addRequiredColumn("REGULATOR NAME", String.class, false);
         importFormat.addRequiredColumn("MAPPING", RegulatorPointMapping.class, false);
         //VALUE-DEPENDENT
-        importFormat.addValueDependentColumn("DEVICE TYPE", PaoType.class, false, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
+        importFormat.addValueDependentColumn("DEVICE TYPE", ImportPaoType.class, false, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
         importFormat.addValueDependentColumn("DEVICE NAME", String.class, false, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
         importFormat.addValueDependentColumn("POINT NAME", String.class, false, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
     }
@@ -71,7 +72,7 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
             if(validationResult.isFailed()) {
                 result = regulatorImportHelper.processValidationResult(validationResult);
             } else {
-                ImportAction action = ImportAction.valueOf(row.getValue("ACTION"));
+                ImportAction action = ImportAction.valueOf(row.getValue("ACTION").toUpperCase());
                 String regulatorName = row.getValue("REGULATOR NAME");
                 YukonPao regulatorPao = regulatorImportHelper.findRegulatorPao(regulatorName);
                 if(regulatorPao == null) {
@@ -109,7 +110,7 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
         }
         
         //Get the point to map
-        PaoType paoType = PaoType.valueOf(row.getValue("DEVICE TYPE"));
+        PaoType paoType = ImportPaoType.valueOf(row.getValue("DEVICE TYPE"));
         String deviceName = row.getValue("DEVICE NAME");
         YukonPao pointPao = paoDao.findYukonPao(deviceName, paoType);
         if(pointPao == null) {
@@ -123,8 +124,8 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
         
         //check that the point is an appropriate type
         PointType pointType = point.getPointTypeEnum();
-        PointType mappingPointType = mapping.getPointType();
-        if(pointType != mappingPointType) {
+        List<PointType> mappingPointTypes = Lists.newArrayList(mapping.getPointTypes());
+        if(!mappingPointTypes.contains(pointType)) {
             return new FailedImportResult("yukon.web.modules.capcontrol.import.regulatorMappingBadPointType", ImportAction.ADD.toString(), pointType.toString(), mapping.toString());
         }
         
@@ -147,7 +148,7 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
         }
         
         //Get the point to map
-        PaoType paoType = PaoType.valueOf(row.getValue("DEVICE TYPE"));
+        PaoType paoType = ImportPaoType.valueOf(row.getValue("DEVICE TYPE"));
         String deviceName = row.getValue("DEVICE NAME");
         YukonPao pointPao = paoDao.findYukonPao(deviceName, paoType);
         if(pointPao == null) {
@@ -161,8 +162,8 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
         
         //check that the point is an appropriate type
         PointType pointType = point.getPointTypeEnum();
-        PointType mappingPointType = mapping.getPointType();
-        if(pointType != mappingPointType) {
+        List<PointType> mappingPointTypes = Lists.newArrayList(mapping.getPointTypes());
+        if(!mappingPointTypes.contains(pointType)) {
             //A failed - Point type X is not valid for Mapping Y
             return new FailedImportResult("yukon.web.modules.capcontrol.import.regulatorMappingBadPointType", ImportAction.UPDATE.toString(), pointType.toString(), mapping.toString());
         }

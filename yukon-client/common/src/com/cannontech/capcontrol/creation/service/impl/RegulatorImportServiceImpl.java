@@ -65,7 +65,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
             if(validationResult.isFailed()) {
                 result = regulatorImportHelper.processValidationResult(validationResult);
             } else {
-                ImportAction action = ImportAction.valueOf(row.getValue("ACTION"));
+                ImportAction action = ImportAction.valueOf(row.getValue("ACTION").toUpperCase());
                 switch(action) {
                     case ADD:
                         result = createRegulator(row);
