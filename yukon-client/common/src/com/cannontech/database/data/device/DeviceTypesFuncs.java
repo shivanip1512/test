@@ -433,6 +433,7 @@ public final static boolean isLmGroup(int deviceType)
 		case LM_GROUP_EMETCON:
 		case LM_GROUP_VERSACOM:
 		case LM_GROUP_EXPRESSCOMM:
+		case LM_GROUP_RFN_EXPRESSCOMM:
 		case LM_GROUP_RIPPLE:
 		case LM_GROUP_POINT:
 		case MACRO_GROUP:

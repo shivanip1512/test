@@ -308,6 +308,11 @@ public final class DeviceFactory {
             returnDevice.setDeviceType( PAOGroups.STRING_EXPRESSCOMM_GROUP[0] );
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
+        case LM_GROUP_RFN_EXPRESSCOMM:
+            returnDevice = new com.cannontech.database.data.device.lm.LMGroupRfnExpressCom();
+            returnDevice.setDeviceType( PAOGroups.STRING_RFN_EXPRESSCOMM_GROUP[0] );
+            returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
+            break;
         case LM_GROUP_RIPPLE:
             returnDevice = new LMGroupRipple();
             returnDevice.setDeviceType(PAOGroups.STRING_RIPPLE_GROUP[0]);

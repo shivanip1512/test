@@ -8,7 +8,7 @@ import com.cannontech.database.db.device.lm.LMGroupExpressComAddress;
 
 public class LMGroupExpressCom extends LMGroup implements IGroupRoute
 {
-	private com.cannontech.database.db.device.lm.LMGroupExpressCom lmGroupExpressComm = null;
+	protected com.cannontech.database.db.device.lm.LMGroupExpressCom lmGroupExpressComm = null;
 
 	private LMGroupExpressComAddress serviceProviderAddress = null;
 	private LMGroupExpressComAddress geoAddress = null;

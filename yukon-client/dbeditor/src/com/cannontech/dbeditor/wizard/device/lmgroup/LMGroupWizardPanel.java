@@ -294,7 +294,8 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	}
 	//Start Expresscom specific
 	else if ( currentInputPanel == getLMGroupBasePanel()
-			    && (getSwitchTypePanel().getTypeOfSwitchSelected() == PAOGroups.LM_GROUP_EXPRESSCOMM) )
+			    && (getSwitchTypePanel().getTypeOfSwitchSelected() == PAOGroups.LM_GROUP_EXPRESSCOMM ||
+			        getSwitchTypePanel().getTypeOfSwitchSelected() == PAOGroups.LM_GROUP_RFN_EXPRESSCOMM) )
 	{
 		getLMGroupExpressComEditorPanel().setFirstFocus();
         return getLMGroupExpressComEditorPanel();

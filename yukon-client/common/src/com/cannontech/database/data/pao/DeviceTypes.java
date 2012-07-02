@@ -185,6 +185,8 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN420ELO = DEVICE_OFFSET + 143;
     public final static int RFN430ELO = DEVICE_OFFSET + 144;
     
+    public final static int LM_GROUP_RFN_EXPRESSCOMM = DEVICE_OFFSET +145;
+    
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
 	public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};	
@@ -262,6 +264,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_EMETCON_GROUP = {"EMETCON GROUP"};
 	public static final String[] STRING_VERSACOM_GROUP = {"VERSACOM GROUP"};
 	public static final String[] STRING_EXPRESSCOMM_GROUP = {"EXPRESSCOM GROUP"};
+	public static final String[] STRING_RFN_EXPRESSCOMM_GROUP = {"RFN EXPRESSCOM GROUP"};
 	public static final String[] STRING_DIGI_SEP_GROUP = {"DIGI SEP GROUP"};
 	public static final String[] STRING_POINT_GROUP = {"POINT GROUP"};
 	public static final String[] STRING_RIPPLE_GROUP = {"RIPPLE GROUP"};

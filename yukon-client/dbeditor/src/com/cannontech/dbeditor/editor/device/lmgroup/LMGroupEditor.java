@@ -26,7 +26,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 		//com.cannontech.dbeditor.editor.device.lmgroup.LMGroupBasePanel
 		{ PAOGroups.LM_GROUP_EMETCON, PAOGroups.LM_GROUP_RIPPLE, 
 		  PAOGroups.LM_GROUP_VERSACOM, PAOGroups.MACRO_GROUP, PAOGroups.LM_GROUP_MCT,
-		  PAOGroups.LM_GROUP_POINT, PAOGroups.LM_GROUP_EXPRESSCOMM, 
+		  PAOGroups.LM_GROUP_POINT, PAOGroups.LM_GROUP_EXPRESSCOMM, PAOGroups.LM_GROUP_RFN_EXPRESSCOMM,
 		  PAOGroups.LM_GROUP_SA305, PAOGroups.LM_GROUP_SA205,
 		  PAOGroups.LM_GROUP_SADIGITAL, PAOGroups.LM_GROUP_GOLAY,
 		  PaoType.LM_GROUP_DIGI_SEP.getDeviceTypeId()},

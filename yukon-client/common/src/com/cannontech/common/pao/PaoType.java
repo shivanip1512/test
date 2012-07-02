@@ -126,6 +126,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     LM_GROUP_DIGI_SEP(DeviceTypes.LM_GROUP_DIGI_SEP, "DIGI SEP GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EMETCON(DeviceTypes.LM_GROUP_EMETCON, "EMETCON GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EXPRESSCOMM(DeviceTypes.LM_GROUP_EXPRESSCOMM, "EXPRESSCOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_RFN_EXPRESSCOMM(DeviceTypes.LM_GROUP_RFN_EXPRESSCOMM, "RFN EXPRESSCOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_GOLAY(DeviceTypes.LM_GROUP_GOLAY, "Golay Group", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_MCT(DeviceTypes.LM_GROUP_MCT, "MCT GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_POINT(DeviceTypes.LM_GROUP_POINT, "POINT GROUP", PaoCategory.DEVICE, PaoClass.GROUP),

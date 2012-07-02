@@ -33,6 +33,7 @@ public synchronized java.util.List getCacheList(IDatabaseCache cache )
  */
 public boolean isDeviceValid( PaoCategory paoCategory, PaoClass paoClass, PaoType paoType )
 {
-	return( paoType == PaoType.LM_GROUP_EXPRESSCOMM);
+	return( paoType == PaoType.LM_GROUP_EXPRESSCOMM ||
+	        paoType == PaoType.LM_GROUP_RFN_EXPRESSCOMM );
 }
 }

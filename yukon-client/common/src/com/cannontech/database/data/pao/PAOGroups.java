@@ -297,6 +297,8 @@ public final static int getDeviceType(String typeString)
 	  return LM_GROUP_MCT;	  
    else if (isStringDevice(compareString, STRING_EXPRESSCOMM_GROUP))
 	  return LM_GROUP_EXPRESSCOMM;
+   else if (isStringDevice(compareString, STRING_RFN_EXPRESSCOMM_GROUP))
+       return LM_GROUP_RFN_EXPRESSCOMM;
    else if (isStringDevice(compareString, STRING_POINT_GROUP))
 	  return LM_GROUP_POINT;
    else if (isStringDevice(compareString, STRING_MACRO_GROUP))
@@ -623,6 +625,8 @@ public final static String getPAOTypeString(int type)
 		  	return STRING_VERSACOM_GROUP[0];
 	  	case LM_GROUP_EXPRESSCOMM:
 		  	return STRING_EXPRESSCOMM_GROUP[0];
+	  	case LM_GROUP_RFN_EXPRESSCOMM:
+            return STRING_RFN_EXPRESSCOMM_GROUP[0];
 	  	case LM_GROUP_SA305:
 	  	  	return STRING_SA305_GROUP[0];
 	  	case LM_GROUP_SA205:

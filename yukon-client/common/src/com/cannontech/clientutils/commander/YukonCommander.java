@@ -304,7 +304,8 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 				Vector lmGroups = new Vector(allLM.size());
 				for (LiteYukonPAObject liteYukonPAObject : allLM) {
 					if (liteYukonPAObject.getPaoType() == PaoType.LM_GROUP_EXPRESSCOMM ||
-							liteYukonPAObject.getPaoType() == PaoType.LM_GROUP_VERSACOM	)
+					    liteYukonPAObject.getPaoType() == PaoType.LM_GROUP_RFN_EXPRESSCOMM ||
+					    liteYukonPAObject.getPaoType() == PaoType.LM_GROUP_VERSACOM	)
 						lmGroups.add(liteYukonPAObject);
 				}
 				selections = lmGroups.toArray();

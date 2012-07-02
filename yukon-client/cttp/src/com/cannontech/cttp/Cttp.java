@@ -187,6 +187,7 @@ public class Cttp {
 				  	 
 					if(litePao.getPaoType() == PaoType.LM_GROUP_VERSACOM ||
 					   litePao.getPaoType() == PaoType.LM_GROUP_EXPRESSCOMM ||
+					   litePao.getPaoType() == PaoType.LM_GROUP_RFN_EXPRESSCOMM ||
 					   litePao.getPaoType() == PaoType.MACRO_GROUP ) {
 						  lmGroups.add(litePao);
 					}

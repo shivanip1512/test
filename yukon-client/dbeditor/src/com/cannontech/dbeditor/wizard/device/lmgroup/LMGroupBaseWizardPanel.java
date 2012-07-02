@@ -18,6 +18,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
+import com.cannontech.database.data.device.lm.LMGroupRfnExpressCom;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -1283,27 +1284,26 @@ public void setSwitchType(String type)
 	getJTextFieldType().setText( type );
 
 	//do not show the route panel if the type is one of the following
+	int deviceType = com.cannontech.database.data.pao.PAOGroups.getDeviceType(type);
+
 	getCommunicationPanel().setVisible( 
-		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP
-	     || com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT
-	     || com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_DIGI_SEP) );
+		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP ||
+	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_POINT ||
+	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_DIGI_SEP ||
+	      deviceType == com.cannontech.database.data.pao.PAOGroups.LM_GROUP_RFN_EXPRESSCOMM) );
+	
 
 	//dont show the following options if this group is a MACRO
 	getJLabelKWCapacity().setVisible( 
-		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
+		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
 	getJTextFieldKWCapacity().setVisible( 
-		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
+		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
 
 	getJCheckBoxDisable().setVisible( 
-		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
+		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
 	getJCheckBoxDisableControl().setVisible( 
-		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
-	/*
-	getJCheckBoxHistory().setVisible( getJCheckBoxHistory().isVisible() &&
-		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
+		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
 
-	getJPanelHistory().setVisible( getJCheckBoxHistory().isVisible() &&
-		!(com.cannontech.database.data.pao.PAOGroups.getDeviceType(type) == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );*/
 
 	if( PAOGroups.getDeviceType(type) != PAOGroups.LM_GROUP_EXPRESSCOMM ) {
 		getPriorityCombo().setVisible(false);
