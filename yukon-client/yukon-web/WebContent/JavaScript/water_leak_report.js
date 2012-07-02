@@ -105,15 +105,19 @@ if(typeof(WaterLeakReport) === 'undefined'){
             var filter_text = jQuery("#filter_shortcut_text").val();
             jQuery("button.leakFilterSubmitButton").before('<span class="filter_shortcut">'+filter_text+'</span>');
 
+            var threshold_errors = jQuery(document.getElementById("threshold.errors"));
+            if (threshold_errors.length === 1) {
+                threshold_errors.prev("br").remove(); //remove the stupid <br> tag that screws up styling for threshold errors
+            }
             // if there are filter errors... set the focus to the first one of these
             Yukon.ui.focusFirstError();
         },
         
         _store_filter_values: function() {
             var the_filter = jQuery(WaterLeakReport._filter_form_selector);
-            WaterLeakReport._f_filter_values.from_local_date  = the_filter.find("input.f_from_local_date").val();
+            WaterLeakReport._f_filter_values.from_datetime  = the_filter.find("input.f_from_datetime").val();
             WaterLeakReport._f_filter_values.from_hour        = the_filter.find("input.f_from_hour").val();
-            WaterLeakReport._f_filter_values.to_local_date    = the_filter.find("input.f_to_local_date").val();
+            WaterLeakReport._f_filter_values.to_datetime    = the_filter.find("input.f_to_datetime").val();
             WaterLeakReport._f_filter_values.to_hour          = the_filter.find("input.f_to_hour").val();
             WaterLeakReport._f_filter_values.threshold        = the_filter.find("input.f_threshold").val();
             WaterLeakReport._f_filter_values.include_disabled = the_filter.find("input.f_include_disabled_paos").is(":checked");
@@ -121,9 +125,9 @@ if(typeof(WaterLeakReport) === 'undefined'){
         
         _restore_filter_values: function() {
             var the_filter = jQuery(WaterLeakReport._filter_form_selector);
-            the_filter.find("input.f_from_local_date").val(WaterLeakReport._f_filter_values.from_local_date);
+            the_filter.find("input.f_from_datetime").val(WaterLeakReport._f_filter_values.from_datetime);
             the_filter.find("input.f_from_hour").val(WaterLeakReport._f_filter_values.from_hour);
-            the_filter.find("input.f_to_local_date").val(WaterLeakReport._f_filter_values.to_local_date);
+            the_filter.find("input.f_to_datetime").val(WaterLeakReport._f_filter_values.to_datetime);
             the_filter.find("input.f_to_hour").val(WaterLeakReport._f_filter_values.to_hour);
             the_filter.find("input.f_threshold").val(WaterLeakReport._f_filter_values.threshold);
             the_filter.find("input.f_include_disabled_paos").attr("checked", WaterLeakReport._f_filter_values.include_disabled);

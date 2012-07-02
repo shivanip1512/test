@@ -5,6 +5,7 @@
 <%@ attribute name="value" type="java.lang.Object" description="Default: null. Sets the initial value of the input." %>
 <%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
 <%@ attribute name="cssClass" type="java.lang.String" description="Class added to the input of the widget" %>
+<%@ attribute name="cssDialogClass" type="java.lang.String" description="Class added to the outer dialog div" %>
 <%@ attribute name="maxDate" type="java.lang.String" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
 <%@ attribute name="minDate" type="java.lang.String" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
 
@@ -43,13 +44,14 @@
 				${dateTime}
 			</cti:displayForPageEditModes>
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
-				<form:input id="${id}" 
-							path="${path}"
-							cssClass="f_datePicker f_datePickerUI ${cssClass}"
-							disabled="${pageScope.disabled}"
-							data-date-time-format="${jsDateTimeFormat}"
-							data-max-date="${pageScope.maxDate}"
-							data-min-date="${pageScope.minDate}" />
+                <form:input id="${id}" 
+                            path="${path}"
+                            cssClass="f_datePicker f_datePickerUI ${cssClass}"
+                            disabled="${pageScope.disabled}"
+                            data-date-time-format="${jsDateTimeFormat}"
+                            data-max-date="${pageScope.maxDate}"
+                            data-min-date="${pageScope.minDate}"
+                            data-class="${pageScope.cssDialogClass}" />
 			</cti:displayForPageEditModes>
 			<c:if test="${status.error}">
 				<br>
@@ -63,10 +65,12 @@
 			</cti:displayForPageEditModes>
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
 				<input	id="${id}" 
+                        value="${dateTime}"
 						class="f_datePicker f_datePickerUI ${cssClass}"
 						<c:if test="${disabled}">disabled="true"</c:if>
 						<c:if test="${!empty pageScope.maxDate}">data-max-date="${pageScope.maxDate}"</c:if>
 						<c:if test="${!empty pageScope.minDate}">data-min-date="${pageScope.minDate}"</c:if>
+                        <c:if test="${!empty pageScope.cssDialogClass}">data-class="${pageScope.cssDialogClass}"</c:if>
 						data-date-time-format="${jsDateTimeFormat}"/>
 			</cti:displayForPageEditModes>
 	</c:otherwise>

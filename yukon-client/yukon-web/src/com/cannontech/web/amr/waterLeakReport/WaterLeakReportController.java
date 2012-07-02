@@ -14,7 +14,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.DateTimeFieldType;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
@@ -127,50 +126,23 @@ public class WaterLeakReportController {
         new SimpleValidator<WaterLeakReportFilterBackingBean>(WaterLeakReportFilterBackingBean.class) {
             @Override
             public void doValidation(WaterLeakReportFilterBackingBean backingBean, Errors errors) {
-                Instant now = new Instant();
                 /* Dates & Hours */
-                if (backingBean.getFromLocalDate() == null) {
-                    if (!errors.hasFieldErrors("fromLocalDate")) {
-                        errors.rejectValue("fromLocalDate", "yukon.web.error.required");
+                if (backingBean.getFromInstant() == null) {
+                    if (!errors.hasFieldErrors("fromInstant")) {
+                        errors.rejectValue("fromInstant", "yukon.web.error.required");
                     }
-                } else if ((backingBean.getToLocalDate() == null)) {
-                    if (!errors.hasFieldErrors("toLocalDate")) {
-                        errors.rejectValue("toLocalDate", "yukon.web.error.required");
+                } else if ((backingBean.getToInstant() == null)) {
+                    if (!errors.hasFieldErrors("toInstant")) {
+                        errors.rejectValue("toInstant", "yukon.web.error.required");
                     }
-                } else if(backingBean.getFromLocalDate().toDate().after(now.toDate())) {
+                } else if(backingBean.getFromInstant().isAfterNow()) {
                     // If the from date is in the future
-                    errors.rejectValue("fromLocalDate", baseKey + ".validation.fromDateInFuture");
-                } else if (backingBean.getFromLocalDate().isAfter(backingBean.getToLocalDate())) {
-                    errors.rejectValue("fromLocalDate", baseKey + ".validation.fromDateAfterToDate");
-                } else if (backingBean.getFromLocalDate().isEqual(backingBean.getToLocalDate())
-                           && backingBean.getFromHour() >= backingBean.getToHour()) {
-                    // If the dates are equal, then the hours must be correct
-                    errors.rejectValue("fromHour", baseKey + ".validation.fromHourAfterToHour");
-                } else if (backingBean.getFromLocalDate().isEqual(new LocalDate(now))
-                           && backingBean.getFromHour() >= now.get(DateTimeFieldType.hourOfDay())) {
-                    // If the from date is today, but the from hour is greater than now
-                    errors.rejectValue("fromHour", baseKey + ".validation.fromHourInFuture");
-                } else if(backingBean.getToLocalDate().toDate().after(now.toDate())) {
+                    errors.rejectValue("fromInstant", baseKey + ".validation.fromDateInFuture");
+                } else if (backingBean.getFromInstant().isAfter(backingBean.getToInstant())) {
+                    errors.rejectValue("fromInstant", baseKey + ".validation.fromDateAfterToDate");
+                } else if(backingBean.getToInstant().isAfterNow()) {
                     // If the to date is in the future
-                    errors.rejectValue("toLocalDate", baseKey + ".validation.toDateInFuture");
-                } else if (backingBean.getToLocalDate().isEqual(new LocalDate(now))
-                           && backingBean.getToHour() >= now.get(DateTimeFieldType.hourOfDay())) {
-                    // If the to date is today, but the to hour is greater than now
-                    errors.rejectValue("toHour", baseKey + ".validation.toHourInFuture");
-                }
-
-                /* Hours (general) */
-                if (backingBean.getFromHour() < 0) {
-                    errors.rejectValue("fromHour", baseKey + ".validation.fromHourTooLow");
-                }
-                if (backingBean.getFromHour() > 24) {
-                    errors.rejectValue("fromHour", baseKey + ".validation.fromHourTooHigh");
-                }
-                if (backingBean.getToHour() < 0) {
-                    errors.rejectValue("toHour", baseKey + ".validation.toHourTooLow");
-                }
-                if (backingBean.getToHour() > 24) {
-                    errors.rejectValue("toHour", baseKey + ".validation.toHourTooHigh");
+                    errors.rejectValue("toInstant", baseKey + ".validation.toDateInFuture");
                 }
 
                 /* Threshold */
@@ -550,7 +522,7 @@ public class WaterLeakReportController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
-        datePropertyEditorFactory.setupLocalDatePropertyEditor(binder, userContext, BlankMode.CURRENT);
+        datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
     }
 
 }

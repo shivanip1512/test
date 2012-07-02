@@ -81,55 +81,91 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
     			};
     			
     			// Date
+    			var outer_self = this;
     			jQuery("input.f_datePicker").each(function(){
-    				jQuery(this).datetimeEntry({
-    					datetimeFormat: jQuery(this).attr('data-date-format'),
+    			    var self = jQuery(this);
+    				self.datetimeEntry({
+    					datetimeFormat: self.attr('data-date-format'),
     					spinnerImage: ''
     				});
     			});
 				jQuery("input.f_datePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
+				        beforeShow: outer_self._getBeforeShow(self),
 						maxDate: self.attr('data-max-date'),
 						minDate: self.attr('data-min-date')
 					};
-					jQuery(this).datepicker(jQuery.extend(datetimepickerArgs, args));
+					self.datepicker(jQuery.extend(datetimepickerArgs, args));
 				});
     			
     			// Date + Time
 				jQuery("input.f_dateTimePicker").each(function(){
-					jQuery(this).datetimeEntry({
-						datetimeFormat: jQuery(this).attr('data-date-time-format'),
-    					maxDatetime: jQuery(this).attr('data-max-date'),
-    					minDatetime: jQuery(this).attr('data-min-date'),
+				    var self = jQuery(this);
+					self.datetimeEntry({
+						datetimeFormat: self.attr('data-date-time-format'),
+    					maxDatetime: self.attr('data-max-date'),
+    					minDatetime: self.attr('data-min-date'),
+    					timeSteps: outer_self._getTimeSteps(self),
 						spinnerImage: ''
 					});
 				});
 				jQuery("input.f_dateTimePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
+				        beforeShow: outer_self._getBeforeShow(self),
 						maxDate: self.attr('data-max-date'),
-						minDate: self.attr('data-min-date')
+						minDate: self.attr('data-min-date'),
+                        stepHour: outer_self._getStepHour(self),
+                        stepMinute: outer_self._getStepMinute(self),
 					};
-					jQuery(this).datetimepicker(jQuery.extend(datetimepickerArgs, args));
+					self.datetimepicker(jQuery.extend(datetimepickerArgs, args));
 				});
 				
 				// Time
 				jQuery("input.f_timePicker").each(function(){
-					jQuery(this).datetimeEntry({
-						datetimeFormat: jQuery(this).attr('data-time-format'),
+				    var self = jQuery(this);
+					self.datetimeEntry({
+						datetimeFormat: self.attr('data-time-format'),
+						timeSteps: outer_self._getTimeSteps(self),
 						spinnerImage: ''
 					});
 				});
 				jQuery("input.f_timePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
+				        beforeShow: outer_self._getBeforeShow(self),
 						maxDate: self.attr('data-max-date'),
-						minDate: self.attr('data-min-date')
+						minDate: self.attr('data-min-date'),
+                        stepHour: outer_self._getStepHour(self),
+                        stepMinute: outer_self._getStepMinute(self)
 					};
-					jQuery(this).timepicker(jQuery.extend(jQuery.extend(datetimepickerArgs, timepickerArgs), args));
+					self.timepicker(jQuery.extend(jQuery.extend(datetimepickerArgs, timepickerArgs), args));
 				});
     		}
+    	},
+    	_getBeforeShow: function(self){
+            return function() {
+                var cssClass = self.attr('data-class');
+                if (typeof(cssClass) !== 'undefined') {
+                    jQuery('#ui-datepicker-div').addClass(cssClass);
+                }
+            };
+    	},
+    	_getStepHour: function(self){
+    	    var step_hour = self.attr('data-step-hour');
+    	    return typeof(step_hour) !== 'undefined' ? parseFloat(step_hour) : .05;
+    	},
+    	_getStepMinute: function(self){
+            var step_minute = self.attr('data-step-minute');
+            return typeof(step_minute) !== 'undefined' ? parseFloat(step_minute) : .05;
+    	},
+    	_getTimeSteps: function(self){
+            var step_hour = self.attr('data-step-hour');
+            step_hour = typeof(step_hour) !== 'undefined' ? parseFloat(step_hour) : 1;
+            var step_minute = self.attr('data-step-minute');
+            step_minute = typeof(step_minute) !== 'undefined' ? parseFloat(step_minute) : 1;
+    	    return [step_hour, step_minute, 1];
     	}
     };
 }

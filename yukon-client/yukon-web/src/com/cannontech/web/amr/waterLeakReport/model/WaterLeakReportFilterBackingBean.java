@@ -1,10 +1,8 @@
 package com.cannontech.web.amr.waterLeakReport.model;
 
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
-import org.joda.time.Hours;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.LocalDate;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.user.YukonUserContext;
@@ -16,24 +14,22 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
     public final static int DEFAULT_TO_HOURS = 25;
 
     private DeviceCollection deviceCollection;
-    private LocalDate fromLocalDate;
-    private LocalDate toLocalDate;
-    private int fromHour;
-    private int toHour;
+    private Instant fromInstant;
+    private Instant toInstant;
     private double threshold = 0.0;
     private boolean includeDisabledPaos;
     
     public WaterLeakReportFilterBackingBean() {/* Needed by Spring */}
 
     public WaterLeakReportFilterBackingBean(WaterLeakReportFilterBackingBean backingBean, YukonUserContext userContext) {
-        DateTime fromDateTime = new DateTime(userContext.getJodaTimeZone()).minus(Hours.hours(DEFAULT_FROM_HOURS));
-        DateTime toDateTime = new DateTime(userContext.getJodaTimeZone()).minus(Hours.hours(DEFAULT_TO_HOURS));
+        fromInstant = new Instant().minus(Duration.standardHours(DEFAULT_FROM_HOURS));
+        toInstant = new Instant().minus(Duration.standardHours(DEFAULT_TO_HOURS));
 
-        fromLocalDate = new LocalDate(fromDateTime);
-        toLocalDate = new LocalDate(toDateTime);
-
-        fromHour = fromDateTime.get(DateTimeFieldType.hourOfDay());
-        toHour = toDateTime.get(DateTimeFieldType.hourOfDay());
+        // Normalize to zero-out the minutes and seconds
+        fromInstant = fromInstant.minus(Duration.standardMinutes(fromInstant.get(DateTimeFieldType.minuteOfHour())));
+        fromInstant = fromInstant.minus(Duration.standardSeconds(fromInstant.get(DateTimeFieldType.secondOfMinute())));
+        toInstant = toInstant.minus(Duration.standardMinutes(toInstant.get(DateTimeFieldType.minuteOfHour())));
+        toInstant = toInstant.minus(Duration.standardSeconds(toInstant.get(DateTimeFieldType.secondOfMinute())));
 
         // Just using the backingbean for the paging & sorting values
         setSort(backingBean.getSort());
@@ -51,45 +47,21 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
     }
 
     public Instant getFromInstant() {
-        return new Instant(fromLocalDate.toDate()).plus(Hours.hours(fromHour).toStandardDuration());
+        return fromInstant;
+    }
+
+    public void setFromInstant(Instant fromInstant) {
+        this.fromInstant = fromInstant;
     }
 
     public Instant getToInstant() {
-        return new Instant(toLocalDate.toDate()).plus(Hours.hours(toHour).toStandardDuration());
+        return toInstant;
     }
 
-    public LocalDate getFromLocalDate() {
-        return fromLocalDate;
+    public void setToInstant(Instant toInstant) {
+        this.toInstant = toInstant;
     }
 
-    public void setFromLocalDate(LocalDate fromLocalDate) {
-        this.fromLocalDate = fromLocalDate;
-    }
-
-    public LocalDate getToLocalDate() {
-        return toLocalDate;
-    }
-
-    public void setToLocalDate(LocalDate toLocalDate) {
-        this.toLocalDate = toLocalDate;
-    }
-
-    public int getFromHour() {
-        return fromHour;
-    }
-
-    public void setFromHour(int fromHour) {
-        this.fromHour = fromHour;
-    }
-    
-    public int getToHour() {
-        return toHour;
-    }
-
-    public void setToHour(int toHour) {
-        this.toHour = toHour;
-    }
-    
     public double getThreshold() {
         return threshold;
     }

@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -32,18 +33,13 @@
 			<div class="under_tabs">
 				<tags:nameValueContainer2>
 					<tags:nameValue2 nameKey=".filter.fromDate">
-						<tags:dateInputCalendar fieldName="fromLocalDate"
-							springInput="true" inputClass="f_focus f_from_local_date"/>
+						<dt:dateTime path="fromInstant" cssClass="f_from_datetime"
+							stepMinute="60" cssDialogClass="hide_minutes" />
 					</tags:nameValue2>
-					<tags:inputNameValue nameKey=".filter.fromHour" path="fromHour"
-						size="2" inputClass="f_from_hour"/>
-
 					<tags:nameValue2 nameKey=".filter.toDate">
-						<tags:dateInputCalendar fieldName="toLocalDate" springInput="true"
-							inputClass="f_to_local_date"/>
+						<dt:dateTime path="toInstant" cssClass="f_to_datetime"
+							stepMinute="60" cssDialogClass="hide_minutes" />
 					</tags:nameValue2>
-					<tags:inputNameValue nameKey=".filter.toHour" path="toHour"
-						size="2" inputClass="f_to_hour"/>
 
                     <tags:nameValue2 nameKey=".filter.threshold">
                         <tags:input path="threshold" size="3" inputClass="threshold_input f_threshold"/>

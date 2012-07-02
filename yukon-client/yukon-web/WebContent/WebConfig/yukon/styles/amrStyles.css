@@ -143,6 +143,10 @@ div.resultBar > div {
 }
 
 /* WaterLeakReport START */
+#leakFilterDialog .errorMessage {
+	font-size: 12px;
+}
+
 #leakFilterDialog.ui-dialog-content {
     padding: .5em 0em
 }

@@ -2126,3 +2126,8 @@ table th.small_width {
 .datetimeEntry_wrap .datetimeEntry_control {
 	display: none !important;
 }
+
+.ui-datepicker.hide_minutes .ui_tpicker_minute_label,
+.ui-datepicker.hide_minutes .ui_tpicker_minute {
+	display: none;
+}

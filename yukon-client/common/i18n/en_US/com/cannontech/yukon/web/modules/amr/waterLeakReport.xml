@@ -96,14 +96,7 @@
     <!-- Validation Errors -->
     <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.thresholdNegative">Threshold cannot be negative</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromDateAfterToDate">From date must be before to date</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourAfterToHour">From hour must be before to hour</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourTooLow">From hour must be greater than 0</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toHourTooLow">To hour must be greater than 0</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourTooHigh">From hour must be less than 24</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toHourTooHigh">To hour must be less than 24</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromHourInFuture">From hour must be in the past</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.fromDateInFuture">From date must be in the past</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toHourInFuture">To hour must be in the past</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.toDateInFuture">To date must be in the past</entry>
     
 </properties>
