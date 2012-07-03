@@ -194,6 +194,15 @@
         <dependent-module archiveName="jloox30.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jloox30.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="exificient.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/exificient.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="xml-apis.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/xml-apis.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="xercesImpl.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/xercesImpl.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="java-output-path" value="/yukon-web/build/classes"/>
         <property name="context-root" value="yukon-web"/>
     </wb-module>

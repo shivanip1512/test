@@ -317,6 +317,8 @@
     <bean id="rfnDeviceLookupService" class="com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl"/>
     <bean id="rfnDeviceCreationService" class="com.cannontech.common.rfn.service.impl.RfnDeviceCreationServiceImpl"/>
     <bean id="rfnExpressComMessageService" class="com.cannontech.dr.rfn.service.impl.RfnExpressComMessageServiceImpl"/>
+    <bean id="exiParsingService" class="com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl"/>
+    <bean id="RfnLcrPointDataMappingService" class="com.cannontech.dr.rfn.service.impl.RfnLcrPointDataMappingServiceImpl"/>
 
     <bean id="bulkPointDataInjectionService" class="com.cannontech.development.impl.BulkPointDataInjectionServiceImpl"/>
 </beans>

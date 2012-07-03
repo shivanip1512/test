@@ -1,6 +1,7 @@
 package com.cannontech.web.support.development;
 
 import java.beans.PropertyEditor;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +13,12 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -58,6 +62,9 @@ public class RfnMeterArchiveTestController {
 
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private ResourceLoader loader;
+
+    private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
     
     @RequestMapping
     public String viewBase() {
@@ -171,32 +178,42 @@ public class RfnMeterArchiveTestController {
     }
     
     @RequestMapping("sendLcrReadArchiveRequest")
-    public String sendLcrReadArchive(int serialFrom, int serialTo, String manufacturer, String model) {
+    public String sendLcrReadArchive(int serialFrom, int serialTo, String manufacturer, String model) throws IOException {
         JmsTemplate jmsTemplate;
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(false);
         jmsTemplate.setDeliveryPersistent(false);
         jmsTemplate.setPubSubDomain(false);
         
-        // Create archive request
-        RfnLcrReadingArchiveRequest readArchiveRequest = new RfnLcrReadingArchiveRequest();
-        RfnLcrReading data = new RfnLcrReading();
-        
-        // Encode test message from classpath and turn it into the payload for RfnLcrReading.
-        byte[] payload = new byte[64];
-        long timeStamp = new Instant().getMillis();
-        RfnIdentifier rfnIdentifier = new RfnIdentifier(new Integer(serialFrom).toString(), manufacturer, model);
-        
-        // Set all data
-        data.setPayload(payload);
-        data.setTimeStamp(timeStamp);
-        readArchiveRequest.setData(data);
-        readArchiveRequest.setDataPointId(0);
-        readArchiveRequest.setRfnIdentifier(rfnIdentifier);
-        readArchiveRequest.setType(RfnLcrReadingType.UNSOLICITED);
-        
-        // Put request on queue
-        jmsTemplate.convertAndSend("yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest", readArchiveRequest);
+        if (serialTo < serialFrom) {
+            serialTo = serialFrom;
+        }
+        for (int serial = serialFrom; serial <= serialTo; serial++) {
+            // Create archive request
+            RfnLcrReadingArchiveRequest readArchiveRequest = new RfnLcrReadingArchiveRequest();
+            RfnLcrReading data = new RfnLcrReading();
+            
+            // Read test encoded EXI file from classpath, assign it to payload.
+            byte[] payload;
+            Resource payloadResource = loader.getResource("classpath:com/cannontech/dr/rfn/service/DRReport.exi");
+            if (payloadResource.exists()) {
+                payload = FileCopyUtils.copyToByteArray(payloadResource.getInputStream());
+            } else {
+                payload = new byte[64];
+            }
+            long timeStamp = new Instant().getMillis();
+            RfnIdentifier rfnIdentifier = new RfnIdentifier(new Integer(serial).toString(), manufacturer, model);
+            
+            // Set all data
+            data.setPayload(payload);
+            data.setTimeStamp(timeStamp);
+            readArchiveRequest.setData(data);
+            readArchiveRequest.setRfnIdentifier(rfnIdentifier);
+            readArchiveRequest.setType(RfnLcrReadingType.UNSOLICITED);
+            
+            // Put request on queue
+            jmsTemplate.convertAndSend(lcrReadingArchiveRequestQueueName, readArchiveRequest);
+        }
         return "redirect:viewLcrReadArchiveRequest";
     }
     
@@ -217,7 +234,7 @@ public class RfnMeterArchiveTestController {
         archiveRequest.setSensorId(1234);
         
         // Put request on queue
-        jmsTemplate.convertAndSend("yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest", archiveRequest);
+        jmsTemplate.convertAndSend(lcrReadingArchiveRequestQueueName, archiveRequest);
         return "redirect:viewLcrArchiveRequest";
     }
     
