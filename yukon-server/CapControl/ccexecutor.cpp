@@ -6381,7 +6381,7 @@ void CtiCCPointDataMsgExecutor::execute()
                     {
                         if( currentCapBank->getControlStatus() != (LONG)value )
                         {
-                            if( currentSubstationBus->getRecentlyControlledFlag() &&
+                            if( (currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getPerformingVerificationFlag() )&&
                                 currentFeeder->getLastCapBankControlledDeviceId() == currentCapBank->getPaoId() )
                             {
                                 currentSubstationBus->setRecentlyControlledFlag(false);

@@ -702,6 +702,110 @@ CapBankList CtiCCSubstationBusStore::getCapBanksByPaoId(int paoId)
     return getCapBanksByPaoIdAndType(paoId,type);
 }
 
+CtiCCSubstationBus_vec CtiCCSubstationBusStore::getAllSubBusesByIdAndType(int paoId, CapControlType type)
+{
+    CtiCCSubstationBus_vec buses;
+    switch (type)
+    {
+        case SubBus:
+        {
+            CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(paoId);
+            if (subBus == NULL)
+            {
+                break;
+            }
+            buses.push_back(subBus);
+            break;
+        }
+        case Substation:
+        {
+            CtiCCSubstationPtr station = findSubstationByPAObjectID(paoId);
+            if (station == NULL)
+            {
+                break;
+            }
+
+            for each(int subId in station->getCCSubIds())
+            {
+                CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
+                if (subBus == NULL)
+                {
+                    continue;
+                }
+                buses.push_back(subBus);
+            }
+            break;
+        }
+        case Area:
+        {
+            CtiCCAreaPtr area = findAreaByPAObjectID(paoId);
+            if (area == NULL)
+            {
+                break;
+            }
+
+            for each(long stationId in area->getSubstationIds())
+            {
+                CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
+                if (station == NULL)
+                {
+                    continue;
+                }
+
+                for each(int subId in station->getCCSubIds())
+                {
+                    CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
+                    if (subBus == NULL)
+                    {
+                        continue;
+                    }
+
+                    buses.push_back(subBus);
+                }
+            }
+            break;
+        }
+        case SpecialArea:
+        {
+            CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(paoId);
+
+            if (spArea == NULL || spArea->getDisableFlag())
+            {
+                break;
+            }
+
+            for each(long stationId in spArea->getSubstationIds())
+            {
+                CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
+                if (station == NULL)
+                {
+                    break;
+                }
+
+                for each(int subId in station->getCCSubIds())
+                {
+                    CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subId);
+                    if (subBus == NULL)
+                    {
+                        continue;
+                    }
+
+                    buses.push_back(subBus);
+                }
+            }
+            break;
+        }
+        case CapBank:
+        case Feeder:
+        case Undefined:
+        default:
+        {
+            break;
+        }
+    }
+
+    return buses;
+}
 CapBankList CtiCCSubstationBusStore::getCapBanksByPaoIdAndType(int paoId, CapControlType type)
 {
     CapBankList banks;

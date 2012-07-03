@@ -324,11 +324,10 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    long subID = _deviceId;
-    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(subID);
-
-
-    if( currentSubstationBus != NULL && subID == currentSubstationBus->getPaoId() )
+    CapControlType type = store->determineTypeById(_deviceId);
+    CtiCCSubstationBus_vec buses = store->getAllSubBusesByIdAndType(_deviceId, type);
+    
+    for each (CtiCCSubstationBus* currentSubstationBus in buses)
     {
         if (!forceStopImmediately && currentSubstationBus->getPerformingVerificationFlag())
         {
@@ -390,8 +389,12 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
         {
             if (forceStopImmediately && currentSubstationBus->getPerformingVerificationFlag())
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Emergency Verification Stop Message received from client. Current Cap Bank Verification will not complete."<< endl;
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Emergency Verification Stop Message received from client. Current Cap Bank Verification will not complete."<< endl;
+                }
+
+                CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
             }
             currentSubstationBus->setVerificationFlag(false);
             currentSubstationBus->setPerformingVerificationFlag(false);
@@ -433,10 +436,6 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
             store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), 0, capControlDisableVerification, currentSubstationBus->getEventSequence(), 0, text, "cap control"));
 
-            if (forceStopImmediately)
-            {
-                CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
-            }
         }
     }
 }

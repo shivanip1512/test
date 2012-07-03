@@ -521,6 +521,7 @@ public:
     CtiCCCapBankPtr getCapBankByPaoId(int paoId);
     CapBankList getCapBanksByPaoId(int paoId);
     CapBankList getCapBanksByPaoIdAndType(int paoId, Cti::CapControl::CapControlType type);
+    CtiCCSubstationBus_vec getAllSubBusesByIdAndType(int paoId, Cti::CapControl::CapControlType type);
     Cti::CapControl::CapControlType determineTypeById(int paoId);
 
     CapControlPointDataHandler& getPointDataHandler();

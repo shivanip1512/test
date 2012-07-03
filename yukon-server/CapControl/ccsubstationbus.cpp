@@ -1874,8 +1874,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkAndUpdateRecentlyControlledFlag()
         for(int j=0;j<ccCapBanks.size();j++)
         {
            currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-           if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-               currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+           if( (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+               currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ) &&
+               !currentCapBank->getPerformingVerificationFlag() )
            {
                pendingBanks = true;
                currentFeeder->setRecentlyControlledFlag(true);
@@ -3785,7 +3786,7 @@ bool CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                     for(int j=0;j<ccCapBanks.size();j++)
                     {
                        currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                       if (currentCapBank->getPaoId() == getCurrentVerificationCapBankId())
+                       if (currentCapBank->getPaoId() == currentFeeder->getCurrentVerificationCapBankId())
                        {
 
                            if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
@@ -5139,7 +5140,7 @@ void CtiCCSubstationBus::clearOutNewPointReceivedFlags()
 bool CtiCCSubstationBus::isAlreadyControlled()
 {
 
-    if (getVerificationFlag())
+    if (getPerformingVerificationFlag())
     {
         return isVerificationAlreadyControlled();
     }
@@ -5294,9 +5295,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify(CtiMultiMsg_vec& 
     _currentVerificationFeederId = -1;
     _currentVerificationCapBankId = -1;
 
-    //_currentCapBankToVerifyId = (LONG) _verificationCapBankIds.back();
-    //_verificationCapBankIds.pop_back();
-
     if (getOverlappingVerificationFlag())
     {
         setCapBanksToVerifyFlags(getVerificationStrategy(), ccEvents);
@@ -5321,6 +5319,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::getNextCapBankToVerify(CtiMultiMsg_vec& 
                 }
             }
             currentFeeder->setVerificationDoneFlag(true);
+            currentFeeder->setPerformingVerificationFlag(false);
             _currentVerificationFeederId = -1;
         }
     }
