@@ -1196,8 +1196,8 @@ public void setSwitchType(String type)
 	getJPanelHistory().setVisible( getJCheckBoxHistory().isVisible() &&
 		!(deviceType == com.cannontech.database.data.pao.PAOGroups.MACRO_GROUP) );
 	
-	if( PAOGroups.getDeviceType(type) != PAOGroups.LM_GROUP_EXPRESSCOMM &&
-	    PAOGroups.getDeviceType(type) != PAOGroups.LM_GROUP_RFN_EXPRESSCOMM) {
+	if( deviceType != PAOGroups.LM_GROUP_EXPRESSCOMM &&
+	    deviceType != PAOGroups.LM_GROUP_RFN_EXPRESSCOMM) {
 		getPriorityCombo().setVisible(false);
 		getPriorityLabel().setVisible(false);
 	}

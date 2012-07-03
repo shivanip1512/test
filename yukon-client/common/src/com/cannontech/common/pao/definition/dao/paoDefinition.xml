@@ -7143,6 +7143,9 @@
     <pao id="LM_GROUP_EXPRESSCOMM" inherits="LM_GROUP_BASE, LM_GROUP">
         <displayName>EXPRESSCOM GROUP</displayName>
     </pao>
+    <pao id="LM_GROUP_RFN_EXPRESSCOMM" inherits="LM_GROUP_BASE, LM_GROUP">
+        <displayName>RFN EXPRESSCOM GROUP</displayName>
+    </pao>
     <pao id="LM_GROUP_VERSACOM" inherits="LM_GROUP_BASE, LM_GROUP">
         <displayName>VERSACOM GROUP</displayName>
     </pao>

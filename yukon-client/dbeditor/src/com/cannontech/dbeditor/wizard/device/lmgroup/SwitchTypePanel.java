@@ -31,10 +31,10 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
         PaoType.LM_GROUP_DIGI_SEP,
         PaoType.LM_GROUP_EMETCON,
         PaoType.LM_GROUP_EXPRESSCOMM,
-        PaoType.LM_GROUP_RFN_EXPRESSCOMM,
         PaoType.LM_GROUP_GOLAY,
         PaoType.LM_GROUP_MCT,
         PaoType.LM_GROUP_POINT,
+        PaoType.LM_GROUP_RFN_EXPRESSCOMM,
         PaoType.LM_GROUP_RIPPLE,
         PaoType.LM_GROUP_VERSACOM
     };  
@@ -43,10 +43,10 @@ public class SwitchTypePanel extends com.cannontech.common.gui.util.DataInputPan
 	    PaoType.LM_GROUP_DIGI_SEP,
 	    PaoType.LM_GROUP_EMETCON,
         PaoType.LM_GROUP_EXPRESSCOMM,
-        PaoType.LM_GROUP_RFN_EXPRESSCOMM,
         PaoType.LM_GROUP_GOLAY,
         PaoType.LM_GROUP_MCT,
         PaoType.LM_GROUP_POINT,
+        PaoType.LM_GROUP_RFN_EXPRESSCOMM,
         PaoType.LM_GROUP_RIPPLE,
         PaoType.LM_GROUP_SA205,
         PaoType.LM_GROUP_SA305,

@@ -47,7 +47,7 @@ public class LMGroupEditor extends com.cannontech.common.editor.PropertyPanel im
 		{ PAOGroups.MACRO_GROUP },
 
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupExpressComEditorPanel
-		{ PAOGroups.LM_GROUP_EXPRESSCOMM },
+		{ PAOGroups.LM_GROUP_EXPRESSCOMM, PAOGroups.LM_GROUP_RFN_EXPRESSCOMM },
 
 		//com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupMCTEditorPanel
 		{ PAOGroups.LM_GROUP_MCT },

@@ -1,6 +1,6 @@
 package com.cannontech.database.data.device.lm;
 
-public class LMGroupRfnExpressCom extends com.cannontech.database.data.device.lm.LMGroupExpressCom implements IGroupRoute
+public class LMGroupRfnExpressCom extends com.cannontech.database.data.device.lm.LMGroupExpressCom
 {
     public LMGroupRfnExpressCom()
     {
