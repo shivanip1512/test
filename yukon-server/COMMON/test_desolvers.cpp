@@ -123,6 +123,7 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
     type_lookups[TYPE_LMGROUP_RIPPLE]      = "RIPPLE GROUP";
     type_lookups[TYPE_LMGROUP_VERSACOM]    = "VERSACOM GROUP";
     type_lookups[TYPE_LMGROUP_EXPRESSCOM]  = "EXPRESSCOM GROUP";
+    type_lookups[TYPE_LMGROUP_RFN_EXPRESSCOM]  = "RFN EXPRESSCOM GROUP";
     type_lookups[TYPE_LMGROUP_DIGI_SEP]    = "DIGI SEP GROUP";
     type_lookups[TYPE_LMGROUP_MCT]         = "MCT GROUP";
     type_lookups[TYPE_LMGROUP_GOLAY]       = "GOLAY GROUP";

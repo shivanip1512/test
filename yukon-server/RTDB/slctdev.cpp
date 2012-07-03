@@ -32,6 +32,7 @@
 #include "dev_wctp.h"
 #include "dev_grp_emetcon.h"
 #include "dev_grp_expresscom.h"
+#include "dev_grp_rfn_expresscom.h"
 #include "dev_grp_golay.h"
 #include "dev_grp_mct.h"
 #include "dev_grp_point.h"
@@ -261,6 +262,8 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPE_LMGROUP_VERSACOM:     NewDevice = CTIDBG_new CtiDeviceGroupVersacom;      break;
 
         case TYPE_LMGROUP_EXPRESSCOM:   NewDevice = CTIDBG_new CtiDeviceGroupExpresscom;    break;
+
+        case TYPE_LMGROUP_RFN_EXPRESSCOM:   NewDevice = CTIDBG_new CtiDeviceGroupRfnExpresscom;    break;
 
         case TYPE_LMGROUP_MCT:          NewDevice = CTIDBG_new CtiDeviceGroupMCT;           break;
 

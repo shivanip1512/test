@@ -85,7 +85,8 @@ public:
         Queue_SmartEnergyProfileControl,
         Queue_SmartEnergyProfileRestore,
         Queue_HistoryRowAssociationResponse,
-        Queue_IvvcAnalysisMessage
+        Queue_IvvcAnalysisMessage,
+        Queue_RfnBroadcast
     };
 };
 

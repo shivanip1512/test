@@ -172,38 +172,39 @@ string desolveDeviceType( int aType )
         case TYPE_FCI:              Ret = "faulted circuit indicator";          break;
         case TYPE_NEUTRAL_MONITOR:  Ret = "capacitor bank neutral monitor";     break;
 
-        case TYPE_LMGROUP_EMETCON:      Ret = "emetcon group";      break;
-        case TYPE_LMGROUP_POINT:        Ret = "point group";        break;
-        case TYPE_LMGROUP_RIPPLE:       Ret = "ripple group";       break;
-        case TYPE_LMGROUP_VERSACOM:     Ret = "versacom group";     break;
-        case TYPE_LMGROUP_EXPRESSCOM:   Ret = "expresscom group";   break;
-        case TYPE_LMGROUP_DIGI_SEP:     Ret = "digi sep group";     break;
-        case TYPE_LMGROUP_MCT:          Ret = "mct group";          break;
-        case TYPE_LMGROUP_GOLAY:        Ret = "golay group";        break;
-        case TYPE_LMGROUP_SADIGITAL:    Ret = "sa-digital group";   break;
-        case TYPE_LMGROUP_SA105:        Ret = "sa-105 group";       break;
-        case TYPE_LMGROUP_SA205:        Ret = "sa-205 group";       break;
-        case TYPE_LMGROUP_SA305:        Ret = "sa-305 group";       break;
-        case TYPE_MACRO:                Ret = "macro group";        break;
+        case TYPE_LMGROUP_EMETCON:        Ret = "emetcon group";        break;
+        case TYPE_LMGROUP_POINT:          Ret = "point group";          break;
+        case TYPE_LMGROUP_RIPPLE:         Ret = "ripple group";         break;
+        case TYPE_LMGROUP_VERSACOM:       Ret = "versacom group";       break;
+        case TYPE_LMGROUP_EXPRESSCOM:     Ret = "expresscom group";     break;
+        case TYPE_LMGROUP_RFN_EXPRESSCOM: Ret = "rfn expresscom group"; break;
+        case TYPE_LMGROUP_DIGI_SEP:       Ret = "digi sep group";       break;
+        case TYPE_LMGROUP_MCT:            Ret = "mct group";            break;
+        case TYPE_LMGROUP_GOLAY:          Ret = "golay group";          break;
+        case TYPE_LMGROUP_SADIGITAL:      Ret = "sa-digital group";     break;
+        case TYPE_LMGROUP_SA105:          Ret = "sa-105 group";         break;
+        case TYPE_LMGROUP_SA205:          Ret = "sa-205 group";         break;
+        case TYPE_LMGROUP_SA305:          Ret = "sa-305 group";         break;
+        case TYPE_MACRO:                  Ret = "macro group";          break;
+                                                                      
+        case TYPEVERSACOMCBC:             Ret = "cbc versacom";         break;
+        case TYPEEXPRESSCOMCBC:           Ret = "cbc expresscom";       break;
+        case TYPEFISHERPCBC:              Ret = "cbc fp-2800";          break;
+                                                                      
+        case TYPECAPBANK:                 Ret = "cap bank";             break;
+        case TYPECBC6510:                 Ret = "cbc 6510";             break;
+        case TYPECBC7010:                 Ret = "cbc 7010";             break;
+        case TYPECBC7020:                 Ret = "cbc 7020";             break;
+        case TYPECBC8020:                 Ret = "cbc 8020";             break;
+        case TYPECBCDNP:                  Ret = "cbc dnp";              break;
+                                                                      
+        case TYPE_TAPTERM:                Ret = "tap terminal";         break;
+        case TYPE_SNPP:                   Ret = "snpp terminal";        break;
+        case TYPE_RDS:                    Ret = "rds terminal";         break;
+        case TYPE_TNPP:                   Ret = "tnpp terminal";        break;
+        case TYPE_WCTP:                   Ret = "wctp terminal";        break;
 
-        case TYPEVERSACOMCBC:           Ret = "cbc versacom";       break;
-        case TYPEEXPRESSCOMCBC:         Ret = "cbc expresscom";     break;
-        case TYPEFISHERPCBC:            Ret = "cbc fp-2800";        break;
-
-        case TYPECAPBANK:               Ret = "cap bank";           break;
-        case TYPECBC6510:               Ret = "cbc 6510";           break;
-        case TYPECBC7010:               Ret = "cbc 7010";           break;
-        case TYPECBC7020:               Ret = "cbc 7020";           break;
-        case TYPECBC8020:               Ret = "cbc 8020";           break;
-        case TYPECBCDNP:                Ret = "cbc dnp";            break;
-
-        case TYPE_TAPTERM:              Ret = "tap terminal";       break;
-        case TYPE_SNPP:                 Ret = "snpp terminal";      break;
-        case TYPE_RDS:                  Ret = "rds terminal";       break;
-        case TYPE_TNPP:                 Ret = "tnpp terminal";      break;
-        case TYPE_WCTP:                 Ret = "wctp terminal";      break;
-
-        case TYPE_PAGING_RECEIVER:      Ret = "page receiver";      break;
+        case TYPE_PAGING_RECEIVER:        Ret = "page receiver";        break;
 
         case TYPE_LMPROGRAM_DIRECT:         Ret = "lm direct program";  break;
         case TYPE_LMPROGRAM_CURTAILMENT:    Ret = "lm curtail program"; break;

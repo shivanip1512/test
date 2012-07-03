@@ -9,21 +9,22 @@ class IM_EX_DEVDB CtiDeviceGroupExpresscom : public CtiDeviceGroupBase
 private:
 
     typedef CtiDeviceGroupBase Inherited;
+    CtiTableExpresscomLoadGroup     _expresscomGroup;
+    
+    typedef std::map< long, CtiDeviceGroupBaseWPtr > WPtrGroupMap;
+    WPtrGroupMap _children;
+
+protected:
 
     // This method makes a gripe if any addressing level or load is predefined when submitting a request to a group
     bool checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &retList );
     void reportChildControlStart(int isshed, int shedtime, int reductionratio, std::list< CtiMessage* >  &vgList, std::string cmd, int controlPriority );
-    typedef std::map< long, CtiDeviceGroupBaseWPtr > WPtrGroupMap;
-    WPtrGroupMap _children;
-
     std::string getAddressingAsString();
 
-protected:
+    int extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, std::list<CtiMessage *> &vgList, std::list<CtiMessage *> &retList, std::string &resultString);
+    void reportAndLogControlStart(CtiCommandParser &parse, std::list<CtiMessage *> &vgList, const std::string &commandString);
 
-    CtiTableExpresscomLoadGroup     _expresscomGroup;
-
-public:
-
+public:    
     CtiDeviceGroupExpresscom();
     CtiDeviceGroupExpresscom(const CtiDeviceGroupExpresscom& aRef);
     virtual ~CtiDeviceGroupExpresscom();

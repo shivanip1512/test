@@ -361,6 +361,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "expresscom group";
     devType = TYPE_LMGROUP_EXPRESSCOM;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "rfn expresscom group";
+    devType = TYPE_LMGROUP_RFN_EXPRESSCOM;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "mct group";
     devType = TYPE_LMGROUP_MCT;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);

@@ -965,6 +965,28 @@ dev_grp_point.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
 		tbl_lmg_point.h mgr_route.h repeaterrole.h slctdev.h \
 		smartmap.h readers_writer_lock.h critical_section.h \
 		msg_pcreturn.h
+dev_grp_rfn_expresscom.obj:	precompiled.h cmdparse.h ctitokenizer.h \
+		dlldefs.h parsevalue.h dev_grp_rfn_expresscom.h \
+		dev_grp_expresscom.h dev_base.h dsm2.h cticonnect.h yukon.h \
+		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h \
+		words.h optional.h dev_exclusion.h boostutil.h \
+		tbl_paoexclusion.h row_reader.h rwutil.h \
+		database_connection.h dbaccess.h dllbase.h database_reader.h \
+		boost_time.h config_device.h logger.h thread.h \
+		CtiPCPtrQueue.h hashkey.h hash_functions.h rte_base.h \
+		dbmemobject.h ctibase.h ctinexus.h message.h collectable.h \
+		tbl_pao_lite.h tbl_rtcomm.h resolvers.h pointtypes.h \
+		db_entry_defines.h desolvers.h msg_signal.h string_utility.h \
+		tbl_static_paoinfo.h pointdefs.h tbl_base.h tbl_scanrate.h \
+		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h dev_grp.h cparms.h \
+		configkey.h configval.h msg_lmcontrolhistory.h \
+		msg_pcrequest.h msg_pdata.h msg_multi.h pt_status.h \
+		tbl_pt_status.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h tbl_pt_analog.h tbl_dv_expresscom.h \
+		vcomdefs.h expresscom.h ctistring.h msg_pcreturn.h \
+		devicetypes.h amq_connection.h critical_section.h \
+		rfnbroadcastmessage.h
 dev_grp_ripple.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
 		types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h cticonnect.h netports.h mutex.h guard.h \
@@ -2326,14 +2348,14 @@ mgr_device.obj:	precompiled.h mgr_device.h dlldefs.h rtdb.h hashkey.h \
 		tbl_dv_tappaging.h encryption_oneway_message.h dev_snpp.h \
 		dev_tnpp.h tbl_dv_tnpp.h dev_pagingreceiver.h \
 		tbl_dv_pagingreceiver.h dev_grp_emetcon.h tbl_dv_emetcon.h \
-		dev_grp_expresscom.h tbl_dv_expresscom.h dev_grp_golay.h \
-		prot_sasimple.h tbl_lmg_sasimple.h dev_grp_point.h \
-		tbl_lmg_point.h dev_grp_ripple.h tbl_dv_lmg_ripple.h \
-		dev_grp_sa105.h prot_sa105.h tbl_lmg_sa205105.h \
-		dev_grp_sa305.h prot_sa305.h tbl_lmg_sa305.h dev_grp_sa205.h \
-		prot_sa205.h dev_grp_sadigital.h dev_grp_versacom.h \
-		tbl_dv_versacom.h dev_grp_mct.h tbl_dv_lmgmct.h \
-		dev_mct_broadcast.h dev_rds.h
+		dev_grp_expresscom.h tbl_dv_expresscom.h \
+		dev_grp_rfn_expresscom.h dev_grp_golay.h prot_sasimple.h \
+		tbl_lmg_sasimple.h dev_grp_point.h tbl_lmg_point.h \
+		dev_grp_ripple.h tbl_dv_lmg_ripple.h dev_grp_sa105.h \
+		prot_sa105.h tbl_lmg_sa205105.h dev_grp_sa305.h prot_sa305.h \
+		tbl_lmg_sa305.h dev_grp_sa205.h prot_sa205.h \
+		dev_grp_sadigital.h dev_grp_versacom.h tbl_dv_versacom.h \
+		dev_grp_mct.h tbl_dv_lmgmct.h dev_mct_broadcast.h dev_rds.h
 mgr_holiday.obj:	precompiled.h ctidbgmem.h mgr_holiday.h ctidate.h \
 		dlldefs.h logger.h thread.h mutex.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -2809,11 +2831,11 @@ slctdev.obj:	precompiled.h dev_710.h dev_idlc.h types.h os2_2w32.h \
 		encryption_oneway_message.h dev_snpp.h dev_pagingreceiver.h \
 		tbl_dv_pagingreceiver.h dev_tnpp.h tbl_dv_tnpp.h dev_wctp.h \
 		dev_grp_emetcon.h tbl_dv_emetcon.h dev_grp_expresscom.h \
-		tbl_dv_expresscom.h dev_grp_golay.h prot_sasimple.h \
-		tbl_lmg_sasimple.h dev_grp_mct.h tbl_dv_lmgmct.h \
-		dev_grp_point.h tbl_lmg_point.h dev_grp_ripple.h \
-		tbl_dv_lmg_ripple.h dev_grp_sa105.h prot_sa105.h \
-		tbl_lmg_sa205105.h dev_grp_sa205.h prot_sa205.h \
+		tbl_dv_expresscom.h dev_grp_rfn_expresscom.h dev_grp_golay.h \
+		prot_sasimple.h tbl_lmg_sasimple.h dev_grp_mct.h \
+		tbl_dv_lmgmct.h dev_grp_point.h tbl_lmg_point.h \
+		dev_grp_ripple.h tbl_dv_lmg_ripple.h dev_grp_sa105.h \
+		prot_sa105.h tbl_lmg_sa205105.h dev_grp_sa205.h prot_sa205.h \
 		dev_grp_sa305.h prot_sa305.h tbl_lmg_sa305.h \
 		dev_grp_sadigital.h dev_grp_versacom.h tbl_dv_versacom.h \
 		dev_davis.h dev_system.h dev_aplus.h dev_alpha.h dev_a1.h \

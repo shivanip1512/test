@@ -2486,6 +2486,52 @@ BYTE CtiProtocolExpresscom::getByte(int pos, int messageNum)// messageNum is a 1
     return retVal;
 }
 
+bool CtiProtocolExpresscom::getFullMessage(std::vector<unsigned char> &message)
+{
+    if(messageSize() <= 0)
+    {
+        return false;
+    }
+
+    message.push_back(getStartByte());
+
+    int curByte;
+    for(int i = 0; i < messageSize(); i++)
+    {
+        message.push_back(getByte(i));
+    }
+
+    message.push_back(getStopByte());
+
+    return true;
+}
+
+string CtiProtocolExpresscom::getMessageAsString()
+{
+    string message;
+    if(messageSize() <= 0)
+    {
+        return message;
+    }
+
+    message.push_back(getStartByte());
+
+    bool wasUseAscii = _useASCII;
+    _useASCII = true;
+
+    int curByte;
+    for(int i = 0; i < messageSize(); i++)
+    {
+        message.push_back(getByte(i));
+    }
+
+    message.push_back(getStopByte());
+
+    _useASCII = wasUseAscii;
+
+    return message;
+}
+
 int CtiProtocolExpresscom::messageSize(int messageNum)
 {
     int size;

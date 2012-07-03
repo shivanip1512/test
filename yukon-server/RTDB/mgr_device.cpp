@@ -32,6 +32,7 @@
 #include "dev_pagingreceiver.h"
 #include "dev_grp_emetcon.h"
 #include "dev_grp_expresscom.h"
+#include "dev_grp_rfn_expresscom.h"
 #include "dev_grp_golay.h"
 #include "dev_grp_point.h"
 #include "dev_grp_ripple.h"
@@ -742,6 +743,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                         rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
                         rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
                         rowFound |= loadDeviceType(paoid_subset, "Expresscom groups",      CtiDeviceGroupExpresscom());
+                        rowFound |= loadDeviceType(paoid_subset, "RFN Expresscom groups",  CtiDeviceGroupRfnExpresscom());
                         rowFound |= loadDeviceType(paoid_subset, "Ripple groups",          CtiDeviceGroupRipple());
 
                         rowFound |= loadDeviceType(paoid_subset, "MCT load groups",        CtiDeviceGroupMCT());
@@ -2256,6 +2258,7 @@ void CtiDeviceManager::refreshGroupHierarchy(LONG deviceID)
         vector< CtiDeviceSPtr > match_coll;
         vector< CtiDeviceGroupBaseSPtr > groupVec;
         getDevicesByType(TYPE_LMGROUP_EXPRESSCOM, match_coll);
+        getDevicesByType(TYPE_LMGROUP_RFN_EXPRESSCOM, match_coll);
         //This makes me so very unhappy.
         for( vector< CtiDeviceSPtr >::iterator iter = match_coll.begin(); iter != match_coll.end(); iter++ )
         {

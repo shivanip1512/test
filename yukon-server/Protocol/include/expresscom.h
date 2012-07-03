@@ -371,4 +371,7 @@ public:
     bool getUseCRC();
     void setUseASCII(bool useASCII);
     bool getUseASCII();
+
+    bool getFullMessage(std::vector<unsigned char> &message);
+    std::string getMessageAsString();
 };

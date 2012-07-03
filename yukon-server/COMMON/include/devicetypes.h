@@ -124,6 +124,7 @@
 #define TYPE_LMGROUP_RIPPLE                  2005
 #define TYPE_LMGROUP_POINT                   2010
 #define TYPE_LMGROUP_EXPRESSCOM              2015
+#define TYPE_LMGROUP_RFN_EXPRESSCOM          2016
 #define TYPE_LMGROUP_DIGI_SEP                2017
 #define TYPE_LMGROUP_MCT                     2020
 

@@ -55,6 +55,7 @@ CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(Cti::RowReader &rdr)
     case TYPE_LMGROUP_POINT:
         lm_group = CTIDBG_new CtiLMGroupPoint(rdr);
         break;
+    case TYPE_LMGROUP_RFN_EXPRESSCOM:
     case TYPE_LMGROUP_EXPRESSCOM:
         lm_group = CTIDBG_new CtiLMGroupExpresscom(rdr);
         break;

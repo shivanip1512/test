@@ -408,6 +408,7 @@ device_lookup_t init_device_lookups()
     device_types.insert(make_pair("digi sep group",     TYPE_LMGROUP_DIGI_SEP));
     device_types.insert(make_pair("emetcon group",      TYPE_LMGROUP_EMETCON));
     device_types.insert(make_pair("expresscom group",   TYPE_LMGROUP_EXPRESSCOM));
+    device_types.insert(make_pair("rfn expresscom group",TYPE_LMGROUP_RFN_EXPRESSCOM));
     device_types.insert(make_pair("mct group",          TYPE_LMGROUP_MCT));
     device_types.insert(make_pair("point group",        TYPE_LMGROUP_POINT));
     device_types.insert(make_pair("ripple group",       TYPE_LMGROUP_RIPPLE));
@@ -903,6 +904,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_LMGROUP_RIPPLE:
         case TYPE_LMGROUP_VERSACOM:
         case TYPE_LMGROUP_EXPRESSCOM:
+        case TYPE_LMGROUP_RFN_EXPRESSCOM:
         case TYPE_LMGROUP_DIGI_SEP:
         case TYPE_LMGROUP_MCT:
         case TYPE_LMGROUP_GOLAY:

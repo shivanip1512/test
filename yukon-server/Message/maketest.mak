@@ -360,6 +360,14 @@ porterresponsemessage.obj:	precompiled.h PorterResponseMessage.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h queues.h \
 		cticalls.h os2_2w32.h numstr.h dsm2err.h words.h optional.h \
 		database_reader.h row_reader.h boost_time.h boostutil.h
+rfnbroadcastmessage.obj:	precompiled.h RfnBroadcastMessage.h dlldefs.h \
+		msg_pcreturn.h msg_multi.h collectable.h msg_pdata.h yukon.h \
+		types.h ctidbgmem.h pointdefs.h pointtypes.h message.h \
+		ctitime.h rwutil.h database_connection.h dbaccess.h dllbase.h \
+		dsm2.h cticonnect.h netports.h mutex.h guard.h utility.h \
+		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
+		optional.h database_reader.h row_reader.h boost_time.h \
+		boostutil.h
 test_message.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		collectable.h rwutil.h yukon.h types.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h cticonnect.h netports.h mutex.h \

@@ -714,7 +714,7 @@ bool isLCU(INT type)
 
 bool isExpresscomGroup(INT Type)
 {
-    return Type == TYPE_LMGROUP_EXPRESSCOM;
+    return Type == TYPE_LMGROUP_EXPRESSCOM || Type == TYPE_LMGROUP_RFN_EXPRESSCOM;
 }
 
 bool isRepeater(INT Type)

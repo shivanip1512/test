@@ -140,6 +140,15 @@ BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, parent->compareAddressing(child));
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
 
+    //short test to ensure that RFN Expresscom is keeping separate from Expresscom.
+    parent->setType(TYPE_LMGROUP_RFN_EXPRESSCOM);
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, parent->compareAddressing(child));
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, child->compareAddressing(parent));
+
+    child->setType(TYPE_LMGROUP_RFN_EXPRESSCOM);
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, parent->compareAddressing(child));
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
+
     parentGrpPtr->getExpresscomGroup().setFeeder(10);
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, parent->compareAddressing(child));
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, child->compareAddressing(parent));

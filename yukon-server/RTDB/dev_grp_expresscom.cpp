@@ -125,6 +125,137 @@ void CtiDeviceGroupExpresscom::DecodeDatabaseReader(Cti::RowReader &rdr)
     _expresscomGroup.DecodeDatabaseReader(rdr);
 }
 
+
+int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiCommandParser &parse, OUTMESS * &OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, string &resultString)
+{
+    int nRet = NoError;
+
+    checkForEmptyParseAddressing( parse, OutMessage, retList );
+
+    int serial     = 0;
+    int spid       = 0;
+    int geo        = 0;
+    int substation = 0;
+    int feeder     = 0;
+    int zip        = 0;
+    int uda        = 0;
+    int program    = 0;
+    int splinter   = 0;
+
+    serial = (int)(getExpresscomGroup().getSerial());
+
+    if (serial == 0)
+    {
+        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)          spid        = (int)(getExpresscomGroup().getServiceProvider());
+        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)           geo         = (int)(getExpresscomGroup().getGeo());
+        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSubstation)    substation  = (int)(getExpresscomGroup().getSubstation());
+        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)        feeder      = (int)(getExpresscomGroup().getFeeder());
+        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)           zip         = (int)(getExpresscomGroup().getZip());
+        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)          uda         = (int)(getExpresscomGroup().getUda());
+        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)       program     = (int)(getExpresscomGroup().getProgram());
+        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)      splinter    = (int)(getExpresscomGroup().getSplinter());
+
+        // Only want to set these parse entries if the values are not zero.  Zeros screw up
+        // address validation code.  Exception is "xc_feeder" which CAN be zero.
+
+        parse.setValue("xc_feeder",   feeder);
+        if (spid        != 0) parse.setValue("xc_spid",     spid);
+        if (geo         != 0) parse.setValue("xc_geo",      geo);
+        if (substation  != 0) parse.setValue("xc_sub",      substation);
+        if (zip         != 0) parse.setValue("xc_zip",      zip);
+        if (uda         != 0) parse.setValue("xc_uda",      uda);
+        if (program     != 0) parse.setValue("xc_program",  program);
+        if (splinter    != 0) parse.setValue("xc_splinter", splinter);
+    }
+    else
+    {
+        parse.setValue("xc_serial", serial);
+    }
+
+    if (getExpresscomGroup().getPriority() < 3 && getExpresscomGroup().getPriority() >=0 && !parse.isKeyValid("xcpriority"))
+    {
+        parse.setValue("xcpriority", getExpresscomGroup().getPriority());
+    }
+
+    if (parse.getCommand() == ControlRequest && serial <= 0 && program == 0 && splinter == 0 )
+    {
+        if ((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) &&
+            (getExpresscomGroup().getLoadMask() != 0))
+        {
+            parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
+        }
+        else
+        {
+            // This is bad!  We would control every single load based upon geo addressing...
+            nRet = BADPARAM;
+
+            resultString = "\nERROR: " + getName() + " Group addressing control commands to all loads is prohibited\n" + \
+                           " The group must specify program, splinter or load level addressing";
+            CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
+            retList.push_back( pRet );
+
+            if (OutMessage)
+            {
+                delete OutMessage;
+                OutMessage = NULL;
+            }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << resultString << endl;
+            }
+
+            return nRet;
+        }
+    }
+    else
+    {
+        if ((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) && (serial != 0))
+        {
+            parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
+        }
+        else
+        {
+            parse.setValue("relaymask", 0);
+        }
+    }
+
+    if ( parse.getControlled() )
+    {
+        OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt(GROUP_CONTROL_EXPIRATION, 1200);
+    }
+
+    reportActionItemsToDispatch(pReq, parse, vgList);
+
+    return nRet;
+}
+
+
+void CtiDeviceGroupExpresscom::reportAndLogControlStart(CtiCommandParser &parse, list<CtiMessage *> &vgList, const string &commandString)
+{
+    if (parse.getCommand() == ControlRequest)
+    {
+        int priority = parse.getiValue("xcpriority",3);
+        if (priority < 0 || priority > 3)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Priority is invalid: " << priority << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            priority = 3; //set it to the default priority if there is a problem.
+        }
+        reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, removeCommandDynamicText(parse.getCommandStr()), priority );
+    }
+
+    string addressing = getAddressingAsString();
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(slog);
+        slog << CtiTime() << " " <<  getName() << ": Preparing command for transmission." << endl;
+        slog << CtiTime() << "    Group ID " << getID() << ", Addressing: " << addressing << endl;
+        slog << CtiTime() << "    Command: " << commandString << endl;
+    }
+}
+
+
 INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;
@@ -146,102 +277,10 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
     {
         OutMessage->TargetID = getID();
 
-        checkForEmptyParseAddressing( parse, OutMessage, retList );
-
-        int serial     = 0;
-        int spid       = 0;
-        int geo        = 0;
-        int substation = 0;
-        int feeder     = 0;
-        int zip        = 0;
-        int uda        = 0;
-        int program    = 0;
-        int splinter   = 0;
-
-        serial = (int)(getExpresscomGroup().getSerial());
-
-        if(serial == 0)
+        if( (nRet = extractGroupAddressing(pReq, parse, OutMessage, vgList, retList, resultString)) != NoError )
         {
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)          spid        = (int)(getExpresscomGroup().getServiceProvider());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)           geo         = (int)(getExpresscomGroup().getGeo());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSubstation)    substation  = (int)(getExpresscomGroup().getSubstation());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)        feeder      = (int)(getExpresscomGroup().getFeeder());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)           zip         = (int)(getExpresscomGroup().getZip());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)          uda         = (int)(getExpresscomGroup().getUda());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)       program     = (int)(getExpresscomGroup().getProgram());
-            if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)      splinter    = (int)(getExpresscomGroup().getSplinter());
-
-            // Only want to set these parse entries if the values are not zero.  Zeros screw up
-            // address validation code.  Exception is "xc_feeder" which CAN be zero.
-
-            parse.setValue("xc_feeder",   feeder);
-            if (spid        != 0) parse.setValue("xc_spid",     spid);
-            if (geo         != 0) parse.setValue("xc_geo",      geo);
-            if (substation  != 0) parse.setValue("xc_sub",      substation);
-            if (zip         != 0) parse.setValue("xc_zip",      zip);
-            if (uda         != 0) parse.setValue("xc_uda",      uda);
-            if (program     != 0) parse.setValue("xc_program",  program);
-            if (splinter    != 0) parse.setValue("xc_splinter", splinter);
+            return nRet;
         }
-        else
-        {
-            parse.setValue("xc_serial", serial);
-        }
-
-        if(getExpresscomGroup().getPriority() < 3 && getExpresscomGroup().getPriority() >=0 && !parse.isKeyValid("xcpriority"))
-        {
-            parse.setValue("xcpriority", getExpresscomGroup().getPriority());
-        }
-
-        if(parse.getCommand() == ControlRequest && serial <= 0 && program == 0 && splinter == 0 )
-        {
-            if((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) &&
-               (getExpresscomGroup().getLoadMask() != 0))
-            {
-                parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
-            }
-            else
-            {
-                // This is bad!  We would control every single load based upon geo addressing...
-                nRet = BADPARAM;
-
-                resultString = "\nERROR: " + getName() + " Group addressing control commands to all loads is prohibited\n" + \
-                               " The group must specify program, splinter or load level addressing";
-                CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
-                retList.push_back( pRet );
-
-                if(OutMessage)
-                {
-                    delete OutMessage;
-                    OutMessage = NULL;
-                }
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << resultString << endl;
-                }
-
-                return nRet;
-            }
-        }
-        else
-        {
-            if((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) && (serial != 0))
-            {
-                parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
-            }
-            else
-            {
-                parse.setValue("relaymask", 0);
-            }
-        }
-
-        if( parse.getControlled() )
-        {
-            OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt(GROUP_CONTROL_EXPIRATION, 1200);
-        }
-
-        reportActionItemsToDispatch(pReq, parse, vgList);
 
         /*
          *  Form up the reply here since the ExecuteRequest function will consume the
@@ -259,26 +298,7 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
         }
         else
         {
-            if(parse.getCommand() == ControlRequest)
-            {
-                int priority = parse.getiValue("xcpriority",3);
-                if(priority < 0 || priority > 3)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Priority is invalid: " << priority << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    priority = 3; //set it to the default priority if there is a problem.
-                }
-                reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, removeCommandDynamicText(parse.getCommandStr()), priority );
-            }
-
-            string addressing = getAddressingAsString();
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                slog << CtiTime() << " " <<  getName() << ": Preparing command for transmission." << endl;
-                slog << CtiTime() << "    Group ID " << getID() << ", Addressing: " << addressing << endl;
-                slog << CtiTime() << "    Command: " << pRet->CommandString() << endl;
-            }
+            reportAndLogControlStart(parse, vgList, pRet->CommandString());
 
             delete pRet;
         }
@@ -463,7 +483,9 @@ CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT CtiDeviceGroupExpresscom::compareA
 {
     ADDRESSING_COMPARE_RESULT retVal = NO_RELATIONSHIP;
 
-    if( otherGroup  && isExpresscomGroup(otherGroup->getType()) )
+    // Inherited classes can use this exact same get type check.
+    // Currently this says the addressing for RFN can never match the base expresscom type.
+    if( otherGroup  && getType() == otherGroup->getType() )
     {
         CtiDeviceGroupExpresscom *expGroup = (CtiDeviceGroupExpresscom*)otherGroup.get();
         if( _expresscomGroup.getAddressUsage() == expGroup->_expresscomGroup.getAddressUsage() )
@@ -507,7 +529,8 @@ void CtiDeviceGroupExpresscom::reportControlStart(int isshed, int shedtime, int 
         for( WPtrGroupMap::iterator iter = _children.begin(); iter != _children.end(); iter++ )
         {
             CtiDeviceGroupBaseSPtr sptr = iter->second.lock();
-            if( sptr && isExpresscomGroup(sptr->getType()) )
+            // Inherited classes can use this exact same get type check.
+            if( sptr && getType() == sptr->getType() )
             {
                 CtiDeviceGroupExpresscom *grpPtr = (CtiDeviceGroupExpresscom*)sptr.get();
                 grpPtr->reportChildControlStart(isshed, shedtime, reductionratio, vgList, cmd, controlPriority);
