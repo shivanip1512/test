@@ -25,11 +25,13 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
         fromInstant = new Instant().minus(Duration.standardHours(DEFAULT_FROM_HOURS));
         toInstant = new Instant().minus(Duration.standardHours(DEFAULT_TO_HOURS));
 
-        // Normalize to zero-out the minutes and seconds
+        // Normalize to zero-out the minutes and seconds (since water nodes report on the exact hour)
         fromInstant = fromInstant.minus(Duration.standardMinutes(fromInstant.get(DateTimeFieldType.minuteOfHour())));
         fromInstant = fromInstant.minus(Duration.standardSeconds(fromInstant.get(DateTimeFieldType.secondOfMinute())));
+        fromInstant = fromInstant.minus(fromInstant.get(DateTimeFieldType.millisOfSecond()));
         toInstant = toInstant.minus(Duration.standardMinutes(toInstant.get(DateTimeFieldType.minuteOfHour())));
         toInstant = toInstant.minus(Duration.standardSeconds(toInstant.get(DateTimeFieldType.secondOfMinute())));
+        toInstant = toInstant.minus(toInstant.get(DateTimeFieldType.millisOfSecond()));
 
         // Just using the backingbean for the paging & sorting values
         setSort(backingBean.getSort());

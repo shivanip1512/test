@@ -31,22 +31,12 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
 public class DateFormattingServiceImpl implements DateFormattingService {
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private SystemDateFormattingService systemDateFormattingService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private SystemDateFormattingService systemDateFormattingService;
 
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setSystemDateFormattingService(
-            SystemDateFormattingService systemDateFormattingService) {
-        this.systemDateFormattingService = systemDateFormattingService;
-    }
-    
     private Map<String, FlexibleDateParser> dateParserLookup = new HashMap<String, FlexibleDateParser>();
 
+    @Override
     public String format(Object object, DateFormatEnum type, YukonUserContext userContext)
             throws IllegalArgumentException {
         Validate.notNull(object, "Date object is null in DateFormattingServiceImpl.formatDate()");
@@ -82,6 +72,7 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         }
     }
 
+    @Override
     public DateFormat getDateFormatter(DateFormatEnum type, YukonUserContext userContext)
             throws IllegalArgumentException {
 
@@ -114,11 +105,13 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         return result;
     }
 
+    @Override
     public Date flexibleDateParser(String dateStr, YukonUserContext userContext)
             throws ParseException {
         return flexibleDateParser(dateStr, DateOnlyMode.START_OF_DAY, userContext);
     }
 
+    @Override
     public synchronized Date flexibleDateParserWithSystemTimeZone(String dateStr,
             DateOnlyMode mode, YukonUserContext userContext) throws ParseException {
 
@@ -128,6 +121,7 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         return result;
     }
 
+    @Override
     public LocalTime parseLocalTime(String localTimeStr,
             YukonUserContext userContext) throws ParseException {
         String parserName = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.dateFormatting.parserImplementation");
@@ -150,6 +144,7 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         return result;
     }
     
+    @Override
     public Calendar getCalendar(YukonUserContext userContext) {
         return Calendar.getInstance(userContext.getTimeZone(), userContext.getLocale());
     }

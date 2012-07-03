@@ -9,6 +9,7 @@
 <entry key="yukon.common.dateFormatting.TIME24H">HH:mm</entry>
 <entry key="yukon.common.dateFormatting.TIME_TZ">HH:mm z</entry>
 <entry key="yukon.common.dateFormatting.TIMEZONE">z</entry>
+<entry key="yukon.common.dateFormatting.TIMEZONE_FULL">zzzz</entry>
 <entry key="yukon.common.dateFormatting.DATE">MM/dd/yyyy</entry>
 <entry key="yukon.common.dateFormatting.FULL">MM/dd/yyyy HH:mm:ss zz</entry>
 <entry key="yukon.common.dateFormatting.BOTH">MM/dd/yyyy HH:mm:ss</entry>

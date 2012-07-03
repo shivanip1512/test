@@ -92,11 +92,12 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 				jQuery("input.f_datePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
-				        beforeShow: outer_self._getBeforeShow(self),
+				        beforeShow: outer_self._getBeforeShow,
 						maxDate: self.attr('data-max-date'),
 						minDate: self.attr('data-min-date')
 					};
 					self.datepicker(jQuery.extend(datetimepickerArgs, args));
+					outer_self._insertTimezone(self);
 				});
     			
     			// Date + Time
@@ -113,13 +114,14 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 				jQuery("input.f_dateTimePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
-				        beforeShow: outer_self._getBeforeShow(self),
+				        beforeShow: outer_self._getBeforeShow,
 						maxDate: self.attr('data-max-date'),
 						minDate: self.attr('data-min-date'),
                         stepHour: outer_self._getStepHour(self),
                         stepMinute: outer_self._getStepMinute(self),
 					};
 					self.datetimepicker(jQuery.extend(datetimepickerArgs, args));
+					outer_self._insertTimezone(self);
 				});
 				
 				// Time
@@ -134,23 +136,27 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 				jQuery("input.f_timePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
-				        beforeShow: outer_self._getBeforeShow(self),
+				        beforeShow: outer_self._getBeforeShow,
 						maxDate: self.attr('data-max-date'),
 						minDate: self.attr('data-min-date'),
                         stepHour: outer_self._getStepHour(self),
                         stepMinute: outer_self._getStepMinute(self)
 					};
 					self.timepicker(jQuery.extend(jQuery.extend(datetimepickerArgs, timepickerArgs), args));
+					outer_self._insertTimezone(self);
 				});
     		}
     	},
-    	_getBeforeShow: function(self){
-            return function() {
-                var cssClass = self.attr('data-class');
-                if (typeof(cssClass) !== 'undefined') {
-                    jQuery('#ui-datepicker-div').addClass(cssClass);
-                }
-            };
+    	_insertTimezone: function(self){
+    	    var tz_short = self.attr('data-time-zone-short');
+    	    var tz_full = self.attr('data-time-zone-full');
+    	    self.after('<div class="timezone_container" title="' + tz_full + '">' + tz_short + '</div>');
+    	},
+    	_getBeforeShow: function(input){
+            var cssClass = jQuery(input).attr('data-class');
+            if (typeof(cssClass) !== 'undefined') {
+                jQuery('#ui-datepicker-div').addClass(cssClass);
+            }
     	},
     	_getStepHour: function(self){
     	    var step_hour = self.attr('data-step-hour');

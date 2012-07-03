@@ -28,7 +28,9 @@
 </c:if>
 
 <c:if test="${!empty pageScope.value}">
-    <cti:formatDate var="dateTime" value="${pageScope.value}" type="BOTH"/>
+    <cti:formatDate var="dateTime" value="${pageScope.value}" type="DATE"/>
+    <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
+    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_FULL"/>
 </c:if>
 
 <c:if test="${!empty pageScope.disabled}">
@@ -46,11 +48,14 @@
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
                 <form:input id="${id}" 
                             path="${path}"
+                            value="${dateTime}"
                             cssClass="f_datePicker f_datePickerUI ${cssClass}"
                             disabled="${pageScope.disabled}"
                             data-date-time-format="${jsDateTimeFormat}"
                             data-max-date="${pageScope.maxDate}"
                             data-min-date="${pageScope.minDate}"
+                            data-time-zone-short="${timeZoneShort}"
+                            data-time-zone-full="${timeZoneFull}"
                             data-class="${pageScope.cssDialogClass}" />
 			</cti:displayForPageEditModes>
 			<c:if test="${status.error}">
@@ -71,7 +76,9 @@
 						<c:if test="${!empty pageScope.maxDate}">data-max-date="${pageScope.maxDate}"</c:if>
 						<c:if test="${!empty pageScope.minDate}">data-min-date="${pageScope.minDate}"</c:if>
                         <c:if test="${!empty pageScope.cssDialogClass}">data-class="${pageScope.cssDialogClass}"</c:if>
-						data-date-time-format="${jsDateTimeFormat}"/>
+                        data-date-time-format="${jsDateTimeFormat}"
+                        data-time-zone-short="${timeZoneShort}"
+                        data-time-zone-full="${timeZoneFull}"/>
 			</cti:displayForPageEditModes>
 	</c:otherwise>
 </c:choose>

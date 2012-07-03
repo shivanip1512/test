@@ -30,7 +30,9 @@
 </c:if>
 
 <c:if test="${!empty pageScope.value}">
-    <cti:formatDate var="dateTime" value="${pageScope.value}" type="BOTH"/>
+    <cti:formatDate var="dateTime" value="${pageScope.value}" type="DATEHM"/>
+    <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
+    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_FULL"/>
 </c:if>
 
 <c:if test="${!empty pageScope.disabled}">
@@ -48,6 +50,7 @@
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
                 <form:input id="${id}" 
                             path="${path}"
+                            value="${dateTime}"
                             cssClass="f_dateTimePicker f_dateTimePickerUI ${cssClass}"
                             disabled="${pageScope.disabled}"
                             data-date-time-format="${jsDateTimeFormat}"
@@ -55,6 +58,8 @@
                             data-min-date="${pageScope.minDate}"
 	                        data-step-hour="${pageScope.stepHour}"
 	                        data-step-minute="${pageScope.stepMinute}"
+                            data-time-zone-short="${timeZoneShort}"
+                            data-time-zone-full="${timeZoneFull}"
 	                        data-class="${pageScope.cssDialogClass}" />
 			</cti:displayForPageEditModes>
 			<c:if test="${status.error}">
@@ -77,7 +82,9 @@
 						<c:if test="${!empty pageScope.stepHour}">data-step-hour="${pageScope.stepHour}"</c:if>
 						<c:if test="${!empty pageScope.stepMinute}">data-step-minute="${pageScope.stepMinute}"</c:if>
                         <c:if test="${!empty pageScope.cssDialogClass}">data-class="${pageScope.cssDialogClass}"</c:if>
-						data-date-time-format="${jsDateTimeFormat}"/>
+						data-date-time-format="${jsDateTimeFormat}"
+						data-time-zone-short="${timeZoneShort}"
+						data-time-zone-full="${timeZoneFull}"/>
 						
 			</cti:displayForPageEditModes>
 	</c:otherwise>
