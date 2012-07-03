@@ -41,7 +41,7 @@ public:
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     void restore(Cti::RowReader& rdr);
-    void setDynamicData(Cti::RowReader& rdr, CtiTime timestamp);
+    void setDynamicData(Cti::RowReader& rdr, LONG cbcState, const CtiTime timestamp);
 
     CtiCCTwoWayPoints& operator=(const CtiCCTwoWayPoints& right);
 

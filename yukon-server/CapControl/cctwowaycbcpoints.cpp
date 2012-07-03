@@ -510,11 +510,17 @@ static const TwoWayColumns[] =
     { ColumnMapping::Long,    "udpport",                PointAttribute::UDPPortNumber          },
 };
 
-void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, CtiTime timestamp)
+void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr, LONG cbcState, CtiTime timestamp)
 {
+
+
+
+    _pointValues.addPointValue(getPointIdByAttribute(PointAttribute::CapacitorBankState), cbcState, timestamp);
     for each( const ColumnMapping &cm in TwoWayColumns )
     {
         double value;
+
+
 
         if( cm.type == ColumnMapping::Boolean )
         {

@@ -6754,7 +6754,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                     if (stringContainsIgnoreCase(currentCCCapBank->getControlDeviceType(), "CBC 702"))
                     {
                         currentCCCapBank->getTwoWayPoints()->setPAOId(currentCbcId);
-                        currentCCCapBank->getTwoWayPoints()->setDynamicData(rdr, currentCCCapBank->getReportedCBCStateTime());
+                        currentCCCapBank->getTwoWayPoints()->setDynamicData(rdr, currentCCCapBank->getReportedCBCState(), currentCCCapBank->getReportedCBCStateTime());
                     }
                 }
             }
