@@ -281,7 +281,7 @@ public class StaticAuthenticationThrottleImplTest {
     }
     
     /**
-     * This method tries to login an account multiple times.  If the account becomes locked it will return false.  If not it will return true.
+     * This method tries to login an account multiple times.  If the account becomes locked it will return true.  If not it will return false.
      */
     private boolean doLoginAttempsLockTheAccount(LiteYukonUser user, int numberOfTries) {
         return doLoginAttempsLockTheAccount(user.getUsername(), numberOfTries);
