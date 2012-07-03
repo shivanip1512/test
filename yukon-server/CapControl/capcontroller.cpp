@@ -410,8 +410,15 @@ void CtiCapController::incomingMessageProcessor()
         {
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Processing New Message" << endl;
+                int msgCount = 1;
+                if (msg->isA() == MSG_MULTI)
+                {
+                    msgCount = ((CtiMultiMsg*)msg)->getCount();
+                }
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Processing "<< msgCount <<" New Message(s). " << endl;
+                }
             }
 
             parseMessage(msg);
@@ -588,9 +595,6 @@ void CtiCapController::controlLoop()
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - ********** Control Loop Start ********* " << endl;
                     }
-
-                    store->setStoreRecentlyReset(false);
-
                     areaChanges.clear();
                     stationChanges.clear();
                     PaoIdToSubBusMap::iterator busIter = store->getPAOSubMap()->begin();
@@ -1524,56 +1528,6 @@ CtiConnectionPtr CtiCapController::getPILConnection()
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
 
         return NULL;
-    }
-}
-
-/*---------------------------------------------------------------------------
-    checkDispatch
-
-    Reads off the Dispatch connection and handles messages accordingly.
----------------------------------------------------------------------------*/
-void CtiCapController::checkDispatch()
-{
-    bool done = false;
-    CtiTime tempTime;
-    DispatchConnectionPtr tempPtrDispatchConn = getDispatchConnection();
-    tempTime.now();
-
-    int sizeOfQueue = tempPtrDispatchConn->getInQueueHandle().size();
-
-    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - ENTER: Dispatch Queue: " <<sizeOfQueue << endl;
-    }
-    int counter = 0;
-    do
-    {
-        try
-        {
-            CtiMessage* inMsg = (CtiMessage*) tempPtrDispatchConn->ReadConnQue(100);
-            if ( inMsg != NULL )
-            {
-                parseMessage(inMsg);
-                delete inMsg;
-            }
-            else
-                done = true;
-        }
-        catch(...)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
-        counter++;
-    }
-    while(!done);
-    sizeOfQueue = tempPtrDispatchConn->getInQueueHandle().size();
-
-    if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Messages Processed from Queue: " << counter<<"  EXIT: Dispatch Queue: " <<sizeOfQueue << endl;
     }
 }
 
@@ -2743,9 +2697,10 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
         dout << CtiTime() << " - " << outString.c_str() << endl;
     }
 
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
     try
     {
-        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
         CapControlPointDataHandler pointHandler = store->getPointDataHandler();
         pointHandler.processIncomingPointData(message);
 
@@ -2845,6 +2800,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
 
     CtiCCAreaPtr currentArea = NULL;
     PointIdToAreaMultiMap::iterator areaIter, end;
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     store->findAreaByPointID(pointID, areaIter, end);
 
     while (areaIter != end)
@@ -2889,11 +2845,13 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
 }
 void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
+
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 
     CtiCCSpecialPtr currentSpArea = NULL;
     PointIdToSpecialAreaMultiMap::iterator saIter, end;
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     store->findSpecialAreaByPointID(pointID, saIter, end);
 
     while (saIter != end)
@@ -2940,12 +2898,14 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
 }
 void CtiCapController::pointDataMsgBySubstation( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
+
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 
     CtiCCSubstation* currentStation = NULL;
     CtiCCAreaPtr currentArea = NULL;
     PointIdToSubstationMultiMap::iterator stationIter, end;
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     store->findSubstationByPointID(pointID, stationIter, end);
 
     while (stationIter != end)
@@ -3004,6 +2964,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
 
 void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigned quality, CtiTime& timestamp)
 {
+
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 
@@ -3012,9 +2973,9 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
     CtiCCAreaPtr currentArea = NULL;
 
     PointIdToSubBusMultiMap::iterator subIter, end;
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     store->findSubBusByPointID(pointID, subIter, end);
-
-    while (subIter != end)
+    while (subIter != end )
     {
         try
         {
@@ -3336,12 +3297,14 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
 void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigned quality, CtiTime& timestamp )
 {
+
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
     PointIdToFeederMultiMap::iterator feedIter, end;
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     store->findFeederByPointID(pointID, feedIter, end);
 
     while (feedIter != end)
@@ -3578,6 +3541,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
     CtiCCFeederPtr currentFeeder = NULL;
     CtiCCCapBankPtr currentCapBank = NULL;
     PointIdToCapBankMultiMap::iterator capIter, end;
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     store->findCapBankByPointID(pointID, capIter, end);
 
     while (capIter != end)
@@ -3928,8 +3892,6 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
-
 
     int bankid = store->findCapBankIDbyCbcID(deviceId);
     if ( bankid == NULL )

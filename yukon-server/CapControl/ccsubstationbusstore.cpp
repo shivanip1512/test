@@ -246,6 +246,7 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(unsigned l
         checkAMFMSystemForUpdates();
     }
 
+    setStoreRecentlyReset(false);
     return _ccSubstationBuses;
 }
 
@@ -1172,6 +1173,7 @@ bool CtiCCSubstationBusStore::deleteCapControlMaps()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     try
     {
+        setStoreRecentlyReset(true);
         _unsolicitedCapBanks.clear();
         _rejectedCapBanks.clear();
         for each (long orphanId in _orphanedFeeders)
@@ -1412,8 +1414,6 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - Done Loading values into capcontrol - " << endl;
             }
 
-            setStoreRecentlyReset(true);
-            _isvalid = true;
             _2wayFlagUpdate = false;
         }
 
@@ -7609,6 +7609,7 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
         return;
     try
     {
+        setStoreRecentlyReset(true);
         //Using the list because deleteSubbus(int) removes the subbus from the map, invalidating our counter for the loop.
         //Quick fix, a more elegant solution should be found.
         std::list<int> deleteList;
@@ -7723,6 +7724,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
     {
         if (areaToDelete != NULL)
         {
+            setStoreRecentlyReset(true);
             try
             {
                 //Delete pointids on this sub
@@ -7827,7 +7829,7 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
     {
         if (spAreaToDelete != NULL)
         {
-
+            setStoreRecentlyReset(true);
             try
             {
                 //Delete pointids on this sub
@@ -7925,6 +7927,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 
     try
     {
+        setStoreRecentlyReset(true);
         for each(int feederId in subToDelete->getCCFeederIds())
         {
             deleteFeeder(feederId);
@@ -8063,6 +8066,7 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
         return;
     try
     {
+        setStoreRecentlyReset(true);
         for each(int capBankId in feederToDelete->getAllCapBankIds())
         {
             deleteCapBank(capBankId);
@@ -8141,6 +8145,7 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
     {
         if (capBankToDelete != NULL)
         {
+            setStoreRecentlyReset(true);
           //Delete pointids on this feeder
             for each (long pointid in *capBankToDelete->getPointIds())
             {
