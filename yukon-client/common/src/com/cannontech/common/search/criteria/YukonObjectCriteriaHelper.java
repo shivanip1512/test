@@ -5,6 +5,7 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
 
 import com.cannontech.common.search.YukonObjectCriteria;
 
@@ -25,6 +26,12 @@ public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
     protected void addCriteria(String field, Integer value, BooleanClause.Occur clause) {
         TermQuery termQuery = new TermQuery(new Term(field, value.toString()));
         query.add(termQuery, clause);
+    }
+    
+    protected void addCriteria(String field, String lowerTerm, String upperTerm, boolean includeLower,
+                               boolean includeUpper, BooleanClause.Occur clause) {
+        TermRangeQuery rangeQuery = new TermRangeQuery(field, lowerTerm, upperTerm, includeLower, includeUpper);
+        query.add(rangeQuery, clause);
     }
     
 }
