@@ -44,6 +44,7 @@
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_EMETCON">Emetcon Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_RFN_EXPRESSCOMM">RFN Expresscom Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_GOLAY">Golay Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_MCT">MCT Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_POINT">Point Group</entry>
