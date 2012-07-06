@@ -157,6 +157,10 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                     String columnValue = line[i];
                     if(columnValue.equalsIgnoreCase("")) continue; //no value present, skip to next
                     
+                    if(columnValue.equalsIgnoreCase(FdrUtils.EMPTY)){
+                        columnValue = line[i] = "";
+                    }
+                    
                     boolean isDefaultColumn = false;
                     for(FdrCsvHeader defaultHeader : FdrCsvHeader.values()) {
                         if(defaultHeader.toString().equals(header)) {

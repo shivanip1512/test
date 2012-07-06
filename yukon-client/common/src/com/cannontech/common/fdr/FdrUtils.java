@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
  */
 public class FdrUtils {
     
+    public static final String EMPTY = "EMPTY";
     public static final ImmutableMap<FdrInterfaceOption, FdrInterfaceType> OPTION_TO_INTERFACE_MAP;
     
     static {

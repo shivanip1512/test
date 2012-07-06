@@ -40,6 +40,7 @@ import com.cannontech.common.bulk.service.FdrTranslationManagerService;
 import com.cannontech.common.exception.ImportFileFormatException;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
+import com.cannontech.common.fdr.FdrUtils;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -105,6 +106,11 @@ public class FdrTranslationManagerController {
         
         //Write array values to csv
         for(String[] line : exportData.asArrays()) {
+            for(int i=0; i<line.length; i++) {
+                if ( "".equals(line[i]) ) {
+                    line[i] = FdrUtils.EMPTY;
+                }
+            }
             csvWriter.writeNext(line);
         }
         csvWriter.close();
@@ -251,6 +257,11 @@ public class FdrTranslationManagerController {
         
         //Write array values to csv
         for(String[] line : dataGrid) {
+            for( int i=0; i<line.length; i++){
+                if ( "".equals(line[i]) ) {
+                    line[i] = FdrUtils.EMPTY;
+                }
+            }
             csvWriter.writeNext(line);
         }
         csvWriter.close();
