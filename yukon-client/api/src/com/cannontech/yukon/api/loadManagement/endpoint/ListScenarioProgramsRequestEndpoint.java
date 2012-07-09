@@ -51,8 +51,7 @@ public class ListScenarioProgramsRequestEndpoint {
 
         // init response
         Element resp = new Element("listScenarioProgramsResponse", ns);
-        Attribute versionAttribute = new Attribute("version", "1.0");
-        resp.setAttribute(versionAttribute);
+        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // run service
         ScenarioProgramStartingGears scenarioProgramStartingGears = null;

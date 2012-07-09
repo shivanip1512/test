@@ -38,7 +38,7 @@ public class ForgotPasswordRequestEndpoint {
         
         //build response
         Element response = new Element("forgotPasswordResponse", ns);
-        response.setAttribute(new Attribute("version", "1.0"));
+        XmlVersionUtils.addVersionAttribute(response, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         try {
             //see if resetting the password even makes sense.  this assumes that the authentication

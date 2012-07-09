@@ -41,8 +41,7 @@ public class NewAccountsRequestEndpoint {
                               new NodeToElementMapperWrapper<UpdatableAccount>(new AccountsRequestMapper()));
         
         Element newAccountsResponse = new Element("newAccountsResponse", ns);
-        Attribute versionAttribute = new Attribute("version", "1.0"); 
-        newAccountsResponse.setAttribute(versionAttribute); 
+        XmlVersionUtils.addVersionAttribute(newAccountsResponse, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         Element newAccountsResultList = new Element("accountResultList", ns);
         newAccountsResponse.addContent(newAccountsResultList);

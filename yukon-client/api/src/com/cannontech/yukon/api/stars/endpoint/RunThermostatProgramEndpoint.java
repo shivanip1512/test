@@ -54,7 +54,7 @@ public class RunThermostatProgramEndpoint {
         
         // init response
         Element resp = new Element("runThermostatProgramResponse", ns);
-        resp.setAttribute("version", "1.0");
+        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // run service
         ThermostatManualEventResult result = null;

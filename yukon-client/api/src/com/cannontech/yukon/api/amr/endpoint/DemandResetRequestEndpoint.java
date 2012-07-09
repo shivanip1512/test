@@ -68,6 +68,7 @@ public class DemandResetRequestEndpoint {
         XmlVersionUtils.verifyYukonMessageVersion(demandResetRequest,
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         Element response = new Element("demandResetResponse", ns);
+        XmlVersionUtils.addVersionAttribute(response, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         try {
             SimpleXPathTemplate requestTemplate =

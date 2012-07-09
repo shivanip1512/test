@@ -37,7 +37,7 @@ public class UserLoginRequestEndpoint {
         
         //build response
         Element response = new Element("userLoginResponse", ns);
-        response.setAttribute(new Attribute("version", "1.0"));
+        XmlVersionUtils.addVersionAttribute(response, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         try{
             //get their credentials

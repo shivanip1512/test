@@ -20,6 +20,7 @@ import com.cannontech.common.token.service.TokenService.TokenHandler;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -35,6 +36,7 @@ public class TokenStatusRequestEndpoint {
     public Element invoke(Element requestElem, YukonUserContext userContext) throws Exception {
         XmlVersionUtils.verifyYukonMessageVersion(requestElem, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         Element responseElem = new Element("tokenStatusResponse", ns);
+        XmlVersionUtils.addVersionAttribute(responseElem, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(requestElem);
         String tokenStr = requestTemplate.evaluateAsString("/y:tokenStatusRequest/y:token/@value");
@@ -43,10 +45,9 @@ public class TokenStatusRequestEndpoint {
         TokenHandler tokenHandler = tokenHandlers.get(token.getType());
         TokenStatus status = tokenHandler.getStatus(token);
         if (status == null) {
-            // Unknown token.
-            Element errorElem = new Element("failure", ns);
-            errorElem.addContent("Token " + tokenStr + " is invalid or has expired.");
-            responseElem.addContent(errorElem);
+            // Unknown token.         
+            Element fe = XMLFailureGenerator.generateFailure(requestElem, "UnknownToken", "Token " + tokenStr + " is invalid or has expired.");
+            responseElem.addContent(fe);
         } else if (status.isFinished()) {
             Element mainElem = new Element("complete", ns);
             if (token.getType() == TokenType.PROFILE_COLLECTION) {

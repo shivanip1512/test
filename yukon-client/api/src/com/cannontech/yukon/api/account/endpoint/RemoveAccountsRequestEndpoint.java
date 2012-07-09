@@ -38,8 +38,7 @@ public class RemoveAccountsRequestEndpoint {
                               new NodeToElementMapperWrapper<String>(new RemoveAccountsRequestMapper()));
         
         Element removeAccountsResponse = new Element("removeAccountsResponse", ns);
-        Attribute versionAttribute = new Attribute("version", "1.0"); 
-        removeAccountsResponse.setAttribute(versionAttribute); 
+        XmlVersionUtils.addVersionAttribute(removeAccountsResponse, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         Element removeAccountsResultList = new Element("accountResultList", ns);
         removeAccountsResponse.addContent(removeAccountsResultList);

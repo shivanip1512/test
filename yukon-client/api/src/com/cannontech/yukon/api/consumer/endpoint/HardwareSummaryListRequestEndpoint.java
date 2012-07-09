@@ -40,7 +40,7 @@ public class HardwareSummaryListRequestEndpoint {
         
         //build response
         Element response = new Element("hardwareSummaryListResponse", ns);
-        response.setAttribute(new Attribute("version", "1.0"));
+        XmlVersionUtils.addVersionAttribute(response, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         try{
             //get the hardware summary for the specified account

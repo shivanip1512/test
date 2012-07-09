@@ -82,9 +82,8 @@ public class SendTextMessageEndpoint {
 
         // init response
         Element resp = new Element("sendTextMessageResponse", ns);
-        Attribute versionAttribute = new Attribute("version", "1.0");
-        resp.setAttribute(versionAttribute);
-
+        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        
         try {
 
             DeviceTextMessage deviceTextMessage = requestTemplate.evaluateAsObject("//y:textMessage",

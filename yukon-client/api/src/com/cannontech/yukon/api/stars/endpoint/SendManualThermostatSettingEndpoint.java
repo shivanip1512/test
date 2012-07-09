@@ -73,8 +73,7 @@ public class SendManualThermostatSettingEndpoint {
         
         // init response
         Element resp = new Element("sendManualThermostatSettingResponse", ns);
-        Attribute versionAttribute = new Attribute("version", "1.0");
-        resp.setAttribute(versionAttribute);
+        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // run service
         ThermostatManualEventResult result = null;

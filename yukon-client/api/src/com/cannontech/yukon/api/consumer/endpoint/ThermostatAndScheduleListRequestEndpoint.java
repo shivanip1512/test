@@ -46,7 +46,7 @@ public class ThermostatAndScheduleListRequestEndpoint {
                 
         // init response
         Element response = new Element("thermostatAndScheduleListResponse", ns);
-        response.setAttribute(new Attribute("version", "1.0"));
+        XmlVersionUtils.addVersionAttribute(response, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         try {
             // get all the schedules
             Map<Thermostat, List<AccountThermostatSchedule>> thermostatSchedules = getThermostatSchedules(customerAccount.getAccountId(), thermostats);

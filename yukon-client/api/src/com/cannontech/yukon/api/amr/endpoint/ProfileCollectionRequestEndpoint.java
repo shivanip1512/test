@@ -45,6 +45,7 @@ public class ProfileCollectionRequestEndpoint {
     public Element invoke(Element requestElem, YukonUserContext userContext) throws Exception {
         XmlVersionUtils.verifyYukonMessageVersion(requestElem, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         Element responseElem = new Element("profileCollectionResponse", ns);
+        XmlVersionUtils.addVersionAttribute(responseElem, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(requestElem);
 

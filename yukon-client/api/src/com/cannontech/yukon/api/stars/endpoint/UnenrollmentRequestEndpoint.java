@@ -31,7 +31,7 @@ public class UnenrollmentRequestEndpoint {
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="unenrollmentRequest")
     public Element invoke(Element enrollmentRequest, LiteYukonUser user) throws Exception {
-        XmlVersionUtils.verifyYukonMessageVersion(enrollmentRequest, "1.0"); 
+        XmlVersionUtils.verifyYukonMessageVersion(enrollmentRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0); 
         
         Namespace ns = YukonXml.getYukonNamespaceForDefault();
         SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(enrollmentRequest);
@@ -40,8 +40,7 @@ public class UnenrollmentRequestEndpoint {
                               new NodeToElementMapperWrapper<EnrollmentHelper>(new ProgramEnrollmentElementRequestMapper()));
 
         Element enrollmentResponseBase = new Element("unenrollmentResponse", ns);
-        Attribute versionAttribute = new Attribute("version", "1.0"); 
-        enrollmentResponseBase.setAttribute(versionAttribute); 
+        XmlVersionUtils.addVersionAttribute(enrollmentResponseBase, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         Element enrollmentResultList = new Element("enrollmentResultList", ns);
         enrollmentResponseBase.addContent(enrollmentResultList);

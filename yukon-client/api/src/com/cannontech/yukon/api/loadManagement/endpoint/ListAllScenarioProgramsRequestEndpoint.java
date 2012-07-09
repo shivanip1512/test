@@ -54,8 +54,7 @@ public class ListAllScenarioProgramsRequestEndpoint {
 
         // init response
         Element resp = new Element("listAllScenarioProgramsResponse", ns);
-        Attribute versionAttribute = new Attribute("version", "1.0");
-        resp.setAttribute(versionAttribute);
+        XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // run service
         try {

@@ -53,7 +53,7 @@ public class CapControlImportRequestEndpoint {
 	    
 	    XmlVersionUtils.verifyYukonMessageVersion(capControlImportRequest, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         Element response = new Element("capControlImportResponse", ns);
-        response.setAttribute("version", XmlVersionUtils.YUKON_MSG_VERSION_1_0);
+        XmlVersionUtils.addVersionAttribute(response, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
 	    try {
     		SimpleXPathTemplate requestTemplate = YukonXml.getXPathTemplateForElement(capControlImportRequest);

@@ -12,6 +12,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.common.util.xml.YukonXml;
+import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -74,6 +75,11 @@ public class ProhibitConsumerOverridesRequestEndpoint {
                                                                 e,
                                                                 "UserNotAuthorized",
                                                                 "The user is not authorized to prohibit overrides.");
+        } catch (ProgramNotFoundException e) {
+            resultElement = XMLFailureGenerator.generateFailure(prohibitConsumerOverridesRequest,
+                                                    e,
+                                                    "InvalidProgramName",
+                                                    "No program named: " + programName);
         }
 
         // return response

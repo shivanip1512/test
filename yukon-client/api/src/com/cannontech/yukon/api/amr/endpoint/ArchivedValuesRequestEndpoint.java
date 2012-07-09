@@ -82,6 +82,7 @@ public class ArchivedValuesRequestEndpoint {
         XmlVersionUtils.verifyYukonMessageVersion(archivedValuesRequest,
                                                   XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         Element response = new Element("archivedValuesResponse", ns);
+        XmlVersionUtils.addVersionAttribute(response, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
 
         // The "response" node contains a child for each type of data to include in the output.
         // For example, if a "paoType" node is included as a child of "response", the response

@@ -51,8 +51,7 @@ public class ProgramControlHistoryRequestEndpoint {
 
         // init response
         Element resp = new Element("programControlHistoryResponse", ns);
-        Attribute versionAttribute = new Attribute("version", version);
-        resp.setAttribute(versionAttribute);
+        XmlVersionUtils.addVersionAttribute(resp, version);
         
         // run service
         List<ProgramControlHistory> programControlHistory = new ArrayList<ProgramControlHistory>();
