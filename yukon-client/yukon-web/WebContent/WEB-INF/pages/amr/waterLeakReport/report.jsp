@@ -33,11 +33,11 @@
 			<div class="under_tabs">
 				<tags:nameValueContainer2>
 					<tags:nameValue2 nameKey=".filter.fromDate">
-						<dt:dateTime path="fromInstant" value="${backingBean.fromInstant}" cssClass="f_from_datetime"
+						<dt:dateTime path="fromInstant" id="fromInstantPicker" value="${backingBean.fromInstant}" cssClass="f_from_datetime f_focus"
 							stepMinute="60" cssDialogClass="hide_minutes" />
 					</tags:nameValue2>
 					<tags:nameValue2 nameKey=".filter.toDate">
-						<dt:dateTime path="toInstant" value="${backingBean.toInstant}" cssClass="f_to_datetime"
+						<dt:dateTime path="toInstant" id="toInstantPicker" value="${backingBean.toInstant}" cssClass="f_to_datetime"
 							stepMinute="60" cssDialogClass="hide_minutes" />
 					</tags:nameValue2>
 

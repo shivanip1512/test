@@ -118,7 +118,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 						maxDate: self.attr('data-max-date'),
 						minDate: self.attr('data-min-date'),
                         stepHour: outer_self._getStepHour(self),
-                        stepMinute: outer_self._getStepMinute(self),
+                        stepMinute: outer_self._getStepMinute(self)
 					};
 					self.datetimepicker(jQuery.extend(datetimepickerArgs, args));
 					outer_self._insertTimezone(self);
