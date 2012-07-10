@@ -1414,6 +1414,7 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - Done Loading values into capcontrol - " << endl;
             }
 
+            _isvalid = true;
             _2wayFlagUpdate = false;
         }
 
