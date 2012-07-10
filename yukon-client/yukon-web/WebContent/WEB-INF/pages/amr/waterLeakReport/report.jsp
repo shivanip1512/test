@@ -94,6 +94,16 @@
 				<cti:msg2 key=".firstVisit" arguments="${arguments}" htmlEscape="false"/>
 			</div>
 		</c:when>
+		<c:when test="${not empty filter_datetime_breach}">
+		    <div class="page_error">
+				<cti:list var="arguments">
+                    <cti:item value="${current_filter}"/>
+					<cti:item value="${filter_datetime_breach}"/>
+					<cti:item value="${water_node_reporting_interval}"/>
+				</cti:list>
+				<cti:msg2 key=".filterDatetimeBreach" arguments="${arguments}" htmlEscape="false"/>
+		    </div>
+		</c:when>
 		<c:when test="${filterResult.hitCount == 0}">
 			<div class="page_warning">
                 <cti:list var="arguments">
@@ -115,12 +125,6 @@
 		</c:when>
 	</c:choose>
 	
-	<c:if test="${not empty filter_datetime_breach}">
-	    <div class="page_warning">
-	        <cti:msg2 key=".filterDatetimeBreach" arguments="${filter_datetime_breach},${water_node_reporting_interval}"
-	            argumentSeparator="," htmlEscape="false"/>
-	    </div>
-	</c:if>
 
     <c:set var="actionsMenu">
         <tags:dropdownActions>

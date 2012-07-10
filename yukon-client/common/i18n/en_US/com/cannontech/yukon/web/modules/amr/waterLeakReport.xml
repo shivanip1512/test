@@ -21,7 +21,7 @@
          No leaks were found using our {0} and the {1}. This is possibly an indication that your filter needs tweaking.
     ]]></entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.filterDatetimeBreach"><![CDATA[
-         The current filter has a from date of {0} hours from now. This is not recommended as the default reporting interval of water nodes is {1} hours.
+         The {0} has a from date of {1,choice,0#0 hours|1#1 hour|1<{1} hours} from now. This is not recommended as the default reporting interval of water nodes is {2} hours.
     ]]></entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.foundLeaks"><![CDATA[
          There have been {0} water leaks identified (see below) using our {1} and based on the {2}.
@@ -32,7 +32,7 @@
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm.title">Leak Detection Algorithm</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason1">We consider a meter to be leaking when there is no interval during the time period (between the Filter's Start and End times) that had usage less than or equal to the Filter's Threshold value in gallons (default of this is zero).</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason2">If any of the interval data during the period is missing, that meter is not flagged for leaks regardless of the data that is available.</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterShortcutOpen"><![CDATA[Shortcut: Pressing <strong>f</strong> also opens this dialog box]]></entry>
+	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterShortcutOpen"><![CDATA[Shortcut: Pressing f also opens this dialog box]]></entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterButtonTitle">View report using above values</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterResetButtonTitle">View default report</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterShortcutClose">Press Esc to close</entry>
