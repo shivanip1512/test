@@ -12,18 +12,21 @@
 	
 	<script>
 		jQuery(document).ready(function() {
-			jQuery("table.compactResultsTable tbody tr td input:checkbox").click(function() {
+			jQuery("table.compactResultsTable tbody tr td input:checkbox").change(function() {
 				jQuery(this).closest("tr").find("input:text").toggleDisabled();
 			});
 			
-			jQuery("form#voltagePointsForm").submit(function() {
-				jQuery("table.compactResultsTable tbody tr td input:text:disabled").each(function() {
-					var input = jQuery(this);
-					var hiddenInput = "<input type='hidden' name='" + input.attr("name") + "' value='" + input.val() + "'/>";
-					jQuery("form#voltagePointsForm").append(hiddenInput);
-				});
-				return true;
+		    /**
+		     * If the user checked the Override Strategy checkbox.. then entered invalid limit values,
+		     * then hit save. Since the Override Strategy value is not yet in the database the resulting
+		     * error page would show this checkbox as unchecked. This code iterates through these and 
+		     * "checks" them for the user.
+		     */
+			jQuery("input.lowerLimit.error, input.upperLimit.error").each(function() {
+			    this.disabled = false;
+			    jQuery(this).closest("tr").find("input:checkbox").attr("checked", true);
 			});
+			Yukon.ui.focusFirstError();
 		});
 	</script>
 

@@ -13,7 +13,6 @@ private LitePoint monitorPoint = null;
 
 private int deviceId = 0;
 private int displayOrder = 0;
-private char scannable = 'N';
 private long NINAvg = 3;
 private float upperBandwidth = (float) 0.0;
 private float lowerBandwidth = (float) 0.0;

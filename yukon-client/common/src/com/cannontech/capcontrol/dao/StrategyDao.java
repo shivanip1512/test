@@ -2,6 +2,7 @@ package com.cannontech.capcontrol.dao;
 
 import java.util.List;
 
+import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.capcontrol.model.ViewableStrategy;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
@@ -39,5 +40,7 @@ public interface StrategyDao {
     public CapControlStrategy getForId(int strategyId);
 
     public void update(CapControlStrategy strategy);
+
+    public StrategyLimitsHolder getStrategyLimitsHolder(int strategyId);
 
 }

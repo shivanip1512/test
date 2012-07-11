@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.capcontrol.model.ViewableStrategy;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.service.DurationFormattingService;
@@ -346,7 +347,24 @@ public class StrategyDaoImpl implements StrategyDao, InitializingBean {
         
         return settings;
     }
-    
+
+    @Override
+    public StrategyLimitsHolder getStrategyLimitsHolder(int strategyId) {
+        CapControlStrategy strategy = getForId(strategyId);
+        List<PeakTargetSetting> settings = strategy.getTargetSettings();
+        double upperVoltLimit = 0.0;
+        double lowerVoltLimit = 0.0;
+        for(PeakTargetSetting setting : settings) {
+            if(setting.getType() == TargetSettingType.UPPER_VOLT_LIMIT) {
+                upperVoltLimit = Double.parseDouble(setting.getPeakValue());
+            } else if(setting.getType() == TargetSettingType.LOWER_VOLT_LIMIT) {
+                lowerVoltLimit = Double.parseDouble(setting.getPeakValue());
+            }
+            if (upperVoltLimit != 0.0 && lowerVoltLimit != 0.0) break;
+        }
+        return new StrategyLimitsHolder(strategy, upperVoltLimit, lowerVoltLimit);
+    }
+
     private static YukonRowMapper<PeakTargetSetting> peakTargetSettingMapper = 
 		new YukonRowMapper<PeakTargetSetting>() {
 		@Override

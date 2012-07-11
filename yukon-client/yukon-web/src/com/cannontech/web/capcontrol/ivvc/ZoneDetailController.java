@@ -31,6 +31,7 @@ import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.CapBankPointDelta;
 import com.cannontech.capcontrol.model.CcEvent;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
+import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneVoltagePointsHolder;
@@ -54,9 +55,6 @@ import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
-import com.cannontech.database.db.capcontrol.PeakTargetSetting;
-import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
 import com.cannontech.enums.RegulatorPointMapping;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -154,31 +152,7 @@ public class ZoneDetailController {
         }
 
         try {
-            CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(context.getYukonUser());
-            Zone zone = zoneDao.getZoneById(zoneId);
-            int subBusId = zone.getSubstationBusId();
-            CapControlStrategy strategy = strategyDao.getForId(cache.getSubBus(subBusId).getStrategyId());
-
-            // Loop over your zoneVoltagePoints and set the limits to the strategies if Override is false
-            for (VoltageLimitedDeviceInfo voltagePoint : zoneVoltagePointsHolder.getPoints()) {
-                if (voltagePoint.isOverrideStrategy()) continue;
-
-                double lowerLimit = voltagePoint.getLowerLimit(); 
-                double upperLimit = voltagePoint.getUpperLimit();
-                for ( PeakTargetSetting setting : strategy.getTargetSettings()) {
-                    if (setting.getType() == TargetSettingType.LOWER_VOLT_LIMIT) {
-                        lowerLimit = Double.parseDouble(setting.getPeakValue());
-                    }
-                    if (setting.getType() == TargetSettingType.UPPER_VOLT_LIMIT) {
-                        upperLimit = Double.parseDouble(setting.getPeakValue());
-                    }
-                }
-
-                voltagePoint.setLowerLimit(lowerLimit);
-                voltagePoint.setUpperLimit(upperLimit);
-            }
-
-            AbstractZone abstractZone = zoneDtoHelper.getAbstractZoneFromZone(zone, context.getYukonUser());
+            AbstractZone abstractZone = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, context.getYukonUser());
             zoneService.saveVoltagePointInfo(abstractZone, zoneVoltagePointsHolder.getPoints());
             MessageSourceResolvable successMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.ivvc.voltagePoints.updateSuccess");
@@ -207,8 +181,19 @@ public class ZoneDetailController {
         Zone zone = zoneDao.getZoneById(zoneId);
         int subBusId = zone.getSubstationBusId();
         int strategyId = cache.getSubBus(subBusId).getStrategyId();
-        CapControlStrategy strategy = strategyDao.getForId(strategyId);
-        model.addAttribute("strategy", strategy);
+
+        StrategyLimitsHolder strategyLimitsHolder = strategyDao.getStrategyLimitsHolder(strategyId);
+        for (VoltageLimitedDeviceInfo deviceInfo : zoneVoltagePointsHolder.getPoints()) {
+            /* If OverideStrategy is false, then simply assign the stragie's limits to our object.
+             * This prevents having to write jsp and javascript code checking for this case and handling it
+             * special (hence preventing client-side bugs). 
+             */
+            if (!deviceInfo.isOverrideStrategy()) {
+                deviceInfo.setLowerLimit(strategyLimitsHolder.getLowerLimit());
+                deviceInfo.setUpperLimit(strategyLimitsHolder.getUpperLimit());
+            }
+        }
+        model.addAttribute("strategy", strategyLimitsHolder.getStrategy());
     }
 
     @RequestMapping
@@ -327,6 +312,10 @@ public class ZoneDetailController {
         setupBreadCrumbs(model, cache, zoneDto, isSpecialArea);
         setupRegulatorPointMappings(model, zoneDto);
         setupRegulatorCommands(model, zoneDto);
+        
+        int strategyId = cache.getSubBus(zoneDto.getSubstationBusId()).getStrategyId();
+        StrategyLimitsHolder strategyLimitsHolder = strategyDao.getStrategyLimitsHolder(strategyId);
+        model.addAttribute("strategyLimits", strategyLimitsHolder);
 
         model.addAttribute("subBusId", zoneDto.getSubstationBusId());
         int updaterDelay = Integer.valueOf(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATA_UPDATER_DELAY_MS, user));

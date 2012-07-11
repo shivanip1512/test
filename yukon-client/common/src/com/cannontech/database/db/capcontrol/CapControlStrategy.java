@@ -7,7 +7,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
-import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.CTIDbChange;
@@ -55,7 +54,6 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
 	public static final String TABLE_NAME = "CapControlStrategy";
 	public static boolean todExists = false;
 	private StrategyDao strategyDao = YukonSpringHook.getBean(StrategyDao.class);
-	private CcMonitorBankListDao ccMonitorBankListDao = YukonSpringHook.getBean(CcMonitorBankListDao.class);
 	
 	public void add() throws SQLException {
 		Object[] addValues = {
@@ -84,7 +82,6 @@ public class CapControlStrategy extends DBPersistent implements CTIDbChange {
         update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
         
         strategyDao.savePeakSettings(this);
-        ccMonitorBankListDao.updateDeviceInfosFromStrategyId(strategyID);
     }
 	
 	public void retrieve() throws SQLException {

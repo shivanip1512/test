@@ -8,12 +8,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PointDao;
@@ -23,15 +23,11 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
-import com.cannontech.database.db.capcontrol.PeakTargetSetting;
-import com.cannontech.database.db.capcontrol.TargetSettingType;
 import com.cannontech.enums.Phase;
 import com.cannontech.enums.RegulatorPointMapping;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 
 public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
@@ -131,127 +127,6 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     }
 
     @Override
-    public void updateDeviceInfosFromStrategyId(int strategyId) {
-        List<VoltageLimitedDeviceInfo> capBankDeviceInfos = getCapBankDeviceInfosFromStrategyId(strategyId);
-        List<VoltageLimitedDeviceInfo> regulatorDeviceInfos = getRegulatorDeviceInfosFromStrategyId(strategyId);
-        List<VoltageLimitedDeviceInfo> additionalPointDeviceInfos = getAdditionalPointDeviceInfosFromStrategyId(strategyId);
-
-        List<VoltageLimitedDeviceInfo> allDeviceInfos = Lists.newArrayListWithCapacity(capBankDeviceInfos.size() + regulatorDeviceInfos.size()
-                                                                                       + additionalPointDeviceInfos.size());
-        allDeviceInfos.addAll(capBankDeviceInfos);
-        allDeviceInfos.addAll(regulatorDeviceInfos);
-        allDeviceInfos.addAll(additionalPointDeviceInfos);
-        
-        LimitsHolder strategyLimits = getStrategyLimits(strategyId);
-        for (VoltageLimitedDeviceInfo deviceInfo : allDeviceInfos) {
-            deviceInfo.setLowerLimit(strategyLimits.lowerLimit);
-            deviceInfo.setUpperLimit(strategyLimits.upperLimit);
-        }
-        
-        updateDeviceInfo(allDeviceInfos);
-    }
-    
-    private List<VoltageLimitedDeviceInfo> getCapBankDeviceInfosFromStrategyId(int strategyId) {
-        SqlStatementBuilder innerSql = new SqlStatementBuilder();
-        innerSql.append("  CASE ");
-        innerSql.append("    WHEN (strat3u.StrategyId IS not NULL) THEN strat3u.StrategyId");
-        innerSql.append("    WHEN (strat2u.StrategyId IS not NULL) THEN strat2u.StrategyId");
-        innerSql.append("    WHEN (strat1u.StrategyId IS not NULL) THEN strat1u.StrategyId");
-        innerSql.append("    ELSE -1");
-        innerSql.append("  END StrategyId");
-        getInitialCcMonitorBankListJoins(innerSql);
-        innerSql.append("  JOIN CapBank cb ON cb.deviceid = ccmb.deviceid AND cb.controlDeviceID = p.paobjectid");
-        innerSql.append("  JOIN CCFeederBankList fb ON fb.DeviceID = ccmb.deviceid");
-        innerSql.append("  JOIN CCFeederSubAssignment fsa ON fsa.FeederID = fb.FeederID");
-        innerSql.append("  JOIN CCSubstationSubBusList ssb ON ssb.SubStationBusID = fsa.SubStationBusID");
-        innerSql.append("  JOIN CCSubAreaAssignment sa ON sa.SubstationBusID = ssb.SubStationID");
-        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat1 ON sa.AreaID = seasStrat1.PAObjectId");
-        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat2 ON ssb.SubStationBusID = seasStrat2.PAObjectId");
-        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat3 ON fsa.FeederID = seasStrat3.PAObjectId");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1u ON strat1u.StrategyId = seasStrat1.StrategyId AND strat1u.SettingName = 'Upper Volt Limit' AND strat1u.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1l ON strat1l.StrategyId = seasStrat1.StrategyId AND strat1l.SettingName = 'Lower Volt Limit' AND strat1l.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2u ON strat2u.StrategyId = seasStrat2.StrategyId AND strat2u.SettingName = 'Upper Volt Limit' AND strat2u.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2l ON strat2l.StrategyId = seasStrat2.StrategyId AND strat2l.SettingName = 'Lower Volt Limit' AND strat2l.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat3u ON strat3u.StrategyId = seasStrat3.StrategyId AND strat3u.SettingName = 'Upper Volt Limit' AND strat3u.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat3l ON strat3l.StrategyId = seasStrat3.StrategyId AND strat3l.SettingName = 'Lower Volt Limit' AND strat3l.SettingType = 'PEAK'");
-
-        return getDeviceInfosFromStrategyId(innerSql, strategyId);
-    }
-    
-    private List<VoltageLimitedDeviceInfo> getRegulatorDeviceInfosFromStrategyId(int strategyId) {
-        SqlStatementBuilder innerSql = new SqlStatementBuilder();
-        innerSql.append("  CASE ");
-        innerSql.append("    WHEN (strat2u.StrategyId IS not NULL) THEN strat2u.StrategyId");
-        innerSql.append("    WHEN (strat1u.StrategyId IS not NULL) THEN strat1u.StrategyId");
-        innerSql.append("    ELSE -1");
-        innerSql.append("  END StrategyId");
-        getInitialCcMonitorBankListJoins(innerSql);
-        innerSql.append("  JOIN regulatortozonemapping zm on zm.RegulatorId = ccmb.deviceid");
-        innerSql.append("  join Zone z on z.ZoneId = zm.ZoneId");
-        innerSql.append("  JOIN CCSubstationSubBusList ssb ON ssb.SubStationBusID = z.SubStationBusID");
-        innerSql.append("  JOIN CCSubAreaAssignment sa ON sa.SubstationBusID = ssb.SubStationID");
-        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat1 ON sa.AreaID = seasStrat1.PAObjectId");
-        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat2 ON ssb.SubStationBusID = seasStrat2.PAObjectId");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1u ON strat1u.StrategyId = seasStrat1.StrategyId AND strat1u.SettingName = 'Upper Volt Limit' AND strat1u.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1l ON strat1l.StrategyId = seasStrat1.StrategyId AND strat1l.SettingName = 'Lower Volt Limit' AND strat1l.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2u ON strat2u.StrategyId = seasStrat2.StrategyId AND strat2u.SettingName = 'Upper Volt Limit' AND strat2u.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2l ON strat2l.StrategyId = seasStrat2.StrategyId AND strat2l.SettingName = 'Lower Volt Limit' AND strat2l.SettingType = 'PEAK'");
-
-        return getDeviceInfosFromStrategyId(innerSql, strategyId);
-    }
-    
-    private List<VoltageLimitedDeviceInfo> getAdditionalPointDeviceInfosFromStrategyId(int strategyId) {
-        SqlStatementBuilder innerSql = new SqlStatementBuilder();
-        innerSql.append("  CASE ");
-        innerSql.append("    WHEN (strat2u.StrategyId IS not NULL) THEN strat2u.StrategyId");
-        innerSql.append("    WHEN (strat1u.StrategyId IS not NULL) THEN strat1u.StrategyId");
-        innerSql.append("    ELSE -1");
-        innerSql.append("  END StrategyId");
-        getInitialCcMonitorBankListJoins(innerSql);
-        innerSql.append("  AND p.PAObjectID = ccmb.DeviceId");
-        innerSql.append("  JOIN PointToZoneMapping zm on zm.PointId = p.pointid");
-        innerSql.append("  join Zone z on z.ZoneId = zm.ZoneId");
-        innerSql.append("  JOIN CCSubstationSubBusList ssb ON ssb.SubStationBusID = z.SubStationBusID");
-        innerSql.append("  JOIN CCSubAreaAssignment sa ON sa.SubstationBusID = ssb.SubStationID");
-        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat1 ON sa.AreaID = seasStrat1.PAObjectId");
-        innerSql.append("  LEFT JOIN CCSeasonStrategyAssignment seasStrat2 ON ssb.SubStationBusID = seasStrat2.PAObjectId");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1u ON strat1u.StrategyId = seasStrat1.StrategyId AND strat1u.SettingName = 'Upper Volt Limit' AND strat1u.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat1l ON strat1l.StrategyId = seasStrat1.StrategyId AND strat1l.SettingName = 'Lower Volt Limit' AND strat1l.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2u ON strat2u.StrategyId = seasStrat2.StrategyId AND strat2u.SettingName = 'Upper Volt Limit' AND strat2u.SettingType = 'PEAK'");
-        innerSql.append("  LEFT JOIN CCStrategyTargetSettings strat2l ON strat2l.StrategyId = seasStrat2.StrategyId AND strat2l.SettingName = 'Lower Volt Limit' AND strat2l.SettingType = 'PEAK'");
-        
-        return getDeviceInfosFromStrategyId(innerSql, strategyId);
-    }
-
-    private void getInitialCcMonitorBankListJoins(SqlStatementBuilder innerSql) {
-        innerSql.append("  FROM ccmonitorbanklist ccmb");
-        innerSql.append("  JOIN YukonPaObject ypo ON ccmb.deviceid = ypo.paObjectId");
-        innerSql.append("  JOIN POINT p ON ccmb.PointId = p.PointId");
-    }
-
-    private List<VoltageLimitedDeviceInfo> getDeviceInfosFromStrategyId(SqlStatementBuilder inner, int strategyId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT innerValues.deviceid as PaObjectId, innerValues.PaoName, innerValues.Type, innerValues.PointId, innerValues.PointName, innerValues.Phase, innerValues.LowerBandwidth, innerValues.UpperBandwidth, innerValues.OverrideStrategy");
-        sql.append("FROM");
-        sql.append(" (select");
-        sql.append("  ccmb.DeviceId,");
-        sql.append("  ypo.PaoName,");
-        sql.append("  ypo.Type,");
-        sql.append("  p.PointId,");
-        sql.append("  p.PointName,");
-        sql.append("  ccmb.Phase,");
-        sql.append("  ccmb.LowerBandwidth,");
-        sql.append("  ccmb.UpperBandwidth,");
-        sql.append("  ccmb.OverrideStrategy,");
-        sql.appendFragment(inner);
-        sql.append("  ) innerValues");
-        sql.append("where innerValues.strategyid").eq(strategyId);
-        sql.append("AND innerValues.OverrideStrategy").eq_k(String.valueOf(CtiUtilities.falseChar));
-
-        return yukonJdbcTemplate.query(sql, deviceInfoRowMapper);
-    }
-
-    @Override
     public int addDeviceInfo(VoltageLimitedDeviceInfo info) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto("CcMonitorBankList");
@@ -300,7 +175,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             return 0; //no rows affected
         }
                 
-        LimitsHolder limits = getLimitsFromStrategyByZoneId(zonePointPhase.zoneId);
+        StrategyLimitsHolder limits = getLimitsFromStrategyByZoneId(zonePointPhase.zoneId);
         
         //paoType here may not be technically correct, but it will never actually be used. Only the id is necessary.
         PaoIdentifier paoId = new PaoIdentifier(regulatorId, PaoType.PHASE_OPERATED);
@@ -323,7 +198,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             return 0; //no rows affected
         }
         
-        LimitsHolder limits = getLimitsFromStrategyBySubbusId(substationBusId);
+        StrategyLimitsHolder limits = getLimitsFromStrategyBySubbusId(substationBusId);
         
         //paoType here may not be technically correct, but it will never actually be used. Only the id is necessary.
         PaoIdentifier paoId = new PaoIdentifier(regulatorId, PaoType.PHASE_OPERATED);
@@ -333,7 +208,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     
     @Override
     public int addAdditionalMonitorPoint(int pointId, int substationBusId, Phase phase) {
-        LimitsHolder limits = getLimitsFromStrategyBySubbusId(substationBusId);
+        StrategyLimitsHolder limits = getLimitsFromStrategyBySubbusId(substationBusId);
         PaoIdentifier paoId = pointDao.getPaoPointIdentifier(pointId).getPaoIdentifier();
         
         VoltageLimitedDeviceInfo info = buildNewInfoObject(paoId, pointId, limits, phase);
@@ -341,7 +216,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     }
     
     @Override
-    public void updateRegulatorPoint(int regulatorId) {
+    public void updateRegulatorPoint(int regulatorId, Phase phase) {
         ZonePointPhaseHolder zonePointPhase = getZonePointPhaseByRegulatorId(regulatorId);
         if(zonePointPhase == null) {
             return;
@@ -349,7 +224,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE CcMonitorBankList");
-        sql.append("SET Phase").eq(zonePointPhase.phase);
+        sql.append("SET Phase").eq_k(phase);
         sql.append("WHERE PointId").eq(zonePointPhase.pointId);
         sql.append("AND DeviceId").eq(regulatorId);
         
@@ -413,12 +288,12 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         yukonJdbcTemplate.update(sql);
     }
     
-    private VoltageLimitedDeviceInfo buildNewInfoObject(PaoIdentifier paoId, int pointId, LimitsHolder limits, Phase phase) {
+    private VoltageLimitedDeviceInfo buildNewInfoObject(PaoIdentifier paoId, int pointId, StrategyLimitsHolder limits, Phase phase) {
         VoltageLimitedDeviceInfo info = new VoltageLimitedDeviceInfo();
         info.setParentPaoIdentifier(paoId);
         info.setPointId(pointId);
-        info.setUpperLimit(limits.upperLimit);
-        info.setLowerLimit(limits.lowerLimit);
+        info.setUpperLimit(limits.getUpperLimit());
+        info.setLowerLimit(limits.getLowerLimit());
         info.setPhase(phase);
         info.setOverrideStrategy(false);
         
@@ -427,11 +302,12 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     
     private ZonePointPhaseHolder getZonePointPhaseByRegulatorId(int regulatorId) {
         SqlStatementBuilder getZoneInfoSql = new SqlStatementBuilder();
-        getZoneInfoSql.append("SELECT ZoneId, PointId, Phase");
-        getZoneInfoSql.append("FROM RegulatorToZoneMapping");
+        getZoneInfoSql.append("SELECT rtz.ZoneId, cc.PointId, cc.Phase");
+        getZoneInfoSql.append("FROM RegulatorToZoneMapping rtz");
+        getZoneInfoSql.append("JOIN CcMonitorBankList cc ON rtz.RegulatorId = cc.DeviceId");
         getZoneInfoSql.append("JOIN ExtraPaoPointAssignment eppa ON RegulatorId = eppa.PAObjectId");
-        getZoneInfoSql.append("WHERE RegulatorId").eq(regulatorId);
-        getZoneInfoSql.append("AND Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
+        getZoneInfoSql.append("WHERE rtz.RegulatorId").eq(regulatorId);
+        getZoneInfoSql.append("AND eppa.Attribute").eq_k(RegulatorPointMapping.VOLTAGE_Y);
         
         try {
             return yukonJdbcTemplate.queryForObject(getZoneInfoSql, regulatorPointRowMapper);
@@ -441,7 +317,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         }
     }
     
-    private LimitsHolder getLimitsFromStrategyByZoneId(int zoneId) {
+    private StrategyLimitsHolder getLimitsFromStrategyByZoneId(int zoneId) {
         SqlStatementBuilder getStrategyIdSql = new SqlStatementBuilder();
         getStrategyIdSql.append("SELECT StrategyId");
         getStrategyIdSql.append("FROM Zone");
@@ -450,10 +326,10 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         int strategyId = yukonJdbcTemplate.queryForInt(getStrategyIdSql);
         
         //get the upper and lower limits from the strategy
-        return getStrategyLimits(strategyId);
+        return strategyDao.getStrategyLimitsHolder(strategyId);
     }
     
-    private LimitsHolder getLimitsFromStrategyBySubbusId(int substationBusId) {
+    private StrategyLimitsHolder getLimitsFromStrategyBySubbusId(int substationBusId) {
         SqlStatementBuilder getStrategyIdSql = new SqlStatementBuilder();
         getStrategyIdSql.append("SELECT StrategyId");
         getStrategyIdSql.append("FROM CcSeasonStrategyAssignment");
@@ -462,7 +338,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         
         if(strategyIds.size() == 1) {
             //subbus strategy found
-            return getStrategyLimits(Iterables.getOnlyElement(strategyIds));
+            return strategyDao.getStrategyLimitsHolder(Iterables.getOnlyElement(strategyIds));
         } else {
             //no subbus strategy, get area strategy
             getStrategyIdSql = new SqlStatementBuilder();
@@ -472,31 +348,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             getStrategyIdSql.append("JOIN CcSubstationSubbusList CSSL ON CSSL.SubStationID = CSAA.SubstationBusID");
             getStrategyIdSql.append("WHERE cssl.SubStationBusID").eq(substationBusId);
             int strategyId = yukonJdbcTemplate.queryForInt(getStrategyIdSql);
-            return getStrategyLimits(strategyId);
-        }
-    }
-    
-    private LimitsHolder getStrategyLimits(int strategyId) {
-        CapControlStrategy strategy = strategyDao.getForId(strategyId);
-        List<PeakTargetSetting> settings = strategy.getTargetSettings();
-        double upperVoltLimit = 0.0;
-        double lowerVoltLimit = 0.0;
-        for(PeakTargetSetting setting : settings) {
-            if(setting.getType() == TargetSettingType.UPPER_VOLT_LIMIT) {
-                upperVoltLimit = Double.parseDouble(setting.getPeakValue());
-            } else if(setting.getType() == TargetSettingType.LOWER_VOLT_LIMIT) {
-                lowerVoltLimit = Double.parseDouble(setting.getPeakValue());
-            }
-        }
-        return new LimitsHolder(upperVoltLimit, lowerVoltLimit);
-    }
-    
-    private class LimitsHolder {
-        public double upperLimit;
-        public double lowerLimit;
-        public LimitsHolder(double upperLimit, double lowerLimit) {
-            this.upperLimit = upperLimit;
-            this.lowerLimit = lowerLimit;
+            return strategyDao.getStrategyLimitsHolder(strategyId);
         }
     }
     

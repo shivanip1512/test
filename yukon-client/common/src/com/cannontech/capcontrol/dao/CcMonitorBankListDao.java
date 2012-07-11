@@ -26,15 +26,6 @@ public interface CcMonitorBankListDao {
     public void updateDeviceInfo(List<VoltageLimitedDeviceInfo> deviceInfoList);
     
     /**
-     * Updates the Phase, Lower Limit, Upper Limit, and Override Strategy
-     * values for all entries that are NOT overriding the strategy (using the passed in strategyId).
-     * This method is called from CapControlStrategy.update method so this table is kept up to date.
-     * This is not a great solution and all this code should be replaced with a simple foreign key
-     * ASAP.
-     */
-    public void updateDeviceInfosFromStrategyId(int strategyId);
-    
-    /**
      * Updates the phase on the specified point.
      * @return 
      */
@@ -62,7 +53,7 @@ public interface CcMonitorBankListDao {
     /**
      * Updates the entry for voltage Y point on the specified regulator.
      */
-    public void updateRegulatorPoint(int regulatorId);
+    public void updateRegulatorPoint(int regulatorId, Phase phase);
     
     /**
      * Removes the voltage Y point entry for the specified regulator unless

@@ -34,8 +34,12 @@
 		</tr>
 		<c:forEach var="voltagePoint" items="${zoneVoltagePointsHolder.points}" varStatus="status">
 			<c:set var="overrideStrategyClass" value="fwb"/>
+			<c:set var="lowerLimit" value="${voltagePoint.lowerLimit}"/>
+			<c:set var="upperLimit" value="${voltagePoint.upperLimit}"/>
 			<c:if test="${!voltagePoint.overrideStrategy}">
 				<c:set var="overrideStrategyClass" value="disabled"/>
+    			<c:set var="lowerLimit" value="${strategyLimits.lowerLimit}"/>
+    			<c:set var="upperLimit" value="${strategyLimits.upperLimit}"/>
 			</c:if>
 			<tr class="<tags:alternateRow even="altTableCell" odd="tableCell"/>">
 				<td>
@@ -53,7 +57,7 @@
 				</td>
 				<td><i:inline key="yukon.common.phase.phase${voltagePoint.phase}"/></td>
 				<td title="<cti:msg2 key=".table.header.lowerLimitTitle"/>" class="${overrideStrategyClass}">
-					${voltagePoint.lowerLimit}
+					${lowerLimit}
 				</td>
 				<td><c:choose>
 						<c:when test="${voltagePoint.pointId > 0}">
@@ -65,7 +69,7 @@
 					</c:choose>
 				</td>
 				<td title="<cti:msg2 key=".table.header.upperLimitTitle"/>" class="${overrideStrategyClass}">
-					${voltagePoint.upperLimit}
+					${upperLimit}
 				</td>
 			</tr>
 		</c:forEach>

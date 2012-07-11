@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.AbstractZone;
+import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
 import com.cannontech.capcontrol.model.ZoneHierarchy;
 import com.cannontech.capcontrol.model.ZoneVoltagePointsHolder;
@@ -22,7 +23,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.ZoneType;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.enums.Phase;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubStation;
@@ -95,11 +95,12 @@ public class BusViewController {
     
     private void setupStrategyDetails(ModelMap model, CapControlCache cache, int subBusId) {
         int strategyId = cache.getSubBus(subBusId).getStrategyId();
-        CapControlStrategy strategy = strategyDao.getForId(strategyId);
+        StrategyLimitsHolder strategyLimitsHolder = strategyDao.getStrategyLimitsHolder(strategyId);
 
-        model.addAttribute("strategyId",strategy.getStrategyID());
-        model.addAttribute("strategyName",strategy.getStrategyName());
-        model.addAttribute("strategySettings",strategy.getTargetSettings());
+        model.addAttribute("strategyLimits", strategyLimitsHolder);
+        model.addAttribute("strategyId", strategyLimitsHolder.getStrategy().getStrategyID());
+        model.addAttribute("strategyName", strategyLimitsHolder.getStrategy().getStrategyName());
+        model.addAttribute("strategySettings", strategyLimitsHolder.getStrategy().getTargetSettings());
     }
     
     private void setupBreadCrumbs(ModelMap model, CapControlCache cache, int subBusId, boolean isSpecialArea, YukonUserContext userContext) {
