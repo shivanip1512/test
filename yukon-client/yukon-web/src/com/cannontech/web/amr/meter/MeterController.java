@@ -105,7 +105,7 @@ public class MeterController extends MultiActionController {
             startIndex = 0;
         }
 
-        boolean isQuickSearch = StringUtils.isNotBlank(request.getParameter("Quick Search"));
+        boolean isQuickSearch = StringUtils.isNotBlank(request.getParameter("quickSearch"));
         MeterSearchField defaultField = isQuickSearch ? MeterSearchField.METERNUMBER : MeterSearchField.PAONAME;
 
         // Get the order by field
