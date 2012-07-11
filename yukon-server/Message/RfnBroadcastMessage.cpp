@@ -27,8 +27,7 @@ _messagePriority(0)
 
 void RfnBroadcastMessage::streamInto(cms::StreamMessage &message) const
 {
-    __int64 milliseconds = _expirationTime.seconds();
-    milliseconds *= 1000;
+    __int64 milliseconds = (__int64)_expirationDuration * 1000;
 
     message.writeShort  (_messageId);
     message.writeInt    (_messagePriority);
@@ -40,7 +39,7 @@ void RfnBroadcastMessage::streamInto(cms::StreamMessage &message) const
 
 RfnBroadcastMessage* RfnBroadcastMessage::createMessage( int messagePriority,
                                                          const string &rfnMessageClass,
-                                                         CtiTime expirationTime,
+                                                         unsigned int expirationDuration,
                                                          const std::vector<unsigned char> &payload )
 {
     RfnBroadcastMessage *retVal= new RfnBroadcastMessage();
@@ -51,7 +50,7 @@ RfnBroadcastMessage* RfnBroadcastMessage::createMessage( int messagePriority,
 
     retVal->_messagePriority = messagePriority;
     retVal->_rfnMessageClass = rfnMessageClass;
-    retVal->_expirationTime = expirationTime;
+    retVal->_expirationDuration = expirationDuration;
     retVal->_payload = payload;
 
     return retVal;

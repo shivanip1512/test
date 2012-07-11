@@ -16,7 +16,7 @@ private:
     short             _messageId;
     int               _messagePriority;
     std::string       _rfnMessageClass;
-    CtiTime           _expirationTime;
+    unsigned int      _expirationDuration;
     std::vector<unsigned char> _payload;
 
     RfnBroadcastMessage();
@@ -26,7 +26,7 @@ public:
     // Helper method to fill out the standard fields.
     static RfnBroadcastMessage* createMessage(int messagePriority,
                                               const std::string &rfnMessageClass,
-                                              CtiTime expirationTime,
+                                              unsigned int expirationDuration,
                                               const std::vector<unsigned char> &payload);
 
     void streamInto(cms::StreamMessage &message) const;
