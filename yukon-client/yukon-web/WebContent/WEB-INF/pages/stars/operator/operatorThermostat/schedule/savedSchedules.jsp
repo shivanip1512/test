@@ -23,18 +23,19 @@ Event.observe(window, 'load', function(){
             HEAT: {
                 upper: new Temperature({degrees: parseFloat(${type.upperLimitHeat.value}), unit:'F'}),
                 lower: new Temperature({degrees: parseFloat(${type.lowerLimitHeat.value}), unit:'F'}),
-                temperature: new Temperature({unit: '${temperatureUnit}'})
+                temperature: new Temperature()
             },
             COOL: {
                 upper: new Temperature({degrees: parseFloat(${type.upperLimitCool.value}), unit:'F'}),
                 lower: new Temperature({degrees: parseFloat(${type.lowerLimitCool.value}), unit:'F'}),
-                temperature: new Temperature({unit: '${temperatureUnit}'})
+                temperature: new Temperature()
             },
             mode: '${type.defaultThermostatScheduleMode}',
             fan: '',
             secondsResolution: ${type.resolution.standardSeconds},
             secondsBetweenPeriods: ${type.minimumTimeBetweenPeriods.standardSeconds}
-        }
+        },
+        unit: '${temperatureUnit}'
     });
 });
 </script>

@@ -30,18 +30,19 @@ Event.observe(window, 'load', function(){
             HEAT: {
                 upper: new Temperature({degrees: parseFloat(${type.upperLimitHeat.value}), unit:'F'}),
                 lower: new Temperature({degrees: parseFloat(${type.lowerLimitHeat.value}), unit:'F'}),
-                temperature: new Temperature({unit: '${temperatureUnit}'})
+                temperature: new Temperature()
             },
             COOL: {
                 upper: new Temperature({degrees: parseFloat(${type.upperLimitCool.value}), unit:'F'}),
                 lower: new Temperature({degrees: parseFloat(${type.lowerLimitCool.value}), unit:'F'}),
-                temperature: new Temperature({unit: '${temperatureUnit}'})
+                temperature: new Temperature()
             },
             mode: '${type.defaultThermostatScheduleMode}',
             fan: '${event.fanState}',
             secondsResolution: ${type.resolution.standardSeconds},
             secondsBetweenPeriods: ${type.minimumTimeBetweenPeriods.standardSeconds}
-        }
+        },
+        unit: '${temperatureUnit}'
     });
     
 });
@@ -77,6 +78,13 @@ Event.observe(window, 'load', function(){
         <div class="helper">
             <i:inline key=".noSchedulesHelper" />
         </div>
+        <br>
+        <div class="tempControls fl">
+                    <form method="post" action="/spring/stars/consumer/thermostat/schedule/updateTemperaturePreference">
+                        <label><input name="units" type="radio" value="C" <c:if test="${temperatureUnit eq 'C'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.celsius"/></label>
+                        <label><input name="units" type="radio" value="F" <c:if test="${temperatureUnit eq 'F'}" >checked="checked"</c:if>><i:inline key="yukon.web.defaults.fahrenheit"/></label>
+                    </form>
+                </div>
         <br>
         <br>
         <cti:button nameKey="help" styleClass="help fl"/>

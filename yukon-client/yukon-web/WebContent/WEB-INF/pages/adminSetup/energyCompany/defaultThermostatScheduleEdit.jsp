@@ -30,18 +30,19 @@
                 HEAT: {
                     upper: new Temperature({degrees: parseFloat(${schedule.thermostatType.upperLimitHeat.value}), unit:'F'}),
                     lower: new Temperature({degrees: parseFloat(${schedule.thermostatType.lowerLimitHeat.value}), unit:'F'}),
-                    temperature: new Temperature({unit: '${temperatureUnit}'})
+                    temperature: new Temperature()
                 },
                 COOL: {
                     upper: new Temperature({degrees: parseFloat(${schedule.thermostatType.upperLimitCool.value}), unit:'F'}),
                     lower: new Temperature({degrees: parseFloat(${schedule.thermostatType.lowerLimitCool.value}), unit:'F'}),
-                    temperature: new Temperature({unit: '${temperatureUnit}'})
+                    temperature: new Temperature()
                 },
                 mode: '${schedule.thermostatType.defaultThermostatScheduleMode}',
                 fan: '',
                 secondsResolution: ${schedule.thermostatType.resolution.standardSeconds},
                 secondsBetweenPeriods: ${schedule.thermostatType.minimumTimeBetweenPeriods.standardSeconds}
-            }
+            },
+            unit: '${temperatureUnit}'
         });
     });
     </script>

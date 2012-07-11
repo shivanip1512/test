@@ -351,6 +351,7 @@ Yukon.ui = {
         },
         
         nextPage: function(page) {
+        	page = jQuery(page);
             if(typeof(page) != 'undefined') {
                 var nextPage = page.next(".f_page");
                 if(typeof(nextPage) != 'undefined') {
@@ -380,24 +381,13 @@ Yukon.ui = {
          * 
          */
         reset: function(wizard) {
-            if(wizard.hasClassName("f_wizard")){
-                wizard.select(".f_page").each(function(elem, idx){
-                    if(idx > 0){
-                        elem.hide();
-                    }else{
-                        elem.show();
-                    }
-                });
+        	wizard = jQuery(wizard);
+            if(wizard.hasClass("f_wizard")){
+                jQuery(".f_page", wizard).hide();
+                jQuery(".f_page:first", wizard).show();
             }else{
-                wizard.select(".f_wizard").each(function(elem){
-                    elem.select(".f_page").each(function(elem, idx){
-                        if(idx > 0){
-                            elem.hide();
-                        }else{
-                            elem.show();
-                        }
-                    });
-                });
+            	jQuery(".f_wizard .f_page").hide();
+            	jQuery(".f_wizard .f_page:first").show();
             }
         }
     }
