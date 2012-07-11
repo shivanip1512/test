@@ -235,7 +235,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         return sb.toString();
     }
     
-    public String convertToFirmwareVersion(Double value) {
+    public static String convertToFirmwareVersion(Double value) {
         
         Long majorValue = new Long(value.longValue());
         Double minorValue = (value - majorValue) * 100;
