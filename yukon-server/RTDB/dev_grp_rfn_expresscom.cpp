@@ -68,7 +68,7 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
 
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Rfn;
-    std::auto_ptr<StreamableMessage> message(RfnBroadcastMessage::createMessage(OutMessage->Priority, RfnBroadcastMessage::RfnMessageClass::DemandResponse, OutMessage->ExpirationTime.seconds() - CtiTime::now().seconds(), payload));
+    std::auto_ptr<StreamableMessage> message(RfnBroadcastMessage::createMessage(OutMessage->Priority, RfnBroadcastMessage::RfnMessageClass::DemandResponse, OutMessage->ExpirationTime - CtiTime::now().seconds(), payload));
 
     gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_RfnBroadcast, message);
 
