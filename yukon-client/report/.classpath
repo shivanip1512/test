@@ -7,21 +7,81 @@
 	<classpathentry kind="src" path="/dbeditor"/>
 	<classpathentry kind="src" path="/resource"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
-	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
-	<classpathentry kind="lib" path="/third-party/jcfield401K.jar"/>
-	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
-	<classpathentry kind="lib" path="/third-party/led.jar"/>
-	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
-	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
-	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
-	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
-	<classpathentry kind="lib" path="/third-party/itext.jar"/>
-	<classpathentry kind="lib" path="/third-party/poi.jar"/>
-	<classpathentry kind="lib" path="/third-party/bsh.jar"/>
-	<classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/third-party/linked-sources/jfreereport-0.8.6-4.zip"/>
-	<classpathentry kind="lib" path="/third-party/bsf-2.3.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/libfonts-0.1.0.jar"/>
+	<classpathentry kind="lib" path="/third-party/jaxm-api.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jcfield401K.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/led.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/rwav.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/saaj.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jfreechart.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jcommon.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jtds.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/itext.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/poi.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/bsh.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/jfreereport.jar" sourcepath="/third-party/linked-sources/jfreereport-0.8.6-4.zip">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/bsf-2.3.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/third-party/libfonts-0.1.0.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/loadcontrol"/>
 	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0">
 		<attributes>
