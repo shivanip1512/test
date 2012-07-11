@@ -1110,6 +1110,9 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_crc)
         BOOST_CHECK_EQUAL( message.front(), 'u' ); // With CRC, these are U and V.
         BOOST_CHECK_EQUAL( message.back(), 'v' );
 
+        BOOST_CHECK_EQUAL_COLLECTIONS(message.begin()+1, message.end()-1,
+                                      expected_result,   expected_result+xcom.messageSize());
+
         for (int i = 0; i < xcom.messageSize(); ++i)
         {
             // Do this check by hand so we can have a nice printout on failure.
@@ -1117,12 +1120,6 @@ BOOST_AUTO_TEST_CASE(test_prot_xcom_crc)
             {
                 BOOST_CHECK_EQUAL( xcom.getByte(i), expected_result[i] );
                 std::cout << "Failed when i was " << i << std::endl;
-            }
-
-            if (message[i+1] != expected_result[i])
-            {
-                BOOST_CHECK_EQUAL( message[i+1], expected_result[i] );
-                std::cout << "Get Full Message Failed when i was " << i << std::endl;
             }
         }
     }

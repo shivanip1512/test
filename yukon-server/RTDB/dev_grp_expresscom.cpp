@@ -144,43 +144,43 @@ int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiC
 
     serial = (int)(getExpresscomGroup().getSerial());
 
-    if (serial == 0)
+    if(serial == 0)
     {
-        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)          spid        = (int)(getExpresscomGroup().getServiceProvider());
-        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)           geo         = (int)(getExpresscomGroup().getGeo());
-        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSubstation)    substation  = (int)(getExpresscomGroup().getSubstation());
-        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)        feeder      = (int)(getExpresscomGroup().getFeeder());
-        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)           zip         = (int)(getExpresscomGroup().getZip());
-        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)          uda         = (int)(getExpresscomGroup().getUda());
-        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)       program     = (int)(getExpresscomGroup().getProgram());
-        if (getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)      splinter    = (int)(getExpresscomGroup().getSplinter());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSpid)          spid        = (int)(getExpresscomGroup().getServiceProvider());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atGeo)           geo         = (int)(getExpresscomGroup().getGeo());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSubstation)    substation  = (int)(getExpresscomGroup().getSubstation());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atFeeder)        feeder      = (int)(getExpresscomGroup().getFeeder());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atZip)           zip         = (int)(getExpresscomGroup().getZip());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atUser)          uda         = (int)(getExpresscomGroup().getUda());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atProgram)       program     = (int)(getExpresscomGroup().getProgram());
+        if(getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atSplinter)      splinter    = (int)(getExpresscomGroup().getSplinter());
 
         // Only want to set these parse entries if the values are not zero.  Zeros screw up
         // address validation code.  Exception is "xc_feeder" which CAN be zero.
 
         parse.setValue("xc_feeder",   feeder);
-        if (spid        != 0) parse.setValue("xc_spid",     spid);
-        if (geo         != 0) parse.setValue("xc_geo",      geo);
-        if (substation  != 0) parse.setValue("xc_sub",      substation);
-        if (zip         != 0) parse.setValue("xc_zip",      zip);
-        if (uda         != 0) parse.setValue("xc_uda",      uda);
-        if (program     != 0) parse.setValue("xc_program",  program);
-        if (splinter    != 0) parse.setValue("xc_splinter", splinter);
+        if(spid        != 0) parse.setValue("xc_spid",     spid);
+        if(geo         != 0) parse.setValue("xc_geo",      geo);
+        if(substation  != 0) parse.setValue("xc_sub",      substation);
+        if(zip         != 0) parse.setValue("xc_zip",      zip);
+        if(uda         != 0) parse.setValue("xc_uda",      uda);
+        if(program     != 0) parse.setValue("xc_program",  program);
+        if(splinter    != 0) parse.setValue("xc_splinter", splinter);
     }
     else
     {
         parse.setValue("xc_serial", serial);
     }
 
-    if (getExpresscomGroup().getPriority() < 3 && getExpresscomGroup().getPriority() >=0 && !parse.isKeyValid("xcpriority"))
+    if(getExpresscomGroup().getPriority() < 3 && getExpresscomGroup().getPriority() >=0 && !parse.isKeyValid("xcpriority"))
     {
         parse.setValue("xcpriority", getExpresscomGroup().getPriority());
     }
 
-    if (parse.getCommand() == ControlRequest && serial <= 0 && program == 0 && splinter == 0 )
+    if(parse.getCommand() == ControlRequest && serial <= 0 && program == 0 && splinter == 0 )
     {
-        if ((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) &&
-            (getExpresscomGroup().getLoadMask() != 0))
+        if((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) &&
+           (getExpresscomGroup().getLoadMask() != 0))
         {
             parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
         }
@@ -194,7 +194,7 @@ int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiC
             CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
             retList.push_back( pRet );
 
-            if (OutMessage)
+            if(OutMessage)
             {
                 delete OutMessage;
                 OutMessage = NULL;
@@ -210,7 +210,7 @@ int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiC
     }
     else
     {
-        if ((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) && (serial != 0))
+        if((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) && (serial != 0))
         {
             parse.setValue("relaymask", (int)(getExpresscomGroup().getLoadMask()));
         }
@@ -220,7 +220,7 @@ int CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &pReq, CtiC
         }
     }
 
-    if ( parse.getControlled() )
+    if( parse.getControlled() )
     {
         OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt(GROUP_CONTROL_EXPIRATION, 1200);
     }
