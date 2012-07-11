@@ -682,7 +682,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 	background: lightBlue;
 	border: solid 1px #ccc;
 }
-.ui-slider .ui-slider-handle {
+.ui-datepicker .ui-slider .ui-slider-handle {
 	border: solid 1px #999;
 	background: #ccc;
 	box-shadow: 0 0 8px rgba(0,0,0,0.3);
@@ -690,7 +690,7 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 	outline: none !important;
 }
 
-.ui-slider-horizontal, .ui-slider .ui-slider-handle, .ui-datepicker {
+.ui-datepicker .ui-slider-horizontal, .ui-slider .ui-slider-handle, .ui-datepicker {
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
