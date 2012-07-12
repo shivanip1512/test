@@ -217,7 +217,7 @@ public final class CapControlUtils {
      * valid PowerFactor values.
      */
     public static final double calcAvgPF(List<SubStation> subs) {
-        double retVal = 0.0;
+        Double retVal = 0.0;
         double sumOfVars = 0.0;
         double sumOfWatts = 0.0;
 
@@ -239,7 +239,7 @@ public final class CapControlUtils {
         if (sumOfVars < 0) {
             retVal = retVal * (-1);
         }
-        return retVal;
+        return retVal.isNaN() ? 0.0 : retVal.doubleValue();
     }
 
     /**
@@ -278,7 +278,7 @@ public final class CapControlUtils {
      * that have valid PowerFactor values.
      */
     public static final double calcAvgEstPF(List<SubStation> subs) {
-        double retVal = 0.0;
+        Double retVal = 0.0;
         double sumOfVars = 0.0;
         double sumOfWatts = 0.0;
 
@@ -300,7 +300,7 @@ public final class CapControlUtils {
         if (sumOfVars < 0) {
             retVal = retVal * (-1);
         }
-        return retVal;
+        return retVal.isNaN() ? 0.0 : retVal.doubleValue();
     }
 
     public static String format(int val) {
