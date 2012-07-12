@@ -62,7 +62,7 @@
 					<form:hidden path="points[${status.index}].pointName"/>
 					
 					<c:set var="disabledInput" value="false"/>
-					<c:if test="${voltagePoint.overrideStrategy == false}">
+					<c:if test="${voltagePoint.overrideStrategy == false || !hasEditingRole}">
 						<c:set var="disabledInput" value="true"/>
 					</c:if>
 				
@@ -80,7 +80,7 @@
 						<td>
 							<c:choose>
 								<c:when test="${!voltagePoint.regulator}">
-									<form:select path="points[${status.index}].phase">
+									<form:select path="points[${status.index}].phase" disabled="${!hasEditingRole}">
 										<form:option value="A"><cti:msg2 key="yukon.common.phase.phaseA"/></form:option>
 										<form:option value="B"><cti:msg2 key="yukon.common.phase.phaseB"/></form:option>
 										<form:option value="C"><cti:msg2 key="yukon.common.phase.phaseC"/></form:option>
@@ -110,23 +110,25 @@
 							<tags:input path="points[${status.index}].upperLimit" size="4"
 									disabled="${disabledInput}" inputClass="upperLimit" />
 						</td>
-						<td><form:checkbox path="points[${status.index}].overrideStrategy"/></td>
+						<td><form:checkbox path="points[${status.index}].overrideStrategy" disabled="${!hasEditingRole}"/></td>
 					</tr>
 				</c:forEach>
 				</tbody>
 			</table>
 			<div class="pageActionArea">
-				<cti:button nameKey="save" type="submit"/>
-				
-				<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
-			    	<cti:param name="zoneId" value="${zoneId}"/>
-			    </cti:url>
-				<cti:button nameKey="reset" href="${zoneVoltagePointsUrl}"/>
+                <c:if test="${hasEditingRole}">
+					<cti:button nameKey="save" type="submit"/>
+					
+					<cti:url var="zoneVoltagePointsUrl" value="/spring/capcontrol/ivvc/zone/voltagePoints">
+				    	<cti:param name="zoneId" value="${zoneId}"/>
+				    </cti:url>
+					<cti:button nameKey="reset" href="${zoneVoltagePointsUrl}"/>
 		
-				<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
-			    	<cti:param name="zoneId" value="${zoneId}"/>
-			    </cti:url>
-				<cti:button nameKey="back" id="backBtn" href="${zoneDetailUrl}"/>
+					<cti:url var="zoneDetailUrl" value="/spring/capcontrol/ivvc/zone/detail">
+				    	<cti:param name="zoneId" value="${zoneId}"/>
+				    </cti:url>
+					<cti:button nameKey="back" id="backBtn" href="${zoneDetailUrl}"/>
+                </c:if>
 			</div>
 		</form:form>
 	</tags:boxContainer2>

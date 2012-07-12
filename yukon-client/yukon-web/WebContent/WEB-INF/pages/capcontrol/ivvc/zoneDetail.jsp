@@ -111,16 +111,6 @@
         });
     </script>
 
-    <c:choose>
-        <c:when test="${hasEditingRole}">
-            <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/pencil.gif"/>
-        </c:when>
-        <c:otherwise>
-            <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/information.gif"/>
-        </c:otherwise>
-    </c:choose>
-    
-
 	<cti:url var="zoneEditorUrl" value="/spring/capcontrol/ivvc/wizard/zoneEditor">
     	<cti:param name="zoneId" value="${zoneId}"/>
     </cti:url>
@@ -175,8 +165,18 @@
                                 </spring:escapeBody>
                             </td>
                             <td>
-                                <cti:button nameKey="edit" renderMode="image" 
-                                    href="/editor/cbcBase.jsf?type=2&amp;itemid=${regulatorIdMap[phaseKey]}"/>
+								<c:choose>
+								    <c:when test="${hasEditingRole}">
+				                        <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
+				                            <cti:param name="type" value="2"/>
+				                            <cti:param name="itemid" value="${regulatorIdMap[phaseKey]}"/>
+				                        </cti:url>
+                                        <cti:button nameKey="edit" renderMode="image" href="${editorUrl}"/>
+								    </c:when>
+                                    <c:otherwise>
+                                        <cti:button nameKey="disabledEdit" renderMode="image" disabled="true"/>
+									</c:otherwise>
+                                </c:choose>
                             </td>
                         </tr>
                     </c:forEach>

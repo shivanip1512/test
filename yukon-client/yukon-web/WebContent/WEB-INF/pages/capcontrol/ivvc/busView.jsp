@@ -96,9 +96,15 @@
 						</tr>
 					</c:forEach>
 				</table>
-                <div class="actionArea">
-                    <cti:button nameKey="edit" href="/editor/cbcBase.jsf?type=5&amp;itemid=${strategyId}"/>
-                </div>
+				<c:if test="${hasEditingRole}">
+	                <div class="actionArea">
+						<cti:url var="editorUrl" value="/editor/cbcBase.jsf">
+							<cti:param name="type" value="5"/>
+							<cti:param name="itemid" value="${strategyId}"/>
+						</cti:url>
+						<cti:button nameKey="edit" href="${editorUrl}"/>
+	                </div>
+				</c:if>
 			</tags:boxContainer2>
 			
 			<br>
@@ -236,9 +242,15 @@
                         </tr>
                     </c:forEach>
 				</table>
-                <div class="actionArea">
-                    <cti:button nameKey="edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${subBusId}"/>
-                </div>
+                <c:if test="${hasEditingRole}">
+	                <div class="actionArea">
+	                    <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
+	                        <cti:param name="type" value="2"/>
+	                        <cti:param name="itemid" value="${subBusId}"/>
+	                    </cti:url>
+	                    <cti:button nameKey="edit" href="${editorUrl}"/>
+	                </div>
+                </c:if>
 			</tags:boxContainer2>
 		</cti:dataGridCell>
 		<cti:dataGridCell>
