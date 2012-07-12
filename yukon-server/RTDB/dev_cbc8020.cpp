@@ -56,10 +56,50 @@ void Cbc8020Device::combineFirmwarePoints( Cti::Protocol::Interface::pointlist_t
              * Use them to create the single revision data point message and
              * store it.
              */
-            double firmware = major->getValue() + (minor->getValue() / 100.0);
+
+            /*
+                incoming data:
+                    'major' : 8-bit value -- upper 4-bits == major_version
+                                             lower 4-bits == minor_version
+                    'minor' : 8-bit value -- revision
+             
+                outgoing data format:
+                    a SIXBIT (http://nemesis.lonestar.org/reference/telecom/codes/sixbit.html)
+                    encoded string packed inside a long long.  The point data message holds a
+                    double which limits us to 8 encoded characters inside the mantissa.  The
+                    string format is "major_version.minor_version.revision".  A string that is
+                    too long will be truncated and the last character replaced by '#' to
+                    denote that condition. eg: "10.11.123" --> "10.11.1#".  
+            */
+
+            int major_minor = static_cast<int>( major->getValue() );
+            int revision    = static_cast<int>( minor->getValue() );
+
+            char buffer[16];
+
+            int messageLength = _snprintf_s( buffer, 16, 15, "%d.%d.%d",
+                                             ( major_minor >> 4 ) & 0x0f,
+                                             major_minor & 0x0f,
+                                             revision & 0x0ff );
+
+            if ( messageLength > 8 )
+            {
+                buffer[7] = '#';
+                buffer[8] = 0;
+
+                messageLength = 8;
+            }
+
+            long long encodedValue = 0;
+
+            for ( int i = 0; i < messageLength; ++i )
+            {
+                encodedValue <<= 6;
+                encodedValue |= ( ( buffer[i] - ' ' ) & 0x03f );
+            }
 
             CtiPointDataMsg *pt_msg = new CtiPointDataMsg(PointOffset_FirmwareRevision,
-                                                          firmware,
+                                                          static_cast<double>( encodedValue ),
                                                           NormalQuality,
                                                           AnalogPointType);
             points.push_back(pt_msg);

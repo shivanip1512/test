@@ -29,6 +29,7 @@ protected:
     };
 
     virtual void processPoints( Cti::Protocol::Interface::pointlist_t &points );
+    static void processFirmwarePoint( Cti::Protocol::Interface::pointlist_t &points );
 
 private:
 

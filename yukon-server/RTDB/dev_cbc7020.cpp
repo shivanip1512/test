@@ -77,9 +77,7 @@ INT Cbc7020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
     return nRet;
 }
 
-
-//  This overrides the processPoints function in dev_dnp, but calls it afterward to do the real processing
-void Cbc7020Device::processPoints( Protocol::Interface::pointlist_t &points )
+void Cbc7020Device::processFirmwarePoint( Cti::Protocol::Interface::pointlist_t &points )
 {
     Protocol::Interface::pointlist_t::iterator pt_itr, last_pos;
 
@@ -94,16 +92,63 @@ void Cbc7020Device::processPoints( Protocol::Interface::pointlist_t &points )
             pt_msg->getType() == AnalogPointType &&
             pt_msg->getId()   == PointOffset_FirmwareRevision )
         {
+            /*
+                incoming data:
+                    'pt_msg' : 16-bit value -- upper 8-bits == major_version
+                                            -- lower 8-bits == minor_version
+
+                outgoing data format:
+                    a SIXBIT (http://nemesis.lonestar.org/reference/telecom/codes/sixbit.html)
+                    encoded string packed inside a long long.  The point data message holds a
+                    double which limits us to 8 encoded characters inside the mantissa.  The
+                    string format is "major_version.minor_version".
+                    The major version is represented by a single capital alphabet letter.  The
+                    valid range is 1 to 26 mapping to 'A' to 'Z' (ie: '@' + i).  The minor version
+                    is the raw 8 bit number plus 1.
+
+                    Example: 0x0805 --> H.6     (8th letter of alphabet . minor + 1)
+
+                    An error in the range of the major value (0 or greater than 26) will report
+                    0.0 as the firmware revision.
+            */
             unsigned int value = pt_msg->getValue();
 
-            //  convert 0x[hibyte][lobyte] into lobyte.hibyte
-            //  i.e. 0x0208 = 8.02
-            double firmware = static_cast<double>(value & 0xff) +
-                              static_cast<double>((value >> 8) & 0xff) / 100;
+            int major = ( value >> 8 ) & 0x0ff;
+            int minor = value & 0x0ff;
 
-            pt_msg->setValue(firmware);
+            if ( major == 0 || major > 26 )
+            {
+                major = '0';
+                minor = 0;
+            }
+            else
+            {
+                major += '@';
+                ++minor;
+            }
+
+            char buffer[16];
+
+            int messageLength = _snprintf_s( buffer, 16, 15, "%c.%d", major, minor );
+
+            long long encodedValue = 0;
+
+            for ( int i = 0; i < messageLength; ++i )
+            {
+                encodedValue <<= 6;
+                encodedValue |= ( ( buffer[i] - ' ' ) & 0x03f );
+            }
+
+            pt_msg->setValue( static_cast<double>( encodedValue ) );
         }
     }
+}
+
+//  This overrides the processPoints function in dev_dnp, but calls it afterward to do the real processing
+void Cbc7020Device::processPoints( Protocol::Interface::pointlist_t &points )
+{
+    // preprocess any existing firmware point
+    processFirmwarePoint(points);
 
     //  do the final processing
     Inherited::processPoints(points);

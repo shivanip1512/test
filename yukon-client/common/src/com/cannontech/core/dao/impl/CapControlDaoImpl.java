@@ -237,14 +237,18 @@ public class CapControlDaoImpl  implements CapControlDao{
     
     public static String convertToFirmwareVersion(Double value) {
         
-        Long majorValue = new Long(value.longValue());
-        Double minorValue = (value - majorValue) * 100;
+        //  The firmware version is encoded as up to 8 six-bit ASCII characters
+        //  http://nemesis.lonestar.org/reference/telecom/codes/sixbit.html
+        long encodedValue = value.longValue();
 
         StringBuilder sb = new StringBuilder();
-        sb.append( majorValue > 0 ? (char)(65 + majorValue) : '0');
-        sb.append("." + minorValue.toString());
+        
+        while( encodedValue != 0 ) {
+            sb.append((char)(' ' + encodedValue % 0x40));            
+            encodedValue /= 0x40;
+        }
       
-        return sb.toString();
+        return sb.reverse().toString();
     }
     
     public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user) {
