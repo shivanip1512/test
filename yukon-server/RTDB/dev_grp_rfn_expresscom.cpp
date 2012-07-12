@@ -22,69 +22,98 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
     INT   nRet = NoError;
     string resultString;
 
-    /*
-     *  This method should only be called by the dev_base method
-     *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
-     *   That method prepares an outmessage for submission to the internals..
-     */
-    if(parse.getiValue("type") != ProtocolExpresscomType)
+    if( parse.isKeyValid("hexraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
     {
-        parse.setValue("type", ProtocolExpresscomType);
-        parse.parse();  // reparse for xcom specific data items....  This is required in case we got here from a group macro.
-    }
-
-    if( (nRet = extractGroupAddressing(pReq, parse, OutMessage, vgList, retList, resultString)) != NoError )
-    {
-        // extractGroupAddressing generates its own error return to the caller
-        return nRet;
-    }
-
-    CtiProtocolExpresscom  xcom;
-    xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
-    nRet = xcom.parseRequest(parse);
-
-    if(nRet != NoError || xcom.entries() <= 0)
-    {
-        if (nRet == NoError)
+        CtiString outputValue = parse.getsValue("hexraw");
+        if( (outputValue.size()%2) != 0 )
         {
-            nRet = BADPARAM;
+            outputValue.append("0");
+        }
+        std::vector<unsigned char> payload;
+        for(int i = 0; i < outputValue.size()/2; i++)
+        {
+            payload.push_back(strtoul(outputValue.substr(i*2,2).c_str(), NULL, 16));
         }
 
-        resultString = "Did not transmit Expresscom commands. Error " + CtiNumStr(nRet) + " - " + FormatError(nRet);
-        retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+        resultString = "Device: " + getName() + " -- Raw hex Command sent \n\"" + (string)outputValue + "\"";
 
-        string desc = "Route: RF Network";
-        string actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route. Error " + CtiNumStr(nRet) + " - " + FormatError(nRet);
-        vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+        using namespace Cti::Messaging;
+        using namespace Cti::Messaging::Rfn;
+        std::auto_ptr<StreamableMessage> message(RfnBroadcastMessage::createMessage(OutMessage->Priority, RfnBroadcastMessage::RfnMessageClass::DemandResponse, 20*60/*20 minutes*/, payload));
+
+        gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_RfnBroadcast, message);
+
+        resultString = "Device: " + getName() + " -- Raw hex Command sent \n\"" + (string)outputValue + "\"";
+        retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
 
         return nRet;
     }
-
-    xcom.setUseCRC(false);
-    xcom.setUseASCII(false);
-
-    std::vector<unsigned char> payload;
-    xcom.getFullMessage(payload);
-
-    using namespace Cti::Messaging;
-    using namespace Cti::Messaging::Rfn;
-    std::auto_ptr<StreamableMessage> message(RfnBroadcastMessage::createMessage(OutMessage->Priority, RfnBroadcastMessage::RfnMessageClass::DemandResponse, OutMessage->ExpirationTime - CtiTime::now().seconds(), payload));
-
-    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_RfnBroadcast, message);
-
-    reportAndLogControlStart(parse, vgList, OutMessage->Request.CommandStr);
-
-    resultString = string(" Expresscom command (") + CtiNumStr(payload.size()) + " bytes) sent on RF network";
-
-    if(!gConfigParms.isTrue("HIDE_PROTOCOL"))
+    else
     {
-        resultString += " \n" + xcom.getMessageAsString();
+
+        /*
+         *  This method should only be called by the dev_base method
+         *   ExecuteRequest(CtiReturnMsg*) (NOTE THE DIFFERENCE IN ARGS)
+         *   That method prepares an outmessage for submission to the internals..
+         */
+        if(parse.getiValue("type") != ProtocolExpresscomType)
+        {
+            parse.setValue("type", ProtocolExpresscomType);
+            parse.parse();  // reparse for xcom specific data items....  This is required in case we got here from a group macro.
+        }
+
+        if( (nRet = extractGroupAddressing(pReq, parse, OutMessage, vgList, retList, resultString)) != NoError )
+        {
+            // extractGroupAddressing generates its own error return to the caller
+            return nRet;
+        }
+
+        CtiProtocolExpresscom  xcom;
+        xcom.parseAddressing(parse);                    // The parse holds all the addressing for the group.
+        nRet = xcom.parseRequest(parse);
+
+        if(nRet != NoError || xcom.entries() <= 0)
+        {
+            if (nRet == NoError)
+            {
+                nRet = BADPARAM;
+            }
+
+            resultString = "Did not transmit Expresscom commands. Error " + CtiNumStr(nRet) + " - " + FormatError(nRet);
+            retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+
+            string desc = "Route: RF Network";
+            string actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route. Error " + CtiNumStr(nRet) + " - " + FormatError(nRet);
+            vgList.push_back(CTIDBG_new CtiSignalMsg(0, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+
+            return nRet;
+        }
+
+        xcom.setUseCRC(false);
+        xcom.setUseASCII(false);
+
+        std::vector<unsigned char> payload;
+        xcom.getFullMessage(payload);
+
+        using namespace Cti::Messaging;
+        using namespace Cti::Messaging::Rfn;
+        std::auto_ptr<StreamableMessage> message(RfnBroadcastMessage::createMessage(OutMessage->Priority, RfnBroadcastMessage::RfnMessageClass::DemandResponse, OutMessage->ExpirationTime - CtiTime::now().seconds(), payload));
+
+        gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_RfnBroadcast, message);
+
+        reportAndLogControlStart(parse, vgList, OutMessage->Request.CommandStr);
+
+        resultString = string(" Expresscom command (") + CtiNumStr(payload.size()) + " bytes) sent on RF network";
+
+        if(!gConfigParms.isTrue("HIDE_PROTOCOL"))
+        {
+            resultString += " \n" + xcom.getMessageAsString();
+        }
+
+        retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+
+        return nRet;
     }
-
-    retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
-
-    return nRet;
-
 }
 
 string CtiDeviceGroupRfnExpresscom::getSQLCoreStatement() const
