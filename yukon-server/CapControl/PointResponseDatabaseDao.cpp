@@ -133,7 +133,11 @@ bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databas
               << pointResponse.getDeviceId()
               << pointResponse.getPointId();
 
-    bool success = executeDbCommand(dbUpdater,(_CC_DEBUG & CC_DEBUG_DATABASE));
+    // require both of these flags to show the debug on an update
+    const bool showDebug = (_CC_DEBUG & (CC_DEBUG_DATABASE | CC_DEBUG_DYNPOINTRESPONSE))
+                            == (CC_DEBUG_DATABASE | CC_DEBUG_DYNPOINTRESPONSE);
+
+    bool success = executeDbCommand(dbUpdater, showDebug);
 
     if (success)
     {
