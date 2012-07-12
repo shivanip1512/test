@@ -420,7 +420,7 @@ bool CtiCCTwoWayPoints::setTwoWayStatusPointValue(long pointID, long value, CtiT
     }
     return retVal;
 }
-bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue(long pointID, long value, CtiTime timestamp)
+bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue(long pointID, double value, CtiTime timestamp)
 {
     bool retVal = false;
     if (_pointidPointtypeMap.find(pointID) == _pointidPointtypeMap.end())
@@ -433,7 +433,7 @@ bool CtiCCTwoWayPoints::setTwoWayAnalogPointValue(long pointID, long value, CtiT
     }
     return retVal;
 }
-bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(long pointID, long value, CtiTime timestamp)
+bool CtiCCTwoWayPoints::setTwoWayPulseAccumulatorPointValue(long pointID, double value, CtiTime timestamp)
 {
     bool retVal = false;
     if (_pointidPointtypeMap.find(pointID) == _pointidPointtypeMap.end())
@@ -495,7 +495,7 @@ static const TwoWayColumns[] =
     { ColumnMapping::Double,  "lowvoltage",             PointAttribute::LowVoltage             },
     { ColumnMapping::Double,  "deltavoltage",           PointAttribute::DeltaVoltage           },
     { ColumnMapping::Long,    "analoginputone",         PointAttribute::AnalogInput1           },
-    { ColumnMapping::Long,    "temp",                   PointAttribute::Temperature            },
+    { ColumnMapping::Double,  "temp",                   PointAttribute::Temperature            },
     { ColumnMapping::Long,    "rssi",                   PointAttribute::RSSI                   },
     { ColumnMapping::Long,    "ignoredreason",          PointAttribute::IgnoredReason          },
     { ColumnMapping::Long,    "totalopcount",           PointAttribute::TotalOpCount           },

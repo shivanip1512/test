@@ -34,8 +34,8 @@ public:
 
     bool setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId);
     bool setTwoWayStatusPointValue(long pointID, long value, CtiTime timestamp);
-    bool setTwoWayAnalogPointValue(long pointID, long value, CtiTime timestamp);
-    bool setTwoWayPulseAccumulatorPointValue(long pointID, long value, CtiTime timestamp);
+    bool setTwoWayAnalogPointValue(long pointID, double value, CtiTime timestamp);
+    bool setTwoWayPulseAccumulatorPointValue(long pointID, double value, CtiTime timestamp);
 
     CtiCCTwoWayPoints& addAllCBCPointsToRegMsg(std::set<long>& pointList);
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
