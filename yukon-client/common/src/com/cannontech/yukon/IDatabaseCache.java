@@ -25,7 +25,6 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LiteSeasonSchedule;
-import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteTOUDay;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
