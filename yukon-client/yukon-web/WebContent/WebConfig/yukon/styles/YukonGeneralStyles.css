@@ -2036,8 +2036,8 @@ button.wideButton {
 }
 
 /* sugar */
-a { color: #0066CC; }
-a:visited { color: #002288; }
+.StandardLayout a { color: #0066CC; } */
+.StandardLayout a:visited { color: #002288; }
 
 .filters label {
 	margin-right: 8px;
