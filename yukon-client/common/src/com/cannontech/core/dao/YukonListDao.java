@@ -13,7 +13,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
  */
 public interface YukonListDao {
 
-    public boolean isListEntryValid(int entryID_, String entry_);
+    public boolean isListEntryValid(int definitionId, String entryText);
 
     public boolean areSameInYukon(int entryID1, int entryID2);
 

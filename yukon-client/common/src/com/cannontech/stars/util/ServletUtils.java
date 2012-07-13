@@ -19,6 +19,8 @@ import org.apache.commons.lang.Validate;
 import org.joda.time.Instant;
 
 import com.cannontech.common.exception.NotLoggedInException;
+import com.cannontech.core.service.PhoneNumberFormattingService;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
@@ -30,7 +32,6 @@ import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.util.PhoneNumber;
 import com.cannontech.util.ServletUtil;
 
 public class ServletUtils {
@@ -172,36 +173,29 @@ public class ServletUtils {
      * Strips a phone number down to a simple string of digits
      */
     public static String formatPhoneNumberForSearch(String phoneNo) throws WebClientException {
-        phoneNo = phoneNo.trim();
-        if (phoneNo.equals("")) {
-            return "";
-        }
 
+        phoneNo = formatPhoneNumberForStorage(phoneNo);
+        
         // get rid of US country code (long distance)
-        if (phoneNo.startsWith("1")) {
+        if (phoneNo.startsWith("1") && phoneNo.length() == 11) {
             phoneNo = phoneNo.replaceFirst("1", "");
         }
 
-        return formatPhoneNumberForStorage(phoneNo);
+        return phoneNo;
     }
 
     public static String formatPhoneNumberForStorage(String phoneNo) throws WebClientException {
-        phoneNo = phoneNo.trim();
-        if (phoneNo.equals("")) {
+        if (phoneNo.trim().equals("")) {
             return "";
         }
 
-        char[] checkDigits = phoneNo.toCharArray();
-        for (char j : checkDigits) {
-            if (!Character.isDigit(j) && j != '-' && j != 'x' && j != '(' && j != ')' && j != ' ') {
-                throw new WebClientException("Invalid phone number format '"+ phoneNo
-                                             + "'.  The phone number contains non-digits.");
-            }
+        PhoneNumberFormattingService phoneNumberFormattingService = YukonSpringHook.getBean(PhoneNumberFormattingService.class);
+        if(phoneNumberFormattingService.isHasInvalidCharacters(phoneNo)){
+            throw new WebClientException("Invalid phone number format '"+ phoneNo + "'.  The phone number contains non-digits.");
         }
-
-        return PhoneNumber.extractDigits(phoneNo);
+        return phoneNumberFormattingService.strip(phoneNo);
     }
-
+    
     public static String formatPin(String pin) throws WebClientException {
         pin = pin.trim();
         if (pin.equals("")) {

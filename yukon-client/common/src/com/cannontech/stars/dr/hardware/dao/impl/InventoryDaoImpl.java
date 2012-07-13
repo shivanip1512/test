@@ -766,7 +766,7 @@ public class InventoryDaoImpl implements InventoryDao {
             whereClause.add(new SqlStatementBuilder("CA.AccountNumber").startsWith(inventorySearch.getAccountNumber()));
         }
         if (usePhone) {
-            whereClause.add(new SqlStatementBuilder("CN.Notification").startsWith(phoneNumberFormattingService.strip(inventorySearch.getPhoneNumber())));
+            whereClause.add(new SqlStatementBuilder("CN.Notification").contains(phoneNumberFormattingService.strip(inventorySearch.getPhoneNumber())));
         }
         if (StringUtils.isNotBlank(inventorySearch.getLastName())) {
             whereClause.add(new SqlStatementBuilder("CON.ContLastName").startsWith(inventorySearch.getLastName()));

@@ -237,10 +237,6 @@ public class Validator
 		return true;
 	}
 
-	public static boolean isPhoneNumber(String phoneNumber)
-	{
-		return isNumber(PhoneNumber.strip(phoneNumber));
-	}
 
 	public static boolean isMacAddress(String macAddress) {
         String  regex = "([\\da-fA-F]{2}:){5}[\\da-fA-F]{2}";

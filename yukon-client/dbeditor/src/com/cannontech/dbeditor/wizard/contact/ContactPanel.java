@@ -24,9 +24,12 @@ import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.ContactNotification;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 
 
@@ -50,6 +53,7 @@ public class ContactPanel extends com.cannontech.common.gui.util.DataInputPanel 
 	private javax.swing.JTextField ivjJTextFieldFirstName = null;
 	private javax.swing.JTextField ivjJTextFieldLastName = null;
 	private javax.swing.JButton ivjJButtonAddress = null;
+
 
 /**
  * DestinationLocationInfoPanel constructor comment.
@@ -99,15 +103,15 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {1}
 
-	if (e.getSource() == getJTextFieldLastName() )
+	if (e.getSource() == getJTextFieldLastName())
 	{	
-		jTextField_CaretUpdate( e );
+		jTextField_CaretUpdate(e);
 		fireInputUpdate();
 	}		
 
-	if (e.getSource() == getJTextFieldFirstName() )
+	if (e.getSource() == getJTextFieldFirstName())
 	{	
-		jTextField_CaretUpdate( e );
+		jTextField_CaretUpdate(e);
 		fireInputUpdate();
 	}		
 	
@@ -433,8 +437,8 @@ private javax.swing.JComboBox getJComboBoxNotifyType() {
 			    
 			});
 			
-			for(YukonListEntry entry : listOfEntries ) {
-                ivjJComboBoxNotifyType.addItem( entry );
+			for(YukonListEntry entry : listOfEntries) {
+                ivjJComboBoxNotifyType.addItem(entry);
 			}
 			
 		} catch (java.lang.Throwable ivjExc) {
@@ -714,7 +718,7 @@ private javax.swing.JTable getJTableEmail() {
 			ivjJTableEmail.setBounds(0, 0, 200, 200);
 			// user code begin {1}
 			
-			ivjJTableEmail.setModel( getTableModel() );
+			ivjJTableEmail.setModel(getTableModel());
 			
 			//Do any column specific initialization here, with the exception of the gear column.
 			TableColumn notifColumn = getJTableEmail().getColumnModel().getColumn(ContactNotificationTableModel.COLUMN_NOTIFICATION);
@@ -733,39 +737,39 @@ private javax.swing.JTable getJTableEmail() {
 					fireInputUpdate();
 				};
 			});
-			txtFieldEditor.setHorizontalAlignment( JTextField.LEFT );
+			txtFieldEditor.setHorizontalAlignment(JTextField.LEFT);
 			DefaultCellEditor notifEd = new DefaultCellEditor(txtFieldEditor);
 			notifEd.setClickCountToStart(2);
 			
 			JComboBox typeCombo = new JComboBox();
 			ComboBoxTableRenderer typeRenderer = new ComboBoxTableRenderer();
-			for( int i = 0; i < getJComboBoxNotifyType().getItemCount(); i++ )
+			for(int i = 0; i < getJComboBoxNotifyType().getItemCount(); i++)
 			{
-				typeCombo.addItem( getJComboBoxNotifyType().getItemAt(i) );
-				typeRenderer.addItem( getJComboBoxNotifyType().getItemAt(i) );
+				typeCombo.addItem(getJComboBoxNotifyType().getItemAt(i));
+				typeRenderer.addItem(getJComboBoxNotifyType().getItemAt(i));
 			}
 
 			//set up the renderer and editor for the Disabled column
 			JComboBox disabledCombo = new JComboBox();
 			ComboBoxTableRenderer disabledRenderer = new ComboBoxTableRenderer();			
-			if( disabledCombo.getRenderer() instanceof JLabel )
-				((JLabel)disabledCombo.getRenderer()).setHorizontalAlignment( JTextField.CENTER );
-			if( disabledRenderer.getRenderer() instanceof JLabel )
-				((JLabel)disabledRenderer.getRenderer()).setHorizontalAlignment( JTextField.CENTER );
+			if (disabledCombo.getRenderer() instanceof JLabel)
+				((JLabel)disabledCombo.getRenderer()).setHorizontalAlignment(JTextField.CENTER);
+			if (disabledRenderer.getRenderer() instanceof JLabel)
+				((JLabel)disabledRenderer.getRenderer()).setHorizontalAlignment(JTextField.CENTER);
 			
-			disabledCombo.addItem( CtiUtilities.trueChar.toString() );
-			disabledCombo.addItem( CtiUtilities.falseChar.toString() );
-			disabledRenderer.addItem( CtiUtilities.trueChar.toString() );
-			disabledRenderer.addItem( CtiUtilities.falseChar.toString() );
+			disabledCombo.addItem(CtiUtilities.trueChar.toString());
+			disabledCombo.addItem(CtiUtilities.falseChar.toString());
+			disabledRenderer.addItem(CtiUtilities.trueChar.toString());
+			disabledRenderer.addItem(CtiUtilities.falseChar.toString());
 
 			//add listeners to each combobox so we know when the values change
-			typeCombo.addActionListener( new java.awt.event.ActionListener() {
+			typeCombo.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					fireInputUpdate();
 				}
 			});
 
-			disabledCombo.addActionListener( new java.awt.event.ActionListener() {
+			disabledCombo.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					fireInputUpdate();
 				}
@@ -773,13 +777,13 @@ private javax.swing.JTable getJTableEmail() {
 
 
 			//Set all renderer and editor components for each column
-			notifColumn.setCellEditor( notifEd );
+			notifColumn.setCellEditor(notifEd);
 
-			typeColumn.setCellRenderer( typeRenderer );
-			typeColumn.setCellEditor( new DefaultCellEditor(typeCombo) );
+			typeColumn.setCellRenderer(typeRenderer);
+			typeColumn.setCellEditor(new DefaultCellEditor(typeCombo));
 
-			disabledColumn.setCellRenderer( disabledRenderer  );			
-			disabledColumn.setCellEditor( new DefaultCellEditor(disabledCombo) );
+			disabledColumn.setCellRenderer(disabledRenderer );			
+			disabledColumn.setCellEditor(new DefaultCellEditor(disabledCombo));
 
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -803,7 +807,7 @@ private javax.swing.JTextField getJTextFieldAddress() {
 			ivjJTextFieldAddress = new javax.swing.JTextField();
 			ivjJTextFieldAddress.setName("JTextFieldAddress");
 			ivjJTextFieldAddress.setToolTipText("Enter an e-mail address, phone number, etc.");
-			ivjJTextFieldAddress.setDocument(	new TextFieldDocument( 130 ) );
+			ivjJTextFieldAddress.setDocument(	new TextFieldDocument(130));
 			// user code begin {1}
 
 			// user code end
@@ -873,7 +877,7 @@ private javax.swing.JTextField getJTextFieldLastName() {
  */
 private ContactNotificationTableModel getTableModel() 
 {
-	if( tableModel == null )
+	if (tableModel == null)
 		tableModel = new ContactNotificationTableModel();
 		
 	return tableModel;
@@ -889,33 +893,38 @@ public Object getValue(Object val)
 {
 	Contact cnt = null;
 	
-	if( val == null )
+	if (val == null)
 		cnt = new Contact();
 	else
 		cnt = (Contact)val;
 
 	//make sure cells get saved even though they might be currently being edited
-	if( getJTableEmail().isEditing() ) getJTableEmail().getCellEditor().stopCellEditing();
+	if (getJTableEmail().isEditing()) getJTableEmail().getCellEditor().stopCellEditing();
 
 	//HAVE THE ADD() METHOD GET THE NEW CONTACT_ID!!!!		
-	//cn.getContact().setContactID( recID );
-	cnt.getContact().setContFirstName( getJTextFieldFirstName().getText() );
-	cnt.getContact().setContLastName( getJTextFieldLastName().getText() );
+	//cn.getContact().setContactID(recID);
+	cnt.getContact().setContFirstName(getJTextFieldFirstName().getText());
+	cnt.getContact().setContLastName(getJTextFieldLastName().getText());
 	
-	cnt.getContact().setLogInID( new Integer( 
-		((LiteYukonUser)getJComboBoxLoginUser().getSelectedItem()).getLiteID()) );
+	cnt.getContact().setLogInID(new Integer(
+		((LiteYukonUser)getJComboBoxLoginUser().getSelectedItem()).getLiteID()));
 
-
-	Vector holder = new Vector();
-	for( int i = 0; i < getTableModel().getRowCount(); i++ )
-	{
+	YukonListDao yukonListDao = DaoFactory.getYukonListDao();
+	PhoneNumberFormattingService phoneService = YukonSpringHook.getBean(PhoneNumberFormattingService.class);
+	Vector<ContactNotification> holder = new Vector<ContactNotification>();
+	for(int i = 0; i < getTableModel().getRowCount(); i++) {
 		ContactNotification cn = getTableModel().getContactNotificationRow(i);
-		cn.setOrdering( new Integer(i) );
+		cn.setOrdering(new Integer(i));
+		
+		/** Strip anything but digits for phone number types */
+		if (yukonListDao.isPhoneNumber(cn.getNotificationCatID()) ||  yukonListDao.isFax(cn.getNotificationCatID())){
+		  cn.setNotification(phoneService.strip(cn.getNotification()));
+		}
 		holder.addElement(cn);
 	}
 	
 	cnt.getContactNotifVect().clear();
-	cnt.getContactNotifVect().addAll( holder );
+	cnt.getContactNotifVect().addAll(holder);
 
 	return cnt;
 }
@@ -929,7 +938,7 @@ private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	com.cannontech.clientutils.CTILogger.error(exception.getMessage(), exception);;
 }
 
 
@@ -944,7 +953,7 @@ private void initConnections() throws java.lang.Exception {
 	getJTextFieldLastName().addCaretListener(this);
 	getJComboBoxLoginUser().addActionListener(this);
 	getJCheckBoxDisable().addActionListener(this);
-	getJTableEmail().getSelectionModel().addListSelectionListener( this );
+	getJTableEmail().getSelectionModel().addListSelectionListener(this);
 
 	// user code end
 	getJButtonAdd().addActionListener(this);
@@ -955,15 +964,15 @@ private void initConnections() throws java.lang.Exception {
 	getJButtonAddress().addActionListener(this);
 }
 
-private void initUserCombo( int currID )
+private void initUserCombo(int currID)
 {
 	int[] availUserids =
-		com.cannontech.database.db.contact.Contact.findAvailableUserIDs( currID );
+		com.cannontech.database.db.contact.Contact.findAvailableUserIDs(currID);
 
-	for( int i = 0; i < availUserids.length; i++ )
+	for(int i = 0; i < availUserids.length; i++)
 	{
 		getJComboBoxLoginUser().addItem(
-			DaoFactory.getYukonUserDao().getLiteYukonUser(availUserids[i]) );
+			DaoFactory.getYukonUserDao().getLiteYukonUser(availUserids[i]));
 	}
 
 }
@@ -1066,29 +1075,25 @@ constraintsJButtonAddress.gridheight = 2;
  * This method was created in VisualAge.
  * @return boolean
  */
-public boolean isInputValid() 
-{
-	if( getJTextFieldFirstName().getText() == null 
-		 || getJTextFieldFirstName().getText().length() <= 0 )
-	{
+public boolean isInputValid() {
+	if (getJTextFieldFirstName().getText() == null 
+		 || getJTextFieldFirstName().getText().length() <= 0) {
 		setErrorString("The First Name text field must be filled in");
 		return false;
 	}
 
-	if( getJTextFieldLastName().getText() == null 
-		 || getJTextFieldLastName().getText().length() <= 0 )
-	{
+	if (getJTextFieldLastName().getText() == null 
+		 || getJTextFieldLastName().getText().length() <= 0) {
 		setErrorString("The Last Name text field must be filled in");
 		return false;
 	}
 	
 	//make sure cells get saved even though they might be currently being edited
-	if( getJTableEmail().isEditing() ) getJTableEmail().getCellEditor().stopCellEditing();
+	if (getJTableEmail().isEditing()) getJTableEmail().getCellEditor().stopCellEditing();
 
-	String retVal = null;
-	if( (retVal = isAllEntryFieldsValid()) != null )
-	{
-		setErrorString("The row inside the table with the value of '" + retVal + "'is invalid");
+	String entryText = isAllEntryFieldsValid();
+	if (entryText != null) {
+		setErrorString("The row inside the table with the value of '" + entryText + "'is invalid");
 		return false;
 	}
 
@@ -1101,21 +1106,25 @@ public boolean isInputValid()
  */
 public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
+    YukonListDao yukonListDao = DaoFactory.getYukonListDao();
 	Object o = getJComboBoxNotifyType().getSelectedItem();
+	PhoneNumberFormattingService phoneService = YukonSpringHook.getBean(PhoneNumberFormattingService.class);
 	
-	if( o != null && (o instanceof YukonListEntry) )
+	if (o != null && (o instanceof YukonListEntry))
 	{	
 		YukonListEntry entry = (YukonListEntry)o;
-		
 		ContactNotification cn = new ContactNotification();
-		cn.setNotification( getJTextFieldAddress().getText() );
-		cn.setNotificationCatID( new Integer(entry.getEntryID()) );
-		cn.setDisableFlag( 
-				getJCheckBoxDisable().isSelected() ? "Y" : "N"  );
-
-		cn.setOrdering( new Integer(getTableModel().getRowCount()) );
-
-		getTableModel().addRowValue( cn );	
+		cn.setNotificationCatID(new Integer(entry.getEntryID()));
+		String notification =  getJTextFieldAddress().getText();
+		
+		/** Strip anything but digits for phone number types */
+        if (yukonListDao.isPhoneNumber(cn.getNotificationCatID()) ||  yukonListDao.isFax(cn.getNotificationCatID())){
+            notification = phoneService.removeNonDigits(notification);
+        }
+		cn.setNotification(notification) ;
+		cn.setDisableFlag(getJCheckBoxDisable().isSelected() ? "Y" : "N" );
+		cn.setOrdering(new Integer(getTableModel().getRowCount()));
+		getTableModel().addRowValue(cn);	
 		getTableModel().fireTableDataChanged();
 		fireInputUpdate();
 	}
@@ -1136,10 +1145,10 @@ public void disableFlag_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 {
 
 	// if no rows exist, clear the selection
-	if( getTableModel().getRowCount() == 0 || getJTableEmail().getSelectedRow() == -1)
+	if (getTableModel().getRowCount() == 0 || getJTableEmail().getSelectedRow() == -1)
 		return;
 	ContactNotification currentTableSelection = getTableModel().getContactNotificationRow(getJTableEmail().getSelectedRow());
-	currentTableSelection.setDisableFlag( getJCheckBoxDisable().isSelected() ? "Y" : "N"  );
+	currentTableSelection.setDisableFlag(getJCheckBoxDisable().isSelected() ? "Y" : "N" );
 	getTableModel().fireTableDataChanged();
 
 	return;
@@ -1152,17 +1161,17 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 {
 	// store the previous selected row
 	int newSelectedRow = getJTableEmail().getSelectedRow() - 1;
-    if( newSelectedRow == -1 )
+    if (newSelectedRow == -1)
         newSelectedRow = 0;
 
 	// delete the row
     int row = getJTableEmail().getSelectedRow();
 
-    if( row != -1){
-        getTableModel().removeRowValue( row );
+    if (row != -1){
+        getTableModel().removeRowValue(row);
         
     	// if no rows exist, clear the selection
-    	if( getTableModel().getRowCount() == 0 )
+    	if (getTableModel().getRowCount() == 0)
     		getJTableEmail().getSelectionModel().clearSelection();
     	else
     	{
@@ -1180,7 +1189,7 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
  */
 public void jTableEmail_SelectionModel(javax.swing.ListSelectionModel arg1) 
 {
-	getJButtonRemove().setEnabled( arg1.getMinSelectionIndex() >= 0 );
+	getJButtonRemove().setEnabled(arg1.getMinSelectionIndex() >= 0);
 
 	fireInputUpdate();
 			
@@ -1191,45 +1200,36 @@ private void checkEntry()
 {
 	Object o = getJComboBoxNotifyType().getSelectedItem();
 	
-	if( o != null && (o instanceof YukonListEntry) )
+	if (o != null && (o instanceof YukonListEntry))
 	{
 		YukonListEntry entry = (YukonListEntry)o;
 		
 		//is there a good input into the text field?		
 		getJButtonAdd().setEnabled(
-				DaoFactory.getYukonListDao().isListEntryValid( 
+				DaoFactory.getYukonListDao().isListEntryValid(
 						entry.getYukonDefID(),
-						getJTextFieldAddress().getText()) );
+						getJTextFieldAddress().getText()));
 	}	
 } 
 
 /**
- * Returns null if the EntryFields are good, else the first Notifcation string
- * that violates validity is returned.
- * 
+ * Returns null if the EntryFields are good, otherwise the value 
+ * of the first invalid notification is returned.
  */
-private String isAllEntryFieldsValid()
-{
-	for( int i = 0; i < getTableModel().getRowCount(); i++ )
-	{
-		ContactNotification notif =
-			getTableModel().getContactNotificationRow(i);
-		
-		YukonListEntry listEntry = (YukonListEntry)
-			getTableModel().getValueAt( i, ContactNotificationTableModel.COLUMN_TYPE );
+private String isAllEntryFieldsValid() {
+    YukonListDao yukonListDao = DaoFactory.getYukonListDao();
+	for(int i = 0; i < getTableModel().getRowCount(); i++) {
+		ContactNotification notif = getTableModel().getContactNotificationRow(i);
+		YukonListEntry listEntry = (YukonListEntry) getTableModel().getValueAt(i, ContactNotificationTableModel.COLUMN_TYPE);
 
 		//is there a good input into the text field?
-		if( !DaoFactory.getYukonListDao().isListEntryValid(
-						listEntry.getYukonDefID(),
-						notif.getNotification()) )
-		{
+        if (!yukonListDao.isListEntryValid(listEntry.getYukonDefID(), notif.getNotification())) {
 			return notif.getNotification();  //failure
 		}
 	}
 	
 	return null;  //success
 } 
-
 
 /**
  * Comment
@@ -1267,20 +1267,20 @@ public static void main(java.lang.String[] args) {
 }
 
 
-private void setSelectedLogin( Contact cnt )
+private void setSelectedLogin(Contact cnt)
 {
 	initUserCombo(
 		(cnt == null
 			? UserUtils.USER_DEFAULT_ID
-			: cnt.getContact().getLogInID().intValue()) );
+			: cnt.getContact().getLogInID().intValue()));
 
-	for( int i = 0; i < getJComboBoxLoginUser().getItemCount(); i++ )
+	for(int i = 0; i < getJComboBoxLoginUser().getItemCount(); i++)
 	{
 		LiteYukonUser user = (LiteYukonUser)getJComboBoxLoginUser().getItemAt(i);
-		if( cnt == null 
-			|| user.getLiteID() == cnt.getContact().getLogInID().intValue() )
+		if (cnt == null 
+			|| user.getLiteID() == cnt.getContact().getLogInID().intValue())
 		{
-			getJComboBoxLoginUser().setSelectedIndex( i );
+			getJComboBoxLoginUser().setSelectedIndex(i);
 			break;	
 		}
 	}	
@@ -1293,26 +1293,26 @@ private void setSelectedLogin( Contact cnt )
  */
 public void setValue(Object val) 
 {
-	if( val == null )
+	if (val == null)
 	{
-		setSelectedLogin( null );
+		setSelectedLogin(null);
 		return;
 	}
 	
 	Contact cnt = (Contact)val;
 
-	getJTextFieldFirstName().setText( cnt.getContact().getContFirstName() );
-	getJTextFieldLastName().setText( cnt.getContact().getContLastName() );
+	getJTextFieldFirstName().setText(cnt.getContact().getContFirstName());
+	getJTextFieldLastName().setText(cnt.getContact().getContLastName());
 
 	//select the login ID
-	setSelectedLogin( cnt );
+	setSelectedLogin(cnt);
 
 	
-	for( int i = 0; i < cnt.getContactNotifVect().size(); i++ )
+	for(int i = 0; i < cnt.getContactNotifVect().size(); i++)
 	{
 		ContactNotification cntNotif = (ContactNotification)cnt.getContactNotifVect().get(i);
 
-		getTableModel().addRowValue( cntNotif );
+		getTableModel().addRowValue(cntNotif);
 	}
 	getTableModel().fireTableDataChanged();
 
@@ -1321,7 +1321,7 @@ public void setValue(Object val)
 public void setFirstFocus() 
 {
     // Make sure that when its time to display this panel, the focus starts in the top component
-    javax.swing.SwingUtilities.invokeLater( new Runnable() 
+    javax.swing.SwingUtilities.invokeLater(new Runnable() 
         { 
         public void run() 
             { 
@@ -1337,7 +1337,7 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 {
 	javax.swing.ListSelectionModel lsm = (javax.swing.ListSelectionModel) event.getSource();
 	
-	if( lsm.isSelectionEmpty() )
+	if (lsm.isSelectionEmpty())
 	{
 		getJButtonRemove().setEnabled(false);
 		return;

@@ -82,23 +82,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("ORDER BY ca.AccountNumber");
 		
 		List<Integer> accountIds = yukonJdbcOperations.query(sql, new IntegerRowMapper());
-		
-		if (accountIds.size() <= 0 && phoneNumber.length() == 10) {
-			
-			sql = new SqlStatementBuilder();
-			sql.append("SELECT ca.AccountId");
-			sql.append("FROM CustomerAccount ca");
-			sql.append("JOIN ECToAccountMapping ectam ON (ca.AccountId = ectam.AccountId)");
-			sql.append("JOIN Customer cust ON (ca.CustomerId = cust.CustomerId)");
-			sql.append("JOIN ContactNotification cn ON (cust.PrimaryContactId = cn.ContactId)");
-			sql.append("WHERE cn.Notification").endsWith(phoneNumber.substring(0, 3) + "-" + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6));
-			sql.append("AND cn.NotificationCategoryId").in(phoneNumberNotificationCategories);
-			sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
-			sql.append("ORDER BY ca.AccountNumber");
-			
-			accountIds = yukonJdbcOperations.query(sql, new IntegerRowMapper());
-		}
-		
+				
 		return accountIds;
 	}
 	

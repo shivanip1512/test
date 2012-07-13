@@ -21,6 +21,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonListEntryRowMapper;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -73,8 +74,9 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         }
     }
 
-    private AsyncDynamicDataSource asyncDynamicDataSource;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
 
     // Base Queries
     private SqlStatementBuilder selectYukonListEntriesSql = new SqlStatementBuilder();
@@ -262,25 +264,21 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
     }
     
     // Contact YukonListEntry Helper Methods
-    public boolean isListEntryValid( int entryID_, String entry_ )
-	{
-		switch( entryID_ )
-		{
-			case YukonListEntryTypes.YUK_DEF_ID_EMAIL:
-				return Validator.isEmailAddress( entry_ );
-				 
-			case YukonListEntryTypes.YUK_DEF_ID_PHONE:
-				return Validator.isPhoneNumber( entry_ );
-			
-			case YukonListEntryTypes.YUK_DEF_ID_PIN:
-				return Validator.isNumber( entry_ );
-			
-			
-			default: //what is this?? Must be good!!
-				return true;
-		}
-
-	}
+    public boolean isListEntryValid(int definitionId, String entry) {
+        boolean isValidEntry = true;
+        if (definitionId > 0) {
+            if (isFax(definitionId)) {
+                isValidEntry = !phoneNumberFormattingService.isHasInvalidCharacters(entry);
+            } else if (isPhoneNumber(definitionId)) {
+                isValidEntry = !phoneNumberFormattingService.isHasInvalidCharacters(entry);
+            } else if (YukonListEntryTypes.YUK_DEF_ID_EMAIL == definitionId) {
+                isValidEntry = Validator.isEmailAddress(entry);
+            } else if (YukonListEntryTypes.YUK_DEF_ID_PIN == definitionId) {
+                isValidEntry = Validator.isNumber(entry);
+            }
+        }
+        return isValidEntry;
+    }
 	
 	public boolean areSameInYukon(int entryID1, int entryID2) {
 		YukonListEntry entry1 = getYukonListEntry( entryID1 );
@@ -382,15 +380,5 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 
         return entries;
     }
-    
-    // DI Setters
-    @Autowired
-    public void setAsyncDynamicDataSource(AsyncDynamicDataSource asyncDynamicDataSource) {
-        this.asyncDynamicDataSource = asyncDynamicDataSource;
-    }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
+
 }

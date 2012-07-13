@@ -62,6 +62,7 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -179,11 +180,13 @@ public class InventoryController {
         boolean hasWarnings = false;
         
         if (StringUtils.isNotBlank(inventorySearch.getPhoneNumber())) {
-            String phoneNo =  phoneNumberFormattingService.strip(inventorySearch.getPhoneNumber());
-            if("".equals(phoneNo)){
+            try{
+                String phoneNumber = ServletUtils.formatPhoneNumberForSearch(inventorySearch.getPhoneNumber());
+                inventorySearch.setPhoneNumber(phoneNumber);   
+            }catch(WebClientException e){
                 MessageSourceResolvable invalidPhoneNumberWarning = new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.invalidPhoneNumber");
-                flashScope.setError(Collections.singletonList(invalidPhoneNumberWarning));
-                hasWarnings = true;   
+                flashScope.setWarning(Collections.singletonList(invalidPhoneNumberWarning));
+                hasWarnings = true; 
             }
         }
                 
