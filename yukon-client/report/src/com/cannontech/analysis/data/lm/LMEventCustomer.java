@@ -7,14 +7,14 @@
 package com.cannontech.analysis.data.lm;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
-import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.stars.util.SettlementConfigFuncs;
 
@@ -75,12 +75,8 @@ public class LMEventCustomer
 	{
 		if( deviationPeriods == null)
 		{
-			int ecID = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
-			LiteSettlementConfig lsc = SettlementConfigFuncs.getLiteSettlementConfig(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_ALLOWED_VIOLATIONS_STRING);
-			if( lsc != null)
-				deviationPeriods = Integer.valueOf(lsc.getFieldValue());
-			else
-				deviationPeriods = new Integer(5);	//default value?  This HOPEFULLY will never happen
+			String fieldValue = SettlementConfigFuncs.getLiteSettlementConfig(SettlementConfig.HECO_ALLOWED_VIOLATIONS_STRING);
+			deviationPeriods = Integer.valueOf(fieldValue);
 		}
 		return deviationPeriods;
 	}
@@ -93,12 +89,8 @@ public class LMEventCustomer
 	{
 		if( eriRate == null)
 		{
-			int ecID = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
-			LiteSettlementConfig lsc = SettlementConfigFuncs.getLiteSettlementConfig(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_ERI_RATE_STRING);
-			if( lsc != null)
-				eriRate = Double.valueOf(lsc.getFieldValue());
-			else
-				eriRate= new Double(.25);	//default value?  This HOPEFULLY will never happen
+			String fieldValue = SettlementConfigFuncs.getLiteSettlementConfig(SettlementConfig.HECO_ERI_RATE_STRING);
+			eriRate = Double.valueOf(fieldValue);
 		}
 		return eriRate;
 	}
@@ -203,15 +195,12 @@ public class LMEventCustomer
             {
     			if( getMaxKW().doubleValue() > 0)
     			{
-    				int ecID = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue()).getEnergyCompanyID();
-    				Vector configs = SettlementConfigFuncs.getLiteSettlementConfigs(ecID, YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
+    				List<Pair<Integer, String>> demandCharges = SettlementConfigFuncs.getLiteSettlementConfigs(SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
     				double demandCharge = 0;
     				LiteCustomer liteCust = DaoFactory.getCustomerDao().getLiteCustomer(getCustomerID().intValue());
-    				for (int i = 0; i < configs.size(); i++)
-    				{
-    					LiteSettlementConfig lsc = (LiteSettlementConfig)configs.get(i);
-    					if(lsc.getRefEntryID() == liteCust.getRateScheduleID())
-    						demandCharge = Double.valueOf(lsc.getFieldValue()).doubleValue();
+    				for (Pair<Integer, String> pair : demandCharges) {
+    					if(pair.getFirst() == liteCust.getRateScheduleID())
+    						demandCharge = Double.valueOf(pair.getSecond());
     				}
     							
     				excessFirmServiceLevelCharge = new Double( -(getMaxKW().doubleValue()) * 2d * demandCharge);

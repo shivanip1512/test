@@ -5,7 +5,7 @@ import com.cannontech.database.data.lite.LiteSettlementConfig;
 
 public interface SettlementConfigDao {
     
-    public void save(LiteSettlementConfig liteSettlementConfig, int settlementYukonDefId, int settlementEntryId, int availRateListEntryId);
+    public void save(LiteSettlementConfig liteSettlementConfig, int availRateListEntryId);
 
     public void delete(LiteSettlementConfig liteSettlementConfig);
     

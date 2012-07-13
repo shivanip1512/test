@@ -19,9 +19,7 @@ public class LiteSettlementConfig extends LiteBase {
 	
 	private String fieldName = CtiUtilities.STRING_NONE;
 	private String fieldValue = CtiUtilities.STRING_NONE;
-	private int yukonDefID = 0;
 	private String desc = CtiUtilities.STRING_NONE;
-	private int entryID = 0;
 	private int refEntryID = 0;
 	
 	
@@ -35,13 +33,11 @@ public class LiteSettlementConfig extends LiteBase {
 		setLiteID( configID_);
 	}
 	
-	public LiteSettlementConfig(int configID_, String fieldName_, String fieldValue_, int yukDefID_, String desc_, int entryID_, int refEntryID_) {
+	public LiteSettlementConfig(int configID_, String fieldName_, String fieldValue_, String desc_, int refEntryID_) {
 		this(configID_);
 		setFieldName(fieldName_);
 		setFieldValue(fieldValue_);
-		setYukonDefID(yukDefID_);
 		setDescription(desc_);
-		setEntryID(entryID_);
 		setRefEntryID(refEntryID_);		
 	}
 	
@@ -59,7 +55,7 @@ public class LiteSettlementConfig extends LiteBase {
 			conn = PoolManager.getInstance().getConnection( dbAlias );
 			
 			SqlStatement stat = new SqlStatement(
-					"SELECT FieldName, FieldValue, YukonDefID, Description, EntryID, RefEntryID " +
+					"SELECT FieldName, FieldValue, Description, RefEntryID " +
 					" FROM " + SettlementConfig.TABLE_NAME +
 					" WHERE ConfigID = " + getConfigID(),
 					conn );
@@ -73,10 +69,8 @@ public class LiteSettlementConfig extends LiteBase {
 			
 			setFieldName( objs[0].toString() );
 			setFieldValue( objs[1].toString() );
-			setYukonDefID( ((java.math.BigDecimal) objs[2]).intValue() );
-			setDescription( objs[3].toString());
-			setEntryID( ((java.math.BigDecimal) objs[4]).intValue() );
-			setRefEntryID( ((java.math.BigDecimal) objs[5]).intValue() );
+			setDescription( objs[2].toString());
+			setRefEntryID( ((java.math.BigDecimal) objs[3]).intValue() );
 		}
 		catch (Exception e) {
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
@@ -87,14 +81,6 @@ public class LiteSettlementConfig extends LiteBase {
 			}
 			catch (java.sql.SQLException e) {}
 		}
-	}
-
-	/**
-	 * @return
-	 */
-	public int getEntryID()
-	{
-		return entryID;
 	}
 
 	/**
@@ -122,22 +108,6 @@ public class LiteSettlementConfig extends LiteBase {
 	}
 
 	/**
-	 * @return
-	 */
-	public int getYukonDefID()
-	{
-		return yukonDefID;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setEntryID(int i)
-	{
-		entryID = i;
-	}
-
-	/**
 	 * @param i
 	 */
 	public void setRefEntryID(int i)
@@ -161,14 +131,6 @@ public class LiteSettlementConfig extends LiteBase {
 		fieldValue = string;
 	}
 
-	/**
-	 * @param i
-	 */
-	public void setYukonDefID(int i)
-	{
-		yukonDefID = i;
-	}
-
 	public String getDescription()
 	{
 		return desc;
@@ -183,13 +145,11 @@ public class LiteSettlementConfig extends LiteBase {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result + ((desc == null) ? 0 : desc.hashCode());
-        result = prime * result + entryID;
         result = prime * result
                  + ((fieldName == null) ? 0 : fieldName.hashCode());
         result = prime * result
                  + ((fieldValue == null) ? 0 : fieldValue.hashCode());
         result = prime * result + refEntryID;
-        result = prime * result + yukonDefID;
         return result;
     }
 
@@ -207,8 +167,6 @@ public class LiteSettlementConfig extends LiteBase {
                 return false;
         } else if (!desc.equals(other.desc))
             return false;
-        if (entryID != other.entryID)
-            return false;
         if (fieldName == null) {
             if (other.fieldName != null)
                 return false;
@@ -220,8 +178,6 @@ public class LiteSettlementConfig extends LiteBase {
         } else if (!fieldValue.equals(other.fieldValue))
             return false;
         if (refEntryID != other.refEntryID)
-            return false;
-        if (yukonDefID != other.yukonDefID)
             return false;
         return true;
     }

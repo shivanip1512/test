@@ -50,27 +50,26 @@ public class SettlementController {
     }
     
     @RequestMapping(value="edit", method=RequestMethod.GET)
-    public String edit(YukonUserContext userContext, ModelMap modelMap, Integer settlementYukonDefId,
+    public String edit(YukonUserContext userContext, ModelMap modelMap, 
                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
-        modelMap.addAttribute("settlementYukonDefId", settlementYukonDefId);
         modelMap.addAttribute("mode", PageEditMode.EDIT);
 
-        SettlementDto settlementDto = getSettlementDto(energyCompanyInfoFragment, settlementYukonDefId);
+        SettlementDto settlementDto = getSettlementDto(energyCompanyInfoFragment);
         modelMap.addAttribute("settlementDto", settlementDto);
         
-        String settlementName = getSettlementName(energyCompanyInfoFragment.getEnergyCompanyId(), settlementYukonDefId);
+        String settlementName = getSettlementName(energyCompanyInfoFragment.getEnergyCompanyId());
         modelMap.addAttribute("settlementName", settlementName);
         
         return "energyCompany/settlement/settlementEdit.jsp";
     }
  
     @RequestMapping(value="edit", params="save", method=RequestMethod.POST)
-    public String save(YukonUserContext userContext, ModelMap modelMap, Integer settlementYukonDefId, FlashScope flashScope,
+    public String save(YukonUserContext userContext, ModelMap modelMap, FlashScope flashScope,
                        SettlementDto settlementDto, EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         EnergyCompanyInfoFragmentHelper.setupModelMapBasics(energyCompanyInfoFragment, modelMap);
         
-        settlementService.saveSettlementDto(settlementDto, energyCompanyInfoFragment.getEnergyCompanyId(), settlementYukonDefId);
+        settlementService.saveSettlementDto(settlementDto, energyCompanyInfoFragment.getEnergyCompanyId());
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.settlements.settlementSaved"));
         
         return "redirect:list";
@@ -86,16 +85,16 @@ public class SettlementController {
     /**
      * This method builds up a settlementDto object that is used to represent a settlement.
      */
-    private SettlementDto getSettlementDto(EnergyCompanyInfoFragment energyCompanyInfoFragment, int settlementYukonDefId){
+    private SettlementDto getSettlementDto(EnergyCompanyInfoFragment energyCompanyInfoFragment){
         
         SettlementDto settlementDto = new SettlementDto();
         
         // Get configuration settings
-        List<LiteSettlementConfig> editableLiteSettlementConfigs = settlementService.getEditableConfigs(settlementYukonDefId);
+        List<LiteSettlementConfig> editableLiteSettlementConfigs = settlementService.getEditableConfigs();
         settlementDto.setEditableLiteSettlementConfigs(editableLiteSettlementConfigs);
         
         // Get Available Rates
-        List<AvailableRate> availableRates = settlementService.getAvailableRates(energyCompanyInfoFragment.getEnergyCompanyId(), settlementYukonDefId);
+        List<AvailableRate> availableRates = settlementService.getAvailableRates(energyCompanyInfoFragment.getEnergyCompanyId());
         settlementDto.setAvailableRates(availableRates);
         
         return settlementDto;
@@ -105,15 +104,13 @@ public class SettlementController {
      * This method returns the settlement name using the nergy company id and yukon def it.  If it cannot find the
      * settlement name, it will return null.
      */
-    private String getSettlementName(int energyCompanyId, int settlementYukonDefId){
+    private String getSettlementName(int energyCompanyId){
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         YukonSelectionList yukonSelectionList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE);
         
         List<YukonListEntry> settlementNames = yukonSelectionList.getYukonListEntries();
         for (YukonListEntry yukonListEntry : settlementNames) {
-            if (yukonListEntry.getYukonDefID() == settlementYukonDefId) {
-                return yukonListEntry.getEntryText();
-            }
+            return yukonListEntry.getEntryText();
         }
         
         return null;

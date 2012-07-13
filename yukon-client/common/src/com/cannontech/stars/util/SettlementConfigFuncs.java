@@ -3,27 +3,33 @@
  */
 package com.cannontech.stars.util;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
+import org.apache.log4j.Logger;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.Pair;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompanyFactory;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 /**
@@ -32,284 +38,101 @@ import com.google.common.collect.Lists;
  */
 public final class SettlementConfigFuncs {
 
+    private static final Logger log = YukonLogManager.getLogger(SettlementConfigFuncs.class);
 	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-		
+
 	/**
-	 * Return the LiteSettlementConfig for the given configID
-	 * @param configID
+	 * Loads all settlement configs. 
+	 * If no "non-default" configs exist (those with configId >= 0, then loadDefaultIfEmpty is checked.
+	 * When loadDefaultIfEmpty is true, if no non-default configs are loaded, then the default configs (confiId < 0) are loaded and returned.
+	 * When false, only non-defaults are ever attempted to be loaded.
+	 * @param loadDefaultIfEmpty
 	 * @return
 	 */
-	public static LiteSettlementConfig getLiteSettlementConfig(int configID) {
-		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized(cache) {
-			Iterator iter = cache.getAllSettlementConfigs().iterator();
-			while(iter.hasNext()) {
-				LiteSettlementConfig lsc = (LiteSettlementConfig) iter.next();
-				if(configID == lsc.getLiteID()) {
-					return lsc;
-				}
-			}
-		}
-		return null;
-	}
-	
+	public static List<LiteSettlementConfig> getAllLiteConfigsBySettlementType(boolean loadDefaultIfEmpty)
+    {
+	    List<LiteSettlementConfig> settlementConfigs = getLiteSettlementConfigs(false);
+	    if (settlementConfigs.isEmpty()) {
+	        settlementConfigs = getLiteSettlementConfigs(true);
+	    }
+	    return settlementConfigs;
+    }
+
 	/**
-	 * Returns a Vector of LiteSettlementConfig objects for the yukonDefID.
-	 * The yukonDefID is the settlement "type" defined in Yukon.
+	 * Returns a List of LiteSettlementConfig objects (HECO only).
+	 * When queryForDefaults is true, only "default" configs will be loaded (configId < 0).
+	 * When false, only non-default configs are loaded (configId >= 0)
 	 * Valid types found in YukonListEntryTypes.
 	 * @param yukonDefID
 	 * @return
 	 */
-	public static List<LiteSettlementConfig> getAllLiteConfigsBySettlementType(int yukonDefID)
+	private static List<LiteSettlementConfig> getLiteSettlementConfigs(boolean queryForDefaults)
 	{
-		List<LiteSettlementConfig> liteConfigs = Lists.newArrayList();
-		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			synchronized(cache) {
-				Iterator iter = cache.getAllSettlementConfigs().iterator();
-				while(iter.hasNext()) {
-					LiteSettlementConfig lsc = (LiteSettlementConfig) iter.next();
-					if(lsc.getConfigID() >= 0  && yukonDefID == lsc.getYukonDefID())
-						liteConfigs.add(lsc);
-				}
-				
-				if( liteConfigs.isEmpty())
-				{	//load default values if no custom ones exist yet.
-					iter = cache.getAllSettlementConfigs().iterator();
-					while(iter.hasNext()) {
-						LiteSettlementConfig lsc = (LiteSettlementConfig) iter.next();
-						if(lsc.getConfigID() < 0  && yukonDefID == lsc.getYukonDefID()) {
-							liteConfigs.add(lsc);
-						}
-					}
-				}
-		}
-		return liteConfigs;
-	}
-	
-	
-	/**
-	 * Returns a Vector of LiteSettlementConfig objects for the entryID (the YukonListEntry).
-	 * @param entryID_
-	 * @return
-	 */
-	public static Vector getAllLiteConfigsByEntryID(int entryID_)
-	{
-		Vector liteConfigs = new Vector();
-		if( entryID_ > 0)
-		{
-			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-				synchronized(cache) {
-					Iterator iter = cache.getAllSettlementConfigs().iterator();
-					while(iter.hasNext()) {
-						LiteSettlementConfig lsc = (LiteSettlementConfig) iter.next();
-						if(lsc.getEntryID() == entryID_)
-							liteConfigs.add(lsc);
-					}
-				}
-		}
-		return liteConfigs;
+        final List<LiteSettlementConfig> settlementConfigs = new ArrayList<LiteSettlementConfig>();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ConfigId, FieldName, FieldValue, Description, RefEntryId FROM SettlementConfig");
+        if (!queryForDefaults) {
+            sql.append("WHERE ConfigId >= 0");  //remove default/negative configs
+        } else {
+            sql.append("WHERE ConfigId < 0");  //remove default/negative configs
+        }
+        
+        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+        yukonTemplate.query(sql.getSql(), new ResultSetExtractor() {
+            @Override
+            public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
+
+                while (rset.next()) {
+                    int configId = rset.getInt("ConfigId");
+                    String fieldName = rset.getString("FieldName");
+                    String fieldValue = rset.getString("FieldValue");
+                    String description = rset.getString("Description");
+                    int refEntryId = rset.getInt("RefEntryId");
+                    LiteSettlementConfig liteSettlementConfig = new LiteSettlementConfig(configId, fieldName, fieldValue, description, refEntryId);
+                    settlementConfigs.add(liteSettlementConfig);
+                }
+                return null;
+            }
+        });
+        return settlementConfigs;
 	}
 
-	
 	/**
-	 * Returns a Vector of Integer rateScheduleID (YukDefID) objects for the yukonDefID.
-	 * The yukonDefID is the settlement "type" defined in Yukon.
-	 * Valid types found in YukonListEntryTypes.
-	 * @param yukonDefID
+	 * Returns all YukonListEntry values for listeStarsEC's "Rate Schedule" list.
+	 * @param liteStarsEC
 	 * @return
 	 */
-	public static Vector getAllRateScheduleIDsSettlementType(int yukonDefID)
+	public static List<YukonListEntry> getAllAvailRateSchedules(LiteStarsEnergyCompany liteStarsEC)
 	{
-		Vector liteConfigs = new Vector();
-		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			synchronized(cache) {
-				Iterator iter = cache.getAllSettlementConfigs().iterator();
-				while(iter.hasNext()) {
-					LiteSettlementConfig lsc = (LiteSettlementConfig) iter.next();
-					if(yukonDefID == lsc.getYukonDefID()) {
-						liteConfigs.add(lsc);
-				}
-			}
-		}
-		return liteConfigs;
-	}
-	
-	public static List<YukonListEntry> getAllAvailRateSchedules(LiteStarsEnergyCompany liteStarsEC, int yukonDefID)
-	{
-		List<YukonListEntry> rates = Lists.newArrayList();
 		YukonSelectionList rateList = liteStarsEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_RATE_SCHEDULE);
-		List<LiteSettlementConfig> liteConfigs = getAllLiteConfigsBySettlementType(yukonDefID);
-		for (int i = 0; i < rateList.getYukonListEntries().size(); i++)
-		{
-			boolean add = true;
-			YukonListEntry rate_listEntry = (YukonListEntry) rateList.getYukonListEntries().get(i);
-			LiteSettlementConfig lsc = null;
-			
-			for (int j = 0; j < liteConfigs.size(); j++)
-			{
-				lsc = (LiteSettlementConfig)liteConfigs.get(j);
-				if( lsc.getEntryID() == rate_listEntry.getEntryID() && 
-					lsc.getYukonDefID() != yukonDefID)
-				{
-					add = false;
-					break;
-				}
-			}
-			if( add )
-				rates.add(rate_listEntry);
-		}
-		return rates;
+		return rateList.getYukonListEntries();
 	}
-	
-	@Deprecated
-	public static boolean isEditableConfig(int configID, int entryID)
-	{
-		//YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO configs
-		if( configID == SettlementConfig.HECO_RATE_DEMAND_CHARGE)
-//			|| configID == SettlementConfig.HECO_RATE_PENALTY_CHARGE)
-			return false;
 
-		if( configID >= 0)
-			return false;	//these are the custom table entries for rates assoc with a settlement 
-
-		return true;
-	}
-	
-	public static List<LiteSettlementConfig> getNonEditableConfigs(int energyCompanyId, int yukonDefId){
-	    ArrayList<LiteSettlementConfig> nonEditableConfigs = Lists.newArrayList();
-	    
-	    LiteSettlementConfig demandChargeConfig = 
-	        getLiteSettlementConfig(energyCompanyId, yukonDefId, SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
-	    nonEditableConfigs.add(demandChargeConfig);
-
-	    return nonEditableConfigs;
-	}
-	
 	/**
-	 * Returns vector of LiteSettlementConfig values
-	 * @param yukDefID Settlement Type ID
-	 * @param entryID YukonListEntryTypes (rate schedule ID)
+	 * Returns List of LiteSettlementConfig values.
+	 * If no settlementConfig.refEntryId matches rateEntryId, then the expected default config is returned.
+	 * NOTE: This should probably just return 1 item as we only expect there to ever be one (HECO, specifically).
+	 *  But to minimize change, we're leaving as a list.
+	 * @param rateEntryID YukonListEntryTypes (a rate schedule list's EntryID)
 	 * @return
 	 */
-	public static List<LiteSettlementConfig> getRateScheduleConfigs(int yukDefID, int rateEntryID)
+	public static List<LiteSettlementConfig> getRateScheduleConfigs(int rateEntryID)
 	{
 		List<LiteSettlementConfig> rateConfigs = Lists.newArrayList();
 		
-		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		List configs = cache.getAllSettlementConfigs();
-		for (int i = 0; i < configs.size(); i++)
-		{
-			LiteSettlementConfig liteConfig = (LiteSettlementConfig)configs.get(i);
-			if( rateEntryID == liteConfig.getRefEntryID() &&
-				liteConfig.getYukonDefID() == yukDefID)	//less than zero are Yukon defaults
-			{
-				rateConfigs.add(liteConfig);
+		List<LiteSettlementConfig> liteSettlementConfigs = getAllLiteConfigsBySettlementType(false);
+		for (LiteSettlementConfig liteSettlementConfig : liteSettlementConfigs) {
+		    // Find and add to list if settlement config refEntryId exists with that rateEntryId
+			if( rateEntryID == liteSettlementConfig.getRefEntryID()) {
+				rateConfigs.add(liteSettlementConfig);
 			}
 		}
 		
-		if( rateConfigs.isEmpty())	//fill it with defaults
-		{
-			if( yukDefID == YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO)
-			{
-				rateConfigs.add(DefaultDatabaseCache.getInstance().getAllSettlementConfigsMap().get(new Integer(SettlementConfig.HECO_RATE_DEMAND_CHARGE)));
-			}
+		// If no settlmentConfig.refEntryId found that matched rateEntryId, then load the expected default
+		if( rateConfigs.isEmpty()) {
+			rateConfigs.add(new LiteSettlementConfig(SettlementConfig.HECO_RATE_DEMAND_CHARGE, SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING, "0", "Rate Schedule billing demand charge", 0));
 		}
 		return rateConfigs;
-	}
-
-	public static String buildConfigHTML(LiteStarsEnergyCompany liteEC, int yukDefID)
-	{
-		List<LiteSettlementConfig> liteConfigs = SettlementConfigFuncs.getAllLiteConfigsBySettlementType(yukDefID);
-
-		String html = "";
-		
-		html += "<tr height='30'>" + LINE_SEPARATOR;
-		html += "  <td width='25%' align='right' class='TableCell'>Settlement:</td>" + LINE_SEPARATOR;
-		html += "  <td colspan= '2' class='MainText' width='75%'>" + liteEC.getYukonListEntry(yukDefID).getEntryText()+ "</td>" + LINE_SEPARATOR;
-		html += "  <input type='hidden' name='SettlementEntryID' value='" + liteEC.getYukonListEntry(yukDefID).getEntryID() +"'>" + LINE_SEPARATOR;		
-		html += "</tr>" + LINE_SEPARATOR;
-		html += "<tr align='center'>" + LINE_SEPARATOR;
-		html += "  <td colspan='3' class='TableCell' height='2'><hr>" + LINE_SEPARATOR;
-		html += "  </td>" + LINE_SEPARATOR;
-		html += "</tr>" + LINE_SEPARATOR;
-		
-		for (int i = 0; i < liteConfigs.size(); i++)
-		{
-			LiteSettlementConfig lsc = (LiteSettlementConfig)liteConfigs.get(i);
-			if( SettlementConfigFuncs.isEditableConfig(lsc.getConfigID(), lsc.getEntryID()) ||
-				liteEC.getYukonListEntry(yukDefID).getEntryID()== lsc.getEntryID() && lsc.getRefEntryID() == 0) 
-			{
-				html += "<tr class='TableCell'>" + LINE_SEPARATOR;
-				html += "  <td width='25%' align='right'>"+ lsc.getFieldName() + ":&nbsp;" + LINE_SEPARATOR;
-				html += "  </td>" + LINE_SEPARATOR;
-				html += "  <td width='25%'>" + LINE_SEPARATOR; 
-				html += "    <input type='text' name='ConfigID" + lsc.getConfigID() +"' size='15' value='" + lsc.getFieldValue()+ "'>" + LINE_SEPARATOR;
-				html += "  </td>" + LINE_SEPARATOR;
-				html += "  <td width='50%' align='left'>&nbsp;"+ lsc.getDescription() + LINE_SEPARATOR;
-				html += "  </td>" + LINE_SEPARATOR;
-				html += "</tr>" + LINE_SEPARATOR;
-			}
-		}
-		
-		html += "<tr align='center'>" + LINE_SEPARATOR;
-		html += "  <td colspan='3' class='TableCell' height='2'><hr></td>" + LINE_SEPARATOR;
-		html += "</tr>" + LINE_SEPARATOR;
-		
-		List<YukonListEntry> availRates = SettlementConfigFuncs.getAllAvailRateSchedules(liteEC, yukDefID);
-		for (int i = 0; i < availRates.size(); i++)
-		{
-			YukonListEntry entry = (YukonListEntry) availRates.get(i);
-			List<LiteSettlementConfig> rateConfigs = SettlementConfigFuncs.getRateScheduleConfigs(yukDefID, entry.getEntryID());
-			if( !rateConfigs.isEmpty())
-			{
-				LiteSettlementConfig rateConfig = (LiteSettlementConfig)rateConfigs.get(0);	//use the first one for checking if the rate is 'checked'
-				boolean enableRate = rateConfig.getRefEntryID() > 0;
-				
-				html += "<tr class='TableCell'>" + LINE_SEPARATOR;
-				html += "  <td width='25%'></td>" + LINE_SEPARATOR;
-				html += "  <td colspan='2' width='25%' align='left'>" + LINE_SEPARATOR;
-				html += "    <input type='checkbox' name='EntryID" + entry.getEntryID() +"' value='" + entry.getEntryID()+ "' " +
-							" " + (enableRate ? "checked ":" ") +  
-							" onclick='document.getElementById(this.value).disabled=!this.checked;'>" + entry.getEntryText() + LINE_SEPARATOR;
-				html += "  </td>" + LINE_SEPARATOR;
-				html += "</tr>" + LINE_SEPARATOR;
-	
-				html += "<tr id='" + entry.getEntryID() +"' " + (enableRate?"":"disabled") + ">" + LINE_SEPARATOR;
-				html += "  <td colspan='3'>" + LINE_SEPARATOR;
-				html += "    <table width='100%' border='0' cellspacing='0' cellpadding='0'>" + LINE_SEPARATOR;
-				
-				for ( int j = 0; j < rateConfigs.size(); j++)
-				{
-					rateConfig = (LiteSettlementConfig)rateConfigs.get(j);
-					html += "<tr class='TableCell'>" + LINE_SEPARATOR;			
-					html += "  <td width='25%' align='right'>" + rateConfig.getFieldName()+ ":&nbsp;</td>" + LINE_SEPARATOR;
-					html += "  <td width='25%' align='left'>" + LINE_SEPARATOR;
-					html += "    <input type='text' name='EntryID" + entry.getEntryID() + "RateID" +rateConfig.getConfigID()+ "' size='15' value='" + (rateConfig.getConfigID() < 0?"0": rateConfig.getFieldValue()) + "' ><br>" + LINE_SEPARATOR;
-					html += "  </td>" + LINE_SEPARATOR;
-					html += "  <td width='50%' align='left'>" + rateConfig.getDescription() + "</td>" + LINE_SEPARATOR;
-					html += "</tr>" + LINE_SEPARATOR;
-				}
-				html += "    </table><BR>" + LINE_SEPARATOR;
-				html += "  </td>" + LINE_SEPARATOR;
-				html += "</tr>" + LINE_SEPARATOR;
-			}			
-		}
-		return html;
-	}
-	
-	/**
-	 * Returns the String value of yukDefID (from YukonListEntryTypes)
-	 * @param yukDefID
-	 * @return
-	 */
-	public static String getCTISettlementStr(int yukDefID) 
-	{
-		switch (yukDefID)
-		{
-			case YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO:
-				return "HECO";
-		}
-		return "Unknown";
 	}
 	
 	/**
@@ -339,51 +162,54 @@ public final class SettlementConfigFuncs {
 		}
 	}
 	
-	public static LiteSettlementConfig getLiteSettlementConfig( int energyCompanyID, int yukonDefID, String fieldName)
+	/**
+	 * If exactly one SettlementConfig is not found (with configId >= 0), a default value of "0" is returned.
+	 * @param fieldName
+	 * @return fieldValue string
+	 */
+	public static String getLiteSettlementConfig(String fieldName)
 	{
-	    LiteStarsEnergyCompanyFactory factory = 
-            YukonSpringHook.getBean("liteStarsEnergyCompanyFactory", LiteStarsEnergyCompanyFactory.class);
-		LiteStarsEnergyCompany lsec = factory.createEnergyCompany(energyCompanyID);
-//		int entryID = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO).getEntryID();	//2260
-		int entryID = lsec.getYukonListEntry(yukonDefID).getEntryID();	//2260
-		Vector settlementConfigs = SettlementConfigFuncs.getAllLiteConfigsByEntryID(entryID);
-		for (int i = 0; i < settlementConfigs.size(); i++)
-		{
-			LiteSettlementConfig lsc = (LiteSettlementConfig)settlementConfigs.get(i);
-			if (lsc.getFieldName().equals(fieldName))
-			{
-				return lsc;
-			}
-		}
-		return null;
+	    String fieldValue = "0";   //default to 0 
+	    
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT FieldValue FROM SettlementConfig");
+	    sql.append("WHERE ConfigId >= 0");  //remove default/negative configs
+	    sql.append("AND FieldName").eq(fieldName);
+	    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+	    try {
+	        fieldValue = yukonTemplate.queryForObject(sql.getSql(), sql.getArguments(), String.class);
+	    } catch (IncorrectResultSizeDataAccessException e) {
+	        log.error("SettlementConfig did not return exactly one row for FieldName " + fieldName + ". Check database for distinct FieldName (with configId >= 0).");
+	    }
+        return fieldValue;
 	}
-	
-	public static Vector getLiteSettlementConfigs( int energyCompanyID, int yukonDefID, String fieldName)
-	{
-		Vector settleConfigs = new Vector();
-		
-		LiteStarsEnergyCompanyFactory factory = 
-            YukonSpringHook.getBean("liteStarsEnergyCompanyFactory", LiteStarsEnergyCompanyFactory.class);
-		LiteStarsEnergyCompany lsec = factory.createEnergyCompany(energyCompanyID);
-//			int entryID = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO).getEntryID();	//2260
-		int entryID = lsec.getYukonListEntry(yukonDefID).getEntryID();	//2260
-		Vector settlementConfigs = SettlementConfigFuncs.getAllLiteConfigsByEntryID(entryID);
-		for (int i = 0; i < settlementConfigs.size(); i++)
-		{
-			LiteSettlementConfig lsc = (LiteSettlementConfig)settlementConfigs.get(i);
-			if (lsc.getFieldName().equals(fieldName))
-			{
-				settleConfigs.add(lsc);
-			}
-		}
-		return settleConfigs;
-	}
-	public static int getConfigValue(int ecID, int yukonDefID, String fieldName)
-	{
-		LiteSettlementConfig lsc = SettlementConfigFuncs.getLiteSettlementConfig(ecID, 
-																	YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, 
-																	fieldName);
 
-		return Integer.valueOf(lsc.getFieldValue()).intValue();
-	}	
+	/**
+     * If exactly one SettlementConfig is not found (with configId >= 0), an empty list is returned.
+     * @param fieldName
+     * @return fieldValue string
+     */
+    public static List<Pair<Integer, String>> getLiteSettlementConfigs(String fieldName)
+    {
+        final List<Pair<Integer, String>> refEntryIdAndFieldValue = new ArrayList<Pair<Integer,String>>();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT RefEntryId, FieldValue FROM SettlementConfig");  //RefEntryId is the rateSchedule entryId
+        sql.append("WHERE ConfigId >= 0");  //remove default/negative configs
+        sql.append("AND FieldName").eq(fieldName);
+        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+        yukonTemplate.query(sql.getSql(), sql.getArguments(), new ResultSetExtractor() {
+            @Override
+            public Object extractData(ResultSet rset) throws SQLException, DataAccessException {
+
+                while (rset.next()) {
+                    int refEntryId = rset.getInt("RefEntryId");
+                    String fieldValue = rset.getString("FieldValue");
+                    Pair<Integer, String> pair = new Pair<Integer, String>(refEntryId, fieldValue);
+                    refEntryIdAndFieldValue.add(pair);
+                }
+                return null;
+            }
+        });
+        return refEntryIdAndFieldValue;
+    }
 }

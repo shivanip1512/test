@@ -56,7 +56,6 @@ Event.observe(window, 'load', function() {
 
     <cti:url value="edit" var="editUrl">
         <cti:param name="ecId" value="${ecId}" />
-        <cti:param name="settlementYukonDefId" value="${settlementYukonDefId}" />
     </cti:url>
 
     <form:form commandName="settlementDto" method="post" action="${edit}">
@@ -96,7 +95,6 @@ Event.observe(window, 'load', function() {
                                 <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].configID"/>
                                 <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].fieldName"/>
                                 <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].description"/>
-                                <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].entryID"/>
                                 <tags:hidden path="availableRates[${availRatesStatus.index}].rateConfigurations[${rateConfigStatus.index}].refEntryID"/>
                                 <span class="focusedFieldDescription">${liteSettlementConfig.description}</span>
                             </td>

@@ -242,9 +242,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			((SettlementConfig)returnObject).setConfigID(new Integer(((LiteSettlementConfig)liteObject).getConfigID()));				
 			((SettlementConfig)returnObject).setFieldName(((LiteSettlementConfig)liteObject).getFieldName());
 			((SettlementConfig)returnObject).setFieldValue(((LiteSettlementConfig)liteObject).getFieldValue());
-			((SettlementConfig)returnObject).setYukonDefID(new Integer(((LiteSettlementConfig)liteObject).getYukonDefID()));
 			((SettlementConfig)returnObject).setDescription(((LiteSettlementConfig)liteObject).getDescription());
-			((SettlementConfig)returnObject).setEntryID(new Integer(((LiteSettlementConfig)liteObject).getEntryID()));			
 			break;
 		default:
 			returnObject = null;
@@ -486,9 +484,7 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 			 ((SettlementConfig)val).getConfigID().intValue(),
 			 ((SettlementConfig)val).getFieldName(),
 			 ((SettlementConfig)val).getFieldValue(),
-			 ((SettlementConfig)val).getYukonDefID().intValue(),
 			 ((SettlementConfig)val).getDescription(), 
-			 ((SettlementConfig)val).getEntryID().intValue(),
 			 ((SettlementConfig)val).getRefEntryID().intValue());
 	}
 

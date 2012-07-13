@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,14 +23,14 @@ import com.cannontech.analysis.data.lm.LMEvent;
 import com.cannontech.analysis.data.lm.LMEventCustomer;
 import com.cannontech.analysis.data.lm.SettlementCustomer;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
-import com.cannontech.database.data.lite.LiteSettlementConfig;
+import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.pao.LMControlHistory;
 import com.cannontech.database.db.point.RawPointHistory;
@@ -57,7 +58,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	private Vector dataObjects = new Vector();
 	
 	/** Map of Integer(customerID) to CICustomerBase object*/
-	public HashMap settlementCustomerMap = null;
+	public HashMap<Integer, SettlementCustomer> settlementCustomerMap = null;
 	
 	/** An eri amount for each customer, index of eriAmounts are the same as the customerIDs index*/
 	private Double[] eriAmounts = null;
@@ -70,7 +71,6 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	private Double[] custDemandLevels = null;
 	private Double[] custCurtailLoads = null;
 	
-	private Vector settlementConfigs = null;
 	private LiteStarsEnergyCompany liteStarsEC = null;
 	
 	/** A string for the title of the data */
@@ -135,7 +135,6 @@ public class HECO_SettlementModelBase extends ReportModelBase
         getData().clear();
         getDataObjects().clear();
         settlementCustomerMap = null;   //dump old data
-        settlementConfigs = null;   //dump old configs
         pointIDCSV = null;
         
         eriAmounts = null;
@@ -488,7 +487,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	 * settlement type are returned. 
 	 * @return
 	 */
-	public HashMap getSettlementCustomerMap()
+	public HashMap<Integer, SettlementCustomer> getSettlementCustomerMap()
 	{
 		if( settlementCustomerMap == null)
 			loadSettlementCustomerMap();
@@ -497,26 +496,24 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	
 	private void loadSettlementCustomerMap()
 	{
-		settlementCustomerMap = new HashMap();
+		settlementCustomerMap = new HashMap<Integer, SettlementCustomer>();
 		if (getEnergyCompanyID() != null )
 		{
 			Connection conn = null;
 			try {
 				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias());
 				
-				List ciCustomers = DefaultDatabaseCache.getInstance().getAllCICustomers();
-				for (int i = 0; i < ciCustomers.size(); i++)
-				{
-					LiteCICustomer liteCICust = (LiteCICustomer)ciCustomers.get(i);
-					if( liteCICust.getRateScheduleID() > 0)
+				List<LiteCICustomer> ciCustomers = DefaultDatabaseCache.getInstance().getAllCICustomers();
+				for (LiteCICustomer liteCICustomer : ciCustomers) {
+					if( liteCICustomer.getRateScheduleID() > 0)
 					{
-						for (int j = 0; j < getSettlementConfigs().size(); j++)
-						{
-							if( ((LiteSettlementConfig)getSettlementConfigs().get(j)).getRefEntryID() > 0 && liteCICust.getRateScheduleID() == ((LiteSettlementConfig)getSettlementConfigs().get(j)).getRefEntryID() )
+					    List<Pair<Integer, String>> demandCharges = SettlementConfigFuncs.getLiteSettlementConfigs(SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
+					    for (Pair<Integer, String> pair : demandCharges) {
+							if (pair.getFirst() > 0 && liteCICustomer.getRateScheduleID() == pair.getFirst())
 							{
-								SettlementCustomer settleCust = new SettlementCustomer(new Integer(liteCICust.getCustomerID()), getStartDate(), getStopDate());
+								SettlementCustomer settleCust = new SettlementCustomer(new Integer(liteCICustomer.getCustomerID()), getStartDate(), getStopDate());
 								settlementCustomerMap.put(settleCust.getCustomerID(), settleCust);
-								CTILogger.info("Added Customer: " + settleCust.getCustomerID().intValue() + " " + ((LiteSettlementConfig)getSettlementConfigs().get(j)).getRefEntryID());
+								CTILogger.info("Added Customer: " + settleCust.getCustomerID().intValue() + " " + pair.getFirst());
 								break;						
 							}
 						}
@@ -542,7 +539,7 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	 */
 	public SettlementCustomer getSettlementCustomer(Integer customerID)
 	{
-		return (SettlementCustomer)getSettlementCustomerMap().get(customerID);
+		return getSettlementCustomerMap().get(customerID);
 	}
 	
 	/**
@@ -589,11 +586,11 @@ public class HECO_SettlementModelBase extends ReportModelBase
 		custDemandLevels = new Double[getSettlementCustomerMap().size()];
 		custCurtailLoads = new Double[getSettlementCustomerMap().size()];
 	
-		Iterator iter = getSettlementCustomerMap().entrySet().iterator();
+		Iterator<Entry<Integer, SettlementCustomer>> iter = getSettlementCustomerMap().entrySet().iterator();
 		int index = 0;
 		while(iter.hasNext())
 		{
-			SettlementCustomer settleCust = (SettlementCustomer)((Map.Entry)iter.next()).getValue();
+			SettlementCustomer settleCust = iter.next().getValue();
 			customerIDS[index] = settleCust.getCustomerID();
 			custDemandLevels[index] = settleCust.getDemandLevel();
 			custCurtailLoads[index] = settleCust.getCurtailableLoad();
@@ -616,20 +613,6 @@ public class HECO_SettlementModelBase extends ReportModelBase
 		return dataObjects;
 	}
 	
-	/**
-	 * Returns a Vector of LiteSettlementConfigs for the HECO Settlement type assigned to energyCompanyID.
-	 * @return Vector
-	 */
-	public Vector getSettlementConfigs()
-	{
-		if (settlementConfigs == null)
-		{
-			int entryID = getLiteStarsEC().getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO).getEntryID();	//2260
-			settlementConfigs = SettlementConfigFuncs.getAllLiteConfigsByEntryID(entryID);
-		}
-		return settlementConfigs;
-	}
-
 	/**
 	 * This method should be overwritten by all implementing interfaces.
 	 * This method should load the getData() vector.

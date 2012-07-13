@@ -17,10 +17,7 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 	private Integer configID = null;
 	private String fieldName = CtiUtilities.STRING_NONE;
 	private String fieldValue = CtiUtilities.STRING_NONE;	
-	private String ctiSettlement = CtiUtilities.STRING_NONE;
-	private Integer yukonDefID = null;
 	private String description = "";
-	private Integer entryID = null;
 	private Integer refEntryID = null;
 
 	public static final int HECO_CDI_RATE = -1;
@@ -46,7 +43,7 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
-		"FieldName", "FieldValue", "CTISettlement", "YukonDefID", "Description", "EntryID", "RefEntryID"
+		"FieldName", "FieldValue", "Description", "RefEntryID"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "ConfigID" };
@@ -68,7 +65,7 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 		Object addValues[] = 
 		{ 
 			getConfigID(), getFieldName(), getFieldValue(), 
-			getCtiSettlement(), getYukonDefID(), getDescription(), getEntryID(), getRefEntryID()
+			getDescription(), getRefEntryID()
 		};
 	
 		add( TABLE_NAME, addValues );
@@ -118,11 +115,8 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 		{
 			setFieldName( (String) results[0] );
 			setFieldValue( (String) results[1] );
-			setCtiSettlement( (String) results[2] );
-			setYukonDefID( (Integer) results[3] );
-			setDescription( (String) results[4] );
-			setEntryID( (Integer) results[5]);
-			setRefEntryID( (Integer) results[6]);
+			setDescription( (String) results[2] );
+			setRefEntryID( (Integer) results[3]);
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -136,8 +130,8 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 	{
 		Object setValues[] =
 		{ 
-			getFieldName(), getFieldValue(), getCtiSettlement(),
-			getYukonDefID(), getDescription(), getEntryID(), getRefEntryID()
+			getFieldName(), getFieldValue(), 
+			getDescription(), getRefEntryID()
 		};
 	
 		Object constraintValues[] = { getConfigID()};
@@ -156,25 +150,9 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 	/**
 	 * @return
 	 */
-	public String getCtiSettlement()
-	{
-		return ctiSettlement;
-	}
-
-	/**
-	 * @return
-	 */
 	public String getDescription()
 	{
 		return description;
-	}
-
-	/**
-	 * @return
-	 */
-	public Integer getEntryID()
-	{
-		return entryID;
 	}
 
 	/**
@@ -202,14 +180,6 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 	}
 
 	/**
-	 * @return
-	 */
-	public Integer getYukonDefID()
-	{
-		return yukonDefID;
-	}
-
-	/**
 	 * @param integer
 	 */
 	public void setConfigID(Integer configID_)
@@ -220,25 +190,9 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 	/**
 	 * @param string
 	 */
-	public void setCtiSettlement(String ctiSettlement_)
-	{
-		ctiSettlement = ctiSettlement_;
-	}
-
-	/**
-	 * @param string
-	 */
 	public void setDescription(String desc_)
 	{
 		description = desc_;
-	}
-
-	/**
-	 * @param integer
-	 */
-	public void setEntryID(Integer entryID_)
-	{
-		entryID = entryID_;
 	}
 
 	/**
@@ -265,13 +219,6 @@ public class SettlementConfig extends com.cannontech.database.db.DBPersistent im
 		fieldValue = fieldValue_;
 	}
 
-	/**
-	 * @param integer
-	 */
-	public void setYukonDefID(Integer yukonDefID_)
-	{
-		yukonDefID = yukonDefID_;
-	}
 	/**
 	 * Generates a DBChange msg.
 	 * 

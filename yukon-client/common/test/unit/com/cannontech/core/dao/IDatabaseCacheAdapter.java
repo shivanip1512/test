@@ -276,15 +276,6 @@ public class IDatabaseCacheAdapter implements IDatabaseCache {
         throw new UnsupportedOperationException();
     }
 
-    public List<LiteSettlementConfig> getAllSettlementConfigs() {
-
-        throw new UnsupportedOperationException();
-    }
-
-    public Map<Integer, LiteSettlementConfig> getAllSettlementConfigsMap() {
-
-        throw new UnsupportedOperationException();
-    }
 
     public Map<Integer, LiteStateGroup> getAllStateGroupMap() {
 

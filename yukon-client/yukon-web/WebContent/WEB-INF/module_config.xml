@@ -1623,7 +1623,7 @@
                                         <pages>
                                             <page name="settlements.EDIT" type="DETAIL">
                                                 <menu>energyCompanySetup|home</menu>
-                                                <link>/spring/adminSetup/energyCompany/schedules/edit?ecId=${ecId}</link>
+                                                <link>/spring/adminSetup/energyCompany/settlement/edit?ecId=${ecId}</link>
                                                 <labelArgument>${settlementName}</labelArgument>
                                             </page>
                                         </pages>

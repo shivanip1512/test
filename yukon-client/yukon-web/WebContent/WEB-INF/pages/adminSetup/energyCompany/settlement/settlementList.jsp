@@ -14,7 +14,6 @@
             <c:forEach var="settlementType" items="${settlementTypes.yukonListEntries}">
                 <cti:url value="edit" var="editUrl">
                     <cti:param name="ecId" value="${ecId}" />
-                    <cti:param name="settlementYukonDefId" value="${settlementType.yukonDefID}" />
                 </cti:url>
         
                 <a href="${editUrl}">

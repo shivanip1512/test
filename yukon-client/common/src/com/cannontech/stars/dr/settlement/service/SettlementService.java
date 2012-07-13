@@ -9,20 +9,20 @@ import com.cannontech.stars.dr.settlement.model.SettlementDto;
 public interface SettlementService {
     
     /**
-     * This method returns a list of all the editable settlement configurations of a given settlement,
-     * which is represented by the yukonDefId.
+     * This method returns a list of all the editable settlement configurations of a given settlement (HECO specifically).
+     * Editable configurations include all except Demand Charge.
      */
-    public List<LiteSettlementConfig> getEditableConfigs(int yukonDefId);
+    public List<LiteSettlementConfig> getEditableConfigs();
     
     /**
-     * This method returns all of the available rates for a given settlement, which is represented by the yukonDefId. 
+     * This method returns all of the available rates for the HECO settlement. 
      */
-    public List<AvailableRate> getAvailableRates(int energyCompanyId, int yukonDefId);
+    public List<AvailableRate> getAvailableRates(int energyCompanyId);
 
     /**
      * 
      * @param settlementDto
      */
-    public void saveSettlementDto(SettlementDto settlementDto, int energyCompanyId, int settlementYukonDefId);
+    public void saveSettlementDto(SettlementDto settlementDto, int energyCompanyId);
     
 }

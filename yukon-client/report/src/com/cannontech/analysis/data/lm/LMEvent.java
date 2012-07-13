@@ -11,8 +11,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.stars.util.SettlementConfigFuncs;
 
@@ -99,10 +97,10 @@ public class LMEvent
 		actualStopDateTime = actualStop_;
 		if( energyCompanyID_ != null)
 		{
-			restoreDuration = Integer.valueOf(SettlementConfigFuncs.getLiteSettlementConfig(energyCompanyID_.intValue(), YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_RESTORE_DURATION_STRING).getFieldValue()).intValue();
-			emergencyDelay = Integer.valueOf(SettlementConfigFuncs.getLiteSettlementConfig(energyCompanyID_.intValue(), YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_EMERGENCY_DELAY_STRING).getFieldValue()).intValue(); 
-			dispatchedDelay = Integer.valueOf(SettlementConfigFuncs.getLiteSettlementConfig(energyCompanyID_.intValue(), YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_DISPATCHED_DELAY_STRING).getFieldValue()).intValue();
-			ufDelay = Integer.valueOf(SettlementConfigFuncs.getLiteSettlementConfig(energyCompanyID_.intValue(), YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, SettlementConfig.HECO_UF_DELAY_STRING).getFieldValue()).intValue();
+			restoreDuration = Integer.valueOf(SettlementConfigFuncs.getLiteSettlementConfig(SettlementConfig.HECO_RESTORE_DURATION_STRING));
+			emergencyDelay = Integer.valueOf(SettlementConfigFuncs.getLiteSettlementConfig(SettlementConfig.HECO_EMERGENCY_DELAY_STRING)); 
+			dispatchedDelay = Integer.valueOf(SettlementConfigFuncs.getLiteSettlementConfig(SettlementConfig.HECO_DISPATCHED_DELAY_STRING));
+			ufDelay = Integer.valueOf(SettlementConfigFuncs.getLiteSettlementConfig(SettlementConfig.HECO_UF_DELAY_STRING));
 		}
 
 		for ( int i = 0; i < customerIDs.length; i++)

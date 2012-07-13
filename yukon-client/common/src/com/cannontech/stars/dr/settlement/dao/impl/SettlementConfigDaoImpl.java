@@ -18,7 +18,7 @@ public class SettlementConfigDaoImpl implements SettlementConfigDao {
     private Logger log = YukonLogManager.getLogger(SettlementConfigDaoImpl.class);
     
     @Override
-    public void save(LiteSettlementConfig liteSettlementConfig, int settlementYukonDefId, int settlementEntryId, int availRateListEntryId) {
+    public void save(LiteSettlementConfig liteSettlementConfig, int availRateListEntryId) {
         if (liteSettlementConfig.getConfigID() >= 0) {
             SettlementConfigFuncs.updateSettlementConfigTrx(liteSettlementConfig, liteSettlementConfig.getFieldValue());
         } else {
@@ -26,10 +26,7 @@ public class SettlementConfigDaoImpl implements SettlementConfigDao {
             newSC.setConfigID(SettlementConfig.getNextConfigID());
             newSC.setFieldName(liteSettlementConfig.getFieldName());
             newSC.setFieldValue(liteSettlementConfig.getFieldValue());
-            newSC.setCtiSettlement(SettlementConfigFuncs.getCTISettlementStr(settlementYukonDefId));
-            newSC.setYukonDefID(settlementYukonDefId);
             newSC.setDescription(liteSettlementConfig.getDescription());
-            newSC.setEntryID(settlementEntryId);
             newSC.setRefEntryID(availRateListEntryId);
 
             dbPersistentDao.performDBChange(newSC, TransactionType.INSERT);

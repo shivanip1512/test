@@ -131,13 +131,6 @@ public interface IDatabaseCache {
 
     public List<LiteTag> getAllTags();
 
-    public List<LiteSettlementConfig> getAllSettlementConfigs();
-
-    /**
-     * @return  Map configID LiteSettlementConfig
-     */
-    public Map<Integer, LiteSettlementConfig> getAllSettlementConfigsMap();
-
     public List<LiteYukonPAObject> getAllUnusedCCDevices();
 
     public List<LiteYukonPAObject> getAllYukonPAObjects();
@@ -189,8 +182,6 @@ public interface IDatabaseCache {
     public void releaseAllConfigs();
 
     public void releaseAllTags();
-
-    public void releaseAllSettlementConfigs();
 
     public void releaseAllLMProgramConstraints();
 

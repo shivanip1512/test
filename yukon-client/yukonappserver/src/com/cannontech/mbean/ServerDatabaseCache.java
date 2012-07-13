@@ -40,7 +40,6 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LiteSeasonSchedule;
-import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteTOUDay;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
@@ -80,7 +79,6 @@ import com.cannontech.yukon.server.cache.LMPAOExclusionLoader;
 import com.cannontech.yukon.server.cache.LMScenarioProgramLoader;
 import com.cannontech.yukon.server.cache.PointLimitLoader;
 import com.cannontech.yukon.server.cache.SeasonScheduleLoader;
-import com.cannontech.yukon.server.cache.SettlementConfigLoader;
 import com.cannontech.yukon.server.cache.StateGroupLoader;
 import com.cannontech.yukon.server.cache.SystemPointLoader;
 import com.cannontech.yukon.server.cache.TOUDayLoader;
@@ -136,8 +134,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private ArrayList<LiteLMPAOExclusion> allLMPAOExclusions = null;
 
 	private ArrayList<LiteTag> allTags = null;
-	private ArrayList<LiteSettlementConfig> allSettlementConfigs = null;
-	private Map<Integer, LiteSettlementConfig> allSettlementConfigsMap = null;
 	
 	private ArrayList<LiteSeasonSchedule> allSeasonSchedules = null;
 	private ArrayList <LiteTOUSchedule> allTOUSchedules = null;
@@ -882,30 +878,6 @@ public synchronized List<LiteTag> getAllTags() {
 	return allTags;
 }
 
-public synchronized List<LiteSettlementConfig> getAllSettlementConfigs() {
-	if(allSettlementConfigs == null)
-	{
-		allSettlementConfigs = new ArrayList<LiteSettlementConfig>();
-		allSettlementConfigsMap = new HashMap<Integer, LiteSettlementConfig>();
-		SettlementConfigLoader stlmtCfgLoader = new SettlementConfigLoader(allSettlementConfigs, allSettlementConfigsMap, databaseAlias);
-		stlmtCfgLoader.run();
-	}
-	return allSettlementConfigs;
-}
-
-public synchronized java.util.Map<Integer, LiteSettlementConfig> getAllSettlementConfigsMap()
-{
-	if( allSettlementConfigsMap != null )
-		return allSettlementConfigsMap;
-	else
-	{
-		releaseAllSettlementConfigs();
-		getAllSettlementConfigs();
-
-		return allSettlementConfigsMap;
-	}
-}
-
 // This cache is derive from the Device cache
 public synchronized List<LiteYukonPAObject> getAllUnusedCCDevices()
 {
@@ -1456,10 +1428,6 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
             //allContacts = null;
         }
         retLBase = null;
-    }
-    else if ( database == DBChangeMsg.CHANGE_SETTLEMENT_DB)
-    {
-        retLBase = handleSettlementConfigChange(dbChangeType, id);
     } else {
         // There are several messages we don't care about.
         CTILogger.debug("Unhandled DBChangeMessage with category " + dbCategory);
@@ -2062,55 +2030,7 @@ private synchronized LiteBase handleTagChange( DbChangeType dbChangeType, int id
 
 	return lTag;
 }
-private synchronized LiteBase handleSettlementConfigChange( DbChangeType dbChangeType, int id)
-{
-	LiteBase lBase = null;
 
-	// if the storage is not already loaded, we must not care about it
-	if( allSettlementConfigs == null )
-		return lBase;
-
-	switch(dbChangeType)
-	{
-		case ADD:
-
-			lBase = allSettlementConfigsMap.get( new Integer(id));
-			if( lBase == null)
-			{
-				LiteSettlementConfig lsc = new LiteSettlementConfig(id);
-				lsc.retrieve(databaseAlias);
-				allSettlementConfigs.add(lsc);
-				allSettlementConfigsMap.put( new Integer(lsc.getConfigID()), lsc);
-				
-				lBase = lsc;
-			}
-			break;
-			
-		case UPDATE:
-			
-			LiteSettlementConfig lsc = allSettlementConfigsMap.get(new Integer(id));
-			lsc.retrieve(databaseAlias);
-			lBase = lsc;
-			break;
-			
-		case DELETE:
-			for(int i=0;i<allSettlementConfigs.size();i++)
-			{
-				if( allSettlementConfigs.get(i).getConfigID() == id )
-				{
-					allSettlementConfigsMap.remove( new Integer(id));
-					lBase = allSettlementConfigs.remove(i);
-					break;
-				}
-			}
-			break;
-		default:
-				releaseAllSettlementConfigs();
-				break;
-	}
-
-	return lBase;
-}
 private synchronized LiteBase handleLMProgramConstraintChange( DbChangeType dbChangeType, int id )
 {
 	boolean alreadyAdded = false;
@@ -2548,8 +2468,6 @@ public synchronized void releaseAllCache()
 	allLMScenarioProgs = null;
 
 	allTags = null;
-	allSettlementConfigs = null;
-	allSettlementConfigsMap = null;
 	allSeasonSchedules = null;
 	allDeviceTypeCommands = null;
 	allTOUSchedules = null;
@@ -2663,12 +2581,6 @@ public synchronized void releaseAllConfigs()
 public synchronized void releaseAllTags()
 {
 	allTags = null;
-}
-
-public synchronized void releaseAllSettlementConfigs()
-{
-	allSettlementConfigs = null;
-	allSettlementConfigsMap = null;
 }
 
 public synchronized void releaseAllLMProgramConstraints()

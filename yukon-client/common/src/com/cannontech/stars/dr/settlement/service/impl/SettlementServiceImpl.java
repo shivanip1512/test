@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.settlement.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,8 @@ public class SettlementServiceImpl implements SettlementService {
     private final List<String> nonEditableFieldNames = ImmutableList.of(SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
     
     @Override
-    public List<LiteSettlementConfig> getEditableConfigs(int yukonDefId) {
-        List<LiteSettlementConfig> allLiteSettlementConfigs = SettlementConfigFuncs.getAllLiteConfigsBySettlementType(yukonDefId);
+    public List<LiteSettlementConfig> getEditableConfigs() {
+        List<LiteSettlementConfig> allLiteSettlementConfigs = SettlementConfigFuncs.getAllLiteConfigsBySettlementType(true);
         
         List<LiteSettlementConfig> editableLiteSettlementConfigs = Lists.newArrayListWithExpectedSize(allLiteSettlementConfigs.size());
         for (LiteSettlementConfig liteSettlementConfig : allLiteSettlementConfigs) {
@@ -41,13 +40,13 @@ public class SettlementServiceImpl implements SettlementService {
     }
     
     @Override
-    public List<AvailableRate> getAvailableRates(int energyCompanyId, int yukonDefId) {
+    public List<AvailableRate> getAvailableRates(int energyCompanyId) {
         List<AvailableRate> availableRates = Lists.newArrayList();
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         
-        List<YukonListEntry> allAvailRateSchedules = SettlementConfigFuncs.getAllAvailRateSchedules(energyCompany, yukonDefId);
+        List<YukonListEntry> allAvailRateSchedules = SettlementConfigFuncs.getAllAvailRateSchedules(energyCompany);
         for (YukonListEntry yukonListEntry : allAvailRateSchedules) {
-            List<LiteSettlementConfig> rateConfigs = SettlementConfigFuncs.getRateScheduleConfigs(yukonDefId, yukonListEntry.getEntryID());
+            List<LiteSettlementConfig> rateConfigs = SettlementConfigFuncs.getRateScheduleConfigs(yukonListEntry.getEntryID());
 
             boolean enabled = false;
             if (rateConfigs.size() > 0) {
@@ -63,40 +62,22 @@ public class SettlementServiceImpl implements SettlementService {
     
     @Override
     @Transactional
-    public void saveSettlementDto(SettlementDto settlementDto, int energyCompanyId, int settlementYukonDefId){
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        int settlementEntryId = energyCompany.getYukonListEntry(settlementYukonDefId).getEntryID();
-
+    public void saveSettlementDto(SettlementDto settlementDto, int energyCompanyId){
+        
         // Save editable settlement configurations
         for (LiteSettlementConfig liteSettlementConfig : settlementDto.getEditableLiteSettlementConfigs()) {
-            settlementConfigDao.save(liteSettlementConfig, settlementYukonDefId, settlementEntryId, 0);
+            settlementConfigDao.save(liteSettlementConfig, 0);
         }
         
-        // Save rate configurations
-        List<Integer> validRateEntryIds = new ArrayList<Integer>();
+        // Save new rate configurations, delete any that are no longer enabled.
         for (AvailableRate availableRate : settlementDto.getAvailableRates()) {
-
             for (LiteSettlementConfig rateConfiguration : availableRate.getRateConfigurations()) {
                 if (availableRate.isEnabled()) {
-                    settlementConfigDao.save(rateConfiguration, settlementYukonDefId, settlementEntryId, availableRate.getEntryId());
-                    validRateEntryIds.add(rateConfiguration.getEntryID());
+                    settlementConfigDao.save(rateConfiguration, availableRate.getEntryId());
                 } else {
                     if (rateConfiguration.getConfigID() >= 0) {
                         settlementConfigDao.delete(rateConfiguration);
                     }
-                }
-            }
-        }
-
-        //loop through all updated/inserted Rates and remove all from the settlement config that were not submitted in this request
-        List<LiteSettlementConfig> allConfigs = SettlementConfigFuncs.getAllLiteConfigsBySettlementType(settlementYukonDefId);
-        for (LiteSettlementConfig liteSettlementConfig : allConfigs) {
-            
-            //0 is default for no mapping to a YukonListEntry
-            if( liteSettlementConfig.getEntryID() > 0 && liteSettlementConfig.getEntryID() != settlementYukonDefId) {   
-                // This entry is not one of the new entries.  Delete it. 
-                if (!validRateEntryIds.contains(liteSettlementConfig.getEntryID())) {
-                    settlementConfigDao.delete(liteSettlementConfig);
                 }
             }
         }

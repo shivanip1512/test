@@ -13,22 +13,20 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Vector;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.Pair;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.customer.CICustomerBase;
-import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.db.company.SettlementConfig;
 import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.point.RawPointHistory;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.SettlementConfigFuncs;
 
@@ -328,11 +326,8 @@ public class SettlementCustomer
 	
 	public Double getCDIRate()
 	{
-		if (cdiRate == null)
-		{
-			cdiRate = Double.valueOf(SettlementConfigFuncs.getLiteSettlementConfig(getCICustomerBase().getEnergyCompany().getEnergyCompanyID().intValue(),
-																			YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO, 
-																			SettlementConfig.HECO_CDI_RATE_STRING).getFieldValue());
+		if (cdiRate == null) {
+			cdiRate = Double.valueOf(SettlementConfigFuncs.getLiteSettlementConfig(SettlementConfig.HECO_CDI_RATE_STRING));
 		}
 		return cdiRate;
 	}
@@ -342,15 +337,12 @@ public class SettlementCustomer
 	 */
 	public Double getCIDLCDemandCharge()
 	{
-		Vector configs = SettlementConfigFuncs.getLiteSettlementConfigs(getCICustomerBase().getEnergyCompany().getEnergyCompanyID().intValue(),
-																		YukonListEntryTypes.YUK_DEF_ID_SETTLEMENT_HECO,
-																		SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
+		List<Pair<Integer, String>> demandCharges = SettlementConfigFuncs.getLiteSettlementConfigs(SettlementConfig.HECO_RATE_DEMAND_CHARGE_STRING);
 		double demandCharge = 0;
-		for (int i = 0; i < configs.size(); i++)
-		{
-			LiteSettlementConfig lsc = (LiteSettlementConfig)configs.get(i);
-			if(lsc.getRefEntryID() == getCICustomerBase().getCustomer().getRateScheduleID().intValue())
-				demandCharge = Double.valueOf(lsc.getFieldValue()).doubleValue();
+		for (Pair<Integer, String> pair : demandCharges) {
+			if(pair.getFirst().intValue() == getCICustomerBase().getCustomer().getRateScheduleID()) {
+				demandCharge = Double.valueOf(pair.getSecond());
+			}
 		}
 		return new Double(demandCharge);
 	}
