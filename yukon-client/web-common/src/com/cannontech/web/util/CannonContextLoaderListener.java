@@ -22,7 +22,6 @@ import javax.servlet.ServletContextListener;
 
 import org.springframework.web.context.ContextLoader;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -49,6 +48,7 @@ public class CannonContextLoaderListener implements ServletContextListener {
     /**
      * Initialize the root web application context.
      */
+    @Override
     public void contextInitialized(ServletContextEvent event) {
     	String appName = event.getServletContext().getInitParameter("cti.app.name");
         System.setProperty("cti.app.name", appName);
@@ -59,7 +59,9 @@ public class CannonContextLoaderListener implements ServletContextListener {
             this.contextLoader = createContextLoader();
             this.contextLoader.initWebApplicationContext(event.getServletContext());
         } catch (Throwable t) {
-            CTILogger.error("Unable to initialize Spring Context. Setting error flag.", t);
+            // We have to use standard error because logging hasn't been initialized yet.
+            System.err.println("Unable to initialize Spring Context. Setting error flag.");
+            t.printStackTrace(System.err);
             ServletContext servletContext = event.getServletContext();
             ErrorHelperFilter.recordStartupError(servletContext, t);
         }
@@ -84,6 +86,7 @@ public class CannonContextLoaderListener implements ServletContextListener {
     /**
      * Close the root web application context.
      */
+    @Override
     public void contextDestroyed(ServletContextEvent event) {
         if (this.contextLoader != null) {
             this.contextLoader.closeWebApplicationContext(event.getServletContext());
