@@ -13,8 +13,6 @@ public class LmDeviceDto {
 
     private String accountNumber;
     private String serialNumber;
-    private String manufacturer;
-    private String model;
     private String deviceType;
     private String deviceLabel;
     private Date fieldInstallDate;
@@ -38,22 +36,6 @@ public class LmDeviceDto {
         this.serialNumber = serialNumber;
     }
     
-    public String getManufacturer() {
-        return manufacturer;
-    }
-    
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-    
-    public String getModel() {
-        return model;
-    }
-    
-    public void setModel(String model) {
-        this.model = model;
-    }
-
     public String getDeviceType() {
         return deviceType;
     }
@@ -106,8 +88,6 @@ public class LmDeviceDto {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("accountNumber", getAccountNumber());
         tsc.append("serialNumber", getSerialNumber());
-        tsc.append("manufacturer", getManufacturer());
-        tsc.append("model", getModel());
         tsc.append("deviceType", getDeviceType());
         tsc.append("fieldInstallDate", getFieldInstallDate());
         tsc.append("serviceCompanyName", getServiceCompanyName());
@@ -116,4 +96,5 @@ public class LmDeviceDto {
 
         return tsc.toString();
     }
+    
 }

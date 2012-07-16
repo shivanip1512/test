@@ -39,17 +39,14 @@ public interface StarsInventoryBaseService {
             LiteStarsEnergyCompany energyCompany, LiteYukonUser user);
 
     /**
-     * Removes a hardware device from the customer account. If
-     * deleteFromInventory is true, deletes the device from the Inventory also.
+     * Removes a hardware device from the customer account. 
      * Handles only LMHardware devices for now, will need to support other
      * device types later.
      * @param liteInv
-     * @param deleteFromInventory
      * @param energyCompany
      * @param user
      */
-    public void removeDeviceFromAccount(LiteInventoryBase liteInv,
-            boolean deleteFromInventory, LiteStarsEnergyCompany energyCompany,
+    public void removeDeviceFromAccount(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany,
             LiteYukonUser user);
 
     /**

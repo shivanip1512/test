@@ -66,8 +66,6 @@ public class ImportFields {
 	public static final int IDX_R3_STATUS = inv_idx++;
     public static final int IDX_OPTION_PARAMS = inv_idx++;
     public static final int IDX_DEVICE_LABEL = inv_idx++;
-    public static final int IDX_DEVICE_MANUFACTURER = inv_idx++;
-    public static final int IDX_DEVICE_MODEL = inv_idx++;
     public static final int NUM_INV_FIELDS = inv_idx;
 	
 	// Appliance fields

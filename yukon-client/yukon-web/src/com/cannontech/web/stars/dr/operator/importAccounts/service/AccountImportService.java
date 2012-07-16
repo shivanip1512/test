@@ -524,8 +524,6 @@ public class AccountImportService {
                         
                         YukonSelectionList devTypeList = lsec.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
                         YukonListEntry deviceType = yukonListDao.getYukonListEntry(devTypeList, hwFields[ImportFields.IDX_DEVICE_TYPE]);
-                        String manufacturer = null;
-                        String model = null;
                         HardwareType type = null;
                         
                         if (deviceType == null) {
@@ -535,21 +533,6 @@ public class AccountImportService {
                             custLines.put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
-                        } else {
-                            type = HardwareType.valueOf(deviceType.getYukonDefID());
-                            if (type.isRf()) {
-                                manufacturer = hwFields[ImportFields.IDX_DEVICE_MANUFACTURER].trim();
-                                model = hwFields[ImportFields.IDX_DEVICE_MODEL].trim();
-                                if (manufacturer.length() == 0 || model.length() == 0) {
-                                    // RF types require manufacturer and model fields
-                                    result.custFileErrors++;
-                                    String[] value = custLines.get(lineNoKey);
-                                    value[1] = "[line: " + lineNo + " error: RF device types require \"" + hwFields[ImportFields.IDX_DEVICE_MANUFACTURER] + "\" and " +" \"" + hwFields[ImportFields.IDX_DEVICE_MODEL] + "\" fields]";
-                                    custLines.put(lineNoKey, value);
-                                    addToLog(lineNoKey, value, importLog);
-                                    continue;
-                                }
-                            }
                         }
                         
                         String[] appFields = null;
@@ -573,7 +556,7 @@ public class AccountImportService {
                                 LiteInventoryBase liteInv = null;
                                 
                                 // IMPORT HARDWARE
-                                liteInv = importHardware(hwFields, liteAcctInfo, lsec, result, user);
+                                liteInv = importHardware(hwFields, liteAcctInfo, lsec, result, user, type);
 
                                 if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
                                         && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -849,7 +832,8 @@ public class AccountImportService {
                     if (!preScan) {
                         LiteInventoryBase liteInv;
                         try {
-                            liteInv = importHardware(hwFields, liteAcctInfo, lsec, result, user);                            
+                            HardwareType type = HardwareType.valueOf(deviceType.getYukonDefID());
+                            liteInv = importHardware(hwFields, liteAcctInfo, lsec, result, user, type);                            
 
                             if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
                                     && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -986,7 +970,8 @@ public class AccountImportService {
                                              LiteAccountInfo liteAcctInfo, 
                                              LiteStarsEnergyCompany lsec, 
                                              AccountImportResult result, 
-                                             LiteYukonUser user) throws Exception {
+                                             LiteYukonUser user,
+                                             HardwareType type) throws Exception {
         
         LiteInventoryBase liteInv = null;
 
@@ -1028,7 +1013,7 @@ public class AccountImportService {
                 
                 // ADD HARDWARE
                 LmDeviceDto dto = dtoConverter.createNewDto(accountNumber, hwFields, lsec);
-                liteInv = deviceHelper.addDeviceToAccount(dto, result.getCurrentUser());
+                liteInv = deviceHelper.addDeviceToAccount(dto, result.getCurrentUser(), type);
                 
                 result.getHardwareAdded().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             } else if (!result.isInsertSpecified()) {
@@ -1037,7 +1022,7 @@ public class AccountImportService {
                 // UPDATE HARDWARE
                 LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, lsec);
                 dtoConverter.updateDtoWithHwFields(dto, hwFields, lsec);
-                liteInv = deviceHelper.updateDeviceOnAccount(dto, result.getCurrentUser());
+                liteInv = deviceHelper.updateDeviceOnAccount(dto, result.getCurrentUser(), type);
                 
                 result.getHardwareUpdated().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             }

@@ -23,10 +23,10 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsInventoryBaseService;
 import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -293,7 +293,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Override
     @Transactional
     public void removeDeviceFromAccount(LiteInventoryBase liteInventory,
-            boolean deleteFromInventory, 
             LiteStarsEnergyCompany energyCompany,
             LiteYukonUser user) {
         
@@ -306,45 +305,38 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             unenrollHardware(liteInventory, user, energyCompany);
         }
         
-        if (deleteFromInventory) {
-            
-            inventoryBaseDao.deleteInventoryBase(inventoryId);
-            hardwareEventLogService.hardwareDeleted(user, liteInventory.getDeviceLabel());
-            
+        int accountId = liteInventory.getAccountID();
+        long remove = liteInventory.getRemoveDate();
+        Instant removeInstant;
+        if (remove <= 0) {
+            removeInstant = new Instant();
         } else {
-            int accountId = liteInventory.getAccountID();
-            long remove = liteInventory.getRemoveDate();
-            Instant removeInstant;
-            if (remove <= 0) {
-                removeInstant = new Instant();
-            } else {
-                removeInstant = new Instant(remove);
-            }
-            liteInventory.setRemoveDate(remove);
-
-            // add UnInstall hardware event
-            addUnInstallHardwareEvent(liteInventory, energyCompany, user);
-
-            // Delete appliances for the account/inventory id
-            if (enrollable) {
-                applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);
-            }
-
-            // update the Inventory to remove it from the account
-            inventoryBaseDao.removeInventoryFromAccount(inventoryId, removeInstant);
-            
-            // cleaup gateway assignments for zigbee devices
-            HardwareClass hardwareClass = identifier.getHardwareType().getHardwareClass();
-            if (hardwareClass == HardwareClass.GATEWAY) {
-                gatewayDeviceDao.removeDevicesFromGateway(liteInventory.getDeviceID());
-            } else if (identifier.getHardwareType().isZigbee()) {
-                gatewayDeviceDao.unassignDeviceFromGateway(liteInventory.getDeviceID());
-            }
-
-            // log removal
-            CustomerAccount account = customerAccountDao.getById(accountId);
-            hardwareEventLogService.hardwareRemoved(user, liteInventory.getDeviceLabel(), account.getAccountNumber());
+            removeInstant = new Instant(remove);
         }
+        liteInventory.setRemoveDate(remove);
+
+        // add UnInstall hardware event
+        addUnInstallHardwareEvent(liteInventory, energyCompany, user);
+
+        // Delete appliances for the account/inventory id
+        if (enrollable) {
+            applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);
+        }
+
+        // update the Inventory to remove it from the account
+        inventoryBaseDao.removeInventoryFromAccount(inventoryId, removeInstant);
+        
+        // cleaup gateway assignments for zigbee devices
+        HardwareClass hardwareClass = identifier.getHardwareType().getHardwareClass();
+        if (hardwareClass == HardwareClass.GATEWAY) {
+            gatewayDeviceDao.removeDevicesFromGateway(liteInventory.getDeviceID());
+        } else if (identifier.getHardwareType().isZigbee()) {
+            gatewayDeviceDao.unassignDeviceFromGateway(liteInventory.getDeviceID());
+        }
+
+        // log removal
+        CustomerAccount account = customerAccountDao.getById(accountId);
+        hardwareEventLogService.hardwareRemoved(user, liteInventory.getDeviceLabel(), account.getAccountNumber());
     }
 
     // Unenrolls the inventory from all its programs

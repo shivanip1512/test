@@ -7,10 +7,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsInventoryBaseService;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
@@ -24,56 +26,32 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsExcept
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountException;
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 
-public class StarsControllableDeviceHelperImpl implements
-        StarsControllableDeviceHelper {
+public class StarsControllableDeviceHelperImpl implements StarsControllableDeviceHelper {
 
-    private StarsSearchDao starsSearchDao;
-    private CustomerAccountDao customerAccountDao;    
-    private StarsInventoryBaseService starsInventoryBaseService;
-    private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsSearchDao starsSearchDao;
+    @Autowired private CustomerAccountDao customerAccountDao;    
+    @Autowired private StarsInventoryBaseService starsInventoryBaseService;
+    @Autowired private StarsDatabaseCache cache;
+    @Autowired private YukonEnergyCompanyService yecService;
 
-    @Autowired
-    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
-        this.starsSearchDao = starsSearchDao;
-    }
-
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-
-    @Autowired
-    public void setStarsInventoryBaseService(
-            StarsInventoryBaseService starsInventoryBaseService) {
-        this.starsInventoryBaseService = starsInventoryBaseService;
-    }
-    
-    @Autowired    
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-
-    private String getAccountNumber(LmDeviceDto deviceInfo) {
-        String acctNum = deviceInfo.getAccountNumber();
+    private String getAccountNumber(LmDeviceDto dto) {
+        String acctNum = dto.getAccountNumber();
         if (StringUtils.isBlank(acctNum)) {
             throw new StarsInvalidArgumentException("Account Number is required");
         }
         return acctNum;
     }
 
-    private String getSerialNumber(LmDeviceDto deviceInfo) {
-        String serialNum = deviceInfo.getSerialNumber();
+    private String getSerialNumber(LmDeviceDto dto) {
+        String serialNum = dto.getSerialNumber();
         if (StringUtils.isBlank(serialNum)) {
             throw new StarsInvalidArgumentException("Serial Number is required");
         } 
-        // Serial number validation that it should be numeric, upto 18-digits removed for now.
-//        else if (!InventoryUtils.isValidHardwareSerialNumber(serialNum)) {
-//            throw new StarsInvalidArgumentException("Invalid Serial Number [" + serialNum + "], should be numeric upto 18-digits");        
-//        }
         return serialNum;
     }
 
@@ -85,206 +63,187 @@ public class StarsControllableDeviceHelperImpl implements
         return deviceType;
     }
 
-    private CustomerAccount getCustomerAccount(
-            LmDeviceDto deviceInfo,
-            LiteStarsEnergyCompany energyCompany) {
+    private CustomerAccount getCustomerAccount(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
         CustomerAccount custAcct = null;
         try {
-            custAcct = customerAccountDao.getByAccountNumber(getAccountNumber(deviceInfo),
-                                                             energyCompany.getLiteID());
+            custAcct = customerAccountDao.getByAccountNumber(getAccountNumber(dto), lsec.getLiteID());
         } catch (NotFoundException e) {
             // convert to a better, Account not found exception
-            throw new StarsAccountNotFoundException(getAccountNumber(deviceInfo),
-                                                    energyCompany.getName(),
-                                                    e);
+            throw new StarsAccountNotFoundException(getAccountNumber(dto), lsec.getName(), e);
         }
         return custAcct;
     }
 
     /**
      * Returns the YukonListEntry id value for deviceInfo.deviceType
-     * Performs initial validation on deviceType as defined by getDeviceType(deviceInfo).
-     * @param deviceInfo
-     * @param energyCompany
+     * Performs initial validation on deviceType as defined by getDeviceType(dto).
+     * @param dto
+     * @param lsec
      * @return deviceTypeId - yukonListEntry id value.
      * @throws StarsInvalidDeviceTypeException if yukonListEntry is not found for deviceInfo.deviceType 
      */
-    private int getDeviceTypeId(LmDeviceDto deviceInfo,
-            LiteStarsEnergyCompany energyCompany) {
-    	String deviceType = getDeviceType(deviceInfo);
+    private int getDeviceTypeId(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
+    	String deviceType = getDeviceType(dto);
     	try {
     		int deviceTypeId = YukonListEntryHelper.getEntryIdForEntryText(deviceType, 
     				YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
-    				energyCompany);
-    		return deviceTypeId;	
+    				lsec);
+    		
+    		return deviceTypeId;
+    		
     	} catch (NotFoundException e) {
-            throw new StarsInvalidDeviceTypeException(deviceType,
-                                                      energyCompany.getName());
+            throw new StarsInvalidDeviceTypeException(deviceType, lsec.getName());
         }
     }
 
     @Override
-    public LiteInventoryBase addDeviceToAccount(LmDeviceDto deviceInfo,
-             LiteYukonUser user) {
+    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user, HardwareType type) {
 
         LiteInventoryBase liteInv = null;
         
         //Get energyCompany for the user
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        YukonEnergyCompany yec = yecService.getEnergyCompanyByOperator(user);
+        LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
         
         // Get Inventory, if exists on account
-        liteInv = getInventoryOnAccount(deviceInfo, energyCompany);
+        liteInv = getInventoryOnAccount(dto, lsec);
         // Inventory already exists on the account
         if (liteInv != null) {
-            throw new StarsDeviceAlreadyExistsException(getAccountNumber(deviceInfo),
-                                                        getSerialNumber(deviceInfo),
-                                                        energyCompany.getName());
+            throw new StarsDeviceAlreadyExistsException(getAccountNumber(dto), getSerialNumber(dto), yec.getName());
         }
         // add device to account
-        liteInv = internalAddDeviceToAccount(deviceInfo,
-                                             energyCompany,
-                                             user);
+        liteInv = internalAddDeviceToAccount(dto, lsec, user, type);
         return liteInv;
     }
 
     // Gets Inventory if exists on the account
-    private LiteInventoryBase getInventoryOnAccount(
-            LmDeviceDto deviceInfo,
-            LiteStarsEnergyCompany energyCompany) {
-        LiteInventoryBase liteInvAcct = null;
+    private LiteInventoryBase getInventoryOnAccount(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
+        
+        LiteInventoryBase lib = null;
 
-        CustomerAccount custAcct = getCustomerAccount(deviceInfo, energyCompany);
-        LiteInventoryBase liteInv = getInventory(deviceInfo, energyCompany);
-        if (liteInv != null && liteInv.getAccountID() == custAcct.getAccountId()) {
-            liteInvAcct = liteInv;
+        CustomerAccount custAcct = getCustomerAccount(dto, lsec);
+        LiteInventoryBase existing = getInventory(dto, lsec);
+        if (existing != null && existing.getAccountID() == custAcct.getAccountId()) {
+            lib = existing;
         }
 
-        return liteInvAcct;
+        return lib;
 
     }
 
     // Gets Inventory if exists for the energyCompany
     // Handles only LMHardware devices for now, will need to support other
     // device types later.
-    private LiteInventoryBase getInventory(
-            LmDeviceDto deviceInfo,
-            LiteStarsEnergyCompany energyCompany) {
-        LiteInventoryBase liteInv = null;
-
+    private LiteInventoryBase getInventory(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
+        
+        LiteInventoryBase lib = null;
         try {
-            int deviceTypeId = getDeviceTypeId(deviceInfo, energyCompany);
-            int categoryID = InventoryUtils.getInventoryCategoryID(deviceTypeId,
-                                                                   energyCompany);
+            int deviceTypeId = getDeviceTypeId(dto, lsec);
+            int categoryID = InventoryUtils.getInventoryCategoryID(deviceTypeId, lsec);
+            
             boolean lmHardware = InventoryUtils.isLMHardware(categoryID);
             if (lmHardware) {
-                LiteLmHardwareBase lmhw = (LiteLmHardwareBase) starsSearchDao.searchLmHardwareBySerialNumber(getSerialNumber(deviceInfo),
-                                                                                                               energyCompany);
-                liteInv = lmhw;
+                LiteLmHardwareBase lmhw = (LiteLmHardwareBase) starsSearchDao.searchLmHardwareBySerialNumber(getSerialNumber(dto), lsec);
+                lib = lmhw;
             }
         } catch (ObjectInOtherEnergyCompanyException e) {
             throw new RuntimeException(e);
         }
 
-        return liteInv;
+        return lib;
     }
 
     // Creates new Inventory based on the deviceType
     // Handles only LMHardware devices for now, will need to support other
     // device types later.
-    private LiteInventoryBase createNewInventory(
-            LmDeviceDto deviceInfo,
-            LiteStarsEnergyCompany energyCompany) {
-        LiteInventoryBase liteInv = null;
+    private LiteInventoryBase buildLiteInventoryBase(LmDeviceDto dto, LiteStarsEnergyCompany lsec) {
+        
+        LiteInventoryBase lib = null;
 
-        int deviceTypeId = getDeviceTypeId(deviceInfo, energyCompany);
-        int categoryID = InventoryUtils.getInventoryCategoryID(deviceTypeId,
-                                                               energyCompany);
+        int deviceTypeId = getDeviceTypeId(dto, lsec);
+        int categoryID = InventoryUtils.getInventoryCategoryID(deviceTypeId, lsec);
         boolean lmHardware = InventoryUtils.isLMHardware(categoryID);
+        
         if (lmHardware) {
             LiteLmHardwareBase lmhw = new LiteLmHardwareBase();
             lmhw.setCategoryID(categoryID);
             lmhw.setLmHardwareTypeID(deviceTypeId);
-            lmhw.setManufacturerSerialNumber(getSerialNumber(deviceInfo));
+            lmhw.setManufacturerSerialNumber(getSerialNumber(dto));
             lmhw.setInstallDate(new Date().getTime());
             // force not null
             lmhw.setAlternateTrackingNumber("");
             lmhw.setNotes("");
             lmhw.setDeviceLabel("");
 
-            liteInv = lmhw;
+            lib = lmhw;
         }
 
-        return liteInv;
+        return lib;
     }
 
-    private LiteInventoryBase internalAddDeviceToAccount(
-            LmDeviceDto deviceInfo,
-            LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+    private LiteInventoryBase internalAddDeviceToAccount(LmDeviceDto dto, 
+                                                         LiteStarsEnergyCompany lsec, 
+                                                         LiteYukonUser user, 
+                                                         HardwareType type) {
 
-        LiteInventoryBase liteInv = null;
+        LiteInventoryBase lib = null;
         // See if Inventory exists
-        liteInv = getInventory(deviceInfo, energyCompany);
+        lib = getInventory(dto, lsec);
 
-        if (liteInv != null) {
+        if (lib != null) {
             // Inventory associated to an account, error out
-            if (liteInv.getAccountID() > 0) {
-                throw new StarsDeviceAlreadyAssignedException(getAccountNumber(deviceInfo),
-                                                              getSerialNumber(deviceInfo),
-                                                              energyCompany.getName());
+            if (lib.getAccountID() > 0) {
+                throw new StarsDeviceAlreadyAssignedException(getAccountNumber(dto), getSerialNumber(dto), lsec.getName());
             }
             // existing inventory, reset some fields
             // currentStateId should be retained
-            liteInv.setRemoveDate(0);
-            liteInv.setInstallDate(new Date().getTime());
+            lib.setRemoveDate(0);
+            lib.setInstallDate(new Date().getTime());
         }// Inventory doesn't exist, create a new one
         else {
-            liteInv = createNewInventory(deviceInfo, energyCompany);
+            lib = buildLiteInventoryBase(dto, lsec);
         }
 
         // By this point, we should have an existing or new Inventory to add
         // to account
-        if (liteInv == null) {
-            throw new StarsInvalidDeviceTypeException(getDeviceType(deviceInfo),
-                                                      energyCompany.getName());
+        if (lib == null) {
+            throw new StarsInvalidDeviceTypeException(getDeviceType(dto), lsec.getName());
         }
         // set common fields on the Inventory
-        setInventoryValues(deviceInfo, liteInv, energyCompany);
+        setInventoryValues(dto, lib, lsec);
 
         // call service to add device on the customer account
-        liteInv = starsInventoryBaseService.addDeviceToAccount(liteInv,
-                                                               energyCompany,
-                                                               user, true);
-        return liteInv;
+        lib = starsInventoryBaseService.addDeviceToAccount(lib, lsec, user, true);
+        return lib;
     }
 
-    private void setInventoryValues(LmDeviceDto deviceInfo,
-            LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
+    private void setInventoryValues(LmDeviceDto dto, LiteInventoryBase lib, LiteStarsEnergyCompany lsec) {
         // update install date, if specified
-        Date installDate = deviceInfo.getFieldInstallDate();
+        Date installDate = dto.getFieldInstallDate();
         if (installDate != null) {
-            liteInv.setInstallDate(installDate.getTime());
+            lib.setInstallDate(installDate.getTime());
         }
 
         // update Device label, if specified
-        String deviceLabel = deviceInfo.getDeviceLabel();
+        String deviceLabel = dto.getDeviceLabel();
         if (deviceLabel != null) {
-            liteInv.setDeviceLabel(deviceLabel);
+            lib.setDeviceLabel(deviceLabel);
         }
 
         // Derive Account Id
-        CustomerAccount custAcct = getCustomerAccount(deviceInfo, energyCompany);
-        liteInv.setAccountID(custAcct.getAccountId());
+        CustomerAccount custAcct = getCustomerAccount(dto, lsec);
+        lib.setAccountID(custAcct.getAccountId());
 
         // Derive and update Installation Company id, if specified
-        String serviceCompany = deviceInfo.getServiceCompanyName();
+        String serviceCompany = dto.getServiceCompanyName();
         if (serviceCompany != null) {
             if (StringUtils.isBlank(serviceCompany)) {
-                liteInv.setInstallationCompanyID(0);
+                lib.setInstallationCompanyID(0);
             } else {
-                List<LiteServiceCompany> companies = energyCompany.getAllServiceCompanies();
+                List<LiteServiceCompany> companies = lsec.getAllServiceCompanies();
                 for (LiteServiceCompany entry : companies) {
                     if (entry.getCompanyName().equalsIgnoreCase(serviceCompany)) {
-                        liteInv.setInstallationCompanyID(entry.getCompanyID());
+                        lib.setInstallationCompanyID(entry.getCompanyID());
                         break;
                     }
                 }
@@ -294,35 +253,32 @@ public class StarsControllableDeviceHelperImpl implements
     }
 
     @Override
-    public LiteInventoryBase updateDeviceOnAccount(
-            LmDeviceDto deviceInfo, LiteYukonUser user) {
+    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser user, HardwareType type) {
 
-        LiteInventoryBase liteInv = null;
+        LiteInventoryBase lib = null;
         
         //Get energyCompany for the user
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        LiteStarsEnergyCompany energyCompany = cache.getEnergyCompanyByUser(user);
         
         // Get Inventory if exists on account
-        liteInv = getInventoryOnAccount(deviceInfo, energyCompany);
+        lib = getInventoryOnAccount(dto, energyCompany);
         // Inventory exists on the account
-        if (liteInv != null) {
+        if (lib != null) {
             // existing inventory, reset some fields
-            liteInv.setRemoveDate(0);
+            lib.setRemoveDate(0);
 
             // set common fields on the Inventory
-            setInventoryValues(deviceInfo, liteInv, energyCompany);
+            setInventoryValues(dto, lib, energyCompany);
 
             // call service to update device on the customer account
-            liteInv = starsInventoryBaseService.updateDeviceOnAccount(liteInv,
+            lib = starsInventoryBaseService.updateDeviceOnAccount(lib,
                                                                       energyCompany,
                                                                       user);
         } else {
             // add device to account
-            liteInv = internalAddDeviceToAccount(deviceInfo,
-                                                 energyCompany,
-                                                 user);
+            lib = internalAddDeviceToAccount(dto, energyCompany, user, type);
         }
-        return liteInv;
+        return lib;
     }
 
     @Override
@@ -332,15 +288,14 @@ public class StarsControllableDeviceHelperImpl implements
         LiteInventoryBase liteInv = null;
         
         //Get energyCompany for the user
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+        YukonEnergyCompany yec = yecService.getEnergyCompanyByOperator(user);
+        LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
 
         // Get Inventory if exists on account
-        liteInv = getInventoryOnAccount(deviceInfo, energyCompany);
+        liteInv = getInventoryOnAccount(deviceInfo, lsec);
         // Error, if Inventory not found on the account
         if (liteInv == null) {
-            throw new StarsDeviceNotFoundOnAccountException(getAccountNumber(deviceInfo),
-                                                            getSerialNumber(deviceInfo),
-                                                            energyCompany.getName());
+            throw new StarsDeviceNotFoundOnAccountException(getAccountNumber(deviceInfo), getSerialNumber(deviceInfo), lsec.getName());
         }
 
         // Remove date defaults to current date, if not specified
@@ -351,10 +306,7 @@ public class StarsControllableDeviceHelperImpl implements
         liteInv.setRemoveDate(removeDate.getTime());
 
         // Remove device from the account
-        starsInventoryBaseService.removeDeviceFromAccount(liteInv,
-                                                          false,
-                                                          energyCompany,
-                                                          user);
+        starsInventoryBaseService.removeDeviceFromAccount(liteInv, lsec, user);
     }
 
 }

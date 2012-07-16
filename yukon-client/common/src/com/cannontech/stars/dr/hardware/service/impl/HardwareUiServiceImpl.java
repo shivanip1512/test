@@ -506,7 +506,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                                    LiteStarsEnergyCompany energyCompany,
                                    LiteYukonUser user) {
         if (fromAccount) {
-            starsInventoryBaseService.removeDeviceFromAccount(liteInventoryBase, false, energyCompany, user);
+            starsInventoryBaseService.removeDeviceFromAccount(liteInventoryBase, energyCompany, user);
         }
         
         liteInventoryBase.setAccountID(accountId);
@@ -590,12 +590,12 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         /* If this is a meter change out, the newInventoryId will be a pao id */
         if (isMeter) {
             int accountId = oldInventory.getAccountID();
-            starsInventoryBaseService.removeDeviceFromAccount(oldInventory, false, energyCompany, user);
+            starsInventoryBaseService.removeDeviceFromAccount(oldInventory, energyCompany, user);
             addYukonMeter(newInventoryId, accountId, user);
         } else {
             LiteInventoryBase newInventory = inventoryBaseDao.getByInventoryId(newInventoryId);
             newInventory.setAccountID(oldInventory.getAccountID());
-            starsInventoryBaseService.removeDeviceFromAccount(oldInventory, false, energyCompany, user);
+            starsInventoryBaseService.removeDeviceFromAccount(oldInventory, energyCompany, user);
             starsInventoryBaseService.addDeviceToAccount(newInventory, energyCompany, user, false);
         }
         

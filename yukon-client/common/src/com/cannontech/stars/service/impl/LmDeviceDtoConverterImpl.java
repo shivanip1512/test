@@ -8,13 +8,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.constants.YukonListEntry;
-import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.service.LmDeviceDtoConverter;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.util.ImportFields;
@@ -33,9 +31,8 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
 		
 		dto.setDeviceLabel(hwFields[ImportFields.IDX_DEVICE_LABEL]);
 		String deviceTypeText = hwFields[ImportFields.IDX_DEVICE_TYPE];
-		YukonSelectionList deviceType = lsec.getYukonSelectionList(YukonSelectionListEnum.DEVICE_TYPE.getListName());
         dto.setDeviceType(deviceTypeText);
-		
+        
 		dto.setFieldInstallDate(new Date());
 		if (!StringUtils.isBlank(hwFields[ImportFields.IDX_INSTALL_DATE])) {
 			Date installDate = ServletUtil.parseDateStringLiberally(hwFields[ImportFields.IDX_INSTALL_DATE], lsec.getDefaultTimeZone());
