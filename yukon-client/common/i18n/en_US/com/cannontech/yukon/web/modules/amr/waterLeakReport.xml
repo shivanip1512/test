@@ -17,15 +17,14 @@
         <li>To view interval data check the respective checkbox in the table below, then click the "View Interval Data" button</li>
         </ul>
     ]]></entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.noResults"><![CDATA[
-         No leaks were found using our {0} and the {1}. This is possibly an indication that your filter needs tweaking.
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.noResults">No leaks were found using our {0} and the {1}. This is possibly an indication that your filter needs tweaking.</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filterBetweenFromAndToBreach"><![CDATA[
+         The {0} has a from date and to date that are {1,choice,0#0 hours|1#1 hour|1<{1} hours} apart. A {2} hour period or longer is recommended for accurately determining leaks.
     ]]></entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.filterDatetimeBreach"><![CDATA[
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filterBetweenToAndNowBreach"><![CDATA[
          The {0} has a from date of {1,choice,0#0 hours|1#1 hour|1<{1} hours} ago. Data may not yet be expected for some devices during this time.
     ]]></entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.foundLeaks"><![CDATA[
-         There have been {0} water leaks identified (see below) using our {1} and based on the {2}.
-    ]]></entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.foundLeaks">There have been {0} water leaks identified (see below) using our {1} and based on the {2}.</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.currentFilter">current filter</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.clickHere">click here</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm">leak detection algorithm</entry>
@@ -33,7 +32,7 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason1">A leak is detected when every metering interval over the selected reporting period has usage greater than the filter's threshold value in gallons (this is zero by default).</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason2">If any of the interval data during the period is not yet collected for a meter, that meter will not be flagged for leaks regardless of what any partial data shows. This is to prevent false alarms.</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithmReason3">To ensure meters have a full set of data for the reporting period, it's recommended that the report stop time is at least as far back from the current time as the RFN reporting interval (the water node reporting interval is 24 hours by default, so the report defaults to 25+ hours ago for the stop time).</entry>
-	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterShortcutOpen"><![CDATA[Shortcut: Pressing f also opens this dialog box]]></entry>
+	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterShortcutOpen">Shortcut: Pressing f also opens this dialog box</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterButtonTitle">View report using above values</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterResetButtonTitle">View default report</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.filterShortcutClose">Press Esc to close</entry>
@@ -58,7 +57,6 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.leakRate.linkText">Leak Rate</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.cisDetails">Customer Info</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.viewCISDetails">View Details</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.noPrimaryMultiVendor">No Primary Multispeak Vendor Configured</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.noLeaks">No Leaks</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.viewIntervalData">View Interval Data</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.viewIntervalDataTitle">View interval data for the selected devices</entry>

@@ -94,13 +94,23 @@
 				<cti:msg2 key=".firstVisit" arguments="${arguments}" htmlEscape="false"/>
 			</div>
 		</c:when>
-		<c:when test="${not empty filter_datetime_breach}">
+		<c:when test="${not empty from_toInstant_breach}">
 		    <div class="page_error">
 				<cti:list var="arguments">
                     <cti:item value="${current_filter}"/>
-					<cti:item value="${filter_datetime_breach}"/>
+					<cti:item value="${from_toInstant_breach}"/>
+					<cti:item value="${reporting_interval}"/>
 				</cti:list>
-				<cti:msg2 key=".filterDatetimeBreach" arguments="${arguments}" htmlEscape="false"/>
+				<cti:msg2 key=".filterBetweenFromAndToBreach" arguments="${arguments}" htmlEscape="false"/>
+		    </div>
+		</c:when>
+		<c:when test="${not empty toInstant_now_breach}">
+		    <div class="page_error">
+				<cti:list var="arguments">
+                    <cti:item value="${current_filter}"/>
+					<cti:item value="${toInstant_now_breach}"/>
+				</cti:list>
+				<cti:msg2 key=".filterBetweenToAndNowBreach" arguments="${arguments}" htmlEscape="false"/>
 		    </div>
 		</c:when>
 		<c:when test="${filterResult.hitCount == 0}">
@@ -167,7 +177,7 @@
 					<th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="report" fieldName="METER_NUMBER"/></th>
 					<th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="report" fieldName="PAO_TYPE"/></th>
 					<th><tags:sortLink nameKey="tableHeader.leakRate" baseUrl="report" fieldName="LEAK_RATE"/></th>
-					<th><i:inline key=".tableHeader.cisDetails"/></th>
+                    <c:if test="${hasVendorId}"><th><i:inline key=".tableHeader.cisDetails"/></th></c:if>
 				</tr>
 			</thead>
 			<tbody>
@@ -191,20 +201,13 @@
 						<td>${fn:escapeXml(row.meter.meterNumber)}</td>
 						<td><tags:paoType yukonPao="${row.meter}"/></td>
 						<td><i:inline key=".leakRateLabel" arguments="${row.leakRate}"/></td>
-						<td>
-                            <c:choose>
-								<c:when test="${hasVendorId}">
-									<a href="javascript:void(0);" class="f_cis_details">
-                                        <i:inline key=".viewCISDetails"/>
-									</a>
-								</c:when>
-								<c:otherwise>
-									<span class="disabled" title="<cti:msg2 key=".noPrimaryMultiVendor"/>">
-                                        <i:inline key=".viewCISDetails"/>
-									</span>
-								</c:otherwise>
-							</c:choose>
-                        </td>
+                        <c:if test="${hasVendorId}">
+							<td>
+								<a href="javascript:void(0);" class="f_cis_details">
+                                    <i:inline key=".viewCISDetails"/>
+								</a>
+	                        </td>
+                        </c:if>
 					</tr>
 				</c:forEach>
 			</tbody>

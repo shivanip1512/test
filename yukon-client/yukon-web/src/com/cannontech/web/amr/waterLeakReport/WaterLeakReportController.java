@@ -408,9 +408,14 @@ public class WaterLeakReportController {
         model.addAttribute("filterResult", filterResult);
         model.addAttribute("backingBean", backingBean);
 
-        Hours hoursBetween = Hours.hoursBetween(backingBean.getToInstant(), new Instant());
-        if (hoursBetween.isLessThan(water_node_reporting_interval)) {
-            model.addAttribute("filter_datetime_breach", hoursBetween.getHours());
+        Hours hoursBetweenToInstantAndNow = Hours.hoursBetween(backingBean.getToInstant(), new Instant());
+        if (hoursBetweenToInstantAndNow.isLessThan(water_node_reporting_interval)) {
+            model.addAttribute("toInstant_now_breach", hoursBetweenToInstantAndNow.getHours());
+        }
+        Hours hoursBetweenFromAndToInstant = Hours.hoursBetween(backingBean.getFromInstant(), backingBean.getToInstant());
+        if (hoursBetweenFromAndToInstant.isLessThan(water_node_reporting_interval)) {
+            model.addAttribute("reporting_interval", water_node_reporting_interval.getHours());
+            model.addAttribute("from_toInstant_breach", hoursBetweenFromAndToInstant.getHours());
         }
 
         if (backingBean.getDeviceCollection() != null) {
