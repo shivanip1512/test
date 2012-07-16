@@ -24,9 +24,9 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
     private static String documentQuery;
     {
         SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
-        sql.append("SELECT CA.AccountId, CA.AccountNumber, ECTAM.EnergyCompanyId");
-        sql.append("FROM CustomerAccount CA");
-        sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = CA.AccountId");
+        sql.append(getQuerySelect());
+        sql.append(getQueryGuts());
+        sql.append(getQueryOrderBy());
         
         documentQuery = sql.toString();
     }
@@ -35,10 +35,24 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
     {
         SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
         sql.append("SELECT COUNT(*)");
-        sql.append("FROM CustomerAccount CA");
-        sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = CA.AccountId");
+        sql.append(getQueryGuts());
 
         documentCountQuery = sql.toString();
+    }
+    
+    private SqlStatementBuilder getQuerySelect() {
+        return new SqlStatementBuilder("SELECT CA.AccountId, CA.AccountNumber, ECTAM.EnergyCompanyId");
+    }
+    
+    private SqlStatementBuilder getQueryGuts() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("FROM CustomerAccount CA");
+        sql.append("  JOIN ECToAccountMapping ECTAM ON ECTAM.AccountId = CA.AccountId");
+        return sql;
+    }
+    
+    private SqlStatementBuilder getQueryOrderBy() {
+        return new SqlStatementBuilder("ORDER BY CA.AccountNumber, ECTAM.EnergyCompanyID");
     }
 
     public String getIndexName() {
@@ -101,8 +115,10 @@ public class CustomerAccountIndexManager extends AbstractIndexManager {
         List<Document> docList = new ArrayList<Document>();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(this.getDocumentQuery());
+        sql.append(getQuerySelect());
+        sql.append(getQueryGuts());
         sql.append("WHERE CA.AccountId").eq(accountId);
+        sql.append(getQueryOrderBy());
         
         docList = this.jdbcTemplate.query(sql.getSql(), sql.getArguments(), new DocumentMapper());
         return new IndexUpdateInfo(docList, term);

@@ -10,7 +10,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.search.YukonObjectAnalyzer;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -34,33 +36,32 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
     }
 
     protected String getDocumentQuery() {
-        String query = "select *                                                        "
-                + " from                                                                "
-                + "     point                                                           "
-                + " join                                                                "
-                + "     yukonpaobject on (yukonpaobject.paobjectid = point.paobjectid)  "
-                + " join                                                                "
-                + "     device on (deviceid = yukonpaobject.paobjectid)                 "
-                + " left join                                                           "
-                + "     pointunit on point.pointid = pointunit.pointid                  "
-                + " where                                                               "
-                + "     category = 'DEVICE'                                             ";
-        return query;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select *");
+        sql.append(getQueryGuts());
+        sql.append(getOrderBy());
+        return sql.getSql();
     }
 
     protected String getDocumentCountQuery() {
-        String query = "select count(*)                                             "
-                + " from                                                                "
-                + "     point                                                           "
-                + " join                                                                "
-                + "     yukonpaobject on (yukonpaobject.paobjectid = point.paobjectid)  "
-                + " join                                                                "
-                + "     device on (deviceid = yukonpaobject.paobjectid)                 "
-                + " left join                                                           "
-                + "     pointunit on point.pointid = pointunit.pointid                  "
-                + " where                                                               "
-                + "     category = 'DEVICE'";
-        return query;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(*)");
+        sql.append(getQueryGuts());
+        return sql.getSql();
+    }
+    
+    private SqlStatementBuilder getQueryGuts() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("from point p");
+        sql.append("join yukonpaobject ypo on (ypo.paobjectid = p.paobjectid)");
+        sql.append("join device d on (d.deviceid = ypo.paobjectid)");
+        sql.append("left join pointunit pu on p.pointid = pu.pointid");
+        sql.append("where ypo.category").eq_k(PaoCategory.DEVICE.getDbString());
+        return sql;
+    }
+    
+    private SqlStatementBuilder getOrderBy() {
+        return new SqlStatementBuilder("order by p.pointname, p.pointid");
     }
 
     protected Document createDocument(ResultSet rs) throws SQLException {
@@ -141,11 +142,14 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
 
         List<Document> docList = new ArrayList<Document>();
 
-        StringBuffer sql = new StringBuffer(this.getDocumentQuery());
-        sql.append(" AND device.deviceid = ?");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select *");
+        sql.append(getQueryGuts());
+        sql.append("AND d.deviceid").eq(deviceId);
+        sql.append(getOrderBy());
 
-        docList = this.jdbcTemplate.query(sql.toString(),
-                                          new Object[] { deviceId },
+        docList = this.jdbcTemplate.query(sql.getSql(),
+                                          sql.getArguments(),
                                           new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }
@@ -165,11 +169,14 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         }
         List<Document> docList = new ArrayList<Document>();
 
-        StringBuffer sql = new StringBuffer(this.getDocumentQuery());
-        sql.append(" AND point.pointid = ?");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select *");
+        sql.append(getQueryGuts());
+        sql.append(" AND p.pointid").eq(pointId);
+        sql.append(getOrderBy());
 
-        docList = this.jdbcTemplate.query(sql.toString(),
-                                          new Object[] { pointId },
+        docList = this.jdbcTemplate.query(sql.getSql(),
+                                          sql.getArguments(),
                                           new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }

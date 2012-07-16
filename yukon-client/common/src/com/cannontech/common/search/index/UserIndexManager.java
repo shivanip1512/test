@@ -11,6 +11,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.UserUtils;
@@ -33,13 +34,29 @@ public class UserIndexManager extends AbstractIndexManager {
     }
 
     protected String getDocumentQuery() {
-        String query = "select * from yukonuser where userid > " + UserUtils.USER_DEFAULT_ID;
-        return query;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select *");
+        sql.append(getQueryGuts());
+        sql.append(getOrderBy());
+        return sql.getSql();
     }
 
     protected String getDocumentCountQuery() {
-        String query = "select count(*) from yukonuser where userid > " + UserUtils.USER_DEFAULT_ID + " ";
-        return query;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(*)");
+        sql.append(getQueryGuts());
+        return sql.getSql();
+    }
+    
+    private SqlStatementBuilder getQueryGuts() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("from yukonuser");
+        sql.append("where userid > " + UserUtils.USER_DEFAULT_ID);
+        return sql;
+    }
+    
+    private SqlStatementBuilder getOrderBy() {
+        return new SqlStatementBuilder("order by status, username, userid");
     }
 
     protected Document createDocument(ResultSet rs) throws SQLException {
@@ -84,11 +101,14 @@ public class UserIndexManager extends AbstractIndexManager {
         Term term = new Term("userid", Integer.toString(userId));
         List<Document> docList = new ArrayList<Document>();
 
-        StringBuffer sql = new StringBuffer(this.getDocumentQuery());
-        sql.append(" AND userid = ?");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select *");
+        sql.append(getQueryGuts());
+        sql.append(" AND userid").eq(userId);
+        sql.append(getOrderBy());
 
-        docList = this.jdbcTemplate.query(sql.toString(),
-                                          new Object[] { userId },
+        docList = this.jdbcTemplate.query(sql.getSql(),
+                                          sql.getArguments(),
                                           new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }

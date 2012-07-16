@@ -5,14 +5,8 @@ import java.io.IOException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 
 public class CustomerAccountLuceneSearcher extends AbstractLuceneSearcher<UltraLightCustomerAccount> implements CustomerAccountSearcher {
-    private SortField sortList[] = 
-        {new SortField("accountNumber", SortField.STRING),
-         new SortField("energyCompanyId", SortField.INT)};
-    private final Sort sort = new Sort(sortList);
     
     @Override
     public UltraLightCustomerAccount buildResults(final Document doc) {
@@ -30,7 +24,7 @@ public class CustomerAccountLuceneSearcher extends AbstractLuceneSearcher<UltraL
     public SearchResult<UltraLightCustomerAccount> all(YukonObjectCriteria criteria, int start, int count) {
         try {
             final Query query = compileAndCombine(new MatchAllDocsQuery(), criteria);
-            return doSearch(query, sort, start, count);
+            return doSearch(query, start, count);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -7,16 +7,10 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 
 public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLightPoint> implements PointDeviceSearcher {
-    private SortField sortList[] = 
-        {new SortField("pointName", SortField.STRING),
-         new SortField("pointid", SortField.INT)};
-    private final Sort sort = new Sort(sortList);
     
     @Override
     public UltraLightPoint buildResults(final Document doc) {
@@ -45,7 +39,7 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
         final Query query = new TermQuery(new Term("pointid", Integer.toString(currentPointId)));
 
         try {
-            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, sort, new TopDocsCallbackHandler<SearchResult<UltraLightPoint>>() {
+            return this.getIndexManager().getSearchTemplate().doCallBackSearch(query, new TopDocsCallbackHandler<SearchResult<UltraLightPoint>>() {
                 public SearchResult<UltraLightPoint> processHits(TopDocs hits, IndexSearcher indexSearcher) throws IOException {
                     if (hits.totalHits != 1) {
                         return SearchResult.emptyResult();
@@ -56,7 +50,7 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
                     String deviceId = document.get("deviceid");
                     Query aQuery = new TermQuery(new Term("deviceid", deviceId));
                     aQuery = compileAndCombine(aQuery, criteria);
-                    return doSearch(aQuery, sort, start, count);
+                    return doSearch(aQuery, start, count);
                 }
             });
         } catch (IOException e) {
@@ -68,7 +62,7 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
             int start, int count) {
         try {
             final Query query = compileAndCombine(new MatchAllDocsQuery(), criteria);
-            return doSearch(query, sort, start, count);
+            return doSearch(query, start, count);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -6,19 +6,12 @@ import java.util.List;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.user.UserUtils;
 
 public class UserLuceneSearcher extends AbstractLuceneSearcher<UltraLightYukonUser> implements UserSearcher {
-    private SortField sortList[] = 
-        {new SortField("status", SortField.STRING),
-         new SortField("userName", SortField.STRING),
-         new SortField("userid", SortField.INT)};
-    private final Sort sort = new Sort(sortList);
 
     @Override
     public UltraLightYukonUser buildResults(final Document doc) {
@@ -41,7 +34,7 @@ public class UserLuceneSearcher extends AbstractLuceneSearcher<UltraLightYukonUs
             int start, int count) {
         try {
             final Query query = compileAndCombine(new MatchAllDocsQuery(), criteria);
-            return doSearch(query, sort, start, count);
+            return doSearch(query, start, count);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

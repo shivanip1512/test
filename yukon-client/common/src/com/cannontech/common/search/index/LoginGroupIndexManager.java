@@ -11,6 +11,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -32,11 +33,26 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
     }
 
     protected String getDocumentQuery() {
-        return "select * from yukongroup";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select *");
+        sql.append(getBaseQuery());
+        sql.append(getOrderBy());
+        return sql.getSql();
     }
 
     protected String getDocumentCountQuery() {
-        return "select count(*) from yukongroup";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(*)");
+        sql.append(getBaseQuery());
+        return sql.getSql();
+    }
+    
+    private SqlStatementBuilder getBaseQuery() {
+        return new SqlStatementBuilder("from yukongroup");
+    }
+    
+    private SqlStatementBuilder getOrderBy() {
+        return new SqlStatementBuilder("order by groupname, groupid");
     }
 
     protected Document createDocument(ResultSet rs) throws SQLException {
@@ -77,11 +93,14 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
         Term term = new Term("groupid", Integer.toString(groupId));
         List<Document> docList = new ArrayList<Document>();
 
-        StringBuffer sql = new StringBuffer(this.getDocumentQuery());
-        sql.append(" WHERE groupid = ?");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select *");
+        sql.append(getBaseQuery());
+        sql.append("WHERE groupid").eq(groupId);
+        sql.append(getOrderBy());
 
-        docList = this.jdbcTemplate.query(sql.toString(),
-                                          new Object[] { groupId },
+        docList = this.jdbcTemplate.query(sql.getSql(),
+                                          sql.getArguments(),
                                           new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }

@@ -23,11 +23,10 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
@@ -311,7 +310,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     
     public SearchTemplate getSearchTemplate(){
         return new SearchTemplate(){
-            public <R> R doCallBackSearch(Query query, Sort sort, TopDocsCallbackHandler<R> handler) throws IOException {
+            public <R> R doCallBackSearch(Query query, TopDocsCallbackHandler<R> handler) throws IOException {
                 
                 // Make sure there are currently no issues with the index
                 checkForException();
@@ -323,9 +322,8 @@ public abstract class AbstractIndexManager implements IndexManager {
                 
                 // Make sure we don't search while someone is updating the index
                 final IndexSearcher indexSearcher = new IndexSearcher(indexLocation);
-                final Sort aSort = (sort == null) ? new Sort() : sort;
                 try {
-                    TopDocs topDocs = indexSearcher.search(query, Integer.MAX_VALUE, aSort);
+                    TopDocs topDocs = indexSearcher.search(query, Integer.MAX_VALUE);
                     return handler.processHits(topDocs, indexSearcher);
                 } finally {
                     indexSearcher.close();

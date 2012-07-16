@@ -12,6 +12,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 
 import com.cannontech.common.search.YukonObjectAnalyzer;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -33,19 +34,30 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
     }
 
     protected String getDocumentQuery() {
-        String query = "select ypo.*, d.deviceid, dmg.meternumber "
-                + " from"
-                + "  yukonpaobject ypo "
-                + "  left join device d on d.deviceid = ypo.paobjectid "
-        		+ "  left join devicemetergroup dmg on dmg.deviceid = ypo.paobjectid ";
-        return query;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(getBaseQuery());
+        sql.append(getOrderBy());
+        return sql.getSql();
+    }
+    
+    private SqlStatementBuilder getBaseQuery() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select ypo.*, d.deviceid, dmg.meternumber");
+        sql.append("from yukonpaobject ypo");
+        sql.append("  left join device d on d.deviceid = ypo.paobjectid");
+        sql.append("  left join devicemetergroup dmg on dmg.deviceid = ypo.paobjectid");
+        return sql;
+    }
+    
+    private SqlStatementBuilder getOrderBy() {
+        return new SqlStatementBuilder("order by ypo.Category, ypo.Type, ypo.PAOName, ypo.PAObjectID");
     }
 
     protected String getDocumentCountQuery() {
-        String query = "select count(*)                                                 "
-                + " from                                                                "
-                + "     yukonpaobject                                                   ";
-        return query;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(*)");
+        sql.append("from yukonpaobject");
+        return sql.getSql();
     }
 
     protected Document createDocument(ResultSet rs) throws SQLException {
@@ -108,11 +120,13 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
         }
         List<Document> docList = new ArrayList<Document>();
 
-        StringBuffer sql = new StringBuffer(this.getDocumentQuery());
-        sql.append(" WHERE paobjectid = ?");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(getBaseQuery());
+        sql.append("WHERE ypo.paobjectid").eq(paoId);
+        sql.append(getOrderBy());
 
-        docList = this.jdbcTemplate.query(sql.toString(),
-                                          new Object[] { paoId },
+        docList = this.jdbcTemplate.query(sql.getSql(),
+                                          sql.getArguments(),
                                           new DocumentMapper());
         return new IndexUpdateInfo(docList, term);
     }

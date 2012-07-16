@@ -39,15 +39,14 @@ public abstract class AbstractLuceneSearcher<E> {
     public final SearchResult<E> search(String queryString, YukonObjectCriteria criteria, int start, int count) {
         try { 
             Query query = createQuery(queryString, criteria);
-            return doSearch(query, null, start, count);
+            return doSearch(query, start, count);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
     
-    protected final SearchResult<E> doSearch(final Query query, final Sort sort, final int start, final int count) throws IOException {
-        final Sort aSort = (sort == null) ? new Sort() : sort;
-        final SearchResult<E> result = getIndexManager().getSearchTemplate().doCallBackSearch(query, aSort, new TopDocsCallbackHandler<SearchResult<E>>() {
+    protected final SearchResult<E> doSearch(final Query query, final int start, final int count) throws IOException {
+        final SearchResult<E> result = getIndexManager().getSearchTemplate().doCallBackSearch(query, new TopDocsCallbackHandler<SearchResult<E>>() {
             
             @Override
             public SearchResult<E> processHits(TopDocs topDocs, IndexSearcher indexSearcher) throws IOException {
