@@ -32,7 +32,7 @@
 <c:if test="${!empty pageScope.value}">
     <cti:formatDate var="dateTime" value="${pageScope.value}" type="TIME24H"/>
     <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
-    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_FULL"/>
+    <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
 </c:if>
 
 <c:if test="${!empty pageScope.disabled}">
@@ -77,11 +77,11 @@
 				        value="${dateTime}"
 						class="f_timePicker f_timePickerUI ${cssClass}"
 						<c:if test="${disabled}">disabled="true"</c:if>
-						<c:if test="${!empty pageScope.maxDate}">data-max-date="${pageScope.maxDate}"</c:if>
-						<c:if test="${!empty pageScope.minDate}">data-min-date="${pageScope.minDate}"</c:if>
-                        <c:if test="${!empty pageScope.stepHour}">data-step-hour="${pageScope.stepHour}"</c:if>
-                        <c:if test="${!empty pageScope.stepMinute}">data-step-minute="${pageScope.stepMinute}"</c:if>
-                        <c:if test="${!empty pageScope.cssDialogClass}">data-class="${pageScope.cssDialogClass}"</c:if>
+						data-max-date="${pageScope.maxDate}"
+						data-min-date="${pageScope.minDate}"
+                        data-step-hour="${pageScope.stepHour}"
+                        data-step-minute="${pageScope.stepMinute}"
+                        data-class="${pageScope.cssDialogClass}"
 						data-date-time-format="${jsDateTimeFormat}"
                         data-time-zone-short="${timeZoneShort}"
                         data-time-zone-full="${timeZoneFull}"/>

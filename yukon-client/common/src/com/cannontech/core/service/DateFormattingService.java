@@ -29,7 +29,7 @@ public interface DateFormattingService {
         TIME24H(MidnightMode.NORMAL), 
         TIME_TZ(MidnightMode.NORMAL),
         TIMEZONE(MidnightMode.NORMAL),
-        TIMEZONE_FULL(MidnightMode.NORMAL),
+        TIMEZONE_EXTENDED(MidnightMode.NORMAL),
         DATE(MidnightMode.NORMAL), 
         BOTH(MidnightMode.NORMAL), 
         FULL(MidnightMode.NORMAL), 

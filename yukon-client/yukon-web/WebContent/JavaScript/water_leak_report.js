@@ -105,10 +105,9 @@ if(typeof(WaterLeakReport) === 'undefined'){
             var filter_text = jQuery("#filter_shortcut_text").val();
             jQuery("button.leakFilterSubmitButton").before('<span class="filter_shortcut">'+filter_text+'</span>');
 
-            var threshold_errors = jQuery(document.getElementById("threshold.errors"));
-            if (threshold_errors.length === 1) {
-                threshold_errors.prev("br").remove(); //remove the stupid <br> tag that screws up styling for threshold errors
-            }
+            //remove the stupid <br> tag that screws up styling for threshold errors
+            jQuery(document.getElementById("threshold.errors")).prev("br").remove();
+
             // if there are filter errors... set the focus to the first one of these
             Yukon.ui.focusFirstError();
         },

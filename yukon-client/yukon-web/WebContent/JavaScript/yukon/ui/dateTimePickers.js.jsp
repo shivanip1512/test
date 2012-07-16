@@ -92,7 +92,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 				jQuery("input.f_datePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
-				        beforeShow: outer_self._getBeforeShow,
+				        beforeShow: outer_self._onBeforeShow,
 						maxDate: self.attr('data-max-date'),
 						minDate: self.attr('data-min-date')
 					};
@@ -114,7 +114,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 				jQuery("input.f_dateTimePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
-				        beforeShow: outer_self._getBeforeShow,
+				        beforeShow: outer_self._onBeforeShow,
 						maxDate: self.attr('data-max-date'),
 						minDate: self.attr('data-min-date'),
                         stepHour: outer_self._getStepHour(self),
@@ -136,7 +136,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 				jQuery("input.f_timePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
-				        beforeShow: outer_self._getBeforeShow,
+				        beforeShow: outer_self._onBeforeShow,
 						maxDate: self.attr('data-max-date'),
 						minDate: self.attr('data-min-date'),
                         stepHour: outer_self._getStepHour(self),
@@ -148,15 +148,10 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
     		}
     	},
     	_insertTimezone: function(self){
-    	    var tz_short = self.attr('data-time-zone-short');
-    	    var tz_full = self.attr('data-time-zone-full');
-    	    self.after('<div class="timezone_container" title="' + tz_full + '">' + tz_short + '</div>');
+    	    self.after('<div class="timezone_container" title="' + self.attr('data-time-zone-full') + '">' + self.attr('data-time-zone-short') + '</div>');
     	},
-    	_getBeforeShow: function(input){
-            var cssClass = jQuery(input).attr('data-class');
-            if (typeof(cssClass) !== 'undefined') {
-                jQuery('#ui-datepicker-div').addClass(cssClass);
-            }
+    	_onBeforeShow: function(input){
+    	    jQuery('#ui-datepicker-div').addClass(jQuery(input).attr('data-class'));
     	},
         /**
          * Gets the step hour for the datetimepicker and timepicker plugins. Defaults to .05.

@@ -1,4 +1,4 @@
-<form:hidden path="fromInstant"/>
-<form:hidden path="toInstant"/>
+<form:hidden path="fromInstant" id="fromInstant_form_value"/> <!-- Has an id so there are no conflicts with the datetime picker input id (same with toInstant) -->
+<form:hidden path="toInstant" id="toInstant_form_value"/>
 <form:hidden path="threshold"/>
 <form:hidden path="includeDisabledPaos"/>

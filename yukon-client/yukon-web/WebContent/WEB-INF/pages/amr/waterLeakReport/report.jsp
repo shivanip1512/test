@@ -33,11 +33,11 @@
 			<div class="under_tabs">
 				<tags:nameValueContainer2>
 					<tags:nameValue2 nameKey=".filter.fromDate">
-						<dt:dateTime path="fromInstant" id="fromInstantPicker" value="${backingBean.fromInstant}" cssClass="f_from_datetime f_focus"
+						<dt:dateTime path="fromInstant" value="${backingBean.fromInstant}" cssClass="f_from_datetime f_focus"
 							stepMinute="60" cssDialogClass="hide_minutes" />
 					</tags:nameValue2>
 					<tags:nameValue2 nameKey=".filter.toDate">
-						<dt:dateTime path="toInstant" id="toInstantPicker" value="${backingBean.toInstant}" cssClass="f_to_datetime"
+						<dt:dateTime path="toInstant" value="${backingBean.toInstant}" cssClass="f_to_datetime"
 							stepMinute="60" cssDialogClass="hide_minutes" />
 					</tags:nameValue2>
 
@@ -99,7 +99,6 @@
 				<cti:list var="arguments">
                     <cti:item value="${current_filter}"/>
 					<cti:item value="${filter_datetime_breach}"/>
-					<cti:item value="${water_node_reporting_interval}"/>
 				</cti:list>
 				<cti:msg2 key=".filterDatetimeBreach" arguments="${arguments}" htmlEscape="false"/>
 		    </div>

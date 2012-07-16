@@ -5,6 +5,7 @@
 	<ul>
 		<li><i:inline key=".leakDetectionAlgorithmReason1"/></li>
 		<li><i:inline key=".leakDetectionAlgorithmReason2"/></li>
+		<li><i:inline key=".leakDetectionAlgorithmReason3"/></li>
 	</ul>
 </dialog:inline>
 </cti:msgScope>

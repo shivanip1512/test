@@ -127,14 +127,10 @@ public class WaterLeakReportController {
             @Override
             public void doValidation(WaterLeakReportFilterBackingBean backingBean, Errors errors) {
                 /* Dates & Hours */
-                if (backingBean.getFromInstant() == null) {
-                    if (!errors.hasFieldErrors("fromInstant")) {
-                        errors.rejectValue("fromInstant", "yukon.web.error.required");
-                    }
-                } else if ((backingBean.getToInstant() == null)) {
-                    if (!errors.hasFieldErrors("toInstant")) {
-                        errors.rejectValue("toInstant", "yukon.web.error.required");
-                    }
+                if (backingBean.getFromInstant() == null && !errors.hasFieldErrors("fromInstant")) {
+                    errors.rejectValue("fromInstant", "yukon.web.error.required");
+                } else if (backingBean.getToInstant() == null && !errors.hasFieldErrors("toInstant")) {
+                    errors.rejectValue("toInstant", "yukon.web.error.required");
                 } else if(backingBean.getFromInstant().isAfterNow()) {
                     // If the from date is in the future
                     errors.rejectValue("fromInstant", baseKey + ".validation.fromDateInFuture");
@@ -414,7 +410,6 @@ public class WaterLeakReportController {
 
         Hours hoursBetween = Hours.hoursBetween(backingBean.getToInstant(), new Instant());
         if (hoursBetween.isLessThan(water_node_reporting_interval)) {
-            model.addAttribute("water_node_reporting_interval", water_node_reporting_interval.getHours());
             model.addAttribute("filter_datetime_breach", hoursBetween.getHours());
         }
 
