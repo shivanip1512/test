@@ -42,6 +42,7 @@
         <include name="commons-pool-1.4.jar"/>
         <include name="dom4j-1.6.1.jar"/>
         <include name="ecs-1.4.2.jar"/>
+        <include name="exificient.jar"/>
         <include name="guava-11.0.1.jar"/>
         <include name="i18n-en_US.jar"/>
         <include name="jaxen-1.1.1.jar"/>
@@ -76,6 +77,7 @@
         <include name="web-common.jar"/>
         <include name="wsdl4j.jar"/>
         <include name="xercesImpl.jar"/>
+        <include name="xml-apis.jar"/>
         <include name="XmlSchema-1.4.2.jar"/>
         <include name="yc.jar"/>
         <include name="yukonappserver.jar"/>
