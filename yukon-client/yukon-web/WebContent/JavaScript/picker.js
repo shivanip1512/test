@@ -38,7 +38,7 @@ Picker.prototype = {
 		this.extraDestinationFields = new Array();
 		if (extraDestinationFields) {
 			var pairs = extraDestinationFields.split(/;/);
-			for (index = 0; index < pairs.length; index++) {
+			for (var index = 0; index < pairs.length; index++) {
 				var pair = pairs[index].split(/:/);
 				if (pair.length == 2) {
 					var extraDestinationField = {
@@ -94,7 +94,7 @@ Picker.prototype = {
 		var ss = pickerThis.ssInput.value;
 		if (pickerThis.currentSearch != ss) {
 			setTimeout(timerFunction, quietDelay);
-			showBusy();
+			Yukon.ui.blockPage();
 		}
 	},
 
@@ -106,7 +106,7 @@ Picker.prototype = {
 	 */
 	doSearch: function(start, count, onComplete) {
 		this.inSearch = true;
-		showBusy();
+		Yukon.ui.blockPage();
 		var ss = this.ssInput.value;
 		if (ss) {
 			this.showAllLink.show();
@@ -241,7 +241,7 @@ Picker.prototype = {
 		this.resetSearchFields();
 		this.clearSearchResults();
 		if (!this.primed) {
-			showBusy();
+		    Yukon.ui.blockPage();
 			this.prime(true, null, skipFocus);
 		} else {
 			this.doShow(skipFocus);
@@ -267,7 +267,7 @@ Picker.prototype = {
 	},
 
 	onPrimeComplete : function(showPicker, initialIds, skipFocus, transport, json) {
-		hideBusy();
+	    Yukon.ui.unblockPage();
 		this.ssInput = $('picker_' + this.pickerId + '_ss');
 		this.showAllLink = $('picker_' + this.pickerId + '_showAllLink');
 		this.resultsDiv = $('picker_' + this.pickerId + '_results');
@@ -493,7 +493,7 @@ Picker.prototype = {
 		this.updateSelectAllCheckbox();
 
 		var ss = this.ssInput.value;
-		hideBusy();
+		Yukon.ui.unblockPage();
 		if (this.currentSearch != ss) {
 			// do another search
 			this.doSearch();
@@ -504,7 +504,7 @@ Picker.prototype = {
 
 	ajaxError: function(transport) {
 		this.inSearch = false;
-		hideBusy();
+		Yukon.ui.unblockPage();
 		this.resultsDiv.innerHTML = '';
 		errorHolder = document.createElement('div');
 		errorHolder.id = this.errorHolderId;
@@ -707,7 +707,7 @@ Picker.prototype = {
 		} else {
 			this.selectedItems = hitList;
 		}
-		hideBusy();
+		Yukon.ui.unblockPage();
 		this.inSearch = false;
 		this.ssInput.focus();
 		$(this.selectAllPagesLink.parentNode).hide();
@@ -778,4 +778,4 @@ Picker.prototype = {
 			}
 		}
 	}
-}
+};

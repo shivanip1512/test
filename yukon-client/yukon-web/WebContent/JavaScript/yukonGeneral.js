@@ -27,7 +27,6 @@ function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
 	}
 	
 	//if no options are selected, quit
-	var routeIndex = selectElement.selectedIndex; 
     if (index[0] == -1) { //none selected
         return false;
     }
@@ -95,12 +94,12 @@ function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
 	for (var x = 0; x < copy.length; x++) { 
 		selectElement.options[x] = copy[x];
 	}
-	
+
 	//highlight all the previously selected elements in their new position
-	for (j = 0; j < index.length; j++){ 
+	for (var j = 0; j < index.length; j++){ 
 		selectList.options[index[j] + direction].selected = true;
 	}
-	
+
     return true;
 }
 
@@ -259,14 +258,6 @@ function flashYellow(element, duration) {
     jQuery(element).flashColor({color: "#FF0", duration: duration*1000});
 }
 
-function showBusy() {
-	$('busyBox').show();
-}
-
-function hideBusy() {
-	$('busyBox').hide();
-}
-
 var YEvent = new Object();
 
 Object.extend(YEvent, {
@@ -407,7 +398,7 @@ function changeInputType(inputElement, inputType) {
 
 function getHeaderJSON(xhr) {
 	var json;
-	try { json = xhr.getResponseHeader('X-Json') }
+	try { json = xhr.getResponseHeader('X-Json'); }
 	catch(e) {}
 
 	if (json) {

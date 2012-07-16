@@ -156,14 +156,14 @@ function submitFormViaAjax(dialogId, formId, url, title, method, skipShow) {
  */
 function simpleAJAXRequest(url) {
     var successCallback = function(transport, json) {
-        hideBusy();
+        Yukon.ui.unblockPage();
         if (json.action === 'reload') {
             window.location = window.location;
         }
     };
 
     var errorCallback = function(transport) {
-        hideBusy();
+        Yukon.ui.unblockPage();
         alert('error making request');
     };
 
@@ -173,7 +173,7 @@ function simpleAJAXRequest(url) {
             'onSuccess': successCallback,
             'onFailure': errorCallback
             };
-    showBusy();
+    Yukon.ui.blockPage();
     new Ajax.Request(url, options);
 }
 
