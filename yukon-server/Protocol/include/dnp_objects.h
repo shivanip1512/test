@@ -134,6 +134,27 @@ public:
     void getPoints( Interface::pointlist_t &points, const TimeCTO *cto, const Time *arrival ) const;
 };
 
+class ConfigData
+{
+private:
+
+    unsigned _internalRetries;
+    bool _useLocalTime;
+    bool _enableDnpTimesyncs;
+    bool _omitTimeRequest;
+    bool _enableUnsolicited;
+
+public:
+    ConfigData(unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs, 
+                  bool omitTimeRequest, bool enableUnsolicited);
+
+    unsigned getInternalRetries() const;
+    bool isUsingLocalTime();
+    bool isDnpTimesyncEnabled();
+    bool isTimeRequestOmitted();
+    bool isUnsolicitedEnabled();
+};
+
 }
 }
 }

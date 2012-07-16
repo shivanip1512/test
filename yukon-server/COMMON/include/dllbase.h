@@ -67,7 +67,6 @@ IM_EX_CTIBASE extern int            gMaxDBConnectionCount;        // Maximum num
 
 IM_EX_CTIBASE extern int            ModemConnectionTimeout;       // Modem Connection Timeout in seconds (60 def.)
 IM_EX_CTIBASE extern bool           gDNPVerbose;
-IM_EX_CTIBASE extern UINT           gDNPInternalRetries;
 IM_EX_CTIBASE extern bool           gDNPOfflineNonUpdated;
 IM_EX_CTIBASE extern int            gDefaultCommFailCount;
 IM_EX_CTIBASE extern int            gDefaultPortCommFailCount;

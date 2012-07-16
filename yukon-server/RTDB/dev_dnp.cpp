@@ -40,8 +40,6 @@ std::set<long> parseCsvLongs(const std::string &csv)
     return longs;
 }
 
-set<long> gDnpTimeAverseDevices = parseCsvLongs(gConfigParms.getValueAsString("YUKON_DNP_OMIT_TIME_REQUEST_DEVICEIDS"));
-
 namespace Cti {
 namespace Devices {
 
@@ -400,11 +398,25 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
         case ScanRequest:
         {
+            Cti::Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+            if( !deviceConfig )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - DNP configuration missing for DNP device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                nRet = MISCONFIG;
+                break;
+            }
+
+            bool omitTimeRequest = deviceConfig->getValueFromKey("Omit Time Request") == "true";
+
             switch( parse.getiValue("scantype") )
             {
                 case ScanRateGeneral:
                 {
-                    if( gDnpTimeAverseDevices.count(getID()) )
+                    if( omitTimeRequest )
                     {
                         command = Protocol::DNPInterface::Command_Class123Read;
                     }
@@ -428,7 +440,7 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
                 case ScanRateIntegrity:
                 {
-                    if( gDnpTimeAverseDevices.count(getID()) )
+                    if( omitTimeRequest )
                     {
                         command = Protocol::DNPInterface::Command_Class1230Read;
                     }
@@ -667,6 +679,7 @@ int DnpDevice::recvCommRequest( OUTMESS *OutMessage )
         buf[127] = 0;             //  make sure it's null-terminated somewhere before we do this:
         _porter_info.user = buf;  //  ooo, how daring
 
+        loadConfigData();
         _dnp.setCommand(_porter_info.protocol_command, _porter_info.protocol_parameter);
     }
     else
@@ -682,9 +695,28 @@ int DnpDevice::recvCommRequest( OUTMESS *OutMessage )
     return retVal;
 }
 
+void DnpDevice::loadConfigData()
+{
+    Cti::Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
+
+    if( !deviceConfig )
+    {
+        std::exception();
+    }
+
+    unsigned internalRetries = deviceConfig->getLongValueFromKey("Internal Retries");
+    bool useLocalTime = deviceConfig->getValueFromKey("Local Time") == "true";
+    bool enableDnpTimesyncs = deviceConfig->getValueFromKey("Enable DNP Timesyncs") == "true";
+    bool omitTimeRequest = deviceConfig->getValueFromKey("Omit Time Request") == "true";
+    bool enableUnsolicited = deviceConfig->getValueFromKey("Enable Unsolicited Messages") == "true";
+
+    _dnp.setConfigData(internalRetries, useLocalTime, enableDnpTimesyncs, omitTimeRequest, enableUnsolicited);
+}
+
 
 void DnpDevice::initUnsolicited()
 {
+    loadConfigData();
     _dnp.setCommand(Protocol::DNPInterface::Command_UnsolicitedInbound);
 }
 

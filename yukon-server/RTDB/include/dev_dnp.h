@@ -68,6 +68,8 @@ protected:
 
     virtual void processPoints( Protocol::Interface::pointlist_t &points );
 
+    void loadConfigData();
+
 public:
 
     DnpDevice();

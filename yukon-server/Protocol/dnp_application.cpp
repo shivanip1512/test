@@ -65,6 +65,10 @@ void ApplicationLayer::setOptions( int options )
     _transport.setOptions(options);
 }
 
+void ApplicationLayer::setConfigData( const DNP::ConfigData* configData )
+{
+    _config_data = configData;
+}
 
 void ApplicationLayer::setCommand( FunctionCode fc )
 {
@@ -427,7 +431,7 @@ int ApplicationLayer::decode( CtiXfer &xfer, int status )
 
     if( retVal = _transport.decode(xfer, status) )
     {
-        if( ++_comm_errors <= gDNPInternalRetries )  // CommRetries )
+        if( ++_comm_errors <= _config_data->getInternalRetries() )  // CommRetries )
         {
             if( _appState == RecvResponse )
             {

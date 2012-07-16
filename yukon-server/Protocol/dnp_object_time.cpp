@@ -112,25 +112,6 @@ int Time::restoreVariation(const unsigned char *buf, int len, int variation)
             _seconds      = floor(tmp / 1000.0);
             _milliseconds = tmp - (_seconds * 1000.0);
 
-            if( gConfigParms.getValueAsInt("YUKON_DNP_LOCALTIME") )
-            {
-                //  this is CRAZY WIN32 SPECIFIC
-                _TIME_ZONE_INFORMATION tzinfo;
-                int timezone_offset = 0;
-
-                switch( GetTimeZoneInformation(&tzinfo) )
-                {
-                    //  Bias is in minutes - subtract the difference to convert the local time to UTC
-                    case TIME_ZONE_ID_STANDARD:     _seconds += (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
-                    case TIME_ZONE_ID_DAYLIGHT:     _seconds += (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
-
-                    case TIME_ZONE_ID_INVALID:
-                    case TIME_ZONE_ID_UNKNOWN:
-                    default:
-                        break;
-                }
-            }
-
             break;
         }
 
@@ -175,26 +156,6 @@ int Time::serializeVariation(unsigned char *buf, int variation) const
             long tmpHi, tmpLo;
 
             tmp = _seconds;
-
-            if( gConfigParms.getValueAsInt("YUKON_DNP_LOCALTIME") )
-            {
-                //  this is CRAZY WIN32 SPECIFIC
-                _TIME_ZONE_INFORMATION tzinfo;
-                int timezone_offset = 0;
-
-                switch( GetTimeZoneInformation(&tzinfo) )
-                {
-                    //  Bias is in minutes - add the difference to convert UTC to local time
-                    case TIME_ZONE_ID_STANDARD:     tmp -= (tzinfo.Bias + tzinfo.StandardBias) * 60; break;
-                    case TIME_ZONE_ID_DAYLIGHT:     tmp -= (tzinfo.Bias + tzinfo.DaylightBias) * 60; break;
-
-                    case TIME_ZONE_ID_INVALID:
-                    case TIME_ZONE_ID_UNKNOWN:
-                    default:
-                        break;
-                }
-            }
-
             tmp *= 1000.0;
             tmp += _milliseconds;
 

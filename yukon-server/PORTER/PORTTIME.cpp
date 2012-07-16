@@ -514,54 +514,74 @@ struct timeSyncDNPDevices
 
     void operator()(CtiDeviceSPtr &RemoteRecord)
     {
-        if(RemoteRecord->getPortID() != port_id || RemoteRecord->isInhibited())
+        try
         {
-            return;
-        }
-
-        /* Allocate some memory */
-        OUTMESS *OutMessage = CTIDBG_new OUTMESS;
-
-        if( OutMessage == NULL)
-        {
+            Cti::Config::DeviceConfigSPtr config = RemoteRecord->getDeviceConfig();
+            if( !config )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                throw std::exception();
             }
 
-            return;
-        }
+            bool dnpTimesyncEnabled = config->getValueFromKey("Enable DNP Timesyncs") == "true";
 
-        using Cti::Devices::DnpDevice;
-        boost::shared_ptr<DnpDevice> dnp_device = boost::static_pointer_cast<DnpDevice>(RemoteRecord);
-
-        CtiRequestMsg request(RemoteRecord->getID(), "putconfig timesync");
-
-        list<CtiMessage *> stub;
-        list<OUTMESS *> outlist;
-
-        dnp_device->ExecuteRequest(&request, CtiCommandParser(request.CommandString()), OutMessage, stub, stub, outlist);
-
-        while( !stub.empty() )
-        {
-            delete stub.back();
-            stub.pop_back();
-        }
-
-        while( !outlist.empty() )
-        {
-            OutMessage = outlist.back();
-
-            OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
-            OutMessage->ExpirationTime = getNextTimeSync();
-
-            if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+            if( dnpTimesyncEnabled )
             {
-                printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
-                delete (OutMessage);
-            }
+                if(RemoteRecord->getPortID() != port_id || RemoteRecord->isInhibited())
+                {
+                    return;
+                }
 
-            outlist.pop_back();
+                /* Allocate some memory */
+                OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+
+                if( OutMessage == NULL)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    return;
+                }
+
+                using Cti::Devices::DnpDevice;
+                boost::shared_ptr<DnpDevice> dnp_device = boost::static_pointer_cast<DnpDevice>(RemoteRecord);
+
+                CtiRequestMsg request(RemoteRecord->getID(), "putconfig timesync");
+
+                list<CtiMessage *> stub;
+                list<OUTMESS *> outlist;
+
+                dnp_device->ExecuteRequest(&request, CtiCommandParser(request.CommandString()), OutMessage, stub, stub, outlist);
+
+                while( !stub.empty() )
+                {
+                    delete stub.back();
+                    stub.pop_back();
+                }
+
+                while( !outlist.empty() )
+                {
+                    OutMessage = outlist.back();
+
+                    OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+                    OutMessage->ExpirationTime = getNextTimeSync();
+
+                    if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
+                    {
+                        printf ("Error Writing to Queue for Port %2hd\n", RemoteRecord->getPortID());
+                        delete (OutMessage);
+                    }
+
+                    outlist.pop_back();
+                }
+            }
+        }
+        catch ( std::exception &e )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Device " << RemoteRecord->getName() << " is not assigned a DNP configuration. " 
+                 << "Unable to process DNP timesync." << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 };
@@ -758,16 +778,13 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
             for_each(devices.begin(), devices.end(), timeSyncCCU721(PortRecord->getPortID()));
             devices.clear();
 
-            if( gConfigParms.isTrue("YUKON_DNP_TIMESYNCS") )
-            {
-                DeviceManager.getDevicesByType(TYPE_DNPRTU,   devices);
-                DeviceManager.getDevicesByType(TYPE_DARTRTU,  devices);
-                DeviceManager.getDevicesByType(TYPECBCDNP,    devices);
-                DeviceManager.getDevicesByType(TYPECBC7020,   devices);
-                DeviceManager.getDevicesByType(TYPECBC8020,   devices);
-                for_each(devices.begin(), devices.end(), timeSyncDNPDevices(PortRecord->getPortID()));
-                devices.clear();
-            }
+            DeviceManager.getDevicesByType(TYPE_DNPRTU,   devices);
+            DeviceManager.getDevicesByType(TYPE_DARTRTU,  devices);
+            DeviceManager.getDevicesByType(TYPECBCDNP,    devices);
+            DeviceManager.getDevicesByType(TYPECBC7020,   devices);
+            DeviceManager.getDevicesByType(TYPECBC8020,   devices);
+            for_each(devices.begin(), devices.end(), timeSyncDNPDevices(PortRecord->getPortID()));
+            devices.clear();
 
             CtiDeviceManager::coll_type::reader_lock_guard_t dvguard(DeviceManager.getLock());  // Deadlock avoidance!
             RouteManager.apply(applyMCT400TimeSync, (void*)PortRecord->getPortID());

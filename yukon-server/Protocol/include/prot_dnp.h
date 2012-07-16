@@ -7,8 +7,9 @@
 #include "packet_finder.h"
 
 #include "dnp_application.h"
-#include "dnp_objects.h"
 #include "dnp_object_binaryoutput.h"
+
+#include <boost/scoped_ptr.hpp>
 
 #include <map>
 
@@ -27,13 +28,14 @@ private:
     int              _options;
     unsigned long    _last_complaint;
 
-    typedef std::vector<Command>  Command_vec;
-    typedef Command_vec::iterator Command_vec_itr;
+    typedef std::deque<Command>   Command_deq;
+    typedef Command_deq::iterator Command_deq_itr;
 
     Command     _command;
-    Command_vec _additional_commands;
+    Command_deq _additional_commands;
 
     std::vector<output_point> _command_parameters;
+    boost::scoped_ptr<DNP::ConfigData> _config_data;
 
     DNP::ApplicationLayer::object_block_queue _object_blocks;
 
@@ -75,6 +77,9 @@ protected:
     Command getCommand();
     void addStringResults(std::string *s);
 
+    unsigned convertLocalSecondsToUtcSeconds( const unsigned seconds );
+    unsigned convertUtcSecondsToLocalSeconds( const unsigned seconds );
+
 public:
 
     DNPInterface();
@@ -84,6 +89,11 @@ public:
 
     bool setCommand( Command command );
     bool setCommand( Command command, output_point &point );
+
+    void setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs, 
+                        bool omitTimeRequest, bool enableUnsolicited );
+
+    void setInternalRetries( unsigned retries ) const;
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );

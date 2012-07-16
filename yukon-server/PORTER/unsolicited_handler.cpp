@@ -618,16 +618,26 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
         //  no new outbound work, so process the unexpected inbound
         if( isDnpDevice(*dr->device) )
         {
-            //  push a null OM on there so can distinguish this request from anything else that comes in
-            dr->outbound.push_back(0);
-
             //  there is no outmessage, so we don't call recvCommRequest -
             //    we have to call the Device::DNP-specific initUnsolicited
             shared_ptr<Devices::DnpDevice> dnp_device = boost::static_pointer_cast<Devices::DnpDevice>(dr->device);
 
-            dnp_device->initUnsolicited();
+            long long steve = 0;
+            try
+            {
+                dnp_device->initUnsolicited();
 
-            _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
+                //  push a null OM on there so can distinguish this request from anything else that comes in
+                dr->outbound.push_back(0);
+
+                _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
+            }
+            catch( std::exception& e )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " DNP Device " << dnp_device->getName() << " is not assigned a DNP configuration. " 
+                     << "Unable to process inbound message." << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
         else if( isGpuffDevice(*dr->device) )
         {

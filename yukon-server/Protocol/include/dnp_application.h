@@ -25,6 +25,8 @@ private:
 
     short _dstAddr, _srcAddr;
 
+    const ConfigData* _config_data;
+
 #pragma pack( push, 1 )
 
     struct control_header
@@ -110,7 +112,7 @@ private:
 
     } _appState;
 
-    int _comm_errors;
+    unsigned _comm_errors;
 
     indications _iin;
 
@@ -147,6 +149,8 @@ public:
     void setAddresses( unsigned short dstAddr, unsigned short srcAddr );
     void setOptions( int options );
     void resetLink( void );
+
+    void setConfigData( const DNP::ConfigData* configData );
 
     void setCommand( FunctionCode fc );
     void addObjectBlock( const ObjectBlock *obj );

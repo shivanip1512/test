@@ -66,7 +66,6 @@ IM_EX_CTIBASE INT           useVersacomTypeFourControl = 0;  // Jeesh if you can
 IM_EX_CTIBASE INT           ModemConnectionTimeout = 60;     // Modem Connection Timeout in seconds (60 def.)
 IM_EX_CTIBASE int           gMaxDBConnectionCount = 10;      // Maximum number of DB connections to allow to remain open.
 IM_EX_CTIBASE bool          gDNPVerbose = false;
-IM_EX_CTIBASE UINT          gDNPInternalRetries = 2;
 IM_EX_CTIBASE bool          gDNPOfflineNonUpdated = false;
 IM_EX_CTIBASE int           gDefaultCommFailCount = 10;
 IM_EX_CTIBASE int           gDefaultPortCommFailCount = 5;
@@ -247,17 +246,6 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         gDNPVerbose = true;
     }
     if(DebugLevel & 0x0001) cout << "DNP output is " << ( gDNPVerbose ? "verbose" : "quiet") << endl;
-
-    if( !(str = gConfigParms.getValueAsString("YUKON_DNP_INTERNAL_RETRIES")).empty() )
-    {
-        gDNPInternalRetries = abs(atoi(str.c_str()));
-        if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to " << str << endl;
-    }
-    else
-    {
-        gDNPInternalRetries = 2;
-        if(DebugLevel & 0x0001) cout << "DNP Internal Retries set to 2" << endl;
-    }
 
     if( !(str = gConfigParms.getValueAsString("YUKON_DNP_OFFLINE_IS_NONUPDATED")).empty() && (!stricmp("TRUE", str.c_str())))
     {

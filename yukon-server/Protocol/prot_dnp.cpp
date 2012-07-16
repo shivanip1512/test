@@ -73,6 +73,20 @@ bool DNPInterface::setCommand( Command command, output_point &point )
     return setCommand(command);
 }
 
+void DNPInterface::setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs, 
+                                  bool omitTimeRequest, bool enableUnsolicited )
+{
+    _config_data.reset(
+       new DNP::ConfigData(
+          internalRetries, 
+          useLocalTime, 
+          enableDnpTimesyncs, 
+          omitTimeRequest, 
+          enableUnsolicited));
+
+    _app_layer.setConfigData(_config_data.get());
+}
+
 int DNPInterface::generate( CtiXfer &xfer )
 {
     if( _app_layer.isTransactionComplete() )
@@ -82,9 +96,18 @@ int DNPInterface::generate( CtiXfer &xfer )
             case Command_WriteTime:
             {
                 DNP::Time *time_now = CTIDBG_new DNP::Time(Time::T_TimeAndDate);
-                CtiTime Now;
+                CtiTime now;
 
-                time_now->setSeconds(Now.seconds() );
+                if( _config_data->isUsingLocalTime() )
+                {
+                    const unsigned utc_seconds = now.seconds();
+                    const unsigned local_seconds = convertUtcSecondsToLocalSeconds(utc_seconds);
+                    time_now->setSeconds(local_seconds);
+                }
+                else 
+                {
+                    time_now->setSeconds(now.seconds());
+                }
 
                 _app_layer.setCommand(ApplicationLayer::RequestWrite);
 
@@ -121,6 +144,10 @@ int DNPInterface::generate( CtiXfer &xfer )
             case Command_UnsolicitedEnable:
             {
                 _app_layer.setCommand(ApplicationLayer::RequestEnableUnsolicited);
+
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
+                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
 
                 break;
             }
@@ -502,8 +529,9 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             }
         }
 
-        scoped_ptr<const TimeCTO>     cto;
-        scoped_ptr<const Time>        time_sent;
+        scoped_ptr<TimeCTO> cto;
+        scoped_ptr<Time>    time_sent;
+
         scoped_ptr<const ObjectBlock> ob;
 
         //  and this is where the pointdata gets harvested
@@ -516,6 +544,13 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 if( ob->getGroup() == TimeCTO::Group )
                 {
                     cto.reset(CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object))));
+
+                    if( _config_data->isUsingLocalTime() )
+                    {
+                        const unsigned local_seconds = cto->getSeconds();
+                        const unsigned utc_seconds = convertLocalSecondsToUtcSeconds(local_seconds);
+                        cto->setSeconds(utc_seconds);
+                    }
 
                     CtiTime t(cto->getSeconds());
 
@@ -532,6 +567,14 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                     if( od.object )
                     {
                         time_sent.reset(CTIDBG_new Time(*(reinterpret_cast<const DNP::Time *>(od.object))));
+
+                        if( _config_data->isUsingLocalTime() )
+                        {
+                            const unsigned local_seconds = time_sent->getSeconds();
+                            const unsigned utc_seconds = convertLocalSecondsToUtcSeconds(local_seconds);
+                            time_sent->setSeconds(utc_seconds);
+                        }
+
                         string s;
 
                         CtiTime t(time_sent->getSeconds());
@@ -616,22 +659,25 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                     setCommand(Command_ResetDeviceRestartBit);
                 }
 
-                Command_vec_itr itr = std::find(_additional_commands.begin(), 
-                                                _additional_commands.end(), 
-                                                Command_UnsolicitedEnable);
-
-                if( itr == _additional_commands.end() ) // && gConfigParms.getValueAsInt("DNP_THING") )
+                if( _config_data->isUnsolicitedEnabled() )
                 {
-                    // Device restarted, so let's tell it to enabled unsolicited commands.
-                    _additional_commands.push_back(Command_UnsolicitedEnable);
+                    Command_deq_itr itr = std::find(_additional_commands.begin(), 
+                                                    _additional_commands.end(), 
+                                                    Command_UnsolicitedEnable);
+
+                    if( itr == _additional_commands.end() )
+                    {
+                        // Device restarted, so let's tell it to enabled unsolicited commands.
+                        _additional_commands.push_back(Command_UnsolicitedEnable);
+                    }
                 }
-            } 
+            }
             else 
             {
                 if ( !_additional_commands.empty() )
                 {
                     setCommand(_additional_commands.front());
-                    _additional_commands.erase(_additional_commands.begin());
+                    _additional_commands.pop_front();
                 }
                 else
                 {
@@ -882,12 +928,46 @@ void DNPInterface::addStringResults(string *s)
     return;
 }
 
+unsigned DNPInterface::convertLocalSecondsToUtcSeconds( const unsigned seconds )
+{
+    //  this is CRAZY WIN32 SPECIFIC
+    _TIME_ZONE_INFORMATION tzinfo;
+
+    switch( GetTimeZoneInformation(&tzinfo) )
+    {
+        //  Bias is in minutes - subtract the difference to convert the local time to UTC
+        case TIME_ZONE_ID_STANDARD:     return (seconds + (tzinfo.Bias + tzinfo.StandardBias) * 60);
+        case TIME_ZONE_ID_DAYLIGHT:     return (seconds + (tzinfo.Bias + tzinfo.DaylightBias) * 60);
+
+        case TIME_ZONE_ID_INVALID:
+        case TIME_ZONE_ID_UNKNOWN:
+        default:
+            return seconds;
+    }
+}
+
+unsigned DNPInterface::convertUtcSecondsToLocalSeconds( const unsigned seconds )
+{
+    //  this is CRAZY WIN32 SPECIFIC
+    _TIME_ZONE_INFORMATION tzinfo;
+
+    switch( GetTimeZoneInformation(&tzinfo) )
+    {
+        //  Bias is in minutes - add the difference to convert UTC to local time
+        case TIME_ZONE_ID_STANDARD:     return (seconds - (tzinfo.Bias + tzinfo.StandardBias) * 60);
+        case TIME_ZONE_ID_DAYLIGHT:     return (seconds - (tzinfo.Bias + tzinfo.DaylightBias) * 60);
+
+        case TIME_ZONE_ID_INVALID:
+        case TIME_ZONE_ID_UNKNOWN:
+        default:
+            return seconds;
+    }
+}
 
 DNPSlaveInterface::DNPSlaveInterface()
 {
    getApplicationLayer().completeSlave();
    setOptions(DNPSlaveInterface::Options_SlaveResponse);
-
 }
 
 int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
