@@ -23,7 +23,7 @@ import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
 import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
-import com.cannontech.stars.ws.StarsControllableDeviceDTO;
+import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.yukon.api.loadManagement.mocks.MockAuthDao;
 import com.cannontech.yukon.api.stars.endpoint.ControllableDevicesRequestEndPoint;
@@ -89,7 +89,7 @@ public class ControllableDevicesRequestEndPointTest {
 
         @Override
         public LiteInventoryBase addDeviceToAccount(
-                StarsControllableDeviceDTO deviceInfo, LiteYukonUser user) {
+                LmDeviceDto deviceInfo, LiteYukonUser user) {
             if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
                 throw new StarsAccountNotFoundException("Account not found");
             } else if (deviceInfo.getAccountNumber()
@@ -105,7 +105,7 @@ public class ControllableDevicesRequestEndPointTest {
 
         @Override
         public LiteInventoryBase updateDeviceOnAccount(
-                StarsControllableDeviceDTO deviceInfo, LiteYukonUser user) {
+                LmDeviceDto deviceInfo, LiteYukonUser user) {
             if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
                 throw new StarsAccountNotFoundException("Account not found");
             } else if (deviceInfo.getAccountNumber()
@@ -121,7 +121,7 @@ public class ControllableDevicesRequestEndPointTest {
 
         @Override
         public void removeDeviceFromAccount(
-                StarsControllableDeviceDTO deviceInfo, LiteYukonUser user) {
+                LmDeviceDto deviceInfo, LiteYukonUser user) {
             if (deviceInfo.getAccountNumber().equals(ACCOUNT_NUM_NOT_FOUND)) {
                 throw new StarsAccountNotFoundException("Account not found");
             } else if (deviceInfo.getAccountNumber()

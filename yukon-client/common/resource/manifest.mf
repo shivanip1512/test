@@ -63,4 +63,6 @@ Class-Path: ./
  xbean-spring-3.4.jar 
  jaxb-api.jar 
  jaxb-impl.jar 
+ exificient.jar 
+ xml-apis.jar
  

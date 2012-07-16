@@ -49,16 +49,12 @@ function validate(form) {
 		alert("Work Order # cannot be empty");
 		return false;
 	}
-<%
-	if (liteOrder.getCurrentStateID() != statusCompleted && liteOrder.getCurrentStateID() != statusCancelled) {
-%>
-	if (form.CurrentState.value == "<%= statusCancelled %>") {
+<%if (liteOrder.getCurrentStateID() != statusCompleted && liteOrder.getCurrentStateID() != statusCancelled) {%>
+	if (form.CurrentState.value == "<%=statusCancelled%>") {
 		if (!confirm("Are you sure you want to cancel this service order?"))
 			return false;
 	}
-<%
-	}
-%>
+<%}%>
 	return true;
 }
 
@@ -66,7 +62,7 @@ function deleteWorkOrder(form) {
 	if (!confirm('Are you sure you want to delete this service order?'))
 		return;
 	form.action.value = "DeleteWorkOrder";
-	form.REDIRECT.value = "<%= request.getContextPath() %>/operator/WorkOrder/WorkOrder.jsp";
+	form.REDIRECT.value = "<%=request.getContextPath()%>/operator/WorkOrder/WorkOrder.jsp";
 	form.submit();
 }
 
@@ -75,7 +71,7 @@ function searchAccount(form) {
 		alert("Account # cannot be empty");
 		return;
 	}
-	form.attributes["action"].value = "<%= request.getContextPath() %>/servlet/WorkOrderManager";
+	form.attributes["action"].value = "<%=request.getContextPath()%>/servlet/WorkOrderManager";
 	form.action.value = "SearchCustAccount";
 	form.submit();
 }
@@ -115,7 +111,7 @@ function resetOrder(form) {
 }
 
 function scheduleOrder(form) {
-	form.CurrentState.value = "<%= statusScheduled %>";
+	form.CurrentState.value = "<%=statusScheduled%>";
 	resetOrder(form);
 	showDateDiv(form, "EventTimestamp");
 }
@@ -126,10 +122,10 @@ function closeOrder(form) {
 }
 
 function changeStatus(form) {
-	if( form.CurrentState.value == "<%= liteOrder.getCurrentStateID()%>" )
+	if( form.CurrentState.value == "<%=liteOrder.getCurrentStateID()%>" )
 	{
-		form.elements["DateEventTimestamp"].value = "<%= (eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), datePart)) : "") %>";
-		form.elements["TimeEventTimestamp"].value = "<%= (eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), timeFormat)) : "") %>";
+		form.elements["DateEventTimestamp"].value = "<%=(eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), datePart)) : "")%>";
+		form.elements["TimeEventTimestamp"].value = "<%=(eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), timeFormat)) : "")%>";
 		document.getElementById("DivEventTimestamp").disabled = true;
 	}
 	else {
@@ -140,11 +136,11 @@ function changeStatus(form) {
 }
 
 function changeServiceCompany(form) {
-	if( form.ServiceCompany.value == "<%= liteOrder.getServiceCompanyID()%>" )
+	if( form.ServiceCompany.value == "<%=liteOrder.getServiceCompanyID()%>" )
 	{
 		var group = document.getElementById("CurrentState");
 		for (var i = 0; i < group.length; i++) {
-			if( group[i].value == <%= liteOrder.getCurrentStateID()%>)
+			if( group[i].value == <%=liteOrder.getCurrentStateID()%>)
 			{
 				group[i].selected = true;	
 			}
@@ -153,13 +149,13 @@ function changeServiceCompany(form) {
 	else {
 		if (!confirm("A Change to Service Company also changes the Current State to Assigned.\r\nYou may override the Current State change after pressing OK."))
 		{
-			form.ServiceCompany.value = "<%= liteOrder.getServiceCompanyID()%>";
+			form.ServiceCompany.value = "<%=liteOrder.getServiceCompanyID()%>";
 			return false;	
 		}
 		
 		var group = document.getElementById("CurrentState");
 		for (var i = 0; i < group.length; i++) {
-			if( group[i].value == <%= statusAssigned%>)
+			if( group[i].value == <%=statusAssigned%>)
 			{
 				group[i].selected = true;	
 			}
@@ -215,40 +211,46 @@ function sendWorkOrder() {
                 <td><a href="" onclick="sendWorkOrder(); return false;" class="Link2">Send To Service Company</a></td>
               </tr>--%>
             </table>
-			<form name="rptForm" method="post" action="<%= request.getContextPath() %>/servlet/ReportGenerator">
+			<form name="rptForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator">
 			  <input type="hidden" name="ACTION" value="DownloadReport">
-			  <input type="hidden" name="type" value="<%= com.cannontech.analysis.ReportTypes.EC_WORK_ORDER%>">
+			  <input type="hidden" name="type" value="<%=com.cannontech.analysis.ReportTypes.EC_WORK_ORDER%>">
 			  <input type="hidden" name="fileName" value="WorkOrder">
 			  <input type="hidden" name="NoCache">
-			  <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
-                <input type="hidden" name="OrderNo" value="<%= liteOrder.getOrderNumber() %>">
-			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
-			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+			  <input type="hidden" name="OrderID" value="<%=liteOrder.getOrderID()%>">
+                <input type="hidden" name="OrderNo" value="<%=liteOrder.getOrderNumber()%>">
+			  <input type="hidden" name="REDIRECT" value="<%=request.getRequestURI()%>">
+			  <input type="hidden" name="REFERRER" value="<%=request.getRequestURI()%>">
 			</form>
-			<form name="woForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
+			<form name="woForm" method="post" action="<%=request.getContextPath()%>/servlet/WorkOrderManager">
 			  <input type="hidden" name="action" value="SendWorkOrder">
-              <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
-                <input type="hidden" name="OrderNo" value="<%= liteOrder.getOrderNumber() %>">
-              <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
-              <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
-			  <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
+              <input type="hidden" name="OrderID" value="<%=liteOrder.getOrderID()%>">
+                <input type="hidden" name="OrderNo" value="<%=liteOrder.getOrderNumber()%>">
+              <input type="hidden" name="REDIRECT" value="<%=request.getRequestURI()%>">
+              <input type="hidden" name="REFERRER" value="<%=request.getRequestURI()%>">
+			  <input type="hidden" name="<%=ServletUtils.CONFIRM_ON_MESSAGE_PAGE%>">
 			</form>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
-              <% String header = "SERVICE ORDER"; %>
+              <%
+                   String header = "SERVICE ORDER";
+               %>
               <%@ include file="include/SearchBar.jspf" %>
-			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
-              <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>			  
+			  <%
+			      if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>");
+			  %>
+              <%
+                  if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>");
+              %>			  
               
-			  <form name="soForm" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient" onsubmit="return validate(this)" onreset="resetOrder(this)">
+			  <form name="soForm" method="post" action="<%=request.getContextPath()%>/servlet/SOAPClient" onsubmit="return validate(this)" onreset="resetOrder(this)">
 			    <input type="hidden" name="action" value="UpdateWorkOrder">
-                <input type="hidden" name="OrderNo" value="<%= liteOrder.getOrderNumber() %>">
-                <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">
-				<input type="hidden" name="AccountID" value="<%= liteOrder.getAccountID() %>">
-				<input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
-				<input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
+                <input type="hidden" name="OrderNo" value="<%=liteOrder.getOrderNumber()%>">
+                <input type="hidden" name="OrderID" value="<%=liteOrder.getOrderID()%>">
+				<input type="hidden" name="AccountID" value="<%=liteOrder.getAccountID()%>">
+				<input type="hidden" name="REDIRECT" value="<%=request.getRequestURI()%>">
+				<input type="hidden" name="REFERRER" value="<%=request.getRequestURI()%>">
                 <table width="640" border="0" cellspacing="0" cellpadding="10" align="center">
                   <tr> 
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
@@ -261,7 +263,7 @@ function sendWorkOrder() {
                                 <td width="30%" class="TableCell"> 
                                   <div align="right">Work Order #:</div>
                                 </td>
-                                <td width="70%" class="MainText"><%= liteOrder.getOrderNumber() %></td>
+                                <td width="70%" class="MainText"><%=liteOrder.getOrderNumber()%></td>
                               </tr>
                               <tr> 
                                 <td width="30%" class="TableCell"> 
@@ -270,13 +272,15 @@ function sendWorkOrder() {
                                 <td width="70%"> 
                                   <select name="ServiceType" onchange="setContentChanged(true)">
                                     <%
-	StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
-	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == liteOrder.getWorkTypeID())? "selected" : "";
-%>
-                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-                                    <%	} %>
+                                        StarsCustSelectionList serviceTypeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_TYPE );
+                                    	for (int i = 0; i < serviceTypeList.getStarsSelectionListEntryCount(); i++) {
+                                    		StarsSelectionListEntry entry = serviceTypeList.getStarsSelectionListEntry(i);
+                                    		String selected = (entry.getEntryID() == liteOrder.getWorkTypeID())? "selected" : "";
+                                    %>
+                                    <option value="<%=entry.getEntryID()%>" <%=selected%>><%=entry.getContent()%></option>
+                                    <%
+                                        }
+                                    %>
                                   </select>
                                 </td>
                               </tr>
@@ -285,15 +289,15 @@ function sendWorkOrder() {
                                   <div align="right">Ordered By:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <input type="text" name="OrderedBy" size="14" value="<%= StringEscapeUtils.escapeHtml(liteOrder.getOrderedBy()) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="OrderedBy" size="14" value="<%=StringEscapeUtils.escapeHtml(liteOrder.getOrderedBy())%>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
                                 <td width="30%" class="TableCell"> 
-                                  <div align="right"><cti:getProperty propertyid="<%= WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL%>" defaultvalue="Addtl Order #"/>:</div>
+                                  <div align="right"><cti:getProperty propertyid="<%=WorkOrderRole.ADDTL_ORDER_NUMBER_LABEL%>" defaultvalue="Addtl Order #"/>:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <input type="text" name="AddtlOrderNumber" size="14" value="<%= liteOrder.getAdditionalOrderNumber()%>" onchange="setContentChanged(true)">
+                                  <input type="text" name="AddtlOrderNumber" size="14" value="<%=liteOrder.getAdditionalOrderNumber()%>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               
@@ -304,12 +308,14 @@ function sendWorkOrder() {
                                 <td width="70%"> 
                                   <select name="ServiceCompany" onchange="changeServiceCompany(this.form);setContentChanged(true)">
                                     <%
-	for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
-		StarsServiceCompany company = companies.getStarsServiceCompany(i);
-		String selected = (company.getCompanyID() == liteOrder.getServiceCompanyID())? "selected" : "";
-%>
-                                    <option value="<%= company.getCompanyID() %>" <%= selected %>><%= company.getCompanyName() %></option>
-                                    <%	} %>
+                                        for (int i = 0; i < companies.getStarsServiceCompanyCount(); i++) {
+                                    		StarsServiceCompany company = companies.getStarsServiceCompany(i);
+                                    		String selected = (company.getCompanyID() == liteOrder.getServiceCompanyID())? "selected" : "";
+                                    %>
+                                    <option value="<%=company.getCompanyID()%>" <%=selected%>><%=company.getCompanyName()%></option>
+                                    <%
+                                        }
+                                    %>
                                   </select>
                                 </td>
                               </tr>
@@ -318,7 +324,7 @@ function sendWorkOrder() {
                                   <div align="right">Notes:</div>
                                 </td>
                                 <td width="70%"> 
-                                  <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= liteOrder.getDescription().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                                  <textarea name="Description" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%=liteOrder.getDescription().replaceAll("<br>", System.getProperty("line.separator"))%></textarea>
                                 </td>
                               </tr>
 							</table>
@@ -338,13 +344,15 @@ function sendWorkOrder() {
                                 <td width="70%"> 
                                   <select id="CurrentStateID" name="CurrentState" onchange="changeStatus(this.form);setContentChanged(true);">
                                     <%
-	StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
-	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
-		StarsSelectionListEntry entry = serviceStatusList.getStarsSelectionListEntry(i);
-		String selected = (entry.getEntryID() == liteOrder.getCurrentStateID())? "selected" : "";
-%>
-                                    <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
-                                    <%	} %>
+                                        StarsCustSelectionList serviceStatusList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SERVICE_STATUS );
+                                    	for (int i = 0; i < serviceStatusList.getStarsSelectionListEntryCount(); i++) {
+                                    		StarsSelectionListEntry entry = serviceStatusList.getStarsSelectionListEntry(i);
+                                    		String selected = (entry.getEntryID() == liteOrder.getCurrentStateID())? "selected" : "";
+                                    %>
+                                    <option value="<%=entry.getEntryID()%>" <%=selected%>><%=entry.getContent()%></option>
+                                    <%
+                                        }
+                                    %>
                                   </select>
                                 </td>
                               </tr>
@@ -357,9 +365,9 @@ function sendWorkOrder() {
                           <tr> 
                             <td width="30%" align="right" class="TableCell">Event Date:</td>
                             <td width="70%"> 
-                              <input type="text" name="DateEventTimestamp" size="14" value="<%= (eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), datePart)) : "") %>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="DateEventTimestamp" size="14" value="<%=(eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), datePart)) : "")%>" disabled onchange="setContentChanged(true)">
                               - 
-                              <input type="text" name="TimeEventTimestamp" size="8" value="<%= (eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), timeFormat)) : "") %>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="TimeEventTimestamp" size="8" value="<%=(eventBases.size() > 0 ? (ServletUtils.formatInstant(eventBases.get(0).getEventTimestamp(), timeFormat)) : "")%>" disabled onchange="setContentChanged(true)">
                             </td>
                           </tr>
                         </table>
@@ -370,12 +378,16 @@ function sendWorkOrder() {
 	                        <td width="30%" align="right" valign="top" class="TableCell">Event History:
 	                        <td width="70%">
 						      <table width="95%" border="1" cellspacing="0" cellpadding="1" align="left" valign="top">
-	                            <% for (int i = 0; i < eventBases.size(); i++) { %>
+	                            <%
+	                                for (int i = 0; i < eventBases.size(); i++) {
+	                            %>
 	                            <tr> 
 	                              <td width="40%" class="TableCell">&nbsp;<%=DaoFactory.getYukonListDao().getYukonListEntry(eventBases.get(i).getActionId()).getEntryText()%>&nbsp;</td>
-	                              <td width="60%" class="TableCell">&nbsp;<%= ServletUtils.formatInstant(eventBases.get(i).getEventTimestamp(), datePart) %>&nbsp;-&nbsp;<%= ServletUtils.formatInstant(eventBases.get(i).getEventTimestamp(), timeFormat) %></td>
+	                              <td width="60%" class="TableCell">&nbsp;<%=ServletUtils.formatInstant(eventBases.get(i).getEventTimestamp(), datePart)%>&nbsp;-&nbsp;<%=ServletUtils.formatInstant(eventBases.get(i).getEventTimestamp(), timeFormat)%></td>
 	                            </tr>
-	                            <%}%>
+	                            <%
+	                                }
+	                            %>
 	                          </table>                                
 	                        </td>
 	                      </tr>
@@ -384,7 +396,7 @@ function sendWorkOrder() {
                         <tr>
                           <td width="30%" align="right" class="TableCell">Action Taken:</td>
                           <td width="70%"> 
-                            <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= liteOrder.getActionTaken().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                            <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%=liteOrder.getActionTaken().replaceAll("<br>", System.getProperty("line.separator"))%></textarea>
                           </td>
                         </tr>
                       </table>
@@ -392,23 +404,23 @@ function sendWorkOrder() {
                     </td>
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
 <%
-	if (liteOrder.getAccountID() > 0) {
-		LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(liteOrder.getAccountID(), liteEC.getEnergyCompanyID());
-		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
-		LiteContact liteContact = DaoFactory.getContactDao().getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
-		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
-		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
-		
-		String name = StarsUtils.formatName(liteContact);
-		String homePhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.HOME_PHONE));
-		String workPhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.WORK_PHONE));
-		String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
-		
-		StreetAddress starsAddr = new StreetAddress();
-		StarsLiteFactory.setStarsCustomerAddress(starsAddr, liteAddr);
-		String address = ServletUtils.formatAddress(starsAddr);
-		if (address.length() == 0) address = "Address N/A";
-%>
+     if (liteOrder.getAccountID() > 0) {
+ 		LiteAccountInfo liteAcctInfo = starsCustAccountInformationDao.getById(liteOrder.getAccountID(), liteEC.getEnergyCompanyID());
+ 		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
+ 		LiteContact liteContact = DaoFactory.getContactDao().getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
+ 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
+ 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
+ 		
+ 		String name = StarsUtils.formatName(liteContact);
+ 		String homePhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.HOME_PHONE));
+ 		String workPhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.WORK_PHONE));
+ 		String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
+ 		
+ 		StreetAddress starsAddr = new StreetAddress();
+ 		StarsLiteFactory.setStarsCustomerAddress(starsAddr, liteAddr);
+ 		String address = ServletUtils.formatAddress(starsAddr);
+ 		if (address.length() == 0) address = "Address N/A";
+ %>
                       <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr> 
                           <td><span class="SubtitleHeader">CUSTOMER CONTACT</span> 

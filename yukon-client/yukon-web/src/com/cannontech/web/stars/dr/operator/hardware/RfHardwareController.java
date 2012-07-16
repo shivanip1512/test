@@ -16,12 +16,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
-import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
-import com.cannontech.dr.rfn.service.RfnUnicastCompletionCallback;
 import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
-import com.cannontech.dr.rfn.service.WaitableRfnUnicastCompletionCallback;
+import com.cannontech.dr.rfn.service.RfnUnicastCallback;
+import com.cannontech.dr.rfn.service.WaitableRfnUnicastCallback;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -32,7 +30,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class RfHardwareController {
 
     private static final Logger log = YukonLogManager.getLogger(RfHardwareController.class);
-    private static final String keyBase = "yukon.web.modules.hardware.";
+    private static final String keyBase = "yukon.web.modules.operator.hardware.";
     
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnExpressComMessageService rfnExpressComMessageService;
@@ -45,7 +43,15 @@ public class RfHardwareController {
         final JSONObject json = new JSONObject();
         
         /* Using a waitable, this will block for the initial response to the read request or until the intial response timeout expires. */
-        WaitableRfnUnicastCompletionCallback waitableCallback = new WaitableRfnUnicastCompletionCallback(new RfnUnicastCompletionCallback() {
+        WaitableRfnUnicastCallback waitableCallback = new WaitableRfnUnicastCallback(new RfnUnicastCallback() {
+
+            @Override
+            public void processingExceptionOccured(String message) {
+                log.error(message);
+                json.put("success", false);
+                json.put("message", accessor.getMessage(keyBase + "error.readNowProcessingException", message));
+            }
+            
             @Override
             public void receivedStatus(RfnExpressComUnicastReplyType status) {
                 boolean success = status == RfnExpressComUnicastReplyType.OK ? true : false;
@@ -55,31 +61,24 @@ public class RfHardwareController {
                     json.put("message", accessor.getMessage(keyBase + "readNowSuccess"));
                 } else {
                     log.debug("Read now failed for " + device);
-                    json.put("message", accessor.getMessage(keyBase + "readNowFailed", status));
+                    json.put("message", accessor.getMessage(keyBase + "error.readNowFailed", status));
                 }
             }
-            
-            @Override
-            public void processingExceptionOccured(String message) {
-                log.error(message);
+
+            @Override 
+            public void receivedStatusError(RfnExpressComUnicastReplyType replyType) {
+                log.error("Error Reading RF Hardware: " + replyType);
                 json.put("success", false);
-                json.put("message", accessor.getMessage(keyBase + "readNowProcessingException", message));
+                json.put("message", accessor.getMessage(keyBase + "error.readNowFailed", replyType));
             }
             
-            /* Don't care */
-            @Override public void receivedData(Object data) {}
-            @Override public void receivedDataError(RfnExpressComUnicastDataReplyType replyType) {}
-            @Override public void receivedStatusError(RfnExpressComUnicastReplyType replyType) {}
             @Override public void complete() {}
         });
-        
-        //TODO use service to build reqeust
-        RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(device.getRfnIdentifier());
-        
-        rfnExpressComMessageService.sendUnicast(request, waitableCallback);
+            
+        rfnExpressComMessageService.readDevice(device, waitableCallback);
         
         try {
-            waitableCallback.waitForStatusResponse();
+            waitableCallback.waitForCompletion();
         } catch (InterruptedException e) {/* ignore */};
         
         resp.setContentType("application/json");

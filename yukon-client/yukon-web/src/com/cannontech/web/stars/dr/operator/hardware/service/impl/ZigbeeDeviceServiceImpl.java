@@ -17,9 +17,9 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.digi.model.GatewayDto;
 import com.cannontech.stars.dr.digi.model.ZigbeeDeviceDto;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -33,7 +33,7 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
     
     private YukonListDao yukonListDao;
     private AttributeService attributeService;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private InventoryBaseDao inventoryBaseDao;
     private GatewayDeviceDao gatewayDeviceDao;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
 
@@ -91,7 +91,7 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
     public ZigbeeDeviceDto buildZigbeeDeviceDto(int deviceId) {
         ZigbeeDeviceDto device = new ZigbeeDeviceDto();
         
-        LiteStarsLMHardware lmHardware = (LiteStarsLMHardware)starsInventoryBaseDao.getByDeviceId(deviceId);
+        LiteLmHardwareBase lmHardware = (LiteLmHardwareBase)inventoryBaseDao.getByDeviceId(deviceId);
         YukonListEntry deviceTypeEntry = yukonListDao.getYukonListEntry(lmHardware.getLmHardwareTypeID());
         
         HardwareType type = HardwareType.valueOf(deviceTypeEntry.getYukonDefID());
@@ -120,8 +120,8 @@ public class ZigbeeDeviceServiceImpl implements ZigbeeDeviceService {
     }
     
     @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
+        this.inventoryBaseDao = inventoryBaseDao;
     }
     
     @Autowired

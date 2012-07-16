@@ -1,6 +1,5 @@
 package com.cannontech.jobs.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Locale;
@@ -13,6 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.jobs.model.YukonJob;
@@ -30,12 +30,12 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
     private YukonJobDefinitionFactory<? extends YukonTask> beanDefinitionFactory;
 
     @Override
-    protected YukonJob createObject(ResultSet rs) throws SQLException {
+    protected YukonJob createObject(YukonResultSet rs) throws SQLException {
         return new YukonJob();
     }
 
     @Override
-    protected void mapRow(ResultSet rs, YukonJob job) throws SQLException {
+    protected void mapRow(YukonResultSet rs, YukonJob job) throws SQLException {
         job.setId(rs.getInt("jobId"));
         job.setBeanName(rs.getString("beanName"));
         YukonJobDefinition<? extends YukonTask> jobDefinition =

@@ -98,16 +98,9 @@
     
     <bean id="updatableAccountConverter" class="com.cannontech.stars.service.impl.UpdatableAccountConverterImpl"/>
 
-	<bean id="starsControllableDeviceDTOConverter" class="com.cannontech.stars.service.impl.StarsControllableDeviceDTOConverterImpl"/>
+	<bean id="lmDeviceDtoConverter" class="com.cannontech.stars.service.impl.LmDeviceDtoConverterImpl"/>
 
-    <bean id="deviceActivationService"
-        class="com.cannontech.stars.dr.hardware.service.impl.DeviceActivationServiceImpl">
-        <property name="customerAccountDao" ref="customerAccountDao" />
-        <property name="inventoryBaseDao" ref="inventoryBaseDao" />
-        <property name="hardwareBaseDao" ref="hardwareBaseDao" />
-        <property name="customerEventBaseDao" ref="customerEventBaseDao"/>
-        <property name="cacheService" ref="starsCacheService"/>
-    </bean>
+    <bean id="deviceActivationService" class="com.cannontech.stars.dr.hardware.service.impl.DeviceActivationServiceImpl"/>
 
     <bean id="deviceVerificationService" class="com.cannontech.stars.dr.hardware.service.impl.DeviceVerificationServiceImpl">
         <property name="hardwareBaseDao" ref="hardwareBaseDao" />
@@ -140,7 +133,7 @@
 
     <bean id="lmProgramWebPublishingDao" class="com.cannontech.stars.core.dao.impl.LMProgramWebPublishingDaoImpl"/>
 
-    <bean id="starsInventoryBaseDao" class="com.cannontech.stars.core.dao.impl.StarsInventoryBaseDaoImpl"/>
+    <bean id="inventoryBaseDao" class="com.cannontech.stars.core.dao.impl.InventoryBaseDaoImpl"/>
 
     <bean id="starsControllableDeviceHelper" class="com.cannontech.stars.ws.StarsControllableDeviceHelperImpl"/>
             
@@ -192,12 +185,6 @@
 
     <bean id="thermostatService" class="com.cannontech.stars.dr.thermostat.service.impl.ThermostatServiceImpl" />
     
-    <bean id="commandServiceFactory" class="com.cannontech.stars.dr.thermostat.service.impl.CommandServiceFactory" />
-    
-    <bean id="zigbeeCommandService" class="com.cannontech.stars.dr.thermostat.service.impl.ZigbeeCommandService" />
-    
-    <bean id="expressComCommandService" class="com.cannontech.stars.dr.thermostat.service.impl.ExpressComCommandService" />
-    
     <bean id="enrollmentDao" class="com.cannontech.stars.dr.enrollment.dao.impl.EnrollmentDaoImpl"/>
     
     <bean id="optOutService" class="com.cannontech.stars.dr.optout.service.impl.OptOutServiceImpl"/>
@@ -240,10 +227,8 @@
     
     <bean id="accountServiceHelper" class="com.cannontech.stars.dr.account.service.AccountServiceHelper"/>
 
-    <bean id="hardwareBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareBaseDaoImpl"/>
+    <bean id="hardwareBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LmHardwareBaseDaoImpl"/>
 
-    <bean id="inventoryBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl"/>
-    
     <bean id="eventBaseDao" class="com.cannontech.stars.dr.event.dao.impl.EventBaseDaoImpl"/>
         
     <bean id="eventInventoryDao" class="com.cannontech.stars.dr.event.dao.impl.EventInventoryDaoImpl"/>
@@ -261,10 +246,6 @@
     
     <bean id="yukonEnergyCompanyService" class="com.cannontech.stars.core.service.impl.YukonEnergyCompanyServiceImpl"/>
     
-    <bean id="starsCacheService" class="com.cannontech.stars.core.service.impl.StarsCacheServiceImpl">
-        <property name="starsInventoryBaseDao" ref="starsInventoryBaseDao" />
-    </bean>
-
     <bean id="passwordResetService" class="com.cannontech.stars.core.login.service.impl.PasswordResetServiceImpl" />
 
     <bean id="controlHistoryDao" class="com.cannontech.stars.dr.controlHistory.dao.impl.ControlHistoryDaoImpl"/>
@@ -294,10 +275,12 @@
 
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryEnrollmentDaoImpl"/>
     
-    <bean 
-        id="commandRequestHardwareExecutor" 
-        class="com.cannontech.stars.dr.hardware.service.impl.CommandRequestHardwareExecutorImpl">
-    </bean>
+    <bean id="lmHardwareCommandRequestExecutor" class="com.cannontech.stars.dr.hardware.service.impl.LmHardwareCommandRequestExecutorImpl"/>
+    <bean id="lmHardwareCommandService" class="com.cannontech.stars.dr.hardware.service.impl.LmHardwareCommandServiceImpl"/>
+    <bean id="porterExpressComCommandStrategy" class="com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandStrategy"/>
+    <bean id="zigbeeCommandStrategy" class="com.cannontech.stars.dr.hardware.service.impl.ZigbeeCommandStrategy"/>
+    <bean id="rfCommandStrategy" class="com.cannontech.stars.dr.hardware.service.impl.RfCommandStrategy"/>
+    <bean id="porterExpressComCommandBuilder" class="com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder"/>
     
     <!-- OPERATOR GENERAL -->
     <bean id="operatorGeneralSearchService" class="com.cannontech.stars.dr.general.service.impl.OperatorGeneralSearchServiceImpl"/>

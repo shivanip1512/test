@@ -329,6 +329,15 @@ public class ProgramDaoImpl implements ProgramDao {
         };
         return mapper;
     }
+    
+    @Override
+    public int getLoadGroupIdForProgramId(int programId) {
+        List<Integer> loadGroupList = getGroupIdsByProgramId(programId);
+        if (loadGroupList.size() > 0) {
+            return loadGroupList.get(0);
+        }
+        return 0;
+    }
 
     // DI Setters
     @Autowired

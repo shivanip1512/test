@@ -18,16 +18,16 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsInventoryBaseService;
 import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
@@ -37,8 +37,8 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
@@ -50,20 +50,21 @@ import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
-    private HardwareEventLogService hardwareEventLogService;
-    private StarsSearchDao starsSearchDao;
-    private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
-    private LMHardwareConfigurationDao lmHardwareConfigurationDao;
-    private LMHardwareEventDao hardwareEventDao;
-    private ApplianceDao applianceDao;
-    private StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService;
-    private YukonListDao yukonListDao;
-    private EnrollmentHelperService enrollmentService;
-    private CustomerAccountDao customerAccountDao;
-    private LMHardwareBaseDao hardwareBaseDao;
-    private InventoryDao inventoryDao;
-    private GatewayDeviceDao gatewayDeviceDao;
+    
+    @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private StarsSearchDao starsSearchDao;
+    @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private LMHardwareConfigurationDao lmHardwareConfigurationDao;
+    @Autowired private LMHardwareEventDao hardwareEventDao;
+    @Autowired private ApplianceDao applianceDao;
+    @Autowired private StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService;
+    @Autowired private YukonListDao yukonListDao;
+    @Autowired private EnrollmentHelperService enrollmentService;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private LmHardwareBaseDao hardwareBaseDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private GatewayDeviceDao gatewayDeviceDao;
     
     // ADD DEVICE TO ACCOUNT
     @Override
@@ -74,15 +75,15 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         boolean lmHardware = InventoryUtils.isLMHardware(liteInv.getCategoryID());
         if (liteInv.getLiteID() <= 0) {
             if (lmHardware) {
-                LiteStarsLMHardware lmHw = (LiteStarsLMHardware) liteInv;
+                LiteLmHardwareBase lmHw = (LiteLmHardwareBase) liteInv;
                 // create LMHardware here
-                liteInv = starsInventoryBaseDao.saveLmHardware(lmHw,
+                liteInv = inventoryBaseDao.saveLmHardware(lmHw,
                                                                energyCompany.getEnergyCompanyId());
             }
         }
         // existing inventory
         else {
-            LiteInventoryBase liteInvPrev = starsInventoryBaseDao.getByInventoryId(liteInv.getLiteID());
+            LiteInventoryBase liteInvPrev = inventoryBaseDao.getByInventoryId(liteInv.getLiteID());
             // Error, if the device is already assigned to another account
             // If replaceAccount is desired, caller needs to remove from the
             // previous account, then add to the new account
@@ -93,7 +94,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             }
             if (lmHardware) {
                 // update LMHardware here
-                liteInv = starsInventoryBaseDao.saveLmHardware((LiteStarsLMHardware) liteInv,
+                liteInv = inventoryBaseDao.saveLmHardware((LiteLmHardwareBase) liteInv,
                                                                energyCompany.getEnergyCompanyId());
             }
         }
@@ -101,7 +102,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         // Account specific setup
         if (liteInv.getAccountID() > 0) {
             if (lmHardware) {
-                LiteStarsLMHardware lmHw = (LiteStarsLMHardware) liteInv;
+                LiteLmHardwareBase lmHw = (LiteLmHardwareBase) liteInv;
                 // update static LMHardwareConfiguration here
                 if (VersionTools.staticLoadGroupMappingExists()) {
                     initStaticLoadGroup(lmHw, energyCompany);
@@ -119,9 +120,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         
         // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR
         if(lmHardware) {
-        	LiteStarsLMHardware lmHw = (LiteStarsLMHardware) liteInv;
+        	LiteLmHardwareBase lmHw = (LiteLmHardwareBase) liteInv;
         	int hardwareTypeID = lmHw.getLmHardwareTypeID();
-	        if (InventoryUtils.isTwoWayLcr(hardwareTypeID)) {
+	        if (InventoryUtils.is3102(hardwareTypeID)) {
 	        	
 	    		YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
 	    		String deviceTypeName = entry.getEntryText();
@@ -142,9 +143,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     }
 
     @Override
-    public void initStaticLoadGroup(LiteStarsLMHardware lmHw, LiteStarsEnergyCompany energyCompany) {
+    public void initStaticLoadGroup(LiteLmHardwareBase lmHw, LiteStarsEnergyCompany energyCompany) {
         // get the static load group mapping
-        LiteStarsCustAccountInformation liteAcct = starsCustAccountInformationDao.getByAccountId(lmHw.getAccountID());
+        LiteAccountInfo liteAcct = starsCustAccountInformationDao.getByAccountId(lmHw.getAccountID());
         LMHardwareConfiguration lmHwConfig = lmHardwareConfigurationDao.getStaticLoadGroupMapping(liteAcct,
                                                                                                  lmHw,
                                                                                                  energyCompany);
@@ -175,20 +176,16 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     }
 
     // adds the Device status event
-    private void addDeviceStatusEvent(LiteInventoryBase liteInv,
-            LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+    private void addDeviceStatusEvent(LiteInventoryBase liteInv, LiteStarsEnergyCompany lsec, LiteYukonUser user) {
 
         // get the entry ids needed to add device status events
-        int hwEventTypeID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE)
-                                         .getEntryID();
-        int completedActId = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED)
-                                          .getEntryID();
-        // update device status
-        liteInv.updateDeviceStatus();
-        int statusDefID = yukonListDao
-                                    .getYukonListEntry(liteInv.getCurrentStateID())
-                                    .getYukonDefID();
-        if (statusDefID != liteInv.getDeviceStatus()) {
+        int hwEventTypeID = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();
+        int completedActId = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).getEntryID();
+        
+        int statusDefID = yukonListDao.getYukonListEntry(liteInv.getCurrentStateID()).getYukonDefID();
+        int devicesCurrentStatus = inventoryBaseDao.getDeviceStatus(liteInv.getInventoryID());
+        
+        if (statusDefID != devicesCurrentStatus) {
             // add the device status event here
             if (statusDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL) {
                 // If device status is available, add "Completed" event
@@ -199,7 +196,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 lmHwEvent.setEventDateTime(new Date().getTime());
                 lmHwEvent.setNotes("Event added to match the device status");
                 lmHwEvent.setAuthorizedBy(user.getUsername());                
-                hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyId());                
+                hardwareEventDao.add(lmHwEvent, lsec.getEnergyCompanyId());                
             }
         }
     }
@@ -214,7 +211,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         try {
             boolean lmHardware = InventoryUtils.isLMHardware(liteInv.getCategoryID());
             if (lmHardware) {
-                LiteStarsLMHardware lmHw = (LiteStarsLMHardware) liteInv;
+                LiteLmHardwareBase lmHw = (LiteLmHardwareBase) liteInv;
 
                 // serialNumber validation here
                 String newSerialNo = lmHw.getManufacturerSerialNumber();
@@ -224,22 +221,22 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
                 // see if serialNumber is changed, if so, see it doesn't already
                 // exist on another device
-                LiteStarsLMHardware lmHwPrev = (LiteStarsLMHardware) starsSearchDao.getById(lmHw.getInventoryID(), energyCompany);
-                if (!lmHwPrev.getManufacturerSerialNumber().equals(newSerialNo) && starsSearchDao.searchLMHardwareBySerialNumber(newSerialNo,
+                LiteLmHardwareBase lmHwPrev = (LiteLmHardwareBase) starsSearchDao.getById(lmHw.getInventoryID(), energyCompany);
+                if (!lmHwPrev.getManufacturerSerialNumber().equals(newSerialNo) && starsSearchDao.searchLmHardwareBySerialNumber(newSerialNo,
                                                                                                                                  energyCompany) != null) {
                     throw new StarsDeviceSerialNumberAlreadyExistsException(newSerialNo,
                                                                             energyCompany.getName());
                 }
 
                 // save LMHardware here
-                liteInv = starsInventoryBaseDao.saveLmHardware(lmHw,
+                liteInv = inventoryBaseDao.saveLmHardware(lmHw,
                                                                energyCompany.getEnergyCompanyId());
                 
                 // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR
                 // - only if this is a Two Way LCR that does not yet have a Yukon device assigned to it
                 // - updateDeviceOnAccount() does not support updating a Yukon device already assigned
                 int hardwareTypeID = lmHw.getLmHardwareTypeID();
-                if (InventoryUtils.isTwoWayLcr(hardwareTypeID)) {
+                if (InventoryUtils.is3102(hardwareTypeID)) {
                 	if (liteInv.getDeviceID() < 1) {
                 		
                 		YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
@@ -311,7 +308,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         
         if (deleteFromInventory) {
             
-            starsInventoryBaseDao.deleteInventoryBase(inventoryId);
+            inventoryBaseDao.deleteInventoryBase(inventoryId);
             hardwareEventLogService.hardwareDeleted(user, liteInventory.getDeviceLabel());
             
         } else {
@@ -334,7 +331,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             }
 
             // update the Inventory to remove it from the account
-            starsInventoryBaseDao.removeInventoryFromAccount(inventoryId, removeInstant);
+            inventoryBaseDao.removeInventoryFromAccount(inventoryId, removeInstant);
             
             // cleaup gateway assignments for zigbee devices
             HardwareClass hardwareClass = identifier.getHardwareType().getHardwareClass();
@@ -381,81 +378,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         lmHwEvent.setAuthorizedBy(user.getUsername());
 
         hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyId());
-    }
-    
-    /* Depenencies */
-    
-    @Autowired
-    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
-        this.hardwareEventLogService = hardwareEventLogService;
-    }
-    
-    @Autowired
-    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
-        this.starsSearchDao = starsSearchDao;
-    }
-
-    @Autowired
-    public void setStarsCustAccountInformationDao(
-            StarsCustAccountInformationDao starsCustAccountInformationDao) {
-        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
-    }
-
-    @Autowired
-    public void setStarsInventoryBaseDao(
-            StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
-    }
-
-    @Autowired
-    public void setLmHardwareConfigurationDao(
-            LMHardwareConfigurationDao lmHardwareConfigurationDao) {
-        this.lmHardwareConfigurationDao = lmHardwareConfigurationDao;
-    }
-
-    @Autowired    
-    public void setHardwareEventDao(LMHardwareEventDao hardwareEventDao) {
-        this.hardwareEventDao = hardwareEventDao;
-    }
-
-    @Autowired
-    public void setApplianceDao(ApplianceDao applianceDao) {
-        this.applianceDao = applianceDao;
-    }
-
-    @Autowired
-    public void setStarsTwoWayLcrYukonDeviceAssignmentService(StarsTwoWayLcrYukonDeviceAssignmentService starsTwoWayLcrYukonDeviceAssignmentService) {
-        this.starsTwoWayLcrYukonDeviceAssignmentService = starsTwoWayLcrYukonDeviceAssignmentService;
-    }
-    
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
-    }
-    
-    @Autowired
-    public void setEnrollmentService(EnrollmentHelperService enrollmentService) {
-        this.enrollmentService = enrollmentService;
-    }
-
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-
-    @Autowired
-    public void setHardwareBaseDao(LMHardwareBaseDao hardwareBaseDao) {
-        this.hardwareBaseDao = hardwareBaseDao;
-    }
-    
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-    
-    @Autowired
-    public void setGatewayDeviceDao(GatewayDeviceDao gatewayDeviceDao) {
-        this.gatewayDeviceDao = gatewayDeviceDao;
     }
     
 }

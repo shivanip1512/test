@@ -29,18 +29,17 @@ import com.cannontech.stars.dr.appliance.service.StarsApplianceService;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
-import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 
 public class StarsApplianceServiceImpl implements StarsApplianceService {
 
     private AccountEventLogService accountEventLogService;
     private CustomerAccountDao customerAccountDao;
-    private LMHardwareBaseDao lmHardwareBaseDao;
+    private LmHardwareBaseDao lmHardwareBaseDao;
     private ProgramDao programDao;
     private StarsApplianceDao starsApplianceDao;
 
@@ -78,9 +77,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                     .setLoadNumber(starsAppliance.getLoadNumber());
                 if (app.getLMHardwareConfig().getAddressingGroupID() == 0
                     && starsAppliance.getProgramID() > 0) {
-                    Integer groupID = 
-                        InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(
-                           starsAppliance.getProgramID());
+                    int groupID = programDao.getLoadGroupIdForProgramId(starsAppliance.getProgramID());
                     app.getLMHardwareConfig().setAddressingGroupID(groupID);
                 }
             }
@@ -410,8 +407,8 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 Program program = programDao.getByProgramId(liteApp.getProgramID());
                 programName = program.getProgramPaoName();
 
-                LMHardwareBaseDao lmHardwareBaseDao = 
-                    YukonSpringHook.getBean("hardwareBaseDao", LMHardwareBaseDao.class);
+                LmHardwareBaseDao lmHardwareBaseDao = 
+                    YukonSpringHook.getBean("hardwareBaseDao", LmHardwareBaseDao.class);
                 LMHardwareBase hardwareBase = lmHardwareBaseDao.getById(liteApp.getInventoryID());
                 String serialNumber = hardwareBase.getManufacturerSerialNumber();
 
@@ -484,9 +481,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 appConfig.setLoadNumber(liteStarsAppliance.getLoadNumber());
                 if (appConfig.getAddressingGroupID().intValue() == 0
                     && liteStarsAppliance.getProgramID() > 0) {
-                    Integer groupID = 
-                        InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(
-                                           liteStarsAppliance.getProgramID());
+                    int groupID = programDao.getLoadGroupIdForProgramId(liteStarsAppliance.getProgramID());
                     appConfig.setAddressingGroupID(groupID);
                 }
             }
@@ -826,7 +821,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
     }
     
     @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+    public void setLmHardwareBaseDao(LmHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
     

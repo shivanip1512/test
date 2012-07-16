@@ -18,7 +18,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -47,7 +47,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     @Autowired private AccountService accountService;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private HardwareUiService hardwareUiService;
-    @Autowired private StarsInventoryBaseDao starsInventoryBaseDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
     
     @Override
     protected void createAll() {
@@ -349,7 +349,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         }
         // check warehouse
         try {
-            starsInventoryBaseDao.getByInventoryId(hardware.getInventoryId());
+            inventoryBaseDao.getByInventoryId(hardware.getInventoryId());
         } catch (NotFoundException e) {
             return true;
         }

@@ -42,8 +42,6 @@ public final class StarsOperation {
     private StarsAppliance starsUpdateAppliance;
     private StarsAppliance starsDeleteAppliance;
     private StarsDeleteApplianceResponse starsDeleteApplianceResponse;
-    private StarsCreateLMHardware starsCreateLMHardware;
-    private StarsCreateLMHardwareResponse starsCreateLMHardwareResponse;
     private StarsUpdateLMHardware starsUpdateLMHardware;
     private StarsUpdateLMHardwareResponse starsUpdateLMHardwareResponse;
     private StarsDeleteLMHardware starsDeleteLMHardware;
@@ -417,23 +415,6 @@ public final class StarsOperation {
     public void setStarsDeleteApplianceResponse(
             StarsDeleteApplianceResponse starsDeleteApplianceResponse) {
         this.starsDeleteApplianceResponse = starsDeleteApplianceResponse;
-    }
-
-    public StarsCreateLMHardware getStarsCreateLMHardware() {
-        return starsCreateLMHardware;
-    }
-
-    public void setStarsCreateLMHardware(StarsCreateLMHardware starsCreateLMHardware) {
-        this.starsCreateLMHardware = starsCreateLMHardware;
-    }
-
-    public StarsCreateLMHardwareResponse getStarsCreateLMHardwareResponse() {
-        return starsCreateLMHardwareResponse;
-    }
-
-    public void setStarsCreateLMHardwareResponse(
-            StarsCreateLMHardwareResponse starsCreateLMHardwareResponse) {
-        this.starsCreateLMHardwareResponse = starsCreateLMHardwareResponse;
     }
 
     public StarsUpdateLMHardware getStarsUpdateLMHardware() {

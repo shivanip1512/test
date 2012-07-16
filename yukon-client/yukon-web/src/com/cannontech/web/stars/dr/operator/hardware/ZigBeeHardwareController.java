@@ -44,7 +44,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
@@ -79,7 +79,7 @@ public class ZigBeeHardwareController {
     @Autowired private ZigbeeWebService zigbeeWebService;
     @Autowired private ZigbeeStateUpdaterService zigbeeStateUpdaterService;
     @Autowired private ZigbeeDeviceDao zigbeeDeviceDao;
-    @Autowired private LMHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private InventoryDao inventoryDao;

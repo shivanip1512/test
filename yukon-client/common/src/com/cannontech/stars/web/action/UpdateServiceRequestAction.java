@@ -18,7 +18,7 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.event.EventWorkOrder;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
@@ -105,7 +105,7 @@ public class UpdateServiceRequestAction implements ActionBase {
 
         	LiteWorkOrderBase liteOrder = starsWorkOrderBaseDao.getById(updateOrder.getOrderID());
 
-        	LiteStarsCustAccountInformation liteAcctInfo = 
+        	LiteAccountInfo liteAcctInfo = 
         	    starsCustAccountInformationDao.getById(liteOrder.getAccountID(), liteStarsEC.getEnergyCompanyId());
 
         	if (updateOrder.getOrderNumber() != null &&

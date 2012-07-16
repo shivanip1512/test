@@ -14,12 +14,12 @@ import com.cannontech.core.dao.GraphDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
-import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
@@ -28,15 +28,17 @@ import com.cannontech.stars.service.EnergyCompanyService;
 import com.google.common.collect.Lists;
 
 public class AccountCheckerServiceImpl implements AccountCheckerService {
-    private final Logger logger = YukonLogManager.getLogger(AccountCheckerServiceImpl.class);
-    private CustomerAccountDao customerAccountDao;
-    private InventoryBaseDao inventoryBaseDao;
-    private ContactDao contactDao;
-    private ApplianceDao applianceDao;
-    private ProgramDao programDao;
-    private GraphDao graphDao;
-    private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    private EnergyCompanyService energyCompanyService;
+    
+    private final static Logger logger = YukonLogManager.getLogger(AccountCheckerServiceImpl.class);
+    
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private ApplianceDao applianceDao;
+    @Autowired private ProgramDao programDao;
+    @Autowired private GraphDao graphDao;
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private EnergyCompanyService energyCompanyService;
     
     @Override
     public void checkInventory(final LiteYukonUser user, final Integer... inventoryIds)
@@ -222,46 +224,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     private boolean isOperator(LiteYukonUser user) {
         boolean isOperator = energyCompanyService.isOperator(user);
         return isOperator;
-    }
-    
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-    
-    @Autowired
-    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
-        this.inventoryBaseDao = inventoryBaseDao;
-    }
-
-    @Autowired
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-    
-    @Autowired
-    public void setApplianceDao(ApplianceDao applianceDao) {
-        this.applianceDao = applianceDao;
-    }
-    
-    @Autowired
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
-    }
-    
-    @Autowired
-    public void setGraphDao(GraphDao graphDao) {
-		this.graphDao = graphDao;
-	}
-
-    @Autowired
-    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-	}
-    
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
     }
     
 }

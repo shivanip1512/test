@@ -13,6 +13,8 @@ public abstract class WaitableDeviceAttributeReadCallback implements DeviceAttri
     private long timeoutInMillis = 120000;  //default 2mins
     private CountDownLatch latch = new CountDownLatch(1);
     
+    public WaitableDeviceAttributeReadCallback() {}
+    
     public WaitableDeviceAttributeReadCallback(long timeoutInMillis) {
         this.timeoutInMillis = timeoutInMillis;
     }

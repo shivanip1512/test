@@ -7,7 +7,6 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -25,13 +24,15 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
+import com.google.common.collect.Lists;
 
 /**
  * @author yao
@@ -53,7 +54,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 	String redirect;
 	HttpSession session;
 	
-	List<LiteStarsLMHardware> hardwareSet = new ArrayList<LiteStarsLMHardware>();
+	List<LiteLmHardwareBase> hardwareSet = new ArrayList<LiteLmHardwareBase>();
 	List<String> serialNoSet = new ArrayList<String>();
 	int numSuccess = 0, numFailure = 0;
 	
@@ -107,20 +108,22 @@ public class AddSNRangeTask extends TimeConsumingTask {
 					YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
 					devTypeID);
         StarsSearchDao starsSearchDao = YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
-        List<LiteStarsLMHardware> existingHardware = null;
+        List<LiteLmHardwareBase> existingHardware = null;
         try {
+            List<YukonEnergyCompany> ecList = Lists.newArrayList();
+            ecList.add(energyCompany);
             existingHardware = starsSearchDao.searchLMHardwareBySerialNumberRange(snFrom,
                                                                                   snTo,
                                                                                   deviceTypeDefinitionId,
-                                                                                  Collections.singletonList(energyCompany));           
+                                                                                  ecList);           
         } catch (PersistenceException e){
             status = STATUS_ERROR;
             errorMsg = e.getMessage();
             return;
         }
         
-        Map<String, LiteStarsLMHardware> foundMap = new HashMap<String, LiteStarsLMHardware>();
-        for(LiteStarsLMHardware hardware : existingHardware) {
+        Map<String, LiteLmHardwareBase> foundMap = new HashMap<String, LiteLmHardwareBase>();
+        for(LiteLmHardwareBase hardware : existingHardware) {
         	foundMap.put(hardware.getManufacturerSerialNumber(), hardware);
         }
         
@@ -128,7 +131,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
 		for (long sn = snFrom; sn <= snTo; sn++) {
 			String serialNo = String.valueOf(sn);
 			
-			LiteStarsLMHardware existingHw = foundMap.get(serialNo);
+			LiteLmHardwareBase existingHw = foundMap.get(serialNo);
 			if (existingHw != null) 
             {
 				hardwareSet.add( existingHw );

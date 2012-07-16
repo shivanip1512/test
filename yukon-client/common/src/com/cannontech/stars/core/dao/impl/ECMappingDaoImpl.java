@@ -337,6 +337,16 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
+    public List<Integer> getAccountIds(int ecId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT AccountId");
+        sql.append("FROM ECToAccountMapping");
+        sql.append("WHERE EnergyCompanyId").eq(ecId);
+        
+        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+    }
+    
+    @Override
     public List<LiteYukonGroup> getResidentialGroups(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT yg.GroupId, yg.GroupName, yg.GroupDescription");

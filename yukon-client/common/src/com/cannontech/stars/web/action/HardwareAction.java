@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -18,13 +19,13 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLMConfiguration;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -33,8 +34,12 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
+import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.util.InventoryUtils;
@@ -57,7 +62,7 @@ import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfigResponse;
 public class HardwareAction {
 
     /* from UpdateLMHardwareConfigAction */
-    public static boolean isToConfig(LiteStarsLMHardware liteHw, LiteStarsCustAccountInformation liteAcctInfo) {
+    public static boolean isToConfig(LiteLmHardwareBase liteHw, LiteAccountInfo liteAcctInfo) {
     	for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
             if (liteApp.getInventoryID() == liteHw.getInventoryID()) {
                 return true;
@@ -68,15 +73,15 @@ public class HardwareAction {
     }
 
     /* from deleteLMHardwareAction */
-    public static void removeInventory(StarsDeleteLMHardware deleteHw, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+    public static void removeInventory(StarsDeleteLMHardware deleteHw, LiteAccountInfo liteAcctInfo, LiteStarsEnergyCompany energyCompany)
         throws WebClientException
     {
         ApplianceDao applianceDao = YukonSpringHook.getBean("applianceDao", ApplianceDao.class);
         
         try {
-            StarsInventoryBaseDao starsInventoryBaseDao = 
-                YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
-            LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(deleteHw.getInventoryID());
+            InventoryBaseDao inventoryBaseDao = 
+                YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
+            LiteInventoryBase liteInv = inventoryBaseDao.getByInventoryId(deleteHw.getInventoryID());
             
             try {
                 // Unenrolls the inventory from all its programs (inside below catch block as well)
@@ -87,7 +92,7 @@ public class HardwareAction {
                 CustomerAccount customerAccount = customerAccountDao.getById(liteAcctInfo.getAccountID());
                 enrollmentHelper.setAccountNumber(customerAccount.getAccountNumber());
     
-                LMHardwareBaseDao lmHardwareBaseDao = YukonSpringHook.getBean("hardwareBaseDao", LMHardwareBaseDao.class);
+                LmHardwareBaseDao lmHardwareBaseDao = YukonSpringHook.getBean("hardwareBaseDao", LmHardwareBaseDao.class);
                 LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(deleteHw.getInventoryID());
                 enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
                 
@@ -125,7 +130,7 @@ public class HardwareAction {
                 
                 event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
                 
-                if (liteInv instanceof LiteStarsLMHardware) {
+                if (liteInv instanceof LiteLmHardwareBase) {
                     applianceDao.deleteAppliancesByAccountIdAndInventoryId(liteAcctInfo.getAccountID(), liteInv.getInventoryID());
                 }
                 
@@ -245,7 +250,7 @@ public class HardwareAction {
           }
 
     /* from UpdateLMHardwareConfigAction */
-    public static void saveSwitchCommand(LiteStarsLMHardware liteHw, String commandType, LiteStarsEnergyCompany energyCompany) {
+    public static void saveSwitchCommand(LiteLmHardwareBase liteHw, String commandType, LiteStarsEnergyCompany energyCompany) {
         SwitchCommandQueue.SwitchCommand cmd = new SwitchCommandQueue.SwitchCommand();
         cmd.setEnergyCompanyID(energyCompany.getLiteID());
         cmd.setAccountID(liteHw.getAccountID());
@@ -258,9 +263,8 @@ public class HardwareAction {
     /* from UpdateLMHardwareConfigAction */    
     public static void updateLMConfiguration(
                                              StarsLMConfiguration starsHwConfig,
-                                             LiteStarsLMHardware liteHw,
-                                             LiteStarsEnergyCompany energyCompany)
-            throws WebClientException {
+                                             LiteLmHardwareBase liteHw,
+                                             LiteStarsEnergyCompany energyCompany) throws CommandCompletionException {
         com.cannontech.stars.database.data.hardware.LMConfigurationBase config = new com.cannontech.stars.database.data.hardware.LMConfigurationBase();
         com.cannontech.stars.database.db.hardware.LMConfigurationBase configDB = config.getLMConfigurationBase();
     
@@ -365,19 +369,19 @@ public class HardwareAction {
             }
         } catch (TransactionException e) {
             CTILogger.error(e.getMessage(), e);
-            throw new WebClientException("Failed to update the hardware addressing tables");
+            throw new CommandCompletionException("Failed to update the hardware addressing tables");
         }
     }
 
     /* from LMHardwareConfigAction */
     public static StarsUpdateLMHardwareConfigResponse updateLMHardwareConfig(
                                                                              StarsUpdateLMHardwareConfig updateHwConfig,
-                                                                             LiteStarsLMHardware liteHw,
+                                                                             LiteLmHardwareBase liteHw,
                                                                              int userID,
                                                                              LiteStarsEnergyCompany energyCompany)
-            throws WebClientException {
-        LiteStarsCustAccountInformation liteAcctInfo = null;
-        List<LiteStarsLMHardware> hwsToConfig = null;
+            throws CommandCompletionException {
+        LiteAccountInfo liteAcctInfo = null;
+        List<LiteLmHardwareBase> hwsToConfig = null;
 
         LiteYukonUser currentUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
     
@@ -386,14 +390,13 @@ public class HardwareAction {
         if (updateHwConfig.getStarsLMConfiguration() != null) {
             updateLMConfiguration(updateHwConfig.getStarsLMConfiguration(), liteHw, energyCompany);
     
-            hwsToConfig = new ArrayList<LiteStarsLMHardware>();
+            hwsToConfig = new ArrayList<LiteLmHardwareBase>();
             hwsToConfig.add(liteHw);
         }
     
         CustomerAccount customerAccount = null;
         if (liteHw.getAccountID() > 0) {
-            CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao",
-                                                                            CustomerAccountDao.class);
+            CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao", CustomerAccountDao.class);
             customerAccount = customerAccountDao.getById(liteHw.getAccountID());
     
             List<ProgramEnrollment> requests = new ArrayList<ProgramEnrollment>();
@@ -409,9 +412,7 @@ public class HardwareAction {
             }
     
     
-            ProgramEnrollmentService programEnrollmentService = YukonSpringHook.getBean(
-                                                                                        "starsProgramEnrollmentService",
-                                                                                        ProgramEnrollmentService.class);
+            ProgramEnrollmentService programEnrollmentService = YukonSpringHook.getBean("starsProgramEnrollmentService", ProgramEnrollmentService.class);
             hwsToConfig = programEnrollmentService.applyEnrollmentRequests(customerAccount, requests, liteHw, currentUser);
     
             if (!hwsToConfig.contains(liteHw)) {
@@ -428,7 +429,7 @@ public class HardwareAction {
         boolean useHardwareAddressing = Boolean.valueOf(trackHwAddr).booleanValue();
     
         for (int i = 0; i < hwsToConfig.size(); i++) {
-            LiteStarsLMHardware lHw = hwsToConfig.get(i);
+            LiteLmHardwareBase lHw = hwsToConfig.get(i);
     
             if (!updateHwConfig.getSaveConfigOnly()) {
                 boolean toConfig = true;
@@ -443,10 +444,16 @@ public class HardwareAction {
                     String commandType = (toConfig) ? SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE : SwitchCommandQueue.SWITCH_COMMAND_DISABLE;
                     saveSwitchCommand(lHw, commandType, energyCompany);
                 } else {
+                    LmHardwareCommandService commandService = YukonSpringHook.getBean("lmHardwareCommandService", LmHardwareCommandService.class);
                     if (toConfig) {
-                        YukonSwitchCommandAction.sendConfigCommand(energyCompany, lHw, true, null);
+                        LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.CONFIG, energyCompany.getUser());
+                        b.withParam(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
+                        LmHardwareCommand command = b.build();
+                        commandService.sendConfigCommand(command);
                     } else {
-                        YukonSwitchCommandAction.sendDisableCommand(energyCompany, lHw, null);
+                        LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(liteHw, LmHardwareCommandType.OUT_OF_SERVICE, energyCompany.getUser());
+                        LmHardwareCommand command = b.build();
+                        commandService.sendOutOfServiceCommand(command);
                     }
                 }
             }
@@ -469,7 +476,7 @@ public class HardwareAction {
         String logMsg = "Serial #:" + liteHw.getManufacturerSerialNumber();
         if (!disabled) {
             for (int i = 0; i < hwsToConfig.size(); i++) {
-                LiteStarsLMHardware lHw = hwsToConfig.get(i);
+                LiteLmHardwareBase lHw = hwsToConfig.get(i);
                 
                 hardwareEventLogService.hardwareConfigUpdated(currentUser,
                                                               lHw.getManufacturerSerialNumber(),

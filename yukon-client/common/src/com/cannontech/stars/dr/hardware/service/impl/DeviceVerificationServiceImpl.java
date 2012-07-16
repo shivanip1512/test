@@ -5,14 +5,14 @@ import java.util.concurrent.atomic.AtomicLong;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.DeviceVerificationService;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class DeviceVerificationServiceImpl implements DeviceVerificationService {
     private static final AtomicLong messageIdCounter = new AtomicLong();
-    private LMHardwareBaseDao hardwareBaseDao;
+    private LmHardwareBaseDao hardwareBaseDao;
     private BasicServerConnection porterConnection;
     
 
@@ -47,7 +47,7 @@ public class DeviceVerificationServiceImpl implements DeviceVerificationService 
         return false;
     }
 
-    public void setHardwareBaseDao(LMHardwareBaseDao hardwareBaseDao) {
+    public void setHardwareBaseDao(LmHardwareBaseDao hardwareBaseDao) {
         this.hardwareBaseDao = hardwareBaseDao;
     }
     

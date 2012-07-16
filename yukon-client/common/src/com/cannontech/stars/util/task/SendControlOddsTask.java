@@ -19,7 +19,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.util.StarsUtils;
@@ -84,7 +84,7 @@ public class SendControlOddsTask implements Runnable {
 				
 				for (int i = 0; i < stmt.getRowCount(); i++) {
 					int accountID = ((java.math.BigDecimal) stmt.getRow(i)[0]).intValue();
-					LiteStarsCustAccountInformation accountInfo =
+					LiteAccountInfo accountInfo =
 						starsCustAccountInformationDao.getById(accountID, energyCompanyID);
 					
 					LiteContact primContact = DaoFactory.getContactDao().getContact( accountInfo.getCustomer().getPrimaryContactID() );

@@ -12,9 +12,9 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.model.RfnMeter;
-import com.cannontech.amr.rfn.service.RfnMeterReadCompletionCallback;
+import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
-import com.cannontech.amr.rfn.service.WaitableRfnMeterReadCompletionCallback;
+import com.cannontech.amr.rfn.service.WaitableRfnDeviceReadCompletionCallback;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -53,7 +53,9 @@ public class RfnMeterInfoWidget extends WidgetControllerBase {
         
         /* Using a waitable, this will block for the initial response to the read request or until a 10 second timeout expires. */
         
-        WaitableRfnMeterReadCompletionCallback waitableCallback = new WaitableRfnMeterReadCompletionCallback(new RfnMeterReadCompletionCallback() {
+        WaitableRfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> waitableCallback = 
+                new WaitableRfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType>(
+                    new RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType>() { 
             
             @Override
             public void receivedStatus(RfnMeterReadingReplyType status) {

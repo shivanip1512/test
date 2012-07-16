@@ -53,7 +53,7 @@ import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteSiteInformation;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CallReportDao;
@@ -74,7 +74,7 @@ import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
 import com.cannontech.stars.dr.general.service.ContactNotificationService;
 import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -99,7 +99,7 @@ public class AccountServiceImpl implements AccountService {
     private CustomerAccountDao customerAccountDao;
     private ECMappingDao ecMappingDao;
     private InventoryDao inventoryDao;
-    private LMHardwareBaseDao hardwareBaseDao;
+    private LmHardwareBaseDao hardwareBaseDao;
     private LMProgramEventDao lmProgramEventDao;
     private ApplianceDao applianceDao;
     private StarsWorkOrderBaseDao workOrderDao;
@@ -408,7 +408,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private void deleteAccount(CustomerAccount account, LiteYukonUser user) {
-        LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getByAccountId(account.getAccountId());
+        LiteAccountInfo customerInfo = starsCustAccountInformationDao.getByAccountId(account.getAccountId());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
         LiteCustomer liteCustomer = customerDao.getLiteCustomer(account.getCustomerId());
@@ -1185,7 +1185,7 @@ public class AccountServiceImpl implements AccountService {
     }
     
     @Autowired
-    public void setHardwareBaseDao(LMHardwareBaseDao hardwareBaseDao) {
+    public void setHardwareBaseDao(LmHardwareBaseDao hardwareBaseDao) {
         this.hardwareBaseDao = hardwareBaseDao;
     }
 

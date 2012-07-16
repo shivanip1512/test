@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
-import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
-import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.web.stars.dr.operator.model.DisplayableApplianceListEntry;
@@ -15,9 +15,10 @@ import com.cannontech.web.stars.dr.operator.service.DisplayableApplianceService;
 import com.google.common.collect.Lists;
 
 public class DisplayableApplianceServiceImpl implements DisplayableApplianceService {
-    private ApplianceDao applianceDao;
-    private InventoryBaseDao inventoryBaseDao;
-    private ProgramDao programDao;
+    
+    @Autowired private ApplianceDao applianceDao;
+    @Autowired private ProgramDao programDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
     
     @Override
     public List<DisplayableApplianceListEntry> getDisplayableApplianceListEntries(int accountId) {
@@ -25,7 +26,7 @@ public class DisplayableApplianceServiceImpl implements DisplayableApplianceServ
         
         List<Appliance> appliances = applianceDao.getByAccountId(accountId);
         for (Appliance appliance : appliances) {
-            InventoryBase inventoryBase = inventoryBaseDao.getById(appliance.getInventoryId());
+            LiteInventoryBase inventoryBase = inventoryBaseDao.getByInventoryId(appliance.getInventoryId());
             Program starsProgram = programDao.getByProgramId(appliance.getProgramId());
             
             DisplayableApplianceListEntry displayableApplianceListEntry = 
@@ -40,19 +41,4 @@ public class DisplayableApplianceServiceImpl implements DisplayableApplianceServ
         return results;
     }
  
-    @Autowired
-    public void setApplianceDao(ApplianceDao applianceDao) {
-        this.applianceDao = applianceDao;
-    }
-
-    @Autowired
-    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
-        this.inventoryBaseDao = inventoryBaseDao;
-    }
-    
-    @Autowired
-    public void setProgramDao(ProgramDao programDao) {
-        this.programDao = programDao;
-    }
-    
 }

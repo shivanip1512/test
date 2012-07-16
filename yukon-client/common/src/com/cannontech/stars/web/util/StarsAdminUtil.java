@@ -1,7 +1,6 @@
 package com.cannontech.stars.web.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -30,11 +29,14 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.YukonGroupRoleDefs;
@@ -46,20 +48,21 @@ import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.hardware.LMHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
 import com.cannontech.stars.database.data.lite.LiteSubstation;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.ECToGenericMapping;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.action.HardwareAction;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.google.common.collect.Lists;
 
 public class StarsAdminUtil {
 
@@ -129,7 +132,7 @@ public class StarsAdminUtil {
 		company = Transaction.createTransaction( Transaction.INSERT, company ).execute();
 		
 		LiteContact liteContact = (LiteContact) StarsLiteFactory.createLite(company.getPrimaryContact());
-		ServerUtils.handleDBChange( liteContact, DbChangeType.ADD );
+		handleDBChange( liteContact, DbChangeType.ADD );
 		
 		LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );
 		energyCompany.addServiceCompany( liteCompany );
@@ -169,7 +172,7 @@ public class StarsAdminUtil {
 		
 		energyCompany.deleteServiceCompany( companyID );
 		
-		ServerUtils.handleDBChange( liteContact, DbChangeType.DELETE );
+		handleDBChange( liteContact, DbChangeType.DELETE );
 	}
 	
 	public static void deleteAllServiceCompanies(LiteStarsEnergyCompany energyCompany)
@@ -536,10 +539,10 @@ public class StarsAdminUtil {
 
 	    StarsSearchDao starsSearchDao = YukonSpringHook.getBean(StarsSearchDao.class);
 	    DBPersistentDao dbPersistentDao = YukonSpringHook.getBean(DBPersistentDao.class);
-	    List<LiteStarsLMHardware> inventory = 
-	        starsSearchDao.searchLMHardwareByRoute(routeId, 
-	                                               Collections.singletonList(energyCompany));
-	    for (LiteStarsLMHardware liteHw : inventory) {
+	    List<YukonEnergyCompany> ecList = Lists.newArrayList();
+	    ecList.add(energyCompany);
+	    List<LiteLmHardwareBase> inventory = starsSearchDao.searchLMHardwareByRoute(routeId, ecList);
+	    for (LiteLmHardwareBase liteHw : inventory) {
 
 	        LMHardwareBase hw = new LMHardwareBase();
 	        StarsLiteFactory.setLMHardwareBase(hw, liteHw);
@@ -593,7 +596,7 @@ public class StarsAdminUtil {
 		adminGroupUpdated |= DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_MANAGE_MEMBERS, CtiUtilities.TRUE_STRING );
 		
 		if (adminGroupUpdated)
-			ServerUtils.handleDBChange( adminGroup, DbChangeType.UPDATE );
+			handleDBChange( adminGroup, DbChangeType.UPDATE );
 		
 		adminGroup = member.getOperatorAdminGroup();
 		String value = null;
@@ -602,7 +605,7 @@ public class StarsAdminUtil {
 				&& DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING, value ))
 			|| ((value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTIONAL_PRODUCT_DEV )) != null
 				&& DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.OPTIONAL_PRODUCT_DEV, value )))
-			ServerUtils.handleDBChange( adminGroup, DbChangeType.UPDATE );
+			handleDBChange( adminGroup, DbChangeType.UPDATE );
 	}
 	
 	public static void removeMember(LiteStarsEnergyCompany energyCompany, int memberID) throws TransactionException {
@@ -666,7 +669,7 @@ public class StarsAdminUtil {
 		newGroup = Transaction.createTransaction(Transaction.INSERT, newGroup).execute();
 		
 		LiteYukonGroup liteGroup = new LiteYukonGroup( newGroup.getGroupID().intValue() );
-		ServerUtils.handleDBChange( liteGroup, DbChangeType.ADD );
+		handleDBChange( liteGroup, DbChangeType.ADD );
 		
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
@@ -710,7 +713,7 @@ public class StarsAdminUtil {
 		adminGrp = Transaction.createTransaction(Transaction.INSERT, adminGrp).execute();
 		
 		LiteYukonGroup liteGroup = new LiteYukonGroup( adminGrp.getGroupID().intValue() );
-		ServerUtils.handleDBChange( liteGroup, DbChangeType.ADD );
+		handleDBChange( liteGroup, DbChangeType.ADD );
 		
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
@@ -762,7 +765,7 @@ public class StarsAdminUtil {
 				userDB.getLoginStatus()
 				);
         liteUser.setAuthType(defaultAuthType);
-		ServerUtils.handleDBChange( liteUser, DbChangeType.ADD );
+		handleDBChange( liteUser, DbChangeType.ADD );
         
         if (authenticationService.supportsPasswordSet(defaultAuthType)) {
             authenticationService.setPassword(liteUser, password);
@@ -833,6 +836,90 @@ public class StarsAdminUtil {
 			Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
 		}
 		
-		ServerUtils.handleDBChange( liteUser, DbChangeType.UPDATE );
+		handleDBChange( liteUser, DbChangeType.UPDATE );
 	}
+	
+	public static void handleDBChange(LiteBase lite, DbChangeType dbChangeType) {
+        DBChangeMsg msg = null;
+        
+        if (lite == null) {
+            msg = new DBChangeMsg( 0, Integer.MAX_VALUE, "", "", dbChangeType);
+        }
+        else if (lite.getLiteType() == LiteTypes.STARS_CUST_ACCOUNT_INFO) {
+            msg = new DBChangeMsg(
+                lite.getLiteID(),
+                DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB,
+                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
+                dbChangeType
+                );
+        }
+        else if (lite.getLiteType() == LiteTypes.YUKON_USER) {
+            msg = new DBChangeMsg(
+                lite.getLiteID(),
+                DBChangeMsg.CHANGE_YUKON_USER_DB,
+                DBChangeMsg.CAT_YUKON_USER,
+                DBChangeMsg.CAT_YUKON_USER,
+                dbChangeType
+                );
+        }
+        else if (lite.getLiteType() == LiteTypes.CONTACT) {
+            msg = new DBChangeMsg(
+                lite.getLiteID(),
+                DBChangeMsg.CHANGE_CONTACT_DB,
+                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                dbChangeType
+                );
+        }
+        else if (lite.getLiteType() == LiteTypes.YUKON_GROUP) {
+            msg = new DBChangeMsg(
+                lite.getLiteID(),
+                DBChangeMsg.CHANGE_YUKON_USER_DB,
+                DBChangeMsg.CAT_YUKON_USER_GROUP,
+                DBChangeMsg.CAT_YUKON_USER_GROUP,
+                dbChangeType
+                );
+        }
+        else if (lite.getLiteType() == LiteTypes.ENERGY_COMPANY) {
+            msg = new DBChangeMsg(
+                lite.getLiteID(),
+                DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                DBChangeMsg.CAT_ENERGY_COMPANY,
+                DBChangeMsg.CAT_ENERGY_COMPANY,
+                dbChangeType
+                );
+        }
+        else if (lite.getLiteType() == LiteTypes.CUSTOMER) {
+            msg = new DBChangeMsg(
+                lite.getLiteID(),
+                DBChangeMsg.CHANGE_CUSTOMER_DB,
+                DBChangeMsg.CAT_CUSTOMER,
+                DBChangeMsg.CAT_CUSTOMER,
+                dbChangeType
+                );
+        }
+        else if (lite.getLiteType() == LiteTypes.CUSTOMER_CI) {
+            msg = new DBChangeMsg(
+                lite.getLiteID(),
+                DBChangeMsg.CHANGE_CUSTOMER_DB,
+                DBChangeMsg.CAT_CI_CUSTOMER,
+                DBChangeMsg.CAT_CI_CUSTOMER,
+                dbChangeType
+                );
+        }
+        else if( lite.getLiteType() == LiteTypes.STARS_SERVICE_COMPANY_DESIGNATION_CODE){
+            msg = new DBChangeMsg(
+                lite.getLiteID(),
+                DBChangeMsg.CHANGE_SERVICE_COMPANY_DESIGNATION_CODE_DB,
+                DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
+                DBChangeMsg.CAT_SERVICE_COMPANY_DESIGNATION_CODE,
+                dbChangeType
+                );
+        }
+
+        DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+        dbPersistentDao.processDBChange(msg);
+    }
+	
 }

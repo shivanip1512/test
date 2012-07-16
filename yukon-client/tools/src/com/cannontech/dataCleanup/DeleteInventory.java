@@ -11,7 +11,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.user.SystemUserContext;
@@ -22,7 +22,7 @@ public class DeleteInventory {
 
 	private Logger log = YukonLogManager.getLogger(DeleteInventory.class);
 	private String appName = "DeleteInventory";
-	private StarsInventoryBaseDao starsInventoryBaseDao;
+	private InventoryBaseDao inventoryBaseDao;
 	private HardwareService hardwareService;
 
 	private final static Function<String, Integer> stringToIntegerTransformer = new Function<String, Integer>() {
@@ -39,7 +39,7 @@ public class DeleteInventory {
 
 	public void init() {
 		YukonSpringHook.setDefaultContext("com.cannontech.context.tools");
-		starsInventoryBaseDao = YukonSpringHook.getBean( "starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		inventoryBaseDao = YukonSpringHook.getBean( "inventoryBaseDao", InventoryBaseDao.class);
 		hardwareService = YukonSpringHook.getBean("hardwareService", HardwareService.class);
 
 		CtiUtilities.setDefaultApplicationName(appName);
@@ -82,7 +82,7 @@ public class DeleteInventory {
 			inventoryIds = Lists.transform(inventoryIdStrings, stringToIntegerTransformer);
 			log.info("Start deletion of InventoryIds: " + inventoryIds.toString());
 
-			List<LiteInventoryBase> liteInventoryBases = starsInventoryBaseDao.getByIds(inventoryIds);
+			List<LiteInventoryBase> liteInventoryBases = inventoryBaseDao.getByIds(inventoryIds);
 			for (LiteInventoryBase liteInventoryBase : liteInventoryBases) {
 				deleteInventory(liteInventoryBase);
 			}

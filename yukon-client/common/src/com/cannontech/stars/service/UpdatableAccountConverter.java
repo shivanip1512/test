@@ -1,6 +1,6 @@
 package com.cannontech.stars.service;
 
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 
@@ -22,6 +22,6 @@ public interface UpdatableAccountConverter {
 	 * @param ec
 	 * @return
 	 */
-	public UpdatableAccount getUpdatedUpdatableAccount(LiteStarsCustAccountInformation starsCustAcctInfo, String[] custFields, LiteStarsEnergyCompany ec);
+	public UpdatableAccount getUpdatedUpdatableAccount(LiteAccountInfo starsCustAcctInfo, String[] custFields, LiteStarsEnergyCompany ec);
 	
 }

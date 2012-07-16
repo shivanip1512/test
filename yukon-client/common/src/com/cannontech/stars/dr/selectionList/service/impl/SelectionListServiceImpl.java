@@ -14,6 +14,7 @@ import com.cannontech.common.constants.YukonDefinition;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -26,7 +27,6 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -99,7 +99,7 @@ public class SelectionListServiceImpl implements SelectionListService {
         for (YukonListEntry entry : defaultList.getYukonListEntries()) {
             if (list.getType() == YukonSelectionListEnum.DEVICE_TYPE
                     && !showAdditionalProtocols
-                    && InventoryUtils.isAdditionalProtocol(entry.getYukonDefID())) {
+                    && HardwareType.valueOf(entry.getYukonDefID()).isSA()) {
                 continue;
             }
             YukonListEntry newEntry = new YukonListEntry();
@@ -122,7 +122,7 @@ public class SelectionListServiceImpl implements SelectionListService {
             if (!showAdditionalProtocols(energyCompany)) {
                 List<YukonDefinition> filteredRetVal = Lists.newArrayList();
                 for (YukonDefinition definition : retVal) {
-                    if (!InventoryUtils.isAdditionalProtocol(definition.getDefinitionId())) {
+                    if (!HardwareType.valueOf(definition.getDefinitionId()).isSA()) {
                         filteredRetVal.add(definition);
                     }
                 }

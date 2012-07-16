@@ -60,7 +60,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole.MeteringType;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -68,13 +68,13 @@ import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.event.EventInventory;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.digi.model.ZigbeeDeviceDto;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
@@ -130,8 +130,8 @@ public class OperatorHardwareController {
     @Autowired private WarehouseDao warehouseDao;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private ContactDao contactDao;
-    @Autowired private StarsInventoryBaseDao starsInventoryBaseDao;
-    @Autowired private LMHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private HardwareService hardwareService;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
@@ -228,7 +228,7 @@ public class OperatorHardwareController {
         }
         
         try {
-            LiteStarsLMHardware possibleDuplicate = (LiteStarsLMHardware) starsSearchDao.searchLMHardwareBySerialNumber(serialNumber.getSerialNumber(), fragment.getEnergyCompanyId());
+            LiteLmHardwareBase possibleDuplicate = (LiteLmHardwareBase) starsSearchDao.searchLmHardwareBySerialNumber(serialNumber.getSerialNumber(), fragment.getEnergyCompanyId());
 
             InventoryCheckingAddDto inventoryCheckingAddDto = new InventoryCheckingAddDto(serialNumber.getSerialNumber());
             inventoryCheckingAddDto.setHardwareTypeId(hardwareTypeId);
@@ -574,7 +574,7 @@ public class OperatorHardwareController {
         
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
+        LiteInventoryBase liteInventoryBase = inventoryBaseDao.getByInventoryId(inventoryId);
         
         hardwareUiService.addDeviceToAccount(liteInventoryBase, fragment.getAccountId(), fromAccount, energyCompany, context.getYukonUser());
         

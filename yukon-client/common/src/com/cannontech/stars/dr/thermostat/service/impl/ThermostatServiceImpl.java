@@ -41,6 +41,8 @@ import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.HeatCoolSettingType;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
+import com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandStrategy;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
@@ -54,7 +56,6 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
-import com.cannontech.stars.dr.thermostat.service.ThermostatCommandExecutionService;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.UserUtils;
@@ -71,7 +72,6 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    @Autowired private CommandServiceFactory commandServiceFactory;
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private CustomerDao customerDao;
     @Autowired private CustomerEventDao customerEventDao;
@@ -81,7 +81,8 @@ public class ThermostatServiceImpl implements ThermostatService {
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private ExpressComCommandService expressComCommandService;
+    @Autowired private PorterExpressComCommandStrategy porterExpressComCommandStrategy;
+    @Autowired private LmHardwareCommandService lmHardwareCommandService;
 
     //@Autowired by setter
     private JmsTemplate jmsTemplate;
@@ -170,9 +171,7 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     private void sendManualAdjustmentCommand(ThermostatManualEvent event, Thermostat thermostat, LiteYukonUser user) 
     throws CommandCompletionException {
-        
-        ThermostatCommandExecutionService service = commandServiceFactory.getCommandService(thermostat.getType());
-        service.doManualAdjustment(event, thermostat, user);
+        lmHardwareCommandService.doManualAdjustment(event, thermostat, user);
     }
     
     @Override
@@ -235,7 +234,6 @@ public class ThermostatServiceImpl implements ThermostatService {
                                           LiteYukonUser user) {
         
         Thermostat stat = inventoryDao.getThermostatById(thermostatId);
-        HardwareType type = stat.getType();
 
         // Make sure the device is available
         if (!stat.isAvailable()) {
@@ -247,9 +245,11 @@ public class ThermostatServiceImpl implements ThermostatService {
         if (StringUtils.isBlank(serialNumber)) {
             return ThermostatScheduleUpdateResult.NO_SERIAL_ERROR;
         }
-        
-        ThermostatCommandExecutionService service = commandServiceFactory.getCommandService(type);
-        return service.doScheduleUpdate(account, ats, mode, stat, user);
+        try {
+            return lmHardwareCommandService.doScheduleUpdate(account, ats, mode, stat, user);
+        } catch (CommandCompletionException e) {
+            return ThermostatScheduleUpdateResult.SEND_SCHEDULE_ERROR;
+        }
     }
 
     @Override
@@ -637,10 +637,11 @@ public class ThermostatServiceImpl implements ThermostatService {
             message.setInventoryIds(hardwareTypeToInventoryIds.get(hardwareType));
             //Sending text messages are only supported by Utility Pro thermostats (Zigbee or ExpressCom)
             if (hardwareType.isSupportsTextMessages()) {
+                //TODO move this logic into the LmHardwareCommandService to pick the right strategy
                 if (hardwareType.isZigbee()) {
                     jmsTemplate.convertAndSend("yukon.notif.stream.message.yukonTextMessage.Send", message);
                 } else if (hardwareType.isExpressCom()) {
-                    expressComCommandService.sendTextMessage(message, hardwareSummary);
+                    porterExpressComCommandStrategy.sendTextMessage(message, hardwareSummary);
                 } else {
                     logger.error("Send Text Message is not supported by hardware config type "
                                  + hardwareType.getHardwareConfigType() + " for " + message.getInventoryIds().size()

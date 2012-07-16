@@ -1,8 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<%@ page import="com.cannontech.stars.database.data.lite.LiteStarsLMHardware" %>
+<%@ page import="com.cannontech.stars.database.data.lite.LiteLmHardwareBase" %>
 <%@ page import="com.cannontech.stars.util.SwitchCommandQueue" %>
-<%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
+<%@ page import="com.cannontech.stars.core.dao.InventoryBaseDao" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
     if (!DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS)) {
@@ -138,8 +138,8 @@ function validate(form) {
                       <option value="-1">All</option>
                       <%
                           for (int i = 0; i < descendants.size(); i++) {
-                      		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
-                      		String selected = (member != null && company.equals(member))? "selected" : "";
+                                                  		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+                                                  		String selected = (member != null && company.equals(member))? "selected" : "";
                       %>
                       <option value="<%=company.getLiteID()%>" <%=selected%>><%=company.getName()%></option>
                       <%
@@ -171,8 +171,8 @@ function validate(form) {
 %>
                 </tr>
 <%
-    StarsInventoryBaseDao starsInventoryBaseDao = 
-        YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+    InventoryBaseDao inventoryBaseDao = 
+        YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
 
 	for (int i = 0; i < descendants.size(); i++) {
 		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
@@ -182,7 +182,7 @@ function validate(form) {
 		
 		TreeMap serialMap = new TreeMap();
 		for (int j = 0; j < commands.length; j++) {
-			String serialNo = ((LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(commands[j].getInventoryID())).getManufacturerSerialNumber();
+			String serialNo = ((LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(commands[j].getInventoryID())).getManufacturerSerialNumber();
 			try {
 				Integer num = Integer.valueOf(serialNo);
 				serialMap.put(num, commands[j]);

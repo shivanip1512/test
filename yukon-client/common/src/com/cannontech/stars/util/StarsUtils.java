@@ -19,6 +19,7 @@ import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -42,15 +43,17 @@ import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteSubstation;
 import com.cannontech.stars.database.data.lite.LiteWebConfiguration;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
+import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.google.common.collect.Lists;
 
-/**
- * @author yao
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 public class StarsUtils {
+    
+    // Directory for all the temporary files
+    private static final String STARS_TEMP_DIR = "stars_temp";
+    private static final String SWITCH_BATCH_PATH = "switch.batch.path";
     
 	// If date in database is earlier than this, than the date is actually empty
 	public static long VERY_EARLY_TIME = 1000 * 3600 * 24;
@@ -61,17 +64,16 @@ public class StarsUtils {
     public static final String BATCH_SWITCH_COMMAND_AUTO = "auto";
     public static final String BATCH_SWITCH_COMMAND_MANUAL = "manual";
     
-	public static final java.text.SimpleDateFormat starsDateFormat =
-			new java.text.SimpleDateFormat( "yyyyMMdd" );
-	public static final java.text.SimpleDateFormat starsTimeFormat =
-			new java.text.SimpleDateFormat( "HHmm" );
+	public static final SimpleDateFormat starsDateFormat = new SimpleDateFormat("yyyyMMdd");
+	public static final SimpleDateFormat starsTimeFormat = new SimpleDateFormat("HHmm");
+	private static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
 	
 	// Default sender email address from Stars
 	public static final String ADMIN_EMAIL_ADDRESS = "info@cannontech.com";
 	
 	public static final Comparator<YukonListEntry> YUK_LIST_ENTRY_ALPHA_CMPTR = new Comparator<YukonListEntry>() {
 		public int compare(YukonListEntry entry1, YukonListEntry entry2) {
-			int res = entry1.getEntryText().compareToIgnoreCase( entry2.getEntryText() );
+			int res = entry1.getEntryText().compareToIgnoreCase(entry2.getEntryText());
 			if (res == 0) res = entry1.getEntryID() - entry2.getEntryID();
 			return res;
 		}
@@ -79,7 +81,7 @@ public class StarsUtils {
 	
 	public static final Comparator<LiteServiceCompany> SERVICE_COMPANY_CMPTR = new Comparator<LiteServiceCompany>() {
 		public int compare(LiteServiceCompany o1, LiteServiceCompany o2) {
-			int res = o1.getCompanyName().compareToIgnoreCase( o2.getCompanyName() );
+			int res = o1.getCompanyName().compareToIgnoreCase(o2.getCompanyName());
 			if (res == 0) res = o1.getCompanyID() - o2.getCompanyID();
 			return res;
 		}
@@ -89,24 +91,19 @@ public class StarsUtils {
 		public int compare(LiteSubstation o1, LiteSubstation o2) {
 			LiteSubstation sub1 = o1;
 			LiteSubstation sub2 = o2;
-			int res = sub1.getSubstationName().compareToIgnoreCase( sub2.getSubstationName() );
+			int res = sub1.getSubstationName().compareToIgnoreCase(sub2.getSubstationName());
 			if (res == 0) res = sub1.getSubstationID() - sub2.getSubstationID();
 			return res;
 		}
 	};
 	
-	private static final java.text.SimpleDateFormat dateTimeFormat =
-			new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-	
 	/**
 	 * Return date in the format of MM/dd/yy HH:mm in the specified time zone
 	 */
     public static String formatDate(Date date, TimeZone tz) {
-		if (tz != null)
-			dateTimeFormat.setTimeZone( tz );
-		else
-			dateTimeFormat.setTimeZone( TimeZone.getDefault() );
-		return dateTimeFormat.format( date );
+        tz = tz == null ? TimeZone.getDefault() : tz;
+		dateTimeFormat.setTimeZone(tz);
+		return dateTimeFormat.format(date);
 	}
 	
 	public static Date translateDate(long time) {
@@ -131,9 +128,9 @@ public class StarsUtils {
 	private static String[] readLines(Reader reader, boolean returnEmpty) throws IOException {
 		BufferedReader br = null;
 		try {
-			br = new BufferedReader( reader );
+			br = new BufferedReader(reader);
 			
-			ArrayList lines = new ArrayList();
+			ArrayList<String> lines = Lists.newArrayList();
 			String line = null;
 			
 			while ((line = br.readLine()) != null) {
@@ -143,20 +140,19 @@ public class StarsUtils {
 			}
 			
 			String[] lns = new String[ lines.size() ];
-			lines.toArray( lns );
+			lines.toArray(lns);
 			return lns;
-		}
-		finally {
+		} finally {
 			if (br != null) br.close();
 		}
 	}
 	
 	public static String[] readInputStream(InputStream is, boolean returnEmpty) {
 		try {
-			return readLines( new InputStreamReader(is), returnEmpty );
+			return readLines(new InputStreamReader(is), returnEmpty);
 		}
 		catch (IOException e) {
-			CTILogger.error( e.getMessage(), e );
+			CTILogger.error(e.getMessage(), e);
 		}
 		
 		return null;
@@ -165,13 +161,12 @@ public class StarsUtils {
 	public static String[] readFile(File file, boolean returnEmpty) {
 		if (file.exists()) {
 			try {
-				return readLines( new FileReader(file), returnEmpty );
+				return readLines(new FileReader(file), returnEmpty);
 			}
 			catch (IOException e) {
-				CTILogger.error( e.getMessage(), e );
+				CTILogger.error(e.getMessage(), e);
 			}
-		}
-		else {
+		} else {
 			CTILogger.error("Unable to find file \"" + file.getPath() + "\"");
 		}
 		
@@ -179,39 +174,39 @@ public class StarsUtils {
 	}
 	
 	public static String[] readFile(File file) {
-		return readFile( file, true );
+		return readFile(file, true);
 	}
 	
 	public static void writeFile(File file, String[] lines) throws IOException {
-		PrintWriter fw = new PrintWriter(
-				new BufferedWriter( new FileWriter(file) ));
+		PrintWriter fw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 		
-		for (int i = 0; i < lines.length; i++)
-			fw.println( lines[i] );
+		for (int i = 0; i < lines.length; i++) {
+			fw.println(lines[i]);
+		}
 		
 		fw.close();
 	}
 	
 	public static String[] splitString(String str, String delim) {
-		StreamTokenizer st = new StreamTokenizer( new StringReader(str) );
+		StreamTokenizer st = new StreamTokenizer(new StringReader(str));
 		st.resetSyntax();
-		st.wordChars( 0, 255 );
-		st.quoteChar( '"' );
+		st.wordChars(0, 255);
+		st.quoteChar('"');
 		for (int i = 0; i < delim.length(); i++)
-			st.ordinaryChar( delim.charAt(i) );
+			st.ordinaryChar(delim.charAt(i));
 		
-		ArrayList tokenList = new ArrayList();
+		ArrayList<String> tokenList = Lists.newArrayList();
 		boolean isDelimLast = true;	// Whether the last token is a deliminator
 		
 		try {
 			while (st.nextToken() != StreamTokenizer.TT_EOF) {
 				if (isDelimLast) {
 					if (st.ttype == StreamTokenizer.TT_WORD || st.ttype == '"') {
-						tokenList.add( st.sval );
+						tokenList.add(st.sval);
 						isDelimLast = false;
 					}
 					else if (delim.indexOf(st.ttype) >= 0) {
-						tokenList.add( "" );
+						tokenList.add("");
 					}
 				}
 				else {
@@ -221,15 +216,15 @@ public class StarsUtils {
 			}
 		}
 		catch (IOException e) {
-			CTILogger.error( e.getMessage(), e );
+			CTILogger.error(e.getMessage(), e);
 			return null;
 		}
 		
 		// If the line ends with a comma, add an empty string to the column list 
-		if (isDelimLast) tokenList.add( "" );
+		if (isDelimLast) tokenList.add("");
 		
 		String[] tokens = new String[ tokenList.size() ];
-		tokenList.toArray( tokens );
+		tokenList.toArray(tokens);
 		return tokens;
 	}
 	
@@ -268,13 +263,13 @@ public class StarsUtils {
 	public static String formatName(LiteContact liteContact) {
 		StringBuffer name = new StringBuffer();
 		
-		String firstName = StarsUtils.forceNotNone( liteContact.getContFirstName() ).trim();
+		String firstName = StarsUtils.forceNotNone(liteContact.getContFirstName()).trim();
 		if (firstName.length() > 0)
-			name.append( firstName );
+			name.append(firstName);
 		
-		String lastName = StarsUtils.forceNotNone( liteContact.getContLastName() ).trim();
+		String lastName = StarsUtils.forceNotNone(liteContact.getContLastName()).trim();
 		if (lastName.length() > 0)
-			name.append(" ").append( lastName );
+			name.append(" ").append(lastName);
 		
 		return name.toString();
 	}
@@ -283,22 +278,18 @@ public class StarsUtils {
 		String progName = CtiUtilities.STRING_NONE;
 		
 		//display user-friendly name if exists, else Yukon name
-		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
+		LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration(liteProg.getWebSettingsID());
 		if (liteConfig != null) {
-		    String[] dispNames = StarsUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
+		    String[] dispNames = StarsUtils.splitString(liteConfig.getAlternateDisplayName(), ",");
 		    if (dispNames.length > 0 && dispNames[0].length() > 0)
 		        progName = dispNames[0];
 		}
 		
-		if (StringUtils.isBlank(progName) || progName.equalsIgnoreCase(CtiUtilities.STRING_NONE)){
-		    if (liteProg.getDeviceID() > 0)
-		    {
-		        try
-		        {
-		            progName = DaoFactory.getPaoDao().getYukonPAOName( liteProg.getDeviceID() );
-		        }
-		        catch(NotFoundException e) 
-		        {
+		if (StringUtils.isBlank(progName) || progName.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+		    if (liteProg.getDeviceID() > 0) {
+		        try {
+		            progName = DaoFactory.getPaoDao().getYukonPAOName(liteProg.getDeviceID());
+		        } catch(NotFoundException e) {
 		            CTILogger.error(e.getMessage(), e);
 		        }
 		    }		    
@@ -336,4 +327,50 @@ public class StarsUtils {
 	public static boolean isResidentialCustomer(LiteYukonUser user) {
 		return DaoFactory.getAuthDao().checkRole(user, ResidentialCustomerRole.ROLEID);
 	}
+	
+	public static String getStarsTempDir() {
+        final String fs = System.getProperty("file.separator");
+        String serverBase = null;
+        
+        String catBase = System.getProperty("catalina.base");
+        if (catBase != null) {
+            serverBase = catBase;
+        } 
+        else {
+            String yukonBase = System.getProperty("yukon.base");
+            if (yukonBase != null) {
+                serverBase = yukonBase;
+            } 
+            else {
+                serverBase = "C:" + fs + "yukon";
+            }
+        }
+        
+        return serverBase + fs + STARS_TEMP_DIR;
+    }
+	
+	public static String getFileWriteSwitchConfigDir() {
+        String dirBase = null;
+        
+        String temp = System.getProperty(SWITCH_BATCH_PATH);
+        if (temp != null) {
+            dirBase = temp;
+        } else {
+            dirBase = StarsUtils.getStarsTempDir();
+        }
+        
+        return dirBase;
+    }
+	
+	public static void populateInventoryFields(StarsCustAccountInformation starsAcctInfo, StarsInventory starsInv) {
+        StarsInventories inventories = starsAcctInfo.getStarsInventories();
+
+        for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+            StarsInventory inv = inventories.getStarsInventory(i);
+            if (inv.getInventoryID() == starsInv.getInventoryID()) {
+                inventories.setStarsInventory(i, starsInv);
+                break;
+            }
+        }
+    }
 }

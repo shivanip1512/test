@@ -9,13 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.inventory.Hardware;
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.HardwareClass;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.dao.impl.InventoryBaseDaoImpl;
 import com.cannontech.stars.core.dao.impl.StarsSearchDaoImpl;
-import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
-import com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.service.impl.HardwareUiServiceImpl;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -26,7 +25,7 @@ public class HardwareServiceTest {
 
     private HardwareUiServiceImpl hardwareUiService;
     
-    private InventoryBaseDao inventoryBaseDao;
+    private InventoryBaseDaoImpl inventoryBaseDao;
     private StarsSearchDao starsSearchDao;
     
     @Before
@@ -58,8 +57,8 @@ public class HardwareServiceTest {
          
          starsSearchDao = new StarsSearchDaoImpl() {
             @Override
-            public LiteInventoryBase searchLMHardwareBySerialNumber(String serialNumber, int energyCompanyId) {
-                LiteInventoryBase liteBase = new LiteInventoryBase();
+            public LiteLmHardwareBase searchLmHardwareBySerialNumber(String serialNumber, int energyCompanyId) {
+                LiteLmHardwareBase liteBase = new LiteLmHardwareBase();
                 liteBase.setInventoryID(0);
                 return liteBase;
             }

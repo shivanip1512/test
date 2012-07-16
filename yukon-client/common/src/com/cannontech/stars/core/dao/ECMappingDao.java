@@ -228,4 +228,9 @@ public interface ECMappingDao {
      */
     public void removeParentLogin(int parentEcId, int childEcId);
 
+    /**
+     * Returns list of account id's for energy company
+     */
+    public List<Integer> getAccountIds(int ecId);
+
 }

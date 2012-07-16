@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 
 /**
@@ -70,7 +70,7 @@ public class UploadGenericFileTask extends TimeConsumingTask {
 				File uploadFile;
 				final String fs = System.getProperty( "file.separator" );
 				
-				String dirPath = ServerUtils.getStarsTempDir() + fs + "fileholder"
+				String dirPath = StarsUtils.getStarsTempDir() + fs + "fileholder"
 					+ fs + inc.getName();
 				genericFilename = dirPath + fs + fName;
 				

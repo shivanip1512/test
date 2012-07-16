@@ -22,7 +22,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.ws.StarsControllableDeviceDTO;
+import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -256,7 +256,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         List<String> results = new ArrayList<String>();        
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
-        StarsControllableDeviceDTO deviceInfo = new StarsControllableDeviceDTO();
+        LmDeviceDto deviceInfo = new LmDeviceDto();
         deviceInfo.setAccountNumber(ServletRequestUtils.getRequiredStringParameter(request, "accountNumber"));
         deviceInfo.setSerialNumber(ServletRequestUtils.getRequiredStringParameter(request, "serialNumber"));        
         deviceInfo.setDeviceType(ServletRequestUtils.getRequiredStringParameter(request, "deviceType"));
@@ -278,7 +278,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         List<String> results = new ArrayList<String>();        
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
-        StarsControllableDeviceDTO deviceInfo = new StarsControllableDeviceDTO();
+        LmDeviceDto deviceInfo = new LmDeviceDto();
         deviceInfo.setAccountNumber(ServletRequestUtils.getRequiredStringParameter(request, "accountNumber"));
         deviceInfo.setSerialNumber(ServletRequestUtils.getRequiredStringParameter(request, "serialNumber"));        
         deviceInfo.setDeviceType(ServletRequestUtils.getRequiredStringParameter(request, "deviceType"));
@@ -300,7 +300,7 @@ public class LoadControlServiceInputsTestController extends MultiActionControlle
         List<String> results = new ArrayList<String>();        
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
-        StarsControllableDeviceDTO deviceInfo = new StarsControllableDeviceDTO();
+        LmDeviceDto deviceInfo = new LmDeviceDto();
         deviceInfo.setAccountNumber(ServletRequestUtils.getRequiredStringParameter(request, "accountNumber"));
         deviceInfo.setSerialNumber(ServletRequestUtils.getRequiredStringParameter(request, "serialNumber"));        
         deviceInfo.setDeviceType(ServletRequestUtils.getRequiredStringParameter(request, "deviceType"));

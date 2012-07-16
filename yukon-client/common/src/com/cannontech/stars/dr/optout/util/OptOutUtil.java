@@ -10,7 +10,7 @@ import org.apache.commons.lang.time.DateUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.dr.optout.model.OptOut;
@@ -29,7 +29,7 @@ public final class OptOutUtil {
         final StarsCustAccountInformationDao starsCustAccountInformationDao = 
             YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
         
-        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getByAccountId(customerAccountId);
+        LiteAccountInfo liteAcctInfo = starsCustAccountInformationDao.getByAccountId(customerAccountId);
         
         StarsLMProgramHistory programHistory = 
             StarsLiteFactory.createStarsLMProgramHistory(liteAcctInfo, energyCompany);

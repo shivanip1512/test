@@ -23,7 +23,7 @@ public class RfnExpressComUnicastRequest implements RfnIdentifyingMessage, Seria
     private RfnIdentifier rfnIdentifier;
     private int messagePriority;
     private RfnMessageClass rfnMessageClass;
-    private long expirationTime;
+    private long expirationDuration = -1; // milliseconds to live
     private byte[] payload;
     private boolean responseExpected;
 
@@ -72,14 +72,14 @@ public class RfnExpressComUnicastRequest implements RfnIdentifyingMessage, Seria
         this.rfnMessageClass = rfnMessageClass;
     }
 
-    public long getExpirationTime() {
-        return expirationTime;
+    public long getExpirationDuration() {
+        return expirationDuration;
     }
-
-    public void setExpirationTime(long expirationTime) {
-        this.expirationTime = expirationTime;
+    
+    public void setExpirationDuration(long expirationDuration) {
+        this.expirationDuration = expirationDuration;
     }
-
+    
     public byte[] getPayload() {
         return payload;
     }
@@ -99,16 +99,15 @@ public class RfnExpressComUnicastRequest implements RfnIdentifyingMessage, Seria
     @Override
     public String toString() {
         return String
-            .format("RfnExpressComUnicastRequest [messageId=%s, groupId=%s, rfnIdentifier=%s, messagePriority=%s, rfnMessageClass=%s, expirationTime=%s, payload=%s, responseExpected=%s]",
+            .format("RfnExpressComUnicastRequest [messageId=%s, groupId=%s, rfnIdentifier=%s, messagePriority=%s, rfnMessageClass=%s, expirationDuration=%s, payload=%s, responseExpected=%s]",
                     messageId,
                     groupId,
                     rfnIdentifier,
                     messagePriority,
                     rfnMessageClass,
-                    expirationTime,
+                    expirationDuration,
                     Arrays.toString(payload),
                     responseExpected);
     }
-
     
 }

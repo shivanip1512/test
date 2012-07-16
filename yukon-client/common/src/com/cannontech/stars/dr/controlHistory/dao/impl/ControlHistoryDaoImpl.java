@@ -4,10 +4,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.controlHistory.dao.ControlHistoryDao;
 import com.cannontech.stars.dr.controlHistory.dao.ControlHistoryEventDao;
 import com.cannontech.stars.dr.controlHistory.dao.impl.ControlHistoryEventDaoImpl.Holder;
@@ -17,7 +20,6 @@ import com.cannontech.stars.dr.controlHistory.model.ControlHistoryStatus;
 import com.cannontech.stars.dr.controlHistory.model.ControlHistorySummary;
 import com.cannontech.stars.dr.controlHistory.model.ControlPeriod;
 import com.cannontech.stars.dr.controlHistory.service.ControlHistorySummaryService;
-import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl.DistinctEnrollment;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
@@ -30,10 +32,11 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 
 public class ControlHistoryDaoImpl implements ControlHistoryDao {
-    private ControlHistoryEventDao controlHistoryEventDao;
-    private ControlHistorySummaryService controlHistorySummaryService;
-    private InventoryBaseDao inventoryBaseDao;
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+    
+    @Autowired private ControlHistoryEventDao controlHistoryEventDao;
+    @Autowired private ControlHistorySummaryService controlHistorySummaryService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     
     @Override
     public ListMultimap<Integer, ControlHistory> getControlHistory(int accountId, YukonUserContext userContext,
@@ -81,7 +84,9 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
             if (inventory != null) {
                 // Set the display name
                 controlHistory.setInventory(inventory);
-                controlHistory.setDisplayName(inventoryBaseDao.getDisplayName(inventory));
+                LiteLmHardwareBase liteHw = inventoryBaseDao.getHardwareByInventoryId(holder.inventoryId);
+                String displayName = StringUtils.isBlank(liteHw.getDeviceLabel()) ? liteHw.getManufacturerSerialNumber() : liteHw.getDeviceLabel(); 
+                controlHistory.setDisplayName(displayName);
 
                 /* Consolidate the control for a given piece of inventory if its been controlled 
                  * through multiple enrollments.  This fixes duplication issues that appeared through
@@ -177,26 +182,6 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
             holder.programId = enrollment.getProgramId();
             holderList.add(holder);
         }
-    }
-    
-    @Autowired
-    public void setControlHistoryEventDao(ControlHistoryEventDao controlHistoryEventDao) {
-        this.controlHistoryEventDao = controlHistoryEventDao;
-    }
-    
-    @Autowired
-    public void setControlHistorySummaryService(ControlHistorySummaryService controlHistorySummaryService) {
-        this.controlHistorySummaryService = controlHistorySummaryService;
-    }
-    
-    @Autowired
-    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
-        this.inventoryBaseDao = inventoryBaseDao;
-    }
-    
-    @Autowired
-    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
     }
     
 }

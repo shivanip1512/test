@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -36,7 +36,7 @@ public class CreateWorkOrderController extends StarsWorkorderActionController {
         }
 
         if (request.getParameter("AcctNo").trim().length() > 0) {
-            LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( request.getParameter("AcctNo") );
+            LiteAccountInfo liteAcctInfo = energyCompany.searchAccountByAccountNo( request.getParameter("AcctNo") );
             if (liteAcctInfo == null) {
                 session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "The specified account # doesn't exist");
                 String location = this.getReferer(request);

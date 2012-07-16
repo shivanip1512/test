@@ -15,7 +15,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.stars.database.data.hardware.MeterHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.report.WorkOrderBase;
 import com.cannontech.stars.database.db.hardware.LMHardwareBase;
@@ -252,7 +252,7 @@ public void setExtract(Character extract) {
  * @param meterNumber The meterNumber for SerialNumber lookup, when null the workOrderBase.Description field is parsed for it.  
  * @throws TransactionException
  */
-public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrderBase, LiteStarsCustAccountInformation liteStarsCustAcctInfo, LiteStarsEnergyCompany liteStarsEC, int userID, String meterNumber) throws TransactionException
+public static void handleCRSIntegration(int stateYukDefID, WorkOrderBase workOrderBase, LiteAccountInfo liteStarsCustAcctInfo, LiteStarsEnergyCompany liteStarsEC, int userID, String meterNumber) throws TransactionException
 {
     YukonListEntry workTypeEntry = DaoFactory.getYukonListDao().getYukonListEntry(workOrderBase.getWorkOrderBase().getWorkTypeID().intValue());
     

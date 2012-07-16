@@ -8,16 +8,16 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
-import com.cannontech.stars.util.InventoryUtils;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.user.UserUtils;
 
@@ -59,19 +59,19 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
             //TODO: Should pull the db transactions out of the loops.  Will speed things up and is much cleaner.
             StarsCustAccountInformationDao starsCustAccountInformationDao = 
                 YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-            StarsInventoryBaseDao starsInventoryBaseDao = 
-            	YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+            InventoryBaseDao inventoryBaseDao = 
+            	YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
             
             String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
             boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
             
-            List<LiteStarsCustAccountInformation> custAcctInfoList = starsCustAccountInformationDao.getAll(energyCompany.getEnergyCompanyId());
-            for(LiteStarsCustAccountInformation liteAcctInformation : custAcctInfoList) {
-                LiteStarsCustAccountInformation extendedAcctInformation = energyCompany.limitedExtendCustAccountInfo(liteAcctInformation);
+            List<LiteAccountInfo> custAcctInfoList = starsCustAccountInformationDao.getAll(energyCompany.getEnergyCompanyId());
+            for(LiteAccountInfo liteAcctInformation : custAcctInfoList) {
+                LiteAccountInfo extendedAcctInformation = energyCompany.limitedExtendCustAccountInfo(liteAcctInformation);
                 List<LiteStarsAppliance> appList = extendedAcctInformation.getAppliances();
                 for(LiteStarsAppliance app : appList) {
                     if(app.getProgramID() > 0 && app.getInventoryID() > 0 && app.getAccountID() > 0) {
-                        LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(app.getInventoryID());
+                        LiteLmHardwareBase liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(app.getInventoryID());
 
                         LMHardwareControlGroup controlGroup = new LMHardwareControlGroup();
                         controlGroup.setInventoryId(app.getInventoryID());
@@ -84,7 +84,8 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
                                 }
                             }
                         } else if (groupId == 0) {
-                            groupId = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(app.getProgramID());   
+                            ProgramDao programDao = YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
+                            groupId = programDao.getLoadGroupIdForProgramId(app.getProgramID());
                         }
                         controlGroup.setLmGroupId(groupId);
                         controlGroup.setProgramId(app.getProgramID());

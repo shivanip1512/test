@@ -23,7 +23,7 @@ import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.survey.model.ResultAnswer;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
@@ -43,7 +43,7 @@ import com.google.common.collect.Multimap;
  * controllers have in common.
  */
 public class OptOutControllerHelper {
-    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private InventoryBaseDao inventoryBaseDao;
     private OptOutService optOutService;
     private OptOutEventDao optOutEventDao;
 
@@ -164,7 +164,7 @@ public class OptOutControllerHelper {
     }
 
     public void checkInventoryAgainstAccount(int inventoryId, int accountId) {
-        LiteInventoryBase inventory = starsInventoryBaseDao.getByInventoryId(inventoryId);
+        LiteInventoryBase inventory = inventoryBaseDao.getByInventoryId(inventoryId);
         if (inventory.getAccountID() != accountId) {
             throw new NotAuthorizedException("The Inventory with id: " +
                                              inventoryId +
@@ -184,8 +184,8 @@ public class OptOutControllerHelper {
     }
 
     @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
+        this.inventoryBaseDao = inventoryBaseDao;
     }
 
     @Autowired

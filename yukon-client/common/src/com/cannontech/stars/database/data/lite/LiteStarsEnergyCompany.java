@@ -63,6 +63,7 @@ import com.cannontech.stars.database.db.appliance.ApplianceCategory;
 import com.cannontech.stars.database.db.customer.CustomerAccount;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.database.db.user.YukonGroup;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
@@ -78,7 +79,6 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -1044,7 +1044,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     	}
     }
     
-    public LiteStarsThermostatSettings getThermostatSettings(LiteStarsLMHardware liteHw) {
+    public LiteStarsThermostatSettings getThermostatSettings(LiteLmHardwareBase liteHw) {
         try {
             LiteStarsThermostatSettings settings = new LiteStarsThermostatSettings();
             settings.setInventoryID( liteHw.getInventoryID() );
@@ -1101,7 +1101,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     /*Have to use Yao's idea of extending customer account information but I don't want all of 
      * it, just appliances and inventory.
      */
-    public LiteStarsCustAccountInformation limitedExtendCustAccountInfo(LiteStarsCustAccountInformation liteAcctInfo) {
+    public LiteAccountInfo limitedExtendCustAccountInfo(LiteAccountInfo liteAcctInfo) {
         try {
             List<LiteStarsAppliance> appliances = liteAcctInfo.getAppliances();
             for (int i = 0; i < appliances.size(); i++) {
@@ -1127,17 +1127,21 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
      * @deprecated Use starsCustAccountInformationDao.getById() instead of this method.
      */
     @Deprecated
-    public LiteStarsCustAccountInformation getCustAccountInformation(int accountID, boolean autoLoad) {
-        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountID, getEnergyCompanyId());
+    public LiteAccountInfo getCustAccountInformation(int accountID, boolean autoLoad) {
+        LiteAccountInfo liteAcctInfo = starsCustAccountInformationDao.getById(accountID, getEnergyCompanyId());
         return liteAcctInfo;
     }
 
-    public void deleteCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
+    public void deleteCustAccountInformation(LiteAccountInfo liteAcctInfo) {
         if (liteAcctInfo == null) return;
         
         // Remove customer from the cache
-        ServerUtils.handleDBChange( liteAcctInfo.getCustomer(), DbChangeType.DELETE );
-        
+        DBChangeMsg dbChange = new DBChangeMsg(liteAcctInfo.getCustomer().getLiteID(),
+                              DBChangeMsg.CHANGE_CUSTOMER_DB,
+                              DBChangeMsg.CAT_CUSTOMER,
+                              DBChangeMsg.CAT_CUSTOMER,
+                              DbChangeType.DELETE);
+        dbPersistentDao.processDBChange(dbChange);
     }
     
     /**
@@ -1152,7 +1156,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     /**
      * Use LiteStarsEnergyCompany.searchAccountByAccountNumber or CustomerAccountDao.getByAccountNumber
      */
-    public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNo) 
+    public LiteAccountInfo searchAccountByAccountNo(String accountNo) 
     {
     	List<Object> accounts = searchAccountByAccountNumber(accountNo, false, true);
     	int accountNumberLength = 
@@ -1181,7 +1185,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         for (Object object : accounts) {
         	if (object instanceof Integer) {
         		Integer accountId = (Integer) object;
-        		LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(accountId, this.getEnergyCompanyId());
+        		LiteAccountInfo liteAcctInfo = starsCustAccountInformationDao.getById(accountId, this.getEnergyCompanyId());
         	
 	            String comparableAcctNum = liteAcctInfo.getCustomerAccount().getAccountNumber();
 	            if(accountNumSansRotationDigitsIndex > 0 && comparableAcctNum.length() >= accountNumSansRotationDigitsIndex && adjustForRotationDigits)
@@ -1225,7 +1229,7 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
     public List<Object> searchAccountBySerialNo(String serialNo, boolean searchMembers) {
         
     	List<LiteInventoryBase> invList = 
-    		starsSearchDao.searchLMHardwareBySerialNumber(serialNo, Collections.singletonList(this));
+    		starsSearchDao.searchLMHardwareBySerialNumber(serialNo, Collections.singletonList((YukonEnergyCompany)this));
         List<Object> accountList = new ArrayList<Object>();
        
         for (int i = 0; i < invList.size(); i++) {
@@ -1541,13 +1545,13 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         return starsSubstations;
     }
     
-    public StarsCustAccountInformation getStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
+    public StarsCustAccountInformation getStarsCustAccountInformation(LiteAccountInfo liteAcctInfo) {
             StarsCustAccountInformation starsAcctInfo = StarsLiteFactory.createStarsCustAccountInformation( liteAcctInfo, this, true );
             return starsAcctInfo;
     }
     
     public StarsCustAccountInformation getStarsCustAccountInformation(int accountId, boolean autoLoad) {
-        LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getByAccountId(accountId);
+        LiteAccountInfo liteAcctInfo = starsCustAccountInformationDao.getByAccountId(accountId);
         if (liteAcctInfo != null) return getStarsCustAccountInformation( liteAcctInfo );
         return null;
     }

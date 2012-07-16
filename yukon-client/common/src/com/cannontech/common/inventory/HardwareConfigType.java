@@ -5,6 +5,7 @@ import org.apache.commons.lang.Validate;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableSet;
 
 public enum HardwareConfigType {
     NOT_CONFIGURABLE(0, PaoTag.DIRECT_PROGRAM_ENROLLMENT, true),
@@ -20,6 +21,9 @@ public enum HardwareConfigType {
     private PaoTag enrollmentTag;
     private boolean supportsVirtualEnrollment;
 
+    private final static ImmutableSet<HardwareConfigType> saTypes = ImmutableSet.of(SA_SIMPLE, SA205, SA305);
+    private final static ImmutableSet<HardwareConfigType> supportsServiceInOut = ImmutableSet.of(EXPRESSCOM, VERSACOM);
+    
     private final static ImmutableMap<Integer, HardwareConfigType> lookupById;
     static {
         Builder<Integer, HardwareConfigType> idBuilder = ImmutableMap.builder();
@@ -52,6 +56,14 @@ public enum HardwareConfigType {
     
     public boolean isSupportsVirtualEnrollment() {
         return supportsVirtualEnrollment;
+    }
+    
+    public boolean isSA() {
+        return saTypes.contains(this);
+    }
+    
+    public boolean isSupportsServiceInOut() {
+        return supportsServiceInOut.contains(this);
     }
     
 }

@@ -19,13 +19,13 @@ import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -40,7 +40,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
@@ -64,14 +64,14 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
     private LoadGroupDao loadGroupDao;
-    private LMHardwareBaseDao lmHardwareBaseDao;
+    private LmHardwareBaseDao lmHardwareBaseDao;
     private ProgramDao programDao;
     private ProgramService programService;
     private ProgramEnrollmentService programEnrollmentService;
     private StarsDatabaseCache starsDatabaseCache;
     private StarsSearchDao starsSearchDao;    
 	private InventoryDao inventoryDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private InventoryBaseDao inventoryBaseDao;
 
     @Override
     public void updateProgramEnrollments(List<ProgramEnrollment> programEnrollments, 
@@ -399,11 +399,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 		
 		// inventory
 		List<Integer> inventoryIdList = inventoryDao.getInventoryIdsByAccount(account.getAccountId());
-		List<LiteStarsLMHardware> inventoryList = starsInventoryBaseDao.getLMHardwareForIds(inventoryIdList);
+		List<LiteLmHardwareBase> inventoryList = inventoryBaseDao.getLMHardwareForIds(inventoryIdList);
 		
 		// enrolledDeviceProgramsList
 		List<EnrolledDevicePrograms> enrolledDeviceProgramsList = Lists.newArrayListWithExpectedSize(inventoryIdList.size());
-		for (LiteStarsLMHardware lmHardware : inventoryList) {
+		for (LiteLmHardwareBase lmHardware : inventoryList) {
 			
 			String serialNumber = lmHardware.getManufacturerSerialNumber();
 			
@@ -429,7 +429,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
     	LiteInventoryBase liteInventoryBase;
         try {
-        	liteInventoryBase = starsSearchDao.searchLMHardwareBySerialNumber(enrollmentHelper.getSerialNumber(), energyCompany);
+        	liteInventoryBase = starsSearchDao.searchLmHardwareBySerialNumber(enrollmentHelper.getSerialNumber(), energyCompany);
         } catch (ObjectInOtherEnergyCompanyException e) {
             if(enrollmentEnum.equals(EnrollmentEnum.UNENROLL)) {
                 liteInventoryBase = (LiteInventoryBase) e.getObject();
@@ -502,7 +502,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
 
     @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+    public void setLmHardwareBaseDao(LmHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
     
@@ -527,8 +527,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 	}
     
     @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-		this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
+		this.inventoryBaseDao = inventoryBaseDao;
 	}
     
 }

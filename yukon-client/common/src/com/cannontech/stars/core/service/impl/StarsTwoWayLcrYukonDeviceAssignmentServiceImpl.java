@@ -77,7 +77,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 		StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
 		
 		// double check we are only doing this to a Two Way LCR
-		if (InventoryUtils.isTwoWayLcr(inventory.getDeviceType().getEntryID())) {
+		if (InventoryUtils.is3102(inventory.getDeviceType().getEntryID())) {
 			
 			// if the LCR already has a device assigned to it, skip
         	if (inventory.getDeviceID() < 1 || allowCreateIfAlreadyHasAssignedDevice) {
@@ -124,7 +124,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 		
 		// double check we are only doing this to a Two Way LCR
 		StarsInventory inventory = StarsLiteFactory.createStarsInventory(liteInv, energyCompany);
-		if (InventoryUtils.isTwoWayLcr(inventory.getDeviceType().getEntryID())) {
+		if (InventoryUtils.is3102(inventory.getDeviceType().getEntryID())) {
 			updateTwoWayLcrDeviceId(liteInv, deviceId);
 		}
 	}

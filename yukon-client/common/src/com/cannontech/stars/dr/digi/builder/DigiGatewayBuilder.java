@@ -20,7 +20,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.CompleteDigiGateway;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
@@ -37,7 +37,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
     
     private @Autowired PaoPersistenceService paoPersistenceService;
     private @Autowired GatewayDeviceDao gatewayDeviceDao;
-    private @Autowired StarsInventoryBaseDao starsInventoryBaseDao;
+    private @Autowired InventoryBaseDao inventoryBaseDao;
     private @Autowired AttributeService attributeService;
     private @Autowired ZigbeeWebService zigbeeWebService;
     
@@ -75,7 +75,7 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         paoPersistenceService.createPao(digiGateway, PaoType.DIGIGATEWAY);
         
         //Update the Stars table with the device id
-        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), 
+        inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), 
                                                           digiGateway.getPaoIdentifier().getPaoId());
     }
 
@@ -145,6 +145,6 @@ public class DigiGatewayBuilder implements HardwareTypeExtensionProvider {
         
         paoPersistenceService.updatePao(digiGateway);
         
-        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), hardware.getDeviceId());
+        inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), hardware.getDeviceId());
     }
 }

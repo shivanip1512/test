@@ -1,6 +1,6 @@
 <%@page import="com.cannontech.clientutils.CTILogger"%>
 <jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
-<jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation"/>
+<jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteAccountInfo"/>
 <jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsAppliance"/><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:useBean id="starsLMPermissionBean" class="com.cannontech.stars.web.bean.StarsLMPermissionBean" scope="page"/>
@@ -29,11 +29,11 @@
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
 <jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
-<jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation"/>
+<jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteAccountInfo"/>
 <jsp:directive.page import="com.cannontech.stars.database.data.lite.LiteStarsAppliance"/>
 
 <%
-	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
+    LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 	if (user != null)
 	{
@@ -43,7 +43,7 @@
 		}
 		else if (!user.equals(StarsDatabaseCache.getInstance().getStarsYukonUser(lYukonUser))) {
 			// User login no longer valid
-            CTILogger.error("Stars User login no longer valid");
+    CTILogger.error("Stars User login no longer valid");
 			response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
 			return;
 		}
@@ -107,7 +107,7 @@
 	StarsInventories optOutChoices = null;
 	StarsAppliances appliances = null;
 	StarsUser userLogin = null;
-	LiteStarsCustAccountInformation liteAcctInfo = null;
+	LiteAccountInfo liteAcctInfo = null;
 	
 	accountInfo = ServletUtils.removeAccountInformation(session);
 
@@ -151,9 +151,9 @@
 	
     Class[] types = { Integer.class,String.class };    
     java.lang.String sqlString =  "SELECT GDEF.GRAPHDEFINITIONID, GDEF.NAME " +
-                                  " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL "+
-                                  " WHERE GDEF.GRAPHDEFINITIONID=GCL.GRAPHDEFINITIONID "+
-                                  " AND GCL.CUSTOMERID = " + account.getCustomerID()+ " ORDER BY GDEF.NAME";
+                          " FROM GRAPHDEFINITION GDEF, GRAPHCUSTOMERLIST GCL "+
+                          " WHERE GDEF.GRAPHDEFINITIONID=GCL.GRAPHDEFINITIONID "+
+                          " AND GCL.CUSTOMERID = " + account.getCustomerID()+ " ORDER BY GDEF.NAME";
 
 	Object[][] gData = com.cannontech.util.ServletUtil.executeSQL( dbAlias, sqlString, types );
 	

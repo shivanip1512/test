@@ -22,7 +22,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatEventHistoryDao;
@@ -51,7 +51,7 @@ public class OperatorThermostatManualController {
 	@Autowired private CustomerDao customerDao;
 	@Autowired private CustomerAccountDao customerAccountDao;
 	@Autowired private InventoryDao inventoryDao;
-	@Autowired private LMHardwareBaseDao lmHardwareBaseDao;
+	@Autowired private LmHardwareBaseDao lmHardwareBaseDao;
 	@Autowired private OperatorThermostatHelper operatorThermostatHelper;
 	@Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
 	@Autowired private ThermostatService thermostatService;

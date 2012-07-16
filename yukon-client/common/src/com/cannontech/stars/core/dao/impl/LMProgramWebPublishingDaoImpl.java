@@ -14,7 +14,7 @@ import com.cannontech.stars.database.data.event.LMProgramEvent;
 import com.cannontech.stars.database.data.lite.LiteLMProgramEvent;
 import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
@@ -48,7 +48,7 @@ public class LMProgramWebPublishingDaoImpl implements LMProgramWebPublishingDao 
     
     @Override
     @Transactional(readOnly = true)
-    public List<LiteStarsLMProgram> getPrograms(LiteStarsCustAccountInformation account,
+    public List<LiteStarsLMProgram> getPrograms(LiteAccountInfo account,
             LiteStarsEnergyCompany energyCompany) {
         
         final Iterable<LiteLMProgramWebPublishing> allPrograms = energyCompany.getAllPrograms();

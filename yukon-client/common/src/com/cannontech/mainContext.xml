@@ -314,9 +314,12 @@
     <bean class="com.cannontech.common.requests.service.impl.JobManagementServiceImpl"/>
     <bean class="com.cannontech.common.requests.runnable.capcontrol.CapControlJobFactory"/>
     
+    <bean id="exiParsingService" class="com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl"/>
     <bean id="rfnDeviceLookupService" class="com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl"/>
     <bean id="rfnDeviceCreationService" class="com.cannontech.common.rfn.service.impl.RfnDeviceCreationServiceImpl"/>
     <bean id="rfnExpressComMessageService" class="com.cannontech.dr.rfn.service.impl.RfnExpressComMessageServiceImpl"/>
+    <bean id="rfnLcrPointDataMappingService" class="com.cannontech.dr.rfn.service.impl.RfnLcrPointDataMappingServiceImpl"/>
+    <bean id="rawExpressComCommandBuilder" class="com.cannontech.dr.rfn.service.impl.RawExpressComCommandBuilderImpl"/>
 
     <bean id="bulkPointDataInjectionService" class="com.cannontech.development.impl.BulkPointDataInjectionServiceImpl"/>
 </beans>

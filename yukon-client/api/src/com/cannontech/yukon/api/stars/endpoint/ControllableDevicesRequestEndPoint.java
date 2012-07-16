@@ -28,7 +28,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlready
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
 import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
-import com.cannontech.stars.ws.StarsControllableDeviceDTO;
+import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.stars.ws.StarsControllableDeviceHelper;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -86,10 +86,10 @@ public class ControllableDevicesRequestEndPoint {
         
         // create template and parse data
         SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(newControllableDevicesRequest);
-        List<StarsControllableDeviceDTO> devices = template.evaluate(newDeviceElementStr, deviceElementMapper);
+        List<LmDeviceDto> devices = template.evaluate(newDeviceElementStr, deviceElementMapper);
 
         // Log hardware addition attempts
-        for (StarsControllableDeviceDTO device : devices) {
+        for (LmDeviceDto device : devices) {
             hardwareEventLogService.hardwareAdditionAttemptedThroughApi(user,
                                                                         device.getAccountNumber(),
                                                                         device.getSerialNumber());
@@ -100,7 +100,7 @@ public class ControllableDevicesRequestEndPoint {
                                    ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE);
         
         // run service
-        for (StarsControllableDeviceDTO device : devices) {
+        for (LmDeviceDto device : devices) {
             try {
                 starsControllableDeviceHelper.addDeviceToAccount(device, user);
             } catch (StarsClientRequestException e) {
@@ -124,14 +124,14 @@ public class ControllableDevicesRequestEndPoint {
         
         // create template and parse data
         SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(updateControllableDevicesRequest);
-        List<StarsControllableDeviceDTO> devices = template.evaluate(updateDeviceElementStr, deviceElementMapper);        
+        List<LmDeviceDto> devices = template.evaluate(updateDeviceElementStr, deviceElementMapper);        
 
         // check authorization
         authDao.verifyTrueProperty(user,
                                    ConsumerInfoRole.CONSUMER_INFO_HARDWARES);
         
         // run service
-        for (StarsControllableDeviceDTO device : devices) {
+        for (LmDeviceDto device : devices) {
             try {
                 hardwareEventLogService.hardwareUpdateAttemptedThroughApi(user,
                                                                           device.getAccountNumber(),
@@ -160,14 +160,14 @@ public class ControllableDevicesRequestEndPoint {
         
         // create template and parse data
         SimpleXPathTemplate template = YukonXml.getXPathTemplateForElement(removeControllableDevicesRequest);
-        List<StarsControllableDeviceDTO> devices = template.evaluate(removeDeviceElementStr, deviceElementMapper);        
+        List<LmDeviceDto> devices = template.evaluate(removeDeviceElementStr, deviceElementMapper);        
 
         // check authorization
         authDao.verifyTrueProperty(user,
                                    ConsumerInfoRole.CONSUMER_INFO_HARDWARES);
 
         // run service
-        for (StarsControllableDeviceDTO device : devices) {
+        for (LmDeviceDto device : devices) {
             try {
                 hardwareEventLogService.hardwareRemovalAttemptedThroughApi(user,
                                                                            device.getAccountNumber(),
@@ -190,13 +190,13 @@ public class ControllableDevicesRequestEndPoint {
 
     // builds response with the given response element name
     private Element buildResponse(Element req, String respStr,
-            List<StarsControllableDeviceDTO> devices) {
+            List<LmDeviceDto> devices) {
 
         Element resp = new Element(respStr, ns);
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         Element deviceResultList = new Element(controllableDeviceResultListStr, ns);
-        for (StarsControllableDeviceDTO device : devices) {
+        for (LmDeviceDto device : devices) {
 
             Element deviceResult = new Element(controllableDeviceResultStr, ns);
 
@@ -269,14 +269,14 @@ public class ControllableDevicesRequestEndPoint {
     }
 
     public static class ControllableDeviceDTOMapper implements
-            ObjectMapper<Node, StarsControllableDeviceDTO> {
+            ObjectMapper<Node, LmDeviceDto> {
 
         @Override
-        public StarsControllableDeviceDTO map(Node from) throws ObjectMappingException {
+        public LmDeviceDto map(Node from) throws ObjectMappingException {
             // create template and parse data
             SimpleXPathTemplate template = YukonXml.getXPathTemplateForNode(from);
 
-            StarsControllableDeviceDTO device = new StarsControllableDeviceDTO();
+            LmDeviceDto device = new LmDeviceDto();
             device.setAccountNumber(template.evaluateAsString(accountNumberStr));
             device.setSerialNumber(template.evaluateAsString(serialNumberStr));
             device.setDeviceType(template.evaluateAsString(deviceTypeStr));

@@ -24,10 +24,10 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
@@ -57,7 +57,7 @@ public class OptOutAdminController {
 	private StarsDatabaseCache starsDatabaseCache;
 	private OptOutService optOutService;
 	private StarsEventLogService starsEventLogService;
-	private StarsInventoryBaseDao starsInventoryBaseDao;
+	private InventoryBaseDao inventoryBaseDao;
 	private ProgramDao programDao;
 	private RolePropertyDao rolePropertyDao;
 	
@@ -271,8 +271,8 @@ public class OptOutAdminController {
     		eventDto.setAccountNumber(customerAccount.getAccountNumber());
     		
     		Integer inventoryId = event.getInventoryId();
-    		LiteStarsLMHardware inventory = 
-    			(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+    		LiteLmHardwareBase inventory = 
+    			(LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
     		eventDto.setSerialNumber(inventory.getManufacturerSerialNumber());
     		
     		events.add(eventDto);
@@ -361,8 +361,8 @@ public class OptOutAdminController {
     }
     
     @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-		this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
+		this.inventoryBaseDao = inventoryBaseDao;
 	}
 
     @Autowired

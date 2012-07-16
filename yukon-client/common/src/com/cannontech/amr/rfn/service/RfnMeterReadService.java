@@ -35,11 +35,12 @@ import com.google.common.collect.Lists;
 
 public class RfnMeterReadService {
     
-    private ConfigurationSource configurationSource;
-    private ConnectionFactory connectionFactory;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private UnitOfMeasureToPointMapper unitOfMeasureToPointMapper;
+    @Autowired private PointDao pointDao;
+    
     private RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply> rrrTemplate;
-    private UnitOfMeasureToPointMapper unitOfMeasureToPointMapper;
-    private PointDao pointDao;
     
     private static final Logger log = YukonLogManager.getLogger(RfnMeterReadService.class);
     
@@ -64,7 +65,7 @@ public class RfnMeterReadService {
      * @param rfnMeter The meter to read.
      * @param callback The callback to use for updating status, errors and read data.
      */
-    public void send(final RfnMeter rfnMeter, final RfnMeterReadCompletionCallback callback) {
+    public void send(final RfnMeter rfnMeter, final RfnDeviceReadCompletionCallback<RfnMeterReadingReplyType, RfnMeterReadingDataReplyType> callback) {
         JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply> handler = new JmsReplyReplyHandler<RfnMeterReadReply, RfnMeterReadDataReply>() {
 
             @Override
@@ -195,26 +196,6 @@ public class RfnMeterReadService {
         }
     }
     
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
-    }
-    
-    @Autowired
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-    
-    @Autowired
-    public void setUnitOfMeasureToPointMapper(UnitOfMeasureToPointMapper unitOfMeasureToPointMapper) {
-        this.unitOfMeasureToPointMapper = unitOfMeasureToPointMapper;
-    }
-    
     @PostConstruct
     public void initialize() {
         rrrTemplate = new RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply>();
@@ -223,4 +204,5 @@ public class RfnMeterReadService {
         rrrTemplate.setConnectionFactory(connectionFactory);
         rrrTemplate.setRequestQueueName("yukon.qr.obj.amr.rfn.MeterReadRequest", false);
     }
+    
 }

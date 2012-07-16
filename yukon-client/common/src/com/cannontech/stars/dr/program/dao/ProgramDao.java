@@ -61,5 +61,10 @@ public interface ProgramDao {
      * 
      */
     public String getProgramNames(int loadGroupId);
+
+    /**
+     * Returns the first load group found assigned to this program.
+     */
+    public int getLoadGroupIdForProgramId(int programId);
     
 }

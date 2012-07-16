@@ -17,7 +17,7 @@ import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -176,7 +176,7 @@ public class SearchCustAccountAction implements ActionBase {
             	}
             	
                 if (accountId != null) {    //liteAcctInfo will only be loaded if exactly 1 account was found in search.
-            		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountId, true );
+            		LiteAccountInfo liteAcctInfo = energyCompany.getCustAccountInformation( accountId, true );
             		
 					session.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
 		            

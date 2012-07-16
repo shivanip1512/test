@@ -18,7 +18,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.model.CompleteZbEndpoint;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 import com.cannontech.thirdparty.digi.dao.ZigbeeDeviceDao;
@@ -35,7 +35,7 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
     
     private @Autowired PaoPersistenceService paoPersistenceService;
     private @Autowired ZigbeeDeviceDao zigbeeDeviceDao;
-    private @Autowired StarsInventoryBaseDao starsInventoryBaseDao;
+    private @Autowired InventoryBaseDao inventoryBaseDao;
     private @Autowired AttributeService attributeService;
     private @Autowired ZigbeeWebService zigbeeWebService;
     private @Autowired GatewayDeviceDao gatewayDeviceDao;
@@ -100,7 +100,7 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
         paoPersistenceService.createPao(zbEndpoint, PaoType.ZIGBEE_ENDPOINT);
         
         //Update the Stars table with the device id
-        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), 
+        inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), 
                                                           zbEndpoint.getPaObjectId());
     }
 
@@ -121,7 +121,7 @@ public class ZigbeeEndpointBuilder implements HardwareTypeExtensionProvider {
         paoPersistenceService.updatePao(zbEndpoint);
         
         gatewayDeviceDao.updateDeviceToGatewayAssignment(hardware.getDeviceId(), hardware.getGatewayId());
-        starsInventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), hardware.getDeviceId());
+        inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), hardware.getDeviceId());
         
         return;
     }

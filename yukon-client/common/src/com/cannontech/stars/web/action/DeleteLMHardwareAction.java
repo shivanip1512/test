@@ -12,13 +12,13 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -28,7 +28,7 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelperHolder;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -105,9 +105,9 @@ public class DeleteLMHardwareAction implements ActionBase {
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
         	
 			StarsDeleteLMHardware delHw = reqOper.getStarsDeleteLMHardware();
-			StarsInventoryBaseDao starsInventoryBaseDao = 
-				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
-			LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(delHw.getInventoryID());
+			InventoryBaseDao inventoryBaseDao = 
+				YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
+			LiteInventoryBase liteInv = inventoryBaseDao.getByInventoryId(delHw.getInventoryID());
 			
 			if (liteInv.getAccountID() == 0) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -117,7 +117,7 @@ public class DeleteLMHardwareAction implements ActionBase {
             
             //Use account in session, if inventory belongs to it
             //else retreive account (ex. inventory deleted from inventory list)
-            LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+            LiteAccountInfo liteAcctInfo = (LiteAccountInfo) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
             if (liteAcctInfo == null || liteAcctInfo.getAccountID() != liteInv.getAccountID()) {
                 liteAcctInfo = energyCompany.getCustAccountInformation( liteInv.getAccountID(), true );    
             }			
@@ -193,16 +193,16 @@ public class DeleteLMHardwareAction implements ActionBase {
 	 * it means the account this hardware belongs to has also been deleted.
 	 */
 	public static void removeInventory(StarsDeleteLMHardware deleteHw, 
-	                                   LiteStarsCustAccountInformation liteAcctInfo, 
+	                                   LiteAccountInfo liteAcctInfo, 
 	                                   LiteStarsEnergyCompany energyCompany)
 		throws WebClientException
 	{
         ApplianceDao applianceDao = YukonSpringHook.getBean("applianceDao", ApplianceDao.class);
 	    
 		try {
-			StarsInventoryBaseDao starsInventoryBaseDao = 
-				YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
-			LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(deleteHw.getInventoryID());
+			InventoryBaseDao inventoryBaseDao = 
+				YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
+			LiteInventoryBase liteInv = inventoryBaseDao.getByInventoryId(deleteHw.getInventoryID());
 			
 			try {
     		    // Unenrolls the inventory from all its programs (inside below catch block as well)
@@ -214,7 +214,7 @@ public class DeleteLMHardwareAction implements ActionBase {
         			CustomerAccount customerAccount = customerAccountDao.getById(liteAcctInfo.getAccountID());
 	    			enrollmentHelper.setAccountNumber(customerAccount.getAccountNumber());
 	    
-	    			LMHardwareBaseDao lmHardwareBaseDao = YukonSpringHook.getBean("hardwareBaseDao", LMHardwareBaseDao.class);
+	    			LmHardwareBaseDao lmHardwareBaseDao = YukonSpringHook.getBean("hardwareBaseDao", LmHardwareBaseDao.class);
 	    			LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(deleteHw.getInventoryID());
 	    			enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
 	    			
@@ -252,7 +252,7 @@ public class DeleteLMHardwareAction implements ActionBase {
 				
 				event = Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
-				if (liteInv instanceof LiteStarsLMHardware)
+				if (liteInv instanceof LiteLmHardwareBase)
 					applianceDao.deleteAppliancesByAccountIdAndInventoryId(liteAcctInfo.getAccountID(), liteInv.getInventoryID());
 				
 				// Removes any entries found in the inventoryBase Table

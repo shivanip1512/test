@@ -48,7 +48,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             RfnDevice rfnDevice = new RfnDevice(pao, rfnIdentifier);
             return rfnDevice;
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("no meter matches " + rfnIdentifier);
+            throw new NotFoundException("no device matches " + rfnIdentifier);
         }
     }
     
@@ -73,8 +73,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                     return result;
                 }
             });
-            RfnDevice rfnMeter = new RfnDevice(pao, rfnIdentifier);
-            return rfnMeter;
+            RfnDevice rfnDevice = new RfnDevice(pao, rfnIdentifier);
+            return rfnDevice;
         } catch (EmptyResultDataAccessException e) {
             RfnDevice rfnDevice = new RfnDevice(pao, RfnIdentifier.createBlank());
             return rfnDevice;
@@ -137,12 +137,12 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 new YukonRowMapper<Entry<Integer, RfnIdentifier>>() {
             @Override
             public Entry<Integer, RfnIdentifier> mapRow(YukonResultSet rs) throws SQLException {
-                RfnIdentifier rfnMeterIdentifier =
+                RfnIdentifier rfnIdentifier =
                         new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
                                                rs.getStringSafe("Manufacturer"), 
                                                rs.getStringSafe("Model"));
                 int deviceId = rs.getInt("DeviceId");
-                return Maps.immutableEntry(deviceId, rfnMeterIdentifier);
+                return Maps.immutableEntry(deviceId, rfnIdentifier);
             }
         };
 
@@ -153,11 +153,11 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Override
     public void updateDevice(RfnDevice device) {
         if(device.getRfnIdentifier().isBlank()) {
-            /* When someone has blanked out the three fields of the rfn meter address, delete that row from RfnAddress. */
+            /* When someone has blanked out the three fields of the rfn device address, delete that row from RfnAddress. */
             deleteRfnAddress(device);
             return;
         }
-        /* If there is a row in RfnAddress for this meter, update it, otherwise insert it. */
+        /* If there is a row in RfnAddress for this device, update it, otherwise insert it. */
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO RfnAddress");
         sql.values(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier().getSensorSerialNumber(), device.getRfnIdentifier().getSensorManufacturer(), device.getRfnIdentifier().getSensorModel());
@@ -176,7 +176,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             int rowsAffected = jdbcTemplate.update(updateSql);
             
             if(rowsAffected == 0) {
-                /* The initial insert failed because a different meter is using this SN, Manufacturer, Model combination. */
+                /* The initial insert failed because a different device is using this SN, Manufacturer, Model combination. */
                 throw new DataIntegrityViolationException("Serial Number, Manufacturer, and Model must be unique.");
             }
         }

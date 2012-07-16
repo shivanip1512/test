@@ -15,7 +15,7 @@ import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
@@ -57,7 +57,7 @@ public class StarsControllableDeviceHelperImpl implements
         this.starsDatabaseCache = starsDatabaseCache;
     }
 
-    private String getAccountNumber(StarsControllableDeviceDTO deviceInfo) {
+    private String getAccountNumber(LmDeviceDto deviceInfo) {
         String acctNum = deviceInfo.getAccountNumber();
         if (StringUtils.isBlank(acctNum)) {
             throw new StarsInvalidArgumentException("Account Number is required");
@@ -65,7 +65,7 @@ public class StarsControllableDeviceHelperImpl implements
         return acctNum;
     }
 
-    private String getSerialNumber(StarsControllableDeviceDTO deviceInfo) {
+    private String getSerialNumber(LmDeviceDto deviceInfo) {
         String serialNum = deviceInfo.getSerialNumber();
         if (StringUtils.isBlank(serialNum)) {
             throw new StarsInvalidArgumentException("Serial Number is required");
@@ -77,7 +77,7 @@ public class StarsControllableDeviceHelperImpl implements
         return serialNum;
     }
 
-    private String getDeviceType(StarsControllableDeviceDTO deviceInfo) {
+    private String getDeviceType(LmDeviceDto deviceInfo) {
         String deviceType = deviceInfo.getDeviceType();
         if (StringUtils.isBlank(deviceType)) {
             throw new StarsInvalidArgumentException("Device type is required");
@@ -86,7 +86,7 @@ public class StarsControllableDeviceHelperImpl implements
     }
 
     private CustomerAccount getCustomerAccount(
-            StarsControllableDeviceDTO deviceInfo,
+            LmDeviceDto deviceInfo,
             LiteStarsEnergyCompany energyCompany) {
         CustomerAccount custAcct = null;
         try {
@@ -109,7 +109,7 @@ public class StarsControllableDeviceHelperImpl implements
      * @return deviceTypeId - yukonListEntry id value.
      * @throws StarsInvalidDeviceTypeException if yukonListEntry is not found for deviceInfo.deviceType 
      */
-    private int getDeviceTypeId(StarsControllableDeviceDTO deviceInfo,
+    private int getDeviceTypeId(LmDeviceDto deviceInfo,
             LiteStarsEnergyCompany energyCompany) {
     	String deviceType = getDeviceType(deviceInfo);
     	try {
@@ -124,7 +124,7 @@ public class StarsControllableDeviceHelperImpl implements
     }
 
     @Override
-    public LiteInventoryBase addDeviceToAccount(StarsControllableDeviceDTO deviceInfo,
+    public LiteInventoryBase addDeviceToAccount(LmDeviceDto deviceInfo,
              LiteYukonUser user) {
 
         LiteInventoryBase liteInv = null;
@@ -149,7 +149,7 @@ public class StarsControllableDeviceHelperImpl implements
 
     // Gets Inventory if exists on the account
     private LiteInventoryBase getInventoryOnAccount(
-            StarsControllableDeviceDTO deviceInfo,
+            LmDeviceDto deviceInfo,
             LiteStarsEnergyCompany energyCompany) {
         LiteInventoryBase liteInvAcct = null;
 
@@ -167,7 +167,7 @@ public class StarsControllableDeviceHelperImpl implements
     // Handles only LMHardware devices for now, will need to support other
     // device types later.
     private LiteInventoryBase getInventory(
-            StarsControllableDeviceDTO deviceInfo,
+            LmDeviceDto deviceInfo,
             LiteStarsEnergyCompany energyCompany) {
         LiteInventoryBase liteInv = null;
 
@@ -177,7 +177,7 @@ public class StarsControllableDeviceHelperImpl implements
                                                                    energyCompany);
             boolean lmHardware = InventoryUtils.isLMHardware(categoryID);
             if (lmHardware) {
-                LiteStarsLMHardware lmhw = (LiteStarsLMHardware) starsSearchDao.searchLMHardwareBySerialNumber(getSerialNumber(deviceInfo),
+                LiteLmHardwareBase lmhw = (LiteLmHardwareBase) starsSearchDao.searchLmHardwareBySerialNumber(getSerialNumber(deviceInfo),
                                                                                                                energyCompany);
                 liteInv = lmhw;
             }
@@ -192,7 +192,7 @@ public class StarsControllableDeviceHelperImpl implements
     // Handles only LMHardware devices for now, will need to support other
     // device types later.
     private LiteInventoryBase createNewInventory(
-            StarsControllableDeviceDTO deviceInfo,
+            LmDeviceDto deviceInfo,
             LiteStarsEnergyCompany energyCompany) {
         LiteInventoryBase liteInv = null;
 
@@ -201,7 +201,7 @@ public class StarsControllableDeviceHelperImpl implements
                                                                energyCompany);
         boolean lmHardware = InventoryUtils.isLMHardware(categoryID);
         if (lmHardware) {
-            LiteStarsLMHardware lmhw = new LiteStarsLMHardware();
+            LiteLmHardwareBase lmhw = new LiteLmHardwareBase();
             lmhw.setCategoryID(categoryID);
             lmhw.setLmHardwareTypeID(deviceTypeId);
             lmhw.setManufacturerSerialNumber(getSerialNumber(deviceInfo));
@@ -218,7 +218,7 @@ public class StarsControllableDeviceHelperImpl implements
     }
 
     private LiteInventoryBase internalAddDeviceToAccount(
-            StarsControllableDeviceDTO deviceInfo,
+            LmDeviceDto deviceInfo,
             LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
 
         LiteInventoryBase liteInv = null;
@@ -257,7 +257,7 @@ public class StarsControllableDeviceHelperImpl implements
         return liteInv;
     }
 
-    private void setInventoryValues(StarsControllableDeviceDTO deviceInfo,
+    private void setInventoryValues(LmDeviceDto deviceInfo,
             LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
         // update install date, if specified
         Date installDate = deviceInfo.getFieldInstallDate();
@@ -295,7 +295,7 @@ public class StarsControllableDeviceHelperImpl implements
 
     @Override
     public LiteInventoryBase updateDeviceOnAccount(
-            StarsControllableDeviceDTO deviceInfo, LiteYukonUser user) {
+            LmDeviceDto deviceInfo, LiteYukonUser user) {
 
         LiteInventoryBase liteInv = null;
         
@@ -326,7 +326,7 @@ public class StarsControllableDeviceHelperImpl implements
     }
 
     @Override
-    public void removeDeviceFromAccount(StarsControllableDeviceDTO deviceInfo,
+    public void removeDeviceFromAccount(LmDeviceDto deviceInfo,
             LiteYukonUser user) {
 
         LiteInventoryBase liteInv = null;

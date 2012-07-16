@@ -3445,62 +3445,6 @@
                 <unitofmeasure value="Counts"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="2">
-                <init>true</init>
-                <name>Addressing - SPID</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="3">
-                <init>true</init>
-                <name>Addressing - GEO</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="4">
-                <init>true</init>
-                <name>Addressing - Substation</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="5">
-                <init>true</init>
-                <name>Addressing - Feeder</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="6">
-                <init>true</init>
-                <name>Addressing - ZIP</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="7">
-                <init>true</init>
-                <name>Addressing - User</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="8">
-                <init>true</init>
-                <name>Addressing - Relay 1 Program</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="9">
-                <init>true</init>
-                <name>Addressing - Relay 1 Splinter</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
             <point type="Analog" offset="10">
                 <init>true</init>
                 <name>Relay 1 Run Time</name>
@@ -3590,26 +3534,54 @@
             </point>
         </points>
         <attributes>
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="Blink Count" />
+            </attribute>
+            <attribute name="CONTROL_STATUS">
+                <basicLookup point="Control Status" />
+            </attribute>
+            <attribute name="RECORDING_INTERVAL">
+                <basicLookup point="Recording Interval" />
+            </attribute>
+            <attribute name="RELAY_1_LOAD_SIZE">
+                <basicLookup point="Relay 1 kW Load Size"/>
+            </attribute>
+            <attribute name="RELAY_1_REMAINING_CONTROL">
+                <basicLookup point="Relay 1 Remaining Control Time"/>
+            </attribute>
+            <attribute name="RELAY_1_CONTROL_TIME">
+                <basicLookup point="Relay 1 Control Time"/>
+            </attribute>
+            <attribute name="RELAY_1_RUN_TIME">
+                <basicLookup point="Relay 1 Run Time"/>
+            </attribute>
+            <attribute name="RELAY_1_SHED_TIME">
+                <basicLookup point="Relay 1 Shed Time"/>
+            </attribute>
+            <attribute name="REPORTING_INTERVAL">
+                <basicLookup point="Reporting Interval" />
+            </attribute>
+            <attribute name="SERVICE_STATUS">
+                <basicLookup point="Service Status"/>
+            </attribute>
+            <attribute name="TAMPER_FLAG">
+                <basicLookup point="Runtime Tamper"/>
+            </attribute>
+            <attribute name="TEMPORARY_OUT_OF_SERVICE">
+                <basicLookup point="Temp Out of Service Duration"/>
+            </attribute>
+            <attribute name="TOTAL_LUF_COUNT">
+                <basicLookup point="Total LUF Event Count" />
+            </attribute>
+            <attribute name="TOTAL_LUV_COUNT">
+                <basicLookup point="Total LUV Event Count" />
+            </attribute>
         </attributes>
     </pao>
     
     <pao id="LCR6600_RFN" inherits="RF_LCR, LCR6200_RFN">
         <displayName>LCR-6600 RFN</displayName>
         <points>
-            <point type="Analog" offset="20">
-                <init>true</init>
-                <name>Addressing - Relay 2 Program</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="21">
-                <init>true</init>
-                <name>Addressing - Relay 2 Splinter</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
             <point type="Analog" offset="22">
                 <init>true</init>
                 <name>Relay 2 Run Time</name>
@@ -3643,20 +3615,6 @@
                 <name>Relay 2 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="27">
-                <init>true</init>
-                <name>Addressing - Relay 3 Program</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="28">
-                <init>true</init>
-                <name>Addressing - Relay 3 Splinter</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Undefined"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="29">
@@ -3696,6 +3654,36 @@
             </point>
         </points>
         <attributes>
+            <attribute name="RELAY_2_LOAD_SIZE">
+                <basicLookup point="Relay 2 kW Load Size"/>
+            </attribute>
+            <attribute name="RELAY_2_REMAINING_CONTROL">
+                <basicLookup point="Relay 2 Remaining Control Time"/>
+            </attribute>
+            <attribute name="RELAY_2_CONTROL_TIME">
+                <basicLookup point="Relay 2 Control Time"/>
+            </attribute>
+            <attribute name="RELAY_2_RUN_TIME">
+                <basicLookup point="Relay 2 Run Time"/>
+            </attribute>
+            <attribute name="RELAY_2_SHED_TIME">
+                <basicLookup point="Relay 2 Shed Time"/>
+            </attribute>
+            <attribute name="RELAY_3_LOAD_SIZE">
+                <basicLookup point="Relay 3 kW Load Size"/>
+            </attribute>
+            <attribute name="RELAY_3_REMAINING_CONTROL">
+                <basicLookup point="Relay 3 Remaining Control Time"/>
+            </attribute>
+            <attribute name="RELAY_3_CONTROL_TIME">
+                <basicLookup point="Relay 3 Control Time"/>
+            </attribute>
+            <attribute name="RELAY_3_RUN_TIME">
+                <basicLookup point="Relay 3 Run Time"/>
+            </attribute>
+            <attribute name="RELAY_3_SHED_TIME">
+                <basicLookup point="Relay 3 Shed Time"/>
+            </attribute>
         </attributes>
     </pao>
     

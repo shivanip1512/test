@@ -3,7 +3,6 @@
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.util.ProgressChecker" %>
 <%@ page import="com.cannontech.stars.util.task.TimeConsumingTask" %>
-<%@ page import="com.cannontech.stars.util.task.DeleteEnergyCompanyTask" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
@@ -50,16 +49,11 @@
 			
 			ProgressChecker.removeTask(id);
 			isStopped = true;
-			if(task.getClass().equals(DeleteEnergyCompanyTask.class)) {
-			    String redirect = request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT";
-		        response.sendRedirect(redirect);
-            }else{
-				String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
-				if (redirect != null) {
-				    redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
-				    response.sendRedirect(redirect);
-				}
-            }
+			String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
+			if (redirect != null) {
+			    redirect = ServletUtil.createSafeRedirectUrl(request, redirect);
+			    response.sendRedirect(redirect);
+			}
 		}
 		else if (task.getStatus() == TimeConsumingTask.STATUS_ERROR ||
 				task.getStatus() == TimeConsumingTask.STATUS_CANCELED)

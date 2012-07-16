@@ -20,15 +20,16 @@ import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DeviceCustomerListDao;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.GraphCustomerListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.customer.model.CustomerInformation;
-import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -36,6 +37,7 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.SeparableRowMapper;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -232,11 +234,9 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         sql.append("LEFT JOIN CustomerAccount ca ON c.CustomerId = ca.CustomerId");
         sql.append("LEFT JOIN CICustomerBase ci ON c.CustomerID = ci.CustomerID");
         sql.append("LEFT JOIN ECToAccountMapping ectam ON ca.AccountId = ectam.AccountId");
-        sql.append("WHERE c.CustomerId = ?");
+        sql.append("WHERE c.CustomerId").eq(customerId);
 
-        LiteCustomer customer = yukonJdbcTemplate.queryForObject(sql.getSql(),
-                                                                  new TypeAwareCustomerRowMapper(),
-                                                                  customerId);
+        LiteCustomer customer = yukonJdbcTemplate.queryForObject(sql, new TypeAwareCustomerRowMapper());
 
         List<LiteContact> additionalContacts = contactDao.getAdditionalContactsForCustomer(customerId);
         customer.setAdditionalContacts(additionalContacts);
@@ -251,14 +251,12 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         sql.append("SELECT c.CustomerId, ci.CompanyName, con.ContFirstName, con.ContLastName, cn.Notification");
         sql.append("FROM Customer c");
         sql.append("  JOIN Contact con on c.primaryContactId = con.ContactId");
-        sql.append("  LEFT JOIN ContactNotification cn on con.contactId = cn.ContactId and cn.notificationCategoryId =").appendArgument(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+        sql.append("  LEFT JOIN ContactNotification cn on con.contactId = cn.ContactId and cn.notificationCategoryId").eq_k(YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
         sql.append("  LEFT JOIN CICustomerBase ci ON c.CustomerID = ci.CustomerID");
-        sql.append("WHERE c.CustomerId =").appendArgument(customerId);
+        sql.append("WHERE c.CustomerId").eq(customerId);
         sql.append("ORDER BY cn.Ordering");
 
-        List<CustomerInformation> customerInfo = yukonJdbcTemplate.query(sql.getSql(),
-                                                                  new CustomerInformationRowMapper(),
-                                                                  sql.getArguments());
+        List<CustomerInformation> customerInfo = yukonJdbcTemplate.query(sql, new CustomerInformationRowMapper());
 
         return customerInfo.get(0);
     }
@@ -348,9 +346,9 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         sql.append("ORDER BY CompanyName");
 
         final CiCustomerRowMapper customerRowMapper = new CiCustomerRowMapper();
-        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), new AbstractRowCallbackHandler() {
-            public void processRow(ResultSet rs, int rowNum) throws SQLException {
-                LiteCICustomer lc = customerRowMapper.mapRow(rs, rowNum);
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            public void processRow(YukonResultSet rs) throws SQLException {
+                LiteCICustomer lc = customerRowMapper.mapRow(rs);
                 try {
                     callback.handle(lc);
                 } catch (Exception e) {
@@ -369,25 +367,24 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         return result;
     }
     
-    private static class TypeAwareCustomerRowMapper implements ParameterizedRowMapper<LiteCustomer> {
-        private ParameterizedRowMapper<LiteCustomer> customer = new CustomerRowMapper();
-        private ParameterizedRowMapper<LiteCICustomer> ciCustomer = new CiCustomerRowMapper();
+    private static class TypeAwareCustomerRowMapper implements YukonRowMapper<LiteCustomer> {
+        private YukonRowMapper<LiteCustomer> customer = new CustomerRowMapper();
+        private YukonRowMapper<LiteCICustomer> ciCustomer = new CiCustomerRowMapper();
         @Override
-        public LiteCustomer mapRow(ResultSet rs, int rowNum) throws SQLException {
+        public LiteCustomer mapRow(YukonResultSet rs) throws SQLException {
             final int customerTypeId = rs.getInt("CustomerTypeId");
             final boolean isCiCustomer = customerTypeId == CustomerTypes.CUSTOMER_CI;
              
-            return isCiCustomer ? ciCustomer.mapRow(rs, rowNum) : customer.mapRow(rs, rowNum);
+            return isCiCustomer ? ciCustomer.mapRow(rs) : customer.mapRow(rs);
         }
     }
     
     private static class CustomerRowMapper extends SeparableRowMapper<LiteCustomer> {
-        protected LiteCustomer createObject(ResultSet rs) throws SQLException {
+        protected LiteCustomer createObject(YukonResultSet rs) throws SQLException {
             return new LiteCustomer(rs.getInt("CustomerId"));
         }
         
-        public void mapRow(ResultSet rs, LiteCustomer customer)
-        throws SQLException {
+        public void mapRow(YukonResultSet rs, LiteCustomer customer) throws SQLException {
             customer.setPrimaryContactID(rs.getInt("PrimaryContactId"));
             customer.setCustomerTypeID(rs.getInt("CustomerTypeId"));
             customer.setTimeZone(SqlUtils.convertDbValueToString(rs.getString("TimeZone")));
@@ -408,16 +405,15 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
             super(new CustomerRowMapper());
         }
         
-        protected LiteCICustomer createObject(ResultSet rs) throws SQLException {
+        protected LiteCICustomer createObject(YukonResultSet rs) throws SQLException {
             return new LiteCICustomer(rs.getInt("CustomerId"));
         }
         
-        public void mapRow(ResultSet rs, LiteCICustomer customer)
-                throws SQLException {
+        public void mapRow(YukonResultSet rs, LiteCICustomer customer) throws SQLException {
 
             final LiteCICustomer ciCustomer = (LiteCICustomer) customer;
             ciCustomer.setMainAddressID(rs.getInt("MainAddressID"));            
-            ciCustomer.setCompanyName(SqlUtils.convertDbValueToString(rs, "CompanyName"));   
+            ciCustomer.setCompanyName(SqlUtils.convertDbValueToString("CompanyName"));   
             ciCustomer.setDemandLevel(rs.getDouble("CustomerDemandLevel"));
             ciCustomer.setCurtailAmount(rs.getDouble("CurtailAmount"));
             ciCustomer.setCICustType(rs.getInt("CICustType"));

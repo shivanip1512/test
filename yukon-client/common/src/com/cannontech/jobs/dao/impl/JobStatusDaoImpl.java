@@ -71,12 +71,12 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
         sql.append("select *");
         sql.append("from JobStatus js");
         sql.append("join Job j on js.jobid = j.jobid");
-        sql.append("where startTime < ? and stopTime > ?");
+        sql.append("where startTime").lt(lateLimit);
+        sql.append("and stopTime").gt(earlyLimit);
         sql.append("order by startTime " + (reverse ? "desc" : ""));
-        JobStatusRowMapper<YukonJob> jobStatusRowMapper = 
-            new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
-        List<JobStatus<YukonJob>> resultList = 
-            yukonJdbcTemplate.query(sql.toString(), jobStatusRowMapper, lateLimit, earlyLimit);
+        JobStatusRowMapper<YukonJob> mapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
+        
+        List<JobStatus<YukonJob>> resultList = yukonJdbcTemplate.query(sql, mapper);
         return resultList;
     }
     
@@ -86,12 +86,11 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
         sql.append("select *");
         sql.append("from JobStatus js");
         sql.append("join Job j on js.jobid = j.jobid");
-        sql.append("where js.jobid = ?");
+        sql.append("where js.jobid").eq(jobId);
         sql.append("order by js.startTime desc");
-        JobStatusRowMapper<YukonJob> jobStatusRowMapper = 
-            new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
-        List<JobStatus<YukonJob>> results = 
-            yukonJdbcTemplate.query(sql.toString(), jobStatusRowMapper, jobId);
+        
+        JobStatusRowMapper<YukonJob> mapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
+        List<JobStatus<YukonJob>> results = yukonJdbcTemplate.query(sql, mapper);
         
         if (results.size() == 0) {
         	return null;

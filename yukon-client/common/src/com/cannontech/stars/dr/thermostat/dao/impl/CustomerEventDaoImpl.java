@@ -5,30 +5,47 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.activity.ActivityLog;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.CustomerAction;
 import com.cannontech.stars.dr.hardware.model.CustomerEventType;
+import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
+import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
+import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
+import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
 import com.cannontech.stars.dr.thermostat.model.CustomerThermostatEvent;
+import com.cannontech.stars.dr.thermostat.model.CustomerThermostatEventBase;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriod;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedulePeriodStyle;
+import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.google.common.collect.ListMultimap;
 
 /**
  * Implementation class for CustomerEventDao
@@ -39,6 +56,8 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired protected SystemDateFormattingService systemDateFormattingService;
 
     @Override
     public ThermostatManualEvent getLastManualEvent(int inventoryId) {
@@ -283,4 +302,56 @@ public class CustomerEventDaoImpl implements CustomerEventDao {
             return event;
         }
     }
+    
+    @Override
+    public void saveAndLogScheduleUpdate(CustomerAccount account,
+                                       AccountThermostatSchedule schedule,
+                                       TimeOfWeek tow,
+                                       Thermostat stat,
+                                       LiteYukonUser user) {
+        
+        // Log the schedule update in the activity log
+        LiteStarsEnergyCompany lsec = ecMappingDao.getCustomerAccountEC(account);
+        
+        StringBuilder logMessage = new StringBuilder();
+        logMessage.append("Serial #:" + stat.getSerialNumber() + ", ");
+        logMessage.append("Day:" + tow.toString() + ", ");
+        
+        DateTimeFormatter timeFormatter = systemDateFormattingService.getCommandTimeFormatter();
+        SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.getByHardwareType(stat.getType());
+        ThermostatSchedulePeriodStyle periodStyle = schedulableThermostatType.getPeriodStyle();
+        boolean useComma = false;
+
+        ListMultimap<TimeOfWeek, AccountThermostatScheduleEntry> entriesByTimeOfWeekMap = schedule.getEntriesByTimeOfWeekMultimap();
+        List<AccountThermostatScheduleEntry> entries = entriesByTimeOfWeekMap.get(tow);
+        
+        for (ThermostatSchedulePeriod period : periodStyle.getRealPeriods()) {
+            //add a comma to separate entries if there are several
+            if (useComma) {
+                logMessage.append(", ");
+            } else {
+                useComma = true;
+            }
+            AccountThermostatScheduleEntry atsEntry = entries.get(period.getEntryIndex());
+            String entryDate = timeFormatter.print(atsEntry.getStartTimeLocalTime());
+            logMessage.append(period + ": " + entryDate + "," + atsEntry.getCoolTemp().toFahrenheit().toString() + "," + atsEntry.getHeatTemp().toFahrenheit().toString());
+        }
+        
+        ActivityLog event = new ActivityLog();
+        event.setUserID(user.getUserID());
+        event.setAccountID(account.getAccountId());
+        event.setEnergyCompanyID(lsec.getEnergyCompanyId());
+        event.setCustomerID(account.getCustomerId());
+        event.setAction(ActivityLogActions.THERMOSTAT_SCHEDULE_ACTION);
+        event.setDescription(logMessage.toString());
+        ActivityLogger.logEvent(event);
+
+        // Save update schedule event
+        CustomerThermostatEventBase cteb = new CustomerThermostatEventBase();
+        cteb.setAction(CustomerAction.PROGRAMMING);
+        cteb.setEventType(CustomerEventType.HARDWARE);
+        cteb.setThermostatId(stat.getId());
+        save(cteb);
+    }
+    
 }

@@ -17,7 +17,7 @@ import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.hardware.LMHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.hardware.InventoryBase;
 import com.cannontech.stars.database.db.hardware.Warehouse;
@@ -52,7 +52,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
     private final String redirect;
     private final HttpSession session;
 
-    List<LiteStarsLMHardware> hardwareSet = new ArrayList<LiteStarsLMHardware>();
+    List<LiteLmHardwareBase> hardwareSet = new ArrayList<LiteLmHardwareBase>();
     int numSuccess = 0, numFailure = 0;
     int numToBeUpdated = 0;
 
@@ -118,14 +118,14 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
         }
 
         for (int i = 0; i < hwList.size(); i++) {
-            LiteStarsLMHardware liteHw = null;
+            LiteLmHardwareBase liteHw = null;
             LiteStarsEnergyCompany oldMember = null;
 
             Map<Integer, LiteStarsEnergyCompany> ecMap =
                 StarsDatabaseCache.getInstance().getAllEnergyCompanyMap();
 
             LiteInventoryBase liteInventoryBase = hwList.get(i);
-            liteHw = (LiteStarsLMHardware) liteInventoryBase;
+            liteHw = (LiteLmHardwareBase) liteInventoryBase;
             oldMember = ecMap.get(liteHw.getEnergyCompanyId());
 
             LiteStarsEnergyCompany newMember = null;

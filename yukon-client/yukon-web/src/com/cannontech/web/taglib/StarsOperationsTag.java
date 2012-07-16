@@ -101,13 +101,6 @@ public class StarsOperationsTag extends YukonTagSupport {
 			getJspContext().setAttribute("operatorInventorySearchBys", OperatorInventorySearchBy.values());
 		}
 
-		String hardwarePage = "Hardware/Inventory.jsp";
-		List<?> inventoryList = (List<?>) session.getAttribute(ServletUtil.FILTER_INVEN_LIST);
-		if (inventoryList == null || inventoryList.size() < 1) {
-			hardwarePage = "Hardware/Filter.jsp";
-		}
-		getJspContext().setAttribute("hardwarePage", hardwarePage);
-
 		String serviceOrderPage = "WorkOrder/WorkOrder.jsp";
 		List<?> serviceOrderList = (List<?>) session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST);
 		if (serviceOrderList == null || serviceOrderList.size() < 1) {

@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -23,7 +23,7 @@ public abstract class OverrideRequestEndpointBase {
     
     protected AccountEventLogService accountEventLogService;
     protected OptOutService optOutService;
-    protected LMHardwareBaseDao lmHardwareBaseDao;
+    protected LmHardwareBaseDao lmHardwareBaseDao;
     protected RolePropertyDao rolePropertyDao;
 
     protected CustomerAccount getCustomerAccount(String accountNumber, LiteYukonUser user) throws AccountNotFoundException {
@@ -59,7 +59,7 @@ public abstract class OverrideRequestEndpointBase {
     }
     
     @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+    public void setLmHardwareBaseDao(LmHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
     

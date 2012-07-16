@@ -7,7 +7,6 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -23,23 +22,27 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
+import com.cannontech.stars.database.db.hardware.LMHardwareConfiguration;
 import com.cannontech.stars.database.db.hardware.StaticLoadGroupMapping;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.google.common.collect.Lists;
 
 /**
  * @author yao
@@ -55,8 +58,8 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 	HttpSession session;
 	
 	List<StaticLoadGroupMapping> mappingsToAdjust = null;
-	List<LiteStarsLMHardware> hwsToAdjust = null;
-	List<LiteStarsLMHardware> configurationSet = new ArrayList<LiteStarsLMHardware>();
+	List<LiteLmHardwareBase> hwsToAdjust = null;
+	List<LiteLmHardwareBase> configurationSet = new ArrayList<LiteLmHardwareBase>();
     List<String> failureInfo = new ArrayList<String>();
     //don't need since liteHw already has the config loaded....HashMap<Integer, com.cannontech.database.db.stars.hardware.LMHardwareConfiguration> existingConfigEntries;
 	int numSuccess = 0, numFailure = 0;
@@ -73,7 +76,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 
 	@Override
     public String getProgressMsg() {
-		if(numToBeConfigured == 0)
+		if (numToBeConfigured == 0)
             return "Mapping task is sorting static mappings and inventory items";
 	    else if (fullReset) {
 			if (status == STATUS_FINISHED && numFailure == 0) {
@@ -91,18 +94,15 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
 	public void run() {
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         
         StringBuffer logEntry = new StringBuffer();
-        if(fullReset)
+        if (fullReset)
             logEntry.append("Full reset ");
         else
             logEntry.append("Adjusting all zero entries ");
-        if(sendConfig)
+        if (sendConfig)
             logEntry.append("and configs will be sent out if possible.");
         else
             logEntry.append("but configs will NOT be attempted.");
@@ -120,25 +120,25 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 		
 		boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& energyCompany.hasChildEnergyCompanies();
-		hwsToAdjust = new ArrayList<LiteStarsLMHardware>();
+		hwsToAdjust = new ArrayList<LiteLmHardwareBase>();
         
-        StarsInventoryBaseDao starsInventoryBaseDao = 
-        	YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+        InventoryBaseDao inventoryBaseDao = 
+        	YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
         LMHardwareControlGroupDao lmHardwareControlGroupDao = 
             YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);        
         
-		List<LiteStarsEnergyCompany> energyCompanyList = null;
+		List<YukonEnergyCompany> energyCompanyList = Lists.newArrayList();
 		if (!searchMembers) {
-			energyCompanyList = Collections.singletonList(energyCompany);
+			energyCompanyList.add(energyCompany);
 		} else {
-			energyCompanyList = ECUtils.getAllDescendants(energyCompany);
+			energyCompanyList.addAll(ECUtils.getAllDescendants(energyCompany));
 		} 
 		
-		if(!fullReset) {
+		if (!fullReset) {
 			// If not a full reset, we will want to only look for those with an addressing group ID of zero
-			hwsToAdjust = starsInventoryBaseDao.getAllLMHardwareWithoutLoadGroups(energyCompanyList);
+			hwsToAdjust = inventoryBaseDao.getAllLMHardwareWithoutLoadGroups(energyCompanyList);
 		} else {
-			hwsToAdjust = starsInventoryBaseDao.getAllLMHardware(energyCompanyList);
+			hwsToAdjust = inventoryBaseDao.getAllLMHardware(energyCompanyList);
 		}
 		
 		numToBeConfigured = hwsToAdjust.size();
@@ -148,22 +148,6 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
 			return;
 		}
 		
-		/*TODO: shouldn't need to support hardware addressing, but make sure 
-		 *User has specified a new configuration
-		 *StarsLMConfiguration hwConfig = null;
-         * if (request.getParameter("UseHardwareAddressing") != null) {
-			hwConfig = new StarsLMConfiguration();
-			try {
-				InventoryManagerUtil.setStarsLMConfiguration( hwConfig, request );
-			}
-			catch (WebClientException e) {
-				CTILogger.error( e.getMessage(), e );
-				status = STATUS_ERROR;
-				errorMsg = e.getMessage();
-				return;
-			}
-		}
-		else {*/
         String options = null;
         
 		for (int i = 0; i < hwsToAdjust.size(); i++) {
@@ -172,13 +156,13 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 return;
             }
             
-            LiteStarsLMHardware liteHw = hwsToAdjust.get(i);
+            LiteLmHardwareBase liteHw = hwsToAdjust.get(i);
 			LiteStarsEnergyCompany company = energyCompany;
 						
             //get the current Configuration
-            com.cannontech.stars.database.db.hardware.LMHardwareConfiguration configDB = com.cannontech.stars.database.db.hardware.LMHardwareConfiguration.getLMHardwareConfigurationFromInvenID(liteHw.getInventoryID());
+            LMHardwareConfiguration configDB = LMHardwareConfiguration.getLMHardwareConfigurationFromInvenID(liteHw.getInventoryID());
             
-            if(configDB == null) {
+            if (configDB == null) {
                 configurationSet.add( hwsToAdjust.get(i) );
                 numFailure++;
                 failureInfo.add("An LMHardwareConfiguration entry for switch " + liteHw.getManufacturerSerialNumber() 
@@ -186,29 +170,30 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 continue;
             }
                 
-            LiteStarsCustAccountInformation liteAcctInfo = 
-                energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
+            LiteAccountInfo liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
             //get zipCode
             LiteAddress address = energyCompany.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
             String zip = address.getZipCode();
-            if(zip.length() > 5)
+            if (zip.length() > 5) {
                 zip = zip.substring(0, 5);
+            }
             //get ConsumptionType
             LiteCustomer cust = liteAcctInfo.getCustomer();
             Integer consumptionType = -1;
-            if(cust instanceof LiteCICustomer && cust.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
+            if (cust instanceof LiteCICustomer && cust.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
                 consumptionType = ((LiteCICustomer)cust).getCICustType();
+            }
             //get ApplianceCategoryID
             Integer applianceCatID = -1;
             int programId = -1;
             for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
-                if(liteApp.getApplianceID() == configDB.getApplianceID().intValue()){
+                if (liteApp.getApplianceID() == configDB.getApplianceID().intValue()){
                     applianceCatID = liteApp.getApplianceCategory().getApplianceCategoryId();
                     programId = liteApp.getProgramID();
                     break;
                 }
             }
-            if(applianceCatID == -1) {
+            if (applianceCatID == -1) {
                 configurationSet.add( hwsToAdjust.get(i) );
                 numFailure++;
                 failureInfo.add("An appliance could not be detected for serial number " + liteHw.getManufacturerSerialNumber() 
@@ -219,7 +204,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
             //get SwitchTypeID 
             Integer devType = liteHw.getLmHardwareTypeID();
             StaticLoadGroupMapping groupMapping = StaticLoadGroupMapping.getAStaticLoadGroupMapping(applianceCatID, zip, consumptionType, devType);
-            if(groupMapping == null) {
+            if (groupMapping == null) {
                 configurationSet.add( hwsToAdjust.get(i) );
                 numFailure++;
                 failureInfo.add("A static mapping could not be determined for serial number " + liteHw.getManufacturerSerialNumber() 
@@ -245,25 +230,20 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                                         + " could not be found.  It is likely this switch has not been added to an account.");
                         continue;                        
                     }
-                } 
-                catch(TransactionException e) {
+                } catch(TransactionException e) {
                     throw new WebClientException(e.getMessage());
                 }
                 options = "GroupID:" + groupMapping.getLoadGroupID(); 
                 
-    			/*TODO: Will I need this to make sure accounts/inventory get the change?
-                if (hwConfig != null)
-    				UpdateLMHardwareConfigAction.updateLMConfiguration( hwConfig, liteHw, company );
-    			*/
-    				
                 if (sendConfig) {
-                    YukonSwitchCommandAction.fileWriteConfigCommand(company, liteHw, false, options);
+                    PorterExpressComCommandBuilder xcomCommandBuilder = YukonSpringHook.getBean("expressComCommandBuilder", PorterExpressComCommandBuilder.class);
+                    xcomCommandBuilder.fileWriteConfigCommand(company, liteHw, false, options);
     				
     				if (liteHw.getAccountID() > 0) {
     					StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation( liteHw.getAccountID() );
     					if (starsAcctInfo != null) {
     						StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, company );
-    						YukonSwitchCommandAction.populateInventoryFields( starsAcctInfo, starsInv );
+    						StarsUtils.populateInventoryFields( starsAcctInfo, starsInv );
     					}
     				}
     			}

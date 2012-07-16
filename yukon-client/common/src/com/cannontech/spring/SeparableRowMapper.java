@@ -1,11 +1,11 @@
 package com.cannontech.spring;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 
-public abstract class SeparableRowMapper<T> implements ParameterizedRowMapper<T> {
+public abstract class SeparableRowMapper<T> implements YukonRowMapper<T> {
     
     private final SeparableRowMapper<? super T> parent;
 
@@ -17,12 +17,12 @@ public abstract class SeparableRowMapper<T> implements ParameterizedRowMapper<T>
         this.parent = null;
     }
 
-    public T mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public T mapRow(YukonResultSet rs) throws SQLException {
         T t = createObject(rs);
         return internalMapRow(rs, t);
     }
 
-    private T internalMapRow(ResultSet rs, T t) throws SQLException {
+    private T internalMapRow(YukonResultSet rs, T t) throws SQLException {
         if (parent != null) {
             parent.internalMapRow(rs, t);
         }
@@ -30,8 +30,8 @@ public abstract class SeparableRowMapper<T> implements ParameterizedRowMapper<T>
         return t;
     }
 
-    protected abstract void mapRow(ResultSet rs, T t) throws SQLException;
+    protected abstract void mapRow(YukonResultSet rs, T t) throws SQLException;
 
-    protected abstract T createObject(ResultSet rs) throws SQLException;
+    protected abstract T createObject(YukonResultSet rs) throws SQLException;
 
 }

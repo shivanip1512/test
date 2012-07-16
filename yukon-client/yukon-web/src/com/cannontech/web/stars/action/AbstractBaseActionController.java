@@ -21,7 +21,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.service.DefaultRouteService;
@@ -44,7 +44,7 @@ public abstract class AbstractBaseActionController implements Controller {
     protected YukonListDao yukonListDao;
     protected LoginService loginService;
     protected StarsCustAccountInformationDao starsCustAccountInformationDao;
-    protected StarsInventoryBaseDao starsInventoryBaseDao;
+    protected InventoryBaseDao inventoryBaseDao;
     protected StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     protected StarsSearchDao starsSearchDao;
     protected RolePropertyDao rolePropertyDao;
@@ -119,9 +119,9 @@ public abstract class AbstractBaseActionController implements Controller {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
     
-    public void setStarsInventoryBaseDao(
-			StarsInventoryBaseDao starsInventoryBaseDao) {
-		this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setInventoryBaseDao(
+			InventoryBaseDao inventoryBaseDao) {
+		this.inventoryBaseDao = inventoryBaseDao;
 	}
     
     public void setStarsWorkOrderBaseDao(

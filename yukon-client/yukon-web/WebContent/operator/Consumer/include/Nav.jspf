@@ -17,7 +17,6 @@
 						  {"Privileges.jsp", "Privileges"},
 						  {"PrintExport.jsp", "Print/Export"},
 						  {"CreateAppliances.jsp", "New"},
-						  {(DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.INVENTORY_CHECKING)? "SerialNumber.jsp?action=New" : "CreateHardware.jsp"), "New", "CreateHardware.jsp"},
 						  {"AccountLog.jsp", "Account Log"}
 						 };
 
@@ -399,14 +398,6 @@
 	}
 %>
 		  </cti:checkProperty>
-		  <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
-			  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>"> 
-	          <tr>
-	            <td width="10"><%= ((String[]) links.get("CreateHardware.jsp"))[0] %></td>
-	            <td style="padding:1"><%= ((String[]) links.get("CreateHardware.jsp"))[1] %></td>
-	          </tr>
-			  </cti:checkProperty>
-		  </cti:checkProperty>
         </table>
       </div>
     </td>
@@ -458,16 +449,12 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 		int num = Integer.parseInt( ((String[]) switchLabels.get(i))[0] );
 %>
 	pageLinks[<%= num %>] = new Array(2);
-	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
-	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=<%= num %>";
 <%
 	}
 	for (int i = 0; i < thermostatLabels.size(); i++) {
 		int num = Integer.parseInt( ((String[]) thermostatLabels.get(i))[0] );
 %>
 	pageLinks[<%= num %>] = new Array(2);
-	pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
-	pageLinks[<%= num %>][1] = "ConfigHardware.jsp?InvNo=<%= num %>";
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
 	pageLinks[<%= num %>][2] = "ThermSchedule.jsp?InvNo=<%= num %>";
 	pageLinks[<%= num %>][3] = "Thermostat.jsp?InvNo=<%= num %>";
@@ -495,8 +482,6 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
 			int num = Integer.parseInt( ((String[]) meterLabels.get(i))[0] );
 	%>
 		pageLinks[<%= num %>] = new Array(2);
-		pageLinks[<%= num %>][0] = "Inventory.jsp?InvNo=<%= num %>";
-		pageLinks[<%= num %>][1] = "ConfigMeter.jsp?InvNo=<%= num %>";
 	<%
 		}
 	}

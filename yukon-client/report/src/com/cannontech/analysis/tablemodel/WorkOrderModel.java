@@ -46,15 +46,15 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteMeterHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -334,8 +334,8 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 	        if (liteOrder != null) woList.add( liteOrder );
 	    }
 	    else if (getAccountID() != null) {
-	        Map<Integer, LiteStarsCustAccountInformation> accountMap = getWorkOrderHelper().getAccountMap(getEnergyCompanyID());
-	        LiteStarsCustAccountInformation liteAcctInfo = accountMap.get(getAccountID());
+	        Map<Integer, LiteAccountInfo> accountMap = getWorkOrderHelper().getAccountMap(getEnergyCompanyID());
+	        LiteAccountInfo liteAcctInfo = accountMap.get(getAccountID());
 	        if (liteAcctInfo != null) {
 	            List<Integer> workOrderIds = liteAcctInfo.getServiceRequestHistory();
 	            List<LiteWorkOrderBase> workOrders = starsWorkOrderBaseDao.getByIds(workOrderIds);
@@ -390,15 +390,15 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
         
         final Integer energyCompanyId = liteStarsEC.getEnergyCompanyId();
         
-        final Map<Integer, LiteStarsCustAccountInformation> accountMap = getWorkOrderHelper().getAccountMap(energyCompanyId);
+        final Map<Integer, LiteAccountInfo> accountMap = getWorkOrderHelper().getAccountMap(energyCompanyId);
         
         final List<LiteInventoryBase> meterInventoryList = new ArrayList<LiteInventoryBase>();
         
         JdbcTemplate jdbcTemplate = new JdbcTemplate(PoolManager.getYukonDataSource());
         PlatformTransactionManager txManager = new DataSourceTransactionManager(jdbcTemplate.getDataSource());
         
-        final StarsInventoryBaseDao starsInventoryBaseDao = 
-			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+        final InventoryBaseDao inventoryBaseDao = 
+			YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
         
         TransactionTemplate template = new TransactionTemplate(txManager);
         template.setPropagationBehavior(TransactionDefinition.PROPAGATION_SUPPORTS);
@@ -410,9 +410,9 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                     int accountId = workOrder.getAccountID();
                     if (accountId == 0) continue;
                     
-                    LiteStarsCustAccountInformation accountInfo = accountMap.get(accountId);
+                    LiteAccountInfo accountInfo = accountMap.get(accountId);
                     for (Integer inventoryId : accountInfo.getInventories()) {
-                        LiteInventoryBase liteInvBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
+                        LiteInventoryBase liteInvBase = inventoryBaseDao.getByInventoryId(inventoryId);
                         meterInventoryList.add(liteInvBase);
                     }
                 }
@@ -430,7 +430,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 				getData().add( wo );
 			}
 			else {
-				LiteStarsCustAccountInformation liteAcctInfo = accountMap.get(liteOrder.getAccountID());
+				LiteAccountInfo liteAcctInfo = accountMap.get(liteOrder.getAccountID());
 				
 				if (liteAcctInfo.getInventories().size() == 0) {
 					WorkOrder wo = new WorkOrder( liteOrder);
@@ -441,9 +441,9 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                     ArrayList<String> ignoreMeterNumbers = new ArrayList<String>();
 					for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
 						Integer invID = liteAcctInfo.getInventories().get(k);
-						LiteInventoryBase liteInvBase = starsInventoryBaseDao.getByInventoryId(invID);
+						LiteInventoryBase liteInvBase = inventoryBaseDao.getByInventoryId(invID);
 						 
-						if (liteInvBase instanceof LiteStarsLMHardware)
+						if (liteInvBase instanceof LiteLmHardwareBase)
 						{
 							WorkOrder wo = new WorkOrder( liteOrder , liteInvBase);
 							getData().add(wo);	//add to the begining
@@ -456,7 +456,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                     //Second loop through and find anything that is not LiteStarsLMHardware, forcing other types to be last in the list.
                     for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
                         int invID = liteAcctInfo.getInventories().get(k).intValue();
-                        LiteInventoryBase liteInvBase = starsInventoryBaseDao.getByInventoryId(invID);
+                        LiteInventoryBase liteInvBase = inventoryBaseDao.getByInventoryId(invID);
                         /*
                          * TODO: Now that non yukon meters have been removed from cache, need to make sure
                          * that this section is still properly obtaining meters for this account.
@@ -471,7 +471,7 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
                                 getData().add(wo);  //add to the end
                             }
                         }
-                        else if (! (liteInvBase instanceof LiteStarsLMHardware)){ 
+                        else if (! (liteInvBase instanceof LiteLmHardwareBase)){ 
                             WorkOrder wo = new WorkOrder( liteOrder , liteInvBase);
                             getData().add(wo);  //add to the end
                         }
@@ -502,12 +502,12 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 		    LiteStarsEnergyCompany liteStarsEnergyCompany = starsCache.getEnergyCompany(liteWorkOrder.getEnergyCompanyID());
 		    energyContactIdSet.add(liteStarsEnergyCompany.getPrimaryContactID());
 		    
-		    final Map<Integer, LiteStarsCustAccountInformation> currentAccountMap =
+		    final Map<Integer, LiteAccountInfo> currentAccountMap =
 		        getWorkOrderHelper().getAccountMap(liteStarsEnergyCompany.getEnergyCompanyId());
 		    
 		    int accountId = liteWorkOrder.getAccountID();
 		    if (accountId > 0) {
-		        LiteStarsCustAccountInformation lAcctInfo = currentAccountMap.get(accountId);
+		        LiteAccountInfo lAcctInfo = currentAccountMap.get(accountId);
 		        if (lAcctInfo != null) {
 		            int contactId = lAcctInfo.getCustomer().getPrimaryContactID();
 		            contactIdSet.add(contactId);
@@ -548,12 +548,12 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 		    LiteAddress energyCompanyAddress = addressMap.get(energyCompanyConact.getAddressID());
 		    info.setEnergyCompanyAddress(energyCompanyAddress);
 
-		    final Map<Integer, LiteStarsCustAccountInformation> currentAccountMap =
+		    final Map<Integer, LiteAccountInfo> currentAccountMap =
 		        getWorkOrderHelper().getAccountMap(liteStarsEnergyCompany.getEnergyCompanyId());
 		    
 		    int accountId = liteWorkOrder.getAccountID();
 		    if (accountId > 0) {
-		        LiteStarsCustAccountInformation lAcctInfo = currentAccountMap.get(accountId);
+		        LiteAccountInfo lAcctInfo = currentAccountMap.get(accountId);
 		        if (lAcctInfo != null) {
 		            int addressId = lAcctInfo.getAccountSite().getStreetAddressID();
 		            LiteAddress address = addressMap.get(addressId);
@@ -583,11 +583,11 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 			LiteStarsEnergyCompany ec = StarsDatabaseCache.getInstance().getEnergyCompany( wo.getLiteWorkOrderBase().getEnergyCompanyID() );
 			LiteWorkOrderBase lOrder = wo.getLiteWorkOrderBase();
 			
-			LiteStarsCustAccountInformation lAcctInfo = null;
+			LiteAccountInfo lAcctInfo = null;
 			LiteContact liteContact = null;
 			LiteAddress liteAddress = null;
 			if (lOrder.getAccountID() > 0) {
-			    Map<Integer, LiteStarsCustAccountInformation> accountMap = 
+			    Map<Integer, LiteAccountInfo> accountMap = 
 			        getWorkOrderHelper().getAccountMap(ec.getEnergyCompanyId());
 				
 			    lAcctInfo = accountMap.get(lOrder.getAccountID());
@@ -757,8 +757,8 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 				case SERIAL_NO_COLUMN:
 					if (liteInvBase != null )
 					{
-						if( liteInvBase instanceof LiteStarsLMHardware )
-							return ((LiteStarsLMHardware)liteInvBase).getManufacturerSerialNumber();
+						if( liteInvBase instanceof LiteLmHardwareBase )
+							return ((LiteLmHardwareBase)liteInvBase).getManufacturerSerialNumber();
 					}
 					return "";
 				case METER_NO_TO_SERIAL_COLUMN:
@@ -774,8 +774,8 @@ public class WorkOrderModel extends ReportModelBase<WorkOrder> {
 				case DEVICE_TYPE_COLUMN:
 					if (liteInvBase != null)
 					{
-						if( liteInvBase instanceof LiteStarsLMHardware)
-							return DaoFactory.getYukonListDao().getYukonListEntry(((LiteStarsLMHardware)liteInvBase).getLmHardwareTypeID()).getEntryText();
+						if( liteInvBase instanceof LiteLmHardwareBase)
+							return DaoFactory.getYukonListDao().getYukonListEntry(((LiteLmHardwareBase)liteInvBase).getLmHardwareTypeID()).getEntryText();
 						else if( liteInvBase instanceof LiteMeterHardwareBase)
 							return DaoFactory.getYukonListDao().getYukonListEntry(liteInvBase.getCategoryID()).getEntryText();
 					}

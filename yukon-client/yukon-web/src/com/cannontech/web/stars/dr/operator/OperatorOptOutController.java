@@ -41,7 +41,7 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
@@ -81,7 +81,7 @@ public class OperatorOptOutController {
     private OptOutEventDao optOutEventDao;
     private OptOutService optOutService;
     private OptOutValidatorFactory optOutValidatorFactory;
-    private LMHardwareBaseDao lmHardwareBaseDao;
+    private LmHardwareBaseDao lmHardwareBaseDao;
     private RolePropertyDao rolePropertyDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private DateFormattingService dateFormattingService;
@@ -608,7 +608,7 @@ public class OperatorOptOutController {
     }
 
     @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+    public void setLmHardwareBaseDao(LmHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
 

@@ -17,9 +17,9 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.stars.database.data.appliance.ApplianceBase;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Customer;
@@ -27,13 +27,14 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.database.data.appliance.ApplianceBase;
 import com.cannontech.stars.database.data.customer.AccountSite;
 import com.cannontech.stars.database.data.customer.CustomerAccount;
 import com.cannontech.stars.database.data.hardware.MeterHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.data.report.ServiceCompany;
@@ -48,10 +49,11 @@ import com.cannontech.stars.database.db.integration.FailureCRSToSAM_PremMeterChg
 import com.cannontech.stars.database.db.integration.Failure_SwitchReplacement;
 import com.cannontech.stars.database.db.integration.SwitchReplacement;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 
 /**
@@ -370,7 +372,7 @@ public class YukonToCRSFuncs
     					DbChangeType.UPDATE
     					);
 	    		dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
-                ServerUtils.handleDBChangeMsg(dbChangeMessage);
+                handleDBChangeMsg(dbChangeMessage);
 	    		
 			} catch (TransactionException e) {
 				e.printStackTrace();
@@ -476,7 +478,7 @@ public class YukonToCRSFuncs
 			final StarsCustAccountInformationDao starsCustAccountInformationDao =
 			    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
 			
-			LiteStarsCustAccountInformation liteStarsCustAcctInfo = 
+			LiteAccountInfo liteStarsCustAcctInfo = 
 			    starsCustAccountInformationDao.getById(accountID, liteStarsEnergyCompany.getEnergyCompanyId());
 			
             StarsCustAccountInformation starsCustAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true);
@@ -518,7 +520,7 @@ public class YukonToCRSFuncs
 	
 	public static void createNewAppliances(Integer accountID, Character airCond, Character waterHeater, YukonListEntry ciCustTypeEntry,  LiteStarsEnergyCompany liteStarsEnergyCompany) throws TransactionException
 	{
-		LiteStarsCustAccountInformation liteStarsCustAcctInfo = null;
+		LiteAccountInfo liteStarsCustAcctInfo = null;
         StarsCustAccountInformation starsCustAcctInfo = null;
         if( airCond.charValue() == 'Y' || waterHeater.charValue() == 'Y' ) {
             final StarsCustAccountInformationDao starsCustAccountInformationDao =
@@ -675,7 +677,7 @@ public class YukonToCRSFuncs
 			DbChangeType.ADD
 		);
         dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
-        ServerUtils.handleDBChangeMsg(dbChangeMessage);
+        handleDBChangeMsg(dbChangeMessage);
         
 		return customerAccount;
 	}
@@ -719,7 +721,7 @@ public class YukonToCRSFuncs
 			DbChangeType.ADD
 		);
         dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
-        ServerUtils.handleDBChangeMsg(dbChangeMessage);
+        handleDBChangeMsg(dbChangeMessage);
 		return contact;
 	}
 
@@ -799,7 +801,7 @@ public class YukonToCRSFuncs
 					DbChangeType.UPDATE
 				);
 	    		dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
-  	            ServerUtils.handleDBChangeMsg(dbChangeMessage);
+  	            handleDBChangeMsg(dbChangeMessage);
 			} catch (TransactionException e) {
 				e.printStackTrace();
 			}
@@ -823,7 +825,7 @@ public class YukonToCRSFuncs
 				DbChangeType.UPDATE
 			);
             dbChangeMessage.setSource("YukonToCRSFuncs:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
-            ServerUtils.handleDBChangeMsg(dbChangeMessage);
+            handleDBChangeMsg(dbChangeMessage);
 		}
 	}
 	
@@ -894,4 +896,18 @@ public class YukonToCRSFuncs
 			returnEntry = DaoFactory.getYukonListDao().getYukonListEntry(ciCustTypeList, "municipal");
 		return returnEntry;
 	}    
+	
+	public static void handleDBChangeMsg(DBChangeMsg msg) {
+        if (msg != null) {
+            DefaultDatabaseCache.getInstance().handleDBChangeMessage( msg );
+            
+            IServerConnection conn = ConnPool.getInstance().getDefDispatchConn();
+            if (conn == null || !conn.isValid()) {
+                CTILogger.error( "Not connected to dispatch." );
+                return;
+            }
+            
+            conn.write( msg );
+        }
+    }
 }

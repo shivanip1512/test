@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -19,14 +20,13 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.event.EventWorkOrder;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.data.report.WorkOrderBase;
 import com.cannontech.stars.database.db.integration.SAMToCRS_PTJ;
 import com.cannontech.stars.util.EventUtils;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.bean.ManipulationBean;
 import com.cannontech.stars.web.bean.WorkOrderBean;
@@ -52,6 +52,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 
 	private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
 	    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+	private final DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
 	
 	public ManipulateWorkOrderTask(LiteYukonUser liteYukonuser, List<LiteWorkOrderBase> workOrderList, Integer changeServiceCompanyID, Integer changeServiceStatusID, Integer changeServiceTypeID, 
 	        boolean confirmOnMessagePage, String redirect, HttpSession session) {
@@ -153,7 +154,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
     					if ( VersionTools.crsPtjIntegrationExists())
     					{
     						LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(workOrderBase.getEnergyCompanyID());
-    						LiteStarsCustAccountInformation liteStarsCustAcctInfo =
+    						LiteAccountInfo liteStarsCustAcctInfo =
     						    starsCustAccountInformationDao.getById(workOrderBase.getWorkOrderBase().getAccountID(), liteStarsEC.getEnergyCompanyId());
     						SAMToCRS_PTJ.handleCRSIntegration(listEntry.getYukonDefID(), workOrderBase, liteStarsCustAcctInfo, liteStarsEC, liteYukonUser.getUserID(), null);
     					}
@@ -168,7 +169,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 		    			);
 		    		//Change the dbChangeMessage source so the stars message handler will handle it instead of ignore it.
 					dbChangeMessage.setSource("ManipulateWorkOrder:ForceHandleDBChange");
-	                ServerUtils.handleDBChangeMsg(dbChangeMessage);
+					dbPersistentDao.processDBChange(dbChangeMessage);
 	                StarsLiteFactory.setLiteWorkOrderBase(liteWorkOrder, workOrderBase);
 				}
 				numSuccess++;

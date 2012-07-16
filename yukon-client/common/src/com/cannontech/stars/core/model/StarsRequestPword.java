@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 
 /**
@@ -61,7 +61,7 @@ public class StarsRequestPword extends RequestPword {
 				for( int i = 0; i < engrComps.size(); i++ ) {
 					LiteStarsEnergyCompany lsec = (LiteStarsEnergyCompany)engrComps.get(i);
 
-					LiteStarsCustAccountInformation lCustInfo = null;
+					LiteAccountInfo lCustInfo = null;
 					List<Object> accounts = lsec.searchAccountByAccountNumber(accNum, false, true);
 					
 					lCustInfo = searchForMatchingAccount(accounts, lsec);
@@ -74,8 +74,8 @@ public class StarsRequestPword extends RequestPword {
 					
 				if( allCustAccts.size() == 1 ) {
 					//only 1 found, this is good
-					LiteStarsCustAccountInformation lCustInf = 
-						(LiteStarsCustAccountInformation)allCustAccts.get(0);
+					LiteAccountInfo lCustInf = 
+						(LiteAccountInfo)allCustAccts.get(0);
 
 					LiteContact lc = DaoFactory.getContactDao().getContact( lCustInf.getCustomer().getPrimaryContactID() );
 
@@ -99,8 +99,8 @@ public class StarsRequestPword extends RequestPword {
 					foundData.add( " " + getResultString() );
 					foundData.add( " Number of Account Numbers for this Account: " + allCustAccts.size() );
 					for( int i = 0; i < allCustAccts.size(); i++ ) {
-						LiteStarsCustAccountInformation lCstInfo =
-							(LiteStarsCustAccountInformation)allCustAccts.get(i);
+						LiteAccountInfo lCstInfo =
+							(LiteAccountInfo)allCustAccts.get(i);
 						
 						foundData.add( "   Account # " + i + ": " + lCstInfo.getCustomerAccount().getAccountNumber() );
 					}
@@ -125,8 +125,8 @@ public class StarsRequestPword extends RequestPword {
 		}
 	}
 
-	private LiteStarsCustAccountInformation searchForMatchingAccount(List<Object> accounts, LiteStarsEnergyCompany lsec) {
-	    LiteStarsCustAccountInformation lCustInfo = null;
+	private LiteAccountInfo searchForMatchingAccount(List<Object> accounts, LiteStarsEnergyCompany lsec) {
+	    LiteAccountInfo lCustInfo = null;
 	    for(Object object : accounts) {
             if(object instanceof Integer) {
                 Integer accountId = (Integer) object;

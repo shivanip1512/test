@@ -67,8 +67,8 @@ public class MeterReadingArchiveRequestListener extends RfnArchiveRequestListene
         
         // This message is signifying that we are ready to archive meter reads, events & alarms
         // (we only need to send this message once... so we are doing it for no particular reason in this listener)
-        RfnArchiveStartupNotification response = new RfnArchiveStartupNotification();
-        jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", response);
+        RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
+        jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
     }
     
     @PreDestroy

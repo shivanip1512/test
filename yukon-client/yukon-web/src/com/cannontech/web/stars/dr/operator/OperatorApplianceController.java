@@ -34,7 +34,7 @@ import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.service.StarsApplianceService;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
@@ -63,7 +63,7 @@ public class OperatorApplianceController {
     private DisplayableApplianceService displayableApplianceService;
     private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
     private HardwareUiService hardwareUiService;
-    private LMHardwareBaseDao lmHardwareBaseDao;
+    private LmHardwareBaseDao lmHardwareBaseDao;
     private ProgramDao programDao;
     private RolePropertyDao rolePropertyDao;
     private StarsApplianceDao starsApplianceDao;
@@ -427,7 +427,7 @@ public class OperatorApplianceController {
     }
 
     @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+    public void setLmHardwareBaseDao(LmHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
     

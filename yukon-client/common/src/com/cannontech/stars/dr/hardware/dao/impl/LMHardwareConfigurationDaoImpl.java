@@ -1,25 +1,31 @@
 package com.cannontech.stars.dr.hardware.dao.impl;
 
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
@@ -27,27 +33,21 @@ import com.cannontech.stars.dr.hardware.model.StarsStaticLoadGroupMapping;
 
 public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDao {
     
-    private static Logger log = YukonLogManager.getLogger(LMHardwareConfigurationDaoImpl.class);    
-    private SimpleJdbcTemplate simpleJdbcTemplate; 
-    private static final String insertLmHwConfigSql;
-    private static final String updateLmHwConfigSql;
-
-    StarsApplianceDao starsApplianceDao;
-    StaticLoadGroupMappingDao staticLoadGroupMappingDao;
+    private static Logger log = YukonLogManager.getLogger(LMHardwareConfigurationDaoImpl.class);
     
-    static {
-        insertLmHwConfigSql = "INSERT INTO LMHardwareConfiguration (AddressingGroupID,LoadNumber,InventoryID,ApplianceID) VALUES (?,?,?,?)";
-
-        updateLmHwConfigSql = "UPDATE LMHardwareConfiguration SET AddressingGroupID = ?,LoadNumber=? WHERE InventoryID = ? and ApplianceID=?";
-    }
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate; 
+    @Autowired private StarsApplianceDao starsApplianceDao;
+    @Autowired private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
     
     @Override    
     public LMHardwareConfiguration getStaticLoadGroupMapping(
-            LiteStarsCustAccountInformation liteAcct, LiteStarsLMHardware lmHw,
+            LiteAccountInfo liteAcct, LiteLmHardwareBase lmHw,
             LiteStarsEnergyCompany energyCompany) {
+        
         if (!VersionTools.staticLoadGroupMappingExists()) {
             return null;
         }
+        
         LMHardwareConfiguration lmHwConfig = null;
         StarsStaticLoadGroupMapping criteria = new StarsStaticLoadGroupMapping();
         criteria.setSwitchTypeID(lmHw.getLmHardwareTypeID());
@@ -102,77 +102,86 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
     }    
     
     @Override
-    @Transactional
-    public void add(LMHardwareConfiguration lmHwConfig) {
-        // Insert into LMHardwareConfiguration
-        simpleJdbcTemplate.update(insertLmHwConfigSql,
-                                  lmHwConfig.getAddressingGroupId(),
-                                  lmHwConfig.getLoadNumber(),
-                                  lmHwConfig.getInventoryId(),
-                                  lmHwConfig.getApplianceId());
+    public void add(LMHardwareConfiguration config) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink insert = sql.insertInto("LMHardwareConfiguration");
+        insert.addValue("InventoryId", config.getInventoryId());
+        insert.addValue("ApplianceId", config.getApplianceId());
+        insert.addValue("AddressingGroupId", config.getAddressingGroupId());
+        insert.addValue("LoadNumber", config.getLoadNumber());
+        
+        yukonJdbcTemplate.update(sql);
     }
 
     @Override
-    @Transactional
-    public void update(LMHardwareConfiguration lmHwConfig) {
-        // Update LMHardwareConfiguration
-        simpleJdbcTemplate.update(updateLmHwConfigSql,
-                                  lmHwConfig.getAddressingGroupId(),
-                                  lmHwConfig.getLoadNumber(),
-                                  lmHwConfig.getInventoryId(),
-                                  lmHwConfig.getApplianceId());
+    public void update(LMHardwareConfiguration config) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        SqlParameterSink insert = sql.update("LMHardwareConfiguration");
+        insert.addValue("InventoryId", config.getInventoryId());
+        insert.addValue("ApplianceId", config.getApplianceId());
+        insert.addValue("AddressingGroupId", config.getAddressingGroupId());
+        insert.addValue("LoadNumber", config.getLoadNumber());
+        
+        yukonJdbcTemplate.update(sql);
     }
     
     @Override
-    @Transactional    
     public void delete(LMHardwareConfiguration lmConfiguration) {
         delete(lmConfiguration.getInventoryId());
     }
     
     @Override
-    @Transactional    
-    public void delete(int invetoryId) {
-        String sql = "DELETE FROM LMHardwareConfiguration WHERE InventoryID = ?";
-        simpleJdbcTemplate.update(sql, invetoryId);
+    public void delete(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM LMHardwareConfiguration WHERE InventoryID").eq(inventoryId);
+        yukonJdbcTemplate.update(sql);
     }
     
     @Override
-    @Transactional    
     public void deleteForAppliance(int applianceId) {
-        String sql = "DELETE FROM LMHardwareConfiguration WHERE ApplianceId = ?";
-        simpleJdbcTemplate.update(sql, applianceId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM LMHardwareConfiguration WHERE ApplianceId").eq(applianceId);
+        yukonJdbcTemplate.update(sql);
     }
     
     @Override
-    @Transactional
-    public void deleteForAppliances(List<Integer> applianceIds) {
+    public void deleteForAppliances(Collection<Integer> applianceIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM LMHardwareConfiguration WHERE ApplianceId IN (", applianceIds, ")");
-        simpleJdbcTemplate.update(sql.toString());
+        sql.append("DELETE FROM LMHardwareConfiguration WHERE ApplianceId").in(applianceIds);
+        yukonJdbcTemplate.update(sql);
     }
 
     @Override
-    @Transactional
-    public void delete(List<Integer> inventoryIds) {
+    public void delete(Collection<Integer> inventoryIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM LMHardwareConfiguration WHERE InventoryId IN (", inventoryIds, ")");
-        simpleJdbcTemplate.update(sql.toString());
+        sql.append("DELETE FROM LMHardwareConfiguration WHERE InventoryId").in(inventoryIds);
+        yukonJdbcTemplate.update(sql);
     }
-
-    @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-
-    @Autowired    
-    public void setStarsApplianceDao(StarsApplianceDao starsApplianceDao) {
-        this.starsApplianceDao = starsApplianceDao;
-    }
-
-    @Autowired    
-    public void setStaticLoadGroupMappingDao(
-            StaticLoadGroupMappingDao staticLoadGroupMappingDao) {
-        this.staticLoadGroupMappingDao = staticLoadGroupMappingDao;
+    
+    @Override
+    public LMHardwareConfiguration getForInventoryId(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT InventoryId, ApplianceId, AdderssingGroupId, LoadNumber");
+        sql.append("FROM LMHardwareConfiguration");
+        sql.append("WHERE InventoryID").eq(inventoryId);
+        
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<LMHardwareConfiguration>() {
+                @Override
+                public LMHardwareConfiguration mapRow(YukonResultSet rs) throws SQLException {
+                    LMHardwareConfiguration config = new LMHardwareConfiguration();
+                    config.setInventoryId(rs.getInt("inventoryId"));
+                    config.setApplianceId(rs.getInt("ApplianceId"));
+                    config.setAddressingGroupId(rs.getInt("AdderssingGroupId"));
+                    config.setLoadNumber(rs.getInt("LoadNumber"));
+                    return config;
+                }
+            });
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No LMHardwareConfiguration found for inventory with id: " + inventoryId);
+        }
     }
 
 }

@@ -5,15 +5,16 @@ import java.util.Arrays;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.stars.util.InventoryUtils;
+import com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder;
 import com.cannontech.stars.xml.serialize.SA205;
 import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 
 public class Sa205Dto implements AddressingInfo {
+    
     private Integer slots[] = new Integer[6];
 
     public Sa205Dto() {
-        Arrays.fill(slots, InventoryUtils.SA205_UNUSED_ADDR);
+        Arrays.fill(slots, PorterExpressComCommandBuilder.SA205_UNUSED_ADDR);
     }
 
     public Integer[] getSlots() {

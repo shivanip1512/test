@@ -33,19 +33,19 @@ import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.stars.database.data.hardware.InventoryBase;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
+import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.database.data.hardware.InventoryBase;
 import com.cannontech.stars.database.db.appliance.ApplianceChiller;
 import com.cannontech.stars.database.db.appliance.ApplianceDualStageAirCond;
 import com.cannontech.stars.database.db.hardware.MeterHardwareBase;
 import com.cannontech.stars.database.db.report.ServiceCompanyDesignationCode;
-import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
@@ -79,8 +79,8 @@ public class StarsLiteFactory {
 			setLiteAddress( (LiteAddress) lite, (com.cannontech.database.db.customer.Address) db );
 		}
 		else if (db instanceof com.cannontech.stars.database.data.hardware.LMHardwareBase) {
-			lite = new LiteStarsLMHardware();
-			setLiteStarsLMHardware( (LiteStarsLMHardware) lite, (com.cannontech.stars.database.data.hardware.LMHardwareBase) db );
+			lite = new LiteLmHardwareBase();
+			setLiteStarsLMHardware( (LiteLmHardwareBase) lite, (com.cannontech.stars.database.data.hardware.LMHardwareBase) db );
 		}
 		else if (db instanceof com.cannontech.stars.database.data.hardware.MeterHardwareBase) {
 			lite = new LiteMeterHardwareBase();
@@ -210,11 +210,9 @@ public class StarsLiteFactory {
 		
 	}
 	
-	public static void setLiteStarsLMHardware(LiteStarsLMHardware liteHw, com.cannontech.stars.database.data.hardware.LMHardwareBase hw) {
+	public static void setLiteStarsLMHardware(LiteLmHardwareBase liteHw, com.cannontech.stars.database.data.hardware.LMHardwareBase hw) {
 		setLiteInventoryBase( liteHw, hw.getInventoryBase() );
 		
-        liteHw.updateDeviceStatus();
-        
 		liteHw.setManufacturerSerialNumber( hw.getLMHardwareBase().getManufacturerSerialNumber() );
 		liteHw.setLmHardwareTypeID( hw.getLMHardwareBase().getLMHardwareTypeID().intValue() );
 		liteHw.setRouteID( hw.getLMHardwareBase().getRouteID().intValue() );
@@ -282,8 +280,8 @@ public class StarsLiteFactory {
 	}
 	
 	public static void extendLiteInventoryBase(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) {
-		if (liteInv instanceof LiteStarsLMHardware) {
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
+		if (liteInv instanceof LiteLmHardwareBase) {
+			LiteLmHardwareBase liteHw = (LiteLmHardwareBase) liteInv;
 			if (liteHw.isThermostat())
 				liteHw.setThermostatSettings( energyCompany.getThermostatSettings(liteHw) );
 		}
@@ -701,7 +699,7 @@ public class StarsLiteFactory {
 				break;
 			case LiteTypes.STARS_LMHARDWARE:
 				db = new com.cannontech.stars.database.data.hardware.LMHardwareBase();
-				setLMHardwareBase( (com.cannontech.stars.database.data.hardware.LMHardwareBase) db, (LiteStarsLMHardware) lite );
+				setLMHardwareBase( (com.cannontech.stars.database.data.hardware.LMHardwareBase) db, (LiteLmHardwareBase) lite );
 				break;
 			case LiteTypes.STARS_METERHARDWAREBASE:
 				db = new com.cannontech.stars.database.data.hardware.MeterHardwareBase();
@@ -866,7 +864,7 @@ public class StarsLiteFactory {
 		invDB.setCurrentStateID( new Integer (liteInv.getCurrentStateID()));
 	}
 	
-	public static void setLMHardwareBase(com.cannontech.stars.database.data.hardware.LMHardwareBase hw, LiteStarsLMHardware liteHw) {
+	public static void setLMHardwareBase(com.cannontech.stars.database.data.hardware.LMHardwareBase hw, LiteLmHardwareBase liteHw) {
 		setInventoryBase( hw.getInventoryBase(), liteHw );
 		
 		hw.setInventoryID( hw.getInventoryBase().getInventoryID() );
@@ -1053,7 +1051,7 @@ public class StarsLiteFactory {
 	}
 	
 	
-	public static com.cannontech.stars.database.data.customer.CustomerAccount createCustomerAccount(LiteStarsCustAccountInformation liteAccount, LiteStarsEnergyCompany energyCompany) {
+	public static com.cannontech.stars.database.data.customer.CustomerAccount createCustomerAccount(LiteAccountInfo liteAccount, LiteStarsEnergyCompany energyCompany) {
 		com.cannontech.stars.database.data.customer.CustomerAccount account =
 				new com.cannontech.stars.database.data.customer.CustomerAccount();
 		
@@ -1241,7 +1239,7 @@ public class StarsLiteFactory {
 		starsRes.setNotes( liteRes.getNotes() );
 	}
 	
-	public static StarsLMPrograms createStarsLMPrograms(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
+	public static StarsLMPrograms createStarsLMPrograms(LiteAccountInfo liteAcctInfo, LiteStarsEnergyCompany energyCompany) {
 		StarsLMPrograms starsProgs = new StarsLMPrograms();
 		
 		for (int i = 0; i < liteAcctInfo.getPrograms().size(); i++) {
@@ -1281,7 +1279,7 @@ public class StarsLiteFactory {
 		return starsApps;
 	}
 	
-	public static void setStarsCustAccountInformation(StarsCustAccountInformation starsAcctInfo, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, boolean isOperator) {
+	public static void setStarsCustAccountInformation(StarsCustAccountInformation starsAcctInfo, LiteAccountInfo liteAcctInfo, LiteStarsEnergyCompany energyCompany, boolean isOperator) {
 		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
 		LiteCustomer liteCustomer = liteAcctInfo.getCustomer();
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
@@ -1345,13 +1343,13 @@ public class StarsLiteFactory {
 		StarsInventories starsInvs = new StarsInventories();
 		starsAcctInfo.setStarsInventories( starsInvs );
 		
-		StarsInventoryBaseDao starsInventoryBaseDao = 
-			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		InventoryBaseDao inventoryBaseDao = 
+			YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
 		
 		Map<String, List<StarsInventory>> invMap = new TreeMap<String, List<StarsInventory>>();
 		for (int i = 0; i < liteInvs.size(); i++) {
 			
-			LiteInventoryBase liteInv = starsInventoryBaseDao.getByInventoryId(liteInvs.get(i));
+			LiteInventoryBase liteInv = inventoryBaseDao.getByInventoryId(liteInvs.get(i));
 			StarsInventory starsInv = createStarsInventory( liteInv, energyCompany );
 			
 			List<StarsInventory> list = invMap.get( starsInv.getDeviceLabel() );
@@ -1579,15 +1577,15 @@ public class StarsLiteFactory {
 		starsInv.setDeviceStatus( (DeviceStatus) StarsFactory.newStarsCustListEntry(
 				DaoFactory.getYukonListDao().getYukonListEntry( liteInv.getCurrentStateID() ), DeviceStatus.class) );
 
-		if (liteInv instanceof LiteStarsLMHardware) {
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) liteInv;
+		if (liteInv instanceof LiteLmHardwareBase) {
+			LiteLmHardwareBase liteHw = (LiteLmHardwareBase) liteInv;
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 					DaoFactory.getYukonListDao().getYukonListEntry(liteHw.getLmHardwareTypeID()),
 					DeviceType.class) );
 			
 			LMHardware hw = new LMHardware();
 			hw.setRouteID( liteHw.getRouteID() );
-			hw.setManufacturerSerialNumber( StarsUtils.forceNotNull(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber()) );
+			hw.setManufacturerSerialNumber( StarsUtils.forceNotNull(((LiteLmHardwareBase)liteInv).getManufacturerSerialNumber()) );
 			extendLiteInventoryBase( liteHw, energyCompany);
 			
 			if (liteHw.getThermostatSettings() != null) {
@@ -1635,7 +1633,7 @@ public class StarsLiteFactory {
 	}
 	
 	
-	public static StarsCustAccountInformation createStarsCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, boolean isOperator) {
+	public static StarsCustAccountInformation createStarsCustAccountInformation(LiteAccountInfo liteAcctInfo, LiteStarsEnergyCompany energyCompany, boolean isOperator) {
 		StarsCustAccountInformation starsAcctInfo = new StarsCustAccountInformation();
 		setStarsCustAccountInformation( starsAcctInfo, liteAcctInfo, energyCompany, isOperator );
 		return starsAcctInfo;
@@ -1707,7 +1705,7 @@ public class StarsLiteFactory {
 		return starsOrder;
 	}
 	
-	public static StarsLMProgram createStarsLMProgram(LiteStarsLMProgram liteProg, LiteStarsCustAccountInformation liteAcctInfo)
+	public static StarsLMProgram createStarsLMProgram(LiteStarsLMProgram liteProg, LiteAccountInfo liteAcctInfo)
 	{
 		StarsLMProgram starsProg = new StarsLMProgram();
 		starsProg.setProgramID( liteProg.getProgramID() );
@@ -1735,7 +1733,7 @@ public class StarsLiteFactory {
 	}
 	
 	public static StarsLMProgramHistory createStarsLMProgramHistory(
-		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+		LiteAccountInfo liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 	{
 		StarsLMProgramHistory starsProgHist = new StarsLMProgramHistory();
 		List<LiteLMProgramEvent> liteProgHist2 = 
@@ -2316,7 +2314,7 @@ public class StarsLiteFactory {
 		final StarsCustAccountInformationDao starsCustAccountInformationDao =
 		    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
 		
-		LiteStarsCustAccountInformation liteAcctInfo = 
+		LiteAccountInfo liteAcctInfo = 
 		    starsCustAccountInformationDao.getById(event.getAccountID(), energyCompany.getEnergyCompanyId());
 		
 		if (event.getInventoryID() != 0) {

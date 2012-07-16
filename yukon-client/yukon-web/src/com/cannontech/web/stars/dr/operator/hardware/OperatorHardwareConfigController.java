@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.inventory.HardwareConfigType;
@@ -38,11 +39,11 @@ import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
@@ -51,13 +52,12 @@ import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardwareConfig.HardwareConfigService;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.action.HardwareAction;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventories;
@@ -95,12 +95,12 @@ public class OperatorHardwareConfigController {
     private AssignedProgramDao assignedProgramDao;
     private RolePropertyDao rolePropertyDao;
     private EnrollmentDao enrollmentDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private InventoryBaseDao inventoryBaseDao;
     private HardwareConfigService hardwareConfigService;
     private ApplianceCategoryDao applianceCategoryDao;
     private MeterDao meterDao;
     private MeterConfigValidator meterConfigValidator;
-    private LMHardwareBaseDao lmHardwareBaseDao;
+    private LmHardwareBaseDao lmHardwareBaseDao;
     private PaoDao paoDao;
     private ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
     private TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
@@ -288,7 +288,7 @@ public class OperatorHardwareConfigController {
                 }
                 hardwareConfig.setStarsLMConfiguration(configuration.getStarsLMConfiguration(type));
             }
-            LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+            LiteLmHardwareBase liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
             LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(accountInfo.getEnergyCompanyId());
             HardwareAction.updateLMHardwareConfig(hardwareConfig, liteHw, userContext.getYukonUser().getUserID(), energyCompany);
 
@@ -297,7 +297,7 @@ public class OperatorHardwareConfigController {
                                                  action + "Complete",
                                                  hardware.getDisplayName());
             flashScope.setConfirm(confirmationMessage);
-        } catch (WebClientException wce) {
+        } catch (CommandCompletionException wce) {
             MessageSourceResolvable errorMessage = YukonMessageSourceResolvable.createDefaultWithoutCode(wce.getMessage());
             flashScope.setError(errorMessage);
         }
@@ -331,10 +331,9 @@ public class OperatorHardwareConfigController {
             MessageSourceResolvable confirmationMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandSent");
             flashScope.setConfirm(confirmationMessage);
-        } catch (WebClientException wce) {
+        } catch (CommandCompletionException e) {
             MessageSourceResolvable errorMessage =
-                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandFailed",
-                                                 wce.getMessage());
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandFailed", e.getMessage());
             flashScope.setError(errorMessage);
         }
 
@@ -366,10 +365,10 @@ public class OperatorHardwareConfigController {
             MessageSourceResolvable confirmationMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandSent");
             flashScope.setConfirm(confirmationMessage);
-        } catch (WebClientException wce) {
+        } catch (CommandCompletionException e) {
             MessageSourceResolvable errorMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandFailed",
-                                                 wce.getMessage());
+                                                 e.getMessage());
             flashScope.setError(errorMessage);
         }
 
@@ -378,7 +377,7 @@ public class OperatorHardwareConfigController {
 
     private void verifyHardwareIsForAccount(int inventoryId,
             AccountInfoFragment accountInfo) {
-        LiteInventoryBase inventory = starsInventoryBaseDao.getByInventoryId(inventoryId);
+        LiteInventoryBase inventory = inventoryBaseDao.getByInventoryId(inventoryId);
         if (inventory.getAccountID() != accountInfo.getAccountId()) {
             throw new NotAuthorizedException("The device " + inventoryId +
                                              " does not belong to account " +
@@ -498,8 +497,8 @@ public class OperatorHardwareConfigController {
     }
 
     @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
+        this.inventoryBaseDao = inventoryBaseDao;
     }
 
     @Autowired
@@ -528,7 +527,7 @@ public class OperatorHardwareConfigController {
     }
     
     @Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+    public void setLmHardwareBaseDao(LmHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
 }

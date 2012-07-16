@@ -12,7 +12,6 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.model.AddByRange;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 
 public interface HardwareService {
@@ -22,7 +21,7 @@ public interface HardwareService {
      * account and places it back in general inventory.
      */
     public void deleteHardware(LiteYukonUser user, boolean delete, int inventoryId) 
-    throws NotFoundException, CommandCompletionException, SQLException, PersistenceException, WebClientException;
+    throws NotFoundException, CommandCompletionException, SQLException, PersistenceException;
 
     /**
      * Changes the device type of the inventory

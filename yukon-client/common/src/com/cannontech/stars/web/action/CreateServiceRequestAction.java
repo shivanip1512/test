@@ -19,7 +19,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.event.EventWorkOrder;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
@@ -98,7 +98,7 @@ public class CreateServiceRequestAction implements ActionBase {
             
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 			
-			LiteStarsCustAccountInformation liteAcctInfo = null;
+			LiteAccountInfo liteAcctInfo = null;
 			if (createOrder.hasAccountID())	{ 
 			    // Request from CreateOrder.jsp
 			    StarsCustAccountInformationDao starsCustAccountInformationDao =
@@ -106,7 +106,7 @@ public class CreateServiceRequestAction implements ActionBase {
 			    liteAcctInfo = starsCustAccountInformationDao.getById(createOrder.getAccountID(),
 			                                                          energyCompany.getEnergyCompanyId());
 			}else {
-				liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
+				liteAcctInfo = (LiteAccountInfo) session.getAttribute(ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 			}
 			
             LiteWorkOrderBase liteOrder = null;
@@ -213,7 +213,7 @@ public class CreateServiceRequestAction implements ActionBase {
 		return operation;
 	}
 	
-	public static LiteWorkOrderBase createServiceRequest(StarsCreateServiceRequest createOrder, LiteStarsCustAccountInformation liteAcctInfo,
+	public static LiteWorkOrderBase createServiceRequest(StarsCreateServiceRequest createOrder, LiteAccountInfo liteAcctInfo,
 		LiteStarsEnergyCompany energyCompany, int userID, boolean checkConstraint) throws WebClientException, CommandExecutionException
 	{
 		String orderNo = createOrder.getOrderNumber();
@@ -267,7 +267,7 @@ public class CreateServiceRequestAction implements ActionBase {
 		return liteOrder;
 	}
 	
-	public static LiteWorkOrderBase createServiceRequest(StarsCreateServiceRequest createOrder, LiteStarsCustAccountInformation liteAcctInfo,
+	public static LiteWorkOrderBase createServiceRequest(StarsCreateServiceRequest createOrder, LiteAccountInfo liteAcctInfo,
 		LiteStarsEnergyCompany energyCompany, int userID) throws WebClientException, CommandExecutionException
 	{
 		return createServiceRequest(createOrder, liteAcctInfo, energyCompany, userID, true);

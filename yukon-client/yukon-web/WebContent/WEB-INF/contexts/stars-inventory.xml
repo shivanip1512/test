@@ -16,69 +16,10 @@
         <property name="yukonListDao" ref="yukonListDao"/>
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao"/>
-        <property name="starsInventoryBaseDao" ref="starsInventoryBaseDao" />
+        <property name="inventoryBaseDao" ref="inventoryBaseDao" />
         <property name="starsSearchDao" ref="starsSearchDao" />
     </bean>
 
-    <bean id="inventoryDefault" class="com.cannontech.web.stars.action.inventory.DefaultController"
-          parent="starsInventoryActionController"/>
-
-    <bean id="inventoryInsertInventory" class="com.cannontech.web.stars.action.inventory.InsertInventoryController"
-          parent="starsInventoryActionController"/>
-
-    <bean id="inventoryInsertDevice" class="com.cannontech.web.stars.action.inventory.InsertDeviceController"
-          parent="starsInventoryActionController"/>
-
-    <bean id="inventoryCheckInventory" class="com.cannontech.web.stars.action.inventory.CheckInventoryController"
-          parent="starsInventoryActionController"/>
-    
-    <bean id="inventoryCreateLMHardware" class="com.cannontech.web.stars.action.inventory.CreateLMHardwareController"
-          parent="starsInventoryActionController">
-        <property name="checkInventory" ref="inventoryCheckInventory"/>
-    </bean>
-    
-    <bean id="inventoryCreateHardware" class="com.cannontech.web.stars.action.inventory.CreateHardwareController"
-          parent="starsInventoryActionController">
-        <property name="switchContextService" ref="switchContextService"/>
-    </bean>
-    
-    <bean id="inventoryUpdateLMHardware" class="com.cannontech.web.stars.action.inventory.UpdateLMHardwareController"
-          parent="starsInventoryActionController">
-        <property name="checkInventory" ref="inventoryCheckInventory"/>
-    </bean>
-
-    <bean id="inventoryUpdateInventory" class="com.cannontech.web.stars.action.inventory.UpdateInventoryController"
-          parent="starsInventoryActionController"/>
-    
-    <bean id="inventoryDeleteInventory" class="com.cannontech.web.stars.action.inventory.DeleteInventoryController"
-          parent="starsInventoryActionController"/>
-    
-    <bean id="inventoryConfigLMHardware" class="com.cannontech.web.stars.action.inventory.ConfigLMHardwareController"
-          parent="starsInventoryActionController"/>
-    
-    <bean id="inventoryConfirmCheck" class="com.cannontech.web.stars.action.inventory.ConfirmCheckController"
-          parent="starsInventoryActionController"/>
-
-    <bean id="inventoryAddSNRange" class="com.cannontech.web.stars.action.inventory.AddSNRangeController"
-          parent="starsInventoryActionController">
-        <property name="timeConsumingTaskService" ref="timeConsumingTaskService"/>
-    </bean>
-    
-    <bean id="inventoryUpdateSNRange" class="com.cannontech.web.stars.action.inventory.UpdateSNRangeController"
-          parent="starsInventoryActionController">
-        <property name="timeConsumingTaskService" ref="timeConsumingTaskService"/>      
-    </bean>
-    
-    <bean id="inventoryDeleteSNRange" class="com.cannontech.web.stars.action.inventory.DeleteSNRangeController"
-          parent="starsInventoryActionController">
-        <property name="timeConsumingTaskService" ref="timeConsumingTaskService"/>
-    </bean>
-    
-    <bean id="inventoryConfigSNRange" class="com.cannontech.web.stars.action.inventory.ConfigSNRangeController"
-          parent="starsInventoryActionController">
-        <property name="timeConsumingTaskService" ref="timeConsumingTaskService"/>
-    </bean>
-    
     <bean id="inventorySendSwitchCommands" class="com.cannontech.web.stars.action.inventory.SendSwitchCommandsController"
           parent="starsInventoryActionController"/>
     
@@ -87,53 +28,6 @@
     
     <bean id="inventoryFileWriteSwitchCommands" class="com.cannontech.web.stars.action.inventory.FileWriteSwitchCommandsController"
           parent="starsInventoryActionController"/>
-    
-    <bean id="inventoryCreateMCT" class="com.cannontech.web.stars.action.inventory.CreateMCTController"
-          parent="starsInventoryActionController">
-        <property name="switchContextService" ref="switchContextService"/>
-    </bean>
-    
-    <bean id="inventorySelectLMHardware" class="com.cannontech.web.stars.action.inventory.SelectLMHardwareController"
-          parent="starsInventoryActionController"/>
-
-    <bean id="inventorySelectDevice" class="com.cannontech.web.stars.action.inventory.SelectDeviceController"
-          parent="starsInventoryActionController"/>
-    
-    <bean id="inventoryMeterProfileSave" class="com.cannontech.web.stars.action.inventory.MeterProfileSaveController"
-          parent="starsInventoryActionController"/>
-
-    <bean id="inventoryFiltersUpdated" class="com.cannontech.web.stars.action.inventory.UpdateFiltersController"
-          parent="starsInventoryActionController">
-        <property name="hwSelection"><value>false</value></property>
-    </bean>
-    
-    <bean id="inventoryFiltersUpdatedForSelection" class="com.cannontech.web.stars.action.inventory.UpdateFiltersController"
-          parent="starsInventoryActionController">
-        <property name="hwSelection"><value>true</value></property>
-    </bean>
-    
-    <bean id="inventoryApplyActions" class="com.cannontech.web.stars.action.inventory.ApplyActionsController"
-          parent="starsInventoryActionController"/>
-
-    <bean id="inventoryViewInventoryResults" class="com.cannontech.web.stars.action.inventory.ViewInventoryResultsController"
-          parent="starsInventoryActionController"/>
-    
-    <bean id="inventoryApplyOrdering" class="com.cannontech.web.stars.action.inventory.ApplyOrderingController"
-          parent="starsInventoryActionController"/>
-    
-    <bean id="inventoryManipulateInventoryResults" class="com.cannontech.web.stars.action.inventory.ManipulateInventoryResultsController"
-          parent="starsInventoryActionController"/>
-    
-    <bean id="inventoryManipulateSelectedResults" class="com.cannontech.web.stars.action.inventory.ManipulateSelectedResultsController"
-          parent="starsInventoryActionController"/>
-
-    <bean id="inventoryConfigureInventoryResults" class="com.cannontech.web.stars.action.inventory.ConfigureInventoryResultsController"
-          parent="starsInventoryActionController"/>
-    
-    <bean id="inventoryConfigureResultSet" class="com.cannontech.web.stars.action.inventory.ConfigureResultSetController"
-          parent="starsInventoryActionController">
-        <property name="timeConsumingTaskService" ref="timeConsumingTaskService"/>
-    </bean>      
     
     <bean id="inventoryStaticLoadGroupMap" class="com.cannontech.web.stars.action.inventory.StaticLoadGroupMapController"
           parent="starsInventoryActionController"/>

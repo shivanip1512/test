@@ -1,7 +1,6 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -24,13 +23,13 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
@@ -39,11 +38,9 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionServiceImpl;
-import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.AddByRange;
-import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
@@ -66,11 +63,10 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private EnrollmentHelperService enrollmentHelperService;
     @Autowired private HardwareEventLogService hardwareEventLogService;
-    @Autowired private InventoryBaseDao inventoryBaseDao;
-    @Autowired private LMHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private LMHardwareEventDao lmHardwareEventDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
-    @Autowired private StarsInventoryBaseDao starsInventoryBaseDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private OptOutService optOutService;
     @Autowired private OptOutEventDao optOutEventDao;
     @Autowired private HardwareTypeExtensionServiceImpl hardwareTypeExtensionService;
@@ -82,12 +78,12 @@ public class HardwareServiceImpl implements HardwareService {
     @Override
     @Transactional
     public void deleteHardware(LiteYukonUser user, boolean delete, int inventoryId) 
-    throws NotFoundException, CommandCompletionException, SQLException, PersistenceException, WebClientException {
+    throws NotFoundException, CommandCompletionException, SQLException, PersistenceException {
         
         boolean deletePao = false;
         String accountNumber = null;
         
-        LiteInventoryBase lib = starsInventoryBaseDao.getByInventoryId(inventoryId);
+        LiteInventoryBase lib = inventoryBaseDao.getByInventoryId(inventoryId);
         int accountId = lib.getAccountID();
         
         YukonEnergyCompany ec = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
@@ -161,16 +157,16 @@ public class HardwareServiceImpl implements HardwareService {
         
         lmHardwareEventDao.add(liteLMHardwareEvent, ec.getEnergyCompanyId());
         
-        if (lib instanceof LiteStarsLMHardware) {
+        if (lib instanceof LiteLmHardwareBase) {
             applianceDao.deleteAppliancesByAccountIdAndInventoryId(accountId, inventoryId);
         }
         
         /* Removes any entries found in the InventoryBase */
-        InventoryBase inventoryBase =  inventoryBaseDao.getById(inventoryId);
-        inventoryBase.setAccountId(CtiUtilities.NONE_ZERO_ID);
-        inventoryBase.setRemoveDate(new Timestamp(removeDate.getTime()));
+        LiteInventoryBase inventoryBase = inventoryBaseDao.getByInventoryId(inventoryId);
+        inventoryBase.setAccountID(CtiUtilities.NONE_ZERO_ID);
+        inventoryBase.setRemoveDate(removeDate.getTime());
         inventoryBase.setDeviceLabel("");
-        inventoryBaseDao.update(inventoryBase);
+        inventoryBaseDao.saveInventoryBase(inventoryBase, ec.getEnergyCompanyId());
         
         InventoryIdentifier id = inventoryDao.getYukonInventory(inventoryId);
         YukonPao pao = paoDao.getYukonPao(lib.getDeviceID());

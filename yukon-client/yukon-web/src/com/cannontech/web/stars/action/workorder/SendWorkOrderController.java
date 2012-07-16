@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.action.workorder;
 
 import java.io.File;
-
 import java.io.FileOutputStream;
 import java.util.Date;
 
@@ -23,7 +22,6 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteWorkOrderBase;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -69,7 +67,7 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
             
             JFreeReport report = reportBean.createReport();;
             
-            File tempDir = new File( ServerUtils.getStarsTempDir(), "/WorkOrder" );
+            File tempDir = new File( StarsUtils.getStarsTempDir(), "/WorkOrder" );
             if (!tempDir.exists()) tempDir.mkdirs();
             File tempFile = File.createTempFile("WorkOrder", ".pdf", tempDir);
             tempFile.deleteOnExit();

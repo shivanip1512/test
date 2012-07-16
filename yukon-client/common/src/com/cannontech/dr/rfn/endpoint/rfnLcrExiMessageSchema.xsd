@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DRReportSchema" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" version="0.0.2">
+  <xs:element name="DRReport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="UniqueID" type="UInt16"  minOccurs="0" msdata:Ordinal="0" />
+        <xs:element name="HostDeviceID" nillable="true" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:simpleContent msdata:ColumnName="HostDeviceID_Text" msdata:Ordinal="1">
+              <xs:extension base="UInt16">
+                <xs:attribute name="revision" type="UInt16"  />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="OtherDeviceIDS" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="DeviceID" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:simpleContent msdata:ColumnName="DeviceID_Text" msdata:Ordinal="1">
+                    <xs:extension base="UInt16">
+                      <xs:attribute name="revision" type="UInt16"  />
+                    </xs:extension>
+                  </xs:simpleContent>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ExtendedAddresssing" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="SPID" type="UInt16"  minOccurs="0" />
+              <xs:element name="Geo" type="UInt16"  minOccurs="0" />
+              <xs:element name="Feeder" type="UInt16"  minOccurs="0" />
+              <xs:element name="Zip" type="UInt32"  minOccurs="0" />
+              <xs:element name="UDA" type="UInt16"  minOccurs="0" />
+              <xs:element name="Required" type="UInt16"  minOccurs="0" />
+              <xs:element name="SEPDeviceClass" type="UInt16"  minOccurs="0" />
+              <xs:element name="SEPUtilityEnrollmentGroup" type="UInt16"  minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Info" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Flags" type="UInt16"  minOccurs="0" />
+              <xs:element name="ReportingInterval" type="UInt16"  minOccurs="0" />
+              <xs:element name="RecordingInterval" type="UInt16"  minOccurs="0" />
+              <xs:element name="ControlStatusAlarming" type="UInt16"  minOccurs="0" />
+              <xs:element name="InternalDiagnostics" type="UInt16"  minOccurs="0" />
+              <xs:element name="CommsDiagnostics" type="UInt16"  minOccurs="0" />
+              <xs:element name="TotalLUFEvents" type="UInt16"  minOccurs="0" />
+              <xs:element name="TotalLUVEvents" type="UInt16"  minOccurs="0" />
+              <xs:element name="BlinkCount" type="UInt16"  minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="Relays" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Relay" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Flags" type="UInt16"  minOccurs="0" msdata:Ordinal="0" />
+					<xs:element name="Program" type="UInt16" minOccurs="0" msdata:Ordinal="1" />
+                    <xs:element name="Splinter" type="UInt16" minOccurs="0" msdata:Ordinal="2" />
+                    <xs:element name="RemainingControlTime" type="UInt16"  minOccurs="0" msdata:Ordinal="3" />
+                    <xs:element name="KwRating" type="UInt16"  minOccurs="0" msdata:Ordinal="4" />
+                    <xs:element name="AmpType" type="UInt16"  minOccurs="0" msdata:Ordinal="5" />
+                    <xs:element name="ControlHistoryCounters" type="UInt16"  minOccurs="0" msdata:Ordinal="6" />
+                    <xs:element name="IntervalData" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Interval" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:simpleContent msdata:ColumnName="Interval_Text" msdata:Ordinal="0">
+                                <xs:extension base="UInt16">
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="startTime" type="UInt32" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="id" type="UInt16"  />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="ControlEvents" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ControlEvent" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="Flags" type="UInt16" minOccurs="0" />
+					<xs:element name="ID" type="UInt32" minOccurs="0" />
+                    <xs:element name="Type" type="UInt16" minOccurs="0" />
+                    <xs:element name="RandomDelayTime" type="UInt16" minOccurs="0" />
+                    <xs:element name="Start" type="UInt32" minOccurs="0" />
+                    <xs:element name="Stop" type="UInt32" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="LUVEvents" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="LUVEvent" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="LowestVoltage" type="UInt16"  minOccurs="0" />
+                    <xs:element name="Start" type="UInt32"  minOccurs="0" />
+                    <xs:element name="Stop" type="UInt32"  minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="LUFEvents" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="LUFEvent" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="LowestFrequency" type="UInt16"  minOccurs="0" />
+                    <xs:element name="Start" type="UInt32"  minOccurs="0" />
+                    <xs:element name="Stop" type="UInt32"  minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="utc" type="UInt32"  />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="DRReport" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  
+    <xs:simpleType name="UInt8">
+    <xs:annotation>
+      <xs:documentation>Unsigned integer, max inclusive 255 (2^8-1)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:unsignedByte" />
+  </xs:simpleType>
+  <xs:simpleType name="UInt16">
+    <xs:annotation>
+      <xs:documentation>Unsigned integer, max inclusive 65535 (2^16-1)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:unsignedShort" />
+  </xs:simpleType>
+  <xs:simpleType name="UInt32">
+    <xs:annotation>
+      <xs:documentation>Unsigned integer, max inclusive 4294967295 (2^32-1)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:unsignedInt" />
+  </xs:simpleType>
+  
+    <xs:simpleType name="UInt64">
+    <xs:annotation>
+      <xs:documentation>Unsigned integer, max inclusive 4294967295 (2^32-1)</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:unsignedLong" />
+  </xs:simpleType>
+  
+  
+  
+</xs:schema>

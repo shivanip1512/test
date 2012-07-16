@@ -1,19 +1,25 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
-import java.security.InvalidParameterException;
 import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
+import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
+import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
-import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
-import com.cannontech.thirdparty.digi.exception.DigiWebServiceException;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.inventory.service.CollectionBasedInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.InventoryActionsHelper;
@@ -22,8 +28,10 @@ import com.google.common.collect.Sets;
 public class ResendLmConfigHelper extends InventoryActionsHelper {
 
     @Autowired ProgramEnrollmentService enrollmentService;
+    @Autowired InventoryBaseDao inventoryBaseDao;
     @Autowired InventoryDao inventoryDao;
-    
+    @Autowired LmHardwareCommandService commandService;
+    @Autowired YukonEnergyCompanyService yecService;
     
     public class ResendLmConfigTask extends CollectionBasedInventoryTask {
         
@@ -62,23 +70,23 @@ public class ResendLmConfigHelper extends InventoryActionsHelper {
                     for (InventoryIdentifier identifier : collection.getList()) {
                         if (canceled) break;
                         try {
-                            
-                            /* Future expansion of this should handle resending configuration for all device types */
-                            if (identifier.getHardwareType().isZigbeeEndpoint()) {
-                                int deviceId = inventoryDao.getDeviceId(identifier.getInventoryId());
-                                enrollmentService.sendZigbeeConfigMessage(deviceId);
+                            if (identifier.getHardwareType().isConfigurable()) {
+                                LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByInventoryId(identifier.getInventoryId());
+                                YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(identifier.getInventoryId());
+                                
+                                LmHardwareCommand.Builder b = new LmHardwareCommand.Builder(lmhb, LmHardwareCommandType.CONFIG, yec.getEnergyCompanyUser());
+                                b.withParam(LmHardwareCommandParam.BULK, true);
+                                
+                                commandService.sendConfigCommand(b.build());
+                                
                                 successful.add(identifier);
                                 successCount++;
                             } else {
                                 unsupported.add(identifier);
                                 unsupportedCount++;
                             }
-                        } catch (DigiWebServiceException dwse) {
-                            fail(failureKey, identifier, dwse);
-                        } catch (DigiNotConfiguredException dnce) {
-                            fail(failureKey, identifier, dnce);
-                        } catch (InvalidParameterException ipe) {
-                            fail(failureKey, identifier, ipe);
+                        } catch (CommandCompletionException cce) {
+                            fail(failureKey, identifier, cce);
                         } finally {
                             completedItems ++;
                         }

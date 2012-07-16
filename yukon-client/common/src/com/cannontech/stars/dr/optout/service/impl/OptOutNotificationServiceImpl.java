@@ -28,10 +28,10 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.i18n.service.YukonUserContextService;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationService;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
@@ -52,7 +52,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private DateFormattingService dateFormattingService;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private InventoryBaseDao inventoryBaseDao;
     private YukonUserContextService yukonUserContextService;
     
     @Override
@@ -202,15 +202,15 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
                                                                     DateFormatEnum.DATEHM,
                                                                     holder.yukonUserContext);
         
-        LiteStarsCustAccountInformation liteAcctInfo = 
+        LiteAccountInfo liteAcctInfo = 
             starsCustAccountInformationDao.getById(holder.customerAccount.getAccountId(),
                                                    holder.energyCompany.getEnergyCompanyId());
 
         List<Integer> inventoryIdList = holder.request.getInventoryIdList();
-        List<LiteStarsLMHardware> hardwares = new ArrayList<LiteStarsLMHardware>();;
+        List<LiteLmHardwareBase> hardwares = new ArrayList<LiteLmHardwareBase>();;
         
         for (final Integer inventoryId : inventoryIdList) {
-            hardwares.add((LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId));
+            hardwares.add((LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId));
         }    
         
         String accountInfo = OptOutNotificationUtil.getAccountInformation(holder.energyCompany, liteAcctInfo);
@@ -259,9 +259,9 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     }
     
     @Autowired
-    public void setStarsInventoryBaseDao(
-			StarsInventoryBaseDao starsInventoryBaseDao) {
-		this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setInventoryBaseDao(
+			InventoryBaseDao inventoryBaseDao) {
+		this.inventoryBaseDao = inventoryBaseDao;
 	}
 
     @Autowired

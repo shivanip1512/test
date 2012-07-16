@@ -6,7 +6,6 @@
  */
 package com.cannontech.stars.web.bean;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,10 +16,12 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
+import com.google.common.collect.Lists;
 
 /**
  * @author yao
@@ -71,14 +72,14 @@ public class DeviceBean {
 		List<DisplayablePao> currentDeviceList = paoLoadingService.getDisplayableDevices(devices);
 		
 		int currentFilter = getFilter();
-		List<LiteStarsEnergyCompany> energyCompanyList = 
-		    Collections.singletonList(getEnergyCompany());
-		StarsInventoryBaseDao starsInventoryBaseDao = 
-		    YukonSpringHook.getBean(StarsInventoryBaseDao.class);
+		List<YukonEnergyCompany> energyCompanyList = Lists.newArrayList(); 
+		energyCompanyList.add(getEnergyCompany());
+		
+		InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean(InventoryBaseDao.class);
 
 		if(currentFilter == DEV_FILTER_NOT_IN_INVENTORY) {
 		    
-		    List<PaoIdentifier> paosToKeep = starsInventoryBaseDao.getPaosNotInInventory();
+		    List<PaoIdentifier> paosToKeep = inventoryBaseDao.getPaosNotInInventory();
 
 		    Iterator<DisplayablePao> iterator = currentDeviceList.iterator();
 		    while(iterator.hasNext()) {
@@ -92,11 +93,11 @@ public class DeviceBean {
 		} else if(currentFilter == DEV_FILTER_NOT_ASSIGNED) {
 		    
 		    // Get paos not in inventory
-		    List<PaoIdentifier> paosToKeep = starsInventoryBaseDao.getPaosNotInInventory();
+		    List<PaoIdentifier> paosToKeep = inventoryBaseDao.getPaosNotInInventory();
 		    
 		    // Get paos in inventory but not assigned to an account
 		    List<PaoIdentifier> paosNotOnAnAccount = 
-		        starsInventoryBaseDao.getPaosNotOnAnAccount(energyCompanyList);
+		        inventoryBaseDao.getPaosNotOnAnAccount(energyCompanyList);
 		    
 		    paosToKeep.addAll(paosNotOnAnAccount);
 		    

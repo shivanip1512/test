@@ -40,16 +40,20 @@ public class RfnAlarmArchiveRequestListener extends RfnArchiveRequestListenerBas
 
         @Override
         protected void processPointDatas(RfnDevice device, RfnAlarmArchiveRequest archiveRequest) {
-            List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
-            rfnMeterEventService.processEvent(device, archiveRequest.getAlarm(), messagesToSend);
-
-            // Save analog value(s) to db
-            dynamicDataSource.putValues(messagesToSend);
-            processedAlarmArchiveRequest.addAndGet(messagesToSend.size());
-
+            /** Only process events for meters at this time */
+            if (device.getPaoIdentifier().getPaoType().isMeter()) {
+                List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
+                rfnMeterEventService.processEvent(device, archiveRequest.getAlarm(), messagesToSend);
+    
+                // Save analog value(s) to db
+                dynamicDataSource.putValues(messagesToSend);
+                processedAlarmArchiveRequest.addAndGet(messagesToSend.size());
+    
+                incrementProcessedArchiveRequest();
+                LogHelper.debug(log, "%d PointDatas generated for RfnAlarmArchiveRequest", messagesToSend.size());
+            }
+            
             sendAcknowledgement(archiveRequest);
-            incrementProcessedArchiveRequest();
-            LogHelper.debug(log, "%d PointDatas generated for RfnAlarmArchiveRequest", messagesToSend.size());
         }
     }
 

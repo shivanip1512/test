@@ -23,7 +23,7 @@ import com.cannontech.database.db.customer.Customer;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.customer.CustomerAccount;
 import com.cannontech.stars.database.data.event.EventWorkOrder;
@@ -39,7 +39,6 @@ import com.cannontech.stars.database.db.integration.CRSToSAM_PremiseMeterChange;
 import com.cannontech.stars.database.db.integration.SAMToCRS_PTJ;
 import com.cannontech.stars.database.db.integration.SwitchReplacement;
 import com.cannontech.stars.util.EventUtils;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.SwitchCommandQueue.SwitchCommand;
 
@@ -254,7 +253,7 @@ public final class YukonCRSIntegrator
                                 DbChangeType.UPDATE
                             );
 				            dbChangeMessage.setSource("RunCRSToSam_PremiseMeterChange:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
-                            ServerUtils.handleDBChangeMsg(dbChangeMessage);
+                            YukonToCRSFuncs.handleDBChangeMsg(dbChangeMessage);
                         }
                     }
                     catch (TransactionException e) 
@@ -574,8 +573,8 @@ public final class YukonCRSIntegrator
                             }
 		        		}
 		               	
-		               	StarsInventoryBaseDao starsInventoryBaseDao = 
-		        			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+		               	InventoryBaseDao inventoryBaseDao = 
+		        			YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
 		               	for (int i = 0; i < lmHardwares.size(); i++)
 		               	{
 		               		try{
@@ -592,7 +591,7 @@ public final class YukonCRSIntegrator
                                     lmHardwareBase.getInventoryBase().setCurrentStateID(new Integer(devStateEntry.getEntryID()));
                                 }
 				       			lmHardwareBase = Transaction.createTransaction(Transaction.UPDATE, lmHardwareBase).execute();
-                                LiteInventoryBase liteHardInvBase = starsInventoryBaseDao.getByInventoryId(lmHardwares.get(i).getInventoryID().intValue());
+                                LiteInventoryBase liteHardInvBase = inventoryBaseDao.getByInventoryId(lmHardwares.get(i).getInventoryID().intValue());
                                 liteHardInvBase.setCurrentStateID(lmHardwareBase.getInventoryBase().getCurrentStateID().intValue());
 				       			
 				       			//Log the inventory (lmHardwarebase) state change.
@@ -629,7 +628,7 @@ public final class YukonCRSIntegrator
     				DbChangeType.ADD
     			);
 	            dbChangeMessage.setSource("RunCRSToSam_PTJ:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
-                ServerUtils.handleDBChangeMsg(dbChangeMessage);
+                YukonToCRSFuncs.handleDBChangeMsg(dbChangeMessage);
                 
                 if( VersionTools.crsPtjIntegrationExists() && servStat == YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PROCESSED)
                 {	//All Processed status must have an entry in SAMToCRS_PTJ             	
@@ -770,7 +769,7 @@ public final class YukonCRSIntegrator
     				DbChangeType.ADD
     			);
 	            dbChangeMessage.setSource("RunSwitchReplacement:ForceHandleDBChange");	//TODO verify if StarsDBCache handles
-                ServerUtils.handleDBChangeMsg(dbChangeMessage);
+                YukonToCRSFuncs.handleDBChangeMsg(dbChangeMessage);
                 
     			//We made it...remove currentEntry from SwitchReplacement table
     			Transaction.createTransaction(Transaction.DELETE, currentEntry).execute();

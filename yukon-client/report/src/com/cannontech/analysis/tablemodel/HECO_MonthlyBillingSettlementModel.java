@@ -12,7 +12,7 @@ import com.cannontech.analysis.data.lm.SettlementCustomer;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.db.customer.CICustomerPointData;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 
 /**
  * Created on Nov 15, 2005
@@ -184,7 +184,7 @@ public class HECO_MonthlyBillingSettlementModel extends HECO_SettlementModelBase
 							Vector acctIDs = liteCust.getAccountIDs();
 							if( acctIDs != null && !acctIDs.isEmpty())
 							{
-								LiteStarsCustAccountInformation lscai = getLiteStarsEC().getCustAccountInformation( ((Integer)acctIDs.get(0)).intValue(), true);
+								LiteAccountInfo lscai = getLiteStarsEC().getCustAccountInformation( ((Integer)acctIDs.get(0)).intValue(), true);
 								return lscai.getCustomerAccount().getAccountNumber();
 							}
 

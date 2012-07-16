@@ -9,7 +9,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.event.EventInventory;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
@@ -146,9 +146,9 @@ public class InventoryDetailBean
     public void setCurrentInventoryID(int currentInventoryID) {
         this.currentInventoryID = currentInventoryID;
         
-        StarsInventoryBaseDao starsInventoryBaseDao = 
-			YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+        InventoryBaseDao inventoryBaseDao = 
+			YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
         
-        currentInventory = starsInventoryBaseDao.getByInventoryId(currentInventoryID);
+        currentInventory = inventoryBaseDao.getByInventoryId(currentInventoryID);
     }
 }

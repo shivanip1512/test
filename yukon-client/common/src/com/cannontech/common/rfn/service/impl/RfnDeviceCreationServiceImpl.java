@@ -39,6 +39,7 @@ import com.cannontech.database.TransactionTemplateHelper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.rfn.endpoint.LcrReadingArchiveRequestListener;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
@@ -99,11 +100,13 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         templatePrefix = configurationSource.getString("RFN_METER_TEMPLATE_PREFIX", "*RfnTemplate_");
     }
     
+    @Override
     @Transactional
     public RfnDevice create(final RfnIdentifier rfnIdentifier) {
         return createDevice(rfnIdentifier, null, null);
     }
     
+    @Override
     @Transactional
     public RfnDevice create(final RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) {
         return createDevice(rfnIdentifier, hardware, user);
@@ -193,7 +196,9 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             if (typeEntries.isEmpty()) throw new DeviceCreationException("Energy company " + ecName + " has no device for type: " + device.getPaoIdentifier().getPaoType());
             
             hardware = new Hardware();
-            hardware.setHardwareTypeEntryId(typeEntries.get(0).getEntryID());
+            YukonListEntry typeEntry = typeEntries.get(0);
+            hardware.setHardwareTypeEntryId(typeEntry.getEntryID());
+            hardware.setHardwareType(HardwareType.valueOf(typeEntry.getYukonDefID()));
             hardware.setSerialNumber(rfnIdentifier.getSensorSerialNumber());
             hardware.setDeviceId(device.getPaoIdentifier().getPaoId());
             hardware.setEnergyCompanyId(ec.getEnergyCompanyID());

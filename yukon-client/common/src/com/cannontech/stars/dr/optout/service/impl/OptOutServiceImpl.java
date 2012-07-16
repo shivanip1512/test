@@ -38,6 +38,7 @@ import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.inventory.HardwareConfigType;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.survey.dao.SurveyDao;
 import com.cannontech.common.survey.model.Result;
 import com.cannontech.common.util.OpenInterval;
@@ -48,6 +49,7 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -57,13 +59,13 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
@@ -71,9 +73,9 @@ import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
-import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
+import com.cannontech.stars.dr.hardware.service.LmHardwareCommandRequestExecutor;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
@@ -104,7 +106,6 @@ import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.UserUtils;
@@ -117,32 +118,34 @@ public class OptOutServiceImpl implements OptOutService {
 
 	private static final DateTimeFormatter logFormatter = DateTimeFormat.forPattern("MM/dd/yy HH:mm");
 	
-	private LMHardwareBaseDao lmHardwareBaseDao;
-	private AccountEventLogService accountEventLogService;
-	private DisplayableInventoryDao displayableInventoryDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
-	private StarsInventoryBaseDao starsInventoryBaseDao;
-	private OptOutEventDao optOutEventDao;
-	private OptOutAdditionalDao optOutAdditionalDao;
-	private OptOutNotificationService optOutNotificationService;
-	private CustomerAccountDao customerAccountDao;
+	@Autowired private LmHardwareBaseDao lmHardwareBaseDao;
+	@Autowired private AccountEventLogService accountEventLogService;
+	@Autowired private DisplayableInventoryDao displayableInventoryDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+	@Autowired private InventoryBaseDao inventoryBaseDao;
+	@Autowired private OptOutEventDao optOutEventDao;
+	@Autowired private OptOutAdditionalDao optOutAdditionalDao;
+	@Autowired private OptOutNotificationService optOutNotificationService;
+	@Autowired private CustomerAccountDao customerAccountDao;
+	@Autowired private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
+	@Autowired private StarsDatabaseCache starsDatabaseCache;
+	@Autowired private OptOutStatusService optOutStatusService;
+	@Autowired private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
+	@Autowired private LMHardwareControlInformationService lmHardwareControlInformationService;
+	@Autowired private CustomerDao customerDao;
+	@Autowired private ProgramService programService;
+	@Autowired private EnrollmentDao enrollmentDao;
+	@Autowired private StarsEventLogService starsEventLogService;
+	@Autowired private StarsSearchDao starsSearchDao;
+	@Autowired private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
+	@Autowired private SystemDateFormattingService systemDateFormattingService;
+	@Autowired private YukonUserDao yukonUserDao;
+	@Autowired private SurveyDao surveyDao;
+	@Autowired private OptOutSurveyDao optOutSurveyDao;
+	@Autowired private YukonListDao yukonListDao;
+	@Autowired @Qualifier("main") private Executor executor;
+	
 	private RolePropertyDao rolePropertyDao;
-	private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
-	private StarsDatabaseCache starsDatabaseCache;
-	private OptOutStatusService optOutStatusService;
-	private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
-	private LMHardwareControlInformationService lmHardwareControlInformationService;
-	private CustomerDao customerDao;
-	private ProgramService programService;
-	private EnrollmentDao enrollmentDao;
-	private StarsEventLogService starsEventLogService;
-	private StarsSearchDao starsSearchDao;
-	private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
-	private SystemDateFormattingService systemDateFormattingService;
-	private YukonUserDao yukonUserDao;
-	private Executor executor;
-	private SurveyDao surveyDao;
-	private OptOutSurveyDao optOutSurveyDao;
 	
 	private final Logger logger = YukonLogManager.getLogger(OptOutServiceImpl.class);
 	
@@ -183,7 +186,7 @@ public class OptOutServiceImpl implements OptOutService {
         
         for(Integer inventoryId : inventoryIdList) { 
             
-            LiteStarsLMHardware inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+            LiteLmHardwareBase inventory = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
             OptOutCounts optOutCountsKeeper = null;
             
             // No OptOutCounts settings were passed, use the default settings
@@ -387,8 +390,8 @@ public class OptOutServiceImpl implements OptOutService {
 
 		if (optedOut) {
 			
-		    LiteStarsLMHardware inventory = 
-				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+		    LiteLmHardwareBase inventory = 
+				(LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
 		    CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
 			
 			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId);
@@ -438,8 +441,8 @@ public class OptOutServiceImpl implements OptOutService {
 			
 			OptOutEvent event = optOutEventDao.getOptOutEventById(eventId);
 			Integer inventoryId = event.getInventoryId();
-			LiteStarsLMHardware inventory = 
-				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+			LiteLmHardwareBase inventory = 
+				(LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
 			YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByInventoryId(inventoryId);
             CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
     		
@@ -529,9 +532,9 @@ public class OptOutServiceImpl implements OptOutService {
 	private void cancelOptOutEvent(OptOutEvent ooe, LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
 			
 		Integer inventoryId = ooe.getInventoryId();
-		LiteStarsLMHardware inventory = null;
+		LiteLmHardwareBase inventory = null;
 		try {
-		    inventory = starsInventoryBaseDao.getHardwareByInventoryId(inventoryId);
+		    inventory = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
 		} catch (NotFoundException e) {
 		    // Inventory wasn't found, was probably deleted via web interface,
 		    // In this case just change event to CANCEL_SENT and save it to DB
@@ -797,7 +800,7 @@ public class OptOutServiceImpl implements OptOutService {
 		// inventory
 		LiteInventoryBase inventory;
 		try {
-			inventory = starsSearchDao.searchLMHardwareBySerialNumber(serialNumber, energyCompany);
+			inventory = starsSearchDao.searchLmHardwareBySerialNumber(serialNumber, energyCompany);
 		} catch (ObjectInOtherEnergyCompanyException e) {
 			throw new InventoryNotFoundException("Inventory with serial number: " + serialNumber + " is in another energy company.", e);
 		}
@@ -981,7 +984,7 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		LiteInventoryBase inventory;
 		try {
-			inventory = starsSearchDao.searchLMHardwareBySerialNumber(serialNumber, energyCompany);
+			inventory = starsSearchDao.searchLmHardwareBySerialNumber(serialNumber, energyCompany);
 		} catch (ObjectInOtherEnergyCompanyException e) {
 			throw new InventoryNotFoundException("Inventory with serial number: " + serialNumber + 
 			" is in another energy company.", e);
@@ -1003,7 +1006,7 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	@Override
 	@Transactional(propagation = Propagation.NEVER)
-	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany,
+	public void cleanUpCancelledOptOut(LiteLmHardwareBase inventory, YukonEnergyCompany yukonEnergyCompany,
 	                                   OptOutEvent event, LiteYukonUser user) 
     throws CommandCompletionException {
 
@@ -1060,7 +1063,7 @@ public class OptOutServiceImpl implements OptOutService {
 	 * @param event - Event being canceled
 	 * @throws CommandCompletionException
 	 */
-	private void sendCancelCommandAndNotification(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user, OptOutEvent event) 
+	private void sendCancelCommandAndNotification(LiteLmHardwareBase inventory, YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user, OptOutEvent event) 
 	throws CommandCompletionException {
 		
 	    CustomerAccount customerAccount = customerAccountDao.getById(event.getCustomerAccountId());
@@ -1143,7 +1146,7 @@ public class OptOutServiceImpl implements OptOutService {
 	 * 		opt out to the device
 	 * @throws CommandCompletionException - If request is interrupted or times out
 	 */
-	private void sendOptOutRequest(LiteStarsLMHardware inventory, int durationInHours, LiteYukonUser user) 
+	private void sendOptOutRequest(LiteLmHardwareBase inventory, int durationInHours, LiteYukonUser user) 
 		throws CommandCompletionException {
 		
 		
@@ -1162,12 +1165,13 @@ public class OptOutServiceImpl implements OptOutService {
 		cmd.append("putconfig serial ");
 		cmd.append(inventory.getManufacturerSerialNumber());
 		
-		int hwConfigType = InventoryUtils.getHardwareConfigType( inventory.getLmHardwareTypeID() );
-		if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
+		HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(inventory.getLmHardwareTypeID()).getYukonDefID());
+        HardwareConfigType configType = type.getHardwareConfigType();
+		if (configType == HardwareConfigType.VERSACOM) {
 			// Versacom
 			cmd.append(" vcom service out temp offhours ");
 			cmd.append(durationString);
-		} else if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
+		} else if (configType == HardwareConfigType.EXPRESSCOM) {
 			// Expresscom
 			cmd.append(" xcom service out temp offhours ");
 			cmd.append(durationString);
@@ -1179,11 +1183,11 @@ public class OptOutServiceImpl implements OptOutService {
 			if (restoreFirst) {
 				cmd.append(" control restore load 0");
 			}
-		} else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
+		} else if (configType == HardwareConfigType.SA205) {
 			//SA205
 			cmd.append(" sa205 service out temp offhours ");
 			cmd.append(durationString);
-		} else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
+		} else if (configType == HardwareConfigType.SA305) {
 			//SA305
 			
 			boolean trackHwAddr = rolePropertyDao.checkProperty(
@@ -1202,7 +1206,7 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		// Send the command
 		String commandString = cmd.toString();
-		commandRequestHardwareExecutor.execute(inventory, commandString, user);
+		lmHardwareCommandRequestExecutor.execute(inventory, commandString, user);
 		
 	}
 	
@@ -1213,7 +1217,7 @@ public class OptOutServiceImpl implements OptOutService {
 	 * 		cancel opt out to the device
 	 * @throws CommandCompletionException - If request is interrupted or times out
 	 */
-	private void sendCancelRequest(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user) 
+	private void sendCancelRequest(LiteLmHardwareBase inventory, YukonEnergyCompany yukonEnergyCompany, LiteYukonUser user) 
 	throws CommandCompletionException{
 
 		String serialNumber = inventory.getManufacturerSerialNumber();
@@ -1228,17 +1232,18 @@ public class OptOutServiceImpl implements OptOutService {
 		cmd.append("putconfig serial ");
 		cmd.append(inventory.getManufacturerSerialNumber());
 		
-		int hwConfigType = InventoryUtils.getHardwareConfigType( inventory.getLmHardwareTypeID() );
-		if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
+		HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(inventory.getLmHardwareTypeID()).getYukonDefID());
+		HardwareConfigType configType = type.getHardwareConfigType();
+		if (configType == HardwareConfigType.VERSACOM) {
 			// Versacom
 			cmd.append(" vcom service in temp");
-		} else if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
+		} else if (configType == HardwareConfigType.EXPRESSCOM) {
 			// Expresscom
 			cmd.append(" xcom service in temp");
-		} else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
+		} else if (configType == HardwareConfigType.SA205) {
 			// SA205
 			cmd.append(" sa205 service out temp offhours 0");
-		} else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
+		} else if (configType == HardwareConfigType.SA305) {
 			// SA305
 			
 			boolean trackHwAddr = rolePropertyDao.checkProperty(
@@ -1258,7 +1263,7 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		// Send the command
 		String commandString = cmd.toString();
-		commandRequestHardwareExecutor.execute(inventory, commandString, user);
+		lmHardwareCommandRequestExecutor.execute(inventory, commandString, user);
 	}
 	
 	
@@ -1314,142 +1319,9 @@ public class OptOutServiceImpl implements OptOutService {
         return null;
     }
     
-    // DI Setters
-	@Autowired
-	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-	
-	@Autowired
-	public void setDisplayableInventoryDao(DisplayableInventoryDao displayableInventoryDao) {
-        this.displayableInventoryDao = displayableInventoryDao;
-    }
-	
-	@Autowired
-	public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-	
-	@Autowired
-    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-	}	
-	
-	@Autowired
-	public void setStarsInventoryBaseDao(
-			StarsInventoryBaseDao starsInventoryBaseDao) {
-		this.starsInventoryBaseDao = starsInventoryBaseDao;
-	}
-	
-	@Autowired
-	public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
-		this.optOutEventDao = optOutEventDao;
-	}
-	
-	@Autowired
-	public void setOptOutAdditionalDao(OptOutAdditionalDao optOutAdditionalDao) {
-		this.optOutAdditionalDao = optOutAdditionalDao;
-	}
-	
-	@Autowired
-	public void setOptOutNotificationService(
-			OptOutNotificationService optOutNotificationService) {
-		this.optOutNotificationService = optOutNotificationService;
-	}
-	
-	@Autowired
-	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-		this.customerAccountDao = customerAccountDao;
-	}
-	
-	@Autowired
-	public void setCommandRequestHardwareExecutor(
-			CommandRequestHardwareExecutor commandRequestHardwareExecutor) {
-		this.commandRequestHardwareExecutor = commandRequestHardwareExecutor;
-	}
-	
-	@Autowired
-	public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-		this.starsDatabaseCache = starsDatabaseCache;
-	}
-	
-	@Autowired
-	public void setOptOutStatusService(OptOutStatusService optOutStatusService) {
-		this.optOutStatusService = optOutStatusService;
-	}
-	
-	@Autowired
-	public void setOptOutTemporaryOverrideDao(
-			OptOutTemporaryOverrideDao optOutTemporaryOverrideDao) {
-		this.optOutTemporaryOverrideDao = optOutTemporaryOverrideDao;
-	}
-	
-	@Autowired
-	public void setLmHardwareControlInformationService(
-			LMHardwareControlInformationService lmHardwareControlInformationService) {
-		this.lmHardwareControlInformationService = lmHardwareControlInformationService;
-	}
-	
-	@Autowired
-	public void setCustomerDao(CustomerDao customerDao) {
-		this.customerDao = customerDao;
-	}
-	
     @Autowired
-    public void setProgramService(ProgramService programService) {
-        this.programService = programService;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
-	
-	@Autowired
-	public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-		this.enrollmentDao = enrollmentDao;
-	}
-	
-	@Autowired
-	public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
-        this.starsEventLogService = starsEventLogService;
-    }
-	
-	@Autowired
-	public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
-		this.starsSearchDao = starsSearchDao;
-	}
-
-	@Autowired
-	public void setDisplayableInventoryEnrollmentDao(
-            DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao) {
-        this.displayableInventoryEnrollmentDao = displayableInventoryEnrollmentDao;
-    }
-
-    @Autowired
-	public void setSystemDateFormattingService(
-			SystemDateFormattingService systemDateFormattingService) {
-		this.systemDateFormattingService = systemDateFormattingService;
-	}
-	
-	@Autowired
-	public void setYukonUserDao(YukonUserDao yukonUserDao) {
-		this.yukonUserDao = yukonUserDao;
-	}
-	
-	@Autowired
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-	
-	@Autowired
-	public void setExecutor(@Qualifier("main") Executor executor) {
-		this.executor = executor;
-	}
-
-    @Autowired
-    public void setSurveyDao(SurveyDao surveyDao) {
-        this.surveyDao = surveyDao;
-    }
-
-    @Autowired
-    public void setOptOutSurveyDao(OptOutSurveyDao optOutSurveyDao) {
-        this.optOutSurveyDao = optOutSurveyDao;
-    }
-
+    
 }

@@ -34,19 +34,17 @@ import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
 import com.cannontech.stars.dr.hardware.dao.CommandScheduleDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryConfigTaskDao;
 import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTask;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem;
 import com.cannontech.stars.dr.hardware.model.InventoryConfigTaskItem.Status;
-import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
-import com.cannontech.stars.util.WebClientException;
 import com.google.common.collect.Lists;
 
 public class HardwareConfigService {
@@ -57,9 +55,9 @@ public class HardwareConfigService {
     private InventoryConfigTaskDao inventoryConfigTaskDao;
     private com.cannontech.stars.dr.hardwareConfig.HardwareConfigService hardwareConfigService;
     private EnergyCompanyDao energyCompanyDao;
-    private CommandRequestHardwareExecutor commandRequestHardwareExecutor;
+    private LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor;
     private CommandRequestRouteExecutor commandRequestRouteExecutor;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private InventoryBaseDao inventoryBaseDao;
     private InventoryConfigEventLogService inventoryConfigEventLogService;
     private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
 
@@ -72,7 +70,7 @@ public class HardwareConfigService {
         }
 
         private void blockingCommandExecute(CommandRequestExecutionTemplate<CommandRequestRoute> template,
-                final LiteStarsLMHardware hardware, String command, LiteYukonUser user)
+                final LiteLmHardwareBase hardware, String command, LiteYukonUser user)
                 throws CommandCompletionException {
             CommandCompletionCallback<CommandRequestRoute> callback =
                 new CommandCompletionCallbackAdapter<CommandRequestRoute>() {
@@ -85,7 +83,7 @@ public class HardwareConfigService {
             hadErrors = false;
             WaitableCommandCompletionCallback<CommandRequestRoute> waitableCallback =
                 waitableCommandCompletionCallbackFactory.createWaitable(callback);
-            commandRequestHardwareExecutor.executeWithTemplate(template, hardware, command,
+            lmHardwareCommandRequestExecutor.executeWithTemplate(template, hardware, command,
                                                                waitableCallback);
             try {
                 waitableCallback.waitForCompletion();
@@ -103,7 +101,7 @@ public class HardwareConfigService {
             log.trace("processing item " + item);
             Status status = Status.FAIL;
             int inventoryId = item.getInventoryId();
-            LiteStarsLMHardware hardware = starsInventoryBaseDao.getHardwareByInventoryId(inventoryId);
+            LiteLmHardwareBase hardware = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
             LiteYukonUser user = item.getInventoryConfigTask().getUser();
 
             CommandRequestExecutionTemplate<CommandRequestRoute> template =
@@ -134,11 +132,6 @@ public class HardwareConfigService {
                 log.error("exception executing command; inventory id=" + inventoryId +
                           "; CMRE id=" + template.getContextId().getId() +
                           "; msg=[" + cce.getMessage() + "]");
-                status = Status.FAIL;
-            } catch (WebClientException wce) {
-                log.error("error getting commands; inventory id=" + inventoryId +
-                          "; CMRE id=" + template.getContextId().getId() +
-                          "; msg=[" + wce.getMessage() + "]");
                 status = Status.FAIL;
             } catch (InterruptedException ie) {
                 throw ie;
@@ -266,8 +259,8 @@ public class HardwareConfigService {
 
     @Autowired
     public void setCommandRequestHardwareExecutor(
-            CommandRequestHardwareExecutor commandRequestHardwareExecutor) {
-        this.commandRequestHardwareExecutor = commandRequestHardwareExecutor;
+            LmHardwareCommandRequestExecutor lmHardwareCommandRequestExecutor) {
+        this.lmHardwareCommandRequestExecutor = lmHardwareCommandRequestExecutor;
     }
 
     @Autowired
@@ -276,8 +269,8 @@ public class HardwareConfigService {
     }
 
     @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
+        this.inventoryBaseDao = inventoryBaseDao;
     }
 
     @Autowired

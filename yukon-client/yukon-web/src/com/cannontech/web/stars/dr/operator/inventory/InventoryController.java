@@ -497,7 +497,7 @@ public class InventoryController {
     /* DELETE */
     @RequestMapping
     public String delete(ModelMap model, YukonUserContext context, FlashScope flash, int inventoryId) 
-    throws NotFoundException, PersistenceException, CommandCompletionException, SQLException, WebClientException {
+    throws NotFoundException, PersistenceException, CommandCompletionException, SQLException {
         
         Hardware hardwareToDelete = hardwareUiService.getHardware(inventoryId);
         LiteYukonUser user = context.getYukonUser();

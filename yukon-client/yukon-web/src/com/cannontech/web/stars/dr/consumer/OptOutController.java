@@ -35,10 +35,10 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
-import com.cannontech.stars.dr.hardware.model.InventoryBase;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
@@ -69,7 +69,7 @@ public class OptOutController extends AbstractConsumerController {
 	@Autowired private AccountEventLogService accountEventLogService;
 	@Autowired private RolePropertyDao rolePropertyDao;
 	@Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-	@Autowired private LMHardwareBaseDao lmHardwareBaseDao;
+	@Autowired private LmHardwareBaseDao lmHardwareBaseDao;
 	@Autowired private OptOutService optOutService; 
 	@Autowired private OptOutEventDao optOutEventDao;
 	@Autowired private OptOutStatusService optOutStatusService;
@@ -449,12 +449,12 @@ public class OptOutController extends AbstractConsumerController {
     private MessageSourceResolvable validateOptOutsRemaining(List<Integer> inventoryIds,
                                                              CustomerAccount customerAccount) {
 
-        Iterable<InventoryBase> inventoryBases = inventoryBaseDao.getByIds(inventoryIds).values();
+        List<LiteInventoryBase> inventoryBases = inventoryBaseDao.getByIds(inventoryIds);
 
         // Check that there are opt outs remaining for each inventory being opted out
-        for (InventoryBase inventoryBase : inventoryBases) {
+        for (LiteInventoryBase inventoryBase : inventoryBases) {
             OptOutCountHolder optOutCount = 
-                optOutService.getCurrentOptOutCount(inventoryBase.getInventoryId(), 
+                optOutService.getCurrentOptOutCount(inventoryBase.getInventoryID(), 
                                                     customerAccount.getAccountId());
 
             if(!optOutCount.isOptOutsRemaining()){

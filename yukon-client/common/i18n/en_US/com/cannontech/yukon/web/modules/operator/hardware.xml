@@ -114,8 +114,6 @@
     <entry key="yukon.web.modules.operator.hardware.pointValue">Value</entry>
     <entry key="yukon.web.modules.operator.hardware.readNow.label">Read Now</entry>
     <entry key="yukon.web.modules.operator.hardware.readNowSuccess">Read initiated successfully</entry>
-    <entry key="yukon.web.modules.operator.hardware.readNowFailed">Read Failure: {0}</entry>
-    <entry key="yukon.web.modules.operator.hardware.readNowProcessingException">Unable to send read request: {0}</entry>
     
     <entry key="yukon.web.modules.operator.hardware.serialNumber.notFoundAdd">The serial number {0} was not found in the inventory. Would you like to add it now?</entry>
     <entry key="yukon.web.modules.operator.hardware.serialNumber.foundOnAnotherAccount">The device is currently assigned to another account.</entry>
@@ -137,6 +135,7 @@
     
     <entry key="yukon.web.modules.operator.hardware.error.toolong.serialNumber">The serial number is too long.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.unavailable.serialNumber">This serial number is already in use.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.unavailable.rf.serialNumber">Serial number already in use by another RF device.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.invalid.numeric.serialNumber">Serial numbers can only contain numeric characters.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.invalid.alphanumeric.serialNumber">Serial numbers can only contain alpha numeric characters.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.tooLong.twoWay.serialNumber">Serial numbers for two way devices must be less than 2,147,483,648.</entry>
@@ -156,8 +155,11 @@
     <entry key="yukon.web.modules.operator.hardware.error.format.installCode">Invalid Install Code format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui48.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui64.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>
+
     <!-- Rf errors -->
-    <entry key="yukon.web.modules.operator.hardware.error.rfCreationError">Unable to creat rf devices.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.rfCreationError">Unable to create RF device.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.readNowFailed">Read Failure: {0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.readNowProcessingException">Unable to send read request: {0}</entry>
     
     <!-- Swiches -->
     <entry key="yukon.web.modules.operator.hardware.switches.title">Switches</entry>

@@ -19,9 +19,9 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.util.ConnectionException;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
@@ -45,7 +45,7 @@ public class OptOutCleanupService implements InitializingBean {
 	private OptOutService optOutService;
 	private CustomerAccountDao customerAccountDao;
 	private EnrollmentDao enrollmentDao;
-	private StarsInventoryBaseDao starsInventoryBaseDao;
+	private InventoryBaseDao inventoryBaseDao;
 	private YukonEnergyCompanyService yukonEnergyCompanyService;
 	private ScheduledExecutor executor;
 	
@@ -64,7 +64,7 @@ public class OptOutCleanupService implements InitializingBean {
                 // Get a list of all currently opted out inventory (according to the LMHardwareControlGroup
                 // table)
                 List<Integer> inventoryIds = enrollmentDao.getCurrentlyOptedOutInventory();
-                List<LiteStarsLMHardware> completedOptOuts = getCompletedOptOuts(inventoryIds);
+                List<LiteLmHardwareBase> completedOptOuts = getCompletedOptOuts(inventoryIds);
                 cleanUpCompletedOptOuts(completedOptOuts, user);
                 logger.debug("Finished opt out task.");
         
@@ -109,13 +109,13 @@ public class OptOutCleanupService implements InitializingBean {
     	return optOutRequest;
     }
     
-    private List<LiteStarsLMHardware> getCompletedOptOuts(List<Integer> inventoryIds) {
+    private List<LiteLmHardwareBase> getCompletedOptOuts(List<Integer> inventoryIds) {
     	
-    	List<LiteStarsLMHardware> inventoryList = new ArrayList<LiteStarsLMHardware>();
+    	List<LiteLmHardwareBase> inventoryList = new ArrayList<LiteLmHardwareBase>();
     	for(Integer inventoryId : inventoryIds) {
     	    try {
-        		LiteStarsLMHardware inventory = 
-            		(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+        		LiteLmHardwareBase inventory = 
+            		(LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(inventoryId);
                 // Only add inventory that exists and is supposed to be done opting out according
                 // to the OptOutEvent table
                 if(!optOutEventDao.isOptedOut(inventoryId, inventory.getAccountID())) {
@@ -130,9 +130,9 @@ public class OptOutCleanupService implements InitializingBean {
     	return inventoryList;
     }
     
-    private void cleanUpCompletedOptOuts(List<LiteStarsLMHardware> optedOutInventory, LiteYukonUser user) {
+    private void cleanUpCompletedOptOuts(List<LiteLmHardwareBase> optedOutInventory, LiteYukonUser user) {
     	
-    	for(LiteStarsLMHardware inventory : optedOutInventory) {
+    	for(LiteLmHardwareBase inventory : optedOutInventory) {
         	OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventory.getInventoryID());
         	
         	try {
@@ -143,7 +143,7 @@ public class OptOutCleanupService implements InitializingBean {
         }
     }
     
-    private void cancelOptOutEvent(LiteStarsLMHardware inventory, OptOutEvent event, LiteYukonUser user) {
+    private void cancelOptOutEvent(LiteLmHardwareBase inventory, OptOutEvent event, LiteYukonUser user) {
     	Validate.notNull(event, "Event must not be null");
     	
     	int inventoryId = inventory.getInventoryID();
@@ -187,9 +187,9 @@ public class OptOutCleanupService implements InitializingBean {
 	}
 
     @Autowired
-    public void setStarsInventoryBaseDao(
-			StarsInventoryBaseDao starsInventoryBaseDao) {
-		this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setInventoryBaseDao(
+			InventoryBaseDao inventoryBaseDao) {
+		this.inventoryBaseDao = inventoryBaseDao;
 	}
     
     @Resource(name="globalScheduledExecutor")

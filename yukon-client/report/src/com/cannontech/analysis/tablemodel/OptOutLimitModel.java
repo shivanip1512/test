@@ -23,9 +23,7 @@ import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
-import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
-import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
@@ -53,7 +51,6 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     private ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);
     private YukonEnergyCompanyService yukonEnergyCompanyService = YukonSpringHook.getBean("yukonEnergyCompanyService", YukonEnergyCompanyService.class);
     private EnrollmentDao enrollmentDao =  YukonSpringHook.getBean("enrollmentDao", EnrollmentDao.class);
-    private InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
     private LMHardwareControlGroupDao lmHardwareControlGroupDao = YukonSpringHook.getBean("lmHardwareControlGroupDao", LMHardwareControlGroupDao.class);
     private ProgramDao programDao =  YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
     private OptOutEventDao optOutEventDao = YukonSpringHook.getBean("optOutEventDao", OptOutEventDao.class);
@@ -303,12 +300,9 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             CustomerAccountWithNames customerAccountWithName =
                 customerAccountDao.getAcountWithNamesByAccountNumber(overrideHistory.getAccountNumber(), energyCompanyId);
             
-            InventoryBase inventory = null; 
             List<Program> programList = null;
             try {
                 programList = enrollmentDao.getEnrolledProgramIdsByInventory(overrideHistory.getInventoryId(), overrideHistory.getStartDate(), overrideHistory.getStopDate());
-                inventory = inventoryBaseDao.getById(overrideHistory.getInventoryId());
-
             } catch(EmptyResultDataAccessException e) {/* Inventory no longer exists. */}
                     
             if (programIds != null) {
@@ -323,7 +317,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             }
 
             // Adding the gathered information to the model
-            addOptOutLimitRowToModel(customerAccountWithName, inventory, programList, overrideHistory);
+            addOptOutLimitRowToModel(customerAccountWithName, programList, overrideHistory);
         }
     }
 
@@ -382,7 +376,6 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
      * This method adds a row to the report.
      */
     private void addOptOutLimitRowToModel(CustomerAccountWithNames customerAccountWithName,
-                                           InventoryBase inventory, 
                                            List<Program> programList,
                                            OverrideHistory overrideHistory) {
     

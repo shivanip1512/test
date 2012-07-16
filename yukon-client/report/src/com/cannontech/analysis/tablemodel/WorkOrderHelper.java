@@ -16,8 +16,8 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 
 public final class WorkOrderHelper {
     private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
@@ -25,11 +25,11 @@ public final class WorkOrderHelper {
     private final SimpleJdbcTemplate simpleJdbcTemplate = 
         YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
     
-    private final Map<Integer, Map<Integer, LiteStarsCustAccountInformation>> ecToAccountMap = 
-        new HashMap<Integer, Map<Integer, LiteStarsCustAccountInformation>>();
+    private final Map<Integer, Map<Integer, LiteAccountInfo>> ecToAccountMap = 
+        new HashMap<Integer, Map<Integer, LiteAccountInfo>>();
     
-    public synchronized Map<Integer, LiteStarsCustAccountInformation> getAccountMap(final Integer energyCompanyId) {
-        Map<Integer, LiteStarsCustAccountInformation> accountMap = ecToAccountMap.get(energyCompanyId);
+    public synchronized Map<Integer, LiteAccountInfo> getAccountMap(final Integer energyCompanyId) {
+        Map<Integer, LiteAccountInfo> accountMap = ecToAccountMap.get(energyCompanyId);
         
         if (accountMap == null) {
             accountMap = createAccountMap(energyCompanyId);
@@ -39,13 +39,13 @@ public final class WorkOrderHelper {
         return accountMap;
     }
     
-    private Map<Integer, LiteStarsCustAccountInformation> createAccountMap(Integer energyCompanyId) {
-        final List<LiteStarsCustAccountInformation> accountList = starsCustAccountInformationDao.getAll(energyCompanyId);
+    private Map<Integer, LiteAccountInfo> createAccountMap(Integer energyCompanyId) {
+        final List<LiteAccountInfo> accountList = starsCustAccountInformationDao.getAll(energyCompanyId);
         
-        final Map<Integer, LiteStarsCustAccountInformation> resultMap =
-            new HashMap<Integer, LiteStarsCustAccountInformation>(accountList.size());
+        final Map<Integer, LiteAccountInfo> resultMap =
+            new HashMap<Integer, LiteAccountInfo>(accountList.size());
         
-        for (final LiteStarsCustAccountInformation account : accountList) {
+        for (final LiteAccountInfo account : accountList) {
             Integer accountId = account.getAccountID();
             resultMap.put(accountId, account);
         }
@@ -62,7 +62,7 @@ public final class WorkOrderHelper {
          * the LiteInventoryBase Objects by the DeviceID value into separate lists. 
          */
         for (final LiteInventoryBase inventoryBase : liteInvBaseList) {
-            if (!(inventoryBase instanceof LiteStarsLMHardware)) continue;
+            if (!(inventoryBase instanceof LiteLmHardwareBase)) continue;
             
             int inventoryId = inventoryBase.getInventoryID(); 
             int deviceId = inventoryBase.getDeviceID();

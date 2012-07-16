@@ -14,7 +14,7 @@ public interface StarsControllableDeviceHelper {
      * @return LiteInventoryBase
      */
     public LiteInventoryBase addDeviceToAccount(
-            StarsControllableDeviceDTO deviceInfo, LiteYukonUser user);
+            LmDeviceDto deviceInfo, LiteYukonUser user);
 
     /**
      * For Import - Populates the Model object and calls Service to Update a
@@ -26,7 +26,7 @@ public interface StarsControllableDeviceHelper {
      * @return LiteInventoryBase
      */
     public LiteInventoryBase updateDeviceOnAccount(
-            StarsControllableDeviceDTO deviceInfo, LiteYukonUser user);
+            LmDeviceDto deviceInfo, LiteYukonUser user);
 
     /**
      * For Import - Populates the Model object and calls Service to Remove a
@@ -35,6 +35,6 @@ public interface StarsControllableDeviceHelper {
      * @param deviceInfo
      * @param user
      */
-    public void removeDeviceFromAccount(StarsControllableDeviceDTO deviceInfo,
+    public void removeDeviceFromAccount(LmDeviceDto deviceInfo,
             LiteYukonUser user);
 }

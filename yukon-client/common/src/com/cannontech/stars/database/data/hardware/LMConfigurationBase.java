@@ -10,18 +10,20 @@ import java.sql.SQLException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.inventory.HardwareConfigType;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.database.db.hardware.LMConfigurationExpressCom;
 import com.cannontech.stars.database.db.hardware.LMConfigurationSA205;
 import com.cannontech.stars.database.db.hardware.LMConfigurationSA305;
 import com.cannontech.stars.database.db.hardware.LMConfigurationSASimple;
 import com.cannontech.stars.database.db.hardware.LMConfigurationVersaCom;
-import com.cannontech.stars.util.InventoryUtils;
 
 /**
  * @author yao
@@ -149,8 +151,10 @@ public class LMConfigurationBase extends DBPersistent {
 		config.getLMConfigurationBase().setConfigurationID( new Integer(configID) );
 		
 		try {
-			int hwConfigType = InventoryUtils.getHardwareConfigType( hwTypeID );
-			if (hwConfigType == HardwareConfigType.EXPRESSCOM.getHardwareConfigTypeId()) {
+		    YukonListDao yukonListDao = YukonSpringHook.getBean("yukonListDao", YukonListDao.class);
+		    HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(hwTypeID).getYukonDefID());
+		    HardwareConfigType configType = type.getHardwareConfigType();
+			if (configType == HardwareConfigType.EXPRESSCOM) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationExpressCom WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -161,7 +165,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setExpressCom( xcom );
 				}
 			}
-			else if (hwConfigType == HardwareConfigType.VERSACOM.getHardwareConfigTypeId()) {
+			else if (configType == HardwareConfigType.VERSACOM) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationVersaCom WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -172,7 +176,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setVersaCom( vcom );
 				}
 			}
-			else if (hwConfigType == HardwareConfigType.SA205.getHardwareConfigTypeId()) {
+			else if (configType == HardwareConfigType.SA205) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSA205 WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -183,7 +187,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setSA205( sa205 );
 				}
 			}
-			else if (hwConfigType == HardwareConfigType.SA305.getHardwareConfigTypeId()) {
+			else if (configType == HardwareConfigType.SA305) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSA305 WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();
@@ -194,7 +198,7 @@ public class LMConfigurationBase extends DBPersistent {
 					config.setSA305( sa305 );
 				}
 			}
-			else if (hwConfigType == HardwareConfigType.SA_SIMPLE.getHardwareConfigTypeId()) {
+			else if (configType == HardwareConfigType.SA_SIMPLE) {
 				String sql = "SELECT ConfigurationID FROM LMConfigurationSASimple WHERE ConfigurationID = " + configID;
 				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
 				stmt.execute();

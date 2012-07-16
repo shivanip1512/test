@@ -14,7 +14,7 @@ import com.cannontech.core.dao.InventoryNotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.exception.OptOutException;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
@@ -263,7 +263,7 @@ public interface OptOutService {
 	 * @param event - Opt out event being canceled
 	 * @param userContext - User canceling opt out 
 	 */
-	public void cleanUpCancelledOptOut(LiteStarsLMHardware inventory, YukonEnergyCompany yukonEnergyCompany, OptOutEvent event, LiteYukonUser user)
+	public void cleanUpCancelledOptOut(LiteLmHardwareBase inventory, YukonEnergyCompany yukonEnergyCompany, OptOutEvent event, LiteYukonUser user)
     throws CommandCompletionException;
 
     public String checkOptOutStartDate(int accountId, LocalDate startDate,  YukonUserContext userContext, boolean isOperator);

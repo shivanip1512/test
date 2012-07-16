@@ -1,12 +1,11 @@
 package com.cannontech.stars.database.db.hardware;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 
 
 /**
@@ -39,6 +38,7 @@ public class LMHardwareConfiguration extends DBPersistent {
         super();
     }
 
+    /**TODO Move to {@link LMHardwareConfigurationDao} */
     public static LMHardwareConfiguration getLMHardwareConfiguration(Integer applianceID) {
         String sql = "SELECT InventoryID, ApplianceID, AddressingGroupID, LoadNumber FROM " +
         		TABLE_NAME + " WHERE ApplianceID=" + applianceID;
@@ -65,6 +65,11 @@ public class LMHardwareConfiguration extends DBPersistent {
         return null;
     }
 
+    /**
+     * @deprecated Use {@link LMHardwareConfigurationDao} getForInventoryId method.
+     * @param inventoryID
+     * @return
+     */
     public static LMHardwareConfiguration getLMHardwareConfigurationFromInvenID(Integer inventoryID) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE InventoryID = " + inventoryID;
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
@@ -90,6 +95,7 @@ public class LMHardwareConfiguration extends DBPersistent {
         return null;
     }
     
+    /**TODO Move to {@link LMHardwareConfigurationDao} */
 	public static LMHardwareConfiguration[] getAllLMHardwareConfiguration(int energyCompanyID) {
 		String sql = "SELECT cfg.* FROM " + TABLE_NAME + " cfg, ECToInventoryMapping map " +
 				"WHERE map.EnergyCompanyID = " + energyCompanyID + " AND map.InventoryID = cfg.InventoryID";
@@ -118,6 +124,7 @@ public class LMHardwareConfiguration extends DBPersistent {
 		return null;
 	}
     
+	/**TODO Move to {@link LMHardwareConfigurationDao} */
     public static HashMap<Integer, LMHardwareConfiguration> getAllLMHardwareConfigurationsWithoutLoadGroups() {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE AddressingGroupID = 0";
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
@@ -146,7 +153,8 @@ public class LMHardwareConfiguration extends DBPersistent {
         
         return null;
     }
-
+    
+    /**TODO Move to {@link LMHardwareConfigurationDao} */
     public static void deleteLMHardwareConfiguration(Integer applianceID) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE ApplianceID=" + applianceID;
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
@@ -159,6 +167,7 @@ public class LMHardwareConfiguration extends DBPersistent {
         }
     }
 
+    /**TODO Move to {@link LMHardwareConfigurationDao} */
     public static void deleteAllLMHardwareConfiguration(int inventoryID) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE InventoryID=" + inventoryID;
         SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );

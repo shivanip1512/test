@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.roles.yukon.SystemRole;
@@ -93,8 +94,7 @@ public class DailyTimerTask extends StarsTimerTask {
     					try {
     						InventoryManagerUtil.sendSwitchCommand( commands[j] );
     						numCmdSent++;
-    					}
-    					catch (WebClientException e) {
+    					} catch (CommandCompletionException e) {
     						CTILogger.debug( e.getMessage() );
     					}
     				}

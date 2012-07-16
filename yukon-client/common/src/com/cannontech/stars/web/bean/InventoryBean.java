@@ -21,9 +21,9 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.util.ECUtils;
@@ -383,9 +383,9 @@ public class InventoryBean {
         	
 			String deviceType = "(none)";
 			String deviceName = "(none)";
-			if (liteInv instanceof LiteStarsLMHardware) {
-				deviceType = DaoFactory.getYukonListDao().getYukonListEntry( ((LiteStarsLMHardware)liteInv).getLmHardwareTypeID() ).getEntryText();
-				deviceName = ((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber();
+			if (liteInv instanceof LiteLmHardwareBase) {
+				deviceType = DaoFactory.getYukonListDao().getYukonListEntry( ((LiteLmHardwareBase)liteInv).getLmHardwareTypeID() ).getEntryText();
+				deviceName = ((LiteLmHardwareBase)liteInv).getManufacturerSerialNumber();
 			}
 			else if (liteInv.getDeviceID() > 0) {
 				LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO( liteInv.getDeviceID() );
@@ -439,7 +439,7 @@ public class InventoryBean {
                     htmlBuf.append("General Inventory");
 			}
 			else {
-				LiteStarsCustAccountInformation liteAcctInfo = 
+				LiteAccountInfo liteAcctInfo = 
 				    starsCustAccountInformationDao.getById(liteInv.getAccountID(), member.getEnergyCompanyId());
 				LiteContact liteCont = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 				LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );

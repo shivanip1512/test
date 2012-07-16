@@ -1,50 +1,45 @@
 package com.cannontech.stars.core.dao;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteMeterHardwareBase;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 
-public class SmartLiteInventoryBaseRowMapper implements ParameterizedRowMapper<LiteInventoryBase> {
-    private static final ParameterizedRowMapper<LiteStarsLMHardware> hardwareRowMapper =
-        new LiteStarsLMHardwareRowMapper();
-
-    private static final ParameterizedRowMapper<LiteMeterHardwareBase> meterRowMapper =
-        new LiteMeterHardwareBaseRowMapper();
+public class SmartLiteInventoryBaseRowMapper implements YukonRowMapper<LiteInventoryBase> {
     
-    private static final ParameterizedRowMapper<LiteInventoryBase> inventoryRowMapper = 
-        new LiteInventoryBaseRowMapper();
+    private static final YukonRowMapper<LiteLmHardwareBase> hardwareRowMapper = new LiteStarsLMHardwareRowMapper();
+    private static final YukonRowMapper<LiteMeterHardwareBase> meterRowMapper = new LiteMeterHardwareBaseRowMapper();
+    private static final YukonRowMapper<LiteInventoryBase> inventoryRowMapper = new LiteInventoryBaseRowMapper();
     
     @Override
-    public LiteInventoryBase mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ParameterizedRowMapper<LiteInventoryBase> mapper = StrategyTypeMapper.valueOf(rs.getInt("CategoryDefId"));
-        return mapper.mapRow(rs, rowNum);
+    public LiteInventoryBase mapRow(YukonResultSet rs) throws SQLException {
+        YukonRowMapper<LiteInventoryBase> mapper = StrategyTypeMapper.valueOf(rs.getInt("CategoryDefId"));
+        return mapper.mapRow(rs);
     }
     
-    private enum StrategyTypeMapper implements ParameterizedRowMapper<LiteInventoryBase> {
+    private enum StrategyTypeMapper implements YukonRowMapper<LiteInventoryBase> {
         HARWARE() {
             @Override
-            public LiteInventoryBase mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return hardwareRowMapper.mapRow(rs, rowNum);
+            public LiteInventoryBase mapRow(YukonResultSet rs) throws SQLException {
+                return hardwareRowMapper.mapRow(rs);
             }
         },
         
         METER() {
             @Override
-            public LiteInventoryBase mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return meterRowMapper.mapRow(rs, rowNum);
+            public LiteInventoryBase mapRow(YukonResultSet rs) throws SQLException {
+                return meterRowMapper.mapRow(rs);
             }
         },
         
         GENERIC_INVENTORY() {
             @Override
-            public LiteInventoryBase mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return inventoryRowMapper.mapRow(rs, rowNum);
+            public LiteInventoryBase mapRow(YukonResultSet rs) throws SQLException {
+                return inventoryRowMapper.mapRow(rs);
             }
         };
         
@@ -59,4 +54,5 @@ public class SmartLiteInventoryBaseRowMapper implements ParameterizedRowMapper<L
             }
         }
     }
+
 }

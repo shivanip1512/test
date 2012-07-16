@@ -1,7 +1,5 @@
 package com.cannontech.web.stars.dr.operator.hardware.validator;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -15,15 +13,15 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
-import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
-import com.cannontech.stars.dr.hardware.model.InventoryBase;
 
 public class HardwareValidator extends SimpleValidator<Hardware> {
     
-    private InventoryBaseDao inventoryBaseDao;
-    private PaoDao paoDao;
-    private HardwareTypeExtensionService hardwareTypeExtensionService;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private HardwareTypeExtensionService hardwareTypeExtensionService;
     
     public HardwareValidator() {
     	super(Hardware.class);
@@ -97,22 +95,22 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
                         }
                         
                         /* Device can only be used by one lcr at a time */
-                        List<InventoryBase> matchedInventory = inventoryBaseDao.getByDeviceId(hardware.getDeviceId());
-                        if (!matchedInventory.isEmpty()) {
+                        try {
+                            LiteInventoryBase inventoryBase = inventoryBaseDao.getByDeviceId(hardware.getDeviceId());
                             if (hardware.getInventoryId() == null) {
                                 /* Creating a two way lcr and the two way device is already in use */
                                 String unavailableDeviceName = pao.getPaoName();
                                 errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.unavailable", new String[] {unavailableDeviceName}, null);
                             } else {
                                 /* Updating a two way lcr, see if the inventory for this device is us */
-                                InventoryBase inventory = inventoryBaseDao.getById(hardware.getInventoryId());
+                                LiteInventoryBase inventory = inventoryBaseDao.getByInventoryId(hardware.getInventoryId());
                                 /* If something is using this device and it's not this inventory reject this device id */
-                                if (matchedInventory.size() != 0 && matchedInventory.get(0).getDeviceId() != inventory.getDeviceId()) {
+                                if (inventoryBase.getDeviceID() != inventory.getDeviceID()) {
                                     String unavailableDeviceName = pao.getPaoName();
                                     errors.rejectValue("deviceId", "yukon.web.modules.operator.hardware.error.unavailable", new String[] {unavailableDeviceName}, null);
                                 }
                             }
-                        }
+                        } catch (NotFoundException e) {/* Ok */}
                         
                         /* The device's address must match the LCR's serial number */
                         try {
@@ -140,7 +138,7 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
         }
     }
     
-    public static void validateSN(String sn, Errors errors, HardwareType type, String path) {
+    private void validateSN(String sn, Errors errors, HardwareType type, String path) {
         if (type == HardwareType.LCR_3102) {
             /* For LCR 3102's the serial number must be a valid integer since it has to match the 
              * address in DeviceCarrierSettings which is a varchar(18) */
@@ -160,22 +158,8 @@ public class HardwareValidator extends SimpleValidator<Hardware> {
                 errors.rejectValue(path, "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
             } else {
                 YukonValidationUtils.checkExceedsMaxLength(errors, path, sn, 30);
-            } 
+            }
         }
     }
     
-    @Autowired
-    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
-        this.inventoryBaseDao = inventoryBaseDao;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    @Autowired
-    public void setHardwareTypeExtensionService(HardwareTypeExtensionService hardwareTypeExtensionService) {
-        this.hardwareTypeExtensionService = hardwareTypeExtensionService;
-    }
 }

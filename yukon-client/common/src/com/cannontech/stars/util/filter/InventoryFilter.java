@@ -8,7 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.util.filter.filterBy.FilterBy;
 import com.cannontech.stars.util.filter.filterBy.inventory.InventoryJoinTable;
@@ -18,7 +18,7 @@ public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
     private static final String inventoryIdSelectSql;
     private static final String countSelectSql;
     
-    private StarsInventoryBaseDao starsInventoryBaseDao;
+    private InventoryBaseDao inventoryBaseDao;
     
     static {
         baseSql = "FROM InventoryBase ib " +
@@ -43,7 +43,7 @@ public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
     
     @Override
     protected List<LiteInventoryBase> getList(List<Integer> ids) {
-        List<LiteInventoryBase> list = createSortedList(ids, starsInventoryBaseDao.getByIdsMap(ids));
+        List<LiteInventoryBase> list = createSortedList(ids, inventoryBaseDao.getByIdsMap(ids));
         return list;
     }
     
@@ -78,9 +78,9 @@ public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
     }
     
     @Autowired
-    public void setStarsInventoryBaseDao(
-            StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    public void setInventoryBaseDao(
+            InventoryBaseDao inventoryBaseDao) {
+        this.inventoryBaseDao = inventoryBaseDao;
     }
     
 }

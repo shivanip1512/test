@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 
 public interface StarsCustAccountInformationDao {
 
     /**
      * This method returns the liteStarCustAccountInformation for the supplied accountId.
      */
-    public LiteStarsCustAccountInformation getByAccountId(int accountId);
+    public LiteAccountInfo getByAccountId(int accountId);
     
     /**
      * This method does validation as well as getting the lite stars customer account information.
@@ -19,9 +19,9 @@ public interface StarsCustAccountInformationDao {
      * @deprecated use the getByAccountId(int accountId) instead of this method.
      */
     @Deprecated
-    public LiteStarsCustAccountInformation getById(int accountId, int energyCompanyId);
+    public LiteAccountInfo getById(int accountId, int energyCompanyId);
     
-    public Map<Integer, LiteStarsCustAccountInformation> getByIds(Set<Integer> accountIds, int energyCompanyId);
+    public Map<Integer, LiteAccountInfo> getByIds(Set<Integer> accountIds, int energyCompanyId);
     
     /**
      * @deprecated Refactor any code that would need to load all 
@@ -30,6 +30,6 @@ public interface StarsCustAccountInformationDao {
      * @return
      */
     @Deprecated 
-    public List<LiteStarsCustAccountInformation> getAll(int energyCompanyId);
+    public List<LiteAccountInfo> getAll(int energyCompanyId);
     
 }

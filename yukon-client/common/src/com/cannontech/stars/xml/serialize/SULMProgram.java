@@ -1,9 +1,10 @@
 package com.cannontech.stars.xml.serialize;
 
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
-import com.cannontech.stars.util.ServerUtils;
 
 public class SULMProgram {
+    
+    public static final int ADDRESSING_GROUP_NOT_FOUND = -999999;
 
     private int _programID;
     private boolean _has_programID;
@@ -31,7 +32,7 @@ public class SULMProgram {
         if (programEnrollment.getLmGroupId() != 0) {
             setAddressingGroupID(programEnrollment.getLmGroupId());
         } else {
-            setAddressingGroupID(ServerUtils.ADDRESSING_GROUP_NOT_FOUND);
+            setAddressingGroupID(ADDRESSING_GROUP_NOT_FOUND);
         }
         if (programEnrollment.getRelay() > 0) {
             setLoadNumber(programEnrollment.getRelay());

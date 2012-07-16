@@ -3,7 +3,7 @@ package com.cannontech.stars.core.service;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 
 public interface StarsInventoryBaseService {
@@ -57,7 +57,7 @@ public interface StarsInventoryBaseService {
      * @param lmHardware
      * @param energyCompany
      */
-    public void initStaticLoadGroup(LiteStarsLMHardware lmHardware, LiteStarsEnergyCompany energyCompany);
+    public void initStaticLoadGroup(LiteLmHardwareBase lmHardware, LiteStarsEnergyCompany energyCompany);
 
     /**
      * Adds the Install hardware event

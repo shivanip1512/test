@@ -38,30 +38,31 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.data.company.EnergyCompanyBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.user.YukonGroup;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
-import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteApplianceCategory;
 import com.cannontech.stars.database.data.lite.LiteLMProgramWebPublishing;
 import com.cannontech.stars.database.data.lite.LiteServiceCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompanyFactory;
 import com.cannontech.stars.database.data.lite.StarsLiteFactory;
 import com.cannontech.stars.database.db.ECToGenericMapping;
-import com.cannontech.stars.database.db.customer.CustomerAccount;
 import com.cannontech.stars.database.db.hardware.Warehouse;
+import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
@@ -69,9 +70,7 @@ import com.cannontech.stars.model.EnergyCompanyDto;
 import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.stars.util.ECUtils;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.action.AccountAction;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.user.checker.UserCheckerBase;
@@ -83,25 +82,25 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     private final String ecAdminLoginGroupExtension = " Admin Grp";
     private Logger log = YukonLogManager.getLogger(EnergyCompanyServiceImpl.class);
 
-    private AccountThermostatScheduleDao accountThermostatScheduleDao;
-    private ContactDao contactDao;
-    private ContactNotificationDao contactNotificationDao;
-    private DBPersistentDao dbPersistentDao;
-    private DefaultRouteService defaultRouteService;
-    private ECMappingDao ecMappingDao;
-    private EnergyCompanyDao energyCompanyDao;
-    private LiteStarsEnergyCompanyFactory energyCompanyFactory;
-    private RolePropertyDao rolePropertyDao;
-    private SiteInformationDao siteInformationDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private StarsEventLogService starsEventLogService;
-    private YukonGroupDao yukonGroupDao;
-    private YukonListDao yukonListDao;
-    private YukonUserDao yukonUserDao;
-    private StarsCustAccountInformationDao starsCustAccountInformationDao;
-    private ConfigurationSource configurationSource;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
-    private WarehouseDao warehouseDao;
+    @Autowired private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DefaultRouteService defaultRouteService;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private LiteStarsEnergyCompanyFactory energyCompanyFactory;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private SiteInformationDao siteInformationDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private StarsEventLogService starsEventLogService;
+    @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private YukonListDao yukonListDao;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private WarehouseDao warehouseDao;
+    @Autowired private AccountService accountService;
 
     @Override
     @Transactional
@@ -341,7 +340,7 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     
         deleteAllOperatorLogins(energyCompany, dbAlias);
         
-        deleteAllCustomerAccounts(energyCompany);
+        deleteAllCustomerAccounts(energyCompany, user);
         
         deleteAllInventory(energyCompanyId, dbAlias);
         
@@ -378,24 +377,27 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @param energyCompany
      * @param liteGroup
      */
-    private void deleteLoginGroupAndLogin(LiteStarsEnergyCompany energyCompany,
-                                          LiteYukonGroup liteGroup) {
+    private void deleteLoginGroupAndLogin(LiteStarsEnergyCompany energyCompany, LiteYukonGroup liteGroup) {
         // Delete the default operator login
         int defaultUserId = energyCompany.getUser().getUserID();
         if (defaultUserId != com.cannontech.user.UserUtils.USER_ADMIN_ID &&
-                defaultUserId != com.cannontech.user.UserUtils.USER_DEFAULT_ID)
-        {
-            com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(defaultUserId);
-            ServerUtils.handleDBChange( energyCompany.getUser(), DbChangeType.DELETE );
+                defaultUserId != com.cannontech.user.UserUtils.USER_DEFAULT_ID) {
+            
+            YukonUser.deleteOperatorLogin(defaultUserId);
+            DBChangeMsg dbChange = new DBChangeMsg(defaultUserId,
+                                   DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                   DBChangeMsg.CAT_YUKON_USER,
+                                   DBChangeMsg.CAT_YUKON_USER,
+                                   DbChangeType.DELETE);
+            dbPersistentDao.processDBChange(dbChange);
         }
         
         // Delete the privilege group of the default operator login as long as it's not a system groupr and ends with with 'Admin Grp' 
         if (liteGroup != null && liteGroup.getGroupName().endsWith(ecAdminLoginGroupExtension) && liteGroup.getGroupID() > -1) {
-            com.cannontech.database.data.user.YukonGroup dftGroup = new com.cannontech.database.data.user.YukonGroup();
+            YukonGroup dftGroup = new YukonGroup();
             dftGroup.setGroupID(new Integer(liteGroup.getGroupID()));
 
             dbPersistentDao.performDBChange(dftGroup, TransactionType.DELETE);
-            ServerUtils.handleDBChange(liteGroup, DbChangeType.DELETE);
         }
     }
 
@@ -436,19 +438,22 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         
         // Delete the energy company!
         
-        com.cannontech.database.data.company.EnergyCompanyBase ec =
-                new com.cannontech.database.data.company.EnergyCompanyBase();
+        EnergyCompanyBase ec = new EnergyCompanyBase();
         ec.setEnergyCompanyID( energyCompany.getEnergyCompanyId() );
         ec.getEnergyCompany().setPrimaryContactId(energyCompany.getPrimaryContactID());
         
         dbPersistentDao.performDBChange(ec, TransactionType.DELETE);
         
         StarsDatabaseCache.getInstance().deleteEnergyCompany( energyCompany.getLiteID() );
-        ServerUtils.handleDBChange( energyCompany, DbChangeType.DELETE );
         if (energyCompany.getPrimaryContactID() != CtiUtilities.NONE_ZERO_ID) {
             try {
-                LiteContact liteContact = DaoFactory.getContactDao().getContact( energyCompany.getPrimaryContactID() );
-                ServerUtils.handleDBChange( liteContact, DbChangeType.DELETE );
+                LiteContact liteContact = DaoFactory.getContactDao().getContact(energyCompany.getPrimaryContactID());
+                DBChangeMsg dbChange = new DBChangeMsg(liteContact.getContactID(),
+                                                       DBChangeMsg.CHANGE_CONTACT_DB,
+                                                       DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                       DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                       DbChangeType.DELETE);
+                dbPersistentDao.processDBChange(dbChange);
             }catch(EmptyResultDataAccessException ignore) {}
         }
         return liteGroup;
@@ -616,25 +621,10 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
      * @throws TransactionException
      * @throws WebClientException
      */
-    private void deleteAllCustomerAccounts(LiteStarsEnergyCompany energyCompany) {
-
-        try {
-            // Delete all customer accounts
-            Object[][] accounts = CustomerAccount.getAllCustomerAccounts( energyCompany.getEnergyCompanyId() );
-            if (accounts != null) {
-                
-                for (int i = 0; i < accounts.length; i++) {
-                    int accountId = ((Integer) accounts[i][0]).intValue();
-                    
-                    LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getByAccountId(accountId);
-                    AccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
-                    
-                }
-            }
-        } catch (CommandExecutionException e) {
-            ExceptionHelper.throwOrWrap(e);
-        } catch (WebClientException e) {
-            ExceptionHelper.throwOrWrap(e);
+    private void deleteAllCustomerAccounts(LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+        List<Integer> accountIds = ecMappingDao.getAccountIds(energyCompany.getLiteID());
+        for (Integer accountId : accountIds) {
+            accountService.deleteAccount(accountId, user);
         }
     }
 
@@ -662,8 +652,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
                 if (userIDs[i] == energyCompany.getUser().getUserID()) continue;
                 
                 try {
-                    com.cannontech.database.data.user.YukonUser.deleteOperatorLogin(userIDs[i]);
-                    ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(userIDs[i]), DbChangeType.DELETE );
+                    YukonUser.deleteOperatorLogin(userIDs[i]);
+                    DBChangeMsg dbChange = new DBChangeMsg(userIDs[i],
+                                                           DBChangeMsg.CHANGE_YUKON_USER_DB,
+                                                           DBChangeMsg.CAT_YUKON_USER,
+                                                           DBChangeMsg.CAT_YUKON_USER,
+                                                           DbChangeType.DELETE);
+                                     dbPersistentDao.processDBChange(dbChange);
                 } catch (UnsupportedOperationException e) {
                     log.error(e);
                 }
@@ -762,99 +757,4 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         }
     }
     
-    // DI Setters
-    @Autowired
-    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
-        this.accountThermostatScheduleDao = accountThermostatScheduleDao;
-    }
-    
-    @Autowired
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-    
-    @Autowired
-    public void setContactNotificationDao(ContactNotificationDao contactNotificationDao) {
-        this.contactNotificationDao = contactNotificationDao;
-    }
-    
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-    
-    @Autowired
-    public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
-    }
-
-    @Autowired
-    public void setEnergyCompanyFactory(LiteStarsEnergyCompanyFactory energyCompanyFactory) {
-        this.energyCompanyFactory = energyCompanyFactory;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setSiteInformationDao(SiteInformationDao siteInformationDao) {
-        this.siteInformationDao = siteInformationDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setStarsEventLogService(StarsEventLogService starsEventLogService) {
-        this.starsEventLogService = starsEventLogService;
-    }
-    
-    @Autowired
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
-    }
-    
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setDefaultRouteService(DefaultRouteService defaultRouteService) {
-        this.defaultRouteService = defaultRouteService;
-    }
-    
-    @Autowired
-    public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
-        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
-    }
-
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-
-    @Autowired
-    public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-    
-    @Autowired
-    public void setWarehouseDao(WarehouseDao warehouseDao) {
-        this.warehouseDao = warehouseDao;
-    }
 }

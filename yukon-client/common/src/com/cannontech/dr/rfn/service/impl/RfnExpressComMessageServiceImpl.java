@@ -2,39 +2,88 @@ package com.cannontech.dr.rfn.service.impl;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 
+import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.rfn.message.RfnMessageClass;
+import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
-import com.cannontech.dr.rfn.message.broadcast.RfnExpressComBroadcastReply;
-import com.cannontech.dr.rfn.message.broadcast.RfnExpressComBroadcastRequest;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReply;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReply;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
-import com.cannontech.dr.rfn.service.RfnBroadcastCompletionCallback;
-import com.cannontech.dr.rfn.service.RfnUnicastCompletionCallback;
+import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
 import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
+import com.cannontech.dr.rfn.service.RfnUnicastCallback;
+import com.cannontech.dr.rfn.service.RfnUnicastDataCallback;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommand.Builder;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageService {
     
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private RawExpressComCommandBuilder commandBuilder;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
     
-    private RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply> unicastTemplate;
-    private RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply> unicastBulkTemplate;
-    private RequestReplyTemplate<RfnExpressComBroadcastReply> broadcastTemplate;
+    private JmsTemplate jmsTemplate;
+    private RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply> unicastWithDataTemplate;
+    private RequestReplyTemplate<RfnExpressComUnicastReply> unicastTemplate;
+    private Random random = new Random(System.currentTimeMillis());
     
     @Override
-    public void sendUnicast(final RfnExpressComUnicastRequest request, final RfnUnicastCompletionCallback callback) {
+    public void sendUnicastRequest(final RfnExpressComUnicastRequest request, final RfnUnicastCallback callback) {
+        JmsReplyHandler<RfnExpressComUnicastReply> handler = new JmsReplyHandler<RfnExpressComUnicastReply>() {
+            
+            @Override
+            public void complete() {
+                callback.complete();
+            }
+
+            @Override
+            public void handleException(Exception e) {
+                callback.processingExceptionOccured(e.getMessage());
+            }
+
+            @Override
+            public void handleTimeout() {
+                callback.receivedStatusError(RfnExpressComUnicastReplyType.TIMEOUT);
+            }
+
+            @Override
+            public void handleReply(RfnExpressComUnicastReply t) {
+                callback.receivedStatus(t.getReplyType());
+            }
+
+            @Override
+            public Class<RfnExpressComUnicastReply> getExpectedType() {
+                return RfnExpressComUnicastReply.class;
+            }
+        };
+        request.setMessageId(nextMessageId());
+        unicastTemplate.send(request, handler);
+    }
+    
+    @Override
+    public void sendUnicastDataRequest(final RfnExpressComUnicastRequest request, final RfnUnicastDataCallback callback) {
         JmsReplyReplyHandler<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply> handler = new JmsReplyReplyHandler<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply>() {
 
             @Override
@@ -99,38 +148,105 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
             }
         };
         
-        unicastTemplate.send(request, handler);
+        request.setMessageId(nextMessageId());
+        unicastWithDataTemplate.send(request, handler);
     }
     
     @Override
-    public void sendUnicastBulk(final Collection<RfnExpressComUnicastRequest> device, final RfnUnicastCompletionCallback callback) {
-        // TODO
+    public Set<String> sendUnicastBulkRequest(final Collection<RfnExpressComUnicastRequest> requests) {
+        Set<String> messageIds = Sets.newHashSet();
+        for (RfnExpressComUnicastRequest request : requests) {
+            // We will probably need to keep track of the responses at some point.
+            String messageId = nextMessageId();
+            request.setMessageId(messageId);
+            jmsTemplate.convertAndSend("yukon.qr.obj.dr.rfn.ExpressComBulkUnicastRequest", request);
+            messageIds.add(messageId);
+        }
+        
+        return messageIds;
     }
     
-    @Override
-    public void sendBroadcast(final Collection<RfnExpressComBroadcastRequest> device, final RfnBroadcastCompletionCallback callback) {
-        // TODO
-    }
-
     @PostConstruct
     public void initialize() {
-        broadcastTemplate = new RequestReplyTemplate<RfnExpressComBroadcastReply>();
-        broadcastTemplate.setConfigurationName("RFN_XCOMM_REQUEST");
-        broadcastTemplate.setConfigurationSource(configurationSource);
-        broadcastTemplate.setConnectionFactory(connectionFactory);
-        broadcastTemplate.setRequestQueueName("yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest", false);
+        unicastWithDataTemplate = new RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply>();
+        unicastWithDataTemplate.setConfigurationName("RFN_XCOMM_REQUEST");
+        unicastWithDataTemplate.setConfigurationSource(configurationSource);
+        unicastWithDataTemplate.setConnectionFactory(connectionFactory);
+        unicastWithDataTemplate.setRequestQueueName("yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
         
-        unicastTemplate = new RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply>();
+        unicastTemplate = new RequestReplyTemplate<RfnExpressComUnicastReply>();
         unicastTemplate.setConfigurationName("RFN_XCOMM_REQUEST");
         unicastTemplate.setConfigurationSource(configurationSource);
         unicastTemplate.setConnectionFactory(connectionFactory);
         unicastTemplate.setRequestQueueName("yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
+    }
+    
+    /**
+     * Generates unique message id's for rf expresscom unicast requests.
+     */
+    private String nextMessageId() {
+        return Long.toHexString(random.nextLong());
+    }
+
+    @Override
+    public void readDevice(RfnDevice device, final RfnUnicastCallback callback) {
+        LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByDeviceId(device.getPaoIdentifier().getPaoId());
+        LmHardwareCommand.Builder b = new Builder(lmhb, LmHardwareCommandType.READ_NOW, null);
         
-        unicastBulkTemplate = new RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply>();
-        unicastBulkTemplate.setConfigurationName("RFN_XCOMM_REQUEST");
-        unicastBulkTemplate.setConfigurationSource(configurationSource);
-        unicastBulkTemplate.setConnectionFactory(connectionFactory);
-        unicastBulkTemplate.setRequestQueueName("yukon.qr.obj.dr.rfn.ExpressComBulkUnicastRequest", false);
+        RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(device.getRfnIdentifier());
+        request.setMessageId(nextMessageId());
+        request.setMessagePriority(6);
+        request.setPayload(commandBuilder.getCommand(b.build()));
+        request.setResponseExpected(false);
+        request.setRfnMessageClass(RfnMessageClass.DR);
+        
+        sendUnicastRequest(request, callback);
+    }
+    
+    @Override
+    public void readDevice(RfnDevice device, final RfnDeviceReadCompletionCallback<RfnExpressComUnicastReplyType, RfnExpressComUnicastDataReplyType> delegateCallback) {
+        RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(device.getRfnIdentifier());
+        request.setMessageId(nextMessageId());
+        request.setMessagePriority(6);
+        LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByDeviceId(device.getPaoIdentifier().getPaoId());
+        // The rf command strategy does not actually need the user, so null for now.
+        LmHardwareCommand.Builder b = new Builder(lmhb, LmHardwareCommandType.READ_NOW, null);
+        request.setPayload(commandBuilder.getCommand(b.build()));
+        request.setResponseExpected(true);
+        request.setRfnMessageClass(RfnMessageClass.DR);
+        
+        sendUnicastDataRequest(request, new RfnUnicastDataCallback() {
+            @Override public void processingExceptionOccured(String message) {
+                delegateCallback.processingExceptionOccured(message);
+            }
+            @Override public void complete() {
+                delegateCallback.complete();
+            }
+            @Override public void receivedStatusError(RfnExpressComUnicastReplyType replyType) {
+                delegateCallback.receivedStatusError(replyType);
+            }
+            @Override public void receivedStatus(RfnExpressComUnicastReplyType replyType) {
+                delegateCallback.receivedStatus(replyType);
+            }
+            @Override public void receivedDataError(RfnExpressComUnicastDataReplyType replyType) {
+                delegateCallback.receivedDataError(replyType);
+            }
+            @Override public void receivedData(Object data) {
+                try {
+                    PointValueHolder pointValue = (PointValueHolder)data;
+                    delegateCallback.receivedData(pointValue);
+                } catch (ClassCastException e) {
+                    // We won't care about the non-point data for now.
+                }
+            }
+        });
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
     
 }

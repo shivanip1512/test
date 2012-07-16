@@ -71,6 +71,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     
     
     private final static ImmutableSet<HardwareType> rfTypes;
+    private final static ImmutableSet<HardwareType> saTypes = ImmutableSet.of(SA_205, SA_305, SA_SIMPLE);
     private final static ImmutableSet<HardwareType> zigbeeTypes;
     private final static ImmutableSet<HardwareType> zigbeeEndpointTypes;
     private final static ImmutableSet<HardwareType> utilityProTypes;
@@ -367,6 +368,13 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
      */
     public boolean isUtilityProType() {
         return utilityProTypes.contains(this);
+    }
+    
+    /**
+     * Returns true if this hardware type is a Scientific America device.
+     */
+    public boolean isSA() {
+        return saTypes.contains(this);
     }
     
     /**

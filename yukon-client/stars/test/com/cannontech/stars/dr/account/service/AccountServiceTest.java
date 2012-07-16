@@ -42,7 +42,7 @@ import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteSiteInformation;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.YukonEnergyCompanyMockFactory;
 import com.cannontech.stars.dr.account.AccountDtoMockFactory;
@@ -66,7 +66,7 @@ import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
 import com.cannontech.stars.dr.general.service.ContactNotificationService;
 import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.base.Function;
@@ -90,7 +90,7 @@ public class AccountServiceTest extends EasyMockSupport {
     private CustomerAccountDao customerAccountDaoMock;
     private ECMappingDao ecMappingDaoMock;
     private InventoryDao inventoryDaoMock;
-    private LMHardwareBaseDao hardwareBaseDaoMock;
+    private LmHardwareBaseDao hardwareBaseDaoMock;
     private LMProgramEventDao lmProgramEventDaoMock;
     private ApplianceDao applianceDaoMock;
     private StarsWorkOrderBaseDao workOrderDaoMock;
@@ -120,7 +120,7 @@ public class AccountServiceTest extends EasyMockSupport {
         customerAccountDaoMock = createMock(CustomerAccountDao.class);
         ecMappingDaoMock = createMock(ECMappingDao.class);
         inventoryDaoMock = createMock(InventoryDao.class);
-        hardwareBaseDaoMock = createMock(LMHardwareBaseDao.class);
+        hardwareBaseDaoMock = createMock(LmHardwareBaseDao.class);
         lmProgramEventDaoMock = createMock(LMProgramEventDao.class);
         applianceDaoMock = createMock(ApplianceDao.class);
         workOrderDaoMock = createMock(StarsWorkOrderBaseDao.class);
@@ -165,7 +165,7 @@ public class AccountServiceTest extends EasyMockSupport {
             @Override
             public LiteStarsEnergyCompany getEnergyCompanyByUser(LiteYukonUser user) {
                 LiteStarsEnergyCompany ec = new LiteStarsEnergyCompany() {
-                    public LiteStarsCustAccountInformation searchAccountByAccountNo(String accountNumber) {
+                    public LiteAccountInfo searchAccountByAccountNo(String accountNumber) {
                         return null;
                     }
                 };

@@ -8,9 +8,9 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
-import com.cannontech.stars.database.data.lite.LiteStarsCustAccountInformation;
+import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
-import com.cannontech.stars.database.data.lite.LiteStarsLMHardware;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsLMProgram;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.util.StarsUtils;
@@ -23,12 +23,12 @@ public final class OptOutNotificationUtil {
     }
     
     public static String getProgramInformation(final LiteStarsEnergyCompany energyCompany,
-            final LiteStarsCustAccountInformation liteAcctInfo,
-                final List<LiteStarsLMHardware> hardwares) {
+            final LiteAccountInfo liteAcctInfo,
+                final List<LiteLmHardwareBase> hardwares) {
         
         final StringBuilder text = new StringBuilder();
         
-        for (final LiteStarsLMHardware liteHw : hardwares) {
+        for (final LiteLmHardwareBase liteHw : hardwares) {
             text.append("Serial #: ").append(liteHw.getManufacturerSerialNumber()).append(LINE_SEPARATOR);
             
             boolean hasAssignedProg = false;
@@ -63,7 +63,7 @@ public final class OptOutNotificationUtil {
     }
     
     public static String getAccountInformation(final LiteStarsEnergyCompany energyCompany, 
-            final LiteStarsCustAccountInformation liteAcctInfo) {
+            final LiteAccountInfo liteAcctInfo) {
         
         final StringBuilder text = new StringBuilder();
         
@@ -119,7 +119,7 @@ public final class OptOutNotificationUtil {
         return result;
     }
 
-    private static LiteStarsLMProgram getLMProgram(LiteStarsCustAccountInformation liteAcctInfo, int programId) {
+    private static LiteStarsLMProgram getLMProgram(LiteAccountInfo liteAcctInfo, int programId) {
         for (final LiteStarsLMProgram program : liteAcctInfo.getPrograms()) {
             if (program.getProgramID() == programId) return program;
         }

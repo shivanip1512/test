@@ -24,7 +24,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
@@ -53,7 +53,7 @@ public class ThermostatManualController extends AbstractThermostatController {
     @Autowired private CustomerDao customerDao;
     @Autowired private CustomerEventDao customerEventDao;
     @Autowired private InventoryDao inventoryDao;
-    @Autowired private LMHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private OptOutStatusService optOutStatusService;
     @Autowired private ThermostatEventHistoryDao thermostatEventHistoryDao;
     @Autowired private ThermostatService thermostatService;
