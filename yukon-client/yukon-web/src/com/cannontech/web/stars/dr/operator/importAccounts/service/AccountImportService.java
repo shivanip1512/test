@@ -30,7 +30,6 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
@@ -524,7 +523,6 @@ public class AccountImportService {
                         
                         YukonSelectionList devTypeList = lsec.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
                         YukonListEntry deviceType = yukonListDao.getYukonListEntry(devTypeList, hwFields[ImportFields.IDX_DEVICE_TYPE]);
-                        HardwareType type = null;
                         
                         if (deviceType == null) {
                             result.custFileErrors++;
@@ -556,7 +554,7 @@ public class AccountImportService {
                                 LiteInventoryBase liteInv = null;
                                 
                                 // IMPORT HARDWARE
-                                liteInv = importHardware(hwFields, liteAcctInfo, lsec, result, user, type);
+                                liteInv = importHardware(hwFields, liteAcctInfo, lsec, result, user);
 
                                 if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
                                         && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -832,8 +830,7 @@ public class AccountImportService {
                     if (!preScan) {
                         LiteInventoryBase liteInv;
                         try {
-                            HardwareType type = HardwareType.valueOf(deviceType.getYukonDefID());
-                            liteInv = importHardware(hwFields, liteAcctInfo, lsec, result, user, type);                            
+                            liteInv = importHardware(hwFields, liteAcctInfo, lsec, result, user);                            
 
                             if (hwFields[ImportFields.IDX_PROGRAM_NAME].trim().length() > 0
                                     && !hwFields[ImportFields.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -970,8 +967,7 @@ public class AccountImportService {
                                              LiteAccountInfo liteAcctInfo, 
                                              LiteStarsEnergyCompany lsec, 
                                              AccountImportResult result, 
-                                             LiteYukonUser user,
-                                             HardwareType type) throws Exception {
+                                             LiteYukonUser user) throws Exception {
         
         LiteInventoryBase liteInv = null;
 
@@ -1013,7 +1009,7 @@ public class AccountImportService {
                 
                 // ADD HARDWARE
                 LmDeviceDto dto = dtoConverter.createNewDto(accountNumber, hwFields, lsec);
-                liteInv = deviceHelper.addDeviceToAccount(dto, result.getCurrentUser(), type);
+                liteInv = deviceHelper.addDeviceToAccount(dto, result.getCurrentUser());
                 
                 result.getHardwareAdded().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             } else if (!result.isInsertSpecified()) {
@@ -1022,7 +1018,7 @@ public class AccountImportService {
                 // UPDATE HARDWARE
                 LmDeviceDto dto = dtoConverter.getDtoForHardware(accountNumber, liteInv, lsec);
                 dtoConverter.updateDtoWithHwFields(dto, hwFields, lsec);
-                liteInv = deviceHelper.updateDeviceOnAccount(dto, result.getCurrentUser(), type);
+                liteInv = deviceHelper.updateDeviceOnAccount(dto, result.getCurrentUser());
                 
                 result.getHardwareUpdated().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             }

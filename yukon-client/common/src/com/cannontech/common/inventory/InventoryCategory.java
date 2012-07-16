@@ -39,4 +39,8 @@ public enum InventoryCategory {
         throw new IllegalArgumentException("No InventoryCategory found for definitionId: " + definitionId);
 
     }
+    
+    public boolean isLmHardware() {
+        return this == ONE_WAY_RECEIVER || this == TWO_WAY_RECEIVER;
+    }
 }

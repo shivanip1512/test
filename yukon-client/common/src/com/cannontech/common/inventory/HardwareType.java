@@ -392,4 +392,8 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         throw new IllegalArgumentException("Unknown PaoType for HardwareType: " + type);
     }
     
+    public boolean isLmHardware() {
+        return getInventoryCategory().isLmHardware();
+    }
+    
 }

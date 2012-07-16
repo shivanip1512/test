@@ -60,6 +60,10 @@ public class InventoryUtils {
 		return CtiUtilities.NONE_ZERO_ID;
 	}
 	
+    /**
+     * @deprecated Use {@link HardwareType#isLmHardware} or {@link InventoryCategory#isLmHardware}  
+     */
+    @Deprecated
 	public static boolean isLMHardware(int categoryID) {
 		YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( categoryID );
 		return (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC ||

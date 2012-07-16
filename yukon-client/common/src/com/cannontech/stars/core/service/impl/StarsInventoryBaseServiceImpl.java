@@ -90,7 +90,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             if (liteInvPrev.getAccountID() > 0) {
                 throw new StarsDeviceAlreadyAssignedException(liteInv.getAccountID(),
                                                               liteInv.getInventoryID(),
-                                                              energyCompany.getName());                    
+                                                              energyCompany.getName());
             }
             if (lmHardware) {
                 // update LMHardware here

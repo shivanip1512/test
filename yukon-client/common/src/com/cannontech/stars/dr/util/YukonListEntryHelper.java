@@ -69,25 +69,24 @@ public class YukonListEntryHelper {
      * a list name and entry text
      * @param entryText - Entry text of the entry
      * @param listName - Name of list the entry is in
-     * @param energyCompany - Current energy company
+     * @param lsec - Current energy company
      * @return The yukon entry id
      */
-    public static int getEntryIdForEntryText(String entryText, String listName,
-            LiteStarsEnergyCompany energyCompany) {
+    public static YukonListEntry getEntryForEntryText(String entryText, String listName, LiteStarsEnergyCompany lsec) {
 
-        int entryId = -1;
-        YukonSelectionList selectionList = energyCompany.getYukonSelectionList(listName);
+        YukonListEntry entry = null;
+        YukonSelectionList selectionList = lsec.getYukonSelectionList(listName);
 
-        for (YukonListEntry entry : selectionList.getYukonListEntries()) {
-            if (entry.getEntryText().equalsIgnoreCase(entryText)) {
-                entryId = entry.getEntryID();
+        for (YukonListEntry item : selectionList.getYukonListEntries()) {
+            if (item.getEntryText().equalsIgnoreCase(entryText)) {
+                entry = item;
                 break;
             }
         }
-        if (entryId <= 0) {
-            throw new NotFoundException("Could not find yukon entry id for list: " + listName + " EntryText: " + entryText);
+        if (entry == null) {
+            throw new NotFoundException("Could not find yukon entry for list: " + listName + " EntryText: " + entryText);
         }
-        return entryId;
+        return entry;
     }
     
     /**

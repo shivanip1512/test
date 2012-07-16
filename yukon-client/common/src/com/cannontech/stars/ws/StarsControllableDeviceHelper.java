@@ -1,6 +1,5 @@
 package com.cannontech.stars.ws;
 
-import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 
@@ -14,7 +13,7 @@ public interface StarsControllableDeviceHelper {
      * @param user
      * @return LiteInventoryBase
      */
-    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user, HardwareType type);
+    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user);
 
     /**
      * For Import - Populates the Model object and calls Service to Update a
@@ -25,7 +24,7 @@ public interface StarsControllableDeviceHelper {
      * @param user
      * @return LiteInventoryBase
      */
-    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser user, HardwareType type);
+    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser user);
 
     /**
      * For Import - Populates the Model object and calls Service to Remove a
