@@ -79,8 +79,8 @@ BOOL CtiFDR_ValmetMulti::run( void )
     // load up the base class
     CtiFDRScadaServer::run();
 
-    //Load a listener on each port
-    startMultiListeners();
+    _listnerStarterThread = rwMakeThreadFunction(*this, &CtiFDR_ValmetMulti::threadListenerStartupMonitor);
+    _listnerStarterThread.start();
 
     return TRUE;
 }
@@ -90,6 +90,9 @@ BOOL CtiFDR_ValmetMulti::stop( void )
     // stop the base class
     CtiFDRScadaServer::stop();
 
+    _listnerStarterThread.requestCancellation();
+    _listnerStarterThread.join();
+
     //Stop all listener threads happens in CtiFDRSocketServer
     stopMultiListeners();
 
@@ -98,23 +101,34 @@ BOOL CtiFDR_ValmetMulti::stop( void )
 
 void CtiFDR_ValmetMulti::startMultiListeners()
 {
+    CtiLockGuard<CtiMutex> lockGuard(_listeningThreadManagementMutex);
+
     for each(int port in _listeningPortNumbers)
     {
-        RWThreadFunction thr = rwMakeThreadFunction(*(static_cast<CtiFDRSocketServer*>(this)),
-                                                    &CtiFDR_ValmetMulti::threadFunctionConnection,
-                                                    port,
-                                                    _listenerThreadStartupDelay);
-        thr.start();
-        _listenerThreads.push_back(thr);
+        PortNumToListenerThreadMap::iterator itr = _listenerThreads.find(port);
+        if (itr == _listenerThreads.end())
+        {
+            RWThreadFunction thr = rwMakeThreadFunction(*(static_cast<CtiFDRSocketServer*>(this)),
+                                                        &CtiFDR_ValmetMulti::threadFunctionConnection,
+                                                        port,
+                                                        _listenerThreadStartupDelay);
+            thr.start();
+
+            _listenerThreads[port] = thr;
+        } // There is already a thread running.
     }
+
+    _listeningPortNumbers.clear();
 }
 
 void CtiFDR_ValmetMulti::stopMultiListeners()
 {
-    for each(RWThreadFunction thr in _listenerThreads)
+    CtiLockGuard<CtiMutex> lockGuard(_listeningThreadManagementMutex);
+
+    for each(std::pair<int,RWThreadFunction> itr in _listenerThreads)
     {
-        thr.requestCancellation();
-        thr.join();
+        itr.second.requestCancellation();
+        itr.second.join();
     }
 }
 
@@ -230,8 +244,9 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
         valmetPortId.PortNumber = atoi(portNumber.c_str());
         valmetPortId.PointName = pointName;
 
-        if(valmetPortId.PortNumber != 0)
+        if (valmetPortId.PortNumber != 0)
         {
+            CtiLockGuard<CtiMutex> lockGuard(_listeningThreadManagementMutex);
             _listeningPortNumbers.insert(valmetPortId.PortNumber);
         }
 
@@ -1100,6 +1115,47 @@ bool CtiFDR_ValmetMulti::alwaysSendRegistrationPoints()
 {
     return true;
 }
+
+void CtiFDR_ValmetMulti::threadListenerStartupMonitor( void )
+{
+    RWRunnableSelf pSelf = rwRunnable();
+    int refreshDelaySeconds = 5;
+    CtiTime timeNow;
+    CtiTime refreshTime = timeNow + refreshDelaySeconds;
+
+    try
+    {
+        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            logNow() << " Initializing CtiFDR_ValmetMulti::threadListenerStartupMonitor " << endl;
+        }
+
+        for ( ; ; )
+        {
+            pSelf.serviceCancellation( );
+            pSelf.sleep (1000);
+
+            timeNow = CtiTime();
+            if (timeNow >= refreshTime)
+            {
+                startMultiListeners();
+                refreshTime = timeNow + refreshDelaySeconds;
+            }
+        }
+    }
+    catch ( RWCancellation &cancellationMsg )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        logNow() << "threadListenerStartupMonitor shutdown" << endl;
+    }
+    catch ( ... ) // try and catch the thread death
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        logNow() << "Fatal Error: threadListenerStartupMonitor is dead! " << endl;
+    }
+}
+
 
 /****************************************************************************************
 *

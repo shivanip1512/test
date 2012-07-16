@@ -86,11 +86,16 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
 
         virtual CtiFDRClientServerConnection* findConnectionForDestination(const CtiFDRDestination destination) const;
 
+    protected:
+        void threadListenerStartupMonitor();
+
     private:
 
         void startMultiListeners();
         void stopMultiListeners();
 
+        RWThreadFunction _listnerStarterThread;
+        CtiMutex _listeningThreadManagementMutex;
         std::set<int> _listeningPortNumbers;
 
         static const CHAR * KEY_LISTEN_PORT_NUMBER;
@@ -109,7 +114,8 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
 
         CtiFDRScadaHelper<CtiValmetPortId>* _helper;
 
-        std::vector<RWThreadFunction> _listenerThreads;
+        typedef std::map<int,RWThreadFunction> PortNumToListenerThreadMap;
+        PortNumToListenerThreadMap _listenerThreads;
 
         typedef std::map<std::string,int> NameToPointIdMap;
         NameToPointIdMap _receiveNameToPointId;
