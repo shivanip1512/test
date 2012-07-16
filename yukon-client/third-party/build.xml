@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<project name="third party jars" default="all">
+
+   <property file="../build/build.properties"/>
+
+   <target name="all" depends="clean,build">
+    </target>
+   
+   <target name="build">
+       <copy todir="${yukon.lib}" preservelastmodified="yes">
+           <fileset dir=".">
+               <include name="**/*.jar"/>
+               <include name="**/*.zip"/>
+               <include name="**/*.exe"/>
+               <include name="**/*.dll"/>
+           </fileset>
+       </copy>
+   </target>
+
+   <target name="install" depends="build">
+   	   <copy todir="${yukon.client.bin}" preservelastmodified="yes">
+   	   		<fileset dir=".">
+               <include name="**/*.jar"/>
+               <include name="**/*.zip"/>
+               <include name="**/*.exe"/>
+               <include name="**/*.dll"/>
+           </fileset>
+       </copy>
+   </target>
+      	   			
+   <target name="clean"/>
+   
+   <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
+   <target name="runUnitTests" description="Run all unit tests, stop on failure" />
+
+</project>
