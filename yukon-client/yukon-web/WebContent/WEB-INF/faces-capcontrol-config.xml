@@ -94,6 +94,11 @@
             <property-name>transactionTemplate</property-name>
             <value>#{transactionTemplate}</value>
         </managed-property>
+        
+        <managed-property>
+            <property-name>deviceConfigurationDao</property-name>
+            <value>#{deviceConfigurationDao}</value>
+        </managed-property>
     </managed-bean>
     
      <managed-bean>

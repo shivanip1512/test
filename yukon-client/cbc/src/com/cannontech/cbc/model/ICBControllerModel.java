@@ -6,6 +6,7 @@ import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
+import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.pao.YukonPAObject;
 
@@ -65,6 +66,8 @@ public interface ICBControllerModel {
     public abstract void resetSerialNumber();
 
     public abstract boolean isDevice702X();
+    
+    public abstract boolean isDevice802X();
 
     public abstract boolean isDevice701X();
     
@@ -77,4 +80,6 @@ public interface ICBControllerModel {
     public abstract boolean isTcpPort();
 
     public abstract boolean isTcpPort(RemoteBase cbc);
+    
+    public abstract DNPConfiguration getDnpConfiguration();
 }

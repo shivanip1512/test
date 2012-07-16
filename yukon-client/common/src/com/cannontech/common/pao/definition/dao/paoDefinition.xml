@@ -6842,9 +6842,15 @@
     </pao>
     <pao id="RTU_DART" inherits="RTU_BASE" creatable="false">
         <displayName>RTU-DART</displayName>
+        <tags>
+            <tag name="DEVICE_CONFIGURATION_DNP"/>
+        </tags>
     </pao>
     <pao id="RTU_DNP" inherits="RTU_BASE">
         <displayName>RTU-DNP</displayName>
+        <tags>
+            <tag name="DEVICE_CONFIGURATION_DNP"/>
+        </tags>
     </pao>
     <pao id="RTUILEX" inherits="RTU_BASE" creatable="false">
         <displayName>RTU-ILEX</displayName>
@@ -7344,6 +7350,7 @@
         </attributes>
         <tags>
             <tag name="TWO_WAY_DEVICE"/>
+            <tag name="DEVICE_CONFIGURATION_DNP"/>
         </tags>
     </pao>
         
@@ -7397,6 +7404,9 @@
     <pao id="CBC_DNP" inherits="CBC_DNP_BASE">
         <displayName>CBC DNP</displayName>
         <changeGroup>cap</changeGroup>
+        <tags>
+            <tag name="DEVICE_CONFIGURATION_DNP"/>
+        </tags>
     </pao>
     
     <pao id="CBC_702X_BASE" inherits="CBC_2WAY_BASE" abstract="true">

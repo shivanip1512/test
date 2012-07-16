@@ -43,6 +43,8 @@ import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanel;
@@ -69,6 +71,7 @@ import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.IPCMeter;
@@ -2473,6 +2476,16 @@ public void selectionPerformed(WizardPanelEvent event)
             // created in the device config UI
             selectInTree = !(newItem instanceof TOUSchedule)
                         || (newItem instanceof TOUSchedule && currentDatabase == DatabaseTypes.SYSTEM_DB);
+            
+            
+            // DNP devices need to be assigned the default DNP configuration on creation!
+            if (newItem instanceof DNPBase) {
+                DeviceConfigurationDao configurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
+                DNPConfiguration defaultConfig = (DNPConfiguration) configurationDao.getDefaultDNPConfiguration();
+                
+                DNPBase dnpBase = (DNPBase)newItem;
+                dnpBase.setDnpConfiguration(defaultConfig);
+            }
             
 			//try to insert the object into the DB
 			successfullInsertion = insertDBPersistent( newItem );

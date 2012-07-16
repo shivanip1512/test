@@ -17,6 +17,7 @@
 				<ref bean="mct470Config"/>
 				<ref bean="mct430Config"/>
 				<ref bean="mct420Config" />
+                <ref bean="dnpConfig"/>
 				<!-- 
 				<ref bean="mct410Config"/>
 				-->
@@ -559,6 +560,27 @@
 		</property>
 	</bean>
 
+    <bean id="dnpConfig" class="com.cannontech.common.device.config.model.ConfigurationTemplate">
+        <property name="name" value="DNP Configuration" />
+        <property name="view" value="DNPConfig" />
+        <property name="description" value="DNP Configuration" />
+        <property name="categoryList">
+            <list>
+                <ref bean="dnpCategory2"/>
+            </list>
+        </property>
+        
+        <property name="dbNameMapping">
+            <props>
+                <prop key="Internal Retries">internalRetries</prop>
+                <prop key="Local Time">localTime</prop>
+                <prop key="Enable DNP Timesyncs">enableDnpTimesyncs</prop>
+                <prop key="Omit Time Request">omitTimeRequest</prop>
+                <prop key="Enable Unsolicited Messages">enableUnsolicitedMessages</prop>
+            </props>
+        </property>
+    </bean>
+
 	<bean id="displayConfigEnum" class="com.cannontech.web.input.type.DelegatingEnumeratedType">
 		<property name="enumeratedType" ref="inputIntegerType" />
 		<property name="optionList">
@@ -911,6 +933,69 @@
 	
 	<!-- Configuration categories -->
 	
+    <bean id="dnpCategory2" class="com.cannontech.common.device.config.model.CategoryTemplate">
+        <property name="name" value="DNP Configuration" />
+        <property name="inputList">
+            <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Internal Retries" />
+                    <property name="field" value="internalRetries" />
+                    <property name="description">
+                        <value>
+                            The number of retries the DNP Application Layer will attempt before reporting an error out to the device. Default: 2.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputIntegerType" />
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Use Local Time" />
+                    <property name="field" value="localTime" />
+                    <property name="description">
+                        <value>
+                            Enable to have Yukon interpret and send times as local instead of UTC. Default: false.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputBooleanType" />
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Enable DNP Timesyncs" />
+                    <property name="field" value="enableDnpTimesyncs" />
+                    <property name="description">
+                        <value>
+                            Enable to turn on DNP timesyncs. Default: false.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputBooleanType" />
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Omit Time Request" />
+                    <property name="field" value="omitTimeRequest" />
+                    <property name="description">
+                        <value>
+                            Enable to allow DNP scans to omit time request. Default: false.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputBooleanType" />
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="displayName" value="Enable Unsolicited Messages" />
+                    <property name="field" value="enableUnsolicitedMessages" />
+                    <property name="description">
+                        <value>
+                            Enable to allow sending of unsolicited messages following a device restart. Default: true.
+                        </value>
+                    </property>
+                    <property name="type" ref="inputBooleanType" />
+                    <property name="security" ref="configEditSecurity" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+    
 	<bean id="addressingCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT Addressing" />
 		<property name="inputList">
@@ -2044,8 +2129,8 @@
 					<property name="field" value="channel2Length" />
 					<property name="description">
 						<value>
-							Number of days at 15 minute intervl
-						</value>
+                            Number of days at 15 minute interval
+                        </value>
 					</property>
 					<property name="type" ref="inputIntegerType" />
 					<property name="validatorList">

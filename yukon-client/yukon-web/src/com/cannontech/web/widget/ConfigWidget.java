@@ -86,15 +86,14 @@ public class ConfigWidget extends WidgetControllerBase {
     
     @RequestMapping
     public ModelAndView assignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         Meter meter = getMeter(request);
         
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration");
-        if(configId > -1) {
+        if (configId > -1) {
             ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
             deviceConfigurationDao.assignConfigToDevice(configuration, meter);
-        }else {
-            deviceConfigurationDao.unassignConfig(deviceId);
+        } else {
+            deviceConfigurationDao.unassignConfig(meter);
         }
         
         ModelAndView mav = getConfigModelAndView(request);

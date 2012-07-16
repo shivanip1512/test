@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -14,6 +16,8 @@ import com.cannontech.common.device.config.model.CategoryTemplate;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.Input;
 import com.cannontech.web.input.InputFormController;
 import com.cannontech.web.input.InputRoot;
@@ -95,15 +99,17 @@ public class DeviceConfigurationFormController extends InputFormController {
     }
 
     @Override
-    protected ModelAndView onSubmit(Object command) throws Exception {
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, 
+                                    Object command, BindException errors) throws Exception {
+        FlashScope flashScope = new FlashScope(request);
 
         ConfigurationBase config = (ConfigurationBase) command;
-
+       
         deviceConfigurationDao.save(config);
 
         ModelAndView mav = new ModelAndView(getSuccessView());
-
-        mav.addObject("message", "Successfully saved: " + config.getName());
+        
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.saveSuccess"));
 
         return mav;
     }

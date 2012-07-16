@@ -68,8 +68,9 @@ public interface DeviceConfigurationDao {
     /**
      * Method to remove the configuration assignment from the device
      * @param deviceId - Id of device to remove config for
+     * @throws InvalidDeviceTypeException 
      */
-    public void unassignConfig(Integer deviceId);
+    public void unassignConfig(YukonDevice device) throws InvalidDeviceTypeException;
     
     /**
      * Returns configuration of a device or null if the device is not assigned
@@ -93,4 +94,9 @@ public interface DeviceConfigurationDao {
      * @return
      */
     public String getValueForFieldName(int configId, String fieldName);
+    
+    /**
+     * Returns the DNP configuration in the database with the lowest ID
+     */
+    public ConfigurationBase getDefaultDNPConfiguration();
 }

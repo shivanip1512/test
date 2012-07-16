@@ -50,6 +50,9 @@ import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.service.CapControlCreationModel;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -164,6 +167,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private CapControlCreationService capControlCreationService;
     private CapbankControllerDao capbankControllerDao;
     private CapControlCache capControlCache;
+    private DeviceConfigurationDao deviceConfigurationDao;
     private StrategyDao strategyDao;
     private PaoScheduleDao paoScheduleDao;
     private CapbankDao capbankDao;
@@ -179,6 +183,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     Logger log = YukonLogManager.getLogger(CapControlForm.class);
     private ControlAlgorithm currentControlAlgorithm;
     private ControlMethod currentControlMethod;
+    
+    public ConfigurationBase getDefaultDnpConfiguration() {
+        ConfigurationBase configurationBase = deviceConfigurationDao.getDefaultDNPConfiguration();
+        return configurationBase;
+    }
     
     /**
      * Returns a Season object for each season of the current schedule.
@@ -1023,7 +1032,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                         boolean cbcDisabled = cbcWizard.getDisabled();
                         String cbcName = cbcWizard.getName();
                         int cbcPortId = cbcWizard.getPortID();
-                        PaoIdentifier controller = capControlCreationService.createCbc(cbcType, cbcName, cbcDisabled, cbcPortId);
+                        PaoIdentifier controller = capControlCreationService.createCbc(cbcType, cbcName, cbcDisabled, cbcPortId, getDefaultDnpConfiguration());
                         PaoIdentifier capbank = capControlCreationService.createCapControlObject(paoType, name, disabled);
                         int controllerId = controller.getPaoId();
                         int tempItemId = capbank.getPaoId();
@@ -1031,7 +1040,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                         itemId = tempItemId;
                     } else if (isController) {
                         PaoType cbcType = PaoType.getForId(wizard.getSelectedType());
-                	    PaoIdentifier item = capControlCreationService.createCbc(cbcType, name, disabled, portId);
+                	    PaoIdentifier item = capControlCreationService.createCbc(cbcType, name, disabled, portId, getDefaultDnpConfiguration());
                 	    itemId = item.getPaoId();
                     } else {
                         PaoIdentifier item = capControlCreationService.createCapControlObject(paoType, name, disabled);
@@ -2172,6 +2181,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public void setCapbankDao(CapbankDao capbankDao) {
         this.capbankDao = capbankDao;
+    }
+    
+    public void setDeviceConfigurationDao(DeviceConfigurationDao deviceConfigurationDao) {
+        this.deviceConfigurationDao = deviceConfigurationDao;
     }
     
     public void setFeederDao(FeederDao feederDao) {

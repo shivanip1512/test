@@ -11,6 +11,8 @@ import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.SubstationDao;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoScheduleDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -29,6 +31,7 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
     @Autowired private CapbankControllerDao capbankControllerDao;
     @Autowired private PaoScheduleDao paoScheduleDao;
     @Autowired private StrategyDao strategyDao;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
 
     @Override
     protected void createAll() {
@@ -87,7 +90,8 @@ public class DevCapControlCreationService extends DevObjectCreationBase {
             }
 
             if (paoType.isCbc()) {
-                capControlCreationService.createCbc(paoType, name, disabled, portId);
+                ConfigurationBase config = deviceConfigurationDao.getDefaultDNPConfiguration();
+                capControlCreationService.createCbc(paoType, name, disabled, portId, config);
             } else {
                 capControlCreationService.createCapControlObject(paoType, name, false);
             }

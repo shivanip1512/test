@@ -1,5 +1,6 @@
 package com.cannontech.capcontrol.creation.service;
 
+import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 
@@ -19,7 +20,9 @@ public interface CapControlCreationService {
 	 * @param name the name of the CBC
 	 * @param disabled whether or not the new CBC will be disabled
 	 * @param portId for the comm channel the CBC will be operating on
+	 * @param config the dnp configuration the CBC will be assigned to
 	 * @return the PaoIdentifier representing the newly created CBC.
 	 */
-	public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId);
+	public PaoIdentifier createCbc(PaoType paoType, String name, boolean disabled, int portId, 
+	                               ConfigurationBase configId);
 }

@@ -43,7 +43,7 @@ public class InputBase<T> implements InputSource<T> {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description.trim();
     }
 
     public InputType<T> getType() {

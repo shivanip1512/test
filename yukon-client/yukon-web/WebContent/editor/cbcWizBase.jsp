@@ -139,6 +139,21 @@
 
 						</x:panelGroup>
                         
+                        <x:panelGroup rendered="#{capControlForm.wizData.portNeeded || 
+                                                  (capControlForm.wizData.createNested && capControlForm.wizData.nestedWizard.portNeeded)}">
+                            <x:htmlTag value="fieldset" styleClass="fieldSet">
+                                <x:htmlTag value="legend"><x:outputText value="Configuration"/></x:htmlTag>
+                                
+                                <x:panelGrid columns="2">
+                                    
+                                    <x:outputLabel for="CBC_DNP_Config" value="DNP Configuration: " 
+                                        title="The default DNP configuration the CBC will be assigned to."/>
+                                    <x:outputLabel value="#{capControlForm.defaultDnpConfiguration.name}" />
+                                </x:panelGrid>
+
+                            </x:htmlTag>
+                        </x:panelGroup>
+                        
 						<f:facet name="footer">
 							<x:panelGroup>
 								<x:htmlTag value="br"/>

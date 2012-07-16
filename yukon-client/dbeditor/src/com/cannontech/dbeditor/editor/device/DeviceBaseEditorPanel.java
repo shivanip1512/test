@@ -26,6 +26,7 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -118,8 +119,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 	private javax.swing.JComboBox ivjJComboBoxAmpUseType = null;
 	private javax.swing.JLabel ivjJLabelCCUAmpUseType = null;
 	EventHandler eventHandler = new EventHandler();
-	private javax.swing.JLabel ivjConfigLabel = null;
-	private javax.swing.JLabel assignedConfigLabel = null;
+	private javax.swing.JLabel ivjMctConfigLabel = null;
+	private javax.swing.JLabel assignedMctConfigLabel = null;
 	private javax.swing.JComboBox ivjTOUComboBox = null;
 	private javax.swing.JLabel ivjTOULabel = null;
 	private javax.swing.JLabel ivjSecurityCodeLabel = null;
@@ -134,7 +135,17 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 	
     int deviceType;
     
-	private javax.swing.JPanel jPanelMCTSettings = null;
+    private JLabel internalRetriesLabel = null;
+    private JLabel internalRetriesValueLabel = null;
+    private JLabel localTimeLabel = null;
+    private JLabel localTimeValueLabel = null;
+    private JLabel timesyncLabel = null;
+    private JLabel timesyncValueLabel = null;
+    private JLabel dnpConfigLabel = null;
+    private JLabel assignedDnpConfigLabel = null;
+    
+	private JPanel jPanelMCTSettings = null;
+	private JPanel dnpConfigPanel = null;
     private JTextField serialNumberTextField;
     private JTextField manufacturerTextField;
     private JTextField modelTextField;
@@ -468,46 +479,239 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	}
     	return communicationPanel;
     }
+    
+    private JPanel getDnpConfigPanel() {
+        if (dnpConfigPanel == null) {
+            dnpConfigPanel = new JPanel();
+            
+            dnpConfigPanel.setBorder(BorderFactory.createTitledBorder(null, "DNP Additional Settings", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font("Dialog", Font.BOLD, 12), Color.black));
+            dnpConfigPanel.setName("DNPConfigPanel");
+            dnpConfigPanel.setLayout(new GridBagLayout());
+            dnpConfigPanel.setVisible(false);
+            
+            GridBagConstraints configLabelConstraints = new GridBagConstraints();
+            GridBagConstraints assignedConfigLabelConstraints = new GridBagConstraints();
+            GridBagConstraints retriesLabelConstraints = new GridBagConstraints();
+            GridBagConstraints retriesValueLabelConstraints = new GridBagConstraints();
+            GridBagConstraints localTimeLabelConstraints = new GridBagConstraints();
+            GridBagConstraints localTimeValueLabelConstraints = new GridBagConstraints();
+            GridBagConstraints timesyncLabelConstraints = new GridBagConstraints();
+            GridBagConstraints timesyncValueLabelConstraints = new GridBagConstraints();
+            
+            configLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            configLabelConstraints.gridy = 0;
+            configLabelConstraints.gridx = 0;
+            configLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            
+            assignedConfigLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            assignedConfigLabelConstraints.fill = GridBagConstraints.HORIZONTAL;
+            assignedConfigLabelConstraints.gridy = 0;
+            assignedConfigLabelConstraints.gridx = 1;
+            assignedConfigLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            
+            retriesLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            retriesLabelConstraints.gridy = 1;
+            retriesLabelConstraints.gridx = 0;
+            retriesLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            
+            retriesValueLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            retriesValueLabelConstraints.fill = GridBagConstraints.HORIZONTAL;
+            retriesValueLabelConstraints.gridy = 1;
+            retriesValueLabelConstraints.gridx = 1;
+            retriesValueLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            
+            localTimeLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            localTimeLabelConstraints.gridy = 2;
+            localTimeLabelConstraints.gridx = 0;
+            localTimeLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            
+            localTimeValueLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            localTimeValueLabelConstraints.fill = GridBagConstraints.HORIZONTAL;
+            localTimeValueLabelConstraints.gridy = 2;
+            localTimeValueLabelConstraints.gridx = 1;
+            localTimeValueLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            
+            timesyncLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            timesyncLabelConstraints.gridy = 3;
+            timesyncLabelConstraints.gridx = 0;
+            timesyncLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            
+            timesyncValueLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            timesyncValueLabelConstraints.fill = GridBagConstraints.HORIZONTAL;
+            timesyncValueLabelConstraints.gridy = 3;
+            timesyncValueLabelConstraints.gridx = 1;
+            timesyncValueLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            
+            dnpConfigPanel.add(getDnpConfigLabel(), configLabelConstraints);
+            dnpConfigPanel.add(getAssignedDnpConfigLabel(), assignedConfigLabelConstraints);
+            dnpConfigPanel.add(getInternalRetriesLabel(), retriesLabelConstraints);
+            dnpConfigPanel.add(getInternalRetriesValueLabel(), retriesValueLabelConstraints);
+            dnpConfigPanel.add(getLocaltimeLabel(), localTimeLabelConstraints);
+            dnpConfigPanel.add(getLocaltimeValueLabel(), localTimeValueLabelConstraints);
+            dnpConfigPanel.add(getTimesyncLabel(), timesyncLabelConstraints);
+            dnpConfigPanel.add(getTimesyncValueLabel(), timesyncValueLabelConstraints);
+        }
+        
+        return dnpConfigPanel;
+    }
 
     /**
      * Return the ConfigLabel property value.
      * @return javax.swing.JLabel
      */
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
-    private javax.swing.JLabel getConfigLabel() {
-    	if (ivjConfigLabel == null) {
+    private javax.swing.JLabel getMctConfigLabel() {
+    	if (ivjMctConfigLabel == null) {
     		try {
-    			ivjConfigLabel = new javax.swing.JLabel();
-    			ivjConfigLabel.setName("ConfigLabel");
-    			ivjConfigLabel.setFont(new java.awt.Font("dialog", 0, 14));
-    			ivjConfigLabel.setText("MCT Config: ");
-    			ivjConfigLabel.setVisible(true);
-    			// user code begin {1}
-    			ivjConfigLabel.setPreferredSize(new java.awt.Dimension(172,19));
-    			ivjConfigLabel.setMaximumSize(new java.awt.Dimension(172,19));
-    			ivjConfigLabel.setMinimumSize(new java.awt.Dimension(172,19));
-    			ivjConfigLabel.setFont(new java.awt.Font("Arial", 0, 14));
-    			// user code end
+    			ivjMctConfigLabel = new javax.swing.JLabel();
+    			ivjMctConfigLabel.setName("MctConfigLabel");
+    			ivjMctConfigLabel.setFont(new java.awt.Font("dialog", 0, 14));
+    			ivjMctConfigLabel.setText("MCT Config: ");
+    			ivjMctConfigLabel.setVisible(true);
+    			ivjMctConfigLabel.setPreferredSize(new java.awt.Dimension(172,19));
+    			ivjMctConfigLabel.setMaximumSize(new java.awt.Dimension(172,19));
+    			ivjMctConfigLabel.setMinimumSize(new java.awt.Dimension(172,19));
+    			ivjMctConfigLabel.setFont(new java.awt.Font("Arial", 0, 14));
     		} catch (java.lang.Throwable ivjExc) {
-    			// user code begin {2}
-    			// user code end
     			handleException(ivjExc);
     		}
     	}
-    	return ivjConfigLabel;
+    	return ivjMctConfigLabel;
     }
 
-    private JLabel getAssignedConfigLabel() {
-        if (assignedConfigLabel == null) {
-            assignedConfigLabel = new JLabel();
-            assignedConfigLabel.setFont(new java.awt.Font("dialog", 0, 14));
-            assignedConfigLabel.setText(CtiUtilities.STRING_NONE);
-            assignedConfigLabel.setPreferredSize(new java.awt.Dimension(172,19));
-            assignedConfigLabel.setMaximumSize(new java.awt.Dimension(172,19));
-            assignedConfigLabel.setMinimumSize(new java.awt.Dimension(172,19));
-            assignedConfigLabel.setFont(new java.awt.Font("Arial", 0, 14));
+    private JLabel getAssignedMctConfigLabel() {
+        if (assignedMctConfigLabel == null) {
+            assignedMctConfigLabel = new JLabel();
+            assignedMctConfigLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            assignedMctConfigLabel.setText(CtiUtilities.STRING_NONE);
+            assignedMctConfigLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            assignedMctConfigLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            assignedMctConfigLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            assignedMctConfigLabel.setFont(new java.awt.Font("Arial", 0, 14));
         }
-        return assignedConfigLabel;
+        return assignedMctConfigLabel;
+    }
+    
+    private JLabel getAssignedDnpConfigLabel() {
+        if (assignedDnpConfigLabel == null) {
+            assignedDnpConfigLabel = new JLabel();
+            assignedDnpConfigLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            assignedDnpConfigLabel.setText(CtiUtilities.STRING_NONE);
+            assignedDnpConfigLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            assignedDnpConfigLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            assignedDnpConfigLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            assignedDnpConfigLabel.setFont(new java.awt.Font("Arial", 0, 14));
+        }
+        return assignedDnpConfigLabel;
+    }
+    
+    private JLabel getDnpConfigLabel() {
+        if (dnpConfigLabel == null) {
+            try {
+                dnpConfigLabel = new javax.swing.JLabel();
+                dnpConfigLabel.setName("DnpConfigLabel");
+                dnpConfigLabel.setFont(new java.awt.Font("dialog", 0, 14));
+                dnpConfigLabel.setText("DNP Config: ");
+                dnpConfigLabel.setVisible(true);
+                dnpConfigLabel.setPreferredSize(new java.awt.Dimension(172,19));
+                dnpConfigLabel.setMaximumSize(new java.awt.Dimension(172,19));
+                dnpConfigLabel.setMinimumSize(new java.awt.Dimension(172,19));
+                dnpConfigLabel.setFont(new java.awt.Font("Arial", 0, 14));
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return dnpConfigLabel;
+    }
+    
+    private JLabel getInternalRetriesLabel() {
+        if (internalRetriesLabel == null) {
+            internalRetriesLabel = new JLabel();
+            internalRetriesLabel.setName("InternalRetriesLabel");
+            internalRetriesLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            internalRetriesLabel.setText("Internal Retries: ");
+            internalRetriesLabel.setVisible(true);
+            internalRetriesLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            internalRetriesLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            internalRetriesLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            internalRetriesLabel.setFont(new java.awt.Font("Arial", 0, 14));
+        }
+        
+        return internalRetriesLabel;
+    }
+    
+    private JLabel getInternalRetriesValueLabel() {
+        if (internalRetriesValueLabel == null) {
+            internalRetriesValueLabel = new JLabel();
+            internalRetriesValueLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            internalRetriesValueLabel.setText(CtiUtilities.STRING_NONE);
+            internalRetriesValueLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            internalRetriesValueLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            internalRetriesValueLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            internalRetriesValueLabel.setFont(new java.awt.Font("Arial", 0, 14));
+        }
+        
+        return internalRetriesValueLabel;
+    }
+    
+    private JLabel getLocaltimeLabel() {
+        if (localTimeLabel == null) {
+            localTimeLabel = new JLabel();
+            localTimeLabel.setName("LocalTimeLabel");
+            localTimeLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            localTimeLabel.setText("Use Local Time: ");
+            localTimeLabel.setVisible(true);
+            localTimeLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            localTimeLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            localTimeLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            localTimeLabel.setFont(new java.awt.Font("Arial", 0, 14));
+        }
+        
+        return localTimeLabel;
+    }
+    
+    private JLabel getLocaltimeValueLabel() {
+        if (localTimeValueLabel == null) {
+            localTimeValueLabel = new JLabel();
+            localTimeValueLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            localTimeValueLabel.setText(CtiUtilities.STRING_NONE);
+            localTimeValueLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            localTimeValueLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            localTimeValueLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            localTimeValueLabel.setFont(new java.awt.Font("Arial", 0, 14));
+        }
+        
+        return localTimeValueLabel;
+    }
+    
+    private JLabel getTimesyncLabel() {
+        if (timesyncLabel == null) {
+            timesyncLabel = new JLabel();
+            timesyncLabel.setName("TimesyncLabel");
+            timesyncLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            timesyncLabel.setText("Timesyncs Enabled: ");
+            timesyncLabel.setVisible(true);
+            timesyncLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            timesyncLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            timesyncLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            timesyncLabel.setFont(new java.awt.Font("Arial", 0, 14));
+        }
+        
+        return timesyncLabel;
+    }
+    
+    private JLabel getTimesyncValueLabel() {
+        if (timesyncValueLabel == null) {
+            timesyncValueLabel = new JLabel();
+            timesyncValueLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            timesyncValueLabel.setText(CtiUtilities.STRING_NONE);
+            timesyncValueLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            timesyncValueLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            timesyncValueLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            timesyncValueLabel.setFont(new java.awt.Font("Arial", 0, 14));
+        }
+        
+        return timesyncValueLabel;
     }
 
     /**
@@ -1948,6 +2152,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	GridBagConstraints identificationPanelConstraints = new GridBagConstraints();
     	GridBagConstraints mctSettingsConstraints = new GridBagConstraints();
     	GridBagConstraints commPanelConstraints = new GridBagConstraints();
+    	GridBagConstraints dnpPanelConstraints = new GridBagConstraints();
     	
     	identificationPanelConstraints.insets = new Insets(3, 3, 3, 3);
     	identificationPanelConstraints.gridy = 0;
@@ -1969,9 +2174,17 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	mctSettingsConstraints.fill = GridBagConstraints.HORIZONTAL;
     	mctSettingsConstraints.anchor = GridBagConstraints.NORTHWEST;
     	
+    	dnpPanelConstraints.insets = new java.awt.Insets(3, 3, 3, 3);
+    	dnpPanelConstraints.gridy = 3;
+    	dnpPanelConstraints.gridx = 0;
+    	dnpPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+    	dnpPanelConstraints.anchor = GridBagConstraints.NORTHWEST;
+    	
     	add(getIdentificationPanel(), identificationPanelConstraints);
     	add(getJPanelMCTSettings(), mctSettingsConstraints);
+    	add(getDnpConfigPanel(), dnpPanelConstraints);
     	add(getCommunicationPanel(), commPanelConstraints);
+    	
     	try {
       		initConnections();
     	} catch (java.lang.Throwable ivjExc) {
@@ -1994,7 +2207,6 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     		setErrorString("The Address text field must be filled in");
     		return false;
     	}
-    
     
     	if( getPhysicalAddressTextField().isVisible() ) {
     		PaoType paoType = PaoType.getForDbString(deviceBase.getPAOType());
@@ -2136,17 +2348,17 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     	   if(base instanceof MCT430A || base instanceof MCT430A3 || base instanceof MCT430S4 || base instanceof MCT430S4 || base instanceof MCT470) {
     	       MCTBase mctBase = (MCTBase) base;
     	       int id = mctBase.getPAObjectID();
-    	       int type = PAOGroups.getDeviceType(mctBase.getPAOType());
+    	       PaoType type = PaoType.getForDbString(mctBase.getPAOType());
     	       SimpleDevice device = new SimpleDevice(id, type);
     	       DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
     	       ConfigurationBase config = deviceConfigurationDao.findConfigurationForDevice(device);
     	       if(config != null){
-    	           getAssignedConfigLabel().setText(config.getName());
+    	           getAssignedMctConfigLabel().setText(config.getName());
     	       } else {
-    	           getAssignedConfigLabel().setText(CtiUtilities.STRING_NONE);
+    	           getAssignedMctConfigLabel().setText(CtiUtilities.STRING_NONE);
     	       }
            } else {
-               getAssignedConfigLabel().setText("Not Supported");
+               getAssignedMctConfigLabel().setText("Not Supported");
            }
     	   if(base instanceof MCT400SeriesBase)
     	   {
@@ -2566,13 +2778,42 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     		getPasswordLabel().setVisible(false);
     		getPasswordTextField().setVisible(false);
     		
-    	}else {
+    	} else {
     		getPasswordLabel().setVisible(false);
     		getPasswordTextField().setVisible(false);
     		getSlaveAddressLabel().setVisible(false);
     		getSlaveAddressComboBox().setVisible(false);
     	}
-    
+    	
+    	if (PaoType.getForDbString(rBase.getPAOType()) == PaoType.RTU_DNP) {
+    	    getDnpConfigPanel().setVisible(true);
+    	    int id = rBase.getPAObjectID();
+            PaoType type = PaoType.getForDbString(rBase.getPAOType());
+            SimpleDevice device = new SimpleDevice(id, type);
+            DeviceConfigurationDao deviceConfigurationDao = YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
+            DNPConfiguration config = (DNPConfiguration) deviceConfigurationDao.findConfigurationForDevice(device);
+            if(config != null) {
+                config = (DNPConfiguration) deviceConfigurationDao.getConfiguration(config.getId());
+                getAssignedDnpConfigLabel().setText(config.getName());
+                
+                int internalRetries = config.getInternalRetries() != null ? config.getInternalRetries() : DNPConfiguration.InternalRetriesDefault;
+                boolean localTime = config.getLocalTime() != null ? config.getLocalTime() : DNPConfiguration.LocalTimeDefault;
+                boolean enableTimesyncs = config.getEnableDnpTimesyncs() != null ? config.getEnableDnpTimesyncs() : DNPConfiguration.EnableTimesyncsDefault;
+                
+                getInternalRetriesValueLabel().setText(Integer.toString(internalRetries));
+                getLocaltimeValueLabel().setText(Boolean.toString(localTime));
+                getTimesyncValueLabel().setText(Boolean.toString(enableTimesyncs));
+            } else {
+                getAssignedDnpConfigLabel().setText(CtiUtilities.STRING_NONE);
+                getAssignedDnpConfigLabel().setForeground(Color.RED);
+                getInternalRetriesValueLabel().setText("MISSING!");
+                getInternalRetriesValueLabel().setForeground(Color.RED);
+                getLocaltimeValueLabel().setText("MISSING!");
+                getLocaltimeValueLabel().setForeground(Color.RED);
+                getTimesyncValueLabel().setText("MISSING!");
+                getTimesyncValueLabel().setForeground(Color.RED);
+            }
+    	}
        
        if( postCommWait != null )
           getPostCommWaitSpinner().setValue( postCommWait );
@@ -2725,16 +2966,15 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
 			assignedConfigLabelConstraints.gridx = 1;
 			assignedConfigLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
 			
-			
 			configLabelConstraints.insets = new Insets(3, 3, 3, 3);
 			configLabelConstraints.gridy = 0;
 			configLabelConstraints.gridx = 0;
 			configLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
 			
-			jPanelMCTSettings.add(getConfigLabel(), configLabelConstraints);
+			jPanelMCTSettings.add(getMctConfigLabel(), configLabelConstraints);
 			jPanelMCTSettings.add(getTOULabel(), touLabelContstraints);
 			jPanelMCTSettings.add(getTOUComboBox(), touComboBoxConstraints);
-			jPanelMCTSettings.add(getAssignedConfigLabel(), assignedConfigLabelConstraints);
+			jPanelMCTSettings.add(getAssignedMctConfigLabel(), assignedConfigLabelConstraints);
 		}
 		return jPanelMCTSettings;
 	}

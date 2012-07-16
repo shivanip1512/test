@@ -1,10 +1,11 @@
 package com.cannontech.common.device.config.dao;
 
 import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.MCT410Configuration;
+import com.cannontech.common.device.config.model.MCT420Configuration;
 import com.cannontech.common.device.config.model.MCT430Configuration;
 import com.cannontech.common.device.config.model.MCT470Configuration;
-import com.cannontech.common.device.config.model.MCT420Configuration;
 import com.cannontech.common.pao.definition.model.PaoTag;
 
 /**
@@ -62,6 +63,19 @@ public enum ConfigurationType {
 
         public PaoTag getSupportedDeviceTag() {
             return null;
+        }
+    },
+    DNP {
+        public ConfigurationBase getConfigurationClass() {
+            return new DNPConfiguration();
+        };
+        
+        public String getConfigurationTemplateName() {
+            return "DNP Configuration";
+        }
+        
+        public PaoTag getSupportedDeviceTag() {
+            return PaoTag.DEVICE_CONFIGURATION_DNP;
         }
     };
 

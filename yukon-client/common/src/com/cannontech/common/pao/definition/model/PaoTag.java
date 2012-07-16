@@ -18,6 +18,7 @@ public enum PaoTag {
 	DEVICE_CONFIGURATION_470("Device Configuration 470"),
 	DEVICE_CONFIGURATION_430("Device Configuration 430"),
 	DEVICE_CONFIGURATION_420("Device Configuration 420"),
+	DEVICE_CONFIGURATION_DNP("Device Configuration DNP"),
 	DEVICE_ICON_TYPE("Device Icon Type", stringType()),
 	DISCONNECT_COLLAR_COMPATIBLE("Disconnect Collar Compatible"),
 	DISCONNECT_RFN("RFN Disconnect"),

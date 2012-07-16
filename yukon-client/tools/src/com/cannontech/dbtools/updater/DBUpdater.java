@@ -311,6 +311,17 @@ public class DBUpdater extends MessageFrameAdaptor
     						line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM) );
             }
 
+            /*
+             * Check to see if this command contains a master.cfg parameter replacement indicator.
+             * Any statement that contains a string matching the form
+             * 
+             *      {master.cfg:CPARM_PARAMETER_NAME:default_value}
+             *      
+             * will be replaced exactly with the value of the cparm CPARM_PARAMETER_NAME from the
+             * master.cfg file or default_value if CPARM_PARAMETER_NAME doesn't exist in master.cfg.
+             */
+            cmd = MasterConfigUpdateHandler.handleConfigurationCommand(cmd);
+            
             getIMessageFrame().addOutput( "EXECUTING: " + cmd ); 
 
             if (line_.isWarnOnce()) {
@@ -434,30 +445,7 @@ public class DBUpdater extends MessageFrameAdaptor
 		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
 		getIMessageFrame().addOutput("Valid SQL strings LOADED (" + validLines.length + ")" );
 		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
-	}
-
-
-
-	private void printObjects( final Object[] values_, final File file_ )
-	{ 	
-		try
-		{			
-			FileWriter fileWriter = new FileWriter(file_);
-			
-			for( int i = 0; i < values_.length; i++ )
-			{
-				fileWriter.write( values_[i].toString() + LF );
-			}
-
-			fileWriter.close();						
-		}		
-		catch( Exception e)
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-
-	}
-	
+	}	
 
 	private void printUpdateLines( final UpdateLine[] values_, final File file_ )
 	{ 	

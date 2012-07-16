@@ -15,7 +15,6 @@ import org.apache.myfaces.custom.tree2.HtmlTree;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 
-
 import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
@@ -23,12 +22,20 @@ import com.cannontech.cbc.exceptions.SerialNumberExistsException;
 import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.config.model.DNPConfiguration;
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.*;
+import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
+import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.TwoWayDevice;
@@ -44,6 +51,7 @@ import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.capcontrol.CCSessionInfo;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
@@ -701,5 +709,18 @@ public class CBControllerEditor implements ICBControllerModel {
 	public boolean isTcpPort(RemoteBase cbc) {
 	    int portId = cbc.getDeviceDirectCommSettings().getPortID();
 	    return DeviceTypesFuncs.isTcpPort(portId);
+	}
+	
+	@Override
+	public DNPConfiguration getDnpConfiguration() {
+	    DeviceConfigurationDao configurationDao = 
+	            YukonSpringHook.getBean("deviceConfigurationDao", DeviceConfigurationDao.class);
+
+	    PaoIdentifier identifier = 
+	            new PaoIdentifier(deviceCBC.getPAObjectID(), 
+	                              PaoType.getForDbString(deviceCBC.getPAOType()));
+	    
+	    ConfigurationBase config = configurationDao.findConfigurationForDevice(new SimpleDevice(identifier));
+	    return (DNPConfiguration) configurationDao.getConfiguration(config.getId());
 	}
 }

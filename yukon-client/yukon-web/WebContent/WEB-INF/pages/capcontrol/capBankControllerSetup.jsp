@@ -276,6 +276,34 @@
                 rendered="#{capControlForm.editingAuthorized}"
 				actionListener="#{capControlForm.CBControllerEditor.deletePointClick}">
 			</x:commandLink>
+            <x:htmlTag value="br"/>
+            <x:htmlTag value="br"/>
+            <x:panelGroup rendered="#{capControlForm.CBControllerEditor.twoWay}">
+                <x:htmlTag value="fieldset" styleClass="fieldSet">
+                    <x:htmlTag value="legend"><x:outputText value="DNP Configuration"/></x:htmlTag>
+                    <x:div forceId="true" id="CBCCtlEditorScrollDiv2" styleClass="scrollSmall">
+                        <x:panelGrid columns="2">
+                            <x:outputLabel for="cntrlConfig" value="DNP Config: " title="The controller's assigned DNP Configuration." />
+                            <x:outputLabel for="cntrlConfigVal" value="#{capControlForm.CBControllerEditor.dnpConfiguration.name}"/>
+                            <x:outputLabel for="cntrlIntRetries" value="Internal Retries: " 
+                                title="The number of retries the DNP Application Layer will attempt before reporting an error out to the device."/>
+                            <x:outputLabel for="cntrlIntRetriesVal" value="#{capControlForm.CBControllerEditor.dnpConfiguration.internalRetries}"/>
+                            <x:outputLabel for="cntrlLocalTime" value="Use Local Time: " 
+                                title="Whether or not Yukon interprets and sends times as local instead of UTC."/>
+                            <x:outputLabel for="cntrlLocalTimeVal" value="#{capControlForm.CBControllerEditor.dnpConfiguration.localTime}"/>
+                            <x:outputLabel for="cntrlTimesyncs" value="Timesyncs Enabled: " 
+                                title="Whether or not DNP timesyncs are enabled."/>
+                            <x:outputLabel for="cntrlTimesyncsVal" value="#{capControlForm.CBControllerEditor.dnpConfiguration.enableDnpTimesyncs}"/>
+                            <x:outputLabel for="cntrlOmitTime" value="Omit Time Request: " 
+                                title="Whether or not DNP scans omit the time request."/>
+                            <x:outputLabel for="cntrlOmitTimeVal" value="#{capControlForm.CBControllerEditor.dnpConfiguration.omitTimeRequest}"/>
+                            <x:outputLabel for="cntrlUnsolicited" value="Enable Unsolicited: " 
+                                title="Whether or not the DNP device's unsolicited messaging is enabled following a device restart."/>
+                            <x:outputLabel for="cntrlUnsolicitedVal" value="#{capControlForm.CBControllerEditor.dnpConfiguration.enableUnsolicitedMessages}"/>
+                        </x:panelGrid>
+                    </x:div>
+                </x:htmlTag>
+            </x:panelGroup>
 
 		</h:column>
 

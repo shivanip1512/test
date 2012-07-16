@@ -121,6 +121,25 @@
 		<property name="inputRoot" ref="deviceConfigInputRoot" />
     </bean>
     
+    <bean name="/DNPConfig" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="commandName" value="deviceConfiguration" />
+        <property name="commandClass" value="com.cannontech.common.device.config.model.DNPConfiguration" />
+        <property name="formView" value="edit" />
+        <property name="successView" value="redirect:/spring/deviceConfiguration?home" />
+        <property name="configurationTemplate" ref="dnpConfig" />        
+        <property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
+        <property name="inputRoot" ref="deviceConfigInputRoot" />
+    </bean>
+    
     <bean id="deviceConfigInputRoot" class="com.cannontech.web.input.InputRoot" singleton="false">
 		<property name="inputList">
 			<list>

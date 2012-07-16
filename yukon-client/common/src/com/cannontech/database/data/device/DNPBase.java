@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.device.DeviceAddress;
 
@@ -12,6 +13,7 @@ import com.cannontech.database.db.device.DeviceAddress;
 public class DNPBase extends RemoteBase implements com.cannontech.database.db.DBCopiable
 {
    private DeviceAddress deviceAddress = null;
+   private DNPConfiguration dnpConfiguration = null;
 
 	/**
 	 * Constructor for DNPBase.
@@ -39,6 +41,10 @@ public class DNPBase extends RemoteBase implements com.cannontech.database.db.DB
    {
       super.add();
       getDeviceAddress().add();
+      
+      Object[] configValues = { getPAObjectID(), getDnpConfiguration().getId() };
+      
+      add("DeviceConfigurationDeviceMap", configValues);
    }
 
    /**
@@ -106,6 +112,14 @@ public class DNPBase extends RemoteBase implements com.cannontech.database.db.DB
    public void setDeviceAddress(DeviceAddress deviceAddr)
    {
       this.deviceAddress = deviceAddr;
+   }
+   
+   public void setDnpConfiguration(DNPConfiguration dnpConfiguration) {
+       this.dnpConfiguration = dnpConfiguration;
+   }
+   
+   public DNPConfiguration getDnpConfiguration() {
+       return dnpConfiguration;
    }
 
 }

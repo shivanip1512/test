@@ -16,6 +16,8 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
@@ -88,15 +90,17 @@ public class DeviceConfigurationController extends MultiActionController {
             throws ServletException {
 
         Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
-
-        deviceConfigurationDao.delete(configId);
-
         String viewPath = new String("redirect:/spring/deviceConfiguration?home");
-
         ModelAndView mav = new ModelAndView(viewPath);
-
-        mav.addObject("message", "Successfully removed device configuration");
-
+        FlashScope flashScope = new FlashScope(request);
+        
+        try {
+            deviceConfigurationDao.delete(configId);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.removeSuccess"));
+        } catch (RuntimeException e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.removeFail", e.getMessage()));
+        }
+        
         return mav;
     }
 
