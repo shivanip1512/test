@@ -1,6 +1,7 @@
 package com.cannontech.common.i18n;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.context.MessageSourceResolvable;
 
@@ -38,4 +39,17 @@ public interface ObjectFormattingService {
      */
     public <T> List<T> sortDisplayableValues(Iterable<T> toSort, T first, T last,
                                              YukonUserContext context);
+    
+    /**
+     * Sorts the map of keys to list of objects based on their localized values. Values are localized using
+     * {@link #formatObjectAsString(Object, YukonUserContext)}.
+     * 
+     * This method was intended to be used with the groupItems="true" feature of the 
+     * selectNameValue tag.  It sorts the keys and then sorts the values in each
+     * value's list.
+     * 
+     * @param toSort The list to sort. This list will not be modified.
+     * @return The sorted list.
+     */
+    public <S,T> Map<S, List<T>> sortDisplayableValues(Map<S, List<T>> toSort, YukonUserContext context); 
 }

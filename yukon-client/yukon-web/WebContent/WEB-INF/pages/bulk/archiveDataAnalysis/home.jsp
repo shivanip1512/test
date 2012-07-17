@@ -56,15 +56,7 @@
                         </form:select>
                     </tags:nameValue2>
                     
-                    <tags:nameValue2 nameKey=".attribute">
-                        <form:select path="selectedAttribute" class="dateTimeInputWidth">
-                            <c:forEach var="attribute" items="${attributes}">
-                                 <form:option value="${attribute}" title="${attribute.description}">
-                                    ${attribute.description}
-                                 </form:option>
-                            </c:forEach>
-                        </form:select>
-                    </tags:nameValue2>
+                    <tags:selectNameValue nameKey=".attributes" path="selectedAttribute" items="${groupedAttributes}" itemLabel="description" itemValue="key" groupItems="true"/>
                     
                     <tags:checkboxNameValue id="" path="excludeBadQualities" nameKey=".empty" excludeColon="true" checkBoxDescriptionNameKey=".normalQualitiesOnly"/>
                 </tags:nameValueContainer2>

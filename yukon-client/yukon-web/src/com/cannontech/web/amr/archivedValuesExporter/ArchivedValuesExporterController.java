@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -43,8 +44,10 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute.AttributeGroup;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -75,14 +78,21 @@ public class ArchivedValuesExporterController {
     @Autowired private ExportAttributeValidator exportAttributeValidator;
     @Autowired private ExportFieldValidator exportFieldValidator;
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
-    @Autowired private MeterDao meterDao;
     @Autowired private ExportReportGeneratorService exportReportGeneratorService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private ObjectFormattingService objectFormattingService;
     
     @ModelAttribute("attributes")
     public BuiltInAttribute[] getAttributes() {
         return BuiltInAttribute.values();
+    }
+    
+    @ModelAttribute("groupedAttributes")
+    public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributes(YukonUserContext userContext) {
+        return objectFormattingService.sortDisplayableValues(
+                BuiltInAttribute.getStandardGroupedAttributes(), userContext);
     }
 
     @ModelAttribute("dataSelection")

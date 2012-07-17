@@ -55,4 +55,21 @@
 
 <entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 
+<entry key="yukon.common.attributeGroups.current">Current</entry>
+<entry key="yukon.common.attributeGroups.demand">Demand</entry>
+<entry key="yukon.common.attributeGroups.general">General</entry>
+<entry key="yukon.common.attributeGroups.profile">Profile</entry>
+<entry key="yukon.common.attributeGroups.status">Status</entry>
+<entry key="yukon.common.attributeGroups.usage">Usage</entry>
+<entry key="yukon.common.attributeGroups.voltage">Voltage</entry>
+
+<entry key="yukon.common.attributeGroups.rfnHardware">Hardware</entry>
+<entry key="yukon.common.attributeGroups.rfnSoftware">Software</entry>
+<entry key="yukon.common.attributeGroups.rfnVoltage">Voltage</entry>
+<entry key="yukon.common.attributeGroups.rfnCurrent">Current</entry>
+<entry key="yukon.common.attributeGroups.rfnBlinkAndOutage">Blink &amp; Outage</entry>
+<entry key="yukon.common.attributeGroups.rfnDisconnect">Disconnect</entry>
+<entry key="yukon.common.attributeGroups.rfnDemand">Demand</entry>
+<entry key="yukon.common.attributeGroups.rfnOther">Other</entry>
+        
 </properties>

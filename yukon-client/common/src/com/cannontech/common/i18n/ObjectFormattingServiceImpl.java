@@ -3,6 +3,7 @@ package com.cannontech.common.i18n;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class ObjectFormattingServiceImpl implements ObjectFormattingService {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -86,5 +88,16 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
         });
 
         return retVal;
+    }
+
+    @Override
+    public <S, T> Map<S, List<T>> sortDisplayableValues(Map<S, List<T>> toSort, YukonUserContext context) {
+        Map<S, List<T>> sortedResult = Maps.newLinkedHashMap();
+        List<S> sortedKeys = sortDisplayableValues(
+                Lists.newArrayList(toSort.keySet()), null, null, context); 
+        for (S group : sortedKeys) {
+            sortedResult.put(group, sortDisplayableValues(Lists.newArrayList(toSort.get(group)), null, null, context));
+        }
+        return sortedResult;
     }
 }

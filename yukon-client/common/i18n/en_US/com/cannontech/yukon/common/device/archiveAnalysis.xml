@@ -22,6 +22,7 @@
     <entry key="yukon.web.modules.amr.analysis.home.noteText">Some attributes may not be supported by all selected devices.</entry>
     <entry key="yukon.web.modules.amr.analysis.home.startDateLabel">Start Date</entry>
     <entry key="yukon.web.modules.amr.analysis.home.stopDateLabel">Stop Date</entry>
+    <entry key="yukon.web.modules.amr.analysis.home.attributes">Attribute</entry>
     <entry key="yukon.web.modules.amr.analysis.home.exclusive">(Exclusive)</entry>
     <entry key="yukon.web.modules.amr.analysis.home.inclusive">(Inclusive)</entry>
     <entry key="yukon.web.modules.amr.analysis.home.empty"></entry>

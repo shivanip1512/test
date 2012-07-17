@@ -3,6 +3,8 @@ package com.cannontech.web.bulk;
 import java.beans.PropertyEditor;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -27,8 +29,9 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveDataAnalysisBackingBean;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
-import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute.AttributeGroup;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -38,26 +41,28 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.input.PeriodPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.Sets;
 
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_ANALYSIS)
 @Controller
 @RequestMapping("archiveDataAnalysis/home/*")
 public class ArchiveDataAnalysisController {
-    private Set<Attribute> attributes;
+
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired private ArchiveDataAnalysisService archiveDataAnalysisService;
+    @Autowired private ArchiveDataAnalysisDao archiveDataAnalysisDao;
+    @Autowired private ObjectFormattingService objectFormattingService;
+    @Resource(name="recentResultsCache") private RecentResultsCache<ArchiveDataAnalysisCallbackResult> recentResultsCache;
     private Set<Period> intervalPeriods;
-    private DatePropertyEditorFactory datePropertyEditorFactory;
-    private DeviceCollectionFactory deviceCollectionFactory;
-    private ArchiveDataAnalysisService archiveDataAnalysisService;
-    private ArchiveDataAnalysisDao archiveDataAnalysisDao;
-    private RecentResultsCache<ArchiveDataAnalysisCallbackResult> recentResultsCache;
+    private Map<String, List<BuiltInAttribute>> attributes;
+
+    @ModelAttribute("groupedAttributes")
+    public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributes(YukonUserContext userContext) {
+        return objectFormattingService.sortDisplayableValues(
+                BuiltInAttribute.getAllGroupedAttributes(), userContext);
+    }
     
     {
-        attributes = Sets.newLinkedHashSet();
-        for (BuiltInAttribute attribute : BuiltInAttribute.values()) {
-            attributes.add(attribute);
-        }
-        
         intervalPeriods = new LinkedHashSet<Period>();
         intervalPeriods.add(Period.minutes(5));
         intervalPeriods.add(Period.minutes(10));
@@ -80,7 +85,6 @@ public class ArchiveDataAnalysisController {
         
         model.addAttribute("startDateInitialValue", startDateInitialValue);
         model.addAttribute("stopDateInitialValue", stopDateInitialValue);
-        
         return "archiveDataAnalysis/home.jsp";
     }
     
@@ -136,28 +140,4 @@ public class ArchiveDataAnalysisController {
         binder.registerCustomEditor(Period.class, periodEditor);
     }
     
-    @Resource(name="recentResultsCache")
-    public void setRecentResultsCache(RecentResultsCache<ArchiveDataAnalysisCallbackResult> recentResultsCache) {
-        this.recentResultsCache = recentResultsCache;
-    }
-    
-    @Autowired
-    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
-        this.datePropertyEditorFactory = datePropertyEditorFactory;
-    }
-    
-    @Autowired
-    public void setDeviceCollectionFactory(DeviceCollectionFactory deviceCollectionFactory) {
-        this.deviceCollectionFactory = deviceCollectionFactory;
-    }
-    
-    @Autowired
-    public void setArchiveDataAnalysisService(ArchiveDataAnalysisService archiveDataAnalysisService) {
-        this.archiveDataAnalysisService = archiveDataAnalysisService;
-    }
-    
-    @Autowired
-    public void setArchiveDataAnalysisDao(ArchiveDataAnalysisDao archiveDataAnalysisDao) {
-        this.archiveDataAnalysisDao = archiveDataAnalysisDao;
-    }
 }
