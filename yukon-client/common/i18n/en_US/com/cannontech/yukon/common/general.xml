@@ -59,6 +59,7 @@
 <entry key="yukon.common.attributeGroups.demand">Demand</entry>
 <entry key="yukon.common.attributeGroups.general">General</entry>
 <entry key="yukon.common.attributeGroups.profile">Profile</entry>
+<entry key="yukon.common.attributeGroups.relay">Relay</entry>
 <entry key="yukon.common.attributeGroups.status">Status</entry>
 <entry key="yukon.common.attributeGroups.usage">Usage</entry>
 <entry key="yukon.common.attributeGroups.voltage">Voltage</entry>

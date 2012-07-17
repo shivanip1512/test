@@ -159,14 +159,15 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static ImmutableSet<BuiltInAttribute> profileAttributes;
     private static ImmutableSet<BuiltInAttribute> accumulatorAttributes;
     
-    private static Map<AttributeGroup, List<BuiltInAttribute>> standardGroupedAttributes;
+    private static Map<AttributeGroup, List<BuiltInAttribute>> groupedDataAttributes;
     private static ImmutableList<BuiltInAttribute> otherAttributes;
     private static ImmutableList<BuiltInAttribute> demandAttributes;
     private static ImmutableList<BuiltInAttribute> voltageAttributes; 
     private static ImmutableList<BuiltInAttribute> currentAttributes;
     private static ImmutableList<BuiltInAttribute> statusAttributes;
+    private static ImmutableList<BuiltInAttribute> relayAttributes;
     
-    private static Map<AttributeGroup, List<BuiltInAttribute>> rfnEventGroupedAttributes;
+    private static Map<AttributeGroup, List<BuiltInAttribute>> groupedRfnEventAttributes;
     private static ImmutableList<BuiltInAttribute> rfnHardwareAttributes;
     private static ImmutableList<BuiltInAttribute> rfnSoftwareAttributes;
     private static ImmutableList<BuiltInAttribute> rfnVoltageAttributes;
@@ -177,43 +178,111 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     private static Map<AttributeGroup, List<BuiltInAttribute>> allGroupedAttributes;
 
+
     static {
-        buildStandardAttributeSets();
+        buildDataAttributeSets();
         buildRfnEventAttributeSets();
         buildAllAttributeGroups();
     }
 
-    private static void buildAllAttributeGroups() {
-        allGroupedAttributes = Maps.newHashMap();
-
-        List<BuiltInAttribute> allCurrentAttributes = Lists.newArrayList();
-        allCurrentAttributes.addAll(currentAttributes);
-        allCurrentAttributes.addAll(rfnCurrentAttributes);
-        allGroupedAttributes.put(AttributeGroup.CURRENT, allCurrentAttributes);
+    private static void buildDataAttributeSets() {
+        ImmutableSet.Builder<BuiltInAttribute> profile = ImmutableSet.builder();
+        profile.add(LOAD_PROFILE);
+        profile.add(PROFILE_CHANNEL_2);
+        profile.add(PROFILE_CHANNEL_3);
+        profile.add(VOLTAGE_PROFILE);
+        profileAttributes = profile.build();
         
-        List<BuiltInAttribute> allVoltageAttributes = Lists.newArrayList();
-        allVoltageAttributes.addAll(voltageAttributes);
-        allVoltageAttributes.addAll(rfnVoltageAttributes);
-        allGroupedAttributes.put(AttributeGroup.VOLTAGE, allVoltageAttributes);
-
-        List<BuiltInAttribute> allDemandAttributes = Lists.newArrayList();
-        allDemandAttributes.addAll(demandAttributes);
-        allDemandAttributes.addAll(rfnDemandAttributes);
-        allGroupedAttributes.put(AttributeGroup.DEMAND, allDemandAttributes);
+        //point is an accumulation; Example: Usage 
+        ImmutableSet.Builder<BuiltInAttribute> accumulators = ImmutableSet.builder();
+        accumulators.add(TOU_RATE_A_USAGE);
+        accumulators.add(TOU_RATE_B_USAGE);
+        accumulators.add(TOU_RATE_C_USAGE);
+        accumulators.add(TOU_RATE_D_USAGE);
+        accumulators.add(USAGE);
+        accumulators.add(USAGE_WATER);
+        accumulatorAttributes = accumulators.build();
         
-        List<BuiltInAttribute> allOtherAttributes = Lists.newArrayList();
-        allOtherAttributes.addAll(otherAttributes);
-        allOtherAttributes.addAll(rfnOtherAttributes);
-        allGroupedAttributes.put(AttributeGroup.OTHER, allOtherAttributes);
+        ImmutableList.Builder<BuiltInAttribute> other = ImmutableList.builder();
+        other.add(BLINK_COUNT);
+        other.add(ENERGY_GENERATED);
+        other.add(KVAR);
+        other.add(KVARH);
+        other.add(OUTAGE_LOG);
+        other.add(PHASE);
+        otherAttributes = other.build();
         
-        allGroupedAttributes.put(AttributeGroup.PROFILE, Lists.newArrayList(profileAttributes));
-        allGroupedAttributes.put(AttributeGroup.USAGE, Lists.newArrayList(accumulatorAttributes));
-        allGroupedAttributes.put(AttributeGroup.STATUS, statusAttributes);
+        ImmutableList.Builder<BuiltInAttribute> demand = ImmutableList.builder();
+        demand.add(DEMAND);
+        demand.add(PEAK_DEMAND);
+        demand.add(TOU_RATE_A_PEAK_DEMAND);
+        demand.add(TOU_RATE_B_PEAK_DEMAND);
+        demand.add(TOU_RATE_C_PEAK_DEMAND);
+        demand.add(TOU_RATE_D_PEAK_DEMAND);
+        demandAttributes = demand.build();
         
-        allGroupedAttributes.put(AttributeGroup.RFN_HARDWARE, rfnHardwareAttributes);
-        allGroupedAttributes.put(AttributeGroup.RFN_SOFTWARE, rfnSoftwareAttributes);
-        allGroupedAttributes.put(AttributeGroup.RFN_BLINK_AND_OUTAGE, Lists.newArrayList(rfnEventAnalogTypes));
-        allGroupedAttributes.put(AttributeGroup.RFN_DISCONNECT, rfnDisconnectAttributes);
+        ImmutableList.Builder<BuiltInAttribute> voltage = ImmutableList.builder();
+        voltage.add(VOLTAGE);
+        voltage.add(VOLTAGE_PHASE_A);
+        voltage.add(VOLTAGE_PHASE_B);
+        voltage.add(VOLTAGE_PHASE_C);
+        voltage.add(MAXIMUM_VOLTAGE);
+        voltage.add(MINIMUM_VOLTAGE);
+        voltageAttributes = voltage.build();
+        
+        ImmutableList.Builder<BuiltInAttribute> current = ImmutableList.builder();
+        current.add(CURRENT_PHASE_A);
+        current.add(CURRENT_PHASE_B);
+        current.add(CURRENT_PHASE_C);
+        current.add(NEUTRAL_CURRENT);
+        currentAttributes = current.build();
+        
+        ImmutableList.Builder<BuiltInAttribute> status = ImmutableList.builder();
+        status.add(CONNECTION_STATUS);
+        status.add(CONTROL_POINT);
+        status.add(DISCONNECT_STATUS);
+        status.add(FAULT_STATUS);
+        status.add(GENERAL_ALARM_FLAG);
+        status.add(LM_GROUP_STATUS);
+        status.add(OUTAGE_STATUS);
+        status.add(POWER_FAIL_FLAG);
+        status.add(REVERSE_POWER_FLAG);
+        status.add(TAMPER_FLAG);
+        status.add(ZERO_USAGE_FLAG);
+        status.add(ZIGBEE_LINK_STATUS);
+        statusAttributes = status.build();
+        
+        ImmutableList.Builder<BuiltInAttribute> relay = ImmutableList.builder();
+        relay.add(RELAY_1_CONTROL_TIME);
+        relay.add(RELAY_1_LOAD_SIZE);
+        relay.add(RELAY_1_REMAINING_CONTROL);
+        relay.add(RELAY_1_RUN_TIME);
+        relay.add(RELAY_1_SHED_TIME);
+        relay.add(RELAY_2_CONTROL_TIME);
+        relay.add(RELAY_2_LOAD_SIZE);
+        relay.add(RELAY_2_REMAINING_CONTROL);
+        relay.add(RELAY_2_RUN_TIME);
+        relay.add(RELAY_2_SHED_TIME);
+        relay.add(RELAY_3_CONTROL_TIME);
+        relay.add(RELAY_3_LOAD_SIZE);
+        relay.add(RELAY_3_REMAINING_CONTROL);
+        relay.add(RELAY_3_RUN_TIME);
+        relay.add(RELAY_3_SHED_TIME);
+        relayAttributes = relay.build();
+        
+        
+        // Build headings & sub-options relationships for data (non-event) attributes.
+        groupedDataAttributes = Maps.newHashMap();
+        
+        groupedDataAttributes.put(AttributeGroup.PROFILE, Lists.newArrayList(profileAttributes));
+        groupedDataAttributes.put(AttributeGroup.USAGE, Lists.newArrayList(accumulatorAttributes));
+        groupedDataAttributes.put(AttributeGroup.OTHER, otherAttributes);
+        groupedDataAttributes.put(AttributeGroup.DEMAND, demandAttributes);
+        groupedDataAttributes.put(AttributeGroup.VOLTAGE, voltageAttributes);
+        groupedDataAttributes.put(AttributeGroup.CURRENT, currentAttributes);
+        groupedDataAttributes.put(AttributeGroup.STATUS, statusAttributes);
+        groupedDataAttributes.put(AttributeGroup.RELAY, relayAttributes);
+        
     }
     
     private static void buildRfnEventAttributeSets() {
@@ -360,97 +429,51 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         rfnOtherAttributes = other.build();
         
         // Build headings & sub-options relationships for RFN event attributes.
-        rfnEventGroupedAttributes = Maps.newHashMap();
+        groupedRfnEventAttributes = Maps.newHashMap();
 
-        rfnEventGroupedAttributes.put(AttributeGroup.RFN_HARDWARE, rfnHardwareAttributes);
-        rfnEventGroupedAttributes.put(AttributeGroup.RFN_SOFTWARE, rfnSoftwareAttributes);
-        rfnEventGroupedAttributes.put(AttributeGroup.RFN_VOLTAGE, rfnVoltageAttributes);
-        rfnEventGroupedAttributes.put(AttributeGroup.RFN_CURRENT, rfnCurrentAttributes);
-        rfnEventGroupedAttributes.put(AttributeGroup.RFN_BLINK_AND_OUTAGE, Lists.newArrayList(rfnEventAnalogTypes));
-        rfnEventGroupedAttributes.put(AttributeGroup.RFN_DISCONNECT, rfnDisconnectAttributes);
-        rfnEventGroupedAttributes.put(AttributeGroup.RFN_DEMAND, rfnDemandAttributes);
-        rfnEventGroupedAttributes.put(AttributeGroup.RFN_OTHER, rfnOtherAttributes);
+        groupedRfnEventAttributes.put(AttributeGroup.RFN_HARDWARE, rfnHardwareAttributes);
+        groupedRfnEventAttributes.put(AttributeGroup.RFN_SOFTWARE, rfnSoftwareAttributes);
+        groupedRfnEventAttributes.put(AttributeGroup.RFN_VOLTAGE, rfnVoltageAttributes);
+        groupedRfnEventAttributes.put(AttributeGroup.RFN_CURRENT, rfnCurrentAttributes);
+        groupedRfnEventAttributes.put(AttributeGroup.RFN_BLINK_AND_OUTAGE, Lists.newArrayList(rfnEventAnalogTypes));
+        groupedRfnEventAttributes.put(AttributeGroup.RFN_DISCONNECT, rfnDisconnectAttributes);
+        groupedRfnEventAttributes.put(AttributeGroup.RFN_DEMAND, rfnDemandAttributes);
+        groupedRfnEventAttributes.put(AttributeGroup.RFN_OTHER, rfnOtherAttributes);
     }
     
-    private static void buildStandardAttributeSets() {
-        ImmutableSet.Builder<BuiltInAttribute> profile = ImmutableSet.builder();
-        profile.add(LOAD_PROFILE);
-        profile.add(PROFILE_CHANNEL_2);
-        profile.add(PROFILE_CHANNEL_3);
-        profile.add(VOLTAGE_PROFILE);
-        profileAttributes = profile.build();
-        
-        //point is an accumulation; Example: Usage 
-        ImmutableSet.Builder<BuiltInAttribute> accumulators = ImmutableSet.builder();
-        accumulators.add(TOU_RATE_A_USAGE);
-        accumulators.add(TOU_RATE_B_USAGE);
-        accumulators.add(TOU_RATE_C_USAGE);
-        accumulators.add(TOU_RATE_D_USAGE);
-        accumulators.add(USAGE);
-        accumulators.add(USAGE_WATER);
-        accumulatorAttributes = accumulators.build();
-        
-        ImmutableList.Builder<BuiltInAttribute> other = ImmutableList.builder();
-        other.add(BLINK_COUNT);
-        other.add(ENERGY_GENERATED);
-        other.add(KVAR);
-        other.add(KVARH);
-        other.add(OUTAGE_LOG);
-        other.add(PHASE);
-        otherAttributes = other.build();
-        
-        ImmutableList.Builder<BuiltInAttribute> demand = ImmutableList.builder();
-        demand.add(DEMAND);
-        demand.add(PEAK_DEMAND);
-        demand.add(TOU_RATE_A_PEAK_DEMAND);
-        demand.add(TOU_RATE_B_PEAK_DEMAND);
-        demand.add(TOU_RATE_C_PEAK_DEMAND);
-        demand.add(TOU_RATE_D_PEAK_DEMAND);
-        demandAttributes = demand.build();
-        
-        ImmutableList.Builder<BuiltInAttribute> voltage = ImmutableList.builder();
-        voltage.add(VOLTAGE);
-        voltage.add(VOLTAGE_PHASE_A);
-        voltage.add(VOLTAGE_PHASE_B);
-        voltage.add(VOLTAGE_PHASE_C);
-        voltage.add(MAXIMUM_VOLTAGE);
-        voltage.add(MINIMUM_VOLTAGE);
-        voltageAttributes = voltage.build();
-        
-        ImmutableList.Builder<BuiltInAttribute> current = ImmutableList.builder();
-        current.add(CURRENT_PHASE_A);
-        current.add(CURRENT_PHASE_B);
-        current.add(CURRENT_PHASE_C);
-        current.add(NEUTRAL_CURRENT);
-        currentAttributes = current.build();
-        
-        ImmutableList.Builder<BuiltInAttribute> status = ImmutableList.builder();
-        status.add(CONNECTION_STATUS);
-        status.add(CONTROL_POINT);
-        status.add(DISCONNECT_STATUS);
-        status.add(FAULT_STATUS);
-        status.add(GENERAL_ALARM_FLAG);
-        status.add(LM_GROUP_STATUS);
-        status.add(OUTAGE_STATUS);
-        status.add(POWER_FAIL_FLAG);
-        status.add(REVERSE_POWER_FLAG);
-        status.add(TAMPER_FLAG);
-        status.add(ZERO_USAGE_FLAG);
-        status.add(ZIGBEE_LINK_STATUS);
-        statusAttributes = status.build();
-        
-        // Build headings & sub-options relationships for data (non-event) attributes.
-        standardGroupedAttributes = Maps.newHashMap();
-        
-        standardGroupedAttributes.put(AttributeGroup.PROFILE, Lists.newArrayList(profileAttributes));
-        standardGroupedAttributes.put(AttributeGroup.USAGE, Lists.newArrayList(accumulatorAttributes));
-        standardGroupedAttributes.put(AttributeGroup.OTHER, otherAttributes);
-        standardGroupedAttributes.put(AttributeGroup.DEMAND, demandAttributes);
-        standardGroupedAttributes.put(AttributeGroup.VOLTAGE, voltageAttributes);
-        standardGroupedAttributes.put(AttributeGroup.CURRENT, currentAttributes);
-        standardGroupedAttributes.put(AttributeGroup.STATUS, statusAttributes);
-    }
+    private static void buildAllAttributeGroups() {
+        allGroupedAttributes = Maps.newHashMap();
 
+        List<BuiltInAttribute> allCurrentAttributes = Lists.newArrayList();
+        allCurrentAttributes.addAll(currentAttributes);
+        allCurrentAttributes.addAll(rfnCurrentAttributes);
+        allGroupedAttributes.put(AttributeGroup.CURRENT, allCurrentAttributes);
+        
+        List<BuiltInAttribute> allVoltageAttributes = Lists.newArrayList();
+        allVoltageAttributes.addAll(voltageAttributes);
+        allVoltageAttributes.addAll(rfnVoltageAttributes);
+        allGroupedAttributes.put(AttributeGroup.VOLTAGE, allVoltageAttributes);
+
+        List<BuiltInAttribute> allDemandAttributes = Lists.newArrayList();
+        allDemandAttributes.addAll(demandAttributes);
+        allDemandAttributes.addAll(rfnDemandAttributes);
+        allGroupedAttributes.put(AttributeGroup.DEMAND, allDemandAttributes);
+        
+        List<BuiltInAttribute> allOtherAttributes = Lists.newArrayList();
+        allOtherAttributes.addAll(otherAttributes);
+        allOtherAttributes.addAll(rfnOtherAttributes);
+        allGroupedAttributes.put(AttributeGroup.OTHER, allOtherAttributes);
+        
+        allGroupedAttributes.put(AttributeGroup.PROFILE, Lists.newArrayList(profileAttributes));
+        allGroupedAttributes.put(AttributeGroup.USAGE, Lists.newArrayList(accumulatorAttributes));
+        allGroupedAttributes.put(AttributeGroup.STATUS, statusAttributes);
+        
+        allGroupedAttributes.put(AttributeGroup.RFN_HARDWARE, rfnHardwareAttributes);
+        allGroupedAttributes.put(AttributeGroup.RFN_SOFTWARE, rfnSoftwareAttributes);
+        allGroupedAttributes.put(AttributeGroup.RFN_BLINK_AND_OUTAGE, Lists.newArrayList(rfnEventAnalogTypes));
+        allGroupedAttributes.put(AttributeGroup.RFN_DISCONNECT, rfnDisconnectAttributes);
+    }
+    
     private String description;
     
     private BuiltInAttribute(String description) {
@@ -470,11 +493,11 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     }
 
     public static Map<AttributeGroup, List<BuiltInAttribute>> getStandardGroupedAttributes() {
-        return standardGroupedAttributes;
+        return groupedDataAttributes;
     }
     
     public static Map<AttributeGroup, List<BuiltInAttribute>> getRfnEventGroupedAttributes() {
-        return rfnEventGroupedAttributes;
+        return groupedRfnEventAttributes;
     }
 
     public static Map<AttributeGroup, List<BuiltInAttribute>> getAllGroupedAttributes() {
@@ -533,7 +556,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         return keyPrefix + name();
     }
     
-    // List of attribute groups for data & rfn event attributes
+    // List of attribute groups for data & RFN event attributes
     public enum AttributeGroup implements DisplayableEnum {
         //PLC data & event attribute groups
         OTHER("general"),
@@ -543,6 +566,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         PROFILE("profile"),
         USAGE("usage"),
         STATUS("status"),
+        RELAY("relay"),
         
         //RFN event attribute groups
         RFN_HARDWARE("rfnHardware"),
