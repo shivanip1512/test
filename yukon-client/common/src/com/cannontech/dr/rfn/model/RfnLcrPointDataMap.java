@@ -26,10 +26,10 @@ public enum RfnLcrPointDataMap {
     TOTAL_LUF_EVENT(BuiltInAttribute.TOTAL_LUF_COUNT, "/DRReport/Info/TotalLUFEvents", null, null),
     TOTAL_LUV_EVENT(BuiltInAttribute.TOTAL_LUV_COUNT, "/DRReport/Info/TotalLUVEvents", null, null);
 
-    private BuiltInAttribute attribute;
-    private String xPathQuery;
-    private Integer mask;
-    private Integer shift;
+    private final BuiltInAttribute attribute;
+    private final String xPathQuery;
+    private final Integer mask;
+    private final Integer shift;
     
     private static final Logger log = YukonLogManager.getLogger(RfnLcrPointDataMap.class);
     private static final Set<RfnLcrPointDataMap> lcr6200PointDataMap;
@@ -69,7 +69,7 @@ public enum RfnLcrPointDataMap {
             return getLcr6600PointDataMap();
         } else {
             log.error("No RFN LCR point mapping data found for pao type: " + paoType.getPaoTypeName());
-            return null;
+            throw new IllegalArgumentException();
         }
     }
 

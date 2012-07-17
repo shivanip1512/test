@@ -1,5 +1,6 @@
 package com.cannontech.dr.rfn.model;
 
+import java.text.ParseException;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -42,14 +43,14 @@ public enum RfnLcrRelayDataMap {
         lcr6600RelayMap = builder.build();
     }
     
-    public static Set<RfnLcrRelayDataMap> getRelayMapByPaoType(PaoType paoType) {
+    public static Set<RfnLcrRelayDataMap> getRelayMapByPaoType(PaoType paoType) throws ParseException {
         if (paoType == PaoType.LCR6200_RFN) {
             return getLcr6200RelayMap();
         } else if (paoType == PaoType.LCR6600_RFN) {
             return getLcr6600RelayMap();
         } else {
             log.error("No RFN LCR relay mapping data found for pao type: " + paoType.getPaoTypeName());
-            return null;
+            throw new ParseException("No RFN LCR relay mapping data found for pao type: " + paoType.getPaoTypeName(), 0);
         }
     }
 

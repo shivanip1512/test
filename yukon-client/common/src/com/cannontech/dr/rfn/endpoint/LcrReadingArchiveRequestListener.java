@@ -2,6 +2,7 @@ package com.cannontech.dr.rfn.endpoint;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,8 +27,8 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveResponse;
-import com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl;
-import com.cannontech.dr.rfn.service.impl.RfnLcrPointDataMappingServiceImpl;
+import com.cannontech.dr.rfn.service.ExiParsingService;
+import com.cannontech.dr.rfn.service.RfnLcrPointDataMappingService;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -35,8 +36,8 @@ import com.google.common.collect.Lists;
 @ManagedResource
 public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerBase<RfnLcrArchiveRequest> {
     @Autowired ResourceLoader loader;
-    @Autowired RfnLcrPointDataMappingServiceImpl rfnLcrPointDataMappingServiceImpl;
-    @Autowired ExiParsingServiceImpl exiParsingService;
+    @Autowired RfnLcrPointDataMappingService rfnLcrPointDataMappingService;
+    @Autowired ExiParsingService exiParsingService;
     @Autowired PaoDao paoDao;
     @Autowired PointDao pointDao;
     
@@ -64,12 +65,16 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
                 Resource informingSchemaResource = loader.getResource(informingSchemaLocation);
                 try {
                     informingSchema = informingSchemaResource.getInputStream();
+                    decodedPayload = exiParsingService.decodeExiMessage(payload, informingSchema);
                 } catch (IOException e1) {
-                    log.error("Unable to open informing schema as an input stream: " + informingSchemaLocation);
-                    e1.printStackTrace();
+                    log.error("Unable to open informing schema as an input stream: " + informingSchemaLocation, e1);
+                    throw new RuntimeException();
+                } catch (ParseException e) {
+                    log.error("Unable to parse EXI message payload for device: " + rfnDevice.getName(), e);
+                    throw new RuntimeException();
                 }
-                decodedPayload = exiParsingService.decodeExiMessage(payload, informingSchema);
-                messagesToSend = rfnLcrPointDataMappingServiceImpl.mapPointData(readingArchiveRequest, decodedPayload);
+                
+                messagesToSend = rfnLcrPointDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
                 
                 dynamicDataSource.putValues(messagesToSend);
                 archivedReadings.addAndGet(messagesToSend.size());

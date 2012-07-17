@@ -202,7 +202,7 @@ public class RfnMeterArchiveTestController {
                 payload = new byte[64];
             }
             long timeStamp = new Instant().getMillis();
-            RfnIdentifier rfnIdentifier = new RfnIdentifier(new Integer(serial).toString(), manufacturer, model);
+            RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(serial), manufacturer, model);
             
             // Set all data
             data.setPayload(payload);
@@ -227,7 +227,7 @@ public class RfnMeterArchiveTestController {
         
         // Create archive request & fake identifier
         RfnLcrArchiveRequest archiveRequest = new RfnLcrArchiveRequest();
-        RfnIdentifier rfnIdentifier = new RfnIdentifier(new Integer(serialFrom).toString(), manufacturer, model);
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(serialFrom), manufacturer, model);
         
         // Set all data
         archiveRequest.setRfnIdentifier(rfnIdentifier);

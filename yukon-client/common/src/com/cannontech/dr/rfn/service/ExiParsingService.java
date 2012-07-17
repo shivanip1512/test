@@ -1,8 +1,8 @@
 package com.cannontech.dr.rfn.service;
 
 import java.io.InputStream;
+import java.text.ParseException;
 
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 
 public interface ExiParsingService {
@@ -14,7 +14,8 @@ public interface ExiParsingService {
      * @param payload The encoded EXI message as a byte array.
      * @param informingSchema The schema to use when inflating the full-text XML document.
      * @return SimpleXPathTemplate
+     * @throws ParseException 
      */
-    public SimpleXPathTemplate decodeExiMessage(byte[] payload, InputStream informingSchema);
+    public SimpleXPathTemplate decodeExiMessage(byte[] payload, InputStream informingSchema) throws ParseException;
 
 }

@@ -1,5 +1,6 @@
 package com.cannontech.dr.rfn.service.impl;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +16,7 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl;
+import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -31,7 +32,7 @@ import com.google.common.collect.Sets;
 public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMappingService {
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
-    @Autowired private RfnDeviceLookupServiceImpl rfnDeviceLookupServiceImpl;
+    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
 
     private static final Logger log = YukonLogManager.getLogger(RfnLcrPointDataMappingServiceImpl.class);    
 
@@ -40,7 +41,7 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
         List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrPointDataMap> rfnLcrPointDataMap = Sets.newHashSet();
 
-        RfnDevice device = rfnDeviceLookupServiceImpl.getDevice(archiveRequest.getRfnIdentifier());
+        RfnDevice device = rfnDeviceLookupService.getDevice(archiveRequest.getRfnIdentifier());
 
         rfnLcrPointDataMap = RfnLcrPointDataMap.getRelayMapByPaoType(device.getPaoIdentifier().getPaoType());
         for (RfnLcrPointDataMap entry : rfnLcrPointDataMap) {
@@ -52,8 +53,8 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
                 pointId = pointDao.getPointId(paoPointIdentifier);
             }
             catch (IllegalUseOfAttribute e) {
-                log.warn("Illegal use of attribute (" + entry.getAttribute().toString() +
-                        ") for device: " + device.getName());
+                log.warn("The attribute: " + entry.getAttribute().toString() + " is not defined for the device: " +
+                        device.getName() + " of type: " + device.getPaoIdentifier().getPaoType());
                 continue;
             } catch (NotFoundException e) {
                 log.warn("Point for attribute (" + entry.getAttribute().toString() +
@@ -79,7 +80,12 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
         List<PointData> intervalPointData = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();
 
-        rfnLcrRelayDataMap = RfnLcrRelayDataMap.getRelayMapByPaoType(device.getPaoIdentifier().getPaoType());
+        try {
+            rfnLcrRelayDataMap = RfnLcrRelayDataMap.getRelayMapByPaoType(device.getPaoIdentifier().getPaoType());
+        } catch (ParseException e) {
+            log.error("Cannot retrieve relay point data map for device type: " + device.getPaoIdentifier().getPaoType(), e);
+            throw new RuntimeException();
+        }
         for (RfnLcrRelayDataMap relay : rfnLcrRelayDataMap) {
             List<Integer> intervalData = decodedXml.evaluateAsIntegerList("/DRReport/Relays/Relay" + 
                     relay.getRelayIdXPathString() + "/IntervalData/Interval");
