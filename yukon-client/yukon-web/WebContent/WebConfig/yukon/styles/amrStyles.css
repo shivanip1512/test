@@ -143,6 +143,10 @@ div.resultBar > div {
 }
 
 /* WaterLeakReport START */
+.pagedBox.waterLeakReport .title .pagingArea {
+	display: none;
+}
+
 #leakFilterDialog .errorMessage {
 	font-size: 12px;
 }

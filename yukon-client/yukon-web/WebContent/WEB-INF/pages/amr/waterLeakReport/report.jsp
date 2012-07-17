@@ -166,7 +166,7 @@
         </c:if>
     </c:set>
 
-	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${actionsMenu}">
+	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${actionsMenu}" styleClass="waterLeakReport">
 		<table id="leaksTable" class="compactResultsTable">
 			<thead>
 				<tr>

@@ -20,6 +20,11 @@
 
     <div class="title">
         <span class="titleArea">${pageScope.title}</span>
+        <c:if test="${pageScope.searchResult.hitCount > 10}">
+	        <span class="pagingArea fr">
+	            <tags:nextPrevLinks searchResult="${pageScope.searchResult}" baseUrl="${pageScope.baseUrl}" mode="jsp"/>
+	        </span>
+        </c:if>
         <span class="contextArea">
 	        <span class="filterArea">
 	            <c:if test="${!empty pageScope.filterDialog}">

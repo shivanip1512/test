@@ -840,6 +840,11 @@ div.pagedBox table.boxTable {
     position: relative;
 }
 
+.pagedBox .contextArea .navLink a {
+	position: relative;
+	bottom: -5px;
+}
+
 .pagedBox .contextArea button {
     position: relative;
     font-size: 13px!important;
