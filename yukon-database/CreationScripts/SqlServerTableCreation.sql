@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/15/2012 10:57:46 AM                        */
+/* Created on:     7/17/2012 5:06:04 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -2087,6 +2087,8 @@ create table DEVICECONFIGURATION (
 )
 go
 
+INSERT INTO DEVICECONFIGURATION VALUES (0, 'Default DNP Configuration', 'DNP');
+
 /*==============================================================*/
 /* Table: DEVICECONFIGURATIONDEVICEMAP                          */
 /*==============================================================*/
@@ -2108,6 +2110,12 @@ create table DEVICECONFIGURATIONITEM (
    constraint PK_DEVICECONFIGURATIONITEM primary key (DeviceConfigurationItemId)
 )
 go
+
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (0, 0, 'Internal Retries', 2);
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (1, 0, 'Omit Time Request', 'false');
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (2, 0, 'Enable DNP Timesyncs', 'false');
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (3, 0, 'Local Time', 'false');
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (4, 0, 'Enable Unsolicited Messages', 'true');
 
 /*==============================================================*/
 /* Table: DEVICEDIALUPSETTINGS                                  */

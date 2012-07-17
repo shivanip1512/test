@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/15/2012 10:40:14 AM                        */
+/* Created on:     7/17/2012 5:15:26 PM                         */
 /*==============================================================*/
 
 
@@ -1950,6 +1950,8 @@ create table DEVICECONFIGURATION  (
    constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
 );
 
+INSERT INTO DEVICECONFIGURATION VALUES (0, 'Default DNP Configuration', 'DNP');
+
 /*==============================================================*/
 /* Table: DEVICECONFIGURATIONDEVICEMAP                          */
 /*==============================================================*/
@@ -1969,6 +1971,12 @@ create table DEVICECONFIGURATIONITEM  (
    Value                VARCHAR2(60)                    not null,
    constraint PK_DEVICECONFIGURATIONITEM primary key (DeviceConfigurationItemId)
 );
+
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (0, 0, 'Internal Retries', 2);
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (1, 0, 'Omit Time Request', 'false');
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (2, 0, 'Enable DNP Timesyncs', 'false');
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (3, 0, 'Local Time', 'false');
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (4, 0, 'Enable Unsolicited Messages', 'true');
 
 /*==============================================================*/
 /* Table: DEVICEDIALUPSETTINGS                                  */
