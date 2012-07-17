@@ -20,7 +20,6 @@ import com.cannontech.common.token.service.TokenService.TokenHandler;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -45,9 +44,10 @@ public class TokenStatusRequestEndpoint {
         TokenHandler tokenHandler = tokenHandlers.get(token.getType());
         TokenStatus status = tokenHandler.getStatus(token);
         if (status == null) {
-            // Unknown token.         
-            Element fe = XMLFailureGenerator.generateFailure(requestElem, "UnknownToken", "Token " + tokenStr + " is invalid or has expired.");
-            responseElem.addContent(fe);
+            // Unknown token.
+            Element errorElem = new Element("failure", ns);
+            errorElem.addContent("Token " + tokenStr + " is invalid or has expired.");
+            responseElem.addContent(errorElem);
         } else if (status.isFinished()) {
             Element mainElem = new Element("complete", ns);
             if (token.getType() == TokenType.PROFILE_COLLECTION) {

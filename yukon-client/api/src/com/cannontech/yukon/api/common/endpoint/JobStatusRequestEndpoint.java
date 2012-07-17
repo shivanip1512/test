@@ -16,7 +16,6 @@ import com.cannontech.common.token.TokenStatus;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.yukon.api.util.XMLFailureGenerator;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
 
 @Endpoint
@@ -44,9 +43,10 @@ public class JobStatusRequestEndpoint {
         TokenStatus status = jobManagementService.getStatus(token);
         
         if (status == null) {
-            // Unknown token.       
-            Element fe = XMLFailureGenerator.generateFailure(jobStatusRequest, "UnknownToken", "Token " + tokenStr + " is invalid or has expired.");
-            response.addContent(fe);
+            // Unknown token.
+            Element errorElem = new Element("failure", ns);
+            errorElem.addContent("Token " + tokenStr + " is invalid or has expired.");
+            response.addContent(errorElem);
         } else if (status.isFinished()) {
             response.addContent(new Element("complete", ns));
         } else {

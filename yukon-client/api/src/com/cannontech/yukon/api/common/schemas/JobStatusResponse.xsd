@@ -18,7 +18,7 @@
         <xsd:complexContent>
             <xsd:extension base="yukon:YukonMessage">
                 <xsd:choice>
-                    <xsd:element name="failure" type="yukon:Failure"/>
+                    <xsd:element name="failure" type="xsd:string"/>
                     <xsd:element name="complete" type="yukon:emptyElement"/>
                     <xsd:element name="inProgress" type="yukon:ProgressElement"/>
                 </xsd:choice>
