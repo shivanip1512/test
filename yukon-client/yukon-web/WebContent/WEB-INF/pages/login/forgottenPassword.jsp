@@ -22,6 +22,7 @@
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/shared/loginStyles.css">
 
         <script type="text/javascript" src="/JavaScript/lib/jQuery/1.6.4/jquery.min.js"></script>
+        <script type="text/javascript" src="/JavaScript/lib/jQuery/plugins/placeholder/jquery.placeholder.js"></script>
         <script type="text/javascript" src="/JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
         <script type="text/javascript" src="/JavaScript/yukon/ui/general.js"></script>
 
@@ -87,7 +88,8 @@
                         <br>
                         
                         <cti:button type="submit" nameKey="resetPassword" name="resetPassword" styleClass="f_disableAfterClick"/>
-                        <cti:button type="submit" nameKey="cancel" name="cancel"/>
+                        <cti:url value="/login.jsp" var="loginPage"/>
+                        <cti:button href="loginPage" nameKey="cancel"/>
                     </form:form>
                 </tags:abstractContainer>
             </div>
