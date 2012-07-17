@@ -50,7 +50,6 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\ctidbres.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\service.lib
 

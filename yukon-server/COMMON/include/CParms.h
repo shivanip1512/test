@@ -21,7 +21,7 @@ typedef std::pair<std::map<string,CtiConfigValue*>::iterator,bool> mHash_pair2;
 // Forward decls.
 class CtiConfigParameters;
 
-IM_EX_CPARM extern CtiConfigParameters gConfigParms;
+IM_EX_CTIBASE extern CtiConfigParameters gConfigParms;
 
 template<class T>
 class CtiParmLockGuard
@@ -108,7 +108,7 @@ private:
 };
 
 
-class IM_EX_CPARM CtiConfigParameters
+class IM_EX_CTIBASE CtiConfigParameters
 {
 private:
 

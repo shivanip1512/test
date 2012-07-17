@@ -71,7 +71,6 @@ LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
-$(COMPILEBASE)\lib\cticparms.lib
 
 SIMULATOR_TEST_FULLBUILD = $[Filename,$(OBJ),SimulatorTestFullBuild,target]
 

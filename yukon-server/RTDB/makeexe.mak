@@ -65,7 +65,7 @@ rtpttest.exe:  $(RTPTTESTOBJS) makeexe.mak
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(RWLINKFLAGS) $(INCLPATHS) /Fe..\$@ \
 $(RTPTTESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctisvr.lib $(RWLIBS)
+-link $(COMPILEBASE)\lib\ctisvr.lib $(RWLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -79,7 +79,7 @@ memtest.exe:    memtest.obj makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ memtest.obj \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(RWLIBS) $(BOOST_LIBS)
+-link $(COMPILEBASE)\lib\ctibase.lib $(RWLIBS) $(BOOST_LIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -93,7 +93,7 @@ routetest.exe:   $(RTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(RTESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS)
+-link $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -107,7 +107,7 @@ conntest.exe:   $(CONNTESTOBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(CONNTESTOBJS) \
--link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS)
+-link $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib $(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
@@ -121,7 +121,7 @@ key_password_encryptor.exe:   $(KEYPSWDENCRYPTOROBJS) makeexe.mak
                 @echo Compiling ..\$@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ $(KEYPSWDENCRYPTOROBJS) \
-			-link $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib \
+			-link $(COMPILEBASE)\lib\ctibase.lib \
 			$(COMPILEBASE)\lib\ctimsg.lib $(COMPILEBASE)\lib\ctisvr.lib \
 			$(COMPILEBASE)\lib\ctidbsrc.lib $(COMPILEBASE)\lib\ctidevdb.lib  $(RWLIBS) $(BOOST_LIBS) $(OPENSSL_LIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)

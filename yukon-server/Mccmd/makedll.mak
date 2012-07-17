@@ -51,7 +51,6 @@ $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
-$(COMPILEBASE)\lib\cticparms.lib
 
 
 MCCMD_FULLBUILD = $[Filename,$(OBJ),MccmdFullBuild,target]

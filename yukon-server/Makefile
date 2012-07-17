@@ -1,5 +1,4 @@
 build_dirs = \
-        cparms \
         common \
         message \
         server \

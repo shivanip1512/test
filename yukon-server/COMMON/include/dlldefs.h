@@ -101,14 +101,6 @@
    #define IM_EX_MCCMD __declspec(dllimport)
 #endif
 
-#ifdef _DLL_CPARM
-   #define IM_EX_CPARM   __declspec(dllexport)
-#elif defined( STI_UNDERSTAND )
-   #define IM_EX_CPARM
-#else
-   #define IM_EX_CPARM   __declspec(dllimport)
-#endif
-
 #ifdef _DLL_C_CPARM
    #define IM_EX_C_CPARM   __declspec(dllexport)
 #elif defined( STI_UNDERSTAND )

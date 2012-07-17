@@ -38,7 +38,6 @@ INCLPATHS+= \
 
 SVRLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 
 

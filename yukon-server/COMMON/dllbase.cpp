@@ -30,6 +30,7 @@
 #include "ctinexus.h"
 #include "logger.h"
 #include "utility.h"
+#include "shlwapi.h"
 
 #include "thread_monitor.h"
 
@@ -76,6 +77,9 @@ IM_EX_CTIBASE set<long>     gScanForceDevices;
 
 set<long> ForeignCCUPorts;
 
+IM_EX_CTIBASE CtiConfigParameters gConfigParms;
+string getYukonBase();
+
 /*
  *  These are global to the ctibase, but
  */
@@ -87,6 +91,9 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
         case DLL_PROCESS_ATTACH:
         {
             identifyProject(CompileInfo);
+
+            gConfigParms.setYukonBase(getYukonBase());
+            gConfigParms.RefreshConfigParameters();
 
             PorterNexus.NexusState  = CTINEXUS_STATE_NULL;     // Make sure no one thinks we are connected
             InitYukonBaseGlobals();                            // Load up the config file.
@@ -457,6 +464,42 @@ DLLEXPORT INT isForeignCcuPort(INT portid)
     return ForeignCCUPorts.find(portid) != ForeignCCUPorts.end();
 }
 
+string getYukonBase()
+{
+    char yukon_base_env[MAX_PATH];
 
+    DWORD result = GetEnvironmentVariable("YUKON_BASE", yukon_base_env, MAX_PATH);
 
+    PathUnquoteSpaces(yukon_base_env);
+    PathRemoveBlanks(yukon_base_env);
 
+    if( !result )
+    {
+        if( GetLastError() == ERROR_ENVVAR_NOT_FOUND )
+        {
+            cout << "Environment variable YUKON_BASE is missing" << endl;
+        }
+        else
+        {
+            cout << "Environment variable YUKON_BASE is empty" << endl;
+        }
+    }
+    else if( result >= MAX_PATH )
+    {
+        cout << "Environment variable YUKON_BASE is too long (" << result << ")" << endl;
+    }
+    else if( !PathIsDirectory(yukon_base_env) )
+    {
+        cout << "Environment variable YUKON_BASE is not a directory" << endl;
+    }
+    else
+    {
+        return yukon_base_env;
+    }
+
+    const char *yukon_base_default = "c:\\yukon";
+
+    cout << "YUKON_BASE defaulting to " << yukon_base_default << endl;
+
+    return yukon_base_default;
+}

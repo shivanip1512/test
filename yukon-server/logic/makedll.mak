@@ -18,7 +18,6 @@ logic.obj
 
 CTILIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 
 CTIPROGS=\

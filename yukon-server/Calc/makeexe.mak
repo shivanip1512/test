@@ -73,7 +73,6 @@ $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
-$(COMPILEBASE)\lib\cticparms.lib
 
 
 TESTLIBS=\
@@ -82,7 +81,6 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
-$(COMPILEBASE)\lib\cticparms.lib
 
 
 CALCLIBS=\
@@ -92,7 +90,6 @@ $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\service.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 advapi32.lib
 

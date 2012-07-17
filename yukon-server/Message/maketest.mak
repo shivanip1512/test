@@ -35,7 +35,6 @@ LIBS=\
 kernel32.lib user32.lib advapi32.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 
 MESSAGE_TEST_FULLBUILD = $[Filename,$(OBJ),MessageTestFullBuild,target]
 

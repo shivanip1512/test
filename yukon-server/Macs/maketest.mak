@@ -40,7 +40,6 @@ LIBS=\
 advapi32.lib \
 $(TCL_LIBS) \
 $(COMPILEBASE)\lib\service.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\mccmd.lib \

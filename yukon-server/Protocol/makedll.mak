@@ -147,7 +147,6 @@ dll_prot.obj \
 
 PROTLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\saprotocol.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(XERCES_LIBS)

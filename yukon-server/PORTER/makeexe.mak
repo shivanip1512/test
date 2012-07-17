@@ -94,7 +94,6 @@ $(COMPILEBASE)\lib\ctidevdb.lib \
 $(COMPILEBASE)\lib\ctiprtdb.lib \
 $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\ctiprot.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\cticonfig.lib \
 $(OPENSSL_LIBS)
 

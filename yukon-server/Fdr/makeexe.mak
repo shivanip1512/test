@@ -46,7 +46,6 @@ CTIPROGS=fdr.exe
 
 FDRLIBS=\
 advapi32.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \

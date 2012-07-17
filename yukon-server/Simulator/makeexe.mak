@@ -65,7 +65,6 @@ ccusimsvc.obj \
 
 CCU_SIMULATOR_LIBS=\
 advapi32.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctiprtdb.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \

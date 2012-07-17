@@ -46,7 +46,6 @@ pttrigger.obj \
 PNTDBLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctiprot.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 

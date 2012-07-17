@@ -49,7 +49,6 @@ $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
 $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 
 
 DLLOBJS=\

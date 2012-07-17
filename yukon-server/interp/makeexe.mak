@@ -18,7 +18,6 @@ $(TCL_LIBS) \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
-$(COMPILEBASE)\lib\cticparms.lib
 
 EXECS=\
 ctish.exe

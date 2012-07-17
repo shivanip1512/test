@@ -115,7 +115,6 @@ DBLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctiprot.lib \
-$(COMPILEBASE)\lib\cticparms.lib \
 $(SQLAPI)\lib\$(SQLAPI_LIB).lib \
 
 
