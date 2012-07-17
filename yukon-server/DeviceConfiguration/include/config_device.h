@@ -41,7 +41,6 @@ public:
     bool getLongValue(std::string key, long& value);
     long getLongValueFromKey(std::string key);
     double getFloatValueFromKey(std::string key);
-    bool checkValues(std::string stringArray[], unsigned int arrayLen);
 };
 
 typedef boost::shared_ptr< DeviceConfig > DeviceConfigSPtr;

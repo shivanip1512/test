@@ -143,29 +143,5 @@ double DeviceConfig::getFloatValueFromKey(std::string key)
     return retVal;
 }
 
-// Checks each key in the array to see if it exists. The strings in the array will be changed.
-bool DeviceConfig::checkValues(string stringArray[], unsigned int arrayLen)
-{
-    bool retVal = false;
-    if( arrayLen > 0 )
-    {
-        retVal = true; //This is temporary!
-
-        for( int i = 0; i < arrayLen; i++ )
-        {
-            CtiToLower(stringArray[i]);
-            CtiHashKey findKey = CtiHashKey(stringArray[i]);
-            ConfigValueMap::iterator iter = _configurationValues.find(findKey);
-
-            if( iter == _configurationValues.end() )
-            {
-                retVal = false;
-            }
-        }
-    }
-
-    return retVal;
-}
-
 }
 }

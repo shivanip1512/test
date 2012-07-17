@@ -101,12 +101,9 @@ BOOST_AUTO_TEST_CASE(test_ctitime_methods)
     BOOST_CHECK_EQUAL( d2.second(), rw2.second() );
 
     ct5 = d2;
-    //std::cout << std::endl << "Time, " << ct5.asString() << ", to UTC time: " << d2.toUTCtime().asString() << std::endl;
 
     //static methods
     BOOST_CHECK_EQUAL( RWTime::now().minute(), CtiTime::now().minute() );
-    /*std::cout << std::endl << "DST for 2005 in your local is: " << std::endl << CtiTime::beginDST(2005).asString();
-    std::cout << " to " << CtiTime::endDST(2005).asString() << std::endl;*/
 
     // check the constructor CtiTime(seconds), and the special case CtiTime(0)
     long timep = 5*24*60*60 + 8*60*60;
@@ -256,12 +253,6 @@ BOOST_AUTO_TEST_CASE(test_ctitime_DST)
     CtiTime cta;
     cta = ct + timeduration;
 
-    /*std::cout << std::endl;
-    std::cout << "DST begin time:\t\t\t" << ct.asString() << std::endl;
-    std::cout << "A not-exsit time (2:30am):\t" << CtiTime(ct.date(), 2, 30, 0).asString() << std::endl;
-    std::cout << "DST begin time - 5hrs:\t\t" << ctb.asString() << std::endl;
-    std::cout << "DST begin time + 5hrs:\t\t" << cta.asString() << std::endl;*/
-
     // check the time duration calculation acrossing the DST boundary
     BOOST_CHECK_EQUAL( 2 * timeduration, cta.seconds() - ctb.seconds() );
     CtiTime ctt(cta - 6*60*60 + 30);
@@ -270,7 +261,6 @@ BOOST_AUTO_TEST_CASE(test_ctitime_DST)
     ctt = ctb + 6*60*60;
     ctt1 = CtiTime(ct.date(), 4, 0, 0);
     BOOST_CHECK_EQUAL( ctt1.asString(), ctt.asString() );
-    std::cout << "There are problems with DST in the current code. Add testing when these are gone." << std::endl;
 
     // check the ambiguous time points
 
@@ -280,12 +270,8 @@ BOOST_AUTO_TEST_CASE(test_ctitime_DST)
     ctt = ct - 30*60; // 0:30am
     ctt1 = ctt - 90*60; // 23:00pm
 
-    /*std::cout << std::endl << "DST end time - 1hr: \t\t" << ct.asString() << std::endl;
-    std::cout << "DST end time - 1.5hr: \t\t" << ctt.asString() << std::endl;
-    std::cout << "DST end time - 3hr: \t\t" << ctt1.asString() << std::endl;*/
-
     BOOST_CHECK_EQUAL( ctt1.seconds() + 2*timeduration, ct.seconds() );
-    //asdf
+
     ct = ctt; // 0:30am
     ctt = ct + 6*60*60; //5.30am
     ctt1 = ct + 5*60*60; //4.30am
@@ -539,5 +525,77 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fall_dst_creation)
         BOOST_CHECK( ! t1.isDST() );
     }
 }
+
+BOOST_AUTO_TEST_CASE(test_ctitime_asString_standard_time)
+{
+    CtiDate d = CtiDate(1, 1, 2009);
+
+    CtiTime t = CtiTime(d, 0, 0, 0);
+
+    BOOST_CHECK_EQUAL(t.asString(), "01/01/2009 00:00:00");
+
+    struct test_case
+    {
+        CtiTime::DisplayOffset offset;
+        CtiTime::DisplayTimezone timezone;
+        std::string expected;
+    }
+    const test_cases[] = {
+        { CtiTime::Gmt,        CtiTime::OmitTimezone,    "01/01/2009 06:00:00" },
+        { CtiTime::Gmt,        CtiTime::IncludeTimezone, "01/01/2009 06:00:00 (UTC+0:00 GMT)" },
+        { CtiTime::Local,      CtiTime::OmitTimezone,    "01/01/2009 00:00:00" },
+        { CtiTime::Local,      CtiTime::IncludeTimezone, "01/01/2009 00:00:00 (UTC-6:00 CST)" },
+        { CtiTime::LocalNoDst, CtiTime::OmitTimezone,    "01/01/2009 00:00:00" },
+        { CtiTime::LocalNoDst, CtiTime::IncludeTimezone, "01/01/2009 00:00:00 (UTC-6:00 CST)" } };
+
+    std::vector<std::string> results, expected;
+
+    for each( const test_case &tc in test_cases )
+    {
+        results.push_back(t.asString(tc.offset, tc.timezone));
+        expected.push_back(tc.expected);
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected.begin(), expected.end(),
+        results.begin(), results.end());
+}
+
+
+BOOST_AUTO_TEST_CASE(test_ctitime_asString_daylight_saving_time)
+{
+    CtiDate d = CtiDate(1, 6, 2009);
+
+    CtiTime t = CtiTime(d, 0, 0, 0);
+
+    BOOST_CHECK_EQUAL(t.asString(), "06/01/2009 00:00:00");
+
+    struct test_case
+    {
+        CtiTime::DisplayOffset offset;
+        CtiTime::DisplayTimezone timezone;
+        std::string expected;
+    }
+    const test_cases[] = {
+        { CtiTime::Gmt,        CtiTime::OmitTimezone,    "06/01/2009 05:00:00" },
+        { CtiTime::Gmt,        CtiTime::IncludeTimezone, "06/01/2009 05:00:00 (UTC+0:00 GMT)" },
+        { CtiTime::Local,      CtiTime::OmitTimezone,    "06/01/2009 00:00:00" },
+        { CtiTime::Local,      CtiTime::IncludeTimezone, "06/01/2009 00:00:00 (UTC-5:00 CDT)" },
+        { CtiTime::LocalNoDst, CtiTime::OmitTimezone,    "05/31/2009 23:00:00" },
+        { CtiTime::LocalNoDst, CtiTime::IncludeTimezone, "05/31/2009 23:00:00 (UTC-6:00 CST)" } };
+
+    std::vector<std::string> results, expected;
+
+    for each( const test_case &tc in test_cases )
+    {
+        results.push_back(t.asString(tc.offset, tc.timezone));
+        expected.push_back(tc.expected);
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected.begin(), expected.end(),
+        results.begin(), results.end());
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()

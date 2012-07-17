@@ -323,11 +323,11 @@ void CtiAnsiTable64::printResult( const string& deviceName )
                 dout << "  **B*L*O*C*K** : "<<index<<endl;
                 if (_timeZoneApplied)
                 {
-                    dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time).asGMTString()<<endl;
+                    dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time).asString(CtiTime::Gmt, CtiTime::OmitTimezone)<<endl;
                 }
                 else
                 {
-                    dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time)<<endl;
+                    dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time).asString(CtiTime::Local, CtiTime::OmitTimezone)<<endl;
                 }
         }
         if (_blkEndReadFlag)
@@ -576,7 +576,7 @@ bool CtiAnsiTable64::getBlkEndTime(int blkSet, ULONG &blkEndTime)
 ULONG CtiAnsiTable64::getLPDemandTime (int blkSet, int blkIntvl)
 {
     ULONG blkEndTime = 0;
-    
+
     getBlkIntvlTime(blkSet, blkIntvl, blkEndTime);
     return blkEndTime;
 }

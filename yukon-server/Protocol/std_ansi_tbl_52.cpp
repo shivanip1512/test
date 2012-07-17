@@ -119,11 +119,11 @@ void CtiAnsiTable52::printResult( const string& deviceName )
         dout << "         - daylight savings time applied flag "<<(bool)clock_table.time_date_qual.dst_applied_flag<<endl;
         if ( isCalendarValid() && meterTimeIsGMT() )
         {
-            dout << "         - TIME  "<<CtiTime(clock_table.clock_calendar).asGMTString()<<endl;
+            dout << "         - TIME  "<<CtiTime(clock_table.clock_calendar).asString(CtiTime::Gmt, CtiTime::OmitTimezone)<<endl;
         }
         else
         {
-            dout << "         - TIME  "<<CtiTime(clock_table.clock_calendar).asString()<<endl;
+            dout << "         - TIME  "<<CtiTime(clock_table.clock_calendar).asString(CtiTime::Local, CtiTime::OmitTimezone)<<endl;
         }
 
     }

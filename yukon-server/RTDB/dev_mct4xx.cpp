@@ -143,7 +143,7 @@ Mct4xxDevice::CommandSet Mct4xxDevice::initCommandStore()
     return cs;
 }
 
-string Mct4xxDevice::printable_time(unsigned long timestamp)
+string Mct4xxDevice::printTimestamp(unsigned long timestamp)
 {
     string retval;
 
@@ -159,7 +159,7 @@ string Mct4xxDevice::printable_time(unsigned long timestamp)
     return retval;
 }
 
-string Mct4xxDevice::printable_date(const CtiDate &dt)
+string Mct4xxDevice::printDate(const CtiDate &dt)
 {
     string retval;
 
@@ -175,7 +175,7 @@ string Mct4xxDevice::printable_date(const CtiDate &dt)
     return retval;
 }
 
-string Mct4xxDevice::printable_date(unsigned long timestamp)
+string Mct4xxDevice::printDate(unsigned long timestamp)
 {
     string retval;
 
@@ -403,8 +403,8 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
             if( _llpRequest.request_id )
             {
                 lp_status_string += "Requested channel: " + CtiNumStr(_llpRequest.channel + 1) + "\n";
-                lp_status_string += "Current interval: " + printable_time(_llpRequest.begin) + "\n";
-                lp_status_string += "Ending interval:  " + printable_time(_llpRequest.end) + "\n";
+                lp_status_string += "Current interval: " + printTimestamp(_llpRequest.begin) + "\n";
+                lp_status_string += "Ending interval:  " + printTimestamp(_llpRequest.end) + "\n";
             }
             else
             {
@@ -412,12 +412,12 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
 
                 if( _llpRequest.failed )
                 {
-                    lp_status_string += "Last request failed at interval: " + printable_time(_llpRequest.begin) + "\n";
+                    lp_status_string += "Last request failed at interval: " + printTimestamp(_llpRequest.begin) + "\n";
                 }
 
                 if( is_valid_time(_llpRequest.end) )
                 {
-                    lp_status_string += "Last request end time: " + printable_time(_llpRequest.end) + "\n";
+                    lp_status_string += "Last request end time: " + printTimestamp(_llpRequest.end) + "\n";
                 }
             }
 
@@ -564,8 +564,8 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                             {
                                 CtiString temp = "Long load profile request already in progress - use \"getvalue lp cancel\" to cancel\n";
                                 temp += "Requested channel: " + CtiNumStr(_llpRequest.channel + 1) + "\n";
-                                temp += "Current interval: " + printable_time(_llpRequest.begin) + "\n";
-                                temp += "Ending interval:  " + printable_time(_llpRequest.end) + "\n";
+                                temp += "Current interval: " + printTimestamp(_llpRequest.begin) + "\n";
+                                temp += "Ending interval:  " + printTimestamp(_llpRequest.end) + "\n";
                                 errRet->setResultString(temp);
                                 errRet->setStatus(NOTNORMAL);
                                 retList.push_back(errRet);
@@ -833,7 +833,6 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                         }
                         else
                         {
-                            
                             const CtiDate today = CtiDate();
                             const CtiDate request_date =  CtiDate(day,month,year);
                             if( request_date > today )  //  must begin on or before today
@@ -850,7 +849,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                 nRet  = ExecutionComplete;
 
                                 InterlockedExchange(&_llpPeakInterest.in_progress, false);
-                            }                     
+                            }
                             else if( ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) ||
                                      ! hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
                             {
@@ -2570,7 +2569,7 @@ INT Mct4xxDevice::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, CtiMe
                     InMessage->Buffer.DSt.Message[3] <<  8 |
                     InMessage->Buffer.DSt.Message[4];
 
-        resultString  = getName() + " / Current Time: " + printable_time(timestamp) + "\n";
+        resultString  = getName() + " / Current Time: " + printTimestamp(timestamp) + "\n";
 
         resultString += getName() + " / Timezone Offset: ";
 
@@ -2595,7 +2594,7 @@ INT Mct4xxDevice::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, CtiMe
                     InMessage->Buffer.DSt.Message[2] <<  8 |
                     InMessage->Buffer.DSt.Message[3];
 
-        resultString = getName() + " / Time Last Synced at: " + printable_time(timestamp);
+        resultString = getName() + " / Time Last Synced at: " + printTimestamp(timestamp);
     }
 
     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)

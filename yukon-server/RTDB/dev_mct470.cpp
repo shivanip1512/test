@@ -4764,11 +4764,31 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
     {
         case EmetconProtocol::GetConfig_IEDTime:
         {
+            bool dstEnabled = true;
+
+            if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
+            {
+                dstEnabled = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) & 0x01;
+            }
+            else if( const DeviceConfigSPtr deviceConfig = getDeviceConfig() )
+            {
+                long configuration;
+
+                if( deviceConfig->getLongValue(MCTStrings::Configuration, configuration) )
+                {
+                    dstEnabled = configuration & 0x01;
+                }
+            }
+
             point_info  pi_time  = Mct470Device::getData(DSt->Message, 4, ValueType_IED);
 
-            _iedTime = CtiTime::fromLocalSeconds(pi_time.value);
+            _iedTime = dstEnabled ?
+                CtiTime::fromLocalSeconds(pi_time.value) :
+                CtiTime::fromLocalSecondsNoDst(pi_time.value);
 
-            resultString += getName() + " / current time: " + printable_time(_iedTime.seconds()) + "\n";
+            resultString += getName() + " / current time: ";
+            resultString += _iedTime.asString(dstEnabled ? CtiTime::Local : CtiTime::LocalNoDst, CtiTime::IncludeTimezone);
+            resultString += "\n";
 
             if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
             {
@@ -4883,12 +4903,16 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
 
             pi_time  = Mct470Device::getData(DSt->Message + 7, 4, ValueType_IED);
 
-            CtiTime lastReset = CtiTime::fromLocalSeconds(pi_time.value);
+            CtiTime lastReset = dstEnabled ?
+                CtiTime::fromLocalSeconds(pi_time.value) :
+                CtiTime::fromLocalSecondsNoDst(pi_time.value);
 
             insertPointDataReport(AnalogPointType, PointOffset_DemandResetCount,
                                   ReturnMsg, pi, "Demand Reset Count", lastReset);
 
-            resultString += "\n" + getName() + " / time of last reset: " + printable_time(lastReset.seconds()) + "\n";
+            resultString += "\n" + getName() + " / time of last reset: ";
+            resultString += lastReset.asString(dstEnabled ? CtiTime::Local : CtiTime::LocalNoDst, CtiTime::IncludeTimezone);
+            resultString += "\n";
 
             pi = Mct470Device::getData(DSt->Message + 11, 2, ValueType_IED);
 
@@ -5072,7 +5096,7 @@ INT Mct470Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNo
              DSt->Message[2] <<  8 |
              DSt->Message[3];
 
-    resultString += "Current Interval Time: " + printable_time(lpTime) + "\n";
+    resultString += "Current Interval Time: " + printTimestamp(lpTime) + "\n";
     resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[4]) + string("\n");
 
     resultString += "\n";
@@ -5084,7 +5108,7 @@ INT Mct470Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNo
              DSt->Message[7] <<  8 |
              DSt->Message[8];
 
-    resultString += "Current Interval Time: " + printable_time(lpTime) + "\n";
+    resultString += "Current Interval Time: " + printTimestamp(lpTime) + "\n";
     resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[9]) + string("\n");
 
     resultString += "\n";
@@ -5149,7 +5173,7 @@ INT Mct470Device::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, CtiMe
     }
     resultString += "DNP point: " + CtiNumStr(dnpPoint) + "\n";
     resultString += "Command status: " + resolveDNPStatus(commandStatus) + "(" + CtiNumStr(commandStatus) + ")" + "\n";
-    resultString += "Last Successful Read: " + printable_time(ied_time) + "(" + CtiNumStr(ied_time) + ")" + "\n";
+    resultString += "Last Successful Read: " + printTimestamp(ied_time) + "(" + CtiNumStr(ied_time) + ")" + "\n";
 
     ReturnMsg->setResultString(resultString);
 

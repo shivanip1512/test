@@ -30,9 +30,9 @@ private:
 
 protected:
 
-    static std::string printable_time(unsigned long seconds);
-    static std::string printable_date(unsigned long seconds);
-    static std::string printable_date(const CtiDate &dt);
+    static std::string printTimestamp(unsigned long seconds);
+    static std::string printDate(unsigned long seconds);
+    static std::string printDate(const CtiDate &dt);
 
     bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
     void createTOUDayScheduleString(std::string &schedule, long (&times)[5], long (&rates)[6]);

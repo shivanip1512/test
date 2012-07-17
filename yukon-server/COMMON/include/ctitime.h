@@ -11,15 +11,15 @@ class CtiDate;
 typedef time_t ctitime_t;
 
 
-class IM_EX_CTIBASE CtiTime{
+class IM_EX_CTIBASE CtiTime
+{
 private:
-    enum timeFormat{LOCAL_TIMEZONE, LOCAL_NO_TIMEZONE, GMT_TIMEZONE, GMT_NO_TIMEZONE};
+
     ctitime_t maketm(const CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
     ctitime_t _seconds;
-    std::string asString(timeFormat type) const;
 
-    //boost::mutex _secs_mutex;
 public:
+
     enum specialvalues  {neg_infin, pos_infin, not_a_time};
 
     CtiTime();
@@ -39,6 +39,7 @@ public:
     CtiTime& operator -= (const int secs);
 
     static CtiTime fromLocalSeconds(const unsigned long local_seconds);
+    static CtiTime fromLocalSecondsNoDst(const unsigned long local_seconds);
 
     int day() const;
     int dayGMT() const;
@@ -63,9 +64,21 @@ public:
 
     long secondOffsetToGMT() const;
 
+    enum DisplayOffset
+    {
+        Local,
+        LocalNoDst,
+        Gmt
+    };
+
+    enum DisplayTimezone
+    {
+        OmitTimezone,
+        IncludeTimezone
+    };
+
+    std::string asString(DisplayOffset offset, DisplayTimezone timezone) const;
     std::string asString() const;
-    std::string asStringTimeZone() const;
-    std::string asGMTString() const;
 
     CtiTime addDays(const int days, bool DSTflag = true);
 

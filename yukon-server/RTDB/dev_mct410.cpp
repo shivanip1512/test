@@ -948,8 +948,8 @@ INT Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, Ct
                     string request_str = "getvalue daily read ";
 
                     request_str += "channel " + CtiNumStr(_daily_read_info.request.channel)
-                                        + " " + printable_date(_daily_read_info.request.begin + 1)
-                                        + " " + printable_date(_daily_read_info.request.end);
+                                        + " " + printDate(_daily_read_info.request.begin + 1)
+                                        + " " + printDate(_daily_read_info.request.end);
 
                     if( strstr(InMessage.Return.CommandStr, " noqueue") )  request_str += " noqueue";
 
@@ -1778,7 +1778,7 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         }
     }
     else if( parse.isKeyValid("lp_command") )
-    {   
+    {
         // Disable load profile peak report for channel 4. (see YUK-4569)
         if ( parse.getsValue("lp_command") == "peak" && parse.getiValue("lp_channel") == 4 )
         {
@@ -1861,12 +1861,12 @@ INT Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
             if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
             {
-                temp += printable_date(_daily_read_info.request.begin + 1) + " - " +
-                        printable_date(_daily_read_info.request.end) + "\n";
+                temp += printDate(_daily_read_info.request.begin + 1) + " - " +
+                        printDate(_daily_read_info.request.end) + "\n";
             }
             else
             {
-                temp += printable_date(_daily_read_info.request.begin);
+                temp += printDate(_daily_read_info.request.begin);
             }
 
             nRet  = ExecutionComplete;
@@ -3639,8 +3639,8 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                     string request_str = "getvalue daily read ";
 
                     request_str += "channel " + CtiNumStr(_daily_read_info.request.channel)
-                                        + " " + printable_date(_daily_read_info.request.begin + 1)
-                                        + " " + printable_date(_daily_read_info.request.end);
+                                        + " " + printDate(_daily_read_info.request.begin + 1)
+                                        + " " + printDate(_daily_read_info.request.end);
 
                     if( strstr(InMessage->Return.CommandStr, " noqueue") )  request_str += " noqueue";
 
