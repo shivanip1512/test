@@ -310,17 +310,6 @@ public class DBUpdater extends MessageFrameAdaptor
     						0,
     						line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM) );
             }
-
-            /*
-             * Check to see if this command contains a master.cfg parameter replacement indicator.
-             * Any statement that contains a string matching the form
-             * 
-             *      {master.cfg:CPARM_PARAMETER_NAME:default_value}
-             *      
-             * will be replaced exactly with the value of the cparm CPARM_PARAMETER_NAME from the
-             * master.cfg file or default_value if CPARM_PARAMETER_NAME doesn't exist in master.cfg.
-             */
-            cmd = MasterConfigUpdateHandler.handleConfigurationCommand(cmd);
             
             getIMessageFrame().addOutput( "EXECUTING: " + cmd ); 
 

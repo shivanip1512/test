@@ -2,7 +2,7 @@ package com.cannontech.dbtools.updater;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author rneuharth
@@ -16,7 +16,7 @@ public class UpdateLine
 	private StringBuffer value = null;
 	
 	//stores (key<String>, value<String>)
-	private HashMap metaProps = null;
+	private HashMap<String, String> metaProps = null;
 
 	/**
 	 * 
@@ -31,10 +31,10 @@ public class UpdateLine
 	 * Contains (key<String>, value<String>)
 	 * @return
 	 */
-	public HashMap getMetaProps()
+	public HashMap<String, String> getMetaProps()
 	{
 		if( metaProps == null )
-			metaProps = new HashMap(16);
+			metaProps = new HashMap<String, String>(16);
 
 		return metaProps;
 	}
@@ -73,12 +73,12 @@ public class UpdateLine
 	{
 		String[] retVals = new String[ getMetaProps().size() + 1 ];
 
-		Iterator iter = getMetaProps().entrySet().iterator();
+		Iterator<Entry<String, String>> iter = getMetaProps().entrySet().iterator();
 		int i = 0;
 		
 		while( iter.hasNext() )
 		{
-			Map.Entry entr = (Map.Entry)iter.next();
+			Entry<String, String> entr = iter.next();
 			
 			retVals[i++] = 
 					DBMSDefines.COMMENT_BEGIN + " " + 
@@ -138,7 +138,7 @@ public class UpdateLine
 	 */
 	public void setSuccess(boolean b)
 	{
-		getMetaProps().put( DBMSDefines.META_SUCCESS, new Boolean(b) );
+		getMetaProps().put( DBMSDefines.META_SUCCESS, new Boolean(b).toString() );
 	}
 
 

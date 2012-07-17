@@ -45,6 +45,8 @@ public interface DBMSDefines
     /*For use with T-SQL or PL/SQL transaction blocks*/
     public static final String START_BLOCK              = "/* @start-block */";
     public static final String END_BLOCK                = "/* @end-block */";
+    public static final String START_CPARM_REGEX        = "/\\* @start\\-cparm ([A-Za-z_]+) \\*/";
+    public static final String END_CPARM                = "/* @end-cparm */";
     public static final String PROCESS_COMMAND_CHARACTER= "/";
 
 	/** What strings should be ignored by the App for all DBMS's */	

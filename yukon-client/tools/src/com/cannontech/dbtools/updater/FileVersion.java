@@ -17,7 +17,7 @@ public class FileVersion
 {
 	private File file = null;
 
-	public static Comparator FILE_COMP = new Comparator()
+	public static Comparator<FileVersion> FILE_COMP = new Comparator<FileVersion>()
 	{
 		/**
 		 * Compares version numbers to each other. Some truths are:
@@ -27,25 +27,18 @@ public class FileVersion
 			3.99 > 3.2
 			3.9 > 3.11  (interesting!)
 		 */
-		public int compare(Object o1, Object o2)
+		public int compare(FileVersion o1, FileVersion o2)
 		{
-			if( !(o1 instanceof FileVersion) 
-				|| !(o2 instanceof FileVersion) )
-				return 0;
-
-			FileVersion aVal = (FileVersion)o1;
-			FileVersion bVal = (FileVersion)o2;
-
 			// 11.22
 			// 9.1
-			String aMinor = String.valueOf(aVal.getVersion());
+			String aMinor = String.valueOf(o1.getVersion());
 			aMinor = aMinor.substring(
 						aMinor.indexOf(".")+1,
 						aMinor.length() );
 			if( aMinor.length() <= 1 )
 				aMinor = "0" + aMinor;
 			
-			String bMinor = String.valueOf(bVal.getVersion());
+			String bMinor = String.valueOf(o2.getVersion());
 			bMinor = bMinor.substring(
 						bMinor.indexOf(".")+1,
 						bMinor.length() );
@@ -53,9 +46,9 @@ public class FileVersion
 				bMinor = "0" + bMinor;
 			
 			double aVersion = Double.parseDouble(
-				((int)aVal.getVersion()) + "." + aMinor );
+				((int)o1.getVersion()) + "." + aMinor );
 			double bVersion = Double.parseDouble(
-				((int)bVal.getVersion()) + "." + bMinor );
+				((int)o2.getVersion()) + "." + bMinor );
 				
 			//CTILogger.debug("  aVers = " + aVersion + ",  given=" + aVal.getVersion());			
 			//CTILogger.debug("  bVers = " + bVersion + ",  given=" + bVal.getVersion());
@@ -65,8 +58,8 @@ public class FileVersion
 			else if( aVersion == bVersion )
 			{
 				//version is not enough, use the build #
-				return (aVal.getBuild() < bVal.getBuild() ? -1
-						: (aVal.getBuild() == bVal.getBuild() ? 0 : 1) );
+				return (o1.getBuild() < o2.getBuild() ? -1
+						: (o1.getBuild() == o2.getBuild() ? 0 : 1) );
 			}
 			else
 				return 1;

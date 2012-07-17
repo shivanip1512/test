@@ -12,8 +12,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.db.version.CTIDatabase;
@@ -223,7 +227,7 @@ public class UpdateDB
 	* */
 	public FileVersion[] getDBUpdateFiles( String rootDIR )
 	{
-		ArrayList versions = new ArrayList(32);
+		ArrayList<FileVersion> versions = new ArrayList<FileVersion>(32);
 
 		//previously generated list of valid commands
 		final File genDIR = new File( CtiUtilities.getClientLogDir() );
@@ -409,27 +413,66 @@ public class UpdateDB
 		{
 			try
 			{
-				ArrayList validLines = new ArrayList(512);
+			    Pattern pattern = Pattern.compile(DBMSDefines.START_CPARM_REGEX);
+			    Pattern varPattern = Pattern.compile("SELECT @[A-Za-z_]+ = \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
+				ArrayList<UpdateLine> validLines = new ArrayList<UpdateLine>(512);
 				java.io.RandomAccessFile fileReader = new java.io.RandomAccessFile(file, "r");
 				String token = "";
 				UpdateLine updLine = new UpdateLine();
 				boolean commentState = false;
 				boolean blockState = false;
+				boolean cparmState = false;
+				String cparmToken = "";
+				ConfigurationSource config = null;
+				Matcher cparmMatcher = null;
 
 				while( fileReader.getFilePointer() < fileReader.length() )
 				{
 					token = fileReader.readLine().trim();
+					cparmMatcher = pattern.matcher(token);
 
 					if( isValidString(token) )
 					{
+                        // Check to see if we're handling a cparm.
+					    // This can happen in a block, so check it first.
+                        if ( cparmState ) {
+                            if (token.endsWith(DBMSDefines.END_CPARM)) {
+                                // We are done processing this cparm. Grab the next line.
+                                cparmState = false;
+                                continue;
+                            }
+                            
+                            if (config == null) {
+                                config = MasterConfigHelper.getConfiguration();
+                            }
+                            
+                            String configValue = config.getString(cparmToken);
+                            if (configValue != null) {
+                                Matcher matcher = varPattern.matcher(token);
+                                if (matcher.find()) {
+                                    token = token.replace(matcher.group(1), configValue);
+                                }
+                            }
 
+                            // The line gets added regardless of whether we found the cparm
+                            // in master.cfg.
+                            updLine.getValue().append(token);
+                            updLine.getValue().append(" ");
+                                    
+                            // We're done with this line, move on.
+                            continue;
+                        } else if( cparmMatcher.matches() ) {
+                            cparmState = true;
+                            cparmToken = cparmMatcher.group(1);
+                            continue;
+                        }
+                        
 					    // Checks to see if its an end block
 						if ( blockState ) {
 						    // Checks to see if the file is using a slash and skips to the next line
 	                        if (token.equals(DBMSDefines.PROCESS_COMMAND_CHARACTER)) {
 	                            continue;
 	                        }
-	                        
 	                        
                             blockState = !token.endsWith(DBMSDefines.END_BLOCK);
                             if(blockState) {
@@ -444,7 +487,6 @@ public class UpdateDB
                                 continue;
                             }
                         }
-						
 						// Checks to see if its a start block
                         else if( token.startsWith(DBMSDefines.START_BLOCK) ) {
                             //if we have a END_BLOCK, this comment is terminated
