@@ -66,8 +66,8 @@ void Cbc8020Device::combineFirmwarePoints( Cti::Protocol::Interface::pointlist_t
                 outgoing data format:
                     a SIXBIT (http://nemesis.lonestar.org/reference/telecom/codes/sixbit.html)
                     encoded string packed inside a long long.  The point data message holds a
-                    double which limits us to 8 encoded characters inside the mantissa.  The
-                    string format is "major_version.minor_version.revision".  A string that is
+                    double which limits us to 8 (6-bit) encoded characters inside the 52-bit mantissa.
+                    The string format is "major_version.minor_version.revision".  A string that is
                     too long will be truncated and the last character replaced by '#' to
                     denote that condition. eg: "10.11.123" --> "10.11.1#".  
             */

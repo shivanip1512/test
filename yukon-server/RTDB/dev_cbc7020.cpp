@@ -100,11 +100,12 @@ void Cbc7020Device::processFirmwarePoint( Cti::Protocol::Interface::pointlist_t 
                 outgoing data format:
                     a SIXBIT (http://nemesis.lonestar.org/reference/telecom/codes/sixbit.html)
                     encoded string packed inside a long long.  The point data message holds a
-                    double which limits us to 8 encoded characters inside the mantissa.  The
-                    string format is "major_version.minor_version".
+                    double which limits us to 8 (6-bit) encoded characters inside the 52-bit mantissa.
+                    The string format is "major_version.minor_version".
                     The major version is represented by a single capital alphabet letter.  The
                     valid range is 1 to 26 mapping to 'A' to 'Z' (ie: '@' + i).  The minor version
-                    is the raw 8 bit number plus 1.
+                    is the raw 8 bit number plus 1.  Since max length of the string is 5 chars, no
+                    overflow of the 8 char limit is possible.
 
                     Example: 0x0805 --> H.6     (8th letter of alphabet . minor + 1)
 
