@@ -782,12 +782,10 @@ Picker.prototype = {
 	},
 
 	block : function() {
-	    console.log('block ' + this.resultAreaId);
 	    Yukon.uiUtils.elementGlass.show(document.getElementById(this.resultAreaId));
 	},
 
 	unblock : function() {
-        console.log('unblock ' + this.resultAreaId);
 	    Yukon.uiUtils.elementGlass.hide(document.getElementById(this.resultAreaId));
 	},
 };
