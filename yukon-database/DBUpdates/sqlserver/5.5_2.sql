@@ -124,6 +124,37 @@ CREATE INDEX Indx_YkUsIDNm ON YukonUser(
 );
 /* End YUK-11149 */
 
+/* Start YUK-11129 */
+UPDATE ContactNotification
+SET Notification = REPLACE(Notification,'-','')
+WHERE SUBSTRING(Notification, 4,1) = '-'
+  AND SUBSTRING(Notification, 8,1) = '-'
+  AND LEN(REPLACE(Notification, '-', '')) = 10
+  AND NotificationCategoryID IN (2,4,5,6,8,10);
+
+UPDATE ContactNotification
+SET Notification = REPLACE(Notification,'-','')
+WHERE SUBSTRING(Notification, 4,1) = '-'
+  AND LEN(REPLACE(Notification, '-', '')) = 7
+  AND NotificationCategoryID IN (2,4,5,6,8,10);
+
+UPDATE ContactNotification
+SET Notification = REPLACE(REPLACE(REPLACE(Notification,')',''),'(',''),'-','')
+WHERE SUBSTRING(Notification, 1,1) = '('
+  AND SUBSTRING(Notification, 5,1) = ')'
+  AND SUBSTRING(Notification, 9,1) = '-'
+  AND LEN(REPLACE(REPLACE(REPLACE(Notification,')',''),'(',''),'-','')) = 10
+  AND NotificationCategoryID IN (2,4,5,6,8,10);
+
+UPDATE ContactNotification
+SET Notification = REPLACE(REPLACE(REPLACE(REPLACE(Notification,' ',''),')',''),'(',''),'-','')
+WHERE SUBSTRING(Notification, 1,1) = '('
+  AND SUBSTRING(Notification, 5,1) = ')'
+  AND SUBSTRING(Notification, 10,1) = '-'
+  AND LEN(REPLACE(REPLACE(REPLACE(REPLACE(Notification,' ',''),')',''),'(',''),'-','')) = 10
+  AND NotificationCategoryID IN (2,4,5,6,8,10);
+/* End YUK-11129 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
