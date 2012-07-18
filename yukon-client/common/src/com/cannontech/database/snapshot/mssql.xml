@@ -37027,7 +37027,7 @@
             <i__table reference="../../.."/>
             <i__columnName>UserName</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>varchar</i__typeName>
+            <i__typeName>nvarchar</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
             <i__columnSize>64</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
@@ -37043,7 +37043,7 @@
             <i__table reference="../../.."/>
             <i__columnName>Password</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
-            <i__typeName>varchar</i__typeName>
+            <i__typeName>nvarchar</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
             <i__columnSize>64</i__columnSize>
             <i__columnSizeDiffers>false</i__columnSizeDiffers>
