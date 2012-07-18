@@ -3707,13 +3707,6 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
 
                 status = ErrorInvalidTimestamp;
             }
-            else if( channel != _daily_read_info.request.channel )
-            {
-                resultString  = getName() + " / Invalid channel returned by daily read ";
-                resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(_daily_read_info.request.channel) + ")";
-
-                status = ErrorInvalidChannel;
-            }
             else if(  day        !=   _daily_read_info.request.begin.dayOfMonth() ||
                      (month % 4) != ((_daily_read_info.request.begin.month() - 1) % 4) )
             {
