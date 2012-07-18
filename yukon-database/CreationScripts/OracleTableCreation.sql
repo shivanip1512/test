@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/18/2012 10:35:18 AM                        */
+/* Created on:     7/18/2012 3:24:28 PM                         */
 /*==============================================================*/
 
 
@@ -9245,8 +9245,8 @@ INSERT INTO YukonServices VALUES (20, 'OpcService','classpath:com/cannontech/ser
 /*==============================================================*/
 create table YukonUser  (
    UserID               NUMBER                          not null,
-   UserName             VARCHAR2(64)                    not null,
-   Password             VARCHAR2(64)                    not null,
+   UserName             NVARCHAR2(64)                   not null,
+   Password             NVARCHAR2(64)                   not null,
    Status               VARCHAR2(20)                    not null,
    AuthType             VARCHAR2(16)                    not null,
    LastChangedDate      DATE                            not null,

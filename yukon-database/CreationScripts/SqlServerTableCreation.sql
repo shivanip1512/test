@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/18/2012 10:36:37 AM                        */
+/* Created on:     7/18/2012 3:38:05 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9748,8 +9748,8 @@ INSERT INTO YukonServices VALUES (20, 'OpcService','classpath:com/cannontech/ser
 /*==============================================================*/
 create table YukonUser (
    UserID               numeric              not null,
-   UserName             varchar(64)          not null,
-   Password             varchar(64)          not null,
+   UserName             nvarchar(64)         not null,
+   Password             nvarchar(64)         not null,
    Status               varchar(20)          not null,
    AuthType             varchar(16)          not null,
    LastChangedDate      datetime             not null,

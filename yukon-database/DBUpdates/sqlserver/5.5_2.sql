@@ -113,6 +113,17 @@ ALTER TABLE PointStatus DROP COLUMN StateOneControl;
 ALTER TABLE PointStatus DROP COLUMN CommandTimeout;
 /* End YUK-11142 */
 
+/* Start YUK-11149 */
+DROP INDEX YukonUser.Indx_YkUsIDNm;
+ALTER TABLE YukonUser
+ALTER COLUMN Username NVARCHAR(64) NOT NULL;
+ALTER TABLE YukonUser
+ALTER COLUMN Password NVARCHAR(64) NOT NULL;
+CREATE INDEX Indx_YkUsIDNm ON YukonUser(
+    Username ASC
+);
+/* End YUK-11149 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

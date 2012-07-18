@@ -124,6 +124,21 @@ ALTER TABLE PointStatus DROP COLUMN StateOneControl;
 ALTER TABLE PointStatus DROP COLUMN CommandTimeout;
 /* End YUK-11142 */
 
+/* Start YUK-11149 */
+/* @error ignore-begin */
+DROP INDEX INDX_YukonUser_Username_FB;
+/* @error ignore-end */
+ALTER TABLE YukonUser
+MODIFY Username NVARCHAR2(64);
+ALTER TABLE YukonUser
+MODIFY Password NVARCHAR2(64);
+/* @error ignore-begin */
+CREATE INDEX INDX_YukonUser_Username_FB ON YukonUser (
+    LOWER(Username)
+);
+/* @error ignore-end */
+/* End YUK-11149 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
