@@ -4,6 +4,7 @@
 *     REQUIRES:
 *     * jQuery 1.6.4
 *     * blockUI 2.39
+*     * jQuery placeholder plug-in
 *     
 *     USAGE:
 *     In day to day use, the Yukon.ui class will be your best bet at getting the functionality you

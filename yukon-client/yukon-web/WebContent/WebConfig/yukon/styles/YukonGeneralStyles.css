@@ -1322,19 +1322,6 @@ div.padded {
     padding: 4px;
 }
 
-.busyBox {
-	position: absolute;
-	left: 50%;
-    margin-left: -16px;
-    margin-top: -16px;
-    top: 33%;
-	width: 32px;
-	height: 32px;
-    z-index: 99999;
-    background-image: url('/WebConfig/yukon/Icons/busy_rotation.gif');
-    background-repeat: no-repeat;
-}
-
 div.userMessage {
 
 	font-size: 11px;

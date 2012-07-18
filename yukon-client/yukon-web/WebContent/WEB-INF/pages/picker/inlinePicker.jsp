@@ -30,7 +30,7 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
     </div>
 
     <div id="picker_${id}_nothingSelected" style="display:none" class="errorMessage"><i:inline key=".nothingSelected"/></div>
-    <div id="picker_${id}_results" class="pickerResults"></div>
+    <div id="picker_${id}_results" class="pickerResults f_block_this"></div>
     <div id="picker_${id}_noResults" style="display: none" class="pickerResults"><i:inline key=".noResults"/></div>
 </div>
 

@@ -91,10 +91,10 @@ Picker.prototype = {
 		var quietDelay = 300;
 		// Don't do the search if it hasn't changed.  This can happen if
 		// the use the cursor key or alt-tab to another window and back.
-		var ss = pickerThis.ssInput.value;
-		if (pickerThis.currentSearch != ss) {
+		var ss = this.ssInput.value;
+		if (this.currentSearch != ss) {
+	        this.block();
 			setTimeout(timerFunction, quietDelay);
-			Yukon.ui.blockPage();
 		}
 	},
 
@@ -106,7 +106,7 @@ Picker.prototype = {
 	 */
 	doSearch: function(start, count, onComplete) {
 		this.inSearch = true;
-		Yukon.ui.blockPage();
+        this.block();
 		var ss = this.ssInput.value;
 		if (ss) {
 			this.showAllLink.show();
@@ -494,6 +494,7 @@ Picker.prototype = {
 
 		var ss = this.ssInput.value;
 		Yukon.ui.unblockPage();
+		this.unblock();
 		if (this.currentSearch != ss) {
 			// do another search
 			this.doSearch();
@@ -505,6 +506,7 @@ Picker.prototype = {
 	ajaxError: function(transport) {
 		this.inSearch = false;
 		Yukon.ui.unblockPage();
+		this.unblock();
 		this.resultsDiv.innerHTML = '';
 		errorHolder = document.createElement('div');
 		errorHolder.id = this.errorHolderId;
@@ -777,5 +779,15 @@ Picker.prototype = {
 				this.updateSelectAllCheckbox();
 			}
 		}
-	}
+	},
+
+	block : function() {
+	    console.log('block ' + this.resultAreaId);
+	    Yukon.uiUtils.elementGlass.show(document.getElementById(this.resultAreaId));
+	},
+
+	unblock : function() {
+        console.log('unblock ' + this.resultAreaId);
+	    Yukon.uiUtils.elementGlass.hide(document.getElementById(this.resultAreaId));
+	},
 };
