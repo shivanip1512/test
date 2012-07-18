@@ -48,11 +48,9 @@ SELECT @newItemId = MAX(DeviceConfigurationItemId)+1 FROM DEVICECONFIGURATIONITE
 
 INSERT INTO DEVICECONFIGURATIONITEM VALUES (@newItemId, @newDevConfigId, 'Enable Unsolicited Messages', 'true');
 SELECT @newItemId = MAX(DeviceConfigurationItemId)+1 FROM DEVICECONFIGURATIONITEM;
-
 /*
  * Find all DNP devices in the database and assign them to the new device configuration.
  */
-
 DECLARE @count NUMERIC = (SELECT COUNT(*) 
                           FROM YukonPAObject 
                           WHERE (Type LIKE 'CBC 702%' OR Type LIKE 'CBC 802%' OR TYPE LIKE '%DNP%'))
@@ -71,6 +69,49 @@ BEGIN
     SET @count -= 1;
 END
 /* End YUK-11144 */
+
+/* Start YUK-11142 */
+CREATE TABLE PointControl(
+    PointId NUMERIC NOT NULL,
+    ControlOffset NUMERIC NOT NULL,
+    ControlInhibit VARCHAR(1) NOT NULL,
+    CONSTRAINT PK_PointControl PRIMARY KEY (PointId),
+    CONSTRAINT FK_Point_PointControl FOREIGN KEY(PointId)
+        REFERENCES POINT(POINTID)
+);
+
+CREATE TABLE PointStatusControl (
+    PointId NUMERIC NOT NULL,
+    ControlType VARCHAR(12) NOT NULL,
+    CloseTime1 NUMERIC NOT NULL,
+    CloseTime2 NUMERIC NOT NULL,
+    StateZeroControl VARCHAR(100) NOT NULL,
+    StateOneControl VARCHAR(100) NOT NULL,
+    CommandTimeOut NUMERIC NOT NULL,
+    CONSTRAINT PK_PointStatusControl PRIMARY KEY (POINTID),
+    CONSTRAINT FK_PointCntrl_PointStatusCntrl FOREIGN KEY(POINTID)
+        REFERENCES PointControl (PointId)
+);
+
+INSERT INTO PointControl (PointId, ControlOffset, ControlInhibit)
+   (SELECT PointId, ControlOffset, ControlInhibit
+    FROM PointStatus
+    WHERE LOWER(ControlType) != 'none');   
+
+INSERT INTO PointStatusControl (PointId, ControlType, CloseTime1, CloseTime2, StateZeroControl, StateOneControl, CommandTimeOut)
+   (SELECT PointId, ControlType, CloseTime1, CloseTime2, StateZeroControl, StateOneControl, CommandTimeOut
+    FROM PointStatus
+    WHERE LOWER(ControlType) != 'none');
+
+ALTER TABLE PointStatus DROP COLUMN ControlOffset;
+ALTER TABLE PointStatus DROP COLUMN ControlType;
+ALTER TABLE PointStatus DROP COLUMN ControlInhibit;
+ALTER TABLE PointStatus DROP COLUMN CloseTime1;
+ALTER TABLE PointStatus DROP COLUMN CloseTime2;
+ALTER TABLE PointStatus DROP COLUMN StateZeroControl;
+ALTER TABLE PointStatus DROP COLUMN StateOneControl;
+ALTER TABLE PointStatus DROP COLUMN CommandTimeout;
+/* End YUK-11142 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 

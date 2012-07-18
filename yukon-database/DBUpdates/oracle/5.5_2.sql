@@ -81,6 +81,49 @@ BEGIN
 END;
 /* End YUK-11144 */
 
+/* Start YUK-11142 */
+CREATE TABLE PointControl(
+    PointId NUMBER NOT NULL,
+    ControlOffset NUMBER NOT NULL,
+    ControlInhibit VARCHAR2(1) NOT NULL,
+    CONSTRAINT PK_PointControl PRIMARY KEY (PointId),
+    CONSTRAINT FK_Point_PointControl FOREIGN KEY(PointId)
+        REFERENCES POINT(POINTID)
+);
+
+CREATE TABLE PointStatusControl (
+    PointId NUMBER NOT NULL,
+    ControlType VARCHAR2(12) NOT NULL,
+    CloseTime1 NUMBER NOT NULL,
+    CloseTime2 NUMBER NOT NULL,
+    StateZeroControl VARCHAR2(100) NOT NULL,
+    StateOneControl VARCHAR2(100) NOT NULL,
+    CommandTimeOut NUMBER NOT NULL,
+    CONSTRAINT PK_PointStatusControl PRIMARY KEY (POINTID),
+    CONSTRAINT FK_PointCntrl_PointStatusCntrl FOREIGN KEY(POINTID)
+        REFERENCES PointControl (PointId)
+);
+
+INSERT INTO PointControl (PointId, ControlOffset, ControlInhibit)
+   (SELECT PointId, ControlOffset, ControlInhibit
+    FROM PointStatus
+    WHERE LOWER(ControlType) != 'none');   
+
+INSERT INTO PointStatusControl (PointId, ControlType, CloseTime1, CloseTime2, StateZeroControl, StateOneControl, CommandTimeOut)
+   (SELECT PointId, ControlType, CloseTime1, CloseTime2, StateZeroControl, StateOneControl, CommandTimeOut
+    FROM PointStatus
+    WHERE LOWER(ControlType) != 'none');
+
+ALTER TABLE PointStatus DROP COLUMN ControlOffset;
+ALTER TABLE PointStatus DROP COLUMN ControlType;
+ALTER TABLE PointStatus DROP COLUMN ControlInhibit;
+ALTER TABLE PointStatus DROP COLUMN CloseTime1;
+ALTER TABLE PointStatus DROP COLUMN CloseTime2;
+ALTER TABLE PointStatus DROP COLUMN StateZeroControl;
+ALTER TABLE PointStatus DROP COLUMN StateOneControl;
+ALTER TABLE PointStatus DROP COLUMN CommandTimeout;
+/* End YUK-11142 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/17/2012 5:06:04 PM                         */
+/* Created on:     7/18/2012 10:36:37 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -6963,25 +6963,17 @@ go
 create table POINTSTATUS (
    POINTID              numeric              not null,
    INITIALSTATE         numeric              not null,
-   CONTROLTYPE          varchar(12)          not null,
-   CONTROLINHIBIT       varchar(1)           not null,
-   ControlOffset        numeric              not null,
-   CloseTime1           numeric              not null,
-   CloseTime2           numeric              not null,
-   StateZeroControl     varchar(100)         not null,
-   StateOneControl      varchar(100)         not null,
-   CommandTimeOut       numeric              not null,
    constraint PK_PtStatus primary key (POINTID)
 )
 go
 
-insert into pointstatus values( 7, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 6, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 5, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 4, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 3, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 2, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 1, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 7, 0);
+insert into pointstatus values( 6, 0);
+insert into pointstatus values( 5, 0);
+insert into pointstatus values( 4, 0);
+insert into pointstatus values( 3, 0);
+insert into pointstatus values( 2, 0);
+insert into pointstatus values( 1, 0);
 
 /*==============================================================*/
 /* Table: POINTTRIGGER                                          */
@@ -7152,6 +7144,32 @@ go
 INSERT INTO PointAlarming(PointId, AlarmStates, ExcludeNotifyStates, NotifyOnAcknowledge, NotificationGroupId)
 SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1 
 FROM Point;
+
+/*==============================================================*/
+/* Table: PointControl                                          */
+/*==============================================================*/
+create table PointControl (
+   PointId              numeric              not null,
+   ControlOffset        numeric              not null,
+   ControlInhibit       varchar(1)           not null,
+   constraint PK_PointControl primary key (PointId)
+)
+go
+
+/*==============================================================*/
+/* Table: PointStatusControl                                    */
+/*==============================================================*/
+create table PointStatusControl (
+   PointId              numeric              not null,
+   ControlType          varchar(12)          not null,
+   CloseTime1           numeric              not null,
+   CloseTime2           numeric              not null,
+   StateZeroControl     varchar(100)         not null,
+   StateOneControl      varchar(100)         not null,
+   CommandTimeOut       numeric              not null,
+   constraint PK_PointStatusControl primary key (PointId)
+)
+go
 
 /*==============================================================*/
 /* Table: PointToZoneMapping                                    */
@@ -12765,6 +12783,18 @@ go
 alter table PointAlarming
    add constraint FK_POINTALARMING foreign key (NotificationGroupID)
       references NotificationGroup (NotificationGroupID)
+go
+
+alter table PointControl
+   add constraint FK_Point_PointControl foreign key (PointId)
+      references POINT (POINTID)
+         on delete cascade
+go
+
+alter table PointStatusControl
+   add constraint FK_PointCntrl_PointStatusCntrl foreign key (PointId)
+      references PointControl (PointId)
+         on delete cascade
 go
 
 alter table PointToZoneMapping

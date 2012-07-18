@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/17/2012 5:15:26 PM                         */
+/* Created on:     7/18/2012 10:35:18 AM                        */
 /*==============================================================*/
 
 
@@ -6565,24 +6565,16 @@ create table POINTPROPERTYVALUE  (
 create table POINTSTATUS  (
    POINTID              NUMBER                          not null,
    INITIALSTATE         NUMBER                          not null,
-   CONTROLTYPE          VARCHAR2(12)                    not null,
-   CONTROLINHIBIT       VARCHAR2(1)                     not null,
-   ControlOffset        NUMBER                          not null,
-   CloseTime1           NUMBER                          not null,
-   CloseTime2           NUMBER                          not null,
-   StateZeroControl     VARCHAR2(100)                   not null,
-   StateOneControl      VARCHAR2(100)                   not null,
-   CommandTimeOut       NUMBER                          not null,
    constraint PK_PtStatus primary key (POINTID)
 );
 
-insert into pointstatus values( 7, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 6, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 5, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 4, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 3, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 2, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
-insert into pointstatus values( 1, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
+insert into pointstatus values( 7, 0);
+insert into pointstatus values( 6, 0);
+insert into pointstatus values( 5, 0);
+insert into pointstatus values( 4, 0);
+insert into pointstatus values( 3, 0);
+insert into pointstatus values( 2, 0);
+insert into pointstatus values( 1, 0);
 
 /*==============================================================*/
 /* Table: POINTTRIGGER                                          */
@@ -6740,6 +6732,30 @@ create table PointAlarming  (
 INSERT INTO PointAlarming(PointId, AlarmStates, ExcludeNotifyStates, NotifyOnAcknowledge, NotificationGroupId)
 SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1 
 FROM Point;
+
+/*==============================================================*/
+/* Table: PointControl                                          */
+/*==============================================================*/
+create table PointControl  (
+   PointId              NUMBER                          not null,
+   ControlOffset        NUMBER                          not null,
+   ControlInhibit       VARCHAR2(1)                     not null,
+   constraint PK_PointControl primary key (PointId)
+);
+
+/*==============================================================*/
+/* Table: PointStatusControl                                    */
+/*==============================================================*/
+create table PointStatusControl  (
+   PointId              NUMBER                          not null,
+   ControlType          VARCHAR2(12)                    not null,
+   CloseTime1           NUMBER                          not null,
+   CloseTime2           NUMBER                          not null,
+   StateZeroControl     VARCHAR2(100)                   not null,
+   StateOneControl      VARCHAR2(100)                   not null,
+   CommandTimeOut       NUMBER                          not null,
+   constraint PK_PointStatusControl primary key (PointId)
+);
 
 /*==============================================================*/
 /* Table: PointToZoneMapping                                    */
@@ -11753,6 +11769,16 @@ alter table PointAlarming
 alter table PointAlarming
    add constraint FK_POINTALARMING foreign key (NotificationGroupID)
       references NotificationGroup (NotificationGroupID);
+
+alter table PointControl
+   add constraint FK_Point_PointControl foreign key (PointId)
+      references POINT (POINTID)
+      on delete cascade;
+
+alter table PointStatusControl
+   add constraint FK_PointCntrl_PointStatusCntrl foreign key (PointId)
+      references PointControl (PointId)
+      on delete cascade;
 
 alter table PointToZoneMapping
    add constraint FK_PointZoneMap_Point foreign key (PointId)
