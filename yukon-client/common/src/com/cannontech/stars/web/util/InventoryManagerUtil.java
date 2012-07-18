@@ -118,7 +118,7 @@ public class InventoryManagerUtil {
 	public static void sendSwitchCommand(SwitchCommandQueue.SwitchCommand cmd) throws CommandCompletionException {
 	    
 		InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class); 
-		PorterExpressComCommandBuilder xcomCommandBuilder = YukonSpringHook.getBean("expressComCommandBuilder", PorterExpressComCommandBuilder.class); 
+		PorterExpressComCommandBuilder xcomCommandBuilder = YukonSpringHook.getBean("porterExpressComCommandBuilder", PorterExpressComCommandBuilder.class); 
 		LmHardwareCommandService commandService = YukonSpringHook.getBean("lmHardwareCommandService", LmHardwareCommandService.class); 
 
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( cmd.getEnergyCompanyID() );

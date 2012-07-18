@@ -236,7 +236,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                 options = "GroupID:" + groupMapping.getLoadGroupID(); 
                 
                 if (sendConfig) {
-                    PorterExpressComCommandBuilder xcomCommandBuilder = YukonSpringHook.getBean("expressComCommandBuilder", PorterExpressComCommandBuilder.class);
+                    PorterExpressComCommandBuilder xcomCommandBuilder = YukonSpringHook.getBean("porterExpressComCommandBuilder", PorterExpressComCommandBuilder.class);
                     xcomCommandBuilder.fileWriteConfigCommand(company, liteHw, false, options);
     				
     				if (liteHw.getAccountID() > 0) {
