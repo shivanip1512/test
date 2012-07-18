@@ -1528,7 +1528,7 @@
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
         <paoType value="RFN430A3"/>
-        <point name="RF Demand Reset">
+        <point name="RF Demand Reset Status">
             <uom>Demand Reset</uom>
             <parseSiPrefix/>
             <modifiers match="equal"/>

@@ -198,7 +198,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
 
         List<PaoMultiPointIdentifier> paoMultipointIds =
             attributeService.findPaoMultiPointIdentifiersForNonMappedAttributes(devices,
-                    ImmutableSet.of(BuiltInAttribute.RF_DEMAND_RESET));
+                    ImmutableSet.of(BuiltInAttribute.RF_DEMAND_RESET_STATUS));
 
         // Add devices to list of ones we need to send out notifications for.
         Instant now = new Instant();
@@ -221,7 +221,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         }
 
         for (YukonPao device : devicesWithoutPoint) {
-            callback.cannotVerify(new SimpleDevice(device), "\"RF Demand Reset\" point missing");
+            callback.cannotVerify(new SimpleDevice(device), "\"RF Demand Reset Status\" point missing");
         }
 
         // The set returned by keySet isn't serializable, so we have to make a copy.
@@ -253,9 +253,12 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
             if (dvi != null) {
                 LogHelper.debug(log, "pointDataReceived: %s", pointData);
                 Instant pointDataDate = new Instant(pointData.getPointDataTimeStamp());
-                if (pointDataDate.isAfter(dvi.whenRequested)) {
+                RfnDemandResetState resetState = RfnDemandResetState.values()[(int) pointData.getValue()];
+                if (pointDataDate.isAfter(dvi.whenRequested) && resetState == RfnDemandResetState.SUCCESS) {
                     dvi.callback.verified(dvi.device);
                 } else {
+                    log.error("failed to reset demand for device " + dvi.device
+                        + "; resetState = " + resetState);
                     dvi.callback.failed(dvi.device);
                 }
                 devicesAwaitingVerification.remove(pointId);

@@ -69,13 +69,13 @@
         <points>
             <point type="Status" offset="59">
                 <init>true</init>
-                <name>RF Demand Reset</name>
-                <stategroup value="RF Demand Reset"/>
+                <name>RF Demand Reset Status</name>
+                <stategroup value="RF Demand Reset Status"/>
             </point>
         </points>
         <attributes>
-            <attribute name="RF_DEMAND_RESET">
-                <basicLookup point="RF Demand Reset" />
+            <attribute name="RF_DEMAND_RESET_STATUS">
+                <basicLookup point="RF Demand Reset Status" />
             </attribute>
         </attributes>     
         <tags>

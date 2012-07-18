@@ -68,7 +68,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RELAY_3_SHED_TIME("Relay 3 Shed Time"),
     REPORTING_INTERVAL("Reporting Interval"),
     REVERSE_POWER_FLAG("Reverse Power Flag"),
-    RF_DEMAND_RESET("RF Demand Reset"),
+    RF_DEMAND_RESET_STATUS("RF Demand Reset Status"),
     SERVICE_STATUS("Service Status"),
     TAMPER_FLAG("Tamper Flag"),
     TEMPORARY_OUT_OF_SERVICE("Temp Out of Service Duration"),
@@ -480,6 +480,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         this.description = description;
     }
     
+    @Override
     public String getDescription() {
         return description;
     }
@@ -532,6 +533,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         return rfnEventAnalogTypes.contains(this);
     }
     
+    @Override
     public String getKey() {
         return this.name();
     }
