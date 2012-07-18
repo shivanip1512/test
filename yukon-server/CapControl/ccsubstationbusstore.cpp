@@ -780,7 +780,7 @@ CtiCCSubstationBus_vec CtiCCSubstationBusStore::getAllSubBusesByIdAndType(int pa
                 CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
                 if (station == NULL)
                 {
-                    break;
+                    continue;
                 }
 
                 for each(int subId in station->getCCSubIds())
