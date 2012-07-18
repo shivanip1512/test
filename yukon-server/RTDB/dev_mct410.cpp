@@ -3688,6 +3688,10 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
             }
 
+            //  These two need to be available to check for "Requested interval outside of valid range" below
+            point_info reading = getAccumulatorData(DSt->Message + 0, 3, 0);
+            point_info peak    = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
+
             if( channel != _daily_read_info.request.channel )
             {
                 resultString  = getName() + " / Invalid channel returned by daily read ";
@@ -3703,11 +3707,27 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
 
                 status = ErrorInvalidTimestamp;
             }
+            else if( channel != _daily_read_info.request.channel )
+            {
+                resultString  = getName() + " / Invalid channel returned by daily read ";
+                resultString += "(" + CtiNumStr(channel) + "), expecting (" + CtiNumStr(_daily_read_info.request.channel) + ")";
+
+                status = ErrorInvalidChannel;
+            }
             else if(  day        !=   _daily_read_info.request.begin.dayOfMonth() ||
                      (month % 4) != ((_daily_read_info.request.begin.month() - 1) % 4) )
             {
                 resultString  = getName() + " / Invalid day/month returned by daily read ";
                 resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(((_daily_read_info.request.begin.month() - 1) % 4) + 1) + ")";
+
+                //  These come back as 0x7ff.. if daily reads are disabled,
+                //    but may also if the request really was out of range
+                if( reading.description == "Requested interval outside of valid range"
+                    && peak.description == "Requested interval outside of valid range" )
+                {
+                    resultString += "\n";
+                    resultString += getName() + " / Daily reads might be disabled, check device configuration";
+                }
 
                 _daily_read_info.interest.date = DawnOfTime_Date;  //  reset it - it doesn't match what the MCT has
 
@@ -3773,10 +3793,6 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                     insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail, ReturnMsg,
                                           outage_count, "Blink Counter",  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
                 }
-
-                point_info reading = getAccumulatorData(DSt->Message + 0, 3, 0);
-
-                point_info peak = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
 
                 //  adjust for the demand interval
                 peak.value *= 3600 / getDemandInterval();
@@ -4664,6 +4680,12 @@ INT Mct410Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, CtiM
         else if( DSt.Message[3] & 0x10 ) descriptor += "Disconnect cycling mode active\n";
 
         if( DSt.Message[3] & 0x20 )      descriptor += "Role code enabled\n";
+
+        if( rev >= SspecRev_DailyRead )
+        {
+            descriptor += "Daily reporting ";
+            descriptor += (DSt.Message[3] & 0x80) ? "enabled\n" : "disabled\n";
+        }
     }
 
     descriptor += getName() + " / Status and events:\n";

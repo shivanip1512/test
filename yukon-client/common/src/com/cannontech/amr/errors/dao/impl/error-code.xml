@@ -898,7 +898,7 @@
     </error>
     <error code="267">
         <category>Data Validation</category>
-        <porter>Invalid time returned OR time outside of requested range - retry.</porter>
+        <porter>Invalid time returned OR time outside of requested range.</porter>
         <description>The setup validation data returned by the meter did not match the expected
             value. The device did not hear the setup command.</description>
         <troubleshooting>

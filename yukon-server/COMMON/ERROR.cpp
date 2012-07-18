@@ -212,6 +212,10 @@ ERRSTRUCT CTIErrors[] = {
 
     { ErrorQueuePurged,             "Queue purged to limit memory usage",           ERRTYPESYSTEM   },
     { ErrorRequestCancelled,        "Request was cancelled",                        ERRTYPESYSTEM   },
+
+    { ErrorInvalidTimestamp,        "Invalid time returned OR time outside of requested range.", ERRTYPESYSTEM   },
+    { ErrorInvalidChannel,          "Invalid channel returned by daily read.",                   ERRTYPESYSTEM   },
+
     { ErrorDeviceIPUnknown,         "Device has not reported in, outbound IP unknown",  ERRTYPESYSTEM   },
 
     { ErrorMACSTimeout,             "MACS timed out on this message",               ERRTYPESYSTEM   },
