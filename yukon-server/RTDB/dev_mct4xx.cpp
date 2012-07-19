@@ -532,6 +532,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                     month = atoi(date_tok("-/").data());
                     day   = atoi(date_tok("-/").data());
                     year  = atoi(date_tok("-/").data());
+
                     //  note that this code assumes that the current century is 20xx - this will need to change in 2100
                     if( year < 100 )    year += 2000;
 
@@ -1223,17 +1224,20 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
     bool  found = false;
     INT   nRet = NoError, sRet, function;
 
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   OutMessage->Request.CommandStr,
-                                                   string(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.GrpMsgID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
+    std::auto_ptr<CtiReturnMsg> errRet(
+        new CtiReturnMsg(
+               getID(),
+               OutMessage->Request.CommandStr,
+               string(),
+               nRet,
+               OutMessage->Request.RouteID,
+               OutMessage->Request.MacroOffset,
+               OutMessage->Request.Attempt,
+               OutMessage->Request.GrpMsgID,
+               OutMessage->Request.UserID,
+               OutMessage->Request.SOE,
+               CtiMultiMsg_vec()));
+
     errRet->setExpectMore(true);
 
     if( parse.isKeyValid("install") )
@@ -1334,28 +1338,18 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
                 {
                     found = false;
 
-                    if( errRet )
-                    {
-                        errRet->setResultString("Specified dates are invalid");
-                        errRet->setStatus(NoMethod);
-                        retList.push_back(errRet);
-
-                        errRet = NULL;
-                    }
+                    errRet->setResultString("Specified dates are invalid");
+                    errRet->setStatus(NoMethod);
+                    retList.push_back(errRet.release());
                 }
             }
             else
             {
                 found = false;
 
-                if( errRet )
-                {
-                    errRet->setResultString("Invalid holiday offset specified");
-                    errRet->setStatus(NoMethod);
-                    retList.push_back(errRet);
-
-                    errRet = NULL;
-                }
+                errRet->setResultString("Invalid holiday offset specified");
+                errRet->setStatus(NoMethod);
+                retList.push_back(errRet.release());
             }
         }
     }
@@ -1710,84 +1704,88 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
         int day   = atoi(date_tok("-/").data());
         int year  = atoi(date_tok("-/").data());
 
+        //  note that this code assumes that the current century is 20xx - this will need to change in 2100
+        if( year < 100 ) year += 2000;
+
         CtiTokenizer time_tok(parse.getsValue("llp interest time"));
         int hour   = atoi(time_tok(":").data());  //  if this is empty, it returns zeroes, which is fine
         int minute = atoi(time_tok(":").data());  //  if this is empty, it returns zeroes, which is fine
 
         CtiTime interest_time(CtiDate(day, month, year), hour, minute);
 
-        if( ! is_valid_time(interest_time) )
+        function = EmetconProtocol::PutConfig_LoadProfileInterest;
+
+        found = getOperation(function, OutMessage->Buffer.BSt);
+
+        const int interval_len = getLoadProfileInterval(request_channel - 1);
+
+        // Only do things if our interval length is valid!
+        if( interval_len == 0 )
         {
-            CtiString temp = "Bad start time \"" + parse.getsValue("llp interest date") + " " + parse.getsValue("llp interest time") + "\"";
-            errRet->setResultString(temp);
-            errRet->setStatus(NoMethod);
-            retList.push_back(errRet);
-            errRet = NULL;
+            InterlockedExchange(&_llpRequest.request_id, 0); // Reset this guy, there's no lp request active.
+
+            string temp = getName() + " / Load profile request status: \n"
+                        + "Channel " + CtiNumStr(request_channel) + " LP Interval returned 0."
+                        + "Retrieve the correct LP Interval and attempt the request again.";
+
+            returnErrorMessage(ErrorNeedsChannelConfig, OutMessage, retList, temp);
+
+            delete OutMessage;
+            OutMessage = NULL;
+
+            return ErrorNeedsChannelConfig;
+        }
+        else if( ! is_valid_time(interest_time) )
+        {
+            InterlockedExchange(&_llpRequest.request_id, 0); // Reset this guy, there's no lp request active.
+
+            string temp = "Bad start time \"" + parse.getsValue("llp interest date") + " " + parse.getsValue("llp interest time") + "\"";
+
+            returnErrorMessage(ErrorInvalidLpStartDate, OutMessage, retList, temp);
+
+            delete OutMessage;
+            OutMessage = NULL;
+
+            nRet = ExecutionComplete;
         }
         else if( !request_channel || request_channel > LPChannels )
         {
-            CtiString temp = "Bad channel \"" + CtiNumStr(request_channel) + "\"";
-            errRet->setResultString(temp);
-            errRet->setStatus(NoMethod);
-            retList.push_back(errRet);
-            errRet = NULL;
+            InterlockedExchange(&_llpRequest.request_id, 0); // Reset this guy, there's no lp request active.
+
+            returnErrorMessage(BADPARAM, OutMessage, retList, "Bad channel \"" + CtiNumStr(request_channel) + "\"");
+
+            delete OutMessage;
+            OutMessage = NULL;
+
+            nRet = ExecutionComplete;
         }
         else
         {
-            function = EmetconProtocol::PutConfig_LoadProfileInterest;
+            //  align to the beginning of an interval
+            interest_time -= interest_time.seconds() % interval_len;
 
-            found = getOperation(function, OutMessage->Buffer.BSt);
+            _llpInterest.time    = interest_time.seconds();
+            _llpInterest.channel = request_channel - 1;
 
-            const int interval_len = getLoadProfileInterval(request_channel - 1);
+            unsigned long interval_beginning_time = _llpInterest.time - interval_len;
 
-            // Only do things if our interval length is valid!
-            if( interval_len == 0 )
+            OutMessage->Sequence = function;
+
+            //  this request came from a "getvalue lp" command, so make sure to report ExpectMore during Route->ExecuteRequest()
+            if( OutMessage->Request.OptionsField = pReq->OptionsField() )
             {
-                if( errRet )
-                {
-                    string temp = getName() + " / Load profile request status: \n";
-                    temp += "Channel " + CtiNumStr(request_channel) + " LP Interval returned 0.";
-                    temp += "Retrieve the correct LP Interval and attempt the request again.";
-                    errRet->setResultString(temp);
-                    errRet->setStatus(MISCONFIG);
-                    retList.push_back(errRet);
-                    errRet = NULL;
-                }
+                OutMessage->MessageFlags |= MessageFlag_ExpectMore;
             }
-            else
-            {
-                //  align to the beginning of an interval
-                interest_time -= interest_time.seconds() % interval_len;
 
-                _llpInterest.time    = interest_time.seconds();
-                _llpInterest.channel = request_channel - 1;
+            OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
 
-                unsigned long interval_beginning_time = _llpInterest.time - interval_len;
+            OutMessage->Buffer.BSt.Message[1] = request_channel;
 
-                OutMessage->Sequence = function;
-
-                //  this request came from a "getvalue lp" command, so make sure to report ExpectMore during Route->ExecuteRequest()
-                if( OutMessage->Request.OptionsField = pReq->OptionsField() )
-                {
-                    OutMessage->MessageFlags |= MessageFlag_ExpectMore;
-                }
-
-                OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-                OutMessage->Buffer.BSt.Message[1] = request_channel;
-
-                OutMessage->Buffer.BSt.Message[2] = interval_beginning_time >> 24;
-                OutMessage->Buffer.BSt.Message[3] = interval_beginning_time >> 16;
-                OutMessage->Buffer.BSt.Message[4] = interval_beginning_time >>  8;
-                OutMessage->Buffer.BSt.Message[5] = interval_beginning_time;
-            }
+            OutMessage->Buffer.BSt.Message[2] = interval_beginning_time >> 24;
+            OutMessage->Buffer.BSt.Message[3] = interval_beginning_time >> 16;
+            OutMessage->Buffer.BSt.Message[4] = interval_beginning_time >>  8;
+            OutMessage->Buffer.BSt.Message[5] = interval_beginning_time;
         }
-    }
-
-    if( errRet )
-    {
-        delete errRet;
-        errRet = 0;
     }
 
     if( !found )
