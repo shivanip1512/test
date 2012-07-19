@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/19/2012 4:32:03 PM                         */
+/* Created on:     7/19/2012 4:49:41 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -6937,7 +6937,7 @@ create table POINTANALOG (
 )
 go
 
-insert into pointanalog values( 100, 0, 'None', 1, 0 );
+insert into pointanalog values( 100, 0, 1, 0 );
 
 /*==============================================================*/
 /* Table: POINTLIMITS                                           */

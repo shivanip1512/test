@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/19/2012 4:32:57 PM                         */
+/* Created on:     7/19/2012 4:46:47 PM                         */
 /*==============================================================*/
 
 
@@ -6541,7 +6541,7 @@ create table POINTANALOG  (
    constraint PK_POINTANALOG primary key (POINTID)
 );
 
-insert into pointanalog values( 100, 0, 'None', 1, 0 );
+insert into pointanalog values( 100, 0, 1, 0 );
 
 /*==============================================================*/
 /* Table: POINTLIMITS                                           */
