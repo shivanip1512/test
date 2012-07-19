@@ -33,8 +33,8 @@ public enum StateControlType {
 
     OPEN,
     CLOSE,
-    OPEN_702X,
-    CLOSE_702X;
+    DISABLE_OVUV_702X,
+    ENABLE_OVUV_702X;
 
     public String value() {
         return name();

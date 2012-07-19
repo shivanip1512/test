@@ -7715,8 +7715,8 @@
                 <init>true</init>
                 <name>Auto Volt Control</name>
                 <controlType value="NORMAL"/>
-                <stateZeroControl value="OPEN_702X"/>
-                <stateOneControl value="CLOSE_702X"/>
+                <stateZeroControl value="DISABLE_OVUV_702X"/>
+                <stateOneControl value="ENABLE_OVUV_702X"/>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="5">
