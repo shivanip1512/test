@@ -1,4 +1,4 @@
-package com.cannontech.amr.demandreset.service.impl;
+package com.cannontech.database.db.point.stategroup;
 
 /**
  * Enum representing values from "RF Demand Reset" state group.

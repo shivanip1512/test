@@ -11,7 +11,13 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.point.stategroup.RfnDemandResetState;
 
+/**
+ * DBPersistent model object representing a state group.
+ * 
+ * See {@link RfnDemandResetState} for an enum specifically for the "RF Demand Reset" state group.
+ */
 public class StateGroup extends DBPersistent {
     private Integer stateGroupID = null;
     private String name = null;
