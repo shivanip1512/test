@@ -318,6 +318,15 @@ ALTER TABLE DYNAMICCCTWOWAYCBC
 MODIFY NeutralCurrentAlarmSetPoint FLOAT;
 /* End YUK-11135 */
 
+/* Start YUK-11123 */
+INSERT INTO DeviceTypeCommand VALUES(-975, -27, 'RFN EXPRESSCOM GROUP', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-976, -28, 'RFN EXPRESSCOM GROUP', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-977, -133, 'RFN EXPRESSCOM GROUP', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-978, -134, 'RFN EXPRESSCOM GROUP', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-979, -135, 'RFN EXPRESSCOM GROUP', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES(-980, -143, 'RFN EXPRESSCOM GROUP', 6, 'Y', -1);
+/* End YUK-11123 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

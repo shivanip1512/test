@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/19/2012 3:46:33 PM                         */
+/* Created on:     7/19/2012 4:32:57 PM                         */
 /*==============================================================*/
 
 
@@ -3888,6 +3888,13 @@ INSERT INTO DeviceTypeCommand VALUES (-971, -156, 'MCT-420FL', 32, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-972, -157, 'MCT-420FL', 33, 'Y', -1); 
 INSERT INTO DeviceTypeCommand VALUES (-973, -169, 'MCT-420FL', 34, 'Y', -1); 
 INSERT INTO DeviceTypeCommand VALUES (-974, -170, 'MCT-420FL', 35, 'Y', -1);
+
+INSERT INTO DeviceTypeCommand VALUES (-975, -27, 'RFN EXPRESSCOM GROUP', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-976, -28, 'RFN EXPRESSCOM GROUP', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-977, -133, 'RFN EXPRESSCOM GROUP', 3, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-978, -134, 'RFN EXPRESSCOM GROUP', 4, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-979, -135, 'RFN EXPRESSCOM GROUP', 5, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-980, -143, 'RFN EXPRESSCOM GROUP', 6, 'Y', -1);
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */
