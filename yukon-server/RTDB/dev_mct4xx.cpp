@@ -15,6 +15,8 @@
 #include "ctidate.h"
 #include "date_utility.h"
 
+#include <boost/assign/list_of.hpp>
+
 using Cti::Protocols::EmetconProtocol;
 using std::string;
 using std::endl;
@@ -47,9 +49,11 @@ const char *Mct4xxDevice::PutConfigPart_centron         = "centron";
 const char *Mct4xxDevice::PutConfigPart_dnp             = "dnp";
 const char *Mct4xxDevice::PutConfigPart_display         = "display";
 
-const Mct4xxDevice::CommandSet Mct4xxDevice::_commandStore = Mct4xxDevice::initCommandStore();
 
-const Mct4xxDevice::error_map  Mct4xxDevice::error_codes = initErrorInfo();
+const std::string Mct4xxDevice::ErrorText_OutOfRange = "Requested interval outside of valid range";
+
+
+const Mct4xxDevice::CommandSet Mct4xxDevice::_commandStore = Mct4xxDevice::initCommandStore();
 
 const CtiDate                  Mct4xxDevice::DawnOfTime_Date = CtiDate(CtiTime(Mct4xxDevice::DawnOfTime_UtcSeconds));
 
@@ -98,28 +102,17 @@ Mct4xxDevice &Mct4xxDevice::operator=(const Mct4xxDevice &aRef)
     return *this;
 }
 
-Mct4xxDevice::error_map Mct4xxDevice::initErrorInfo( void )
-{
-    error_map e;
+const Mct4xxDevice::error_map Mct4xxDevice::error_codes = boost::assign::map_list_of
+        (0xfffffffe, error_details("Meter communications problem",                 InvalidQuality))
+        (0xfffffffd, error_details("No data yet available for requested interval", InvalidQuality))
+        (0xfffffffc, error_details("No data yet available for requested interval", InvalidQuality))
+        (0xfffffffa, error_details(ErrorText_OutOfRange,                           InvalidQuality))
+        (0xfffffff8, error_details("Device filler",                                DeviceFillerQuality))
+        (0xfffffff6, error_details("Power failure occurred during part or all of this interval",   PowerfailQuality))
+        (0xfffffff4, error_details("Power restored during this interval",          PartialIntervalQuality))
+        (0xffffffe1, error_details("Overflow",                                     OverflowQuality))
+        (0xffffffe0, error_details("Overflow",                                     OverflowQuality));
 
-    e.insert(error_map::value_type(0xfffffffe, error_details("Meter communications problem",                 InvalidQuality)));
-
-    e.insert(error_map::value_type(0xfffffffd, error_details("No data yet available for requested interval", InvalidQuality)));
-    e.insert(error_map::value_type(0xfffffffc, error_details("No data yet available for requested interval", InvalidQuality)));
-
-    e.insert(error_map::value_type(0xfffffffa, error_details("Requested interval outside of valid range",    InvalidQuality)));
-
-    e.insert(error_map::value_type(0xfffffff8, error_details("Device filler",                                DeviceFillerQuality)));
-
-    e.insert(error_map::value_type(0xfffffff6, error_details("Power failure occurred during part or all of this interval",   PowerfailQuality)));
-
-    e.insert(error_map::value_type(0xfffffff4, error_details("Power restored during this interval",          PartialIntervalQuality)));
-
-    e.insert(error_map::value_type(0xffffffe1, error_details("Overflow",                                     OverflowQuality)));
-    e.insert(error_map::value_type(0xffffffe0, error_details("Overflow",                                     OverflowQuality)));
-
-    return e;
-}
 
 Mct4xxDevice::CommandSet Mct4xxDevice::initCommandStore()
 {

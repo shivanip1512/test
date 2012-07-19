@@ -53,7 +53,7 @@ protected:
 
     static const error_map error_codes;
 
-    static error_map initErrorInfo( void );
+    static const std::string ErrorText_OutOfRange;
 
     enum Commands
     {

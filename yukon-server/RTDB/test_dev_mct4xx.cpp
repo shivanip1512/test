@@ -124,6 +124,21 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_kwh_rounding_frozen_accumulator)
     BOOST_CHECK_EQUAL( pi.quality,    NormalQuality );
 }
 
+BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata_error_codes)
+{
+    unsigned char kwh_read[3] = { 0xff, 0xff, 0xfa };
+
+    test_Mct4xxDevice dev;
+    test_Mct4xxDevice::test_point_info pi;
+
+    pi = dev.getData_Accumulator(kwh_read, 3);
+
+    BOOST_CHECK_EQUAL( pi.value,       0 );
+    BOOST_CHECK_EQUAL( pi.freeze_bit,  false );
+    BOOST_CHECK_EQUAL( pi.quality,     InvalidQuality );
+    BOOST_CHECK_EQUAL( pi.description, "Requested interval outside of valid range");
+}
+
 BOOST_AUTO_TEST_CASE(test_dev_mct4xx_isProfileTablePointerCurrent)
 {
     test_Mct4xxDevice dev;

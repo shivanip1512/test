@@ -3688,7 +3688,7 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DailyReadInterestChannel, channel);
             }
 
-            //  These two need to be available to check for "Requested interval outside of valid range" below
+            //  These two need to be available to be checked against ErrorText_OutOfRange below
             point_info reading = getAccumulatorData(DSt->Message + 0, 3, 0);
             point_info peak    = getData(DSt->Message + 3, 2, ValueType_DynamicDemand);
 
@@ -3713,10 +3713,11 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                 resultString  = getName() + " / Invalid day/month returned by daily read ";
                 resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(((_daily_read_info.request.begin.month() - 1) % 4) + 1) + ")";
 
-                //  These come back as 0x7ff.. if daily reads are disabled,
-                //    but may also if the request really was out of range
-                if( reading.description == "Requested interval outside of valid range"
-                    && peak.description == "Requested interval outside of valid range" )
+                //  These come back as 0x7ff.. if daily reads are disabled, but also if the request really was out of range
+                //  Ideally, this check would be against an enum or similar rather than a string, 
+                //    but unless getAccumulatorData is refactored to provide more than a text description and quality, this will have to do.
+                if( reading.description == ErrorText_OutOfRange
+                    && peak.description == ErrorText_OutOfRange )
                 {
                     resultString += "\n";
                     resultString += getName() + " / Daily reads might be disabled, check device configuration";
@@ -3751,7 +3752,7 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                     {
                         voltage.value   = 0;
                         voltage.quality = InvalidQuality;
-                        voltage.description = "Requested interval outside of valid range";
+                        voltage.description = ErrorText_OutOfRange;
                     }
                     else
                     {
@@ -3767,7 +3768,7 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                     {
                         voltage.value   = 0;
                         voltage.quality = InvalidQuality;
-                        voltage.description = "Requested interval outside of valid range";
+                        voltage.description = ErrorText_OutOfRange;
                     }
                     else
                     {
