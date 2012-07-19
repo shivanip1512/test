@@ -10,14 +10,13 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.general.dao.OperatorAccountSearchDao;
 import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.stars.dr.general.service.AccountSearchResultHolder;
 import com.cannontech.stars.dr.general.service.OperatorGeneralSearchService;
-import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -26,6 +25,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 
 	private RolePropertyDao rolePropertyDao;
 	private OperatorAccountSearchDao operatorAccountSearchDao;
+	@Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
 	
 	@Override
 	public AccountSearchResultHolder customerAccountSearch(OperatorAccountSearchBy searchBy, 
@@ -70,13 +70,11 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 	        
 	        // by phone
 	        else if (searchBy == OperatorAccountSearchBy.PHONE_NUMBER) {
-	        	
-	        	try {
-		    		String phoneNo = ServletUtils.formatPhoneNumberForSearch(searchValue);
-		    		accountIds = operatorAccountSearchDao.getAccountIdsByPhoneNumber(phoneNo, searchEnergyCompanyIds);
-	        	} catch (WebClientException e) {
-	        		error = new YukonMessageSourceResolvable("yukon.web.modules.operator.operatorGeneralSearchService.error.invalidPhoneNumber");
-	        	}
+	            if (phoneNumberFormattingService.isHasInvalidCharacters(searchValue)) {
+	                error = new YukonMessageSourceResolvable("yukon.web.modules.operator.operatorGeneralSearchService.error.invalidPhoneNumber");
+	            }else{
+	                accountIds = operatorAccountSearchDao.getAccountIdsByPhoneNumber(searchValue, searchEnergyCompanyIds);
+	            }
 	        }
 	        
 	        // by last name

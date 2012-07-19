@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -28,6 +28,8 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.dr.general.dao.OperatorAccountSearchDao;
 import com.cannontech.stars.dr.general.service.impl.AccountSearchResult;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
@@ -69,14 +71,20 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		Set<ContactNotificationType> phoneNumberNotificationCategories = Sets.newHashSetWithExpectedSize(2);
 		phoneNumberNotificationCategories.add(ContactNotificationType.HOME_PHONE);
 		phoneNumberNotificationCategories.add(ContactNotificationType.WORK_PHONE);
-		
+		String formattedPhoneNumber = "";
+        try {
+            formattedPhoneNumber = ServletUtils.formatPhoneNumberForSearch(phoneNumber);
+        } catch (WebClientException e) {
+          //the phone# should be validated before this method is called.
+        }
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT ca.AccountId");
 		sql.append("FROM CustomerAccount ca");
 		sql.append("JOIN ECToAccountMapping ectam ON (ca.AccountId = ectam.AccountId)");
 		sql.append("JOIN Customer cust ON (ca.CustomerId = cust.CustomerId)");
 		sql.append("JOIN ContactNotification cn ON (cust.PrimaryContactId = cn.ContactId)");
-		sql.append("WHERE cn.Notification").contains(phoneNumber);
+		sql.append("WHERE (cn.Notification").contains(phoneNumber);
+		sql.append("OR cn.Notification").contains(formattedPhoneNumber).append(")");
 		sql.append("AND cn.NotificationCategoryId").in(phoneNumberNotificationCategories);
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY ca.AccountNumber");

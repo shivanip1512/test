@@ -180,13 +180,11 @@ public class InventoryController {
         boolean hasWarnings = false;
         
         if (StringUtils.isNotBlank(inventorySearch.getPhoneNumber())) {
-            try{
-                String phoneNumber = ServletUtils.formatPhoneNumberForSearch(inventorySearch.getPhoneNumber());
-                inventorySearch.setPhoneNumber(phoneNumber);   
-            }catch(WebClientException e){
-                MessageSourceResolvable invalidPhoneNumberWarning = new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.invalidPhoneNumber");
+            if (phoneNumberFormattingService.isHasInvalidCharacters(inventorySearch.getPhoneNumber())) {
+                MessageSourceResolvable invalidPhoneNumberWarning =
+                    new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.invalidPhoneNumber");
                 flashScope.setWarning(Collections.singletonList(invalidPhoneNumberWarning));
-                hasWarnings = true; 
+                hasWarnings = true;
             }
         }
                 

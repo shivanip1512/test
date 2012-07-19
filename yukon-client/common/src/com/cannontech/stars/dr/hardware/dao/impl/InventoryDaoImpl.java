@@ -40,7 +40,6 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
-import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PagingExtractor;
 import com.cannontech.database.StringRowMapper;
@@ -71,6 +70,8 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.model.InventorySearch;
 import com.cannontech.stars.model.LiteLmHardware;
 import com.cannontech.stars.util.InventoryUtils;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
@@ -90,8 +91,7 @@ public class InventoryDaoImpl implements InventoryDao {
     private @Autowired PaoDefinitionDao paoDefinitionDao;
     private @Autowired AccountEventLogService accountEventLogService;
     private @Autowired CustomerAccountDao customerAccountDao;
-    private @Autowired PhoneNumberFormattingService phoneNumberFormattingService;
-    
+
     private Set<HardwareType> THERMOSTAT_TYPES = HardwareType.getForClass(HardwareClass.THERMOSTAT);
     private HardwareSummaryRowMapper hardwareSummaryRowMapper = new HardwareSummaryRowMapper();
 
@@ -766,7 +766,16 @@ public class InventoryDaoImpl implements InventoryDao {
             whereClause.add(new SqlStatementBuilder("CA.AccountNumber").startsWith(inventorySearch.getAccountNumber()));
         }
         if (usePhone) {
-            whereClause.add(new SqlStatementBuilder("CN.Notification").contains(phoneNumberFormattingService.strip(inventorySearch.getPhoneNumber())));
+            String formattedPhoneNumber = "";
+            try {
+                formattedPhoneNumber = ServletUtils.formatPhoneNumberForSearch(inventorySearch.getPhoneNumber());
+            } catch (WebClientException e) {
+                //the phone# should be validated before this method is called.
+            }
+            SqlFragmentCollection orClause =  SqlFragmentCollection.newOrCollection();
+            orClause.add(new SqlStatementBuilder("CN.Notification").contains(inventorySearch.getPhoneNumber()));
+            orClause.add(new SqlStatementBuilder("CN.Notification").contains(formattedPhoneNumber));
+            whereClause.add(orClause);
         }
         if (StringUtils.isNotBlank(inventorySearch.getLastName())) {
             whereClause.add(new SqlStatementBuilder("CON.ContLastName").startsWith(inventorySearch.getLastName()));
