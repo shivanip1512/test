@@ -90,15 +90,20 @@ public class DeviceConfigurationController extends MultiActionController {
             throws ServletException {
 
         Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
+        ConfigurationBase config = deviceConfigurationDao.getConfiguration(configId);
+        String configName = null;
+        if (config != null) {
+            configName = config.getName();
+        }
         String viewPath = new String("redirect:/spring/deviceConfiguration?home");
         ModelAndView mav = new ModelAndView(viewPath);
         FlashScope flashScope = new FlashScope(request);
         
         try {
             deviceConfigurationDao.delete(configId);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.removeSuccess"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.removeSuccess", configName));
         } catch (RuntimeException e) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.removeFail", e.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.removeFail", configName, e.getMessage()));
         }
         
         return mav;

@@ -8,11 +8,10 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
  * 
  * A undefined generated comment
  */
-public class Ion7700 extends DNPBase implements IDeviceMeterGroup
+public class Ion7700 extends AddressBase implements IDeviceMeterGroup
 // implements com.cannontech.database.db.DBCopiable
 {
 	private DeviceMeterGroup deviceMeterGroup = null;
-	
 	
 	/**
 	 * Constructor for Ion7700.

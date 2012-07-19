@@ -8,13 +8,13 @@ import com.cannontech.capcontrol.creation.model.HierarchyImportData;
 import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.csvImport.ImportAction;
+import com.cannontech.common.device.config.dao.ConfigurationType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.CompleteOneWayCbc;
@@ -50,11 +50,26 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
         
         paoPersistenceService.createPao(pao, paoType);
         
-        SimpleDevice device = new SimpleDevice(pao.getPaoIdentifier());
-        try {
-            deviceConfigurationDao.assignConfigToDevice(config, device);
-        } catch (InvalidDeviceTypeException e) {
-            log.warn("caught exception in assignConfig", e);
+        if (paoDefinitionDao.isTagSupported(paoType, PaoTag.DEVICE_CONFIGURATION_DNP)) {
+            if (config == null || config.getType() != ConfigurationType.DNP) {
+                // No way, man. Can't create a DNP CBC without a DNP config! Assign the default.
+                log.debug("Unable to create a DNP CBC without a DNP configuration. Assigning " + 
+                          name + "the default DNP Configuration.");
+                config = deviceConfigurationDao.getDefaultDNPConfiguration();
+            }
+            
+            SimpleDevice device = new SimpleDevice(pao.getPaoIdentifier());
+            try {
+                deviceConfigurationDao.assignConfigToDevice(config, device);
+            } catch (InvalidDeviceTypeException e) {
+                /*
+                 *  This only happens if config is null for a DNP CBC or if we try to assign a
+                 *  non-DNP configuration to a DNP paoType. We've covered both cases, so this
+                 *  isn't possible. Let's alert them just to be safe.
+                 */
+                log.error("An error occurred attempting to assign a DNP configuration to CBC " +
+                          "'" + name + "'. Please assign this device a configuration manually.", e);
+            }
         }
         
         return pao.getPaoIdentifier();

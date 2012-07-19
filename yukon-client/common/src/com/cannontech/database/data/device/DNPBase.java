@@ -2,124 +2,49 @@ package com.cannontech.database.data.device;
 
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.db.device.DeviceAddress;
+import com.cannontech.database.db.DBCopiable;
 
-/**
- * @author rneuharth
- * Aug 9, 2002 at 12:43:42 PM
- * 
- * A undefined generated comment
- */
-public class DNPBase extends RemoteBase implements com.cannontech.database.db.DBCopiable
-{
-   private DeviceAddress deviceAddress = null;
-   private DNPConfiguration dnpConfiguration = null;
+public class DNPBase extends AddressBase implements DBCopiable {
+    private DNPConfiguration dnpConfiguration = null;
 
-	/**
-	 * Constructor for DNPBase.
-	 */
-	public DNPBase()
-	{
-		super();
-		setDeviceClass( DeviceClasses.STRING_CLASS_RTU );
-	}
+    public DNPBase() {
+        super();
+        setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
+    }
 
-   public Integer getAddress() 
-   {
-      return getDeviceAddress().getMasterAddress();
-   }
+    public void add() throws java.sql.SQLException {
+        super.add();
 
-   public void setAddress( Integer newAddress )
-   {
-      getDeviceAddress().setMasterAddress( newAddress );
-   }
+        Object[] configValues = { getPAObjectID(), getDnpConfiguration().getId() };
+        add("DeviceConfigurationDeviceMap", configValues);
+    }
+    
+    public void delete() throws java.sql.SQLException {
+        super.delete();
+    }
 
-   /**
-    * This method was created in VisualAge.
-    */
-   public void add() throws java.sql.SQLException 
-   {
-      super.add();
-      getDeviceAddress().add();
-      
-      Object[] configValues = { getPAObjectID(), getDnpConfiguration().getId() };
-      
-      add("DeviceConfigurationDeviceMap", configValues);
-   }
+    public void retrieve() throws java.sql.SQLException {
+        super.retrieve();
+    }
 
-   /**
-    * This method was created in VisualAge.
-    */
-   public void delete() throws java.sql.SQLException
-   {
-      getDeviceAddress().delete();
-      super.delete();
-   }
+    public void setDbConnection(java.sql.Connection conn) {
+        super.setDbConnection(conn);
+    }
 
-   /**
-    * This method was created in VisualAge.
-    */
-   public void retrieve() throws java.sql.SQLException
-   {
-      super.retrieve();
-      getDeviceAddress().retrieve();
-   }
-   /**
-    * Insert the method's description here.
-    * Creation date: (1/4/00 3:32:03 PM)
-    * @param conn java.sql.Connection
-    */
-   public void setDbConnection(java.sql.Connection conn) 
-   {
-      super.setDbConnection(conn);
-      getDeviceAddress().setDbConnection(conn);
-   }
-   
-   /**
-    * This method was created in VisualAge.
-    * @param deviceID java.lang.Integer
-    */
-   public void setDeviceID(Integer deviceID)
-   {
-      super.setDeviceID(deviceID);
-      getDeviceAddress().setDeviceID(deviceID);
-   }
-   /**
-    * This method was created in VisualAge.
-    */
-   public void update() throws java.sql.SQLException
-   {
-      super.update();
-      getDeviceAddress().update();
-   }
+    public void setDeviceID(Integer deviceID) {
+        super.setDeviceID(deviceID);
+    }
 
-   /**
-    * Returns the deviceDNP.
-    * @return com.cannontech.database.db.device.DeviceAddress
-    */
-   public DeviceAddress getDeviceAddress()
-   {
-      if( deviceAddress == null )
-			deviceAddress = new DeviceAddress();
+    public void update() throws java.sql.SQLException {
+        super.update();
+    }
 
-      return deviceAddress;
-   }
+    public void setDnpConfiguration(DNPConfiguration dnpConfiguration) {
+        this.dnpConfiguration = dnpConfiguration;
+    }
 
-   /**
-    * Sets the deviceDNP.
-    * @param deviceDNP The deviceDNP to set
-    */
-   public void setDeviceAddress(DeviceAddress deviceAddr)
-   {
-      this.deviceAddress = deviceAddr;
-   }
-   
-   public void setDnpConfiguration(DNPConfiguration dnpConfiguration) {
-       this.dnpConfiguration = dnpConfiguration;
-   }
-   
-   public DNPConfiguration getDnpConfiguration() {
-       return dnpConfiguration;
-   }
+    public DNPConfiguration getDnpConfiguration() {
+        return dnpConfiguration;
+    }
 
 }

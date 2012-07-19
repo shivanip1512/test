@@ -10,8 +10,6 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 	<bean id="deviceConfigurationDao" class="com.cannontech.common.device.config.dao.DeviceConfigurationDaoImpl">
-		<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
-		<property name="nextValueHelper" ref="nextValueHelper" />
 		<property name="configurationTemplateList">
 			<list>
 				<ref bean="mct470Config"/>
@@ -23,8 +21,6 @@
 				-->
 			</list>
 		</property>
-		<property name="dbPersistentDao" ref="dbPersistentDao" />
-		<property name="paoDefinitionDao" ref="paoDefinitionDao" />
 	</bean>
 	
 	<!-- Configuration templates -->
@@ -42,7 +38,7 @@
 				<ref bean="relaysCategory"/>
 				<ref bean="mct470PrecannedTableCategory"/>				
 				<ref bean="touCategory"/>
-         <!-- <ref bean="dnpCategory"/>				 
+         <!-- <ref bean="mctDnpCategory"/>				 
                 <ref bean="optionsCategory"/>
 				<ref bean="longLPCategory"/>
 		 		<ref bean="voltageThresholdCategory"/>
@@ -233,7 +229,7 @@
 				 <ref bean="relaysCategory"/>
 				<ref bean="systemOptionsCategory"/>
 				<ref bean="touCategory"/>
-				<ref bean="dnpCategory"/>
+				<ref bean="mctDnpCategory"/>
  -->				
 			</list>
 		</property>
@@ -566,7 +562,7 @@
         <property name="description" value="DNP Configuration" />
         <property name="categoryList">
             <list>
-                <ref bean="dnpCategory2"/>
+                <ref bean="dnpCategory"/>
             </list>
         </property>
         
@@ -933,7 +929,7 @@
 	
 	<!-- Configuration categories -->
 	
-    <bean id="dnpCategory2" class="com.cannontech.common.device.config.model.CategoryTemplate">
+    <bean id="dnpCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
         <property name="name" value="DNP Configuration" />
         <property name="inputList">
             <list>
@@ -5198,7 +5194,7 @@
 		</property>
 	</bean>							
 	
-	<bean id="dnpCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+	<bean id="mctDnpCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT DNP" />
 		<property name="inputList">
 			<list>

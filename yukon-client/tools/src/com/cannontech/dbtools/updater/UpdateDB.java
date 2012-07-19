@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -415,7 +416,7 @@ public class UpdateDB
 			{
 			    Pattern pattern = Pattern.compile(DBMSDefines.START_CPARM_REGEX);
 			    Pattern varPattern = Pattern.compile("SELECT @[A-Za-z_]+ = \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
-				ArrayList<UpdateLine> validLines = new ArrayList<UpdateLine>(512);
+				List<UpdateLine> validLines = new ArrayList<UpdateLine>(512);
 				java.io.RandomAccessFile fileReader = new java.io.RandomAccessFile(file, "r");
 				String token = "";
 				UpdateLine updLine = new UpdateLine();

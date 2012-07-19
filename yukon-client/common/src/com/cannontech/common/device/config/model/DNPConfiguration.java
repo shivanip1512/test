@@ -4,61 +4,60 @@ import com.cannontech.common.device.config.dao.ConfigurationType;
 
 public class DNPConfiguration extends ConfigurationBase {
 
-    public static final Integer InternalRetriesDefault = 2;
-    public static final Boolean LocalTimeDefault = false;
-    public static final Boolean EnableTimesyncsDefault = false;
-    public static final Boolean OmitTimeRequestDefault = false;
-    public static final Boolean EnableUnsolicitedDefault = true;
+    public static final int InternalRetriesDefault = 2;
+    public static final boolean LocalTimeDefault = false;
+    public static final boolean EnableTimesyncsDefault = false;
+    public static final boolean OmitTimeRequestDefault = false;
+    public static final boolean EnableUnsolicitedDefault = true;
     
-    private Integer internalRetries = InternalRetriesDefault;
-    private Boolean localTime = LocalTimeDefault;
-    private Boolean enableDnpTimesyncs = EnableTimesyncsDefault;
-    private Boolean omitTimeRequest = OmitTimeRequestDefault;
-    private Boolean enableUnsolicitedMessages = EnableTimesyncsDefault;
+    private int internalRetries = InternalRetriesDefault;
+    private boolean localTime = LocalTimeDefault;
+    private boolean enableDnpTimesyncs = EnableTimesyncsDefault;
+    private boolean omitTimeRequest = OmitTimeRequestDefault;
+    private boolean enableUnsolicitedMessages = EnableTimesyncsDefault;
     
     @Override
     public ConfigurationType getType() {
         return ConfigurationType.DNP;
     }
 
-    public Integer getInternalRetries() {
+    public int getInternalRetries() {
         return internalRetries;
     }
 
-    public void setInternalRetries(Integer internalRetries) {
+    public void setInternalRetries(int internalRetries) {
         this.internalRetries = internalRetries;
     }
 
-    public Boolean getLocalTime() {
+    public boolean isLocalTime() {
         return localTime;
     }
 
-    public void setLocalTime(Boolean localTime) {
+    public void setLocalTime(boolean localTime) {
         this.localTime = localTime;
     }
 
-    public Boolean getEnableDnpTimesyncs() {
+    public boolean isEnableDnpTimesyncs() {
         return enableDnpTimesyncs;
     }
 
-    public void setEnableDnpTimesyncs(Boolean enableDnpTimesyncs) {
+    public void setEnableDnpTimesyncs(boolean enableDnpTimesyncs) {
         this.enableDnpTimesyncs = enableDnpTimesyncs;
     }
 
-    public Boolean getOmitTimeRequest() {
+    public boolean isOmitTimeRequest() {
         return omitTimeRequest;
     }
 
-    public void setOmitTimeRequest(Boolean omitTimeRequest) {
+    public void setOmitTimeRequest(boolean omitTimeRequest) {
         this.omitTimeRequest = omitTimeRequest;
     }
 
-    public Boolean getEnableUnsolicitedMessages() {
+    public boolean isEnableUnsolicitedMessages() {
         return enableUnsolicitedMessages;
     }
 
-    public void setEnableUnsolicitedMessages(Boolean enableUnsolicitedMessages) {
+    public void setEnableUnsolicitedMessages(boolean enableUnsolicitedMessages) {
         this.enableUnsolicitedMessages = enableUnsolicitedMessages;
     }
-
 }

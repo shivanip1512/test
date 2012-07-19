@@ -2,6 +2,7 @@ package com.cannontech.dbtools.updater;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -16,7 +17,7 @@ public class UpdateLine
 	private StringBuffer value = null;
 	
 	//stores (key<String>, value<String>)
-	private HashMap<String, String> metaProps = null;
+	private Map<String, String> metaProps = null;
 
 	/**
 	 * 
@@ -31,7 +32,7 @@ public class UpdateLine
 	 * Contains (key<String>, value<String>)
 	 * @return
 	 */
-	public HashMap<String, String> getMetaProps()
+	public Map<String, String> getMetaProps()
 	{
 		if( metaProps == null )
 			metaProps = new HashMap<String, String>(16);
@@ -138,7 +139,7 @@ public class UpdateLine
 	 */
 	public void setSuccess(boolean b)
 	{
-		getMetaProps().put( DBMSDefines.META_SUCCESS, new Boolean(b).toString() );
+		getMetaProps().put( DBMSDefines.META_SUCCESS, Boolean.toString(b) );
 	}
 
 

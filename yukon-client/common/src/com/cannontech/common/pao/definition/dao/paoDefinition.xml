@@ -186,6 +186,12 @@
         	<tag name="DISCONNECT_410"/>
         </tags>
     </pao>
+    
+    <pao id="SUPPORTS_DNP_CONFIGURATION" abstract="true">
+        <tags>
+            <tag name="DEVICE_CONFIGURATION_DNP"/>
+        </tags>
+    </pao>
 
     <pao id="REVERSE_POWER_ALARM" abstract="true">
         <points>
@@ -6828,17 +6834,11 @@
     <pao id="DAVISWEATHER" inherits="RTU_BASE" creatable="false">
         <displayName>DAVIS WEATHER</displayName>
     </pao>
-    <pao id="RTU_DART" inherits="RTU_BASE" creatable="false">
+    <pao id="RTU_DART" inherits="RTU_BASE, SUPPORTS_DNP_CONFIGURATION" creatable="false">
         <displayName>RTU-DART</displayName>
-        <tags>
-            <tag name="DEVICE_CONFIGURATION_DNP"/>
-        </tags>
     </pao>
-    <pao id="RTU_DNP" inherits="RTU_BASE">
+    <pao id="RTU_DNP" inherits="RTU_BASE, SUPPORTS_DNP_CONFIGURATION">
         <displayName>RTU-DNP</displayName>
-        <tags>
-            <tag name="DEVICE_CONFIGURATION_DNP"/>
-        </tags>
     </pao>
     <pao id="RTUILEX" inherits="RTU_BASE" creatable="false">
         <displayName>RTU-ILEX</displayName>
@@ -7317,7 +7317,7 @@
         </tags>
     </pao>
     
-    <pao id="CBC_2WAY_BASE" inherits="CBC_BASE" abstract="true">
+    <pao id="CBC_2WAY_BASE" inherits="CBC_BASE, SUPPORTS_DNP_CONFIGURATION" abstract="true">
         <changeGroup>cap2</changeGroup>
         <points>
             <!-- PULSE ACCUMULATOR POINTS -->
@@ -7338,7 +7338,6 @@
         </attributes>
         <tags>
             <tag name="TWO_WAY_DEVICE"/>
-            <tag name="DEVICE_CONFIGURATION_DNP"/>
         </tags>
     </pao>
         
@@ -7384,17 +7383,14 @@
         <changeGroup>cap</changeGroup>
     </pao>
     
-    <pao id="DNP_CBC_6510" inherits="CBC_DNP_BASE">
+    <pao id="DNP_CBC_6510" inherits="CBC_DNP_BASE, SUPPORTS_DNP_CONFIGURATION">
         <displayName>CBC 6510</displayName>
         <changeGroup>cap</changeGroup>
     </pao>    
     
-    <pao id="CBC_DNP" inherits="CBC_DNP_BASE">
+    <pao id="CBC_DNP" inherits="CBC_DNP_BASE, SUPPORTS_DNP_CONFIGURATION">
         <displayName>CBC DNP</displayName>
         <changeGroup>cap</changeGroup>
-        <tags>
-            <tag name="DEVICE_CONFIGURATION_DNP"/>
-        </tags>
     </pao>
     
     <pao id="CBC_702X_BASE" inherits="CBC_2WAY_BASE" abstract="true">

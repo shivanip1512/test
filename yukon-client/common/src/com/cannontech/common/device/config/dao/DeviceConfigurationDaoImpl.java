@@ -9,6 +9,7 @@ import java.util.Properties;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyEditorRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -34,33 +35,15 @@ import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputSource;
 import com.cannontech.web.input.type.InputType;
 
-/**
- * Implementation class for DeviceConfigurationDao
- */
 public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
-
     public static final String DB_CHANGE_OBJECT_TYPE = "config";
-    private YukonJdbcTemplate jdbcTemplate = null;
-    private NextValueHelper nextValueHelper = null;
-    private DBPersistentDao dbPersistentDao = null;
-    private List<ConfigurationTemplate> configurationTemplateList = null;
-    private PaoDefinitionDao paoDefinitionDao;
-
-    public void setSimpleJdbcTemplate(YukonJdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
     
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    
+    private List<ConfigurationTemplate> configurationTemplateList;
 
     public List<ConfigurationTemplate> getConfigurationTemplateList() {
         return configurationTemplateList;

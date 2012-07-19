@@ -109,7 +109,7 @@ public class DeviceConfigurationFormController extends InputFormController {
 
         ModelAndView mav = new ModelAndView(getSuccessView());
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.saveSuccess"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.deviceConfig.saveSuccess", config.getName()));
 
         return mav;
     }

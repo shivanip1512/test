@@ -141,6 +141,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     private JLabel localTimeValueLabel = null;
     private JLabel timesyncLabel = null;
     private JLabel timesyncValueLabel = null;
+    private JLabel unsolicitedLabel = null;
+    private JLabel unsolicitedValueLabel = null;
     private JLabel dnpConfigLabel = null;
     private JLabel assignedDnpConfigLabel = null;
     
@@ -497,6 +499,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             GridBagConstraints localTimeValueLabelConstraints = new GridBagConstraints();
             GridBagConstraints timesyncLabelConstraints = new GridBagConstraints();
             GridBagConstraints timesyncValueLabelConstraints = new GridBagConstraints();
+            GridBagConstraints unsolicitedLabelConstraints = new GridBagConstraints();
+            GridBagConstraints unsolicitedValueLabelConstraints = new GridBagConstraints();
             
             configLabelConstraints.insets = new Insets(3, 3, 3, 3);
             configLabelConstraints.gridy = 0;
@@ -542,6 +546,17 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             timesyncValueLabelConstraints.gridx = 1;
             timesyncValueLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
             
+            unsolicitedLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            unsolicitedLabelConstraints.gridy = 4;
+            unsolicitedLabelConstraints.gridx = 0;
+            unsolicitedLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            
+            unsolicitedValueLabelConstraints.insets = new Insets(3, 3, 3, 3);
+            unsolicitedValueLabelConstraints.fill = GridBagConstraints.HORIZONTAL;
+            unsolicitedValueLabelConstraints.gridy = 4;
+            unsolicitedValueLabelConstraints.gridx = 1;
+            unsolicitedValueLabelConstraints.anchor = GridBagConstraints.NORTHWEST;
+            
             dnpConfigPanel.add(getDnpConfigLabel(), configLabelConstraints);
             dnpConfigPanel.add(getAssignedDnpConfigLabel(), assignedConfigLabelConstraints);
             dnpConfigPanel.add(getInternalRetriesLabel(), retriesLabelConstraints);
@@ -550,6 +565,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             dnpConfigPanel.add(getLocaltimeValueLabel(), localTimeValueLabelConstraints);
             dnpConfigPanel.add(getTimesyncLabel(), timesyncLabelConstraints);
             dnpConfigPanel.add(getTimesyncValueLabel(), timesyncValueLabelConstraints);
+            dnpConfigPanel.add(getUnsolicitedLabel(), unsolicitedLabelConstraints);
+            dnpConfigPanel.add(getUnsolicitedValueLabel(), unsolicitedValueLabelConstraints);
         }
         
         return dnpConfigPanel;
@@ -712,6 +729,36 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
         }
         
         return timesyncValueLabel;
+    }
+    
+    private JLabel getUnsolicitedLabel() {
+        if (unsolicitedLabel == null) {
+            unsolicitedLabel = new JLabel();
+            unsolicitedLabel.setName("UnsolicitedLabel");
+            unsolicitedLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            unsolicitedLabel.setText("Unsolicited Enabled: ");
+            unsolicitedLabel.setVisible(true);
+            unsolicitedLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            unsolicitedLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            unsolicitedLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            unsolicitedLabel.setFont(new java.awt.Font("Arial", 0, 14));
+        }
+        
+        return unsolicitedLabel;
+    }
+    
+    private JLabel getUnsolicitedValueLabel() {
+        if (unsolicitedValueLabel == null) {
+            unsolicitedValueLabel = new JLabel();
+            unsolicitedValueLabel.setFont(new java.awt.Font("dialog", 0, 14));
+            unsolicitedValueLabel.setText(CtiUtilities.STRING_NONE);
+            unsolicitedValueLabel.setPreferredSize(new java.awt.Dimension(172,19));
+            unsolicitedValueLabel.setMaximumSize(new java.awt.Dimension(172,19));
+            unsolicitedValueLabel.setMinimumSize(new java.awt.Dimension(172,19));
+            unsolicitedValueLabel.setFont(new java.awt.Font("Arial", 0, 14));
+        }
+        
+        return unsolicitedValueLabel;
     }
 
     /**
@@ -2796,13 +2843,15 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 config = (DNPConfiguration) deviceConfigurationDao.getConfiguration(config.getId());
                 getAssignedDnpConfigLabel().setText(config.getName());
                 
-                int internalRetries = config.getInternalRetries() != null ? config.getInternalRetries() : DNPConfiguration.InternalRetriesDefault;
-                boolean localTime = config.getLocalTime() != null ? config.getLocalTime() : DNPConfiguration.LocalTimeDefault;
-                boolean enableTimesyncs = config.getEnableDnpTimesyncs() != null ? config.getEnableDnpTimesyncs() : DNPConfiguration.EnableTimesyncsDefault;
+                int internalRetries = config.getInternalRetries();
+                boolean localTime = config.isLocalTime();
+                boolean enableTimesyncs = config.isEnableDnpTimesyncs();
+                boolean unsolicitedEnabled = config.isEnableUnsolicitedMessages();
                 
                 getInternalRetriesValueLabel().setText(Integer.toString(internalRetries));
                 getLocaltimeValueLabel().setText(Boolean.toString(localTime));
                 getTimesyncValueLabel().setText(Boolean.toString(enableTimesyncs));
+                getUnsolicitedValueLabel().setText(Boolean.toString(unsolicitedEnabled));
             } else {
                 getAssignedDnpConfigLabel().setText(CtiUtilities.STRING_NONE);
                 getAssignedDnpConfigLabel().setForeground(Color.RED);
@@ -2812,6 +2861,8 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 getLocaltimeValueLabel().setForeground(Color.RED);
                 getTimesyncValueLabel().setText("MISSING!");
                 getTimesyncValueLabel().setForeground(Color.RED);
+                getUnsolicitedValueLabel().setText("MISSING!");
+                getUnsolicitedValueLabel().setForeground(Color.RED);
             }
     	}
        

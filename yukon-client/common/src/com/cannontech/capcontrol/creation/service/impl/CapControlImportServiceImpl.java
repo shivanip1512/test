@@ -24,10 +24,14 @@ import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.capcontrol.exception.CapControlHierarchyImportException;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
+import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -61,6 +65,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
     @Autowired private CapbankDao capbankDao;
     @Autowired private FeederDao feederDao;
     @Autowired private SubstationBusDao substationBusDao;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
 
     private abstract class PaoRetriever {
         abstract CompleteYukonPao retrievePao(PaoIdentifier pao, HierarchyImportData hierarchyImportData);
@@ -210,6 +215,26 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         pao.setPaoName(cbcImportData.getCbcName());
         
         paoPersistenceService.createPao(pao, cbcImportData.getCbcType());
+        
+        /*
+         * Two-way CBCs need to have a DNP config assigned. In the future, this config will
+         * come from the import data.
+         */
+        if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.DEVICE_CONFIGURATION_DNP)) {
+            ConfigurationBase config = deviceConfigurationDao.getDefaultDNPConfiguration();
+            try {
+                YukonDevice device = (YukonDevice) yukonPao;
+                deviceConfigurationDao.assignConfigToDevice(config, device);
+            } catch (InvalidDeviceTypeException e) {
+                /*
+                 *  This can only happen if there wasn't a default configuration in the database.
+                 *  The database may have been manually edited and it's impossible for Yukon to
+                 *  fix this problem. Alert the user.
+                 */
+                log.error("An error occurred attempting to assign a DNP configuration to CBC '" +
+                          pao.getPaoName() + "'. Please assign this device a configuration manually.", e);
+            }
+        }
         
         int paoId = pao.getPaObjectId();
         
