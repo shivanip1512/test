@@ -197,6 +197,80 @@ END;
 /* @end-block */
 /* End YUK-11087 */
 
+/* Start YUK-10999 */
+DELETE FROM SystemLog WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM RawPointHistory WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM PointAnalog WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM PointUnit WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM PointLimits WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM PointPropertyValue WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM FDRTranslation WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM DynamicPointDispatch WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM DynamicAccumulator WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM GraphDataSeries WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM DynamicPointAlarming WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM CalcComponent WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM TagLog WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM DynamicTags WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM Display2WayData WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM CCEventLog WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM PointAlarming WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+
+DELETE FROM Point WHERE PointId IN (
+	SELECT PointId FROM Point p JOIN YukonPAObject yp ON yp.PAObjectID = p.PAObjectID
+	WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
+/* End YUK-10999 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
