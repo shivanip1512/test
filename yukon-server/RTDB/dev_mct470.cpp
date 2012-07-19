@@ -4787,7 +4787,9 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
                 CtiTime::fromLocalSecondsNoDst(pi_time.value);
 
             resultString += getName() + " / current time: ";
-            resultString += _iedTime.asString(dstEnabled ? CtiTime::Local : CtiTime::LocalNoDst, CtiTime::IncludeTimezone);
+            resultString += dstEnabled ?
+                _iedTime.asString(CtiTime::Local,      CtiTime::IncludeTimezone) :
+                _iedTime.asString(CtiTime::LocalNoDst, CtiTime::IncludeTimezone);
             resultString += "\n";
 
             if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) )
@@ -4911,7 +4913,9 @@ INT Mct470Device::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, CtiMes
                                   ReturnMsg, pi, "Demand Reset Count", lastReset);
 
             resultString += "\n" + getName() + " / time of last reset: ";
-            resultString += lastReset.asString(dstEnabled ? CtiTime::Local : CtiTime::LocalNoDst, CtiTime::IncludeTimezone);
+            resultString += dstEnabled ?
+                lastReset.asString(CtiTime::Local,      CtiTime::IncludeTimezone) :
+                lastReset.asString(CtiTime::LocalNoDst, CtiTime::IncludeTimezone);
             resultString += "\n";
 
             pi = Mct470Device::getData(DSt->Message + 11, 2, ValueType_IED);
