@@ -1,4 +1,4 @@
-<%@ tag body-content="empty" %>
+<%@ tag body-content="empty" description="DEPRECATED!!!! Use tags/dateTime/date instead." %>
 <%@ attribute name="fieldId" required="false" type="java.lang.String" description="Ends up being the id of the input, not used when springInput = true."%>
 <%@ attribute name="fieldName" required="true" type="java.lang.String" description="Used as the path and id of the input when springInput = true, otherwise used as the name attribute of the input."%>
 <%@ attribute name="fieldValue" required="false" type="java.lang.String"%>

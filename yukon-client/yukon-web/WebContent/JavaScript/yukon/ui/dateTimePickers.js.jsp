@@ -24,8 +24,8 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
     	 * 
     	 */
     	init: function(){
-    		if(!this._initialized){
-    			this._initialized = true;
+    		//if(!this._initialized){
+    		//	this._initialized = true;
 
     			//default aruguments
     			var datetimepickerArgs = {
@@ -86,9 +86,23 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
     			    var self = jQuery(this);
     				self.datetimeEntry({
     					datetimeFormat: self.attr('data-date-format'),
-    					spinnerImage: ''
+    					spinnerImage: '',
+    					maxDatetime: self.attr('data-max-date'),
+						minDatetime: self.attr('data-min-date')
     				});
-    			});
+    				
+					if(self.hasClass('f_dateStart')){
+						self.change(function(){
+							jQuery(this).closest('.f_dateRange').find('.f_dateEnd').datetimeEntry('change', 'minDatetime', jQuery(this).datetimeEntry('getDatetime'));
+						});
+					}
+					if(self.hasClass('f_dateEnd')){
+						self.change(function(){
+							jQuery(this).closest('.f_dateRange').find('.f_dateStart').datetimeEntry('change', 'maxDatetime', jQuery(this).datetimeEntry('getDatetime'));
+						});
+					}
+					
+    			}).removeClass('f_datePicker');
 				jQuery("input.f_datePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
@@ -96,9 +110,22 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 						maxDate: self.attr('data-max-date'),
 						minDate: self.attr('data-min-date')
 					};
+					
+					if(self.hasClass('f_dateStart')){
+						args.onSelect = function(selectedDate) {
+							jQuery(this).closest('.f_dateRange').find('.f_dateEnd').datepicker( "option", "minDate", selectedDate );
+						};
+					}
+					if(self.hasClass('f_dateEnd')){
+						args.onSelect = function(selectedDate) {
+							jQuery(this).closest('.f_dateRange').find('.f_dateStart').datepicker( "option", "maxDate", selectedDate );
+						};
+					}
+					
 					self.datepicker(jQuery.extend(datetimepickerArgs, args));
 					outer_self._insertTimezone(self);
-				});
+				}).removeClass('f_datePickerUI');
+				
     			
     			// Date + Time
 				jQuery("input.f_dateTimePicker").each(function(){
@@ -110,7 +137,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
     					timeSteps: outer_self._getTimeSteps(self),
 						spinnerImage: ''
 					});
-				});
+				}).removeClass('f_dateTimePicker');
 				jQuery("input.f_dateTimePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
@@ -122,7 +149,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 					};
 					self.datetimepicker(jQuery.extend(datetimepickerArgs, args));
 					outer_self._insertTimezone(self);
-				});
+				}).removeClass('f_dateTimePickerUI');
 				
 				// Time
 				jQuery("input.f_timePicker").each(function(){
@@ -132,7 +159,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 						timeSteps: outer_self._getTimeSteps(self),
 						spinnerImage: ''
 					});
-				});
+				}).removeClass('f_timePicker');
 				jQuery("input.f_timePickerUI").each(function(){
 					var self = jQuery(this);
 					var args = {
@@ -144,8 +171,8 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 					};
 					self.timepicker(jQuery.extend(jQuery.extend(datetimepickerArgs, timepickerArgs), args));
 					outer_self._insertTimezone(self);
-				});
-    		}
+				}).removeClass('f_timePickerUI');
+    		//}
     	},
     	_insertTimezone: function(self){
     	    self.after('<div class="timezone_container" title="' + self.attr('data-time-zone-full') + '">' + self.attr('data-time-zone-short') + '</div>');
