@@ -4,7 +4,7 @@
 
     <!-- login.jsp -->
     <entry key="yukon.web.login.pageTitle">Energy Services Operations Center</entry>
-    <entry key="yukon.web.login.formTopLogo">/WebConfig/yukon/CannonPlain.gif</entry>
+    <entry key="yukon.web.login.formTopLogo"></entry>
     <entry key="yukon.web.login.formBottomLogo">/WebConfig/yukon/CooperTransparent.gif</entry>
     <entry key="yukon.web.login.titleText"></entry>
     <entry key="yukon.web.login.invalidLogin">* Invalid username/password</entry>
