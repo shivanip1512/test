@@ -288,6 +288,15 @@ UPDATE AMIBillingReadLookup SET PAOType = 'MCT-420cD' WHERE LOWER(PAOType) = LOW
 /* @error ignore-end */
 /* End YUK-11130 */
 
+/* Start YUK-11135 */
+ALTER TABLE DYNAMICCCTWOWAYCBC 
+ALTER COLUMN UvSetPoint FLOAT NOT NULL;
+ALTER TABLE DYNAMICCCTWOWAYCBC 
+ALTER COLUMN OvSetPoint FLOAT NOT NULL;
+ALTER TABLE DYNAMICCCTWOWAYCBC 
+ALTER COLUMN NeutralCurrentAlarmSetPoint FLOAT NOT NULL;
+/* End YUK-11135 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

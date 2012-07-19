@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/19/2012 12:59:01 PM                        */
+/* Created on:     7/19/2012 3:21:18 PM                         */
 /*==============================================================*/
 
 
@@ -2631,12 +2631,12 @@ create table DYNAMICCCTWOWAYCBC  (
    UvOpCount            NUMBER                          not null,
    OvOpCount            NUMBER                          not null,
    OvUvCountResetDate   DATE                            not null,
-   UvSetPoint           NUMBER                          not null,
-   OvSetPoint           NUMBER                          not null,
+   UvSetPoint           FLOAT                           not null,
+   OvSetPoint           FLOAT                           not null,
    OvUvTrackTime        NUMBER                          not null,
    LastOvUvDateTime     DATE                            not null,
    NeutralCurrentSensor NUMBER                          not null,
-   NeutralCurrentAlarmSetPoint NUMBER                          not null,
+   NeutralCurrentAlarmSetPoint FLOAT                           not null,
    IPAddress            NUMBER                          not null,
    UDPPort              NUMBER                          not null,
    constraint PK_DYNAMICCCTWOWAYCBC primary key (DeviceID)

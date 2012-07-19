@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/19/2012 1:06:26 PM                         */
+/* Created on:     7/19/2012 3:19:01 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -2796,12 +2796,12 @@ create table DYNAMICCCTWOWAYCBC (
    UvOpCount            numeric              not null,
    OvOpCount            numeric              not null,
    OvUvCountResetDate   datetime             not null,
-   UvSetPoint           numeric              not null,
-   OvSetPoint           numeric              not null,
+   UvSetPoint           float                not null,
+   OvSetPoint           float                not null,
    OvUvTrackTime        numeric              not null,
    LastOvUvDateTime     datetime             not null,
    NeutralCurrentSensor numeric              not null,
-   NeutralCurrentAlarmSetPoint numeric              not null,
+   NeutralCurrentAlarmSetPoint float                not null,
    IPAddress            numeric              not null,
    UDPPort              numeric              not null,
    constraint PK_DYNAMICCCTWOWAYCBC primary key (DeviceID)
