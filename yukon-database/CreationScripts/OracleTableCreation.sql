@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/19/2012 3:21:18 PM                         */
+/* Created on:     7/19/2012 3:46:33 PM                         */
 /*==============================================================*/
 
 
@@ -6529,7 +6529,6 @@ create table POINTACCUMULATOR  (
 create table POINTANALOG  (
    POINTID              NUMBER                          not null,
    DEADBAND             FLOAT                           not null,
-   TRANSDUCERTYPE       VARCHAR2(14)                    not null,
    MULTIPLIER           FLOAT                           not null,
    DATAOFFSET           FLOAT                           not null,
    constraint PK_POINTANALOG primary key (POINTID)

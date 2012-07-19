@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/19/2012 3:19:01 PM                         */
+/* Created on:     7/19/2012 3:47:42 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -6924,7 +6924,6 @@ go
 create table POINTANALOG (
    POINTID              numeric              not null,
    DEADBAND             float                not null,
-   TRANSDUCERTYPE       varchar(14)          not null,
    MULTIPLIER           float                not null,
    DATAOFFSET           float                not null,
    constraint PK_POINTANALOG primary key (POINTID)
