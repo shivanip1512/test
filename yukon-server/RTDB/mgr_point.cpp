@@ -500,24 +500,24 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
     const string keyColString = paoids ? "paobjectid IN ":"pointid IN ";
 
     //  ACCUMULATOR points
-    const string sql_accum  = string(CtiPointAccumulator().getSQLCoreStatement() + " AND PT.");
+    const string sql_accum  = CtiPointAccumulator::getSQLCoreStatement() + " AND PT.";
 
     //  ANALOG points
-    const string sql_analog = string(CtiPointAnalog().getSQLCoreStatement() + " AND PT.");
+    const string sql_analog = CtiPointAnalog::getSQLCoreStatement() + " AND PT.";
 
     //  CALC points
-    const string sql_calc   = string(CtiPointNumeric().getSQLCoreStatement() +
-                              " AND (upper (PT.pointtype) = 'CALCULATED' OR upper (PT.pointtype) = 'CALCANALOG')" +
-                              " AND PT.");
+    const string sql_calc   = CtiPointNumeric::getSQLCoreStatement() +
+                              " AND (upper (PT.pointtype) = 'CALCULATED' OR upper (PT.pointtype) = 'CALCANALOG')"
+                              " AND PT.";
 
     //  STATUS points
-    const string sql_status = string(CtiPointStatus().getSQLCoreStatement() +
-                              " AND (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS') " +
-                              " AND PT.");
+    const string sql_status = CtiPointStatus::getSQLCoreStatement() +
+                              " AND (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS') "
+                              " AND PT.";
 
     //  SYSTEM points
-    const string sql_system = string(CtiPointBase().getSQLCoreStatement() +
-                              " WHERE upper (PT.pointtype) = 'SYSTEM' AND PT.");
+    const string sql_system = CtiPointBase::getSQLCoreStatement() +
+                              " WHERE upper (PT.pointtype) = 'SYSTEM' AND PT.";
 
     set<long>::const_iterator   id_itr = ids_to_load.begin(),
                                 id_end = ids_to_load.end();
@@ -636,7 +636,7 @@ CtiPointBase* PointFactory(Cti::RowReader &rdr)
         case AnalogPointType:
         {
             if(PseudoPt)
-                Point = CTIDBG_new CtiPointPseudoAnalog;     // Really a numeric!
+                Point = CTIDBG_new CtiPointNumeric;
             else
                 Point = CTIDBG_new CtiPointAnalog;
 
@@ -650,12 +650,12 @@ CtiPointBase* PointFactory(Cti::RowReader &rdr)
         }
         case CalculatedPointType:
         {
-            Point = CTIDBG_new CtiPointCalculated;          // This too is really a numeric!
+            Point = CTIDBG_new CtiPointNumeric;
             break;
         }
         case CalculatedStatusPointType:
         {
-            Point = CTIDBG_new CtiPointCalculatedStatus;
+            Point = CTIDBG_new CtiPointStatus;
             break;
         }
         case SystemPointType:
@@ -763,10 +763,17 @@ void CtiPointManager::addPoint( CtiPointBase *point )
         _pao_pointids.insert(std::make_pair(point->getDeviceID(), point->getPointID()));
 
         //  if it's a control point, add it into the control offset lookup map
-        if( point->getType() == StatusPointType &&
-            point->getControlOffset() )
+        if( point->getType() == StatusPointType )
         {
-            _control_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), (long) point->getControlOffset()), point->getPointID()));
+            CtiPointStatus *pStatus = static_cast<CtiPointStatus *>(point);
+
+            if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+            {
+                if( controlParameters->getControlOffset() )
+                {
+                    _control_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), controlParameters->getControlOffset()), point->getPointID()));
+                }
+            }
         }
     }
 }
@@ -1179,10 +1186,17 @@ void CtiPointManager::removePoint(ptr_type pTempCtiPoint)
     if( pTempCtiPoint )
     {
         //  If it's a status point with control, remove it from the control point lookup as well
-        if( pTempCtiPoint->getType() == StatusPointType &&
-            pTempCtiPoint->getControlOffset() )
+        if( pTempCtiPoint->isStatus() )
         {
-            _control_offsets.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getControlOffset()));
+            CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(pTempCtiPoint);
+
+            if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+            {
+                if( controlParameters->getControlOffset() )
+                {
+                    _control_offsets.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), controlParameters->getControlOffset()));
+                }
+            }
         }
 
         erase_from_multimap(_type_offsets, pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()), pTempCtiPoint->getPointID());

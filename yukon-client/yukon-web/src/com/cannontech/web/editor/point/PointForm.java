@@ -84,8 +84,8 @@ public class PointForm extends DBEditorForm
     //fdr point data
     private PointFDREntry pointFDREntry = null;
     
-    //status point specific editor
-    private PointStatusEntry pointStatusEntry = null;
+    //control point specific editor
+    private PointControlEntry pointControlEntry = null;
     
     private StaleData staleData = null;
 
@@ -307,7 +307,7 @@ public class PointForm extends DBEditorForm
         alarmTableEntries = null;
         pointLimitEntry = null;
         pointFDREntry = null;
-        pointStatusEntry = null;
+        pointControlEntry = null;
         staleData = null;
     }
     
@@ -666,17 +666,25 @@ public class PointForm extends DBEditorForm
     /**
      * @return
      */
-    public PointStatusEntry getPointStatusEntry() {
+    public PointControlEntry getPointControlEntry() {
         
-        if( pointStatusEntry == null ) {
+        if( pointControlEntry == null ) {
         
-            if( !(getPointBase() instanceof StatusPoint) )
-                CTILogger.warn("Attempting to create an StatuPoint editor for a non status point");
-            else
-                pointStatusEntry = new PointStatusEntry( (StatusPoint)getPointBase() );
+            if( getPointBase() instanceof StatusPoint ) {
+                
+                pointControlEntry = new PointControlEntry( ((StatusPoint)getPointBase()).getPointStatusControl() );
+                
+            } else if( getPointBase() instanceof AnalogPoint ) {
+                
+                pointControlEntry = new PointControlEntry( ((AnalogPoint)getPointBase()).getPointAnalogControl() );
+                
+            } else {
+                
+                CTILogger.warn("Attempting to create a PointControl editor for a non-controllable point");
+            }
         }
 
-        return pointStatusEntry;
+        return pointControlEntry;
     }
 
     /**

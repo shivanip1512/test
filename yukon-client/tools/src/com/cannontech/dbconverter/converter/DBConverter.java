@@ -3,19 +3,17 @@ package com.cannontech.dbconverter.converter;
 import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
-import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.device.MCTIEDBase;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.DeviceGroupMember;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.dbtools.updater.MessageFrameAdaptor;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tools.gui.IRunnableDBTool;
 
 /**
@@ -1864,22 +1862,23 @@ public boolean processStatusPoints()
 		statusPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
 	
 		statusPoint.getPointStatus().setInitialState(new Integer(1));
-		statusPoint.getPointStatus().setControlInhibit(new Character('N'));
 
 		// Control point settings	
-		statusPoint.getPointStatus().setControlType(tokenizer.nextElement().toString());
+		statusPoint.getPointStatusControl().setControlType(tokenizer.nextElement().toString());
 		
 		Integer controlOffset = new Integer( Integer.parseInt(tokenizer.nextElement().toString()));
 		Integer closeTime1 = new Integer( Integer.parseInt(tokenizer.nextElement().toString()));	
 		Integer closeTime2 = new Integer( Integer.parseInt(tokenizer.nextElement().toString()));
 		
-		if (!statusPoint.getPointStatus().getControlType().equals(new String("None")) )
+		if (statusPoint.getPointStatusControl().hasControl())
 		{
 			// there is control
-			statusPoint.getPointStatus().setControlOffset(controlOffset);
+			statusPoint.getPointStatusControl().setControlOffset(controlOffset);
 			
-			statusPoint.getPointStatus().setCloseTime1(closeTime1);
-			statusPoint.getPointStatus().setCloseTime2(closeTime2);
+			statusPoint.getPointStatusControl().setCloseTime1(closeTime1);
+			statusPoint.getPointStatusControl().setCloseTime2(closeTime2);
+
+			statusPoint.getPointStatusControl().setControlInhibited(false);
 		}
 		
 		//archiving settings

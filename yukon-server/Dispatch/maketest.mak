@@ -135,8 +135,9 @@ test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		configkey.h configval.h ctibase.h ctinexus.h server_b.h \
 		pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h \
 		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h tbl_pt_property.h \
-		pt_status.h tbl_pt_status.h pt_analog.h pt_numeric.h \
-		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h
+		pt_status.h tbl_pt_status.h tbl_pt_status_control.h \
+		tbl_pt_control.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h tbl_pt_analog.h
 test_signalmanager.obj:	tbl_pt_alarm.h dlldefs.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
@@ -166,9 +167,10 @@ test_vangogh.obj:	ctivangogh.h con_mgr.h connection.h dlldefs.h \
 		resolvers.h db_entry_defines.h desolvers.h tbl_pt_unit.h \
 		tbl_unitmeasure.h signalmanager.h pt_dyn_dispatch.h \
 		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
-		pttrigger.h mgr_point.h tbl_pt_trigger.h tagmanager.h \
-		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
-		tbl_state.h tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
+		tbl_pt_status_control.h tbl_pt_control.h pttrigger.h \
+		mgr_point.h tbl_pt_trigger.h tagmanager.h tbl_dyn_pttag.h \
+		tbl_tag.h tbl_taglog.h tbl_state_grp.h tbl_state.h \
+		tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
 		tbl_rawpthistory.h tbl_signal.h tbl_ci_cust.h \
 		tbl_contact_notification.h rtdb.h hashkey.h hash_functions.h \
 		ctidate.h

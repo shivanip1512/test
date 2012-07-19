@@ -44,8 +44,6 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.data.point.StatusPoint;
-import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.fdemulator.fileio.AcsFileIO;
@@ -1037,14 +1035,11 @@ public class PointEditor extends JFrame implements ActionListener
 
 			} else if ("Status".equalsIgnoreCase(type))
 			{
+                Integer pointID = null;
 
-				analogPoint = PointFactory.createNewPoint(null, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "VALMET " + name, virtDevice.getPAObjectID(), new Integer(0));
+				analogPoint = PointFactory.createNewPoint(pointID, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "VALMET " + name, virtDevice.getPAObjectID(), new Integer(0));
 
 				analogPoint.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
-				((StatusPoint) analogPoint).setPointStatus(new PointStatus(analogPoint.getPoint().getPointID()));
-
-				Integer pointID = analogPoint.getPoint().getPointID();
 
 				FDRTranslation newFDRTranslation = new FDRTranslation(pointID);
 				newFDRTranslation.setDirectionType("Receive");
@@ -1068,13 +1063,11 @@ public class PointEditor extends JFrame implements ActionListener
 
 			} else if ("Control".equalsIgnoreCase(type))
 			{
-				analogPoint = PointFactory.createNewPoint(null, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "VALMET " + name, virtDevice.getPAObjectID(), new Integer(1));
+                Integer pointID = null;
+			    
+				analogPoint = PointFactory.createNewPoint(pointID, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "VALMET " + name, virtDevice.getPAObjectID(), new Integer(1));
 
 				analogPoint.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
-				((StatusPoint) analogPoint).setPointStatus(new PointStatus(analogPoint.getPoint().getPointID()));
-
-				Integer pointID = analogPoint.getPoint().getPointID();
 
 				FDRTranslation newFDRTranslation = new FDRTranslation(pointID);
 				newFDRTranslation.setDirectionType("Receive for control");
@@ -1311,14 +1304,11 @@ public class PointEditor extends JFrame implements ActionListener
 
 			} else if ("Status".equalsIgnoreCase(type))
 			{
+                Integer pointID = null;
 
-				analogPoint = PointFactory.createNewPoint(null, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "RDEX " + name, virtDevice.getPAObjectID(), new Integer(0));
+				analogPoint = PointFactory.createNewPoint(pointID, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "RDEX " + name, virtDevice.getPAObjectID(), new Integer(0));
 
 				analogPoint.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
-				((StatusPoint) analogPoint).setPointStatus(new PointStatus(analogPoint.getPoint().getPointID()));
-
-				Integer pointID = analogPoint.getPoint().getPointID();
 
 				FDRTranslation newFDRTranslation = new FDRTranslation(pointID);
 				newFDRTranslation.setDirectionType("Receive");
@@ -1343,14 +1333,11 @@ public class PointEditor extends JFrame implements ActionListener
 
 			} else if ("Control".equalsIgnoreCase(type))
 			{
+                Integer pointID = null;
 
-				analogPoint = PointFactory.createNewPoint(null, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "RDEX " + name, virtDevice.getPAObjectID(), new Integer(1));
+				analogPoint = PointFactory.createNewPoint(pointID, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "RDEX " + name, virtDevice.getPAObjectID(), new Integer(1));
 
 				analogPoint.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
-				((StatusPoint) analogPoint).setPointStatus(new PointStatus(analogPoint.getPoint().getPointID()));
-
-				Integer pointID = analogPoint.getPoint().getPointID();
 
 				FDRTranslation newFDRTranslation = new FDRTranslation(pointID);
 				newFDRTranslation.setDirectionType("Receive for control");
@@ -1607,14 +1594,11 @@ public class PointEditor extends JFrame implements ActionListener
 
 			} else if ("Status".equalsIgnoreCase(type))
 			{
+                Integer pointID = null;
 
-				analogPoint = PointFactory.createNewPoint(null, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "ACS " + remote + " " + point + " " + category, virtDevice.getPAObjectID(), new Integer(0));
+				analogPoint = PointFactory.createNewPoint(pointID, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "ACS " + remote + " " + point + " " + category, virtDevice.getPAObjectID(), new Integer(0));
 
 				analogPoint.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
-				((StatusPoint) analogPoint).setPointStatus(new PointStatus(analogPoint.getPoint().getPointID()));
-
-				Integer pointID = analogPoint.getPoint().getPointID();
 
 				FDRTranslation newFDRTranslation = new FDRTranslation(pointID);
 				newFDRTranslation.setDirectionType("Receive");
@@ -1646,14 +1630,11 @@ public class PointEditor extends JFrame implements ActionListener
 
 			} else if ("Control".equalsIgnoreCase(type))
 			{
+                Integer pointID = null;
 
-				analogPoint = PointFactory.createNewPoint(null, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "ACS " + remote + " " + point + " " + category, virtDevice.getPAObjectID(), new Integer(1));
+				analogPoint = PointFactory.createNewPoint(pointID, com.cannontech.database.data.point.PointTypes.STATUS_POINT, "ACS " + remote + " " + point + " " + category, virtDevice.getPAObjectID(), new Integer(1));
 
 				analogPoint.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
-				((StatusPoint) analogPoint).setPointStatus(new PointStatus(analogPoint.getPoint().getPointID()));
-
-				Integer pointID = analogPoint.getPoint().getPointID();
 
 				FDRTranslation newFDRTranslation = new FDRTranslation(pointID);
 				newFDRTranslation.setDirectionType("Receive for control");

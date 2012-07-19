@@ -1842,14 +1842,13 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
         }
 
 
-        if(ctlPoint)
+        if( ctlPoint )
         {
-            if(ctlPoint->getPointStatus().getControlType() > NoneControlType &&
-               ctlPoint->getPointStatus().getControlType() < InvalidControlType)
+            if( const boost::optional<CtiTablePointStatusControl> controlParameters = ctlPoint->getControlParameters() )
             {
-                INT ctloffset = ctlPoint->getPointStatus().getControlOffset();
+                INT ctloffset = controlParameters->getControlOffset();
 
-                if( !ctlPoint->getPointStatus().getControlInhibit() )
+                if( ! controlParameters->isControlInhibited() )
                 {
                     if(INT_MIN == ctlpt || !(parse.getFlags() & (CMD_FLAG_CTL_CLOSE | CMD_FLAG_CTL_OPEN)))
                     {
@@ -1885,17 +1884,17 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
                         MyOutMessage->Buffer.OutMessage[7] = LOBYTE(ctloffset - 1);
 
                         /* Load the appropriate times into the message */
-                        if( findStringIgnoreCase(parse.getCommandStr(),ctlPoint->getPointStatus().getStateZeroControl()) )       //  (parse.getFlags() & CMD_FLAG_CTL_OPEN)
+                        if( findStringIgnoreCase(parse.getCommandStr(), controlParameters->getStateZeroControl()) )       //  (parse.getFlags() & CMD_FLAG_CTL_OPEN)
                         {
                             controlState = STATEZERO;
-                            MyOutMessage->Buffer.OutMessage[8] = LOBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10);
-                            MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime1() / 10) & 0x3f) | ((parse.getFlags() & CMD_FLAG_CTL_OPEN) ? EW_TRIP_MASK : EW_CLOSE_MASK);
+                            MyOutMessage->Buffer.OutMessage[8] = LOBYTE (controlParameters->getCloseTime1() / 10);
+                            MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (controlParameters->getCloseTime1() / 10) & 0x3f) | ((parse.getFlags() & CMD_FLAG_CTL_OPEN) ? EW_TRIP_MASK : EW_CLOSE_MASK);
                         }
-                        else if( findStringIgnoreCase(parse.getCommandStr(),ctlPoint->getPointStatus().getStateOneControl()) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
+                        else if( findStringIgnoreCase(parse.getCommandStr(), controlParameters->getStateOneControl()) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
                         {
                             controlState = STATEONE;
-                            MyOutMessage->Buffer.OutMessage[8] = LOBYTE (ctlPoint->getPointStatus().getCloseTime2() / 10);
-                            MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (ctlPoint->getPointStatus().getCloseTime2() / 10) & 0x3f) | ((parse.getFlags() & CMD_FLAG_CTL_OPEN) ? EW_TRIP_MASK : EW_CLOSE_MASK);
+                            MyOutMessage->Buffer.OutMessage[8] = LOBYTE (controlParameters->getCloseTime2() / 10);
+                            MyOutMessage->Buffer.OutMessage[9] = (HIBYTE (controlParameters->getCloseTime2() / 10) & 0x3f) | ((parse.getFlags() & CMD_FLAG_CTL_OPEN) ? EW_TRIP_MASK : EW_CLOSE_MASK);
                         }
                         else
                         {

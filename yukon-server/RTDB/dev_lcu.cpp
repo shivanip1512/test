@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_lcu
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_lcu.cpp-arc  $
-* REVISION     :  $Revision: 1.45.2.2 $
-* DATE         :  $Date: 2008/11/19 15:21:27 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
@@ -32,13 +19,11 @@
 #include "pt_base.h"
 #include "pt_accum.h"
 #include "pt_numeric.h"
+#include "pt_status.h"
 #include "utility.h"
-
-#include "elogger.h"       // for Send4PartToLogger()
 
 #include "numstr.h"
 
-#define DEBUG_PRINT_DECODE 0
 #define DUTYCYCLESIZE 15
 
 using namespace std;
@@ -582,17 +567,24 @@ INT CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, O
     {
     case ControlRequest:
         {
-            int ptOffset;
-            if( 0 != (ptOffset = parse.getiValue("point", 0)) )
+            if( int ptOffset = parse.getiValue("point", 0) )
             {
-                CtiPointSPtr pPt = getDevicePointEqual(ptOffset);
+                CtiPointSPtr point = getDevicePointEqual(ptOffset);
 
-                if(pPt && pPt->isStatus() && pPt->getControlOffset() == 9)
+                if( point && point->isStatus() )
                 {
-                    if(!lcuLockout(OutMessage, parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_SHED) ? false : true))
+                    CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
+
+                    if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
                     {
-                        outList.push_back( OutMessage );
-                        OutMessage = NULL;
+                        if( controlParameters->getControlOffset() == 9 )
+                        {
+                            if(!lcuLockout(OutMessage, parse.getFlags() & (CMD_FLAG_CTL_OPEN | CMD_FLAG_CTL_SHED) ? false : true))
+                            {
+                                outList.push_back( OutMessage );
+                                OutMessage = NULL;
+                            }
+                        }
                     }
                 }
             }

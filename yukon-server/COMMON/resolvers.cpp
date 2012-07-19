@@ -8,6 +8,8 @@
 #include "numstr.h"
 #include "utility.h"
 
+#include <boost/assign.hpp>
+
 using std::transform;
 using std::endl;
 using std::string;
@@ -1421,49 +1423,29 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
 }
 
 
+static const std::map<std::string, CtiControlType_t> ControlTypes =
+    boost::assign::map_list_of
+        ("normal",    ControlType_Normal)
+        ("latch",     ControlType_Latch)
+        ("sbo pulse", ControlType_SBOPulse)
+        ("sbo latch", ControlType_SBOLatch);
+
 CtiControlType_t  resolveControlType(const string& _str)
 {
-    CtiControlType_t Ret = InvalidControlType;
     string str = _str;
     CtiToLower(str);
     in_place_trim(str);
 
-    if(str == "none")
-    {
-        Ret = NoneControlType;
-    }
-    else if(str == "normal")
-    {
-        Ret = NormalControlType;
-    }
-    else if(str == "latch")
-    {
-        Ret = LatchControlType;
-    }
-    else if(str == "pseudo")
-    {
-        Ret = PseudoControlType;
-    }
-    else if(str == "sbo latch")
-    {
-        Ret = SBOLatchControlType;
-    }
-    else if(str == "sbo pulse")
-    {
-        Ret = SBOPulseControlType;
-    }
-    else
+    std::map<std::string, CtiControlType_t>::const_iterator itr = ControlTypes.find(str);
+
+    if( itr == ControlTypes.end() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unknown control type == " << str << endl;
+        dout << "Unknown control type \"" << str << "\"" << endl;
+
+        return ControlType_Invalid;
     }
 
-    return Ret;
-    }
-
-INT resolveUomToCalcType(const string& _str)
-{
-    INT Ret = CalcTypeNormal;
-
-    return Ret;
+    return itr->second;
 }
+

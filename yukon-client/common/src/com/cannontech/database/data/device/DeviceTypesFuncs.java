@@ -24,6 +24,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
@@ -356,21 +357,6 @@ public final static boolean isCCU(int deviceType)
 			return false;
 	}
 
-}
-/**
- * This method was created in VisualAge.
- * @return int
- * @param typeString java.lang.String
- */
-private final static boolean isInCateogry(final String typeString, final String[] category ) 
-{
-	for( int i = 0; i < category.length; i++ )
-	{
-		if( typeString.equalsIgnoreCase(category[i]) )
-			return true;
-	}
-
-	return false;
 }
 /**
  * Insert the method's description here.
@@ -1200,8 +1186,6 @@ public static Object changeType (String newType,
         		
 		if( val instanceof MCT410IL)
 		{
-			Integer[] insertedIDs = new Integer[10];
-			
 			if(loadProfileExists)
 			{
 				StringBuffer lp = new StringBuffer(((MCTBase)oldDevice).getDeviceLoadProfile().getLoadProfileCollection());
@@ -1237,7 +1221,7 @@ public static Object changeType (String newType,
 						   "kWh",
 						   ((DeviceBase) val).getDevice().getDeviceID(),
 						   DaoFactory.getPointDao().getNextPointId(),
-						   PointTypes.PT_OFFSET_TOTAL_KWH,
+						   PointOffsets.PT_OFFSET_TOTAL_KWH,
 						   com.cannontech.database.data.point.PointUnits.UOMID_KWH,
 						   0.1, StateGroupUtils.STATEGROUP_ANALOG,
 						   PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1252,7 +1236,7 @@ public static Object changeType (String newType,
 						   "Blink Count",
 						   ((DeviceBase) val).getDevice().getDeviceID(),
                            DaoFactory.getPointDao().getNextPointId(),
-						   PointTypes.PT_OFFSET_BLINK_COUNT,
+						   PointOffsets.PT_OFFSET_BLINK_COUNT,
 						   com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
 						   1.0, StateGroupUtils.STATEGROUP_ANALOG,
 						   PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1267,7 +1251,7 @@ public static Object changeType (String newType,
 						   "kW-LP",
 						   ((DeviceBase) val).getDevice().getDeviceID(),
                            DaoFactory.getPointDao().getNextPointId(),
-						   PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
+						   PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND,
 						   com.cannontech.database.data.point.PointUnits.UOMID_KW,
 						   0.1, StateGroupUtils.STATEGROUP_ANALOG,
 						   PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1280,7 +1264,7 @@ public static Object changeType (String newType,
 						"Voltage-LP",
 						((DeviceBase) val).getDevice().getDeviceID(),
                         DaoFactory.getPointDao().getNextPointId(),                        
-						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
+						PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
                         PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1293,7 +1277,7 @@ public static Object changeType (String newType,
     						"Peak kW",
     						((DeviceBase) val).getDevice().getDeviceID(),
                             DaoFactory.getPointDao().getNextPointId(),                                                
-    						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
+    						PointOffsets.PT_OFFSET_PEAK_KW_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_KW,
     						0.1,StateGroupUtils.STATEGROUP_ANALOG,
                             PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1307,7 +1291,7 @@ public static Object changeType (String newType,
     						"Max Volts",
     						((DeviceBase) val).getDevice().getDeviceID(),
                             DaoFactory.getPointDao().getNextPointId(),                                                                        
-    						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
+    						PointOffsets.PT_OFFSET_MAX_VOLT_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
                             PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1321,7 +1305,7 @@ public static Object changeType (String newType,
     						"Min Volts",
     						((DeviceBase) val).getDevice().getDeviceID(),
                             DaoFactory.getPointDao().getNextPointId(),                                                                                                
-    						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
+    						PointOffsets.PT_OFFSET_MIN_VOLT_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
                             PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1334,7 +1318,7 @@ public static Object changeType (String newType,
 						"Frozen Peak Demand",
 						((DeviceBase) val).getDevice().getDeviceID(),
                         DaoFactory.getPointDao().getNextPointId(),
-						PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
+						PointOffsets.PT_OFFSET_FROZEN_PEAK_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_KW,
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
                         PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1346,7 +1330,7 @@ public static Object changeType (String newType,
 						"Frozen Max Volts",
 						((DeviceBase) val).getDevice().getDeviceID(),
                         DaoFactory.getPointDao().getNextPointId(),
-						PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
+						PointOffsets.PT_OFFSET_FROZEN_MAX_VOLT,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
                         PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1358,7 +1342,7 @@ public static Object changeType (String newType,
 						"Frozen Min Volts",
 						((DeviceBase) val).getDevice().getDeviceID(),
                         DaoFactory.getPointDao().getNextPointId(),                        
-						PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
+						PointOffsets.PT_OFFSET_FROZEN_MIN_VOLT,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
                         PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1371,7 +1355,7 @@ public static Object changeType (String newType,
     						"kW",
     						((DeviceBase) val).getDevice().getDeviceID(),
                             DaoFactory.getPointDao().getNextPointId(),                        
-    						PointTypes.PT_OFFSET_KW_DEMAND,
+    						PointOffsets.PT_OFFSET_KW_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_KW,
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
                             PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1385,7 +1369,7 @@ public static Object changeType (String newType,
     						"Voltage",
     						((DeviceBase) val).getDevice().getDeviceID(),
                             DaoFactory.getPointDao().getNextPointId(),                        
-    						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
+    						PointOffsets.PT_OFFSET_VOLTAGE_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
                             PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -1415,37 +1399,37 @@ public static Object changeType (String newType,
 
             for (LitePoint point : ltPoints) {
                 if( (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                     && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND ) || 
+                     && point.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND ) || 
                      
                      (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                             && point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ) ||
+                             && point.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ) ||
                              
                      (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                             && point.getPointOffset() == PointTypes.PT_OFFSET_PEAK_KW_DEMAND ) ||
+                             && point.getPointOffset() == PointOffsets.PT_OFFSET_PEAK_KW_DEMAND ) ||
                      
                      (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                             && point.getPointOffset() == PointTypes.PT_OFFSET_MAX_VOLT_DEMAND ) ||
+                             && point.getPointOffset() == PointOffsets.PT_OFFSET_MAX_VOLT_DEMAND ) ||
                              
                      (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                             && point.getPointOffset() == PointTypes.PT_OFFSET_MIN_VOLT_DEMAND ) ||
+                             && point.getPointOffset() == PointOffsets.PT_OFFSET_MIN_VOLT_DEMAND ) ||
                              
                      (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                             && point.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND ) ||
+                             && point.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_PEAK_DEMAND ) ||
                              
                      (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                             && point.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MAX_VOLT ) ||
+                             && point.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_MAX_VOLT ) ||
                              
                      (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                             && point.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MIN_VOLT ) ||
+                             && point.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_MIN_VOLT ) ||
                              
                      (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                             && point.getPointOffset() == PointTypes.PT_OFFSET_KW_DEMAND ) ||
+                             && point.getPointOffset() == PointOffsets.PT_OFFSET_KW_DEMAND ) ||
                              
                      (point.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
-                             && point.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND ) ||
+                             && point.getPointOffset() == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND ) ||
                              
                      (point.getPointType() == PointTypes.STATUS_POINT
-                             && point.getPointOffset() == PointTypes.PT_OFFSET_TOTAL_KWH ))
+                             && point.getPointOffset() == PointOffsets.PT_OFFSET_TOTAL_KWH ))
                 {
                     Transaction deletePoint = Transaction.createTransaction(Transaction.DELETE, ((DBPersistent)LiteFactory.convertLiteToDBPers(point)));
                     try 

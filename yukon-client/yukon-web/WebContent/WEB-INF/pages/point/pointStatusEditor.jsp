@@ -25,24 +25,25 @@
 		<h:panelGrid id="cntrlSettings" columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell" >
 	
 			<h:column>
-				<h:selectBooleanCheckbox id="Control_Inhibit" value="#{ptEditorForm.pointBase.pointStatus.controlDisabled}" />
-				<x:outputLabel for="Control_Inhibit" value="Control Inhibit" title="Check this box to disble control for this point" />
-				
+                <h:selectBooleanCheckbox id="Control_Inhibit" 
+                        disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}" 
+                        value="#{ptEditorForm.pointBase.pointStatusControl.controlInhibited}" />
+                <x:outputLabel for="Control_Inhibit" value="Control Inhibit" title="Check this box to disble control for this point" />
+
 				<x:panelGrid columns="2">
-			
 					<x:outputLabel for="Control_Type" value="Control Type: " title="Specifies the type of control this point will do" />
 					<x:selectOneMenu id="Control_Type" onchange="submit();"
                             disabled="#{!capControlForm.editingAuthorized}"
-							value="#{ptEditorForm.pointBase.pointStatus.controlType}" >
-						<f:selectItems value="#{selLists.ptControlTypes}" />
+							value="#{ptEditorForm.pointBase.pointStatusControl.controlType}" >
+						<f:selectItems value="#{selLists.ptStatusControlTypes}" />
 					</x:selectOneMenu>
 			
 					<x:outputLabel for="Control_Pt_Offset" value="Control Pt. Offset: "
 							title="Specifies the physical location used for wiring the relay point" />
 					<x:inputText id="Control_Pt_Offset" required="true" 
-							disabled="#{!ptEditorForm.pointStatusEntry.controlAvailable}"
+							disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
 							maxlength="8" styleClass="char8Label"
-							value="#{ptEditorForm.pointBase.pointStatus.controlOffset}" >
+							value="#{ptEditorForm.pointBase.pointStatusControl.controlOffset}" >
 						<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
 					</x:inputText>
 			
@@ -51,8 +52,8 @@
 					<x:panelGroup>
 						<x:inputText id="Close_Time_1" required="true" 
 								maxlength="8" styleClass="char8Label"
-								disabled="#{!ptEditorForm.pointStatusEntry.controlAvailable}"
-								value="#{ptEditorForm.pointBase.pointStatus.closeTime1}" >
+								disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+								value="#{ptEditorForm.pointBase.pointStatusControl.closeTime1}" >
 							<f:validateDoubleRange minimum="0" maximum="99999" />
 						</x:inputText>
 						<x:outputText id="time1Millis" value="(millis.)" />
@@ -63,8 +64,8 @@
 					<x:panelGroup>
 						<x:inputText id="Close_Time_2" required="true" 
 								maxlength="8" styleClass="char8Label"
-								disabled="#{!ptEditorForm.pointStatusEntry.controlAvailable}"
-								value="#{ptEditorForm.pointBase.pointStatus.closeTime2}" >
+								disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+								value="#{ptEditorForm.pointBase.pointStatusControl.closeTime2}" >
 							<f:validateDoubleRange minimum="0" maximum="99999" />
 						</x:inputText>
 						<x:outputText id="time2Millis" value="(millis.)" />
@@ -76,58 +77,57 @@
 					<x:panelGroup>
 						<x:inputText id="Command_Timeout" required="true" 
 								maxlength="8" styleClass="char8Label"
-								disabled="#{!ptEditorForm.pointStatusEntry.controlAvailable}"
-								value="#{ptEditorForm.pointBase.pointStatus.commandTimeOut}" >
+								disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+								value="#{ptEditorForm.pointBase.pointStatusControl.commandTimeOut}" >
 							<f:validateDoubleRange minimum="0" maximum="9999999" />
 						</x:inputText>
 						<x:outputText id="cmdTimeSecs" value="(secs.)" />
                     </x:panelGroup>
 				</x:panelGrid>
-	
 			</h:column>
 	
 			<h:column>
                 <x:panelGrid columns="2">
 					<x:outputLabel for="Open_Command" value="Open Command String: " title="The OPEN command string sent out when Yukon controls this point" />
 					<x:inputText id="Open_Command"
-						disabled="#{!ptEditorForm.pointStatusEntry.controlAvailable}"
-						value="#{ptEditorForm.pointBase.pointStatus.stateZeroControl}" 
+						disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+						value="#{ptEditorForm.pointBase.pointStatusControl.stateZeroControl}" 
 						required="true" maxlength="100" styleClass="char64Label" />
 			
 					<x:outputLabel for="Close_Command" value="Close Command String: " title="The CLOSE command string sent out when Yukon controls this point" />
 					<x:inputText id="Close_Command"
-						disabled="#{!ptEditorForm.pointStatusEntry.controlAvailable}"
-						value="#{ptEditorForm.pointBase.pointStatus.stateOneControl}" 
+						disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+						value="#{ptEditorForm.pointBase.pointStatusControl.stateOneControl}" 
 						required="true" maxlength="100" styleClass="char64Label" />
                 </x:panelGrid>
-                
-                <x:htmlTag value="br"/>
+            </h:column>
+        </h:panelGrid>
+    </x:htmlTag>
+
+    <x:htmlTag value="br"/>
             
-            <x:htmlTag value="fieldset" styleClass="fieldSet">
-                <x:htmlTag value="legend"><x:outputText value="Stale Data"/></x:htmlTag>
-                
-                <h:selectBooleanCheckbox id="enableStaleData" onclick="submit();"
-                            disabled="#{!capControlForm.editingAuthorized}"
-                            valueChangeListener="#{ptEditorForm.staleData.enableClick}"
-                            value="#{ptEditorForm.staleData.enabled}"
-                            immediate="true" />
-                            
-                <x:outputLabel for="enableStaleData" value="Enable" title="The first limit that can be set for this point, used to determine if an alarm condition is active" />
-                
-                <x:htmlTag value="br"/>
-                <x:panelGrid columns="2">
-                    <x:outputLabel for="staleDataTime" value="Time in Minutes:"/>
-                    <x:inputText id="staleDataTime" value="#{ptEditorForm.staleData.time}" disabled="#{!ptEditorForm.staleData.enabled}">
-                        <f:validateLongRange minimum="0" maximum="99999999" />
-                    </x:inputText>
+    <x:htmlTag value="fieldset" styleClass="fieldSet">
+        <x:htmlTag value="legend"><x:outputText value="Stale Data"/></x:htmlTag>
+        
+        <h:selectBooleanCheckbox id="enableStaleData" onclick="submit();"
+                    disabled="#{!capControlForm.editingAuthorized}"
+                    valueChangeListener="#{ptEditorForm.staleData.enableClick}"
+                    value="#{ptEditorForm.staleData.enabled}"
+                    immediate="true" />
                     
-                    <x:outputLabel for="staleDataUpdateStyle" value="Update Style:"/>
-                    <x:selectOneMenu id="staleDataUpdateStyle" value="#{ptEditorForm.staleData.updateStyle}" disabled="#{!ptEditorForm.staleData.enabled}">
-                        <f:selectItems value="#{ptEditorForm.staleData.updateStyles}"/>
-                    </x:selectOneMenu>
-                </x:panelGrid>
-            </x:htmlTag>
-			</h:column>
-		</h:panelGrid>
-	</x:htmlTag>
+        <x:outputLabel for="enableStaleData" value="Enable" title="The first limit that can be set for this point, used to determine if an alarm condition is active" />
+        
+        <x:htmlTag value="br"/>
+        <x:panelGrid columns="2">
+            <x:outputLabel for="staleDataTime" value="Time in Minutes:"/>
+            <x:inputText id="staleDataTime" value="#{ptEditorForm.staleData.time}" disabled="#{!ptEditorForm.staleData.enabled}">
+                <f:validateLongRange minimum="0" maximum="99999999" />
+            </x:inputText>
+            
+            <x:outputLabel for="staleDataUpdateStyle" value="Update Style:"/>
+            <x:selectOneMenu id="staleDataUpdateStyle" value="#{ptEditorForm.staleData.updateStyle}" disabled="#{!ptEditorForm.staleData.enabled}">
+                <f:selectItems value="#{ptEditorForm.staleData.updateStyles}"/>
+            </x:selectOneMenu>
+        </x:panelGrid>
+    </x:htmlTag>
 </f:subview>

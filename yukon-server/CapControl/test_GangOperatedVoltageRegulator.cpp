@@ -57,10 +57,6 @@ struct TestCtiCapController : public CtiCapController
 
 struct TestAttributeService : public AttributeService
 {
-    virtual std::list<LitePoint> getExtraPaoPoints(int paoId)
-    {
-        return std::list<LitePoint>();
-    }
     virtual LitePoint getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute)
     {
         switch ( attribute.value() )

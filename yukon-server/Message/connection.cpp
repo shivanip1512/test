@@ -1348,7 +1348,7 @@ _exchange(NULL),
 inQueue(inQ),
 _flag(0)
 {
-    CtiConnection::doConnect(Port, Host, inQ);      // doConnect() is virtual - be specific which one we are calling
+    CtiConnection::doConnect(Port, Host, inQ);
 }
 
 CtiConnection::CtiConnection(CtiExchange *xchg, Que_t *inQ, INT tt) :
@@ -1388,27 +1388,6 @@ void CtiConnection::doConnect( const INT &Port, const string &Host, Que_t *inQ)
 
         ThreadInitiate();
         _connectCalled = TRUE;
-    }
-
-    return;
-}
-
-void CtiConnection::restartConnection( )
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "  UNTESTED CODE HERE " << endl;
-    }
-
-    if(_connectCalled)
-    {
-        cleanConnection();
-
-        // Reset the stuff..
-        _flag = 0;
-
-        doConnect(_port, _host);
     }
 
     return;

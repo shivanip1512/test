@@ -4,6 +4,8 @@
 #include "config_data_cbc.h"
 #include "config_device.h"
 
+#include "pointAttribute.h"
+
 namespace Cti {
 namespace Devices {
 

@@ -515,9 +515,7 @@ tbl_pt_control.obj:	precompiled.h tbl_pt_control.h row_reader.h \
 		ctitime.h dlldefs.h dllbase.h dsm2.h cticonnect.h yukon.h \
 		types.h ctidbgmem.h netports.h mutex.h guard.h utility.h \
 		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
-		optional.h dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h logger.h thread.h \
-		CtiPCPtrQueue.h
+		optional.h dbmemobject.h logger.h thread.h CtiPCPtrQueue.h
 tbl_pt_limit.obj:	precompiled.h tbl_pt_limit.h dlldefs.h dllbase.h \
 		dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \
@@ -531,13 +529,19 @@ tbl_pt_property.obj:	precompiled.h tbl_pt_property.h row_reader.h \
 		queues.h cticalls.h os2_2w32.h numstr.h dsm2err.h words.h \
 		optional.h dbmemobject.h dbaccess.h logger.h thread.h \
 		CtiPCPtrQueue.h
-tbl_pt_status.obj:	precompiled.h pointdefs.h tbl_pt_status.h \
-		row_reader.h ctitime.h dlldefs.h dllbase.h dsm2.h \
+tbl_pt_status.obj:	precompiled.h tbl_pt_status.h dlldefs.h \
+		dbmemobject.h row_reader.h ctitime.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
 		guard.h utility.h queues.h cticalls.h os2_2w32.h numstr.h \
-		dsm2err.h words.h optional.h dbmemobject.h dbaccess.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
-		logger.h thread.h CtiPCPtrQueue.h
+		dsm2err.h words.h optional.h logger.h thread.h \
+		CtiPCPtrQueue.h
+tbl_pt_status_control.obj:	precompiled.h tbl_pt_status_control.h \
+		tbl_pt_control.h row_reader.h ctitime.h dlldefs.h dllbase.h \
+		dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h netports.h \
+		mutex.h guard.h utility.h queues.h cticalls.h os2_2w32.h \
+		numstr.h dsm2err.h words.h optional.h dbmemobject.h \
+		pointtypes.h resolvers.h db_entry_defines.h logger.h thread.h \
+		CtiPCPtrQueue.h
 tbl_pt_trigger.obj:	precompiled.h tbl_pt_trigger.h yukon.h types.h \
 		ctidbgmem.h row_reader.h ctitime.h dlldefs.h dllbase.h dsm2.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h queues.h \
@@ -651,4 +655,9 @@ test_tbl_dv_idlcremote.obj:	tbl_dv_idlcremote.h rwutil.h yukon.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		numstr.h dsm2err.h words.h optional.h database_reader.h \
 		row_reader.h boost_time.h boostutil.h dbmemobject.h
+test_tbl_dyn_paoinfo.obj:	tbl_dyn_paoinfo.h dlldefs.h dbmemobject.h \
+		database_connection.h dbaccess.h dllbase.h dsm2.h \
+		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		numstr.h dsm2err.h words.h optional.h row_reader.h
 #ENDUPDATE#

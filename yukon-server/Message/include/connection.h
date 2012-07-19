@@ -135,7 +135,6 @@ public:
    CtiConnection& setName(const std::string &str);
 
    int outQueueCount() const;
-   void restartConnection();
 
    virtual void preWork();
 

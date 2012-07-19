@@ -10,7 +10,7 @@ class IM_EX_PNTDB CtiPointBase : public CtiMemDBObject, boost::noncopyable
 {
 protected:
 
-   CtiTablePointBase       _pointBase;
+   CtiTablePointBase _pointBase;
 
 public:
 
@@ -42,17 +42,12 @@ public:
    void            setType(CtiPointType_t type);
    CtiPointType_t  getType() const;
 
-   virtual UINT getStaticTags();
    virtual UINT adjustStaticTags(UINT &tag) const;
 
    virtual double getDefaultValue( ) const;
 
-   virtual int getControlExpirationTime() const;
-
    bool isNumeric() const;
    bool isStatus() const;
-
-   virtual int getControlOffset() const { return 0; }
 };
 
 typedef boost::shared_ptr< CtiPointBase > CtiPointSPtr;

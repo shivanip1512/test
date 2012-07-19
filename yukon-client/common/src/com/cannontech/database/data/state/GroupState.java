@@ -79,20 +79,13 @@ public String getGroupType() {
     return getStateGroup().getGroupType();
 }
 
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.point.PointControl
- */
 public com.cannontech.database.db.state.StateGroup getStateGroup() {
 	if( stateGroup == null )
 		stateGroup = new com.cannontech.database.db.state.StateGroup();
 		
 	return stateGroup;
 }
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.point.PointControl
- */
+
 public Vector<State> getStatesVector() {
 	if( statesVector == null )
 		statesVector = new Vector<State>();

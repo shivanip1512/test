@@ -42,7 +42,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
-import com.cannontech.database.data.point.IPointOffsets;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
@@ -116,7 +116,7 @@ public class CapBankEditorForm extends DBEditorForm {
             updateAddInfo();
             try {
                 //Send point data message for optional disable 
-                LitePoint disablePoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(capBank.getPAObjectID().intValue(), IPointOffsets.PT_OFFSET_DISABLE_STATUS, PointType.Status.getPointTypeId());
+                LitePoint disablePoint = pointDao.getLitePointIdByDeviceId_Offset_PointType(capBank.getPAObjectID().intValue(), PointOffsets.PT_OFFSET_DISABLE_STATUS, PointType.Status.getPointTypeId());
                 TrueFalse disableState = ((CapBank) getDbPersistent()).isDisabled() ? TrueFalse.TRUE : TrueFalse.FALSE;
                 pointAccessDao.setPointValue(disablePoint, disableState);
             } catch (NotFoundException eae) {/*IGNORE: This point is optional*/}

@@ -290,9 +290,12 @@ void VoltageRegulator::executeRemoteControlHelper( const LitePoint & point,
 
 void VoltageRegulator::executeKeepAliveHelper( const LitePoint & point, const int keepAliveValue )
 {
-    long pointOffset = point.getPointOffset() % 10000;
-
     CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointOffset(), "Keep Alive" ) );
+
+    const long pointOffset=
+        point.getControlOffset() ?
+            point.getControlOffset() :
+            point.getPointOffset() % 10000;
 
     std::string commandString = "putvalue analog " + CtiNumStr( pointOffset ) + " " + CtiNumStr( keepAliveValue );
 

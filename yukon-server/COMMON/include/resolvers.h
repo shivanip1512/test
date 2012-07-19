@@ -39,7 +39,6 @@ IM_EX_CTIBASE INT resolvePAOClass(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolvePAOCategory(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveScanType(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveStatisticsType(const std::string& rwsTemp);
-IM_EX_CTIBASE CtiFilter_t resolveFilterType(const std::string& rwsTemp);
 IM_EX_CTIBASE INT resolveProtocol(const std::string& str);
 IM_EX_CTIBASE INT resolvePortType(const std::string& str);
 IM_EX_CTIBASE INT resolveAmpUseType(const std::string& rwsTemp);
@@ -55,5 +54,4 @@ IM_EX_CTIBASE CtiControlType_t  resolveControlType(const std::string& str);
 IM_EX_CTIBASE LONG resolveDeviceWindowType(const std::string& rwsTemp);
 
 
-IM_EX_CTIBASE INT resolveUomToCalcType(const std::string& str);
 

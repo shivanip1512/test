@@ -1,13 +1,12 @@
 package com.cannontech.database.data.point;
 
-/**
- * This type was created in VisualAge.
- */
 import com.cannontech.database.db.point.PointAnalog;
+import com.cannontech.database.db.point.PointAnalogControl;
 
 public class AnalogPoint extends ScalarPoint {
 	
-	private PointAnalog pointAnalog = null;
+    private PointAnalog pointAnalog = null;
+    private PointAnalogControl pointAnalogControl = null;
 /**
  * AnalogPoint constructor comment.
  */
@@ -20,10 +19,8 @@ public AnalogPoint() {
 public void add() throws java.sql.SQLException {
 	super.add();
 
-	//check to see if the point is real or pseudo
-	//if pseudo it shouldn't have any 'PointAnalog' info
-	//in the db
 	getPointAnalog().add();
+	getPointAnalogControl().add();
 }
 /**
  * Insert the method's description here.
@@ -33,6 +30,8 @@ public void add() throws java.sql.SQLException {
 public void addPartial() throws java.sql.SQLException {
 	
 	getPointAnalog().add();
+	getPointAnalogControl().add();
+
 	super.addPartial();
 }
 /**
@@ -40,6 +39,7 @@ public void addPartial() throws java.sql.SQLException {
  */
 public void delete() throws java.sql.SQLException {
 
+    getPointAnalogControl().delete();
 	getPointAnalog().delete();
 	
 	super.delete();		
@@ -60,11 +60,19 @@ public void deletePartial() throws java.sql.SQLException {
  * @return com.cannontech.database.db.point.PointAnalogSetting
  */
 public PointAnalog getPointAnalog() {
-	if( pointAnalog == null )
+	if (pointAnalog == null) {
 		pointAnalog = new PointAnalog();
-		
+	}
 	return pointAnalog;
 }
+
+public PointAnalogControl getPointAnalogControl() {
+    if (pointAnalogControl == null) {
+        pointAnalogControl = new PointAnalogControl();
+    }
+    return pointAnalogControl;
+}
+
 /**
  * This method was created in VisualAge.
  */
@@ -72,6 +80,7 @@ public void retrieve() throws java.sql.SQLException {
 	super.retrieve();
 
 	getPointAnalog().retrieve();
+	getPointAnalogControl().retrieve();
 }
 /**
  * Insert the method's description here.
@@ -83,14 +92,9 @@ public void setDbConnection(java.sql.Connection conn)
 	super.setDbConnection(conn);
 
 	getPointAnalog().setDbConnection(conn);
+	getPointAnalogControl().setDbConnection(conn);
 }
-/**
- * This method was created in VisualAge.
- * @param newValue com.cannontech.database.db.point.PointAnalogSetting
- */
-public void setPointAnalog(PointAnalog newValue) {
-	this.pointAnalog = newValue;
-}
+
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
@@ -100,6 +104,7 @@ public void setPointID(Integer pointID) {
 	super.setPointID(pointID);
 
 	getPointAnalog().setPointID(pointID);
+	getPointAnalogControl().setPointID(pointID);
 }
 /**
  * This method was created in VisualAge.
@@ -108,5 +113,6 @@ public void update() throws java.sql.SQLException {
 	super.update();
 
 	getPointAnalog().update();
+	getPointAnalogControl().update();
 }
 }

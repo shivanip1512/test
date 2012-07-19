@@ -146,9 +146,6 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
 
             if (liteColorPoint != null) {
                 if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT 
-                        || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_DEMAND
-                        || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
-                        || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
                         || liteColorPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                         || liteColorPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                         || liteColorPoint.getPointType() == PointTypes.CALCULATED_POINT) {
@@ -186,9 +183,6 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
 
             if (liteThicknessPoint != null) {
                 if (liteThicknessPoint.getPointType() == PointTypes.ANALOG_POINT 
-                        || liteThicknessPoint.getPointType() == PointTypes.ACCUMULATOR_DEMAND
-                        || liteThicknessPoint.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
-                        || liteThicknessPoint.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
                         || liteThicknessPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                         || liteThicknessPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                         || liteThicknessPoint.getPointType() == PointTypes.CALCULATED_POINT) {
@@ -224,9 +218,6 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
 
             if (liteArrowPoint != null) {
                 if (liteArrowPoint.getPointType() == PointTypes.ANALOG_POINT 
-                        || liteArrowPoint.getPointType() == PointTypes.ACCUMULATOR_DEMAND
-                        || liteArrowPoint.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
-                        || liteArrowPoint.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
                         || liteArrowPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                         || liteArrowPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                         || liteArrowPoint.getPointType() == PointTypes.CALCULATED_POINT) {
@@ -261,9 +252,6 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
 
             if (liteOpacityPoint != null) {
                 if (liteOpacityPoint.getPointType() == PointTypes.ANALOG_POINT 
-                        || liteOpacityPoint.getPointType() == PointTypes.ACCUMULATOR_DEMAND
-                        || liteOpacityPoint.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
-                        || liteOpacityPoint.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
                         || liteOpacityPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                         || liteOpacityPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                         || liteOpacityPoint.getPointType() == PointTypes.CALCULATED_POINT) {
@@ -408,9 +396,6 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             lp = pointDao.getLitePoint(si.getPointID());
 
             if (lp.getPointType() == PointTypes.ANALOG_POINT 
-                    || lp.getPointType() == PointTypes.ACCUMULATOR_DEMAND
-                    || lp.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
-                    || lp.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
                     || lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                     || lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                     || lp.getPointType() == PointTypes.CALCULATED_POINT) {
@@ -459,9 +444,6 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             try {
                 LitePoint liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
                 if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT
-                    || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_DEMAND
-                    || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
-                    || liteColorPoint.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
                     || liteColorPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                     || liteColorPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                     || liteColorPoint.getPointType() == PointTypes.CALCULATED_POINT) {
@@ -494,9 +476,6 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                 LitePoint liteTextPoint = DaoFactory.getPointDao().getLitePoint(textPoint);
 
                 if (liteTextPoint.getPointType() == PointTypes.ANALOG_POINT
-                    || liteTextPoint.getPointType() == PointTypes.ACCUMULATOR_DEMAND
-                    || liteTextPoint.getPointType() == PointTypes.ACCUMULATOR_DIALREAD
-                    || liteTextPoint.getPointType() == PointTypes.ACCUMULATOR_PEAKDEMAND
                     || liteTextPoint.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT
                     || liteTextPoint.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT
                     || liteTextPoint.getPointType() == PointTypes.CALCULATED_POINT) {

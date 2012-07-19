@@ -75,18 +75,8 @@ UINT CtiPointBase::adjustStaticTags(UINT &tag) const
     return _pointBase.adjustStaticTags(tag);
 }
 
-UINT CtiPointBase::getStaticTags()
-{
-    return _pointBase.getStaticTags();
-}
-
 double CtiPointBase::getDefaultValue( ) const
 {
     return 0.0;
-}
-
-int CtiPointBase::getControlExpirationTime() const
-{
-    return 300;
 }
 

@@ -33,14 +33,10 @@ public:
    virtual DOUBLE      getMultiplier() const;
    virtual DOUBLE      getDataOffset() const;
 
-   virtual UINT getStaticTags();
    virtual UINT adjustStaticTags(UINT &tag) const;
 
    virtual DOUBLE computeValueForUOM(DOUBLE Value) const;
 
 };
-
-typedef CtiPointNumeric    CtiPointPseudoAnalog;
-typedef CtiPointNumeric    CtiPointCalculated;
 
 typedef shared_ptr< CtiPointNumeric > CtiPointNumericSPtr;

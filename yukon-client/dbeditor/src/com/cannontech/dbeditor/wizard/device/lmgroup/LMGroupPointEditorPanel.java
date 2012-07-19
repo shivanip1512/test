@@ -353,9 +353,9 @@ private void initComboBoxes()
 			            dbPoint = (com.cannontech.database.data.point.StatusPoint)t.execute();
 
 				         //only add status points that have control
-				         if( com.cannontech.database.data.point.PointTypes.hasControl(dbPoint.getPointStatus().getControlType()) )
-				         	pointList.add( point );  //adds a LitePoint to our pointList
-
+				         if (dbPoint.getPointStatusControl().hasControl()) {
+				             pointList.add( point );  //adds a LitePoint to our pointList
+				         }
 			         }
 			         catch (Exception e)
 			         {

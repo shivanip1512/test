@@ -14,6 +14,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointUnit;
@@ -86,7 +87,7 @@ public class MCT410AllPointCreate extends PointCreate
 						"Voltage Profile",
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
+						PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
@@ -105,7 +106,7 @@ public class MCT410AllPointCreate extends PointCreate
 						"Peak kW",
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
+						PointOffsets.PT_OFFSET_PEAK_KW_DEMAND,
 						PointUnits.UOMID_KW,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
@@ -124,7 +125,7 @@ public class MCT410AllPointCreate extends PointCreate
 						"Max Volts",
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
+						PointOffsets.PT_OFFSET_MAX_VOLT_DEMAND,
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
@@ -143,7 +144,7 @@ public class MCT410AllPointCreate extends PointCreate
 						"Min Volts",
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
+						PointOffsets.PT_OFFSET_MIN_VOLT_DEMAND,
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
@@ -163,7 +164,7 @@ public class MCT410AllPointCreate extends PointCreate
 						"kW",
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_KW_DEMAND,
+						PointOffsets.PT_OFFSET_KW_DEMAND,
 						PointUnits.UOMID_KW,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
@@ -182,7 +183,7 @@ public class MCT410AllPointCreate extends PointCreate
 						"Voltage",
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
+						PointOffsets.PT_OFFSET_VOLTAGE_DEMAND,
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
@@ -201,7 +202,7 @@ public class MCT410AllPointCreate extends PointCreate
 					   "kW-LP",
 					   new Integer(paobjectID),
 					   new Integer(pointID),
-					   PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
+					   PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND,
 					   PointUnits.UOMID_KW,
 					   multiplier,
 					   StateGroupUtils.STATEGROUP_ANALOG,
@@ -219,7 +220,7 @@ public class MCT410AllPointCreate extends PointCreate
 					   "kWh",
 					   new Integer(paobjectID),
 					   new Integer(pointID),
-					   PointTypes.PT_OFFSET_TOTAL_KWH,
+					   PointOffsets.PT_OFFSET_TOTAL_KWH,
 					   PointUnits.UOMID_KWH,
 					   multiplier,
 					   StateGroupUtils.STATEGROUP_ANALOG,
@@ -238,7 +239,7 @@ public class MCT410AllPointCreate extends PointCreate
 						   "Blink Count",
 						   new Integer(paobjectID),
 						   new Integer(pointID),
-						   PointTypes.PT_OFFSET_BLINK_COUNT,
+						   PointOffsets.PT_OFFSET_BLINK_COUNT,
 						   PointUnits.UOMID_COUNTS,
 						   1.0,
 						   StateGroupUtils.STATEGROUP_ANALOG,
@@ -256,7 +257,7 @@ public class MCT410AllPointCreate extends PointCreate
 				        	"Outages", 
 							new Integer(paobjectID), 
                             new Integer(pointID), 
-                            PointTypes.PT_OFFSET_OUTAGE, 
+                            PointOffsets.PT_OFFSET_OUTAGE, 
                             PointUnits.UOMID_SECONDS,
     						StateGroupUtils.STATEGROUP_ANALOG) );
 				    CTILogger.info("Adding Outage Log: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
@@ -296,25 +297,25 @@ public class MCT410AllPointCreate extends PointCreate
 	 */
 	public boolean isPointCreated( LitePoint lp)
 	{
-		if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT )
+		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT )
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).voltageLP = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_PEAK_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_PEAK_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).peakKw = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_MAX_VOLT_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_MAX_VOLT_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).maxVolts = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_MIN_VOLT_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_MIN_VOLT_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).minVolts = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).kw = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).voltage = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).kWLP = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_TOTAL_KWH && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_TOTAL_KWH && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).kWh = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_BLINK_COUNT && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_BLINK_COUNT && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).blinkCount = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_OUTAGE && lp.getPointType() == PointTypes.ANALOG_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_OUTAGE && lp.getPointType() == PointTypes.ANALOG_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).outageLog = false;
 		
 		return false;

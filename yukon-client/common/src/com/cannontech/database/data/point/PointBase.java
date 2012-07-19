@@ -20,8 +20,6 @@ import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.database.db.device.lm.LMGroupPoint;
 import com.cannontech.database.db.graph.GraphDataSeries;
-import com.cannontech.database.db.point.DynamicAccumulator;
-import com.cannontech.database.db.point.DynamicPointDispatch;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.RawPointHistory;
@@ -36,7 +34,6 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
     private Point point = null;
     private Vector<FDRTranslation> pointFDR = null;
     private PointAlarming pointAlarming = null;
-    private boolean isPartialDelete;
     
     /**
      * PointBase constructor comment.
@@ -71,7 +68,7 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
     /**
      * delete method comment.
      */
-    public void delete() throws SQLException {
+    public void deletePartial() throws SQLException {
         Integer pointID = getPoint().getPointID();
         PointPropertyValueDao dao = YukonSpringHook.getBean("pointPropertyValueDao",PointPropertyValueDao.class);
         dao.removeByPointId(pointID);
@@ -79,8 +76,8 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
         // ADD TABLES THAT HAVE A REFERENCE TO THE POINT TABLE AND THAT
         // NEED TO BE DELETED WHEN A POINT ROW IS DELETED (CASCADE DELETE)
         delete(FDRTranslation.TABLE_NAME, "PointID", pointID);
-        delete(DynamicPointDispatch.TABLE_NAME, "PointID", pointID);
-        delete(DynamicAccumulator.TABLE_NAME, "PointID", pointID);
+        delete("DynamicPointDispatch", "PointID", pointID);
+        delete("DynamicAccumulator", "PointID", pointID);
         delete(GraphDataSeries.tableName, "PointID", pointID);
         delete("DynamicPointAlarming", "PointID", pointID);
         delete(CalcComponent.TABLENAME, "ComponentPointID", pointID);
@@ -88,18 +85,13 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
         delete("DynamicTags", "PointID", pointID);
         delete("Display2WayData", "PointID", pointID);
         delete("CCEventLog", "PointID", pointID);
-
-        if (!isPartialDelete) {
-            getPointAlarming().delete();
-            getPoint().delete();
-        }
-    
     }
     
-    public void deletePartial() throws SQLException {
-        isPartialDelete = true;
-        delete();
-        isPartialDelete = false;
+    public void delete() throws SQLException {
+         deletePartial();
+  
+         getPointAlarming().delete();
+         getPoint().delete();
     }
     
     public boolean equals(PointBase obj) {

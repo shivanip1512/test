@@ -180,17 +180,6 @@ UINT CtiTablePointBase::adjustStaticTags(UINT &tag) const
     return tag;
 }
 
-UINT CtiTablePointBase::getStaticTags() const
-{
-   UINT tag = 0;
-
-   if(isPseudoPoint()) tag |= TAG_ATTRIB_PSEUDO;
-   if(isOutOfService()) tag |= TAG_DISABLE_POINT_BY_POINT;
-   if(isAlarmDisabled()) tag |= TAG_DISABLE_ALARM_BY_POINT;
-
-   return tag;
-}
-
 CtiTablePointBase::CtiTablePointBase(LONG pid) :
     _pointID( pid ),
     _paObjectID(-1),

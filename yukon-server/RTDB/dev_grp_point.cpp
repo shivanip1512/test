@@ -69,12 +69,19 @@ string CtiDeviceGroupPoint::getDescription(const CtiCommandParser & parse) const
 
 string CtiDeviceGroupPoint::getSQLCoreStatement() const
 {
-    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
-                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, LGP.deviceid, LGP.deviceidusage, "
-                                     "LGP.pointidusage, LGP.startcontrolrawstate, PTS.statezerocontrol, PTS.stateonecontrol "
-                                   "FROM YukonPAObject YP, Device DV, LMGroupPoint LGP, PointStatus PTS "
-                                   "WHERE upper (YP.type) = 'POINT GROUP' AND PTS.pointid = LGP.pointidusage AND "
-                                     "LGP.deviceid = YP.paobjectid AND YP.paobjectid = DV.deviceid";
+    static const string sqlCore =
+        "SELECT"
+            " YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag,"
+            " DV.deviceid, DV.alarminhibit, DV.controlinhibit,"
+            " LGP.deviceid, LGP.deviceidusage, LGP.pointidusage, LGP.startcontrolrawstate,"
+            " PSC.statezerocontrol, PSC.stateonecontrol"
+        " FROM"
+            " YukonPAObject YP"
+            " JOIN Device DV on YP.paobjectid = DV.deviceid"
+            " JOIN LMGroupPoint LGP on YP.paobjectid = LGP.deviceid"
+            " JOIN PointStatusControl PSC on LGP.pointidusage = PSC.pointid"
+        " WHERE"
+            " upper (YP.type) = 'POINT GROUP'";
 
     return sqlCore;
 }

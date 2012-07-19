@@ -63,20 +63,16 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 			analogPoint.getPoint().setArchiveInterval(new Integer(0));
 			
 			// set POINTALARMING defaults
-			analogPoint.getPointAlarming().setPointID(new Integer(pointID));
 			analogPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
 			analogPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
 			analogPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
 			analogPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
-						
 	
 			// set POINTUNIT defaults
-			analogPoint.getPointUnit().setPointID(new Integer(pointID));
 			analogPoint.getPointUnit().setUomID(new Integer(PointUnits.UOMID_KW));
 			analogPoint.getPointUnit().setDecimalPlaces(new Integer(2));
 	
 			// set POINTANALOG defuaults
-			analogPoint.getPointAnalog().setPointID(new Integer(pointID));
 			analogPoint.getPointAnalog().setDeadband(new Double(10.0));
 	
 			multi.addDBPersistent( analogPoint );

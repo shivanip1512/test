@@ -441,8 +441,9 @@ portfield.obj:	precompiled.h c_port_interface.h dlldefs.h elogger.h \
 		std_ansi_tbl_33.h std_ansi_tbl_51.h std_ansi_tbl_52.h \
 		std_ansi_tbl_61.h std_ansi_tbl_62.h std_ansi_tbl_63.h \
 		std_ansi_tbl_64.h dllyukon.h pt_analog.h pt_numeric.h \
-		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h pt_status.h \
-		tbl_pt_status.h dev_ccu721.h tbl_dv_address.h \
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
+		tbl_pt_control.h pt_status.h tbl_pt_status.h \
+		tbl_pt_status_control.h dev_ccu721.h tbl_dv_address.h \
 		device_queue_interface.h prot_klondike.h prot_wrap.h \
 		prot_idlc.h dev_lcu.h dev_idlc.h tbl_dv_idlcremote.h \
 		trx_info.h trx_711.h dev_mark_v.h prot_transdata.h \
@@ -626,15 +627,14 @@ porttime.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		prot_idlc.h dev_dnp.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h pointAttribute.h dev_ilex.h \
-		dev_mct4xx.h dev_mct.h dev_carrier.h dev_dlcbase.h \
-		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h cmd_base.h \
-		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h da_load_profile.h \
-		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h config_data_mct.h ctidate.h mgr_route.h \
-		repeaterrole.h thread_monitor.h thread_register_data.h \
-		ThreadStatusKeeper.h prot_welco.h prot_lmi.h prot_seriesv.h \
-		verification_objects.h
+		dnp_object_binaryoutput.h dev_ilex.h dev_mct4xx.h dev_mct.h \
+		dev_carrier.h dev_dlcbase.h tbl_route.h tbl_carrier.h \
+		prot_emetcon.h cmd_dlc.h cmd_base.h tbl_metergrp.h vcomdefs.h \
+		tbl_loadprofile.h da_load_profile.h tbl_dv_mctiedport.h \
+		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
+		config_data_mct.h ctidate.h mgr_route.h repeaterrole.h \
+		thread_monitor.h thread_register_data.h ThreadStatusKeeper.h \
+		prot_welco.h prot_lmi.h prot_seriesv.h verification_objects.h
 portverify.obj:	precompiled.h boost_time.h mgr_port.h dlldefs.h \
 		smartmap.h boostutil.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h dllbase.h dsm2.h \
@@ -742,7 +742,7 @@ port_thread_udp.obj:	precompiled.h port_thread_udp.h yukon.h types.h \
 		tbl_dialup.h tbl_direct.h prot_dnp.h dnp_application.h \
 		dnp_objects.h dnp_transport.h dnp_datalink.h \
 		dnp_datalink_packet.h dnp_object_binaryoutput.h \
-		tbl_dv_address.h pointAttribute.h dev_gridadvisor.h dev_rds.h \
+		tbl_dv_address.h dev_gridadvisor.h dev_rds.h \
 		encryption_oneway_message.h portfield.h
 ripple.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		connection.h exchange.h dllbase.h dsm2.h cticonnect.h yukon.h \
@@ -886,8 +886,7 @@ unsolicited_handler.obj:	precompiled.h boostutil.h utility.h ctitime.h \
 		porter.h devicetypes.h dev_dnp.h dev_remote.h tbl_dialup.h \
 		tbl_direct.h prot_dnp.h dnp_application.h dnp_objects.h \
 		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
-		msg_trace.h StatisticsManager.h PaoStatistics.h \
-		PaoStatisticsRecord.h ThreadStatusKeeper.h \
-		thread_register_data.h thread_monitor.h
+		dnp_object_binaryoutput.h tbl_dv_address.h msg_trace.h \
+		StatisticsManager.h PaoStatistics.h PaoStatisticsRecord.h \
+		ThreadStatusKeeper.h thread_register_data.h thread_monitor.h
 #ENDUPDATE#

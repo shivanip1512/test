@@ -31,6 +31,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.util.NaturalOrderComparator;
 
@@ -324,8 +325,8 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 		if (getPointType() == LOAD_PROFILE_POINT_TYPE ) {
 		    sql.append(" AND PAO.PAOBJECTID = DLP.DEVICEID ");
 			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
-			sql.append(" AND (P.POINTOFFSET >= ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND);
-			sql.append(" AND P.POINTOFFSET <= ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND);
+			sql.append(" AND (P.POINTOFFSET >= ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND);
+			sql.append(" AND P.POINTOFFSET <= ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND);
 			sql.append(") ");
 		} else if ( getPointType() == STATUS_POINT_TYPE ) {
 			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.STATUS_POINT));
@@ -333,8 +334,8 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 		    sql.append(" AND PAO.PAOBJECTID = DLP.DEVICEID ");
 			sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
 			//Do not allow LP data, those points fall into the LP point type option.
-			sql.append(" AND (P.POINTOFFSET < ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND);
-			sql.append(" OR P.POINTOFFSET > ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND);
+			sql.append(" AND (P.POINTOFFSET < ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND);
+			sql.append(" OR P.POINTOFFSET > ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND);
 			sql.append(")");			
 		} else if ( getPointType() == PULSE_ACC_POINT_TYPE ) {
         	sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT));
@@ -414,14 +415,14 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
                             int intervals = 0;
 
                             LitePoint lp = DaoFactory.getPointDao().getLitePoint(currentPointid);
-                            if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null) {
+                            if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null) {
                                 intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
-                            } else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null) {
+                            } else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null) {
                                 intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
                             } else if (lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null) {
                                 intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
                             }
-                            // else if( pointOffset == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
+                            // else if( pointOffset == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
                             //     intervals = (int) (totalTime / Integer.valueOf(voltageDemandInterval).intValue());
 
 
@@ -475,17 +476,17 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
                 int intervals = 0;
 
                 LitePoint lp = DaoFactory.getPointDao().getLitePoint(currentPointid);							
-                if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null)
+                if( lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && voltageDemandRate != null)
                     intervals = (int) (totalTime / Integer.valueOf(voltageDemandRate).intValue());
-                else if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null)
+                else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND && lpDemandRate != null)
                     intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
-                else if( lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL2 && lpDemandRate != null)
+                else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL2 && lpDemandRate != null)
                     intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
-                else if( lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL3 && lpDemandRate != null)
+                else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL3 && lpDemandRate != null)
                     intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
                 else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null)
                     intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
-                //				else if( pointOffset == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
+                //				else if( pointOffset == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
                 //				    intervals = (int) (totalTime / Integer.valueOf(voltageDemandInterval).intValue());
 
                 if( countData < intervals)
@@ -548,7 +549,7 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				{
 				    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpMeterData.getMeterAndPointData().getPointID().intValue());
 				    if( lp != null && 
-				            (lp.getPointOffset() >= PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lp.getPointOffset() <= PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND))
+				            (lp.getPointOffset() >= PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND && lp.getPointOffset() <= PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND))
 				    {
 				        return String.valueOf(lp.getPointOffset() - 100);	//100 is the offset that load profile points start at (101, 102, 103, 104)
 				    }
@@ -560,17 +561,17 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				    if( lp != null)
 				    {
 				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
-					        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
+					        if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
 					            return lpMeterData.getVoltageDemandRate();
-					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
+					        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
 					            return lpMeterData.getDemandRate();
-					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL2)
+					        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL2)
 					            return lpMeterData.getDemandRate();
-					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL3)
+					        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL3)
 					            return lpMeterData.getDemandRate();
 					        else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 							    return lpMeterData.getLastIntervalDemand();
-	//				        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND)
+	//				        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND)
 	//				            return lpMeterData.getLastIntervalVoltage();
 				    	}
 				    }
@@ -649,20 +650,20 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				    if( lp != null)
 				    {
 				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
-					        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ||
-					                lp.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND)
+					        if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND ||
+					                lp.getPointOffset() == PointOffsets.PT_OFFSET_VOLTAGE_DEMAND)
 					        {
 					            //Return null for voltage since this CASE is used to calculate total kWh
 	//				            divisor = Integer.valueOf(lpMeterData.getVoltageDemandRate()).intValue();
 					            return null;	//a null value "should" give us an "N/A" value.
 					        }
-					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
+					        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
 					            divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
-                            else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL2)
+                            else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL2)
                                 divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
-                            else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL3)
+                            else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL3)
                                 divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
-					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_KW_DEMAND)	//All other intervals are demandIntervals
+					        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_KW_DEMAND)	//All other intervals are demandIntervals
 					            divisor = Integer.valueOf( lpMeterData.getLastIntervalDemand()).intValue();
 				    	}
 				    }				    
@@ -677,13 +678,13 @@ public class PointDataSummaryModel extends ReportModelBase<LPMeterData>
 				    if( lp != null)
 				    {
 				    	if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT) {
-					        if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
+					        if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
 					            divisor = Integer.valueOf(lpMeterData.getVoltageDemandRate()).intValue();
-					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
+					        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND)	//All other intervals are demandIntervals
 					            divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
-					        else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL2)
+					        else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL2)
                                 divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
-                            else if (lp.getPointOffset() == PointTypes.PT_OFFSET_PROFILE_CHANNEL3)
+                            else if (lp.getPointOffset() == PointOffsets.PT_OFFSET_PROFILE_CHANNEL3)
                                 divisor = Integer.valueOf( lpMeterData.getDemandRate()).intValue();
 					        else if (lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 					            divisor = Integer.valueOf(lpMeterData.getLastIntervalDemand()).intValue();

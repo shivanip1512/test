@@ -20,7 +20,6 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.pao.TypeBase;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.Point;
@@ -46,7 +45,7 @@ public class PointUtil {
     public static PointBase createPoint(int type, String name, Integer paoId, boolean disabled) 
         throws TransactionException {
        MultiDBPersistent dbPersistentVector = new MultiDBPersistent(); 
-       PointBase point = new PointBase();
+       PointBase point = null;
        
        // Service flag of 'Y' means disabled, 'N' means enabled.
        char disabledChar = disabled ? CtiUtilities.trueChar : CtiUtilities.falseChar;
@@ -56,7 +55,7 @@ public class PointUtil {
        case PointTypes.ANALOG_POINT:
            point =  PointFactory.createAnalogPoint(name,
                                                    paoId,
-                                                   point.getPoint().getPointID(),
+                                                   null,
                                                    validPointOffset,
                                                    PointUnits.UOMID_VOLTS,
                                                    1.0, 
@@ -74,8 +73,8 @@ public class PointUtil {
        case PointTypes.DEMAND_ACCUMULATOR_POINT:
            point = PointFactory.createDmdAccumPoint(name, 
                                                     paoId, 
-                                                    point.getPoint().getPointID(),
-                                                    TypeBase.POINT_OFFSET, 
+                                                    null,
+                                                    0, 
                                                     PointUnits.UOMID_UNDEF, 
                                                     0.1, 
                                                     StateGroupUtils.STATEGROUP_ANALOG,
@@ -133,20 +132,6 @@ public class PointUtil {
         
         }
     }
-
-/** used for cap control
- * used to determine which point types (Analog, DemandAccum, Status, PulseAccum, e.g) sub/feeder setup 
- * need to be scanable 
- * @param pointType
- * @return true if point type is scanable
- */
-	public static boolean isScanablePointType(int pointType) {
-		for (int i = 0; i < PointTypes.SCANABLE_POINT_TYPES.length; i++) {
-			if (PointTypes.SCANABLE_POINT_TYPES[i] == pointType)
-				return true;
-		}
-		return false;
-	}
 
 	/**
 	 * Helper method to change pointBase to the newPointTemplate type.
@@ -292,10 +277,10 @@ public class PointUtil {
         	StatusPoint statusPoint = (StatusPoint)pointBase;
         	
         	statusPoint.getPoint().setStateGroupID(pointTemplate.getStateGroupId());
-        	statusPoint.getPointStatus().setControlOffset(pointTemplate.getControlOffset());
-        	statusPoint.getPointStatus().setControlType(pointTemplate.getControlType().getControlName());
-        	statusPoint.getPointStatus().setStateZeroControl(pointTemplate.getStateZeroControl().getControlCommand());
-        	statusPoint.getPointStatus().setStateOneControl(pointTemplate.getStateOneControl().getControlCommand());
+        	statusPoint.getPointStatusControl().setControlOffset(pointTemplate.getControlOffset());
+        	statusPoint.getPointStatusControl().setControlType(pointTemplate.getControlType().getControlName());
+        	statusPoint.getPointStatusControl().setStateZeroControl(pointTemplate.getStateZeroControl().getControlCommand());
+        	statusPoint.getPointStatusControl().setStateOneControl(pointTemplate.getStateOneControl().getControlCommand());
         	
         } else if (pointBase instanceof AccumulatorPoint) {
         	

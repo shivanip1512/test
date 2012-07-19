@@ -14,6 +14,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointUnit;
@@ -72,7 +73,7 @@ public class MCT410FrozenPointCreate extends PointCreate
 						"Frozen Peak Demand",
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
+						PointOffsets.PT_OFFSET_FROZEN_PEAK_DEMAND,
 						PointUnits.UOMID_KW,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
@@ -89,7 +90,7 @@ public class MCT410FrozenPointCreate extends PointCreate
 						"Frozen Max Volts",
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
+						PointOffsets.PT_OFFSET_FROZEN_MAX_VOLT,
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
@@ -108,7 +109,7 @@ public class MCT410FrozenPointCreate extends PointCreate
 						"Frozen Min Volts",
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
+						PointOffsets.PT_OFFSET_FROZEN_MIN_VOLT,
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
@@ -153,11 +154,11 @@ public class MCT410FrozenPointCreate extends PointCreate
 	 */
 	public boolean isPointCreated( LitePoint lp)
 	{
-		if( lp.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_PEAK_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).frozenPeakKw = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MAX_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_MAX_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).frozenMaxVolts = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MIN_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_FROZEN_MIN_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).frozenMinVolts = false;
 		
 		return false;

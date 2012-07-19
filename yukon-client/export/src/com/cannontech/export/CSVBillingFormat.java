@@ -8,7 +8,7 @@ import com.cannontech.calchist.Baseline;
 import com.cannontech.calchist.HoursAndValues;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.export.record.CSVBillingCustomerRecord;
 import com.cannontech.export.record.CSVBillingRecord;
@@ -412,7 +412,7 @@ public class CSVBillingFormat extends ExportFormatBase
 		sql.append(" AND PAO.PAOBJECTID = PT.PAOBJECTID ");
 		sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
 		sql.append(" AND CC.POINTID = PT.POINTID ");
-		sql.append(" AND PT.POINTOFFSET = " + PointTypes.PT_OFFSET_BILLING_BASELINE);
+		sql.append(" AND PT.POINTOFFSET = " + PointOffsets.PT_OFFSET_BILLING_BASELINE);
 		sql.append(" AND FUNCTIONNAME = '" + CalcComponentTypes.BASELINE_FUNCTION+"'");
 		
 		java.sql.Connection conn = null;

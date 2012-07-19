@@ -222,9 +222,10 @@ ctivangogh.obj:	precompiled.h collectable.h counter.h guard.h \
 		resolvers.h db_entry_defines.h desolvers.h tbl_pt_unit.h \
 		tbl_unitmeasure.h signalmanager.h pt_dyn_dispatch.h \
 		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
-		pttrigger.h mgr_point.h tbl_pt_trigger.h tagmanager.h \
-		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
-		tbl_state.h tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
+		tbl_pt_status_control.h tbl_pt_control.h pttrigger.h \
+		mgr_point.h tbl_pt_trigger.h tagmanager.h tbl_dyn_pttag.h \
+		tbl_tag.h tbl_taglog.h tbl_state_grp.h tbl_state.h \
+		tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
 		tbl_rawpthistory.h tbl_signal.h tbl_ci_cust.h \
 		tbl_contact_notification.h rtdb.h hashkey.h hash_functions.h \
 		pt_accum.h tbl_pt_accum.h tbl_pt_accumhistory.h pt_analog.h \
@@ -270,9 +271,10 @@ exe_ptchg.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		resolvers.h db_entry_defines.h desolvers.h tbl_pt_unit.h \
 		tbl_unitmeasure.h signalmanager.h pt_dyn_dispatch.h \
 		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
-		pttrigger.h mgr_point.h tbl_pt_trigger.h tagmanager.h \
-		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
-		tbl_state.h tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
+		tbl_pt_status_control.h tbl_pt_control.h pttrigger.h \
+		mgr_point.h tbl_pt_trigger.h tagmanager.h tbl_dyn_pttag.h \
+		tbl_tag.h tbl_taglog.h tbl_state_grp.h tbl_state.h \
+		tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
 		tbl_rawpthistory.h tbl_signal.h tbl_ci_cust.h \
 		tbl_contact_notification.h rtdb.h hashkey.h hash_functions.h
 exe_signal.obj:	precompiled.h message.h ctitime.h dlldefs.h \
@@ -296,9 +298,10 @@ exe_signal.obj:	precompiled.h message.h ctitime.h dlldefs.h \
 		resolvers.h db_entry_defines.h desolvers.h tbl_pt_unit.h \
 		tbl_unitmeasure.h signalmanager.h pt_dyn_dispatch.h \
 		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
-		pttrigger.h mgr_point.h tbl_pt_trigger.h tagmanager.h \
-		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
-		tbl_state.h tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
+		tbl_pt_status_control.h tbl_pt_control.h pttrigger.h \
+		mgr_point.h tbl_pt_trigger.h tagmanager.h tbl_dyn_pttag.h \
+		tbl_tag.h tbl_taglog.h tbl_state_grp.h tbl_state.h \
+		tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
 		tbl_rawpthistory.h tbl_signal.h tbl_ci_cust.h \
 		tbl_contact_notification.h rtdb.h hashkey.h hash_functions.h \
 		exe_signal.h
@@ -323,10 +326,11 @@ mgr_ptclients.obj:	precompiled.h dllvg.h dlldefs.h pt_base.h \
 		tbl_pt_limit.h rtdb.h tbl_rawpthistory.h tbl_pt_property.h \
 		devicetypes.h msg_pcreturn.h msg_signal.h pt_analog.h \
 		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
-		pt_accum.h tbl_pt_accum.h tbl_pt_accumhistory.h pt_status.h \
-		tbl_pt_status.h debug_timer.h con_mgr_vg.h vgexe_factory.h \
-		executor.h exe_ptchg.h executorfactory.h exe_cmd.h exe_reg.h \
-		msg_cmd.h
+		tbl_pt_control.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h pt_status.h tbl_pt_status.h \
+		tbl_pt_status_control.h debug_timer.h con_mgr_vg.h \
+		vgexe_factory.h executor.h exe_ptchg.h executorfactory.h \
+		exe_cmd.h exe_reg.h msg_cmd.h
 pendingopthread.obj:	precompiled.h counter.h guard.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h dbghelp.h mutex.h cparms.h rwutil.h yukon.h \
@@ -441,8 +445,9 @@ test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		configval.h ctibase.h ctinexus.h server_b.h pt_dyn_dispatch.h \
 		tbl_pt_alarm.h tbl_ptdispatch.h tbl_pt_limit.h rtdb.h \
 		tbl_rawpthistory.h tbl_pt_property.h pt_status.h \
-		tbl_pt_status.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_analog.h
+		tbl_pt_status.h tbl_pt_status_control.h tbl_pt_control.h \
+		pt_analog.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
+		tbl_pt_analog.h
 test_signalmanager.obj:	tbl_pt_alarm.h dlldefs.h dllbase.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h netports.h mutex.h \
 		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
@@ -472,12 +477,13 @@ test_vangogh.obj:	ctivangogh.h con_mgr.h connection.h dlldefs.h \
 		tbl_pt_base.h resolvers.h db_entry_defines.h desolvers.h \
 		tbl_pt_unit.h tbl_unitmeasure.h signalmanager.h \
 		pt_dyn_dispatch.h tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h \
-		tbl_pt_status.h pttrigger.h mgr_point.h tbl_pt_trigger.h \
-		tagmanager.h tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h \
-		tbl_state_grp.h tbl_state.h tbl_alm_ngroup.h \
-		tbl_commerrhist.h tbl_pt_limit.h tbl_rawpthistory.h \
-		tbl_signal.h tbl_ci_cust.h tbl_contact_notification.h rtdb.h \
-		hashkey.h hash_functions.h ctidate.h
+		tbl_pt_status.h tbl_pt_status_control.h tbl_pt_control.h \
+		pttrigger.h mgr_point.h tbl_pt_trigger.h tagmanager.h \
+		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
+		tbl_state.h tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
+		tbl_rawpthistory.h tbl_signal.h tbl_ci_cust.h \
+		tbl_contact_notification.h rtdb.h hashkey.h hash_functions.h \
+		ctidate.h
 vangogh.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h types.h \
 		ctidbgmem.h database_connection.h dbaccess.h dllbase.h dsm2.h \
 		cticonnect.h netports.h mutex.h guard.h utility.h ctitime.h \
@@ -498,9 +504,10 @@ vangogh.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h types.h \
 		resolvers.h db_entry_defines.h desolvers.h tbl_pt_unit.h \
 		tbl_unitmeasure.h signalmanager.h pt_dyn_dispatch.h \
 		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
-		pttrigger.h mgr_point.h tbl_pt_trigger.h tagmanager.h \
-		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
-		tbl_state.h tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
+		tbl_pt_status_control.h tbl_pt_control.h pttrigger.h \
+		mgr_point.h tbl_pt_trigger.h tagmanager.h tbl_dyn_pttag.h \
+		tbl_tag.h tbl_taglog.h tbl_state_grp.h tbl_state.h \
+		tbl_alm_ngroup.h tbl_commerrhist.h tbl_pt_limit.h \
 		tbl_rawpthistory.h tbl_signal.h tbl_ci_cust.h \
 		tbl_contact_notification.h rtdb.h hashkey.h hash_functions.h \
 		dllvg.h stdexcepthdlr.h

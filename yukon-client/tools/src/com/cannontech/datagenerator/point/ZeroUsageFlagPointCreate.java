@@ -16,8 +16,6 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.StatusPoint;
-import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.state.StateGroupUtils;
 public class ZeroUsageFlagPointCreate extends PointCreate
 {
@@ -74,7 +72,6 @@ public class ZeroUsageFlagPointCreate extends PointCreate
                     ZERO_USAGE_FLAG_POINT_OFFSET);
 
 		    pointBase.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_TRUEFALSE));
-            ((StatusPoint) pointBase).setPointStatus(new PointStatus(pointBase.getPoint().getPointID()));
 
             multi.addDBPersistent(pointBase);
  

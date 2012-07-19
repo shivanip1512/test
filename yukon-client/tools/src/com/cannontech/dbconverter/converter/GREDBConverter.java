@@ -446,7 +446,6 @@ public boolean processAnalogPoints()
 
 		anaPoint.getPointUnit().setDecimalPlaces(new Integer(2));
 		anaPoint.getPointAnalog().setDeadband(new Double(0.0));
-		anaPoint.getPointAnalog().setTransducerType( new String("none") );
 
 
 		if( anaPoint.getPoint().getPointName().toUpperCase().indexOf("VOLTAGE") != -1 )
@@ -1341,8 +1340,6 @@ public boolean processStatusPoints()
 		statusPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
 	
 		statusPoint.getPointStatus().setInitialState(new Integer(1));
-		statusPoint.getPointStatus().setControlInhibit(new Character('N'));
-
 
 		if( !statusPoint.getPoint().getPointName().toUpperCase().startsWith("FUTURE SPARE")
 			 && deviceIDsMap.get(statusPoint.getPoint().getPaoID()) != null )
@@ -1502,7 +1499,6 @@ public boolean processTransmitterFile()
 			pvPoint.getPoint().setStateGroupID( new Integer(-1) );
 			pvPoint.getPointUnit().setDecimalPlaces(new Integer(2));
 			pvPoint.getPointAnalog().setDeadband(new Double(0.0));
-			pvPoint.getPointAnalog().setTransducerType( new String("none") );
 			pvPoint.getPointUnit().setUomID( new Integer(8) );
 
 			multi.getDBPersistentVector().add( pvPoint );		

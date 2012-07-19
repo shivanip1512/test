@@ -3,7 +3,6 @@
 #include "dev_remote.h"
 #include "prot_dnp.h"
 #include "tbl_dv_address.h"
-#include "pointAttribute.h"
 
 #include <map>
 #include <string>

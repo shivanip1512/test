@@ -49,11 +49,6 @@ UINT CtiPointNumeric::adjustStaticTags(UINT &tag) const
     return Inherited::adjustStaticTags(tag);
 }
 
-UINT CtiPointNumeric::getStaticTags()
-{
-   return Inherited::getStaticTags();
-}
-
 DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
 {
     int calcType = getPointUnits().getUnitMeasure().getCalcType();

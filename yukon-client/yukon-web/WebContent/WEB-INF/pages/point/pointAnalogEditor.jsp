@@ -53,6 +53,38 @@
 		
 			</x:htmlTag>
 			
+            <x:htmlTag value="br"/>
+
+            <x:htmlTag value="fieldset" styleClass="fieldSet">
+                <x:htmlTag value="legend"><x:outputText value="Control Settings"/></x:htmlTag>
+
+                <h:selectBooleanCheckbox id="Control_Inhibit" 
+                        disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+                        value="#{ptEditorForm.pointBase.pointAnalogControl.controlInhibited}" />
+                <x:outputLabel for="Control_Inhibit" value="Control Inhibit" 
+                        title="Check this box to disble control for this point" />
+                
+                <x:panelGrid columns="2">
+            
+                    <x:outputLabel for="Control_Type" value="Control Type: " 
+                            title="Specifies the type of control this point will do" />
+                    <x:selectOneMenu id="Control_Type" onchange="submit();"
+                            disabled="#{!capControlForm.editingAuthorized}"
+                            value="#{ptEditorForm.pointBase.pointAnalogControl.controlType}" >
+                        <f:selectItems value="#{selLists.ptAnalogControlTypes}" />
+                    </x:selectOneMenu>
+            
+                    <x:outputLabel for="Control_Pt_Offset" value="Control Pt. Offset: "
+                            title="Specifies the physical location used for wiring the relay point" />
+                    <x:inputText id="Control_Pt_Offset" required="#{ptEditorForm.pointControlEntry.controlAvailable}" 
+                            disabled="#{!ptEditorForm.pointControlEntry.controlAvailable}"
+                            maxlength="8" styleClass="char8Label"
+                            value="#{ptEditorForm.pointBase.pointAnalogControl.controlOffset}" >
+                        <f:validateLongRange minimum="-99999999" maximum="99999999" />
+                    </x:inputText>
+                </x:panelGrid>
+            </x:htmlTag>
+
 			<x:htmlTag value="br"/>
 			
 			<x:htmlTag value="fieldset" styleClass="fieldSet">

@@ -130,20 +130,7 @@ public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
 
 	return msgs;
 }
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.point.PointControl
- */
-//public java.util.Vector getDestinationVector() {
-//	if( destinationVector == null )
-//		destinationVector = new java.util.Vector();
-//		
-//	return destinationVector;
-//}
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.database.db.point.PointControl
- */
+
 public com.cannontech.database.db.notification.NotificationGroup getNotificationGroup() 
 {
 	if( notificationGroup == null )

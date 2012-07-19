@@ -23,6 +23,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointAlarming;
@@ -289,16 +290,22 @@ public class CBCSelectionLists {
 		new SelectItem(PointAlarming.BOTH_OPTIONS_VALUE_STRING, PointAlarming.BOTH_OPTIONS_VALUE_STRING)
 	};
 
-	private static final SelectItem[] ptControlTypes =  {
-		//value, label
-		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_NONE), PointTypes.getType(PointTypes.CONTROLTYPE_NONE) ),
-		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_LATCH), PointTypes.getType(PointTypes.CONTROLTYPE_LATCH) ),
-		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_NORMAL), PointTypes.getType(PointTypes.CONTROLTYPE_NORMAL) ),
-		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_PSEUDO), PointTypes.getType(PointTypes.CONTROLTYPE_PSEUDO) ),
-		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_SBO_LATCH), PointTypes.getType(PointTypes.CONTROLTYPE_SBO_LATCH) ),
-		new SelectItem( PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE), PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE) )
-	};
-	
+    private static final SelectItem[] ptStatusControlTypes =  {
+        //value, label
+        new SelectItem( ControlType.NONE.getControlName(),     ControlType.NONE.getControlName()),
+        new SelectItem( ControlType.LATCH.getControlName(),    ControlType.LATCH.getControlName()),
+        new SelectItem( ControlType.NORMAL.getControlName(),   ControlType.NORMAL.getControlName()),
+        new SelectItem( ControlType.PSEUDO.getControlName(),   ControlType.PSEUDO.getControlName()),
+        new SelectItem( ControlType.SBOLATCH.getControlName(), ControlType.SBOLATCH.getControlName()),
+        new SelectItem( ControlType.SBOPULSE.getControlName(), ControlType.SBOPULSE.getControlName())
+    };
+    
+    private static final SelectItem[] ptAnalogControlTypes =  {
+        //value, label
+        new SelectItem( ControlType.NONE.getControlName(),     ControlType.NONE.getControlName()),
+        new SelectItem( ControlType.NORMAL.getControlName(),   ControlType.NORMAL.getControlName())
+    };
+    
 	private static YukonUserContext userContext;
 	private static YukonUserContext getYukonUserContext() {
 	    if (userContext == null) {
@@ -306,7 +313,7 @@ public class CBCSelectionLists {
 	    }
 	    return userContext;
 	}
-    
+	
 	/**
 	 * Returns all possible Comm Channels
 	 */
@@ -498,9 +505,13 @@ public class CBCSelectionLists {
 	/**
 	 * @return
 	 */
-	public SelectItem[] getPtControlTypes() {
-		return ptControlTypes;
-	}
+    public SelectItem[] getPtStatusControlTypes() {
+        return ptStatusControlTypes;
+    }
+
+    public SelectItem[] getPtAnalogControlTypes() {
+        return ptAnalogControlTypes;
+    }
 
     public SelectItem[] getPointTypes() {
         return pTypes;

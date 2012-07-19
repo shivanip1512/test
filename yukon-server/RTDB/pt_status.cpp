@@ -6,20 +6,25 @@
 
 using namespace std;
 
-const CtiTablePointStatus &CtiPointStatus::getPointStatus() const
+const boost::optional<CtiTablePointStatusControl> CtiPointStatus::getControlParameters() const
 {
-    return _pointStatus;
+    return _pointStatusControl;
 }
 
 string CtiPointStatus::getSQLCoreStatement()
 {
-    static const string sql =  "SELECT PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, "
-                                   "PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, "
-                                   "PT.archiveinterval, STS.initialstate, STS.controlinhibit, STS.controltype, "
-                                   "STS.controloffset, STS.closetime1, STS.closetime2, STS.statezerocontrol, "
-                                   "STS.stateonecontrol, STS.commandtimeout "
-                               "FROM Point PT, PointStatus STS "
-                               "WHERE PT.pointid = STS.pointid";
+    static const string sql =
+        "SELECT"
+            " PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid,"
+            " PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, PT.archiveinterval,"
+            " STS.initialstate,"
+            " PSC.controltype, PSC.closetime1, PSC.closetime2, PSC.statezerocontrol, PSC.stateonecontrol, PSC.commandtimeout,"
+            " PC.controlinhibit, PC.controloffset"
+        " FROM"
+            " Point PT"
+            " JOIN PointStatus STS on PT.pointid = STS.pointid"
+            " LEFT OUTER JOIN PointStatusControl PSC on STS.pointid = PSC.pointid"
+            " LEFT OUTER JOIN PointControl PC on PSC.pointid = PC.pointid";
 
     return sql;
 }
@@ -35,43 +40,48 @@ void CtiPointStatus::DecodeDatabaseReader(Cti::RowReader &rdr)
     }
 
     _pointStatus.DecodeDatabaseReader(rdr);
+
+    if( ! rdr["controloffset"].isNull() )
+    {
+        _pointStatusControl = CtiTablePointStatusControl();
+
+        _pointStatusControl->DecodeDatabaseReader(rdr);
+    }
+    else
+    {
+        _pointStatusControl.reset();
+    }
 }
 
 UINT CtiPointStatus::adjustStaticTags(UINT &tag) const
 {
     Inherited::adjustStaticTags(tag);
-    return _pointStatus.adjustStaticTags(tag);
-}
 
-UINT CtiPointStatus::getStaticTags()
-{
-   return Inherited::getStaticTags() | _pointStatus.getStaticTags();
-}
+    if( _pointStatusControl &&
+        _pointStatusControl->getControlType() != ControlType_Invalid )
+    {
+        tag |= TAG_ATTRIB_CONTROL_AVAILABLE;
+    }
+    else
+    {
+        tag &= ~TAG_ATTRIB_CONTROL_AVAILABLE;
+    }
 
+    if( _pointStatusControl &&
+        _pointStatusControl->isControlInhibited() )
+    {
+        tag |= TAG_DISABLE_CONTROL_BY_POINT;
+    }
+    else
+    {
+        tag &= ~TAG_DISABLE_CONTROL_BY_POINT;
+    }
+
+    return tag;
+}
 
 double CtiPointStatus::getDefaultValue( ) const
 {
    return _pointStatus.getInitialState();
-}
-
-int CtiPointStatus::getControlExpirationTime() const
-{
-    int ct = _pointStatus.getCommandTimeout();
-
-    if(ct <= 0)
-    {
-        ct = Inherited::getControlExpirationTime();
-    }
-
-    return ct;
-}
-
-int CtiPointStatus::getControlOffset() const
-{
-    int pOff = 0;
-    if(_pointStatus.getControlType() != NoneControlType && _pointStatus.getControlType() != InvalidControlType)
-        pOff = _pointStatus.getControlOffset();
-
-    return pOff;
 }
 

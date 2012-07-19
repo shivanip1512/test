@@ -16,6 +16,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointUnit;
@@ -73,7 +74,7 @@ public class PowerFailPointCreate extends PointCreate
 					   "Blink Count",
 					   new Integer(litePaobject.getYukonID()),
 					   new Integer(pointID),
-					   PointTypes.PT_OFFSET_BLINK_COUNT,
+					   PointOffsets.PT_OFFSET_BLINK_COUNT,
 					   PointUnits.UOMID_COUNTS,
 					   1.0,
 					   StateGroupUtils.STATEGROUP_ANALOG,

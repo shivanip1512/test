@@ -31,6 +31,16 @@ BOOST_AUTO_TEST_CASE(test_resolveRouteType)
     BOOST_CHECK_EQUAL(resolveRouteType("series 5 lmi"),   RouteTypeSeriesVLMI);
 }
 
+BOOST_AUTO_TEST_CASE(test_resolveControlType)
+{
+    BOOST_CHECK_EQUAL(resolveControlType("platypus"),  ControlType_Invalid);
+
+    BOOST_CHECK_EQUAL(resolveControlType("normal"),    ControlType_Normal);
+    BOOST_CHECK_EQUAL(resolveControlType("latch"),     ControlType_Latch);
+    BOOST_CHECK_EQUAL(resolveControlType("sbo pulse"), ControlType_SBOPulse);
+    BOOST_CHECK_EQUAL(resolveControlType("sbo latch"), ControlType_SBOLatch);
+}
+
 BOOST_AUTO_TEST_CASE(test_resolveAmpUseType)
 {
     string tempName = "noname";

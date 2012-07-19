@@ -770,7 +770,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 					liteObject.getLiteID(),
 					DBChangeMsg.CHANGE_POINT_DB,
 					DBChangeMsg.CAT_POINT, 
-					PointTypes.getType(PointTypes.ACCUMULATOR_DEMAND),
+					PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT),
 					DbChangeType.ADD );
 				getConnToDispatch().queue(ptChange);
 				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();

@@ -128,30 +128,33 @@ INT Cbc8020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
         {
             string cmd = parse.getiValue("ovuv") == 0 ? " open " : " close "; //0 = disable, 1 = enable
             pReq->setCommandString("control " +  cmd + " offset 14");
-			parse = CtiCommandParser (pReq->CommandString());
+            parse = CtiCommandParser (pReq->CommandString());
         }
     }
-    if( (parse.getCommand() == ControlRequest)) 
+    if( parse.getCommand() == ControlRequest )
     {
-        CtiPointSPtr   point;
-        string temp;
+        const int pointid = parse.getiValue("point");
 
-        if( parse.getiValue("point") > 0 )
+        if( pointid > 0 )
         {
             //  select by raw pointid
-            if( point = getDevicePointEqual(parse.getiValue("point")) )
+            if( CtiPointSPtr point = getDevicePointEqual(pointid) )
             {
-                if( point->isStatus() && point->getControlOffset() > 0)
+                if( point->isStatus() )
                 {
-                    char wb[10];
-                    temp = " offset " + string(itoa(point->getControlOffset(),wb,10));
+                    CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
+
+                    if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+                    {
+                        if( controlParameters->getControlOffset() > 0 )
+                        {
+                            parse = CtiCommandParser(pReq->CommandString() + " offset " + CtiNumStr(controlParameters->getControlOffset()));
+                        }
+                    }
                 }
             }
         }
-        parse = CtiCommandParser(pReq->CommandString() + temp);
     }
-
-    
 
     nRet = Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
 
@@ -162,7 +165,7 @@ void Cbc8020Device::initOffsetAttributeMaps( std::map <int, PointAttribute> &ana
                                              std::map <int, PointAttribute> &statusOffsetAttribute,
                                              std::map <int, PointAttribute> &accumulatorOffsetAttribute)
 {
-    
+
     //analogOffsetAttribute.insert( std::make_pair( 2, PointAttribute::LastControlReason) );
     //analogOffsetAttribute.insert( std::make_pair( 5, PointAttribute::Temperature) );
     //analogOffsetAttribute.insert( std::make_pair( 6, PointAttribute::DeltaVoltage) );
@@ -206,8 +209,8 @@ void Cbc8020Device::initOffsetAttributeMaps( std::map <int, PointAttribute> &ana
     //statusOffsetAttribute.insert( std::make_pair( 83, PointAttribute::RelaySenseFailed));
     statusOffsetAttribute.insert( std::make_pair( 84, PointAttribute::ReCloseBlocked) );
     statusOffsetAttribute.insert( std::make_pair( 86,  PointAttribute::ControlMode) ); //Manual Mode
-    //statusOffsetAttribute.insert( std::make_pair( 87,  PointAttribute::RemoteControlMode) ); 
-    //statusOffsetAttribute.insert( std::make_pair( 88,  PointAttribute::AutoControlMode) ); 
+    //statusOffsetAttribute.insert( std::make_pair( 87,  PointAttribute::RemoteControlMode) );
+    //statusOffsetAttribute.insert( std::make_pair( 88,  PointAttribute::AutoControlMode) );
 
     accumulatorOffsetAttribute.insert( std::make_pair( 1, PointAttribute::TotalOpCount) );
     accumulatorOffsetAttribute.insert( std::make_pair( 3, PointAttribute::UvCount) );

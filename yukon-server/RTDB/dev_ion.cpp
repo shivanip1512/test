@@ -72,13 +72,13 @@ CtiDeviceION &CtiDeviceION::operator=(const CtiDeviceION &aRef)
 
 void CtiDeviceION::setMeterGroupData( const string &meterNumber )
 {
-    _meterNumber         = meterNumber;
+    _meterNumber = meterNumber;
 }
 
 
 Protocol::Interface *CtiDeviceION::getProtocol( void )
 {
-    return (Protocol::Interface *)&_ion;
+    return &_ion;
 }
 
 
@@ -195,9 +195,12 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                 {
                     CtiPointStatusSPtr statusPoint = boost::static_pointer_cast<CtiPointStatus>(point);
 
-                    if( statusPoint->getPointStatus().getControlType() == NormalControlType )
+                    if( const boost::optional<CtiTablePointStatusControl> controlParameters = statusPoint->getControlParameters() )
                     {
-                        offset = statusPoint->getPointStatus().getControlOffset();
+                        if( controlParameters->getControlType() == ControlType_Normal )
+                        {
+                            offset = controlParameters->getControlOffset();
+                        }
                     }
                 }
             }
@@ -251,7 +254,19 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
                         vgList.push_back(pData);
                     }
 
-                    OutMessage->ExpirationTime = CtiTime().seconds() + point->getControlExpirationTime();
+                    int expirationTime = DefaultControlExpirationTime;
+
+                    if( point->isStatus() )
+                    {
+                        CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
+
+                        if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+                        {
+                            expirationTime = controlParameters->getCommandTimeout();
+                        }
+                    }
+
+                    OutMessage->ExpirationTime = CtiTime().seconds() + expirationTime;
                 }
 
                 _ion.setCommand(CtiProtocolION::Command_ExternalPulseTrigger, offset);

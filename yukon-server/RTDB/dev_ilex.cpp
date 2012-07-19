@@ -930,12 +930,11 @@ INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
         if(ctlPoint)
         {
-            if(ctlPoint->getPointStatus().getControlType() > NoneControlType &&
-               ctlPoint->getPointStatus().getControlType() < InvalidControlType)
+            if( const boost::optional<CtiTablePointStatusControl> controlParameters = ctlPoint->getControlParameters() )
             {
-                INT ctloffset = ctlPoint->getPointStatus().getControlOffset();
+                INT ctloffset = controlParameters->getControlOffset();
 
-                if( !ctlPoint->getPointStatus().getControlInhibit() )
+                if( ! controlParameters->isControlInhibited() )
                 {
                     if(INT_MIN == ctlpt || !(parse.getFlags() & (CMD_FLAG_CTL_CLOSE | CMD_FLAG_CTL_OPEN)))
                     {
@@ -964,21 +963,21 @@ INT CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, 
                         /* This actually takes two messages... a select and an execute */
                         MyOutMessage->OutLength = 4;
 
-                        if( findStringIgnoreCase(parse.getCommandStr(), ctlPoint->getPointStatus().getStateZeroControl()) )       //  (parse.getFlags() & CMD_FLAG_CTL_OPEN)
+                        if( findStringIgnoreCase(parse.getCommandStr(), controlParameters->getStateZeroControl()) )       //  (parse.getFlags() & CMD_FLAG_CTL_OPEN)
                         {
                             controlState = STATEZERO;
 
                             header(MyOutMessage->Buffer.OutMessage + PREIDLEN, ILEXSBOSELECT, 0, 0);
                             /* set the operation time */
-                            MyOutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN + 1] = ctlPoint->getPointStatus().getCloseTime1() / 100;
+                            MyOutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN + 1] = controlParameters->getCloseTime1() / 100;
 
                         }
-                        else if( findStringIgnoreCase(parse.getCommandStr(), ctlPoint->getPointStatus().getStateOneControl()) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
+                        else if( findStringIgnoreCase(parse.getCommandStr(), controlParameters->getStateOneControl()) )  // (parse.getFlags() & CMD_FLAG_CTL_CLOSE)
                         {
                             controlState = STATEONE;
                             header(MyOutMessage->Buffer.OutMessage + PREIDLEN, ILEXSBOSELECT, 1, 0);
                             /* set the operation time */
-                            MyOutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN + 1] = ctlPoint->getPointStatus().getCloseTime2() / 100;
+                            MyOutMessage->Buffer.OutMessage[PREIDLEN + ILEXHEADERLEN + 1] = controlParameters->getCloseTime2() / 100;
                         }
                         else
                         {

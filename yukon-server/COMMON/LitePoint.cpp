@@ -2,24 +2,12 @@
 
 #include "LitePoint.h"
 
-LitePoint::LitePoint() : _pointId(0),
-                         _pointType(InvalidPointType),
-                         _paoId(0),
-                         _pointOffset(0)
-{
-
-}
-LitePoint::LitePoint(const LitePoint& point)
-{
-    _pointId = point._pointId;
-    _pointType = point._pointType;
-    _pointName = point._pointName;
-    _paoId = point._paoId;
-    _pointOffset = point._pointOffset;
-    _stateOneControl = point._stateOneControl;
-}
-
-LitePoint::~LitePoint()
+LitePoint::LitePoint() :
+    _pointId(0),
+    _pointType(InvalidPointType),
+    _paoId(0),
+    _pointOffset(0),
+    _controlOffset(0)
 {
 
 }
@@ -31,6 +19,7 @@ LitePoint::LitePoint( const int Id, const CtiPointType_t Type, const std::string
     _pointName(Name),
     _paoId(PaoId),
     _pointOffset(Offset),
+    _controlOffset(0),
     _stateOneControl(stateOneControl)
 {
 
@@ -86,6 +75,16 @@ int LitePoint::getPointOffset() const
     return _pointOffset;
 }
 
+void LitePoint::setControlOffset(int controlOffset)
+{
+    _controlOffset = controlOffset;
+}
+
+int LitePoint::getControlOffset() const
+{
+    return _controlOffset;
+}
+
 void LitePoint::setStateOneControl(const std::string & stateOneControl)
 {
     _stateOneControl = stateOneControl;
@@ -96,14 +95,3 @@ std::string LitePoint::getStateOneControl() const
     return _stateOneControl;
 }
 
-LitePoint& LitePoint::operator=( const LitePoint & right)
-{
-    _pointId = right._pointId;
-    _pointType = right._pointType;
-    _pointName = right._pointName;
-    _paoId = right._paoId;
-    _pointOffset = right._pointOffset;
-    _stateOneControl = right._stateOneControl;
-
-    return *this;
-}

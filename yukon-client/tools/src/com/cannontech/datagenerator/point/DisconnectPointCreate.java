@@ -16,9 +16,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.StatusPoint;
-import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.state.StateGroupUtils;
 public class DisconnectPointCreate extends PointCreate
 {
@@ -79,10 +78,9 @@ public class DisconnectPointCreate extends PointCreate
                     PointTypes.STATUS_POINT,
                     "Disconnect Status",
                     litePaobject.getYukonID(),
-                    new Integer(PointTypes.PT_OFFSET_TOTAL_KWH));
+                    new Integer(PointOffsets.PT_OFFSET_TOTAL_KWH));
 
             newPoint2.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUP_MCT410DISC));
-            ((StatusPoint) newPoint2).setPointStatus(new PointStatus(newPoint2.getPoint().getPointID()));
 
             multi.addDBPersistent(newPoint2);
  

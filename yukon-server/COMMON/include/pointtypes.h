@@ -9,52 +9,33 @@
 #define SYS_PID_CAPCONTROL                -5       //
 #define SYS_PID_LOADMANAGEMENT            -10      // A load management point
 
-/*-----------------------------------------------------------------------------*
- * Point Stuff
- *
- *-----------------------------------------------------------------------------*/
 
-typedef enum
+enum CtiPointType_t
 {
-   StatusPointType,
-   AnalogPointType,
-   PulseAccumulatorPointType,
-   DemandAccumulatorPointType,
-   CalculatedPointType,
-   StatusOutputPointType,
-   AnalogOutputPointType,
-   SystemPointType,
-   CalculatedStatusPointType,
+    StatusPointType,
+    AnalogPointType,
+    PulseAccumulatorPointType,
+    DemandAccumulatorPointType,
+    CalculatedPointType,
+    StatusOutputPointType,
+    AnalogOutputPointType,
+    SystemPointType,
+    CalculatedStatusPointType,
 
-   InvalidPointType               // Place Holder - allows point type looping.
+    // Placeholder - allows point type looping.
+    InvalidPointType
+};
 
-}  CtiPointType_t;
 
-typedef enum
+enum CtiControlType_t
 {
-   NoneControlType = 0,
-   NormalControlType,
-   LatchControlType,
-   PseudoControlType,
-   SBOLatchControlType,
-   SBOPulseControlType,
+    ControlType_Normal,
+    ControlType_Latch,
+    ControlType_SBOLatch,
+    ControlType_SBOPulse,
 
-   InvalidControlType              // Place Holder - allows point type looping.
-
-}  CtiControlType_t;
-
-// Analog point defines
-#define MAX_POINTLIMITS          2     // Allow up to two point limits currently
-
-typedef enum
-{
-   NoFilter = 0,
-   LastValueFilter,
-   DefaultValueFilter,
-
-   InvalidFilter              // Place Holder - allows point type looping.
-
-}  CtiFilter_t;
+    ControlType_Invalid
+};
 
 typedef enum
 {

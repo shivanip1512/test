@@ -1,13 +1,13 @@
 package com.cannontech.database.data.point;
 
-/**
- * This type was created in VisualAge.
- */
 import com.cannontech.database.db.point.PointStatus;
+import com.cannontech.database.db.point.PointStatusControl;
 
 public class StatusPoint extends PointBase 
 {
 	private PointStatus pointStatus = null;
+	private PointStatusControl pointStatusControl = null;
+
 /**
  * StatusPoint constructor comment.
  */
@@ -23,6 +23,7 @@ public void add() throws java.sql.SQLException
 	super.add();
 	
 	getPointStatus().add();
+	getPointStatusControl().add();
 }
 /**
  * Insert the method's description here.
@@ -32,6 +33,8 @@ public void add() throws java.sql.SQLException
 public void addPartial() throws java.sql.SQLException 
 {
 	getPointStatus().add();
+	getPointStatusControl().add();
+
 	super.addPartial();
 }
 /**
@@ -40,7 +43,8 @@ public void addPartial() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	getPointStatus().delete();
+	getPointStatusControl().delete();
+    getPointStatus().delete();
 
 	super.delete();
 }
@@ -62,6 +66,14 @@ public PointStatus getPointStatus() {
 		pointStatus = new PointStatus();
 	return pointStatus;
 }
+
+public PointStatusControl getPointStatusControl() {
+    if( pointStatusControl == null ) {
+        pointStatusControl = new PointStatusControl();
+    }
+    return pointStatusControl;
+}
+
 /**
  * This method was created in VisualAge.
  * @exception java.sql.SQLException The exception description.
@@ -71,6 +83,7 @@ public void retrieve() throws java.sql.SQLException
 	super.retrieve();
 		
 	getPointStatus().retrieve();
+	getPointStatusControl().retrieve();
 }
 /**
  * Insert the method's description here.
@@ -82,6 +95,7 @@ public void setDbConnection(java.sql.Connection conn)
 	super.setDbConnection(conn);
 
 	getPointStatus().setDbConnection(conn);
+	getPointStatusControl().setDbConnection(conn);
 }
 /**
  * This method was created in VisualAge.
@@ -92,13 +106,7 @@ public void setPointID(Integer pointID)
 	super.setPointID(pointID);
 
 	getPointStatus().setPointID(pointID);
-}
-/**
- * This method was created in VisualAge.
- * @param newValue com.cannontech.database.db.point.PointStatus
- */
-public void setPointStatus(PointStatus newValue) {
-	this.pointStatus = newValue;
+	getPointStatusControl().setPointID(pointID);
 }
 /**
  * This method was created in VisualAge.
@@ -109,5 +117,6 @@ public void update() throws java.sql.SQLException
 	super.update();
 	
 	getPointStatus().update();
+    getPointStatusControl().update();
 }
 }

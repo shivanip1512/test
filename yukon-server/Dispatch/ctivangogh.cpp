@@ -110,32 +110,37 @@ static bool processExecutionTime(UINT ms);
  */
 void CtiVanGogh::groupControlStatusVerification(unsigned long pointID)
 {
-    CtiPointSPtr pPoint = PointMgr.getPoint(pointID);
-
-    if(pPoint &&
-       pPoint->isStatus() &&
-       pPoint->isPseudoPoint() &&
-       boost::static_pointer_cast<CtiPointStatus>(pPoint)->getPointStatus().getControlType() != NoneControlType &&
-       boost::static_pointer_cast<CtiPointStatus>(pPoint)->getPointStatus().getControlOffset() == 1 &&
-       isDeviceGroupType(pPoint->getDeviceID()))
+    if( CtiPointSPtr pPoint = PointMgr.getPoint(pointID))
     {
-        // This is almost certainly a pseudo control indicator that needs to be checked.
-        const CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(pPoint);
-        if( pDyn && (INT)(pDyn->getValue()) == CONTROLLED && pDyn->getQuality() != ManualQuality )
+        if( pPoint->isStatus() && pPoint->isPseudoPoint() )
         {
-            // We either need to set up a future point if control is still running, or send a point for
-            // now if control stopped while we were shut down.
-            CtiTime stopTime =  _pendingOpThread.getPendingControlCompleteTime(pPoint->getPointID());
-            if(!stopTime.isValid())
+            CtiPointStatusSPtr pPointStatus = boost::static_pointer_cast<CtiPointStatus>(pPoint);
+
+            if( const boost::optional<CtiTablePointStatusControl> controlParameters = pPointStatus->getControlParameters() )
             {
-                stopTime = stopTime.now();
+                if( controlParameters->getControlOffset() == 1 &&
+                    isDeviceGroupType(pPoint->getDeviceID()) )
+                {
+                    // This is almost certainly a pseudo control indicator that needs to be checked.
+                    if( const CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(pPoint) )
+                    {
+                        if( (INT)(pDyn->getValue()) == CONTROLLED && pDyn->getQuality() != ManualQuality )
+                        {
+                            // We either need to set up a future point if control is still running, or send a point for
+                            // now if control stopped while we were shut down.
+                            CtiTime stopTime =  _pendingOpThread.getPendingControlCompleteTime(pPoint->getPointID());
+                            if(!stopTime.isValid())
+                            {
+                                stopTime = stopTime.now();
+                            }
+
+                            updateGroupPseduoControlPoint( pPoint, stopTime);
+                        }
+                    }
+                }
             }
-
-            updateGroupPseduoControlPoint( pPoint, stopTime);
-
         }
     }
-    return;
 }
 
 
@@ -897,6 +902,18 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                         {
                             CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(pPoint);
 
+                            int controlTimeout = DefaultControlExpirationTime;
+
+                            if( pPoint->isStatus() )
+                            {
+                                CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(pPoint);
+
+                                if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+                                {
+                                    controlTimeout = controlParameters->getCommandTimeout();
+                                }
+                            }
+
                             if(pDyn
                                && pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE
                                && !(pDyn->getDispatch().getTags() & (TAG_DISABLE_CONTROL_BY_POINT | TAG_DISABLE_CONTROL_BY_DEVICE)))
@@ -916,7 +933,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 pendingControlRequest->setControlState( CtiPendingPointOperations::controlSentToPorter );
                                 pendingControlRequest->setTime( Cmd->getMessageTime() );
                                 pendingControlRequest->setControlCompleteValue( (DOUBLE) rawstate );
-                                pendingControlRequest->setControlTimeout( pPoint->getControlExpirationTime() );
+                                pendingControlRequest->setControlTimeout( controlTimeout );
                                 pendingControlRequest->setExcludeFromHistory(!isDeviceGroupType(did));
 
                                 /*if( verificationPtr = TriggerMgr.getPointTriggerFromPoint(pPoint->getID()) )
@@ -959,7 +976,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << devicename << " / " << pPoint->getName() << " has gone CONTROL SUBMITTED. Control expires at " << CtiTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
+                                    dout << CtiTime() << " " << devicename << " / " << pPoint->getName() << " has gone CONTROL SUBMITTED. Control expires at " << CtiTime(Cmd->getMessageTime() + controlTimeout) << endl;
                                 }
 
                                 CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", string(), GeneralLogType, SignalEvent, Cmd->getUser());
@@ -973,7 +990,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                             else
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << resolveDeviceName(pPoint) << " / " << pPoint->getName() << " CONTROL SENT to port control. Control expires at " << CtiTime( Cmd->getMessageTime() + pPoint->getControlExpirationTime()) << endl;
+                                dout << CtiTime() << " " << resolveDeviceName(pPoint) << " / " << pPoint->getName() << " CONTROL SENT to port control. Control expires at " << CtiTime(Cmd->getMessageTime() + controlTimeout) << endl;
                             }
                         }
                     }
@@ -1022,7 +1039,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
             CtiRequestMsg pReq(paoID, "scan integrity");
             pReq.setUser( Cmd->getUser() );
-            pReq.setMessagePriority( MAXPRIORITY - 1 );    
+            pReq.setMessagePriority( MAXPRIORITY - 1 );
 
             writeMessageToClient(&pReq, string(PIL_REGISTRATION_NAME));
             {
@@ -2648,12 +2665,24 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                     pMsg->setPAOId( pPoint->getDeviceID() );
                 }
 
+                int controlTimeout = DefaultControlExpirationTime;
+
+                if( pPoint->isStatus() )
+                {
+                    CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(pPoint);
+
+                    if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+                    {
+                        controlTimeout = controlParameters->getCommandTimeout();
+                    }
+                }
+
                 CtiPendingPointOperations *pendingControlLMMsg = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
                 pendingControlLMMsg->setType(CtiPendingPointOperations::pendingControl);
                 pendingControlLMMsg->setControlState( CtiPendingPointOperations::controlPending );
                 pendingControlLMMsg->setTime( pMsg->getStartDateTime() );
                 pendingControlLMMsg->setControlCompleteValue( (DOUBLE) pMsg->getRawState() );
-                pendingControlLMMsg->setControlTimeout( pPoint->getControlExpirationTime() );
+                pendingControlLMMsg->setControlTimeout( controlTimeout );
                 pendingControlLMMsg->setExcludeFromHistory(!isDeviceGroupType(pPoint->getDeviceID()));
 
                 /*if( verificationPtr = TriggerMgr.getPointTriggerFromPoint(pPoint->getID()) )
@@ -5809,9 +5838,13 @@ bool CtiVanGogh::writeControlMessageToPIL(LONG deviceid, LONG rawstate, CtiPoint
     string  cmdstr;
     CtiRequestMsg *pReq = 0;
 
-    if( pPoint->getPointStatus().getStateZeroControl().length() > 0 && pPoint->getPointStatus().getStateOneControl().length() > 0 )
+    const boost::optional<CtiTablePointStatusControl> controlParameters = pPoint->getControlParameters();
+
+    if( controlParameters &&
+        controlParameters->getStateZeroControl().length() > 0 &&
+        controlParameters->getStateOneControl().length() > 0 )
     {
-        cmdstr += ((rawstate == UNCONTROLLED) ? pPoint->getPointStatus().getStateZeroControl(): pPoint->getPointStatus().getStateOneControl() );
+        cmdstr += ((rawstate == UNCONTROLLED) ? controlParameters->getStateZeroControl(): controlParameters->getStateOneControl() );
     }
     else
     {
@@ -5910,10 +5943,22 @@ void CtiVanGogh::bumpDeviceToAlternateRate(CtiPointSPtr pPoint)
         CtiCommandMsg *pAltRate = CTIDBG_new CtiCommandMsg( CtiCommandMsg::AlternateScanRate );
         if(pAltRate)
         {
+            int controlTimeout = DefaultControlExpirationTime;
+
+            if( pPoint->isStatus() )
+            {
+                CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(pPoint);
+
+                if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+                {
+                    controlTimeout = controlParameters->getCommandTimeout();
+                }
+            }
+
             pAltRate->insert(-1); // token
             pAltRate->insert( pPoint->getDeviceID() );
             pAltRate->insert( -1 );                     // Seconds since midnight, or NOW if negative.
-            pAltRate->insert( pPoint->getControlExpirationTime() );
+            pAltRate->insert( controlTimeout );
 
             writeMessageToScanner( pAltRate );
             {
@@ -6033,7 +6078,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
 
         if (TAG_DISABLE_CONTROL_BY_POINT & tagmask)
         {
-            static const std::string sql_pointstatus_update = "update pointstatus set controlinhibit = ? where pointid = ?";
+            static const std::string sql_pointstatus_update = "update pointcontrol set controlinhibit = ? where pointid = ?";
 
             Cti::Database::DatabaseConnection   conn;
             Cti::Database::DatabaseWriter       updater(conn, sql_pointstatus_update);

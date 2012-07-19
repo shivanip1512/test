@@ -26,17 +26,8 @@ import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * This type was created in VisualAge.
- */
 public final class PointFactory {
-    public static final String PTNAME_TAG = "Tag Point";
 
-    /**
-     * This method was created in VisualAge.
-     * @return com.cannontech.database.data.point.PointBase
-     * @param type int
-     */
     public final static PointBase createPoint(int type) {
 
         PointBase retPoint = null;
@@ -160,10 +151,6 @@ public final class PointFactory {
                                               PointArchiveInterval pointArchiveInterval)
     {
         com.cannontech.database.data.point.PointBase point =
-            com.cannontech.database.data.point.PointFactory
-                .createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
-
-        point =
             PointFactory.createNewPoint(
                                         pointID,
                                         com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
@@ -188,16 +175,7 @@ public final class PointFactory {
                                                            new Double(0.0),
                                                            new Integer(0)));
 
-        // defaults - pointAnalog
-        ((com.cannontech.database.data.point.AnalogPoint) point)
-            .setPointAnalog(
-            new com.cannontech.database.db.point.PointAnalog(
-                                                             pointID,
-                                                             new Double(-1.0),
-                                                             com.cannontech.database.data.point.PointTypes
-                                                                 .getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
-                                                             new Double(multiplier),
-                                                             new Double(0.0)));
+        ((AnalogPoint) point).getPointAnalog().setMultiplier(multiplier);
 
         return point;
     }
@@ -213,10 +191,6 @@ public final class PointFactory {
                                                 PointArchiveInterval pointArchiveInterval)
     {
         com.cannontech.database.data.point.PointBase point =
-            com.cannontech.database.data.point.PointFactory.createPoint(
-                com.cannontech.database.data.point.PointTypes.DEMAND_ACCUMULATOR_POINT);
-
-        point =
             PointFactory
                 .createNewPoint(
                                 pointID,
@@ -294,6 +268,8 @@ public final class PointFactory {
                                                                "N",
                                                                new Integer(com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID)));
 
+        newPoint.setPointID(pointID);
+        
         return newPoint;
     }
 
@@ -345,48 +321,6 @@ public final class PointFactory {
     }
 
     /**
-     * Creates a CapBanks analog op count point automatically
-     * 
-     */
-    public static synchronized void createBankOpCntPoint(
-                                                         SmartMultiDBPersistent newVal)
-    {
-        // defaults pointControl
-        // an analog point is created
-        PaoDao paoDao = DaoFactory.getPaoDao();
-        newVal.addDBPersistent(
-            createBankOpCntPoint(paoDao.getNextPaoId()));
-    }
-
-    /**
-     * Creates a CapBanks analog op count point automatically
-     */
-    public static synchronized PointBase createBankOpCntPoint(Integer capBankID)
-    {
-        // defaults pointControl
-        // an analog point is created
-        return PointFactory.createAnalogPoint(
-                                              "OPERATION",
-                                              capBankID,
-                                              null,
-                                              PointTypes.PT_OFFSET_TOTAL_KWH,
-                                              PointUnits.UOMID_COUNTS,
-                                              StateGroupUtils.STATEGROUP_ANALOG);
-    }
-
-    /**
-     * Creates a CapBanks stutus point automatically
-     * 
-     */
-    public static synchronized void createBankStatusPt(
-                                                       SmartMultiDBPersistent newVal)
-    {
-        PaoDao paoDao = DaoFactory.getPaoDao();
-        newVal.addDBPersistent(
-            createBankStatusPt(paoDao.getNextPaoId()));
-    }
-
-    /**
      * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
      */
     public static synchronized PointBase createStatusPoint(String pointName, Integer paoID,
@@ -400,8 +334,7 @@ public final class PointFactory {
                                                            PointArchiveInterval pointArchiveInterval)
     {
         // Create new point
-        PointBase newPoint = PointFactory.createPoint(PointTypes.STATUS_POINT);
-        newPoint = PointFactory.createNewPoint(
+        PointBase newPoint = PointFactory.createNewPoint(
                                                pointID,
                                                PointTypes.STATUS_POINT,
                                                pointName,
@@ -413,23 +346,20 @@ public final class PointFactory {
 
         newPoint.getPoint().setStateGroupID(stateGroupId);
 
-        // defaults pointStatus
-        PointStatus pointStatus = new PointStatus(pointID);
-        pointStatus.setInitialState(initialState);
+        ((StatusPoint)newPoint).getPointStatus().setInitialState(initialState);
 
         if (controlOffset != null) {
-            pointStatus.setControlOffset(controlOffset);
+            ((StatusPoint)newPoint).getPointStatusControl().setControlOffset(controlOffset);
         }
 
-        pointStatus.setControlType(controlType.getControlName());
+        ((StatusPoint)newPoint).getPointStatusControl().setControlType(controlType.getControlName());
 
         if (stateZeroControl != null) {
-            pointStatus.setStateZeroControl(stateZeroControl.getControlCommand());
+            ((StatusPoint)newPoint).getPointStatusControl().setStateZeroControl(stateZeroControl.getControlCommand());
         }
         if (stateOneControl != null) {
-            pointStatus.setStateOneControl(stateOneControl.getControlCommand());
+            ((StatusPoint)newPoint).getPointStatusControl().setStateOneControl(stateOneControl.getControlCommand());
         }
-        ((StatusPoint) newPoint).setPointStatus(pointStatus);
 
         return newPoint;
     }
@@ -442,23 +372,15 @@ public final class PointFactory {
     {
 
         // a status point is created
-        PointBase newPoint =
-            PointFactory.createPoint(PointTypes.STATUS_POINT);
-
-        Integer pointID = null;
-
-        // defaults point
-        newPoint = PointFactory.createNewPoint(
-                                               pointID,
-                                               PointTypes.STATUS_POINT,
-                                               "BANK STATUS",
-                                               capBankID,
-                                               new Integer(1));
+        PointBase newPoint = 
+            PointFactory.createNewPoint(
+                null,
+                PointTypes.STATUS_POINT,
+                "BANK STATUS",
+                capBankID,
+                new Integer(1));
 
         newPoint.getPoint().setStateGroupID(new Integer(3));
-
-        // defaults pointStatus
-        ((StatusPoint) newPoint).setPointStatus(new PointStatus(pointID));
 
         return newPoint;
     }
@@ -466,21 +388,15 @@ public final class PointFactory {
     public static PointBase createCalcStatusPoint(Integer paoId, String name, int stateGroupId) {
 
         PointBase newPoint =
-            PointFactory.createPoint(PointTypes.STATUS_POINT);
+            PointFactory.createNewPoint(
+                null,
+                PointTypes.CALCULATED_STATUS_POINT,
+                name,
+                paoId,
+                0);
 
-        newPoint = PointFactory.createNewPoint(
-                                               newPoint.getPoint().getPointID(),
-                                               PointTypes.CALCULATED_STATUS_POINT,
-                                               name,
-                                               paoId,
-                                               new Integer(TypeBase.POINT_OFFSET));
+        newPoint.getPoint().setStateGroupID(stateGroupId);
 
-        newPoint.getPoint().setStateGroupID(stateGroupId); // new Integer
-                                                           // (StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-
-        // defaults pointStatus
-        ((CalcStatusPoint) newPoint).setPointStatus(new PointStatus(newPoint.getPoint()
-            .getPointID()));
         ((CalcStatusPoint) newPoint).getCalcBase().setPeriodicRate(new Integer(1));
         ((CalcStatusPoint) newPoint).getCalcBase().setUpdateType("On All Change");
 
@@ -510,19 +426,18 @@ public final class PointFactory {
                                                   PointArchiveType pointArchiveType,
                                                   PointArchiveInterval pointArchiveInterval,
                                                   CalcPointInfo calcPoint) {
-        PointBase point = createPoint(PointTypes.CALCULATED_POINT);
-
-        point = PointFactory.createNewPoint(point.getPoint().getPointID(),
-                                            PointTypes.CALCULATED_POINT,
-                                            name,
-                                            paoIdentifier.getPaoId(),
-                                            new Integer(TypeBase.POINT_OFFSET)
-            );
+        PointBase point = 
+            PointFactory.createNewPoint(
+                null,
+                PointTypes.CALCULATED_POINT,
+                name,
+                paoIdentifier.getPaoId(),
+                new Integer(0));
 
         point.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
         point.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
         point.getPoint().setStateGroupID(stateGroupId);
-        PointUnit punit = new PointUnit(point.getPoint().getPointID(),
+        PointUnit punit = new PointUnit(null,
                                         new Integer(unitOfMeasure),
                                         new Integer(decimalPlaces),
                                         new Double(CtiUtilities.INVALID_MAX_DOUBLE),
@@ -584,25 +499,6 @@ public final class PointFactory {
         }
 
         return point;
-    }
-
-    // creates a tag point for a sub or a feeder
-    public static synchronized PointBase createTagPoint(Integer objectID, Integer offset) {
-        PointBase newPoint =
-            PointFactory.createPoint(PointTypes.STATUS_POINT);
-        Integer pointID = new Integer(DaoFactory.getPointDao().getNextPointId());
-        newPoint = PointFactory.createNewPoint(
-                                               pointID,
-                                               PointTypes.STATUS_POINT,
-                                               PTNAME_TAG,
-                                               objectID,
-                                               offset);
-        newPoint.getPoint().setStateGroupID(new Integer(StateGroupUtils.STATEGROUPID_CAPBANK));
-
-        ((StatusPoint) newPoint).setPointStatus(new PointStatus(pointID));
-
-        return newPoint;
-
     }
 
     public static synchronized void addPoint(PointBase point) {

@@ -12,12 +12,13 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.StatusPoint;
-import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.IDatabaseCache;
 /**
@@ -70,7 +71,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 				multi.addDBPersistent(PointFactory.createAnalogPoint("DAILY HISTORY", 
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_DAILY_HISTORY,
+						PointOffsets.PT_OFFSET_DAILY_HISTORY,
 						PointUnits.UOMID_COUNTS, 
 						StateGroupUtils.STATEGROUP_ANALOG));
 				CTILogger.info("Adding DAILY_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName() );
@@ -83,7 +84,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 				multi.addDBPersistent(PointFactory.createAnalogPoint("MONTHLY HISTORY", 
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_MONTHLY_HISTORY,
+						PointOffsets.PT_OFFSET_MONTHLY_HISTORY,
 						PointUnits.UOMID_COUNTS,
 						StateGroupUtils.STATEGROUP_ANALOG));
 				CTILogger.info("Adding MONTHLY_HISTROY PointId " + pointID  + " to Device: " + litePaobject.getPaoName());
@@ -96,7 +97,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 				multi.addDBPersistent(PointFactory.createAnalogPoint("SEASON HISTORY", 
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_SEASONAL_HISTORY,
+						PointOffsets.PT_OFFSET_SEASONAL_HISTORY,
 						PointUnits.UOMID_COUNTS, 
 						StateGroupUtils.STATEGROUP_ANALOG));
 				CTILogger.info("Adding SEASONAL_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName());
@@ -109,7 +110,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 				multi.addDBPersistent(PointFactory.createAnalogPoint("ANNUAL HISTORY", 
 						new Integer(paobjectID),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_ANNUAL_HISTORY,
+						PointOffsets.PT_OFFSET_ANNUAL_HISTORY,
 						PointUnits.UOMID_COUNTS,
 						StateGroupUtils.STATEGROUP_ANALOG));
 				CTILogger.info("Adding ANNUAL_HISTROY PointId " + pointID + " to Device: " + litePaobject.getPaoName());
@@ -119,15 +120,15 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			if( createPoint.controlStatus)
 			{
 			    int pointID = pointDao.getNextPointId();
-				PointBase pointBase = PointFactory.createNewPoint(new Integer(pointID),
+				PointBase pointBase = PointFactory.createNewPoint(
+						new Integer(pointID),
 						PointTypes.STATUS_POINT,
 						"CONTROL STATUS",
 						new Integer(paobjectID),
 						new Integer(0) );
 				pointBase.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS));
-				((StatusPoint)pointBase).setPointStatus( new PointStatus( new Integer(pointID)));
-				((StatusPoint)pointBase).getPointStatus().setControlOffset(	new Integer(1));
-				((StatusPoint)pointBase).getPointStatus().setControlType( PointTypes.getType(PointTypes.CONTROLTYPE_NORMAL));
+				((StatusPoint)pointBase).getPointStatusControl().setControlOffset(1);
+				((StatusPoint)pointBase).getPointStatusControl().setControlType(ControlType.NORMAL.getControlName());
 				multi.addDBPersistent(pointBase);
 				CTILogger.info("Adding CONTROL_STATUS PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 	
@@ -140,7 +141,7 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 				multi.addDBPersistent(PointFactory.createAnalogPoint("CONTROL COUNTDOWN", 
 						new Integer(litePaobject.getLiteID()),
 						new Integer(pointID),
-						PointTypes.PT_OFFSET_CONTROL_COUNTDOWN,
+						PointOffsets.PT_OFFSET_CONTROL_COUNTDOWN,
 						PointUnits.UOMID_COUNTS,
 						StateGroupUtils.STATEGROUP_ANALOG));
 				CTILogger.info("Adding CONTROL_COUNTDOWN PointId " + pointID + " to Device ID" + litePaobject.getYukonID());
@@ -184,17 +185,17 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	 */
 	public boolean isPointCreated( com.cannontech.database.data.lite.LitePoint lp)
 	{
-		if( lp.getPointOffset() == PointTypes.PT_OFFSET_DAILY_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
+		if( lp.getPointOffset() == PointOffsets.PT_OFFSET_DAILY_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).dailyhistory = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_MONTHLY_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_MONTHLY_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).monthlyHistory = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_SEASONAL_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_SEASONAL_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).seasonalHistory = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_ANNUAL_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_ANNUAL_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).annualHistory = false;
 		else if( lp.getPointOffset() == 0 && lp.getPointType() == PointTypes.STATUS_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).controlStatus = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_CONTROL_COUNTDOWN && lp.getPointType() == PointTypes.ANALOG_POINT)
+		else if( lp.getPointOffset() == PointOffsets.PT_OFFSET_CONTROL_COUNTDOWN && lp.getPointType() == PointTypes.ANALOG_POINT)
 			createPointHashtable.get(new Integer(lp.getPaobjectID())).controlCountdown = false;
 			
 		return false;

@@ -5,7 +5,7 @@ import com.cannontech.database.data.pao.TypeBase;
 /**
  * This type was created in VisualAge.
  */
-public final class PointTypes implements IPointOffsets, TypeBase
+public final class PointTypes implements TypeBase
 {
 	//System point id constants - these mirror the #defines
 	// in pointtypes.h
@@ -25,53 +25,20 @@ public final class PointTypes implements IPointOffsets, TypeBase
 	//The following constants are keys into the private
 	//Array of strings (not related to any c/c++ defines!)
 	//The Point Types
-	public static final int STATUS_POINT = 0 + TypeBase.POINT_OFFSET;
-	public static final int ANALOG_POINT = 1 + TypeBase.POINT_OFFSET;
-	public static final int PULSE_ACCUMULATOR_POINT = 2 + TypeBase.POINT_OFFSET;
-	public static final int DEMAND_ACCUMULATOR_POINT = 3 + TypeBase.POINT_OFFSET;
-	public static final int CALCULATED_POINT = 4 + TypeBase.POINT_OFFSET;
-	public static final int STATUS_OUTPUT_POINT = 5 + TypeBase.POINT_OFFSET;
-	public static final int ANALOG_OUTPUT_POINT = 6 + TypeBase.POINT_OFFSET;
-	public static final int SYSTEM_POINT = 7 + TypeBase.POINT_OFFSET;
-	public static final int CALCULATED_STATUS_POINT = 8 + TypeBase.POINT_OFFSET;
+	public static final int STATUS_POINT = 0;
+	public static final int ANALOG_POINT = 1;
+	public static final int PULSE_ACCUMULATOR_POINT = 2;
+	public static final int DEMAND_ACCUMULATOR_POINT = 3;
+	public static final int CALCULATED_POINT = 4;
+	public static final int STATUS_OUTPUT_POINT = 5;
+	public static final int ANALOG_OUTPUT_POINT = 6;
+	public static final int SYSTEM_POINT = 7;
+	public static final int CALCULATED_STATUS_POINT = 8;
 
-	public static final int INVALID_POINT = 9 + TypeBase.POINT_OFFSET;
+	public static final int INVALID_POINT = 9;
 	
-	//Control Type constants
-	public static final int CONTROLTYPE_NONE = 20 + TypeBase.POINT_OFFSET;
-	public static final int CONTROLTYPE_LATCH = 21 + TypeBase.POINT_OFFSET;
-	public static final int CONTROLTYPE_NORMAL = 22 + TypeBase.POINT_OFFSET;
-	public static final int CONTROLTYPE_PSEUDO = 23 + TypeBase.POINT_OFFSET;
-
-	//Accumulator point reading types
-	public static final int ACCUMULATOR_DIALREAD = 24 + TypeBase.POINT_OFFSET;
-	public static final int ACCUMULATOR_DEMAND = 25 + TypeBase.POINT_OFFSET;
-	public static final int ACCUMULATOR_PEAKDEMAND = 26 + TypeBase.POINT_OFFSET;
-
-	//Transducer Types
-	public static final int TRANSDUCER_NONE = 27 + TypeBase.POINT_OFFSET;
-	public static final int TRANSDUCER_PSEUDO = 28 + TypeBase.POINT_OFFSET;
-	public static final int TRANSDUCER_DIGITAL = 29 + TypeBase.POINT_OFFSET;
-	public static final int TRANSDUCER_01MA = 30 + TypeBase.POINT_OFFSET;
-	public static final int TRANSDUCER_420MA = 31 + TypeBase.POINT_OFFSET;
-
-	//Data filter types
-	public static final int DATAFILTERTYPE_NONE = 32 + TypeBase.POINT_OFFSET;
-	public static final int DATAFILTERTYPE_USELAST = 33 + TypeBase.POINT_OFFSET;
-	public static final int DATAFILTERTYPE_USEDEFAULT = 34 + TypeBase.POINT_OFFSET;
-	
-	public static final int LP_PEAK_REPORT = 41 + TypeBase.POINT_OFFSET;
-	public static final int LP_ARCHIVED_DATA = 42 + TypeBase.POINT_OFFSET;
-	
-	//More Control Type constants
-	public static final int CONTROLTYPE_SBO_LATCH = 43 + TypeBase.POINT_OFFSET;
-	public static final int CONTROLTYPE_SBO_PULSE = 44 + TypeBase.POINT_OFFSET;
-	
-	public static final int[] SCANABLE_POINT_TYPES = {PULSE_ACCUMULATOR_POINT, DEMAND_ACCUMULATOR_POINT};
-	
-	
-	//All the strings associated with points and the database
-	private static final String[] pointStrings = 
+	// All the strings associated with points and the database
+	private static final String[] pointStrings =
 	{
 		// Point Types
 		"Status",
@@ -84,32 +51,6 @@ public final class PointTypes implements IPointOffsets, TypeBase
 		"System",
 		"CalcStatus",
 		"INVALID",   //9
-		"","","","","","","","","","",  //room for future point types
-		ControlType.NONE.getControlName(),  	//20
-		ControlType.LATCH.getControlName(),
-		ControlType.NORMAL.getControlName(),
-		ControlType.PSEUDO.getControlName(),
-		"Dial Read",
-		"Demand",
-		"Peak Demand",  //26
-		"None",
-		"Pseudo",
-		"Digital",
-		"0-1ma",
-		"4-20ma",
-		"None",
-		"Use Last",
-		"Use Default", //34
-		"Outage 1",
-		"Outage 2",
-		"Outage 3",
-		"Outage 4",
-		"Outage 5",
-		"Outage 6", //40
-		"LP Peak Report",
-		"LP Archived Data",
-		ControlType.SBOLATCH.getControlName(),
-		ControlType.SBOPULSE.getControlName()		
 	};
 
 	//point update types
@@ -164,20 +105,6 @@ public static String[] convertPointTypes(Integer[] pointTypes) {
     return pointTypesStr;
 }
 
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- * @param typeEnum int
- */
-public final static boolean hasControl(String controlString) 
-{
-
-	return controlString.equalsIgnoreCase(PointTypes.getType(PointTypes.CONTROLTYPE_NORMAL))
-				|| controlString.equalsIgnoreCase(PointTypes.getType(PointTypes.CONTROLTYPE_LATCH))
-				|| controlString.equalsIgnoreCase(PointTypes.getType(PointTypes.CONTROLTYPE_SBO_LATCH))
-				|| controlString.equalsIgnoreCase(PointTypes.getType(PointTypes.CONTROLTYPE_SBO_PULSE));
-	
-}
 /**
  * This method was created in VisualAge.
  * @return int

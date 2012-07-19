@@ -8,6 +8,7 @@
 
 #include "pt_status.h"
 #include "pt_accum.h"
+#include "pt_analog.h"
 
 #include "dllyukon.h"
 
@@ -205,8 +206,7 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 
         case ControlRequest:
         {
-            CtiPointSPtr   point;
-            CtiPointStatusSPtr control;
+            CtiPointStatusSPtr pStatus;
 
             Protocol::DNP::BinaryOutputControl::ControlCode controltype = Protocol::DNP::BinaryOutputControl::Noop;
             Protocol::DNP::BinaryOutputControl::TripClose   trip_close = Protocol::DNP::BinaryOutputControl::NUL;
@@ -214,14 +214,14 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                 on_time  = 0,
                 off_time = 0;
 
-            if( parse.getiValue("point") > 0 )
+            if( const int pointid = parse.getiValue("point") > 0 )
             {
                 //  select by raw pointid
-                if( point = getDevicePointEqual(parse.getiValue("point")) )
+                if( CtiPointSPtr point = getDevicePointEqual(pointid) )
                 {
                     if( point->isStatus() )
                     {
-                        control = boost::static_pointer_cast<CtiPointStatus>(point);
+                        pStatus = boost::static_pointer_cast<CtiPointStatus>(point);
                     }
                 }
             }
@@ -230,29 +230,28 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                 //  select by a control point on the device
                 offset  = parse.getiValue("offset");
 
-                control = boost::static_pointer_cast<CtiPointStatus>(getDeviceControlPointOffsetEqual(offset));
+                pStatus = boost::static_pointer_cast<CtiPointStatus>(getDeviceControlPointOffsetEqual(offset));
             }
 
-            if( control )
+            if( pStatus )
             {
                 //  we got a point - check for a valid control type
-                if( control->getPointStatus().getControlType() > NoneControlType &&
-                    control->getPointStatus().getControlType() < InvalidControlType )
+                if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
                 {
                     //  NOTE - the control duration is completely arbitrary here.  Fix sometime if necessary
                     //           (i.e. customer doing sheds/restores that need to be accurately LMHist'd)
                     //  ugh - does this need to be sent from Porter as well?  do we send it if the control fails?
-                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), control->getPointID(), 0, CtiTime(), 86400, 100);
+                    CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg(getID(), pStatus->getPointID(), 0, CtiTime(), 86400, 100);
 
                     //  if the control is latched
-                    if( control->getPointStatus().getControlType() == LatchControlType ||
-                        control->getPointStatus().getControlType() == SBOLatchControlType )
+                    if( controlParameters->getControlType() == ControlType_Latch ||
+                        controlParameters->getControlType() == ControlType_SBOLatch )
                     {
-                        if( findStringIgnoreCase(parse.getCommandStr().c_str(), control->getPointStatus().getStateZeroControl()) )
+                        if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateZeroControl()) )
                         {
                             hist->setRawState(STATEZERO);
                         }
-                        else if( findStringIgnoreCase(parse.getCommandStr().c_str(), control->getPointStatus().getStateOneControl()) )
+                        else if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateOneControl()) )
                         {
                             hist->setRawState(STATEONE);
                         }
@@ -266,19 +265,19 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                             controltype = Protocol::DNP::BinaryOutputControl::LatchOn;
                         }
 
-                        offset      = control->getPointStatus().getControlOffset();
+                        offset = controlParameters->getControlOffset();
                     }
                     else  //  assume pulsed
                     {
-                        if( findStringIgnoreCase(parse.getCommandStr().c_str(), control->getPointStatus().getStateZeroControl()) )      //  CMD_FLAG_CTL_OPEN
+                        if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateZeroControl()) )      //  CMD_FLAG_CTL_OPEN
                         {
-                            on_time     = control->getPointStatus().getCloseTime1();
+                            on_time = controlParameters->getCloseTime1();
 
                             hist->setRawState(STATEZERO);
                         }
-                        else if( findStringIgnoreCase(parse.getCommandStr().c_str(), control->getPointStatus().getStateOneControl()) )  //  CMD_FLAG_CTL_CLOSE
+                        else if( findStringIgnoreCase(parse.getCommandStr().c_str(), controlParameters->getStateOneControl()) )  //  CMD_FLAG_CTL_CLOSE
                         {
-                            on_time     = control->getPointStatus().getCloseTime2();
+                            on_time = controlParameters->getCloseTime2();
 
                             hist->setRawState(STATEONE);
                         }
@@ -300,12 +299,12 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                         }
 
                         controltype = Protocol::DNP::BinaryOutputControl::PulseOn;
-                        offset      = control->getPointStatus().getControlOffset();
+                        offset      = controlParameters->getControlOffset();
                     }
 
                     //  set up the pseudo data to be sent from Porter-side
-                    p_i.is_pseudo = control->isPseudoPoint();
-                    p_i.pointid   = control->getPointID();
+                    p_i.is_pseudo = pStatus->isPseudoPoint();
+                    p_i.pointid   = pStatus->getPointID();
                     p_i.state     = hist->getRawState();
 
                     hist->setMessagePriority(MAXPRIORITY - 1);
@@ -316,10 +315,10 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - invalid control type \"" << control->getPointStatus().getControlType() << "\" specified in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - status point \"" << pStatus->getName() << "\" on device \"" << getName() << "\" does not have control in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    control.reset();
+                    pStatus.reset();
                     offset  = 0;
                 }
             }
@@ -359,16 +358,25 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                 controlout.dout.queue      = false;
                 controlout.dout.clear      = false;
 
-                if( control )
+                if( pStatus )
                 {
-                    OutMessage->ExpirationTime = CtiTime().seconds() + control->getControlExpirationTime();
+                    int controlTimeout = DefaultControlExpirationTime;
+
+                    if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+                    {
+                        controlTimeout = controlParameters->getCommandTimeout();
+                    }
+
+                    OutMessage->ExpirationTime = CtiTime().seconds() + controlTimeout;
                 }
 
-                if( control && control->getPointStatus().getControlInhibit() )
+                if( pStatus &&
+                    pStatus->getControlParameters() &&
+                    pStatus->getControlParameters()->isControlInhibited() )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() << "\" point \"" << control->getName() << "\" in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() << "\" point \"" << pStatus->getName() << "\" in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
                 else
@@ -383,8 +391,10 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                         //  the other half of SBO_SelectOnly
                         command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate;
                     }
-                    else if( (control && control->getPointStatus().getControlType() == SBOPulseControlType) ||
-                             (control && control->getPointStatus().getControlType() == SBOLatchControlType) )
+                    else if( pStatus &&
+                             pStatus->getControlParameters() &&
+                             (pStatus->getControlParameters()->getControlType() == ControlType_SBOPulse ||
+                              pStatus->getControlParameters()->getControlType() == ControlType_SBOLatch) )
                     {
                         //  if successful, this will transition to SBO_Operate in DNPInterface on Porter-side
                         command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_Select;
@@ -482,9 +492,15 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                     {
                         if( point->getType() == AnalogPointType )
                         {
-                            if( point->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
+                            CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(point);
+
+                            if( const CtiTablePointControl *control = pAnalog->getControl() )
                             {
-                                control_offset = point->getPointOffset() - AnalogOutputStatus::AnalogOutputOffset;
+                                control_offset = control->getControlOffset();
+                            }
+                            else if( pAnalog->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
+                            {
+                                control_offset = point->getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
                             }
                         }
                     }

@@ -25,6 +25,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
 
 /**
@@ -195,15 +196,15 @@ public class PointDataIntervalModel extends ReportModelBase<MeterAndPointData>
 	    }
 	    if (getPointType() == LOAD_PROFILE_POINT_TYPE ) {
 	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
-	        sql.append(" AND (P.POINTOFFSET >= ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND);
-	        sql.append(" AND P.POINTOFFSET <= ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND).append(")");
+	        sql.append(" AND (P.POINTOFFSET >= ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND);
+	        sql.append(" AND P.POINTOFFSET <= ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND).append(")");
 	    } else if ( getPointType() == STATUS_POINT_TYPE ) {
 	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.STATUS_POINT));
 	    } else if ( getPointType() == DEMAND_ACC_POINT_TYPE) {
 	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT));
 	        //Do not allow LP data, those points fall into the LP point type option.
-	        sql.append(" AND (P.POINTOFFSET < ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND);
-	        sql.append( " OR P.POINTOFFSET > ").appendArgument(PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND).append(") ");				
+	        sql.append(" AND (P.POINTOFFSET < ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_KW_DEMAND);
+	        sql.append( " OR P.POINTOFFSET > ").appendArgument(PointOffsets.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND).append(") ");				
 	    } else if ( getPointType() == PULSE_ACC_POINT_TYPE) {
 	        sql.append(" AND P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.PULSE_ACCUMULATOR_POINT));
 	    } else if ( getPointType() == ANALOG_POINT_TYPE ) {

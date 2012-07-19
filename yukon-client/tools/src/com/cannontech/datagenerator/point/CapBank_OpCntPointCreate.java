@@ -84,7 +84,6 @@ public class CapBank_OpCntPointCreate extends PointCreate
 			analogPoint.setPointID(new Integer(pointID));
 			
 			// set default settings for BASE point
-			analogPoint.getPoint().setPointID(new Integer(pointID));
 			analogPoint.getPoint().setPointName("OPERATION");
 	
 			Integer deviceID = new Integer( litePaobject.getLiteID());
@@ -98,20 +97,15 @@ public class CapBank_OpCntPointCreate extends PointCreate
 			analogPoint.getPoint().setArchiveInterval(new Integer(1));
 			
 			// set default settings for point POINTALARMING
-			analogPoint.getPointAlarming().setPointID(new Integer(pointID));
 			analogPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
 			analogPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
 			analogPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
 			analogPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
 	
 			// set default settings for point POINTUNIT
-			analogPoint.getPointUnit().setPointID(new Integer(pointID));
 			analogPoint.getPointUnit().setUomID(new Integer(PointUnits.UOMID_COUNTS));
 			analogPoint.getPointUnit().setDecimalPlaces(new Integer(PointUnit.DEFAULT_DECIMAL_PLACES));
 			
-			// set POINTANALOG defaults
-			analogPoint.getPointAnalog().setPointID(new Integer(pointID));
-				
 			multi.addDBPersistent( analogPoint );
 			
 			++addCount;

@@ -296,7 +296,6 @@
 	<table name="PointAnalog">
         <primaryKey name="PointId" tableRef="Point"/>
         <data name="DeadBand" /> 
-        <data name="TransducerType"/>
         <data name="Multiplier"/>
         <data name="DataOffset"/>
     </table>
@@ -309,6 +308,12 @@
         <data name="NotificationGroupId" tableRef="NotificationGroup"  refType="MANY_TO_ONE"/>
     </table>
     
+    <table name="PointControl">
+        <primaryKey name="PointId" tableRef="Point"/>
+        <data name="ControlOffset" /> 
+        <data name="ControlInhibit"/>
+    </table>
+
     <table name="PointLimits">
         <primaryKey name="PointId" tableRef="Point"/>
         <primaryKey name="LimitNumber" /> 
@@ -320,9 +325,11 @@
 	<table name="PointStatus">
         <primaryKey name="PointId" tableRef="Point"/>
         <data name="InitialState" /> 
+    </table>
+    
+    <table name="PointStatusControl">
+        <primaryKey name="PointId" tableRef="PointControl"/>
         <data name="ControlType" /> 
-        <data name="ControlInhibit" /> 
-        <data name="ControlOffset" /> 
         <data name="CloseTime1" /> 
         <data name="CloseTime2" /> 
         <data name="StateZeroControl" /> 

@@ -18,13 +18,13 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
-import com.cannontech.database.data.device.lm.LMGroupRfnExpressCom;
 import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -334,15 +334,11 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 		historyPoint.getPoint().setStateGroupID( 
 				new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_TWO_STATE_STATUS) );
 		
-		((com.cannontech.database.data.point.StatusPoint) historyPoint).setPointStatus(
-				new com.cannontech.database.db.point.PointStatus( new Integer(ids[0]) ));
-
-		((com.cannontech.database.data.point.StatusPoint) historyPoint).getPointStatus().setControlOffset(
+		((com.cannontech.database.data.point.StatusPoint) historyPoint).getPointStatusControl().setControlOffset(
 				new Integer(1) );
 
-		((com.cannontech.database.data.point.StatusPoint) historyPoint).getPointStatus().setControlType(
-				com.cannontech.database.data.point.PointTypes.getType(
-				com.cannontech.database.data.point.PointTypes.CONTROLTYPE_NORMAL) );
+		((com.cannontech.database.data.point.StatusPoint) historyPoint).getPointStatusControl().setControlType(
+				ControlType.NORMAL.getControlName());
 
 
 		smartDB.addDBPersistent(historyPoint);
@@ -352,7 +348,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				"ANNUAL HISTORY",
 				paoID,
 				new Integer(ids[1]),
-				PointTypes.PT_OFFSET_ANNUAL_HISTORY,
+				PointOffsets.PT_OFFSET_ANNUAL_HISTORY,
 				PointUnits.UOMID_COUNTS, 
 				StateGroupUtils.STATEGROUP_ANALOG) );			
 		
@@ -361,7 +357,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 					"DAILY HISTORY",
 					paoID,
 					new Integer(ids[2]),
-					PointTypes.PT_OFFSET_DAILY_HISTORY,
+					PointOffsets.PT_OFFSET_DAILY_HISTORY,
 					PointUnits.UOMID_COUNTS,
 					StateGroupUtils.STATEGROUP_ANALOG) );			
 
@@ -370,7 +366,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				"SEASON HISTORY",
 				paoID,
 				new Integer(ids[3]),
-				PointTypes.PT_OFFSET_SEASONAL_HISTORY,
+				PointOffsets.PT_OFFSET_SEASONAL_HISTORY,
 				PointUnits.UOMID_COUNTS,
 				StateGroupUtils.STATEGROUP_ANALOG) );			
 		
@@ -379,7 +375,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				"MONTH HISTORY",
 				paoID,
 				new Integer(ids[4]),
-				PointTypes.PT_OFFSET_MONTHLY_HISTORY,
+				PointOffsets.PT_OFFSET_MONTHLY_HISTORY,
 				PointUnits.UOMID_COUNTS,
 				StateGroupUtils.STATEGROUP_ANALOG) );
 				
@@ -388,7 +384,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				"CONTROL COUNTDOWN",
 				paoID,
 				new Integer(ids[5]),
-				PointTypes.PT_OFFSET_CONTROL_COUNTDOWN,
+				PointOffsets.PT_OFFSET_CONTROL_COUNTDOWN,
 				PointUnits.UOMID_COUNTS, 
 				StateGroupUtils.STATEGROUP_ANALOG) );				
 	

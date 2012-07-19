@@ -27,6 +27,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.point.CalculatedPoint;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
@@ -137,7 +138,6 @@ public class PointImportUtility
 				analogPoint.getPoint().setStateGroupID( new Integer(-1) );
 			}
 			
-			analogPoint.getPoint().setPointID(pointID);
 			analogPoint.setPointID(pointID);
 			analogPoint.getPoint().setPointType(pointType);
 			analogPoint.getPoint().setPointName( pointName );
@@ -571,7 +571,6 @@ public class PointImportUtility
                 return false; // not an expected format
             }
             
-            accumulatorPoint.getPoint().setPointID(pointID);
             accumulatorPoint.setPointID(pointID);
             accumulatorPoint.getPoint().setPointType( pointType );
             accumulatorPoint.getPoint().setPointName( pointName );
@@ -991,7 +990,6 @@ public class PointImportUtility
                 return false; // not an expected format
             }
             
-            calcPoint.getPoint().setPointID(pointID);
             calcPoint.setPointID(pointID);
             calcPoint.getPoint().setPointType( pointType );
             calcPoint.getPoint().setPointName( pointName );
@@ -1456,7 +1454,7 @@ public class PointImportUtility
 				return false;
 			}
 			
-			statusPoint.getPoint().setPointID(pointID);
+			statusPoint.setPointID(pointID);
 			statusPoint.getPoint().setPointName( pointName );
 			statusPoint.getPoint().setPointType(pointType);
 
@@ -1500,8 +1498,6 @@ public class PointImportUtility
 			statusPoint.getPoint().setAlarmInhibit(new Character('N'));
 
 			statusPoint.getPointStatus().setInitialState(new Integer(1));
-			statusPoint.getPointStatus().setControlInhibit(new Character('N'));
-			statusPoint.getPointStatus().setPointID(pointID);
 
 			// Control point settings
 			String tokenHolder = tokenizer.nextElement().toString();
@@ -1509,7 +1505,7 @@ public class PointImportUtility
 			if(emptyField(tokenHolder))
 				tokenHolder = "None";
 							
-			statusPoint.getPointStatus().setControlType(tokenHolder);
+			statusPoint.getPointStatusControl().setControlType(tokenHolder);
 		
 			tokenHolder = tokenizer.nextElement().toString();
 			tokenCounter++;
@@ -1529,13 +1525,15 @@ public class PointImportUtility
 				tokenHolder = "0";
 			Integer closeTime2 = new Integer( Integer.parseInt(tokenHolder));
 		
-			if (!statusPoint.getPointStatus().getControlType().equals(new String("None")) )
+			if (statusPoint.getPointStatusControl().hasControl())
 			{
 				// there is control
-				statusPoint.getPointStatus().setControlOffset(controlOffset);
+				statusPoint.getPointStatusControl().setControlOffset(controlOffset);
 			
-				statusPoint.getPointStatus().setCloseTime1(closeTime1);
-				statusPoint.getPointStatus().setCloseTime2(closeTime2);
+				statusPoint.getPointStatusControl().setCloseTime1(closeTime1);
+				statusPoint.getPointStatusControl().setCloseTime2(closeTime2);
+
+				statusPoint.getPointStatusControl().setControlInhibited(false);
 			}
 		
 			//archiving settings
