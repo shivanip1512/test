@@ -1028,6 +1028,19 @@
             </ul>
         </troubleshooting>
     </error>
+    <error code="279">
+        <category>Data Validation</category>
+        <porter>Load profile command requires a valid start date.</porter>
+        <description>In order to collect load profile, the command must supply a valid
+            start date.</description>
+        <troubleshooting>
+            Verify that the date provided for the load profile command is valid and submit the 
+            request again.
+            <ul>
+                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+            </ul>
+        </troubleshooting>
+    </error>
 
     <error code="1024">
         <category>Network Manager</category>
