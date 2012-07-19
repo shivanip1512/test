@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/19/2012 5:24:53 PM                         */
+/* Created on:     7/19/2012 5:58:31 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -8413,7 +8413,6 @@ insert into YukonGroupRole values(-1004,-2,-100,-10004,' ');
 insert into YukonGroupRole values(-1005,-2,-100,-10005,' ');
 insert into YukonGroupRole values(-1007,-2,-100,-10007,' ');
 insert into YukonGroupRole values(-1008,-2,-100,-10008,' ');
-insert into YukonGroupRole values(-1009,-2,-100,-10009,' ');
 insert into YukonGroupRole values(-1010,-2,-100,-10010,'00000000');
 insert into YukonGroupRole values(-1011,-2,-100,-10011,' ');
 
@@ -9212,7 +9211,6 @@ INSERT INTO YukonRoleProperty VALUES(-10004,-100,'dbeditor_system','true','Contr
 INSERT INTO YukonRoleProperty VALUES(-10005,-100,'utility_id_range','1-254','<description>');
 INSERT INTO YukonRoleProperty VALUES(-10007,-100,'dbeditor_trans_exclusion','false','Allows the editor panel for the mutual exclusion of transmissions to be shown');
 INSERT INTO YukonRoleProperty VALUES(-10008,-100,'permit_login_edit','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
-INSERT INTO YukonRoleProperty VALUES(-10009,-100,'allow_user_roles','false','Allows the editor panel individual user roles to be shown');
 INSERT INTO YukonRoleProperty VALUES(-10010,-100,'z_optional_product_dev','00000000','This feature is for development purposes only');
 INSERT INTO YukonRoleProperty VALUES(-10011,-100,'allow_member_programs','false','Allows member management of LM Direct Programs through the DBEditor');
 

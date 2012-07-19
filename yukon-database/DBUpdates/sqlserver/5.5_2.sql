@@ -315,6 +315,15 @@ ALTER TABLE PointToZoneMapping
 DROP COLUMN Phase;
 /* End YUK-11086 */
 
+/* Start YUK-11062 */
+DELETE FROM YukonUserRole 
+WHERE RolePropertyId = -10009; 
+DELETE FROM YukonGroupRole 
+WHERE RolePropertyId = -10009; 
+DELETE FROM YukonRoleProperty 
+WHERE RolePropertyId = -10009;
+/* End YUK-11062 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
