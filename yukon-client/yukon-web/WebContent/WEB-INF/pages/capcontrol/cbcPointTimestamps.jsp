@@ -23,13 +23,13 @@
                     <td>
                         <c:choose>
                             <c:when test="${point.pointName == 'Firmware Version'}">
-                               <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.core.dao.impl.CapControlDaoImpl.convertToFirmwareVersion}"/>
+                               <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertToFirmwareVersion}"/>
                             </c:when>
                             <c:when test="${point.pointName == 'IP Address'}">
-                                <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.core.dao.impl.CapControlDaoImpl.convertToOctalIp}"/>
+                                <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertToOctalIp}"/>
                             </c:when>
                             <c:when test="${point.pointName == 'Neutral Current Sensor'}">
-                                <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.core.dao.impl.CapControlDaoImpl.convertNeutralCurrent}"/>
+                                <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertNeutralCurrent}"/>
                             </c:when>
                             <c:when test="${point.pointName == 'Last Control Reason'}">
                                 <cti:pointStatusColor pointId="${point.pointID}">

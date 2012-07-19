@@ -826,4 +826,46 @@ public final class CapControlUtils {
         
         return fixedText;
     }
+    
+    public static String convertNeutralCurrent(Double value) {        
+        Integer pvalue = value.intValue();
+        String neutralCurrent = "No";
+        
+        if ((pvalue & 0x08) == 0x08){
+            neutralCurrent = "Yes";
+        }
+        
+        return neutralCurrent;
+    }
+    
+    public static String convertToOctalIp(Double value) {
+        Long ipvalue = new Long(value.longValue());
+
+        StringBuilder sb = new StringBuilder();
+        int temp = (int) ((ipvalue >> 24) & 0xFF);
+        sb.append(Integer.toString(temp, 10) + ".");
+        temp = (int) ((ipvalue >> 16) & 0xFF);
+        sb.append(Integer.toString(temp, 10) + ".");
+        temp = (int) ((ipvalue >> 8) & 0xFF);
+        sb.append(Integer.toString(temp, 10) + ".");
+        temp = (int) (ipvalue & 0xFF);
+        sb.append(Integer.toString(temp, 10));
+       
+        return sb.toString();
+    }
+    
+    public static String convertToFirmwareVersion(Double value) {
+        //  The firmware version is encoded as up to 8 six-bit ASCII characters
+        //  http://nemesis.lonestar.org/reference/telecom/codes/sixbit.html
+        long encodedValue = value.longValue();
+
+        StringBuilder sb = new StringBuilder();
+        
+        while( encodedValue != 0 ) {
+            sb.append((char)(' ' + encodedValue % 0x40));            
+            encodedValue /= 0x40;
+        }
+      
+        return sb.reverse().toString();
+    }
 }
