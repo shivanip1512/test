@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/19/2012 4:46:47 PM                         */
+/* Created on:     7/19/2012 5:26:31 PM                         */
 /*==============================================================*/
 
 
@@ -6771,7 +6771,6 @@ create table PointToZoneMapping  (
    ZoneId               NUMBER                          not null,
    GraphPositionOffset  FLOAT,
    Distance             FLOAT,
-   Phase                CHAR(1)                         not null,
    constraint PK_PointZoneMap primary key (PointId)
 );
 
@@ -6965,7 +6964,6 @@ create table Regulator  (
 create table RegulatorToZoneMapping  (
    RegulatorId          NUMBER                          not null,
    ZoneId               NUMBER                          not null,
-   Phase                CHAR(1),
    constraint PK_RegToZoneMap primary key (RegulatorId)
 );
 

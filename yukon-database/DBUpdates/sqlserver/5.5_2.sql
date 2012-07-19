@@ -308,6 +308,13 @@ INSERT INTO DeviceTypeCommand VALUES(-979, -135, 'RFN EXPRESSCOM GROUP', 5, 'Y',
 INSERT INTO DeviceTypeCommand VALUES(-980, -143, 'RFN EXPRESSCOM GROUP', 6, 'Y', -1);
 /* End YUK-11123 */
 
+/* Start YUK-11086 */
+ALTER TABLE RegulatorToZoneMapping
+DROP COLUMN Phase;
+ALTER TABLE PointToZoneMapping
+DROP COLUMN Phase;
+/* End YUK-11086 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

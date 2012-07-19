@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/19/2012 4:49:41 PM                         */
+/* Created on:     7/19/2012 5:24:53 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -7185,7 +7185,6 @@ create table PointToZoneMapping (
    ZoneId               numeric              not null,
    GraphPositionOffset  float                null,
    Distance             float                null,
-   Phase                char(1)              not null,
    constraint PK_PointZoneMap primary key (PointId)
 )
 go
@@ -7397,7 +7396,6 @@ go
 create table RegulatorToZoneMapping (
    RegulatorId          numeric              not null,
    ZoneId               numeric              not null,
-   Phase                char(1)              null,
    constraint PK_RegToZoneMap primary key (RegulatorId)
 )
 go
