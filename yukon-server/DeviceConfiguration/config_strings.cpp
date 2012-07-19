@@ -1,19 +1,9 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   config_strings
-*
-* Date:   11/29/2007
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_type_mct_addressing.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/12/03 21:19:13 $
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
+
 #include "config_data_cbc.h"
 #include "config_data_mct.h"
+#include "config_data_dnp.h"
+
 using std::string;
 
 using namespace Cti::Config;
@@ -269,3 +259,10 @@ const string CBCStrings::AnalogDeadBand = "analog value dead band";
 
 const string CBCStrings::RetryDelay = "retry delay";
 const string CBCStrings::PollTimeout = "poll timeout";
+
+/* DNP */
+const string DNPStrings::omitTimeRequest = "Omit Time Request";
+const string DNPStrings::internalRetries = "Internal Retries";
+const string DNPStrings::enableUnsolicited = "Enable Unsolicited Messages";
+const string DNPStrings::enableDnpTimesyncs = "Enable DNP Timesyncs";
+const string DNPStrings::useLocalTime = "Local Time";

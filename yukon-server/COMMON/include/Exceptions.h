@@ -5,3 +5,7 @@
 class NotFoundException : public std::exception
 {
 };
+
+class MissingConfigException : public std::exception
+{
+};

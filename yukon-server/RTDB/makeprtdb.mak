@@ -511,8 +511,9 @@ dev_cbc6510.obj:	precompiled.h dsm2.h cticonnect.h yukon.h types.h \
 		configval.h prot_base.h xfer.h tbl_dialup.h tbl_direct.h \
 		dev_dnp.h prot_dnp.h packet_finder.h dnp_application.h \
 		dnp_objects.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_object_binaryoutput.h \
-		tbl_dv_address.h pointAttribute.h tbl_dv_idlcremote.h
+		dnp_datalink_packet.h dnp_configuration.h \
+		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
+		tbl_dv_idlcremote.h
 dev_cbc7020.obj:	precompiled.h dev_cbc7020.h dev_dnp.h dev_remote.h \
 		dev_single.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h netports.h mutex.h guard.h utility.h ctitime.h \
@@ -533,8 +534,8 @@ dev_cbc7020.obj:	precompiled.h dev_cbc7020.h dev_dnp.h dev_remote.h \
 		configval.h prot_base.h xfer.h tbl_dialup.h tbl_direct.h \
 		prot_dnp.h packet_finder.h dnp_application.h dnp_objects.h \
 		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
-		config_data_cbc.h
+		dnp_configuration.h dnp_object_binaryoutput.h \
+		tbl_dv_address.h pointAttribute.h config_data_cbc.h
 dev_cbc8020.obj:	precompiled.h dev_cbc8020.h dev_cbc7020.h dev_dnp.h \
 		dev_remote.h dev_single.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
@@ -555,8 +556,9 @@ dev_cbc8020.obj:	precompiled.h dev_cbc8020.h dev_cbc7020.h dev_dnp.h \
 		configval.h prot_base.h xfer.h tbl_dialup.h tbl_direct.h \
 		prot_dnp.h packet_finder.h dnp_application.h dnp_objects.h \
 		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
-		config_data_cbc.h pt_status.h tbl_pt_status.h
+		dnp_configuration.h dnp_object_binaryoutput.h \
+		tbl_dv_address.h pointAttribute.h config_data_cbc.h \
+		pt_status.h tbl_pt_status.h
 dev_ccu.obj:	precompiled.h cmdparse.h ctitokenizer.h dlldefs.h \
 		parsevalue.h dsm2.h cticonnect.h yukon.h types.h ctidbgmem.h \
 		netports.h mutex.h guard.h utility.h ctitime.h queues.h \
@@ -699,12 +701,13 @@ dev_dnp.obj:	precompiled.h dev_dnp.h dev_remote.h dev_single.h dsm2.h \
 		queue.h cparms.h configkey.h configval.h prot_base.h xfer.h \
 		tbl_dialup.h tbl_direct.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
 		dnp_object_analogoutput.h porter.h devicetypes.h pt_status.h \
 		tbl_pt_status.h pt_accum.h pt_numeric.h tbl_pt_unit.h \
 		tbl_unitmeasure.h tbl_pt_accum.h tbl_pt_accumhistory.h \
-		dllyukon.h msg_cmd.h msg_lmcontrolhistory.h
+		dllyukon.h exceptions.h config_data_dnp.h msg_cmd.h \
+		msg_lmcontrolhistory.h
 dev_dr87.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h logger.h \
 		thread.h mutex.h guard.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h CtiPCPtrQueue.h porter.h dsm2.h \
@@ -834,7 +837,7 @@ dev_gridadvisor.obj:	precompiled.h porter.h dsm2.h cticonnect.h \
 		queue.h cparms.h configkey.h configval.h prot_base.h xfer.h \
 		tbl_dialup.h tbl_direct.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
 		pt_status.h tbl_pt_status.h pt_analog.h pt_numeric.h \
 		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h pt_accum.h \
@@ -2014,7 +2017,7 @@ dev_single.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
 		msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h porter.h \
 		devicetypes.h tbl_ptdispatch.h ctidate.h scanglob.h \
 		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h ctistring.h \
-		pt_status.h tbl_pt_status.h dllyukon.h
+		pt_status.h tbl_pt_status.h dllyukon.h exceptions.h
 dev_sixnet.obj:	precompiled.h dev_sixnet.h dev_meter.h tbl_metergrp.h \
 		yukon.h types.h ctidbgmem.h vcomdefs.h dlldefs.h \
 		dbmemobject.h dllbase.h dsm2.h cticonnect.h netports.h \
@@ -2298,7 +2301,7 @@ mgr_device.obj:	precompiled.h mgr_device.h dlldefs.h rtdb.h hashkey.h \
 		exchange.h msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h \
 		tbl_dialup.h tbl_direct.h prot_dnp.h packet_finder.h \
 		dnp_application.h dnp_objects.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
 		dev_ion.h dev_meter.h tbl_metergrp.h vcomdefs.h dev_ied.h \
 		tbl_dv_ied.h prot_ion.h ion_datastream.h ion_value.h \
@@ -2782,18 +2785,19 @@ slctdev.obj:	precompiled.h dev_710.h dev_idlc.h types.h os2_2w32.h \
 		tbl_pt_analog.h dev_cbc6510.h dev_dnp.h prot_dnp.h \
 		packet_finder.h dnp_application.h dnp_objects.h \
 		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
-		dev_cbc.h tbl_dv_cbc.h dev_cbc7020.h config_data_cbc.h \
-		dev_cbc8020.h dev_ccu.h dev_ccu_queue_interface.h \
-		device_queue_interface.h dev_ccu721.h prot_klondike.h \
-		prot_wrap.h prot_idlc.h dev_welco.h prot_welco.h dev_ilex.h \
-		dev_seriesv.h dev_ied.h tbl_dv_ied.h prot_seriesv.h dev_lmi.h \
-		tbl_dv_seriesv.h prot_lmi.h verification_objects.h dev_tcu.h \
-		dev_meter.h tbl_metergrp.h vcomdefs.h dev_gridadvisor.h \
-		dev_modbus.h prot_modbus.h dev_schlum.h dev_fulcrum.h \
-		dev_ion.h prot_ion.h ion_datastream.h ion_value.h \
-		ion_serializable.h ion_value_fixed.h ion_value_numeric.h \
-		ion_value_variable.h ion_value_variable_fixedarray.h \
+		dnp_configuration.h dnp_object_binaryoutput.h \
+		tbl_dv_address.h pointAttribute.h dev_cbc.h tbl_dv_cbc.h \
+		dev_cbc7020.h config_data_cbc.h dev_cbc8020.h dev_ccu.h \
+		dev_ccu_queue_interface.h device_queue_interface.h \
+		dev_ccu721.h prot_klondike.h prot_wrap.h prot_idlc.h \
+		dev_welco.h prot_welco.h dev_ilex.h dev_seriesv.h dev_ied.h \
+		tbl_dv_ied.h prot_seriesv.h dev_lmi.h tbl_dv_seriesv.h \
+		prot_lmi.h verification_objects.h dev_tcu.h dev_meter.h \
+		tbl_metergrp.h vcomdefs.h dev_gridadvisor.h dev_modbus.h \
+		prot_modbus.h dev_schlum.h dev_fulcrum.h dev_ion.h prot_ion.h \
+		ion_datastream.h ion_value.h ion_serializable.h \
+		ion_value_fixed.h ion_value_numeric.h ion_value_variable.h \
+		ion_value_variable_fixedarray.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_variable_boolean.h \
 		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
@@ -3022,8 +3026,8 @@ test_dev_cbc7020.obj:	dev_cbc7020.h dev_dnp.h dev_remote.h \
 		configval.h prot_base.h xfer.h tbl_dialup.h tbl_direct.h \
 		prot_dnp.h packet_finder.h dnp_application.h dnp_objects.h \
 		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
-		config_data_cbc.h
+		dnp_configuration.h dnp_object_binaryoutput.h \
+		tbl_dv_address.h pointAttribute.h config_data_cbc.h
 test_dev_cbc8020.obj:	dev_cbc8020.h dev_cbc7020.h dev_dnp.h \
 		dev_remote.h dev_single.h dsm2.h cticonnect.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h mutex.h guard.h utility.h \
@@ -3044,8 +3048,8 @@ test_dev_cbc8020.obj:	dev_cbc8020.h dev_cbc7020.h dev_dnp.h \
 		configval.h prot_base.h xfer.h tbl_dialup.h tbl_direct.h \
 		prot_dnp.h packet_finder.h dnp_application.h dnp_objects.h \
 		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_object_binaryoutput.h tbl_dv_address.h pointAttribute.h \
-		config_data_cbc.h ctidate.h
+		dnp_configuration.h dnp_object_binaryoutput.h \
+		tbl_dv_address.h pointAttribute.h config_data_cbc.h ctidate.h
 test_dev_ccu721.obj:	dev_ccu721.h dev_remote.h dev_single.h dsm2.h \
 		cticonnect.h yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
 		mutex.h guard.h utility.h ctitime.h queues.h cticalls.h \

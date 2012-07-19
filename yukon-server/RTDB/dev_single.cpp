@@ -16,6 +16,7 @@
 #include "ctistring.h"
 #include "pt_status.h"
 #include "dllyukon.h"
+#include "exceptions.h"
 
 using namespace std;
 
@@ -668,7 +669,19 @@ int CtiDeviceSingle::decode(CtiXfer &xfer, int status)
     int retval = -1;
     Protocol::Interface *prot = getProtocol();
 
-    if( prot )  retval = prot->decode(xfer, status);
+    try
+    {
+        if( prot )  retval = prot->decode(xfer, status);
+    }
+    catch ( MissingConfigException &e )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - DNP configuration missing for DNP device \"" << getName() 
+                 << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        retval = MISCONFIG;
+    }
 
     return retval;
 }

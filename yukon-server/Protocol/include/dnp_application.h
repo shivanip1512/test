@@ -4,6 +4,7 @@
 
 #include "dnp_objects.h"
 #include "dnp_transport.h"
+#include "dnp_configuration.h"
 
 namespace Cti {
 namespace Protocol {
@@ -25,7 +26,7 @@ private:
 
     short _dstAddr, _srcAddr;
 
-    const ConfigData* _config_data;
+    const DNP::config_data* _config;
 
 #pragma pack( push, 1 )
 
@@ -150,7 +151,7 @@ public:
     void setOptions( int options );
     void resetLink( void );
 
-    void setConfigData( const DNP::ConfigData* configData );
+    void setConfigData( const config_data* config );
 
     void setCommand( FunctionCode fc );
     void addObjectBlock( const ObjectBlock *obj );

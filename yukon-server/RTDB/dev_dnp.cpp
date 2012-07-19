@@ -11,12 +11,16 @@
 
 #include "dllyukon.h"
 
+#include "exceptions.h"
+#include "config_data_dnp.h"
+
 #include "msg_cmd.h"
 #include "msg_lmcontrolhistory.h"
 
 #include <boost/optional.hpp>
 
 using namespace std;
+using namespace Cti::Config;
 
 std::set<long> parseCsvLongs(const std::string &csv)
 {
@@ -410,7 +414,7 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                 break;
             }
 
-            bool omitTimeRequest = deviceConfig->getValueFromKey("Omit Time Request") == "true";
+            const bool omitTimeRequest = ciStringEqual(deviceConfig->getValueFromKey(DNPStrings::omitTimeRequest), "true");
 
             switch( parse.getiValue("scantype") )
             {
@@ -679,8 +683,19 @@ int DnpDevice::recvCommRequest( OUTMESS *OutMessage )
         buf[127] = 0;             //  make sure it's null-terminated somewhere before we do this:
         _porter_info.user = buf;  //  ooo, how daring
 
-        loadConfigData();
-        _dnp.setCommand(_porter_info.protocol_command, _porter_info.protocol_parameter);
+        try
+        {
+            loadConfigData();
+            _dnp.setCommand(_porter_info.protocol_command, _porter_info.protocol_parameter);
+        }
+        catch (MissingConfigException &e)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Device " << getName() << " is not assigned a DNP configuration. " 
+                     << "Unable to process comm request. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
     }
     else
     {
@@ -701,16 +716,21 @@ void DnpDevice::loadConfigData()
 
     if( !deviceConfig )
     {
-        std::exception();
+        throw MissingConfigException();
     }
 
-    unsigned internalRetries = deviceConfig->getLongValueFromKey("Internal Retries");
-    bool useLocalTime = deviceConfig->getValueFromKey("Local Time") == "true";
-    bool enableDnpTimesyncs = deviceConfig->getValueFromKey("Enable DNP Timesyncs") == "true";
-    bool omitTimeRequest = deviceConfig->getValueFromKey("Omit Time Request") == "true";
-    bool enableUnsolicited = deviceConfig->getValueFromKey("Enable Unsolicited Messages") == "true";
+    const unsigned internalRetries = deviceConfig->getLongValueFromKey(DNPStrings::internalRetries);
+    const bool useLocalTime = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::useLocalTime));
+    const bool enableDnpTimesyncs = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableDnpTimesyncs));
+    const bool omitTimeRequest = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::omitTimeRequest));
+    const bool enableUnsolicited = isConfigurationValueTrue(deviceConfig->getValueFromKey(DNPStrings::enableUnsolicited));
 
     _dnp.setConfigData(internalRetries, useLocalTime, enableDnpTimesyncs, omitTimeRequest, enableUnsolicited);
+}
+
+bool DnpDevice::isConfigurationValueTrue(const std::string &configKey) const
+{
+    return ciStringEqual(configKey, "true");
 }
 
 

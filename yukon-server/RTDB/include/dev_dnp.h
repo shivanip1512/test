@@ -70,6 +70,8 @@ protected:
 
     void loadConfigData();
 
+    bool isConfigurationValueTrue(const std::string &configKey) const;
+
 public:
 
     DnpDevice();

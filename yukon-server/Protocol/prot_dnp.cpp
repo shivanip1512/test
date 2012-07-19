@@ -76,15 +76,15 @@ bool DNPInterface::setCommand( Command command, output_point &point )
 void DNPInterface::setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs, 
                                   bool omitTimeRequest, bool enableUnsolicited )
 {
-    _config_data.reset(
-       new DNP::ConfigData(
-          internalRetries, 
-          useLocalTime, 
-          enableDnpTimesyncs, 
-          omitTimeRequest, 
+    _config.reset(
+       new DNP::config_data(
+          internalRetries,
+          useLocalTime,
+          enableDnpTimesyncs,
+          omitTimeRequest,
           enableUnsolicited));
 
-    _app_layer.setConfigData(_config_data.get());
+    _app_layer.setConfigData(_config.get());
 }
 
 int DNPInterface::generate( CtiXfer &xfer )
@@ -98,7 +98,7 @@ int DNPInterface::generate( CtiXfer &xfer )
                 DNP::Time *time_now = CTIDBG_new DNP::Time(Time::T_TimeAndDate);
                 CtiTime now;
 
-                if( _config_data->isUsingLocalTime() )
+                if( _config->useLocalTime )
                 {
                     const unsigned utc_seconds = now.seconds();
                     const unsigned local_seconds = convertUtcSecondsToLocalSeconds(utc_seconds);
@@ -545,7 +545,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 {
                     cto.reset(CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object))));
 
-                    if( _config_data->isUsingLocalTime() )
+                    if( _config->useLocalTime )
                     {
                         const unsigned local_seconds = cto->getSeconds();
                         const unsigned utc_seconds = convertLocalSecondsToUtcSeconds(local_seconds);
@@ -568,7 +568,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                     {
                         time_sent.reset(CTIDBG_new Time(*(reinterpret_cast<const DNP::Time *>(od.object))));
 
-                        if( _config_data->isUsingLocalTime() )
+                        if( _config->useLocalTime )
                         {
                             const unsigned local_seconds = time_sent->getSeconds();
                             const unsigned utc_seconds = convertLocalSecondsToUtcSeconds(local_seconds);
@@ -659,7 +659,7 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                     setCommand(Command_ResetDeviceRestartBit);
                 }
 
-                if( _config_data->isUnsolicitedEnabled() )
+                if( _config->enableUnsolicited )
                 {
                     Command_deq_itr itr = std::find(_additional_commands.begin(), 
                                                     _additional_commands.end(), 

@@ -8,6 +8,8 @@
 #include "prot_gpuff.h"
 #include "pt_numeric.h"
 
+#include "exceptions.h"
+
 #include "portglob.h"
 #include "dev_dnp.h"
 #include "cparms.h"
@@ -622,7 +624,6 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
             //    we have to call the Device::DNP-specific initUnsolicited
             shared_ptr<Devices::DnpDevice> dnp_device = boost::static_pointer_cast<Devices::DnpDevice>(dr->device);
 
-            long long steve = 0;
             try
             {
                 dnp_device->initUnsolicited();
@@ -632,7 +633,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
 
                 _active_devices[dr] = _to_generate.insert(_to_generate.end(), dr);
             }
-            catch( std::exception& e )
+            catch( MissingConfigException &e )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " DNP Device " << dnp_device->getName() << " is not assigned a DNP configuration. " 

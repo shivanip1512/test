@@ -1,8 +1,7 @@
 #include "precompiled.h"
 
 #include "dnp_application.h"
-
-#include "prot_dnp.h"
+#include "exceptions.h"
 
 #include "logger.h"
 #include "numstr.h"
@@ -65,9 +64,9 @@ void ApplicationLayer::setOptions( int options )
     _transport.setOptions(options);
 }
 
-void ApplicationLayer::setConfigData( const DNP::ConfigData* configData )
+void ApplicationLayer::setConfigData( const config_data* config )
 {
-    _config_data = configData;
+    _config = config;
 }
 
 void ApplicationLayer::setCommand( FunctionCode fc )
@@ -431,7 +430,12 @@ int ApplicationLayer::decode( CtiXfer &xfer, int status )
 
     if( retVal = _transport.decode(xfer, status) )
     {
-        if( ++_comm_errors <= _config_data->getInternalRetries() )  // CommRetries )
+        if (!_config)
+        {
+            throw MissingConfigException();
+        }
+
+        if( ++_comm_errors <= _config->internalRetries )  // CommRetries )
         {
             if( _appState == RecvResponse )
             {

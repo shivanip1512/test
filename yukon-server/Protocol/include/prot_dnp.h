@@ -7,7 +7,9 @@
 #include "packet_finder.h"
 
 #include "dnp_application.h"
+
 #include "dnp_object_binaryoutput.h"
+#include "dnp_configuration.h"
 
 #include <boost/scoped_ptr.hpp>
 
@@ -28,14 +30,14 @@ private:
     int              _options;
     unsigned long    _last_complaint;
 
-    typedef std::deque<Command>   Command_deq;
+    typedef std::deque<Command>  Command_deq;
     typedef Command_deq::iterator Command_deq_itr;
 
     Command     _command;
     Command_deq _additional_commands;
 
     std::vector<output_point> _command_parameters;
-    boost::scoped_ptr<DNP::ConfigData> _config_data;
+    boost::scoped_ptr<DNP::config_data> _config;
 
     DNP::ApplicationLayer::object_block_queue _object_blocks;
 

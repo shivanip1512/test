@@ -952,41 +952,6 @@ void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto,
     }
 }
 
-ConfigData::ConfigData(unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs, 
-                       bool omitTimeRequest, bool enableUnsolicited) :
-    _internalRetries(internalRetries),
-    _useLocalTime(useLocalTime),
-    _enableDnpTimesyncs(enableDnpTimesyncs),
-    _omitTimeRequest(omitTimeRequest),
-    _enableUnsolicited(enableUnsolicited)
-{
-}
-
-unsigned ConfigData::getInternalRetries() const
-{
-    return _internalRetries;
-}
-
-bool ConfigData::isUsingLocalTime()
-{
-    return _useLocalTime;
-}
-
-bool ConfigData::isTimeRequestOmitted()
-{
-    return _omitTimeRequest;
-}
-
-bool ConfigData::isDnpTimesyncEnabled()
-{
-    return _enableDnpTimesyncs;
-}
-
-bool ConfigData::isUnsolicitedEnabled()
-{
-    return _enableUnsolicited;
-}
-
 }
 }
 }
