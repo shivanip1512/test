@@ -14,6 +14,7 @@
             value - for status points = state text, for all others = raw value
             unitofmeasure - the unit of measure text, or nothing if undefined
             paoname - the name of the PAO the point is attached to
+            meternumber - the meternumber (for "meter" device types, else nothing)
             paodescription - the description of the PAO (often this is the CapBank Address)
             pointtype - the name of the point type (e.g. "Analog")
             notificationgroup - the name of the notification group to which this is being sent

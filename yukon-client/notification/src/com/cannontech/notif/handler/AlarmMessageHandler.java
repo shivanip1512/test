@@ -9,11 +9,12 @@ import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.*;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
@@ -30,6 +31,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
     private static Logger log = YukonLogManager.getLogger(AlarmMessageHandler.class);
     
     private @Autowired PointFormattingService pointFormattingService;
+    private @Autowired MeterDao meterDao;
     
     @Override
     public Class<NotifAlarmMsg> getSupportedMessageType() {
@@ -62,7 +64,7 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 
                 notif.addData("notificationgroup", liteNotifGroup.getNotificationGroupName());
                 
-                LitePoint point = (LitePoint)DaoFactory.getPointDao().getLitePoint(msg.pointId);
+                LitePoint point = DaoFactory.getPointDao().getLitePoint(msg.pointId);
                 notif.addData("pointid", Integer.toString(point.getPointID()));
                 notif.addData("pointname", point.getPointName());
                 notif.addData("rawvalue", Double.toString(msg.value));
@@ -72,6 +74,19 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(pAObjectId);
                 notif.addData("paoname", liteYukonPAO.getPaoName());
                 notif.addData("paodescription", liteYukonPAO.getPaoDescription());
+                
+                String meterNumber = "";
+                if (liteYukonPAO.getPaoType().isMeter()) {
+                    try {
+                        Meter meter = meterDao.getForId(liteYukonPAO.getYukonID());
+                        meterNumber = meter.getMeterNumber();
+                    } catch (NotFoundException nfe) {
+                        // ignore if not found, will use default empty string.
+                        // alarmed device is not a meter
+                        log.debug("Alarmed device is not of type meter, skipping meternumber and using empty string.");
+                    }
+                }
+                notif.addData("meternumber", meterNumber);
                 
                 AlarmPointValue alarmPointValue = new AlarmPointValue(msg, point);
                 YukonUserContext userContext = contact.getYukonUserContext();
