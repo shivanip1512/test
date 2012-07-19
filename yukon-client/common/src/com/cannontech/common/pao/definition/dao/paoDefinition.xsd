@@ -115,6 +115,8 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="OPEN"/>
             <xs:enumeration value="CLOSE"/>
+            <xs:enumeration value="OPEN_702X"/>
+            <xs:enumeration value="CLOSE_702X"/>
         </xs:restriction>
     </xs:simpleType>
     

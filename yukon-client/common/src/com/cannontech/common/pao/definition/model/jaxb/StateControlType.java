@@ -32,7 +32,9 @@ import javax.xml.bind.annotation.XmlType;
 public enum StateControlType {
 
     OPEN,
-    CLOSE;
+    CLOSE,
+    OPEN_702X,
+    CLOSE_702X;
 
     public String value() {
         return name();

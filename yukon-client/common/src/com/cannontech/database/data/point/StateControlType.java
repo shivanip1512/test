@@ -6,6 +6,8 @@ public enum StateControlType implements DatabaseRepresentationSource {
     NONE("none"),
     OPEN("control open"),
     CLOSE("control close"),
+    OPEN_702X("putvalue analog 1 0"),  // used for auto volt control point
+    CLOSE_702X("putvalue analog 1 1"), // ditto
     ;
     
     private final String controlCommand;
