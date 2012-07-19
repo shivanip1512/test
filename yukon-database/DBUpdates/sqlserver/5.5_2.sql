@@ -252,6 +252,42 @@ DELETE FROM Point WHERE PointId IN (
     WHERE PointType = 'Analog' AND POINTOFFSET = 40 AND yp.Type LIKE 'RFN%');
 /* End YUK-10999 */
 
+/* Start YUK-11130 */
+UPDATE YukonPAObject SET Type = 'MCT-410iL' WHERE LOWER(Type) = LOWER('MCT-410IL');
+UPDATE YukonPAObject SET Type = 'MCT-410cL' WHERE LOWER(Type) = LOWER('MCT-410CL'); 
+UPDATE YukonPAObject SET Type = 'MCT-430A' WHERE LOWER(Type) = LOWER('MCT-430A');
+UPDATE YukonPAObject SET Type = 'MCT-430S4' WHERE LOWER(Type) = LOWER('MCT-430S4');
+UPDATE YukonPAObject SET Type = 'MCT-410fL' WHERE LOWER(Type) = LOWER('MCT-410FL'); 
+UPDATE YukonPAObject SET Type = 'MCT-410gL' WHERE LOWER(Type) = LOWER('MCT-410GL'); 
+UPDATE YukonPAObject SET Type = 'MCT-430SL' WHERE LOWER(Type) = LOWER('MCT-430SL'); 
+UPDATE YukonPAObject SET Type = 'MCT-430A3' WHERE LOWER(Type) = LOWER('MCT-430A3');
+UPDATE YukonPAObject SET Type = 'MCT-420fL' WHERE LOWER(Type) = LOWER('MCT-420FL'); 
+UPDATE YukonPAObject SET Type = 'MCT-420cL' WHERE LOWER(Type) = LOWER('MCT-420CL'); 
+UPDATE YukonPAObject SET Type = 'MCT-420fD' WHERE LOWER(Type) = LOWER('MCT-420FLD'); 
+UPDATE YukonPAObject SET Type = 'MCT-420cD' WHERE LOWER(Type) = LOWER('MCT-420CLD'); 
+UPDATE YukonPAObject SET Type = 'IPC-410fL' WHERE LOWER(Type) = LOWER('IPC-410AL'); 
+UPDATE YukonPAObject SET Type = 'IPC-420fD' WHERE LOWER(Type) = LOWER('IPC-420AD'); 
+UPDATE YukonPAObject SET Type = 'IPC-430S4e' WHERE LOWER(Type) = LOWER('IPC-430S4'); 
+
+UPDATE DeviceTypeCommand SET DeviceType = 'MCT-420FD' WHERE DeviceType='MCT-420FLD';
+UPDATE DeviceTypeCommand SET DeviceType = 'MCT-420CD' WHERE DeviceType='MCT-420CLD';
+    
+/* @error ignore-begin */
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-410iL' WHERE LOWER(PAOType) = LOWER('MCT-410IL');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-410cL' WHERE LOWER(PAOType) = LOWER('MCT-410CL');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-430A' WHERE LOWER(PAOType) = LOWER('MCT-430A');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-430S4' WHERE LOWER(PAOType) = LOWER('MCT-430S4');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-410fL' WHERE LOWER(PAOType) = LOWER('MCT-410FL');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-410gL' WHERE LOWER(PAOType) = LOWER('MCT-410GL');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-430SL' WHERE LOWER(PAOType) = LOWER('MCT-430SL');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-430A3' WHERE LOWER(PAOType) = LOWER('MCT-430A3');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-420fL' WHERE LOWER(PAOType) = LOWER('MCT-420FL');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-420cL' WHERE LOWER(PAOType) = LOWER('MCT-420CL');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-420fD' WHERE LOWER(PAOType) = LOWER('MCT-420FLD');
+UPDATE AMIBillingReadLookup SET PAOType = 'MCT-420cD' WHERE LOWER(PAOType) = LOWER('MCT-420CLD');
+/* @error ignore-end */
+/* End YUK-11130 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
