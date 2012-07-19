@@ -169,6 +169,33 @@ WHERE SUBSTR(Notification, 1,1) = '('
   AND LENGTH(REPLACE(REPLACE(REPLACE(REPLACE(Notification,' ',''),')',''),'(',''),'-','')) = 10
   AND NotificationCategoryID IN (2,4,5,6,8,10);
 /* End YUK-11129 */
+  
+/* Start YUK-11087 */
+/* @start-block */
+ALTER TABLE SettlementConfig DROP COLUMN CTISettlement;
+ALTER TABLE SettlementConfig DROP COLUMN YukonDefId;
+ALTER TABLE SettlementConfig DROP COLUMN EntryId;
+
+DECLARE
+    v_activeSettlementsCount INT;
+BEGIN
+    SELECT COUNT(*) INTO v_activeSettlementsCount
+    FROM SettlementConfig
+    WHERE ConfigId >= 0;
+    
+    /* If settements aren't being used by the customer lets delete their settlement tables */ 
+    IF 1 > v_activeSettlementsCount THEN
+        DELETE FROM YukonListEntry WHERE ListId IN (SELECT ListId 
+                                                    FROM YukonSelectionList 
+                                                    WHERE ListName = 'Settlement');
+        DELETE FROM YukonSelectionList WHERE ListName = 'Settlement';
+        
+        EXECUTE IMMEDIATE 'DROP TABLE SettlementConfig';
+    END IF;
+END;
+/
+/* @end-block */
+/* End YUK-11087 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 

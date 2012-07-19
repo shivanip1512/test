@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/18/2012 3:24:28 PM                         */
+/* Created on:     7/18/2012 6:24:12 PM                         */
 /*==============================================================*/
 
 
@@ -7122,30 +7122,6 @@ create table ServiceCompanyDesignationCode  (
 );
 
 /*==============================================================*/
-/* Table: SettlementConfig                                      */
-/*==============================================================*/
-create table SettlementConfig  (
-   ConfigID             NUMBER                          not null,
-   FieldName            VARCHAR2(64)                    not null,
-   FieldValue           VARCHAR2(64)                    not null,
-   CTISettlement        VARCHAR2(32)                    not null,
-   YukonDefID           NUMBER                          not null,
-   Description          VARCHAR2(128)                   not null,
-   EntryID              NUMBER                          not null,
-   RefEntryID           NUMBER                          not null,
-   constraint PK_SETTLEMENTCONFIG primary key (ConfigID)
-);
-
-insert into SettlementConfig values (-1, 'CDI Rate', '0', 'HECO', '3651', 'Controlled Demand Incentive, Dollars per kW.', 0, 0);
-insert into SettlementConfig values (-2, 'ERI Rate', '0', 'HECO', '3651', 'Energy Reduction Incentive, Dollars per kWh.', 0, 0);
-insert into SettlementConfig values (-3, 'UF Delay', '0', 'HECO', '3651', 'Under frequency Delay, in minutes.', 0, 0);
-insert into SettlementConfig values (-4, 'Dispatched Delay', '0', 'HECO', '3651', 'Dispatched Delay, in minutes.', 0, 0);
-insert into SettlementConfig values (-5, 'Emergency Delay', '0', 'HECO', '3651', 'Emergency Delay, in minutes.', 0, 0);
-insert into SettlementConfig values (-6, 'Allowed Violations', '0', 'HECO', '3651', 'Max number of allowed violations, deviations.', 0, 0);
-insert into SettlementConfig values (-7, 'Restore Duration', '0', 'HECO', '3651', 'Duration for event restoration to occur, in minutes.', 0, 0);
-insert into SettlementConfig values (-8, 'Demand Charge', '0', 'HECO', '3651', 'Rate Schedule billing demand charge', 0, 0);
-
-/*==============================================================*/
 /* Table: Shipment                                              */
 /*==============================================================*/
 create table Shipment  (
@@ -9196,7 +9172,6 @@ INSERT INTO YukonSelectionList VALUES(1062,'N','(none)','Irrigation meter voltag
 INSERT INTO YukonSelectionList VALUES(1063,'N','(none)','Water heater location selection','WHLocation','Y',-1);
 INSERT INTO YukonSelectionList VALUES(1064,'N','(none)','Heat pump size selection','HeatPumpSize','Y',-1);
 INSERT INTO YukonSelectionList VALUES(1065,'A','(none)','Customer account rate schedule selection','RateSchedule','Y',-1);
-INSERT INTO YukonSelectionList VALUES(1066,'A','(none)','Energy Company Settlement Types','Settlement','Y',-1);
 INSERT INTO YukonSelectionList VALUES(1067,'A','(none)','System category types for Event Logging in STARS', 'EventSystemCategory', 'N',-1);
 INSERT INTO YukonSelectionList VALUES(1068,'A','(none)','Action types for Customer Account events in STARS', 'EventAccountActions', 'N',-1);
 INSERT INTO YukonSelectionList VALUES(1071,'A','(none)','Commercial Customer Types','CICustomerType','N',-1);

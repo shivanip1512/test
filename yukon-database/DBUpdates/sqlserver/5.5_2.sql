@@ -154,6 +154,30 @@ WHERE SUBSTRING(Notification, 1,1) = '('
   AND LEN(REPLACE(REPLACE(REPLACE(REPLACE(Notification,' ',''),')',''),'(',''),'-','')) = 10
   AND NotificationCategoryID IN (2,4,5,6,8,10);
 /* End YUK-11129 */
+  
+/* Start YUK-11087 */
+/* @start-block */
+ALTER TABLE SettlementConfig DROP COLUMN CTISettlement;
+ALTER TABLE SettlementConfig DROP COLUMN YukonDefId;
+ALTER TABLE SettlementConfig DROP COLUMN EntryId;
+GO
+
+IF 0 = (SELECT COUNT (*) 
+        FROM SettlementConfig
+        WHERE ConfigId >= 0)
+BEGIN
+
+        DELETE FROM YukonListEntry WHERE ListId IN (SELECT ListId 
+                                                    FROM YukonSelectionList 
+                                                    WHERE ListName = 'Settlement');
+        DELETE FROM YukonSelectionList WHERE ListName = 'Settlement';
+        
+        DROP TABLE SettlementConfig;
+
+END
+/* @end-block */
+/* End YUK-11087 */
+
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
