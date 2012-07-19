@@ -1,5 +1,8 @@
 package com.cannontech.dr.rfn.endpoint;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -10,6 +13,9 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -18,11 +24,15 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.rfn.endpoint.RfnArchiveRequestListenerBase;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -30,16 +40,34 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveResponse;
 import com.cannontech.dr.rfn.service.ExiParsingService;
 import com.cannontech.dr.rfn.service.RfnLcrPointDataMappingService;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
+import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommand.Builder;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
+import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
+import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 @ManagedResource
 public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerBase<RfnLcrArchiveRequest> {
+    
     @Autowired ResourceLoader loader;
     @Autowired RfnLcrPointDataMappingService rfnLcrPointDataMappingService;
     @Autowired ExiParsingService exiParsingService;
     @Autowired PaoDao paoDao;
     @Autowired PointDao pointDao;
+    @Autowired EnrollmentDao enrollmentService;
+    @Autowired InventoryDao inventoryDao;
+    @Autowired EnergyCompanyRolePropertyDao ecRolePropertyDao;
+    @Autowired YukonEnergyCompanyService yecService;
+    @Autowired LmHardwareCommandService commandService;
+    @Autowired InventoryBaseDao inventoryBaseDao;
     
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
@@ -55,7 +83,7 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
         
         @Override
         public void processPointDatas(RfnDevice rfnDevice, RfnLcrArchiveRequest archiveRequest) {
-            if (archiveRequest instanceof RfnLcrReadingArchiveRequest) { // Nothing to do when just an RfnLcrArchiveRequest
+            if (archiveRequest instanceof RfnLcrReadingArchiveRequest) {
                 RfnLcrReadingArchiveRequest readingArchiveRequest = ((RfnLcrReadingArchiveRequest) archiveRequest);
                 InputStream informingSchema = null;
                 SimpleXPathTemplate decodedPayload = null;
@@ -81,6 +109,26 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
     
                 incrementProcessedArchiveRequest();
                 LogHelper.debug(log, "%d PointDatas generated for RfnLcrReadingArchiveRequest", messagesToSend.size());
+            } else {
+                /** Just an lcr archive request, these happen when devices join the network */
+                InventoryIdentifier inventory = inventoryDao.getYukonInventoryForDeviceId(rfnDevice.getPaoIdentifier().getPaoId());
+                int inventoryId = inventory.getInventoryId();
+                List<ProgramEnrollment> activeEnrollments = enrollmentService.getActiveEnrollmentsByInventory(inventoryId);
+                if (!activeEnrollments.isEmpty()) {
+                    /** Send config if auto-config is enabled */
+                    YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(inventoryId);
+                    boolean autoConfig = ecRolePropertyDao.checkProperty(YukonRoleProperty.AUTOMATIC_CONFIGURATION, yec);
+                    if (autoConfig) {
+                        LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByInventoryId(inventoryId);
+                        LmHardwareCommand.Builder b = new Builder(lmhb, LmHardwareCommandType.CONFIG, yec.getEnergyCompanyUser());
+                        try {
+                            commandService.sendConfigCommand(b.build());
+                            log.debug("Sent config command for RfnLcrArchiveRequest");
+                        } catch (CommandCompletionException e) {
+                            log.error("Unable to send config command for RfnLcrArchiveRequest", e);
+                        }
+                    }
+                }
             }
             sendAcknowledgement(archiveRequest);
         }

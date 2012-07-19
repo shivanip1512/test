@@ -15,8 +15,8 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 public interface EnrollmentDao {
 
     public List<ProgramEnrollment> getActiveEnrollmentsByAccountId(int accountId);
-
-    public List<ProgramEnrollment> getActiveEnrollmentsByInventoryId(int accountId, int inventoryId);
+    
+    public List<ProgramEnrollment> getActiveEnrollmentsByInventory(int inventoryId);
 
     /**
      * Find enrollments which were active at the given time for the given
@@ -126,4 +126,5 @@ public interface EnrollmentDao {
      * @return
      */
     public Set<Integer> getActiveEnrolledInventoryIdsForGroupIds(Collection<Integer> groupIds);
+
 }

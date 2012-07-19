@@ -101,5 +101,10 @@ public class LmHardwareCommand {
     public ImmutableMap<LmHardwareCommandParam, Object> optionsCopy() {
         return ImmutableMap.copyOf(params);
     }
+
+    @Override
+    public String toString() {
+        return String.format("LmHardwareCommand [device=%s, type=%s, user=%s, params=%s]", device, type, user, params);
+    }
     
 }

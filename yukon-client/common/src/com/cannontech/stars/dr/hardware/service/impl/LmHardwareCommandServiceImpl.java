@@ -121,14 +121,16 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
             for (LmHardwareCommandParam option : optionsCopy.keySet()) {
                 b.withParam(option, optionsCopy.get(option));
             }
-            sendInServiceCommand(b.build());
-            
+            LmHardwareCommand inservice = b.build();
+            sendInServiceCommand(inservice);
+            log.debug("Automated in-service LM command sent: " + inservice);
             if (autoConfig) {
                 // Send the config command a while later
                 TimerTask sendConfigLater = new TimerTask() {
                     public void run() {
                         try {
                             impl.sendCommand(command);
+                            log.debug("Delayed config command sent: " + command);
                         } catch (Exception e) {
                             log.error("Unable to send config command", e);
                         }
@@ -141,6 +143,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
             // Only send the config command
             try {
                 impl.sendCommand(command);
+                log.debug("Config command sent: " + command);
             } catch (Exception e) {
                 log.error("Unable to send config command", e);
                 throw new CommandCompletionException("Unable to send config command", e);
@@ -168,6 +171,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         YukonEnergyCompany yec = yecService.getEnergyCompanyByInventoryId(inventoryId);
         
         impl.sendCommand(command);
+        log.debug("In-Service command sent: " + command);
 
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec.getEnergyCompanyId());
         
@@ -194,6 +198,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(ecId);
 
         impl.sendCommand(command);
+        log.debug("Out-of-Service command sent: " + command);
         
         // Add "Termination" to hardware events
         int event = lsec.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID();

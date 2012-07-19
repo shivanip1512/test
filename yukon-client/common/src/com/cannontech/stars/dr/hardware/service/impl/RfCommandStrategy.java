@@ -47,7 +47,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
         LiteLmHardwareBase device = parameters.getDevice();
         YukonListEntry typeEntry = yukonListDao.getYukonListEntry(device.getLmHardwareTypeID());
         HardwareType type = HardwareType.valueOf(typeEntry.getYukonDefID());
-        RfnManufacturerModel template = RfnManufacturerModel.getForType(HardwareType.getForHardwareType(type)).get(0);
+        RfnManufacturerModel template = RfnManufacturerModel.getForType(type.getForHardwareType()).get(0);
         RfnIdentifier rfnIdentifier = new RfnIdentifier(device.getManufacturerSerialNumber(), template.getManufacturer(), template.getModel());
         
         RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(rfnIdentifier);

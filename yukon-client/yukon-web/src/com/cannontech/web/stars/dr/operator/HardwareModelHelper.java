@@ -61,7 +61,7 @@ public class HardwareModelHelper {
             if (type.isRf()) {
                 /** For rf devices the {@link RfnDeviceCreationService} will end up calling {@link HardwareUiService} createHardware method 
                  * after it creates the pao part of the device using the {@link DeviceCreationService}. */
-                PaoType paoType = HardwareType.getForHardwareType(type);
+                PaoType paoType = type.getForHardwareType();
                 RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(paoType).get(0);
                 RfnIdentifier rfId = new RfnIdentifier(hardware.getSerialNumber(), templateSettings.getManufacturer(), templateSettings.getModel());
                 rfnDeviceCreationService.create(rfId, hardware, user);

@@ -11,6 +11,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -63,6 +64,7 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
             }
             Double value = evaluateArchiveReadValue(decodedMessage, entry);
             if (value != null) {
+                if(entry.getAttribute() == BuiltInAttribute.SERVICE_STATUS) { value += 1; } // temporary until we know what firmware is sending.
                 Integer pointTypeId = paoPointIdentifier.getPointIdentifier().getPointType().getPointTypeId();
                 Long timeInSec = decodedMessage.evaluateAsLong("/DRReport/@utc");
                 Date timeOfReading = new Instant(timeInSec * 1000).toDate();

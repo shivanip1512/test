@@ -385,11 +385,11 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         return starsToPaoMap.get(type);
     }
     
-    public static PaoType getForHardwareType(HardwareType type) {
+    public PaoType getForHardwareType() {
         for (PaoType paoType : starsToPaoMap.keySet()) {
-            if (starsToPaoMap.get(paoType).contains(type)) return paoType;
+            if (starsToPaoMap.get(paoType).contains(this)) return paoType;
         }
-        throw new IllegalArgumentException("Unknown PaoType for HardwareType: " + type);
+        throw new IllegalArgumentException("Unknown PaoType for HardwareType: " + this);
     }
     
     public boolean isLmHardware() {

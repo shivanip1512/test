@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -133,8 +132,6 @@ public class AccountImportService {
         // Map from serial # (String) to account # (String)
         Map<String, String> hwFieldsMap = Maps.newHashMap();
 
-        Map<Integer, String[]> custLines = result.getCustLines();
-        Map<Integer, String[]> hwLines = result.getHwLines();
         try {
             final String fs = System.getProperty("file.separator");
             LiteStarsEnergyCompany lsec = result.getEnergyCompany();
@@ -219,7 +216,7 @@ public class AccountImportService {
                         continue;
                     }
 
-                    custLines.put(lineNo, new String[]{line, null});
+                    result.getCustLines().put(lineNo, new String[]{line, null});
                     
                     result.setPosition("customer file line #" + lineNo);
                     
@@ -282,9 +279,9 @@ public class AccountImportService {
                     String[] columns = StarsUtils.splitString(line, ",");
                     if (columns.length > numCustCol) {
                         result.custFileErrors++;
-                        String[] value = custLines.get(lineNoKey);
+                        String[] value = result.getCustLines().get(lineNoKey);
                         value[1] = "[line: " + lineNo + " error: Incorrect number of fields]";
-                        custLines.put(lineNoKey, value);
+                        result.getCustLines().put(lineNoKey, value);
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
@@ -295,9 +292,9 @@ public class AccountImportService {
 
                     if (custFields[ImportFields.IDX_ACCOUNT_NO].trim().length() == 0) {
                         result.custFileErrors++;
-                        String[] value = custLines.get(lineNoKey);
+                        String[] value = result.getCustLines().get(lineNoKey);
                         value[1] = "[line: " + lineNo + " error: Account # cannot be empty]";
-                        custLines.put(lineNoKey, value);
+                        result.getCustLines().put(lineNoKey, value);
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
@@ -305,9 +302,9 @@ public class AccountImportService {
                     String action = custFields[ImportFields.IDX_ACCOUNT_ACTION];
                     if (!(StringUtils.isBlank(action) || action.equalsIgnoreCase("INSERT") || action.equalsIgnoreCase("UPDATE") || action.equalsIgnoreCase("REMOVE"))) {
                         result.custFileErrors++;
-                        String[] value = custLines.get(lineNoKey);
+                        String[] value = result.getCustLines().get(lineNoKey);
                         value[1] = "[line: " + lineNo + " error: " + action + " is not a valid action]";
-                        custLines.put(lineNoKey, value);
+                        result.getCustLines().put(lineNoKey, value);
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
@@ -326,9 +323,9 @@ public class AccountImportService {
                     if ((liteAcctInfo != null) && result.isInsertSpecified()) {
                         
                         result.custFileErrors++;
-                        String[] value = custLines.get(lineNoKey);
+                        String[] value = result.getCustLines().get(lineNoKey);
                         value[1] = "[line: " + lineNo + " error: INSERT account action, but account already exists.]";
-                        custLines.put(lineNoKey, value);
+                        result.getCustLines().put(lineNoKey, value);
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
@@ -338,9 +335,9 @@ public class AccountImportService {
                             liteAcctInfo = importAccount(custFields, lsec, result, user);
                         } catch (Exception ex) {
                             result.custFileErrors++;
-                            String[] value = custLines.get(lineNoKey);
+                            String[] value = result.getCustLines().get(lineNoKey);
                             value[1] = "[line: " + lineNo + " error: " + ex.getMessage() + "]";
-                            custLines.put(lineNoKey, value);
+                            result.getCustLines().put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
                         }
@@ -446,9 +443,9 @@ public class AccountImportService {
                             if (checkUsername) {
                                 if (custFields[ImportFields.IDX_PASSWORD].length() == 0) {
                                     result.custFileErrors++;
-                                    String[] value = custLines.get(lineNoKey);
+                                    String[] value = result.getCustLines().get(lineNoKey);
                                     value[1] = "[line: " + lineNo + " error: Password cannot be empty]";
-                                    custLines.put(lineNoKey, value);
+                                    result.getCustLines().put(lineNoKey, value);
                                     addToLog(lineNoKey, value, importLog);
                                     continue;
                                 }   
@@ -456,9 +453,9 @@ public class AccountImportService {
                                 String username = custFields[ImportFields.IDX_USERNAME];
                                 if (addedUsernames.contains(username)) {
                                     result.custFileErrors++;
-                                    String[] value = custLines.get(lineNoKey);
+                                    String[] value = result.getCustLines().get(lineNoKey);
                                     value[1] = "[line: " + lineNo + " error: Username would have already been added by the import program]";
-                                    custLines.put(lineNoKey, value);
+                                    result.getCustLines().put(lineNoKey, value);
                                     addToLog(lineNoKey, value, importLog);
                                     continue;
                                 }
@@ -467,9 +464,9 @@ public class AccountImportService {
                                     removedUsernames.remove(username);
                                 } else if (yukonUserDao.findUserByUsername(username) != null) {
                                     result.custFileErrors++;
-                                    String[] value = custLines.get(lineNoKey);
+                                    String[] value = result.getCustLines().get(lineNoKey);
                                     value[1] = "[line: " + lineNo + " error: Username already exists]";
-                                    custLines.put(lineNoKey, value);
+                                    result.getCustLines().put(lineNoKey, value);
                                     addToLog(lineNoKey, value, importLog);
                                     continue;
                                 }
@@ -491,9 +488,9 @@ public class AccountImportService {
                         
                         if (hwFields[ImportFields.IDX_SERIAL_NO].trim().length() == 0) {
                             result.custFileErrors++;
-                            String[] value = custLines.get(lineNoKey);
+                            String[] value = result.getCustLines().get(lineNoKey);
                             value[1] = "[line: " + lineNo + " error: Serial number cannot be empty]";
-                            custLines.put(lineNoKey, value);
+                            result.getCustLines().put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
                         }
@@ -512,9 +509,9 @@ public class AccountImportService {
                         
                         if (hwFields[ImportFields.IDX_DEVICE_TYPE].trim().length() == 0) {
                             result.custFileErrors++;
-                            String[] value = custLines.get(lineNoKey);
+                            String[] value = result.getCustLines().get(lineNoKey);
                             value[1] = "[line: " + lineNo + " error: Device type cannot be empty]";
-                            custLines.put(lineNoKey, value);
+                            result.getCustLines().put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
                         }
@@ -526,9 +523,9 @@ public class AccountImportService {
                         
                         if (deviceType == null) {
                             result.custFileErrors++;
-                            String[] value = custLines.get(lineNoKey);
+                            String[] value = result.getCustLines().get(lineNoKey);
                             value[1] = "[line: " + lineNo + " error: Invalid device type \"" + hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
-                            custLines.put(lineNoKey, value);
+                            result.getCustLines().put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
                         }
@@ -541,9 +538,9 @@ public class AccountImportService {
                             if ((appFields[ImportFields.IDX_APP_TYPE].trim().length() > 0) &&
                                 (!applianceNameList.contains(appFields[ImportFields.IDX_APP_TYPE]))) {
                                 result.custFileErrors++;
-                                String[] value = custLines.get(lineNoKey);
+                                String[] value = result.getCustLines().get(lineNoKey);
                                 value[1] = "[line: " + lineNo + " error: Appliance Type was supplied, but doesn't exist]";
-                                custLines.put(lineNoKey, value);
+                                result.getCustLines().put(lineNoKey, value);
                                 addToLog(lineNoKey, value, importLog);
                                 continue;
                             }
@@ -562,9 +559,9 @@ public class AccountImportService {
                                 }
                             } catch (Exception e) {
                                 result.custFileErrors++;
-                                String[] value = custLines.get(lineNoKey);
+                                String[] value = result.getCustLines().get(lineNoKey);
                                 value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
-                                custLines.put(lineNoKey, value);
+                                result.getCustLines().put(lineNoKey, value);
                                 addToLog(lineNoKey, value, importLog);
                                 continue;
                             }
@@ -598,9 +595,9 @@ public class AccountImportService {
                                 // Insert/update a hardware in an account, if hardware already exists in another account, report an error 
                                 if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase(custFields[ImportFields.IDX_ACCOUNT_NO])) {
                                     result.custFileErrors++;
-                                    String[] value = custLines.get(lineNoKey);
+                                    String[] value = result.getCustLines().get(lineNoKey);
                                     value[1] = "[line: " + lineNo + " error: Cannot import hardware, serial #" + hwFields[ImportFields.IDX_SERIAL_NO] + " already exists in account #" + acctNo + "]";
-                                    custLines.put(lineNoKey, value);
+                                    result.getCustLines().put(lineNoKey, value);
                                     addToLog(lineNoKey, value, importLog);
                                     continue;
                                 }
@@ -668,7 +665,7 @@ public class AccountImportService {
                         continue;
                     }
 
-                    hwLines.put(lineNo, new String[]{line, null});
+                    result.getHwLines().put(lineNo, new String[]{line, null});
                     
                     result.setPosition("hardware file line #" + lineNo);
                     
@@ -716,9 +713,9 @@ public class AccountImportService {
                     String[] columns = StarsUtils.splitString(line, ",");
                     if (columns.length > numHwCol) {
                         result.hwFileErrors++;
-                        String[] value = hwLines.get(lineNoKey);
+                        String[] value = result.getHwLines().get(lineNoKey);
                         value[1] = "[line: " + lineNo + " error: Incorrect number of fields]";
-                        hwLines.put(lineNoKey, value);
+                        result.getHwLines().put(lineNoKey, value);
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
@@ -729,26 +726,26 @@ public class AccountImportService {
                     
                     if (hwFields[ImportFields.IDX_ACCOUNT_ID].trim().length() == 0) {
                         result.hwFileErrors++;
-                        String[] value = hwLines.get(lineNoKey);
+                        String[] value = result.getHwLines().get(lineNoKey);
                         value[1] = "[line: " + lineNo + " error: Account # cannot be empty]";
-                        hwLines.put(lineNoKey, value);
+                        result.getHwLines().put(lineNoKey, value);
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
 
                     if (hwFields[ImportFields.IDX_SERIAL_NO].trim().length() == 0) {
                         result.hwFileErrors++;
-                        String[] value = hwLines.get(lineNoKey);
+                        String[] value = result.getHwLines().get(lineNoKey);
                         value[1] = "[line: " + lineNo + " error: Serial # cannot be empty]";
-                        hwLines.put(lineNoKey, value);
+                        result.getHwLines().put(lineNoKey, value);
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
                     if (hwFields[ImportFields.IDX_DEVICE_TYPE].trim().length() == 0) {
                         result.hwFileErrors++;
-                        String[] value = hwLines.get(lineNoKey);
+                        String[] value = result.getHwLines().get(lineNoKey);
                         value[1] = "[line: " + lineNo + " error: Device type cannot be empty]";
-                        hwLines.put(lineNoKey, value);
+                        result.getHwLines().put(lineNoKey, value);
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
@@ -757,9 +754,9 @@ public class AccountImportService {
                     YukonListEntry deviceType = yukonListDao.getYukonListEntry(devTypeList, hwFields[ImportFields.IDX_DEVICE_TYPE]);
                     if (deviceType == null) {
                         result.hwFileErrors++;
-                        String[] value = hwLines.get(lineNoKey);
+                        String[] value = result.getHwLines().get(lineNoKey);
                         value[1] = "[line: " + lineNo + " error: Invalid device type \"" + hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
-                        hwLines.put(lineNoKey, value);
+                        result.getHwLines().put(lineNoKey, value);
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
@@ -778,9 +775,9 @@ public class AccountImportService {
                             }
                             
                             result.hwFileErrors++;
-                            String[] value = hwLines.get(lineNoKey);
+                            String[] value = result.getHwLines().get(lineNoKey);
                             value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " will be removed by the import program]";
-                            hwLines.put(lineNoKey, value);
+                            result.getHwLines().put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
                         }
@@ -800,9 +797,9 @@ public class AccountImportService {
                             }
                             
                             result.hwFileErrors++;
-                            String[] value = hwLines.get(lineNoKey);
+                            String[] value = result.getHwLines().get(lineNoKey);
                             value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportFields.IDX_ACCOUNT_ID] + " doesn't exist]";
-                            hwLines.put(lineNoKey, value);
+                            result.getHwLines().put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
                         }
@@ -819,9 +816,9 @@ public class AccountImportService {
                         if ((appFields[ImportFields.IDX_APP_TYPE].trim().length() > 0) &&
                             (!applianceNameList.contains(appFields[ImportFields.IDX_APP_TYPE]))) {
                             result.hwFileErrors++;
-                            String[] value = hwLines.get(lineNoKey);
+                            String[] value = result.getHwLines().get(lineNoKey);
                             value[1] = "[line: " + lineNo + " error: Appliance Type was supplied, but doesn't exist]";
-                            hwLines.put(lineNoKey, value);
+                            result.getHwLines().put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
                         }
@@ -838,9 +835,9 @@ public class AccountImportService {
                             }
                         } catch (Exception e) {
                             result.hwFileErrors++;
-                            String[] value = hwLines.get(lineNoKey);
+                            String[] value = result.getHwLines().get(lineNoKey);
                             value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
-                            hwLines.put(lineNoKey, value);
+                            result.getHwLines().put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
                         }
@@ -866,9 +863,9 @@ public class AccountImportService {
                         } else {
                             if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase(hwFields[ImportFields.IDX_ACCOUNT_ID])) {
                                 result.hwFileErrors++;
-                                String[] value = hwLines.get(lineNoKey);
+                                String[] value = result.getHwLines().get(lineNoKey);
                                 value[1] = "[line: " + lineNo + " error: Cannot import hardware, serial #" + hwFields[ImportFields.IDX_SERIAL_NO] + " already exists in another account]";
-                                hwLines.put(lineNoKey, value);
+                                result.getHwLines().put(lineNoKey, value);
                                 addToLog(lineNoKey, value, importLog);
                                 continue;
                             }
@@ -929,13 +926,13 @@ public class AccountImportService {
                 // Could not open the file passing error writing.
                 if (!result.getErrors().isEmpty()) {
                     importLog.println("Error Occured");
-                    if (custLines != null) {
-                        value = custLines.get(lineNo);
-                        custLines.put(lineNo, value);
+                    if (result.getCustLines() != null) {
+                        value = result.getCustLines().get(lineNo);
+                        result.getCustLines().put(lineNo, value);
                     } else {
-                        if (hwLines != null) {
-                            value = hwLines.get(lineNo);
-                            hwLines.put(lineNo, value);
+                        if (result.getHwLines() != null) {
+                            value = result.getHwLines().get(lineNo);
+                            result.getHwLines().put(lineNo, value);
                         }
                     }
                     
@@ -1022,7 +1019,7 @@ public class AccountImportService {
                 
                 result.getHardwareUpdated().add(hwFields[ImportFields.IDX_SERIAL_NO]);
             }
-        } catch (ParseException e) {
+        } catch (Exception e) {
             automationCheck(e.getMessage(), result.isAutomatedImport());
         }
         

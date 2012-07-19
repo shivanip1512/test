@@ -23,6 +23,7 @@ import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
@@ -32,7 +33,8 @@ import com.google.common.collect.Sets;
 
 public class EnrollmentDaoImpl implements EnrollmentDao {
     
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private CustomerAccountDao customerAccountDao;
 
     /** These strings are to help with the row mapper.  If you use both of these
      *  strings you will have the right table connections and data returned.
@@ -101,9 +103,11 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
     }
 
     @Override
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
-    public List<ProgramEnrollment> getActiveEnrollmentsByInventoryId(
-            int accountId, int inventoryId) {
+    public List<ProgramEnrollment> getActiveEnrollmentsByInventory(int inventoryId) {
+        
+        /** Will be 0 for devices not assigned to an account */
+        int accountId = customerAccountDao.getAccountByInventoryId(inventoryId).getAccountId();
+        
         SqlStatementBuilder accountEnrollmentSQL = new SqlStatementBuilder();
         accountEnrollmentSQL.append(enrollmentSQLHeader);
         accountEnrollmentSQL.append("WHERE lmhcg.accountId").eq(accountId);
@@ -387,9 +391,4 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
     	
     };
     
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-		this.yukonJdbcTemplate = yukonJdbcTemplate;
-	}
 }
-

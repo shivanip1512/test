@@ -115,7 +115,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     /**
      * Creates an rf devices, if the device is a dr device and create call is spawned from a NM archive request the 
      * hardware argument (and user) is expected to be null the stars tables will be stubbed out with defaults.  Otherwise 
-     * callers of the create(final RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) method are expected to
+     * callers of the {@link #create(final RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user)} method are expected to
      * pass in a fully filled out (not null) hardware (and user).  This allows a single creation service for both types of 
      * users: rf message listeners {@link LcrReadingArchiveRequestListener} and 
      * stars operator controllers {@link OperatorHardwareController}, {@link InventoryController}.

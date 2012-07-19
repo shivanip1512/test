@@ -8,11 +8,14 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -65,6 +68,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Autowired private LmHardwareBaseDao hardwareBaseDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     // ADD DEVICE TO ACCOUNT
     @Override
@@ -206,7 +210,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Override
     @Transactional
     public LiteInventoryBase updateDeviceOnAccount(LiteInventoryBase liteInv,
-            LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
+            LiteStarsEnergyCompany lsec, 
+            LiteYukonUser user) {
 
         try {
             boolean lmHardware = InventoryUtils.isLMHardware(liteInv.getCategoryID());
@@ -221,16 +226,24 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
                 // see if serialNumber is changed, if so, see it doesn't already
                 // exist on another device
-                LiteLmHardwareBase lmHwPrev = (LiteLmHardwareBase) starsSearchDao.getById(lmHw.getInventoryID(), energyCompany);
-                if (!lmHwPrev.getManufacturerSerialNumber().equals(newSerialNo) && starsSearchDao.searchLmHardwareBySerialNumber(newSerialNo,
-                                                                                                                                 energyCompany) != null) {
-                    throw new StarsDeviceSerialNumberAlreadyExistsException(newSerialNo,
-                                                                            energyCompany.getName());
+                LiteLmHardwareBase lmHwPrev = (LiteLmHardwareBase) starsSearchDao.getById(lmHw.getInventoryID(), lsec);
+                boolean changingSerialNo = !lmHwPrev.getManufacturerSerialNumber().equals(newSerialNo);
+                if (changingSerialNo && starsSearchDao.searchLmHardwareBySerialNumber(newSerialNo, lsec) != null) {
+                    throw new StarsDeviceSerialNumberAlreadyExistsException(newSerialNo, lsec.getName());
                 }
 
                 // save LMHardware here
-                liteInv = inventoryBaseDao.saveLmHardware(lmHw,
-                                                               energyCompany.getEnergyCompanyId());
+                liteInv = inventoryBaseDao.saveLmHardware(lmHw, lsec.getEnergyCompanyId());
+                
+                InventoryIdentifier inventoryIdentifier = inventoryDao.getYukonInventory(liteInv.getInventoryID());
+                
+                if (changingSerialNo && inventoryIdentifier.getHardwareType().isRf()) {
+                    RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(liteInv.getDeviceID());
+                    RfnIdentifier previous = rfnDevice.getRfnIdentifier();
+                    RfnIdentifier rfnIdentifier = new RfnIdentifier(lmHw.getManufacturerSerialNumber(), previous.getSensorManufacturer(), previous.getSensorModel());
+                    rfnDevice.setRfnIdentifier(rfnIdentifier);
+                    rfnDeviceDao.updateDevice(rfnDevice);
+                }
                 
                 // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR
                 // - only if this is a Two Way LCR that does not yet have a Yukon device assigned to it
@@ -246,12 +259,12 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         	    			throw new StarsDeviceSerialNumberAlreadyExistsException("Selected yukon device must be a Two Way LCR.");
         	    		} 
         	    		
-                		starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, yukonDeviceTypeId, null, null, false);
+                		starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, lsec, yukonDeviceTypeId, null, null, false);
                 	}
                 }
             }
             // update install event
-            updateInstallHardwareEvent(liteInv, energyCompany, user);
+            updateInstallHardwareEvent(liteInv, lsec, user);
         } catch (ObjectInOtherEnergyCompanyException e) {
             throw new RuntimeException(e);
         }
@@ -292,31 +305,31 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     // REMOVE DEVICE FROM ACCOUNT
     @Override
     @Transactional
-    public void removeDeviceFromAccount(LiteInventoryBase liteInventory,
-            LiteStarsEnergyCompany energyCompany,
+    public void removeDeviceFromAccount(LiteInventoryBase lib,
+            LiteStarsEnergyCompany lsec,
             LiteYukonUser user) {
         
-        int inventoryId = liteInventory.getInventoryID();
+        int inventoryId = lib.getInventoryID();
         InventoryIdentifier identifier = inventoryDao.getYukonInventory(inventoryId);
         
         boolean enrollable = identifier.getHardwareType().isEnrollable();
         if (enrollable) {
             // Unenroll the inventory from all its programs
-            unenrollHardware(liteInventory, user, energyCompany);
+            unenrollHardware(lib, user, lsec);
         }
         
-        int accountId = liteInventory.getAccountID();
-        long remove = liteInventory.getRemoveDate();
+        int accountId = lib.getAccountID();
+        long remove = lib.getRemoveDate();
         Instant removeInstant;
         if (remove <= 0) {
             removeInstant = new Instant();
         } else {
             removeInstant = new Instant(remove);
         }
-        liteInventory.setRemoveDate(remove);
+        lib.setRemoveDate(remove);
 
         // add UnInstall hardware event
-        addUnInstallHardwareEvent(liteInventory, energyCompany, user);
+        addUnInstallHardwareEvent(lib, lsec, user);
 
         // Delete appliances for the account/inventory id
         if (enrollable) {
@@ -329,14 +342,14 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         // cleaup gateway assignments for zigbee devices
         HardwareClass hardwareClass = identifier.getHardwareType().getHardwareClass();
         if (hardwareClass == HardwareClass.GATEWAY) {
-            gatewayDeviceDao.removeDevicesFromGateway(liteInventory.getDeviceID());
+            gatewayDeviceDao.removeDevicesFromGateway(lib.getDeviceID());
         } else if (identifier.getHardwareType().isZigbee()) {
-            gatewayDeviceDao.unassignDeviceFromGateway(liteInventory.getDeviceID());
+            gatewayDeviceDao.unassignDeviceFromGateway(lib.getDeviceID());
         }
 
         // log removal
         CustomerAccount account = customerAccountDao.getById(accountId);
-        hardwareEventLogService.hardwareRemoved(user, liteInventory.getDeviceLabel(), account.getAccountNumber());
+        hardwareEventLogService.hardwareRemoved(user, lib.getDeviceLabel(), account.getAccountNumber());
     }
 
     // Unenrolls the inventory from all its programs

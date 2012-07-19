@@ -5,12 +5,22 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
+import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.service.StarsInventoryBaseService;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -38,6 +48,10 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private StarsInventoryBaseService starsInventoryBaseService;
     @Autowired private StarsDatabaseCache cache;
     @Autowired private YukonEnergyCompanyService yecService;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private DeviceCreationService deviceCreationService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
 
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -97,6 +111,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     @Override
+    @Transactional
     public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user) {
 
         LiteInventoryBase liteInv = null;
@@ -111,8 +126,28 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         if (liteInv != null) {
             throw new StarsDeviceAlreadyExistsException(getAccountNumber(dto), getSerialNumber(dto), yec.getName());
         }
+        
+        YukonListEntry deviceType = getDeviceType(dto, lsec);
+        HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
+        
         // add device to account
         liteInv = internalAddDeviceToAccount(dto, lsec, user);
+        if (ht.isRf()) {
+            try {
+            // add rf device
+            RfnManufacturerModel mm = RfnManufacturerModel.getForType(ht.getForHardwareType()).get(0);
+            String manufacturer = mm.getManufacturer().trim();
+            String model = mm.getModel().trim();
+            String templatePrefix = configurationSource.getString("RFN_METER_TEMPLATE_PREFIX", "*RfnTemplate_");
+            String templateName = templatePrefix + manufacturer + "_" + model;
+            YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, dto.getSerialNumber(), true);
+            RfnDevice device = new RfnDevice(newDevice.getPaoIdentifier(), new RfnIdentifier(dto.getSerialNumber(), manufacturer, model));
+            rfnDeviceDao.updateDevice(device);
+            inventoryBaseDao.updateInventoryBaseDeviceId(liteInv.getInventoryID(), device.getPaoIdentifier().getPaoId());
+            } catch (BadTemplateDeviceCreationException e) {
+                throw new StarsInvalidArgumentException(e.getMessage(), e);
+            }
+        }
         return liteInv;
     }
 
@@ -280,8 +315,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     }
 
     @Override
-    public void removeDeviceFromAccount(LmDeviceDto deviceInfo,
-            LiteYukonUser user) {
+    public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser user) {
 
         LiteInventoryBase liteInv = null;
         
@@ -290,14 +324,14 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
 
         // Get Inventory if exists on account
-        liteInv = getInventoryOnAccount(deviceInfo, lsec);
+        liteInv = getInventoryOnAccount(dto, lsec);
         // Error, if Inventory not found on the account
         if (liteInv == null) {
-            throw new StarsDeviceNotFoundOnAccountException(getAccountNumber(deviceInfo), getSerialNumber(deviceInfo), lsec.getName());
+            throw new StarsDeviceNotFoundOnAccountException(getAccountNumber(dto), getSerialNumber(dto), lsec.getName());
         }
 
         // Remove date defaults to current date, if not specified
-        Date removeDate = deviceInfo.getFieldRemoveDate();
+        Date removeDate = dto.getFieldRemoveDate();
         if (removeDate == null) {
             removeDate = new Date();
         }

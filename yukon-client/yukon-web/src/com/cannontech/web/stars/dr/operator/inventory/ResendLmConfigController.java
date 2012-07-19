@@ -19,8 +19,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.spring.CheckConfigParam;
-import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -33,7 +31,6 @@ import com.cannontech.web.stars.dr.operator.inventory.service.impl.ResendLmConfi
 @Controller
 @RequestMapping("/operator/inventory/resendConfig/*")
 @CheckRoleProperty(YukonRoleProperty.SN_UPDATE_RANGE)
-@CheckConfigParam(value="DIGI_ENABLED", expecting="true", throwable=DigiNotConfiguredException.class, errorMessage="SEP not enabled")
 public class ResendLmConfigController {
     
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;

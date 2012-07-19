@@ -12,11 +12,10 @@ public class RfnEventConditionDataProcessorHelper {
     @Autowired protected RfnMeterEventService rfnMeterEventService;
 
     public Object getEventDataWithType(RfnEvent event, RfnConditionDataType dataType) {
-        Object obj = event.getEventData().get(dataType);
-        if (obj == null) {
-            throw new InvalidEventMessageException("Missing " + dataType + " event data");
+        if (event.getEventData() == null || event.getEventData().get(dataType) == null) {
+            throw new InvalidEventMessageException("Missing " + dataType + " event data for " + event.getRfnIdentifier());
         }
-        return obj;
+        return event.getEventData().get(dataType);
     }
 
 }
