@@ -149,6 +149,8 @@ public class LayoutController {
         final PageDetail pageDetail = pageDetailTemp;
         
         map.addAttribute("pageDetail", pageDetail);
+
+        map.addAttribute("servletPath", tagInfo.getServletPath());
         
         List<String> moduleConfigCssList = new ArrayList<String>(moduleBase.getCssFiles());
         removeDuplicates(moduleConfigCssList);

@@ -18,6 +18,7 @@ public class StandardPageInfo {
     private boolean showMenu;
     private String title;
     private String pageName;
+    private String servletPath;
     private Map<String, String> layoutParts = Maps.newHashMap();
 
     public String getBreadCrumbs() {
@@ -60,6 +61,10 @@ public class StandardPageInfo {
         return pageName;
     }
 
+    public String getServletPath() {
+        return servletPath;
+    }
+
     public void setBreadCrumbs(String breadCrumbs) {
         this.breadCrumbs = breadCrumbs;
     }
@@ -100,6 +105,10 @@ public class StandardPageInfo {
         this.pageName = pageName;
     }
     
+    public void setServletPath(String servletPath) {
+        this.servletPath = servletPath;
+    }
+
     public Map<String, String> getLayoutParts() {
         return layoutParts;
     }

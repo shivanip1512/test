@@ -60,6 +60,7 @@ public class StandardPageTag extends BodyTagSupport {
         
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
         
+        model.setServletPath(request.getServletPath());
         // push the scope of paths (list - page name split on the period)
         // 
         MessageScope messageScope = MessageScopeHelper.forRequest(request);

@@ -141,6 +141,7 @@
             <li>
                 <cti:msg key="yukon.web.layout.standard.buildInfo" arguments="${buildInfo}"/>
             </li>
+            <li>${servletPath}</li>
         </cti:checkGlobalRolesAndProperties>
     </ul>
 </div>
