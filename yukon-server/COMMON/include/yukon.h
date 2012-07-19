@@ -265,7 +265,7 @@ enum YukonError_t
 
     ErrorNeedsChannelConfig,
 
-    ErrorInvalidLpStartDate,
+    ErrorInvalidStartDate,
 
     FinalError
 };

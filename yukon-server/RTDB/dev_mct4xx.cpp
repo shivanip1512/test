@@ -1734,7 +1734,7 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
 
             string temp = "Bad start time \"" + parse.getsValue("llp interest date") + " " + parse.getsValue("llp interest time") + "\"";
 
-            returnErrorMessage(ErrorInvalidLpStartDate, OutMessage, retList, temp);
+            returnErrorMessage(ErrorInvalidStartDate, OutMessage, retList, temp);
 
             delete OutMessage;
             OutMessage = NULL;
