@@ -173,7 +173,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         }
         //if one only contact found attempt to get a user
         if (contactIDs.size() == 1) {
-            int contactId = contactDao.getContact(contactIDs.iterator().next()).getContactID();
+            int contactId = contactIDs.iterator().next();
             passwordResetInfo.setContact(contactDao.getContact(contactId));
             if (passwordResetInfo.isValidContact()) {
                 passwordResetInfo.setUser(yukonUserDao.getLiteYukonUser(passwordResetInfo.getContact().getLoginID()));
