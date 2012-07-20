@@ -179,7 +179,7 @@ public class PasswordPolicyServiceImplTest {
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(USER_SYSTEM_POLICY);
         Assert.assertEquals(Duration.standardMinutes(5), passwordPolicy.getLockoutDuration());
         Assert.assertEquals(5, passwordPolicy.getLockoutThreshold());
-        Assert.assertEquals(Duration.standardDays(180), passwordPolicy.getMaxPasswordAge());
+        Assert.assertEquals(Duration.standardDays(0), passwordPolicy.getMaxPasswordAge());
         Assert.assertEquals(Duration.ZERO, passwordPolicy.getMinPasswordAge());
         Assert.assertEquals(8, passwordPolicy.getMinPasswordLength());
         Assert.assertEquals(5, passwordPolicy.getPasswordHistory());
