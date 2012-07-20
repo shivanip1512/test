@@ -51,7 +51,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
         RfnIdentifier rfnIdentifier = new RfnIdentifier(device.getManufacturerSerialNumber(), template.getManufacturer(), template.getModel());
         
         RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(rfnIdentifier);
-        request.setPayload(commandBuilder.getCommand(parameters));
+        request.setPayload(commandBuilder.getCommandAsHexStringByteArray(parameters));
         
         Long expirationDuration = parameters.findParam(LmHardwareCommandParam.EXPIRATION_DURATION, Long.class);
         if (expirationDuration != null) {

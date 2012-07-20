@@ -1,5 +1,6 @@
 package com.cannontech.dr.rfn.service.impl;
 
+import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
@@ -37,41 +38,17 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     @Autowired private DBPersistentDao dbPersistentDao;
     
     @Override
-    public byte[] getCommand(LmHardwareCommand parameters) {
+    public byte[] getCommand(LmHardwareCommand lmHardwareCommand) {
         ByteBuffer cmd = ByteBuffer.allocate(1024);
-        
-        RfnDevice device = rfnDeviceDao.getDeviceForId(parameters.getDevice().getDeviceID());
-        
-        Integer serialNumber = Integer.parseInt(device.getRfnIdentifier().getSensorSerialNumber());
 
         Charset charset = Charset.forName("US-ASCII");
         // Commands begin with the 's' character.
         cmd.put(charset.encode("s"));
         
-        // 0x00 indicates command selects by device serial number.
-        cmd.put((byte) 0x00);
+        // Get inner ExpressCom payload and add it to the byte array.
+        ByteBuffer innerPayload = getInnerPayload(lmHardwareCommand);
+        cmd.put(innerPayload.array(), 0, innerPayload.position());
         
-        // Write serial number as a 4-byte Integer. 
-        cmd.putInt(serialNumber);
-        
-        // Add command-type specific payload type & message data.
-        switch(parameters.getType()) {
-            case IN_SERVICE:
-                cmd.put((byte) 0x15);
-                cmd.put((byte) 0x80);
-                break;
-            case OUT_OF_SERVICE:
-                cmd.put((byte) 0x15);
-                cmd.put((byte) 0x00);
-                break;
-            case CONFIG:
-                ByteBuffer configCommand = getExpressComForConfigCommand(parameters);
-                cmd.put(configCommand.array(), 0, configCommand.position());
-                break;
-            case READ_NOW:
-                cmd.put((byte) 0xA2);
-                break;
-        }
         // Commands terminate with 't' character.
         cmd.put(charset.encode("t"));
         
@@ -80,6 +57,53 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         cmd.get(output);
         
         return output;
+    }
+
+    public byte[] getCommandAsHexStringByteArray(LmHardwareCommand lmHardwareCommand) {
+        StringWriter sw = new StringWriter();
+        // Commands begin with the 's' character.
+        sw.write('s');
+        
+        // Write inner ExpressCom payload.
+        ByteBuffer innerPayload = getInnerPayload(lmHardwareCommand);
+        sw.write(toHexString(innerPayload.array()));
+
+        // Commands terminate with 't' character.
+        sw.write('t');
+        return(sw.toString().getBytes()); 
+    }
+
+    private ByteBuffer getInnerPayload(LmHardwareCommand lmHardwareCommand) {
+        RfnDevice device = rfnDeviceDao.getDeviceForId(lmHardwareCommand.getDevice().getDeviceID());
+        Integer serialNumber = Integer.parseInt(device.getRfnIdentifier().getSensorSerialNumber());
+        
+        ByteBuffer outputBuffer = ByteBuffer.allocate(1024);
+
+        // 0x00 indicates command selects by device serial number.
+        outputBuffer.put((byte) 0x00);
+        
+        // Write serial number as a 4-byte Integer. 
+        outputBuffer.putInt(serialNumber);
+        
+        // Add command-type specific payload type & message data.
+        switch(lmHardwareCommand.getType()) {
+            case IN_SERVICE:
+                outputBuffer.put((byte) 0x15);
+                outputBuffer.put((byte) 0x80);
+                break;
+            case OUT_OF_SERVICE:
+                outputBuffer.put((byte) 0x15);
+                outputBuffer.put((byte) 0x00);
+                break;
+            case CONFIG:
+                ByteBuffer configCommand = getExpressComForConfigCommand(lmHardwareCommand);
+                outputBuffer.put(configCommand.array(), 0, configCommand.position());
+                break;
+            case READ_NOW:
+                outputBuffer.put((byte) 0xA2);
+                break;
+        }
+        return outputBuffer;
     }
 
     private ByteBuffer getExpressComForConfigCommand(LmHardwareCommand parameters) {
@@ -253,5 +277,16 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         addressingResized.put(addressing.array(), 0, addressing.position());
         return addressingResized;
     }
-
+    
+    public static String toHexString(byte[] bytes) {
+        char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+        char[] hexChars = new char[bytes.length * 2];
+        int v;
+        for ( int j = 0; j < bytes.length; j++ ) {
+            v = bytes[j] & 0xFF;
+            hexChars[j*2] = hexArray[v/16];
+            hexChars[j*2 + 1] = hexArray[v%16];
+        }
+        return new String(hexChars);
+    }
 }

@@ -196,7 +196,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
         RfnExpressComUnicastRequest request = new RfnExpressComUnicastRequest(device.getRfnIdentifier());
         request.setMessageId(nextMessageId());
         request.setMessagePriority(6);
-        request.setPayload(commandBuilder.getCommand(b.build()));
+        request.setPayload(commandBuilder.getCommandAsHexStringByteArray(b.build()));
         request.setResponseExpected(false);
         request.setRfnMessageClass(RfnMessageClass.DR);
         
@@ -211,7 +211,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
         LiteLmHardwareBase lmhb = inventoryBaseDao.getHardwareByDeviceId(device.getPaoIdentifier().getPaoId());
         // The rf command strategy does not actually need the user, so null for now.
         LmHardwareCommand.Builder b = new Builder(lmhb, LmHardwareCommandType.READ_NOW, null);
-        request.setPayload(commandBuilder.getCommand(b.build()));
+        request.setPayload(commandBuilder.getCommandAsHexStringByteArray(b.build()));
         request.setResponseExpected(true);
         request.setRfnMessageClass(RfnMessageClass.DR);
         
