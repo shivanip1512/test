@@ -241,7 +241,6 @@ Picker.prototype = {
 		this.resetSearchFields();
 		this.clearSearchResults();
 		if (!this.primed) {
-		    Yukon.ui.blockPage();
 			this.prime(true, null, skipFocus);
 		} else {
 			this.doShow(skipFocus);
@@ -267,7 +266,6 @@ Picker.prototype = {
 	},
 
 	onPrimeComplete : function(showPicker, initialIds, skipFocus, transport, json) {
-	    Yukon.ui.unblockPage();
 		this.ssInput = $('picker_' + this.pickerId + '_ss');
 		this.showAllLink = $('picker_' + this.pickerId + '_showAllLink');
 		this.resultsDiv = $('picker_' + this.pickerId + '_results');
@@ -493,7 +491,6 @@ Picker.prototype = {
 		this.updateSelectAllCheckbox();
 
 		var ss = this.ssInput.value;
-		Yukon.ui.unblockPage();
 		this.unblock();
 		if (this.currentSearch != ss) {
 			// do another search
@@ -505,7 +502,6 @@ Picker.prototype = {
 
 	ajaxError: function(transport) {
 		this.inSearch = false;
-		Yukon.ui.unblockPage();
 		this.unblock();
 		this.resultsDiv.innerHTML = '';
 		errorHolder = document.createElement('div');
@@ -709,7 +705,6 @@ Picker.prototype = {
 		} else {
 			this.selectedItems = hitList;
 		}
-		Yukon.ui.unblockPage();
 		this.inSearch = false;
 		this.ssInput.focus();
 		$(this.selectAllPagesLink.parentNode).hide();
@@ -782,10 +777,10 @@ Picker.prototype = {
 	},
 
 	block : function() {
-	    Yukon.uiUtils.elementGlass.show(document.getElementById(this.resultAreaId));
+		Yukon.uiUtils.elementGlass.show(jQuery('#' + this.pickerId + ' .f_block_this'));
 	},
 
 	unblock : function() {
-	    Yukon.uiUtils.elementGlass.hide(document.getElementById(this.resultAreaId));
+		Yukon.uiUtils.elementGlass.hide(jQuery('#' + this.pickerId + ' .f_block_this'));
 	},
 };
