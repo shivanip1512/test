@@ -3,6 +3,8 @@ package com.cannontech.common.csvImport;
 import java.util.Collection;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.common.collect.Sets;
 
 /**
@@ -25,5 +27,9 @@ public class ImportValueDependentColumnDefinition extends ImportColumnDefinition
     
     public Set<String> getDependedUponValue() {
         return dependedUponValues;
+    }
+    
+    public String getDependedUponValueString() {
+        return StringUtils.join(dependedUponValues.toArray(), ", ");
     }
 }

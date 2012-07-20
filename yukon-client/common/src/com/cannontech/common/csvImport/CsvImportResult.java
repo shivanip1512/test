@@ -1,6 +1,7 @@
 package com.cannontech.common.csvImport;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -44,5 +45,12 @@ public class CsvImportResult implements ImportResult {
      */
     public boolean isSuccess() {
         return resultType.isSuccess();
+    }
+    
+    /**
+     * Convenience method for generating a resolvable without constructing an import result.
+     */
+    public static YukonMessageSourceResolvable getImportResultMessage(CsvImportResultType resultType, Collection<String> arguments) {
+        return new YukonMessageSourceResolvable(resultType.getFormatKey(), arguments.toArray());
     }
 }

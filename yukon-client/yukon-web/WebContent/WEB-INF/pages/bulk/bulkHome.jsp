@@ -48,6 +48,13 @@
                     Import a file to update existing meters.
                 </div>
             </cti:checkProperty>
+            
+            <cti:checkProperty property="operator.DeviceActionsRole.ADD_REMOVE_POINTS">
+                <div class="marginBottomSmall">
+                    <button type="button" data-href="/spring/bulk/pointImport/upload" class="wideButton">Bulk Point Import</button>
+                    Import a file to create points on existing devices.
+                </div>
+            </cti:checkProperty>
         </cti:checkRole>
             
         <div class="marginBottomSmall">

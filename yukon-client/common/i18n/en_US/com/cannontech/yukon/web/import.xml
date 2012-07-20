@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
+    <!-- Import Results -->
     <entry key="yukon.web.import.result.SUCCESS">Success - {0} succeeded for "{1}"</entry>
     <entry key="yukon.web.import.result.INVALID_IMPORT_ACTION">Invalid Import Action - Cannot perform action "{0}" for "{1}"</entry>
     <entry key="yukon.web.import.result.OBJECT_EXISTS">Object Already Exists - {0} failed on "{1}"</entry>
@@ -8,5 +9,40 @@
     <entry key="yukon.web.import.result.MISSING_DATA">Data Missing - Required values were missing: {0}</entry>
     <entry key="yukon.web.import.result.BAD_DATA">Invalid Value - Specified value is not valid in column: {0}</entry>
     <entry key="yukon.web.import.result.CONDITIONAL_BAD_DATA">Invalid Value - {0} failed. The value "{1}" is not permitted for {2} objects</entry>
-    <entry key="yukon.web.import.result.HAS_DEPENDENCIES">Object Has Dependencies - {0} failed for "{1}"</entry> 
+    <entry key="yukon.web.import.result.HAS_DEPENDENCIES">Object Has Dependencies - {0} failed for "{1}"</entry>
+    
+    <!-- Import Errors -->
+    <entry key="yukon.web.import.error.noImportFile">No import file was selected.</entry>
+    <entry key="yukon.web.import.error.errorProcessingFile">Importer encountered errors processing the file.</entry>
+    <entry key="yukon.web.import.error.duplicateColumns">File contains duplicate columns: {0}</entry>
+    <entry key="yukon.web.import.error.invalidColumns">File contains invalid columns: {0}</entry>
+    <entry key="yukon.web.import.error.missingRequiredColumn">File is missing a required column: {0}</entry>
+    
+    <!-- Format Display -->
+    <entry key="yukon.web.import.typeDescription.integer">An integer.</entry>
+    <entry key="yukon.web.import.typeDescription.positiveInteger">A positive integer.</entry>
+    <entry key="yukon.web.import.typeDescription.short">An integer between -32,768 and 32,767 (inclusive).</entry>
+    <entry key="yukon.web.import.typeDescription.byte">An integer between -128 and 127 (inclusive).</entry>
+    <entry key="yukon.web.import.typeDescription.float">A decimal number.</entry>
+    <entry key="yukon.web.import.typeDescription.positiveDouble">A positive decimal number.</entry>
+    <entry key="yukon.web.import.typeDescription.string">A text string.</entry>
+    <entry key="yukon.web.import.typeDescription.character">A text character.</entry>
+    <entry key="yukon.web.import.typeDescription.boolean">A "true" or "false" value.</entry>
+    
+    <entry key="yukon.web.import.display.column">Column</entry>
+    <entry key="yukon.web.import.display.description">Description</entry>
+    <entry key="yukon.web.import.display.permittedValues">Permitted Values</entry>
+    <entry key="yukon.web.import.display.dependedUponColumn">Depended-Upon Column</entry>
+    <entry key="yukon.web.import.display.dependedUponValues">Depended-Upon Value(s)</entry>
+    
+    <entry key="yukon.web.import.display.requiredColumnsName">Required Columns</entry>
+    <entry key="yukon.web.import.display.optionalColumnsName">Optional Columns</entry>
+    <entry key="yukon.web.import.display.groupedColumnsName">Grouped Columns</entry>
+    <entry key="yukon.web.import.display.valueDependentColumnsName">Value-Dependent Columns</entry>
+    <entry key="yukon.web.import.display.requiredColumnsIntro">Required columns must be present in the import file, and each row must contain a value for each required column.</entry>
+    <entry key="yukon.web.import.display.optionalColumnsIntro">Optional columns may be omitted from the import file. If they are present, individual rows may omit the value in any optional column.</entry>
+    <entry key="yukon.web.import.display.groupedColumnsIntro">Grouped columns are linked together. Each group is optional, but if included, must include all columns. Each row must provide a value for all columns in the group, or omit all values.</entry>
+    <entry key="yukon.web.import.display.valueDependentColumnsIntro">Value-dependent columns depend on another column. They are only required if the depended-upon column contains one of the specified values.</entry>
+    
+    
 </properties>

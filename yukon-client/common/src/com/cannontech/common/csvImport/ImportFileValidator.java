@@ -178,30 +178,24 @@ public class ImportFileValidator {
     //Checks that for column groups, either all columns in the group are present, or all are absent.
     private static void validateOptionalGroupedColumns(ImportData data) throws RequiredColumnMissingException {
         ImportFileFormat format = data.getFormat();
-        Set<String> groups = Sets.newHashSet();
         Set<String> missingColumns = Sets.newHashSet();
-        
-        //find all groups in the format
-        for(String columnName : format.getColumnGroupNames()) {
-            if(data.getColumnNames().contains(columnName)) {
-                groups.add(columnName);
-            }
-        }
-        
-        //for each group in the format, check that all or none of the columns exist
+
+        //Get all group names and associated columns
         Multimap<String, ImportColumnDefinition> groupedColumns = format.getGroupedColumns();
-        for(String groupName : groups) {
+        Set<String> groupNames = format.getColumnGroupNames();
+        for(String groupName : groupNames) {
             Collection<ImportColumnDefinition> columnsInGroup =  groupedColumns.get(groupName);
-            
+            int numberOfColumnsInGroup = columnsInGroup.size();
+            Set<String> missingColumnsInGroup = Sets.newHashSet();
+            //See if any column exists
             for(ImportColumnDefinition column : columnsInGroup) {
-                if(data.getColumnNames().contains(column.getName())) {
-                    columnsInGroup.remove(column);
+                if(!data.getColumnNames().contains(column.getName())) {
+                    missingColumnsInGroup.add(column.getName());
                 }
             }
-            if(!columnsInGroup.isEmpty()) {
-                for(ImportColumnDefinition column : columnsInGroup) {
-                    missingColumns.add(column.getName());
-                }
+            //If any columns exist, check that all columns are populated, or there is an error
+            if(missingColumnsInGroup.size() > 0 && missingColumnsInGroup.size() < numberOfColumnsInGroup) {
+                missingColumns.addAll(missingColumnsInGroup);
             }
         }
         
@@ -248,34 +242,30 @@ public class ImportFileValidator {
      * values should have been populated but were not.
      */
     private static Set<String> validateOptionalGroupedColumnValues(ImportRow row, ImportFileFormat format) {
-        Set<String> groups = Sets.newHashSet();
-        Set<String> missingValues = Sets.newHashSet();
-        
-        //find all groups that have at least one column populated
-        for(String columnName : format.getColumnGroupNames()) {
-            if(row.hasValue(columnName)) {
-                groups.add(columnName);
-            }
-        }
-        
-        //for each group, check that all the columns exist
         Multimap<String, ImportColumnDefinition> groupedColumns = format.getGroupedColumns();
-        for(String groupName : groups) {
-            Collection<ImportColumnDefinition> columnsInGroup =  groupedColumns.get(groupName);
+        Set<String> missingColumns = Sets.newHashSet();
+        
+        for(String columnGroupName : format.getColumnGroupNames()) {
+            //get columns in group
+            Collection<ImportColumnDefinition> columnsInGroup = groupedColumns.get(columnGroupName);
+            Set<String> missingColumnsInGroup = Sets.newHashSet();
             
-            for(ImportColumnDefinition column : columnsInGroup) {
-                if(row.hasValue(column.getName())) {
-                    columnsInGroup.remove(column);
+            //for each column, check if it's in the row.
+            for(ImportColumnDefinition columnInGroup : columnsInGroup) {
+                String columnName = columnInGroup.getName();
+                if(!row.hasValue(columnName)) {
+                    //no value for this column in the row. 
+                    missingColumnsInGroup.add(columnName);
                 }
             }
-            if(!columnsInGroup.isEmpty()) {
-                for(ImportColumnDefinition column : columnsInGroup) {
-                    missingValues.add(column.getName());
-                }
+            //if all columns from group are unpopulated, that's fine
+            //if all columns from group are populated, that's also fine
+            //if only some are populated, it's an error. Add the missing column names to the error output.
+            if(missingColumnsInGroup.size() > 0 && missingColumnsInGroup.size() < columnsInGroup.size()) {
+                missingColumns.addAll(missingColumnsInGroup);
             }
         }
-        
-        return missingValues;
+        return missingColumns;
     }
     
     /*

@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 
 /**
- * Class which provides functionality for manipulating and creating points
+ * Class which provides functionality for manipulating points
  */
 public interface PointService {
 

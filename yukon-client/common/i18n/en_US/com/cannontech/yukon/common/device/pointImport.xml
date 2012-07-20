@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <!-- upload.jsp -->
+    <entry key="yukon.web.modules.amr.pointImport.pageName">Point Import</entry>
+    <entry key="yukon.web.modules.amr.pointImport.mainBox.title">Point Import</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importHeader">Submit an Import File</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importDescription">Upload a .csv file to import new points.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importTypeSelectLabel">Import File Type</entry>
+    <entry key="yukon.web.modules.amr.pointImport.calculationUploadLabel">Calculation File</entry>
+    <entry key="yukon.web.modules.amr.pointImport.pointUploadLabel">Import File</entry>
+    <entry key="yukon.web.modules.amr.pointImport.empty"></entry>
+    <entry key="yukon.web.modules.amr.pointImport.ignoreInvalidText">Ignore columns with invalid headers</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importSubmitButton.label">Import</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importInstructionsHeader">Point Import Instructions</entry>
+    <entry key="yukon.web.modules.amr.pointImport.calculationImportInstructionsHeader">Calculation Import Instructions</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importInstructions">Files must contain a header row with valid columns as listed in the tables below.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importType.ANALOG">Analog Point</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importType.STATUS">Status Point</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importType.ACCUMULATOR">Accumulator Point</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importType.CALC_ANALOG">Calculated Analog Point</entry>
+    <entry key="yukon.web.modules.amr.pointImport.importType.CALC_STATUS">Calculated Status Point</entry>
+    
+    <!-- importResults.jsp -->
+    <entry key="yukon.web.modules.amr.pointImport.results.pageName">Import Results</entry>
+    <entry key="yukon.web.modules.amr.pointImport.results.pageDescription">Point Import Results</entry>
+    <entry key="yukon.web.modules.amr.pointImport.results.mainBox.title">Import Progress</entry>
+    <entry key="yukon.web.modules.amr.pointImport.results.ignoringInvalidColumns">(Ignoring columns with invalid headers.)</entry>
+    <entry key="yukon.web.modules.amr.pointImport.results.importProgress">Import Progress</entry>
+    <entry key="yukon.web.modules.amr.pointImport.results.importLogBox.title">Import Log</entry>
+    <entry key="yukon.web.modules.amr.pointImport.results.downloadFailedLabel">Failed entries are available in a CSV file.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.results.downloadFailedButton.label">Download</entry>
+    
+    <!-- processing errors -->
+    <entry key="yukon.web.modules.amr.pointImport.error.noCalcImportFile">No calculation import file was specified. A calculation file is required for this import type.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.errorProcessingCalcFile">Importer encountered errors processing the calculation file.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.duplicateColumns">Calculation file contains duplicate columns: {0}</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.invalidColumns">Calculation file contains invalid columns: {0}</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.missingRequiredColumn">Calculation file is missing a required column: {0}</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.invalidDeviceName">Calculation file contains an invalid device name: {0} (Line {1})</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.invalidPointName">Calculation file contains an invalid point, "{0}" on device "{1}" (Line {2})</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.invalidCalculationType">Calculation file contains an invalid calculation type, "{0}"</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.invalidCalculation">No calculation named "{0}" is specified in the calculation file.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.invalidStateOrGroup">The specified state or state group is invalid</entry>
+    
+    <!-- result messages -->
+    <entry key="yukon.web.modules.amr.pointImport.operationSuccessful">Line {0}: Operation successful.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.operationFailed">Line {0}: Operation failed - {1}.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.unhandledAction">Unable to process action: {0}</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.invalidDevice">The device "{0}" does not exist</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.pointExists">Point "{0}" already exists on device "{1}"</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.pointOffsetInUse">Point offset {0} on device "{1}" is already in use</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.pointDoesNotExist">Point "{0}" does not exist on device "{1}"</entry>
+    <entry key="yukon.web.modules.amr.pointImport.error.unknownError">An unexpected error occurred. See application log for additional information</entry>
+    
+    <!-- column descriptions -->
+    <entry key="yukon.web.modules.amr.pointImport.column.action">The type of import operation to perform.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.validValues.action">ADD, REMOVE</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.deviceName">The name of the device the point will be attached to.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.deviceType">The type of the device the point will be attached to.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.validValues.deviceType">A device type.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.pointName">The name of the new point.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.disabled">Whether or not the point should be disabled.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.pointOffset">The offset of the point.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.deadband">The deadband range for the point.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.archiveType">When to archive the point's value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.highReasonability">High reasonability value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.lowReasonability">Low reasonability value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.highLimit1">Upper range of limit 1.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.lowLimit1">Lower range of limit 1.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.limitDuration1">Duration for limit 1.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.highLimit2">Upper range of limit 2.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.lowLimit2">Lower range of limit 2.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.limitDuration2">Duration for limit 2.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.staleDataTime">Duration required for data to be considered stale.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.staleDataUpdate">How to update stale data value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.unitOfMeasure">Unit of measure for this point's value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.multiplier">Multiplier applied to the raw point value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.dataOffset">The data offset of the point.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.meterDials">The number of meter dials for the point.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.decimalPlaces">The decimal precision of this point's value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.archiveInterval">How frequently to archive the point's value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.controlType">The control type of the point.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.archiveData">Whether or not to archive the point's data.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.controlInhibit">Whether or not to inhibit control.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.stateGroup">The state group for the point.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.validValues.stateGroup">A valid state group name</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.initialState">The state of the point upon creation.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.validValues.initialState">A valid state name from the specified state group.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.controlPointOffset">The offset of the control point.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.closeTime1">The first close time.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.closeTime2">The second close time.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.state1Command">The command sent for state 1.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.state2Command">The command sent for state 2.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.commandTimeout">The duration required for a command to time out.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.accumulatorType">The type of accumulator point.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.updateType">When to update the point value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.calculation">The calculation name (must match entries in the calculation file).</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.forceQualityNormal">Whether the point quality should be set to "normal" or not.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.updateRate">How frequently to update the point value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.calculationName">The caculation identifier to be used in the point import file.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.calculationType">The type of calculation to perform.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.calculationDeviceName">The name of the device whose point will be used in the calculation.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.calculationDeviceType">The type of the device whose point will be used in the calculation.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.calculationPointName">The name of a point to use in the calculation.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.operation">The operation to use in the calculation.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.constant">The constant to use in the calculation.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.column.function">The function to use in the calculation.</entry>
+    
+</properties>

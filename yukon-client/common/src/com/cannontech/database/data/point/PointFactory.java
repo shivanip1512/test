@@ -11,19 +11,15 @@ import com.cannontech.common.pao.definition.model.CalcPointInfo;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.multi.SmartMultiDBPersistent;
-import com.cannontech.database.data.pao.TypeBase;
-import com.cannontech.database.db.point.PointStatus;
+import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcBase;
 import com.cannontech.database.db.point.calculation.CalcComponent;
-import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.spring.YukonSpringHook;
 
 public final class PointFactory {
@@ -121,9 +117,6 @@ public final class PointFactory {
         return returnVal;
     }
 
-    /**
-     * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
-     */
     public static PointBase createAnalogPoint(String pointName, Integer paoID,
                                               Integer pointID, int pointOffset, int pointUnit,
                                               int stateGroupId)
@@ -141,9 +134,6 @@ public final class PointFactory {
                                  PointArchiveInterval.ZERO);
     }
 
-    /**
-     * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
-     */
     public static PointBase createAnalogPoint(String pointName, Integer paoID,
                                               Integer pointID, int pointOffset, int pointUnit,
                                               double multiplier, int stateGroupId,
@@ -180,9 +170,6 @@ public final class PointFactory {
         return point;
     }
 
-    /**
-     * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
-     */
     public static PointBase createDmdAccumPoint(String pointName, Integer paoID,
                                                 Integer pointID, int pointOffset, int pointUnit,
                                                 double multiplier, int stateGroupId,
@@ -273,9 +260,6 @@ public final class PointFactory {
         return newPoint;
     }
 
-    /**
-     * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
-     */
     public static PointBase createPulseAccumPoint(String pointName, Integer paoID,
                                                   Integer pointID, int pointOffset, int pointUnit,
                                                   double multiplier, int stateGroupId,
@@ -320,9 +304,6 @@ public final class PointFactory {
         return point;
     }
 
-    /**
-     * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
-     */
     public static synchronized PointBase createStatusPoint(String pointName, Integer paoID,
                                                            Integer pointID, int pointOffset,
                                                            int stateGroupId, int initialState,
@@ -500,7 +481,41 @@ public final class PointFactory {
 
         return point;
     }
+    
+    /**
+     * @return The point with the specified point id, or null if it doesn't exist.
+     */
+    public static final PointBase findPoint(Integer id) {
+        Connection conn = null;
+        PointBase returnVal = null;
 
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+            Point p = new Point();
+            p.setPointID(id);
+
+            p.setDbConnection(conn);
+            p.retrieve();
+            p.setDbConnection(null);
+
+            returnVal = createPoint(PointTypes.getType(p.getPointType()));
+            returnVal.setPointID(id);
+
+            returnVal.setDbConnection(conn);
+            returnVal.retrieve();
+            returnVal.setDbConnection(null);
+        } catch (SQLException e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e2) {}
+        }
+
+        return returnVal;
+    }
+    
     public static synchronized void addPoint(PointBase point) {
         Connection connection = null;
         try {

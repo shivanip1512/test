@@ -19,7 +19,7 @@
         <cti:crumbLink><i:inline key="yukon.web.modules.amr.fdrTranslationManagement.import.pageName"/></cti:crumbLink>
     </cti:breadCrumbs>
     
-    <cti:includeScript link="/JavaScript/fdrImportLogger.js"/>
+    <cti:includeScript link="/JavaScript/importLogger.js"/>
     <script>
         jQuery(document).ready(function(){
             initiateLogUpdate("${updateUrl}", 1);

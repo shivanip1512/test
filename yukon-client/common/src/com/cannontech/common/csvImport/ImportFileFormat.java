@@ -1,14 +1,20 @@
 package com.cannontech.common.csvImport;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.common.csvImport.types.StrictBoolean;
+import com.cannontech.common.util.PositiveDouble;
+import com.cannontech.common.util.PositiveInteger;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -23,12 +29,47 @@ import com.google.common.collect.Sets;
  * @see CsvImportFileParser
  * @see ImportDataValidator
  */
-public class ImportFileFormat {
+public class ImportFileFormat implements Cloneable {
     private Set<ImportColumnDefinition> columns = Sets.newHashSet();
     private Set<ImportColumnDefinition> requiredColumns = Sets.newHashSet();
+    private Set<ImportColumnDefinition> optionalColumns = Sets.newHashSet();
     private Multimap<String, ImportColumnDefinition> groupedColumns = ArrayListMultimap.create();
     private Multimap<ImportColumnDefinition, ImportValueDependentColumnDefinition> valueDependentColumns = ArrayListMultimap.create();
     private boolean ignoreInvalidHeaders = false;
+    
+    private static Map<Class<?>, String> typeDescriptionKeys = Maps.newHashMap();
+    static {
+        typeDescriptionKeys.put(Integer.class, "yukon.web.import.typeDescription.integer");
+        typeDescriptionKeys.put(PositiveInteger.class, "yukon.web.import.typeDescription.positiveInteger");
+        typeDescriptionKeys.put(Long.class, "yukon.web.import.typeDescription.integer");
+        typeDescriptionKeys.put(Short.class, "yukon.web.import.typeDescription.short");
+        typeDescriptionKeys.put(Byte.class, "yukon.web.import.typeDescription.byte");
+        typeDescriptionKeys.put(Double.class, "yukon.web.import.typeDescription.float");
+        typeDescriptionKeys.put(Float.class, "yukon.web.import.typeDescription.float");
+        typeDescriptionKeys.put(PositiveDouble.class, "yukon.web.import.typeDescription.positiveDouble");
+        typeDescriptionKeys.put(String.class, "yukon.web.import.typeDescription.string");
+        typeDescriptionKeys.put(Character.class, "yukon.web.import.typeDescription.character");
+        typeDescriptionKeys.put(Boolean.class, "yukon.web.import.typeDescription.boolean");
+        typeDescriptionKeys.put(StrictBoolean.class, "yukon.web.import.typeDescription.boolean");
+    }
+    
+    public static Map<Class<?>, String> getTypeDescriptionKeys() {
+        return Collections.unmodifiableMap(typeDescriptionKeys);
+    }
+    
+    /**
+     * @return A deep copy of this ImportFileFormat.
+     */
+    public ImportFileFormat clone() {
+        ImportFileFormat copy = new ImportFileFormat();
+        copy.columns = Sets.newHashSet(columns);
+        copy.requiredColumns = Sets.newHashSet(requiredColumns);
+        copy.optionalColumns = Sets.newHashSet(optionalColumns);
+        copy.groupedColumns = ArrayListMultimap.create(groupedColumns);
+        copy.valueDependentColumns = ArrayListMultimap.create(valueDependentColumns);
+        copy.ignoreInvalidHeaders = ignoreInvalidHeaders;
+        return copy;
+    }
     
     /**
      * Adds a required column definition to the format. Required columns must be present in a
@@ -63,6 +104,7 @@ public class ImportFileFormat {
         ImportColumnDefinition column = new ImportOptionalColumnDefinition(name, typeClass, nullable);
         validate(column);
         columns.add(column);
+        optionalColumns.add(column);
     }
     
     /**
@@ -136,20 +178,53 @@ public class ImportFileFormat {
         return null;
     }
     
+    /**
+     * @return an immutable copy of the set of all column definitions
+     */
     public Set<ImportColumnDefinition> getColumns() {
         return Collections.unmodifiableSet(columns);
     }
     
+    /**
+     * @return an immutable copy of the set of required column definitions
+     */
     public Set<ImportColumnDefinition> getRequiredColumns() {
         return Collections.unmodifiableSet(requiredColumns);
     }
     
+    /**
+     * @return an immutable copy of the set of optional column definitions
+     */
+    public Set<ImportColumnDefinition> getOptionalColumns() {
+        return Collections.unmodifiableSet(optionalColumns);
+    }
+    
+    /**
+     * @return an immutable copy of the multimap of group names to grouped column definitions
+     */
     public Multimap<String, ImportColumnDefinition> getGroupedColumns() {
         return ImmutableMultimap.copyOf(groupedColumns);
     }
     
+    /**
+     * @return an immutable map of group names to grouped column definitions
+     */
+    public Map<String, Collection<ImportColumnDefinition>> getGroupedColumnsAsMap() {
+        return getGroupedColumns().asMap();
+    }
+    
+    /**
+     * @return an immutable copy of the multimap of column definitions to value dependent column definitions
+     */
     public Multimap<ImportColumnDefinition, ImportValueDependentColumnDefinition> getValueDependentColumns() {
         return ImmutableMultimap.copyOf(valueDependentColumns);
+    }
+    
+    /**
+     * @return an immutable map of the column definitions to value dependent column definitions
+     */
+    public Map<ImportColumnDefinition, Collection<ImportValueDependentColumnDefinition>> getValueDependentColumnsAsMap() {
+        return getValueDependentColumns().asMap();
     }
     
     public void setIgnoreInvalidHeaders(boolean ignoreInvalidHeaders) {
@@ -157,13 +232,41 @@ public class ImportFileFormat {
     }
     
     public Set<String> getColumnGroupNames() {
-        return Collections.unmodifiableSet(groupedColumns.keySet());
+        Set<String> groupedColumnNames = groupedColumns.keySet();
+        Set<String> copy = Sets.newHashSetWithExpectedSize(groupedColumnNames.size());
+        for(String name : groupedColumnNames) {
+            copy.add(name);
+        }
+        
+        return copy;
     }
     
     public boolean isIgnoreInvalidHeaders() {
         return ignoreInvalidHeaders;
     }
-
+    
+    /**
+     * Sets the description i18n key for the specified column.
+     */
+    public void setDescriptionKey(String columnName, String key) {
+        ImportColumnDefinition column = getColumnByName(columnName);
+        if(column == null) {
+            throw new IllegalArgumentException("Unable to set description. No column named \"" + columnName + "\" in this ImportFileFormat.");
+        }
+        column.setDescriptionKey(key);
+    }
+    
+    /**
+     * Sets the valid values i18n key for the specified column.
+     */
+    public void setValidValuesKey(String columnName, String key) {
+        ImportColumnDefinition column = getColumnByName(columnName);
+        if(column == null) {
+            throw new IllegalArgumentException("Unable to set valid values. No column named \"" + columnName + "\" in this ImportFileFormat.");
+        }
+        column.setValidValuesKey(key);
+    }
+    
     //Ensures the column has a name and does not duplicate an existing column name in the format.
     private void validate(ImportColumnDefinition column) {
         if(StringUtils.isBlank(column.getName())) {
@@ -173,4 +276,6 @@ public class ImportFileFormat {
             throw new IllegalArgumentException("Column names must be unique.");
         }
     }
+    
+    
 }

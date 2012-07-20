@@ -1,5 +1,6 @@
 package com.cannontech.common.csvImport;
 
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.common.collect.Lists;
@@ -20,7 +21,7 @@ public class ImportData {
     private List<ImportRow> rows = Lists.newArrayList();
     
     public ImportData(List<String[]> stringData, ImportFileFormat format) {
-        originalData = stringData;
+        originalData = Lists.newArrayList(stringData);
         this.format = format;
         
         columnNames = Lists.newArrayList();
@@ -53,12 +54,40 @@ public class ImportData {
     }
     
     /**
+     * @return An Iterator for the ImportRows contained in this ImportData object. The header
+     * row is not included.
+     */
+    public Iterator<ImportRow> iterator() {
+        return rows.iterator();
+    }
+    
+    /**
+     * @return The number of rows in this data set (not including the headers row).
+     */
+    public int size() {
+        return rows.size();
+    }
+    
+    /**
      * @return The original Strings this data object was built from. This includes column headers
      * and remains identical to the contents of the original file, regardless of any operations
      * performed on the ImportData object.
      */
     public List<String[]> getOriginalData() {
         return originalData;
+    }
+    
+    /**
+     * @return The original Strings this data object was built from, in the form of a List of String
+     * Lists. This includes column headers and remains identical to the contents of the original 
+     * file, regardless of any operations performed on the ImportData object.
+     */
+    public List<List<String>> getOriginalDataAsLists() {
+        List<List<String>> returnList = Lists.newArrayList();
+        for(String[] line : originalData) {
+            returnList.add(Lists.newArrayList(line));
+        }
+        return returnList;
     }
     
     /**

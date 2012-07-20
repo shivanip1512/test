@@ -793,6 +793,9 @@
                 <entry key="FDR_TRANSLATION_IMPORT">
                     <ref local="fdrTranslationImportBackingService"/>
                 </entry>
+                <entry key="POINT_IMPORT">
+                    <ref local="pointImportBackingService"/>
+                </entry>
                 <entry key="INVENTORY_TASK">
                     <ref local="inventoryTaskBackingService"/>
                 </entry>
@@ -882,6 +885,8 @@
     <bean id="adaProfileReadBackingService" class="com.cannontech.web.updater.archiveDataAnalysis.AdaProfileReadBackingService"/>
     
     <bean id="fdrTranslationImportBackingService" class="com.cannontech.web.updater.fdrTranslationImport.FdrTranslationImportBackingService"/>
+    
+    <bean id="pointImportBackingService" class="com.cannontech.web.updater.pointImport.PointImportBackingService"/>
     
     <bean id="commandRequestExecutionBackingService" class="com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionBackingService"/>
     <bean id="requestCountCommandExecutionUpdaterHandler" class="com.cannontech.web.updater.commandRequestExecution.handler.RequestCountCommandExecutionUpdaterHandler"/>
@@ -1486,6 +1491,11 @@
     
     <bean id="fdrTranslationManagerService" class="com.cannontech.common.bulk.service.impl.FdrTranslationManagerServiceImpl"/>
     <bean id="fdrTranslationManagerCsvHelper" class="com.cannontech.common.bulk.service.FdrTranslationManagerCsvHelper"/>
+    
+    <bean id="pointImportService" class="com.cannontech.common.bulk.service.impl.PointImportServiceImpl"/>
+    <bean id="calculationImportService" class="com.cannontech.common.bulk.service.impl.CalculationImportServiceImpl"/>
+    <bean id="pointImportProcessorFactory" class="com.cannontech.common.bulk.processor.PointImportProcessorFactory"/>
+    <bean id="pointBuilderFactory" class="com.cannontech.common.point.PointBuilderFactory"/>
     
     <!-- Simple HTTP Post Service Factory -->
     <bean id="simpleHttpPostServiceFactory" class="com.cannontech.web.simplePost.impl.SimpleHttpPostServiceFactoryImpl">

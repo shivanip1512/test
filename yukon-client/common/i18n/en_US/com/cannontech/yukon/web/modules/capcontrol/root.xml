@@ -505,7 +505,6 @@
     <entry key="yukon.web.modules.capcontrol.import.importTypes.HIERARCHY">Hierarchy</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypes.REGULATOR">Regulator</entry>
     <entry key="yukon.web.modules.capcontrol.import.importTypes.POINT_MAPPING">Point Mapping</entry>
-    <entry key="yukon.web.modules.capcontrol.import.noImportFile">No import file was selected.</entry>
     <entry key="yukon.web.modules.capcontrol.import.errorProcessingFile">Importer encountered errors processing the file.</entry>
     <entry key="yukon.web.modules.capcontrol.import.missingRequiredColumn">File is missing a required column (or data for a required column): {0}</entry>
     <entry key="yukon.web.modules.capcontrol.import.processedWithErrors">File was processed successfully, but import errors occurred. See details below.</entry>
