@@ -14,7 +14,7 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.search.YukonObjectAnalyzer;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 
@@ -72,7 +72,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         String paoName = rs.getString("paoname");
         int uomidInt = rs.getInt("uomid");
         if (rs.wasNull()) {
-            uomidInt = PointUnits.UOMID_INVALID;
+            uomidInt = UnitOfMeasure.INVALID.getId();
         }
         // additional fields for point types and point states
         int stateGrpID = rs.getInt("stategroupid");

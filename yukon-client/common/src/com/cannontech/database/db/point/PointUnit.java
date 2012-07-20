@@ -1,5 +1,7 @@
 package com.cannontech.database.db.point;
 
+import com.cannontech.database.data.point.UnitOfMeasure;
+
 /**
  * This type was created in VisualAge.
  */
@@ -9,7 +11,7 @@ public class PointUnit extends com.cannontech.database.db.DBPersistent
     public static final int DEFAULT_METER_DIALS = 0;
  
 	private Integer pointID = null;
-	private Integer uomID = new Integer(com.cannontech.database.data.point.PointUnits.UOMID_KWH);
+	private Integer uomID = new Integer(UnitOfMeasure.KWH.getId());
 	private Integer decimalPlaces = new Integer(DEFAULT_DECIMAL_PLACES);
 	private Double highReasonabilityLimit = new Double(com.cannontech.common.util.CtiUtilities.INVALID_MAX_DOUBLE);
 	private Double lowReasonabilityLimit = new Double(com.cannontech.common.util.CtiUtilities.INVALID_MIN_DOUBLE);

@@ -3,7 +3,7 @@ package com.cannontech.common.point;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 
 /**
  * Abstract base class containing functionality shared by analog, calcAnalog and accumulator point
@@ -12,7 +12,7 @@ import com.cannontech.database.data.point.PointUnits;
 public abstract class AnalogAccumulatorPointBuilderBase extends PointBuilder {
     protected PointArchiveType archiveType = PointArchiveType.NONE;
     protected PointArchiveInterval archiveInterval = PointArchiveInterval.ZERO;
-    protected int unitOfMeasure = PointUnits.UOMID_KW;
+    protected int unitOfMeasure = UnitOfMeasure.KW.getId();
     protected int decimalPlaces = 0;
     protected Double highReasonability = null;
     protected Double lowReasonability = null;

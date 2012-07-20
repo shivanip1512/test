@@ -21,7 +21,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.holiday.HolidaySchedule;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.holiday.DateOfHoliday;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
@@ -627,10 +627,12 @@ public class Baseline implements Serializable
 						double counter = v[0].doubleValue();
 						double totalVal = v[1].doubleValue();
 						
-						if( pUnit.getUomID().intValue() == PointUnits.UOMID_KW)
+						UnitOfMeasure uom = UnitOfMeasure.getForId(pUnit.getUomID());
+                        if (uom == UnitOfMeasure.KW) {
 							returnData.values[i] = new Double(totalVal/counter);	//kW values.
-						else if( pUnit.getUomID().intValue() == PointUnits.UOMID_KWH)
+                        } else if (uom == UnitOfMeasure.KWH) {
 							returnData.values[i] = new Double(totalVal/validTimestampsVector.size());	//kWh values
+                        }
 					}
 				}
 			}

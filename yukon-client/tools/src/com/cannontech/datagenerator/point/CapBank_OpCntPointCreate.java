@@ -25,7 +25,7 @@ import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.spring.YukonSpringHook;
@@ -103,7 +103,7 @@ public class CapBank_OpCntPointCreate extends PointCreate
 			analogPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
 	
 			// set default settings for point POINTUNIT
-			analogPoint.getPointUnit().setUomID(new Integer(PointUnits.UOMID_COUNTS));
+			analogPoint.getPointUnit().setUomID(UnitOfMeasure.COUNTS.getId());
 			analogPoint.getPointUnit().setDecimalPlaces(new Integer(PointUnit.DEFAULT_DECIMAL_PLACES));
 			
 			multi.addDBPersistent( analogPoint );

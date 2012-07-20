@@ -7,7 +7,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 
 /**
  * @author ryan
@@ -132,7 +132,7 @@ public class LiteWrapper
 		}
 		else if( _getLiteBase() instanceof LitePoint )
 		{
-			if( ((LitePoint)_getLiteBase()).getUofmID() > PointUnits.UOMID_INVALID )
+			if( ((LitePoint)_getLiteBase()).getUofmID() > UnitOfMeasure.INVALID.getId() )
 			{
 				retVal =
 					DaoFactory.getUnitMeasureDao().getLiteUnitMeasure(

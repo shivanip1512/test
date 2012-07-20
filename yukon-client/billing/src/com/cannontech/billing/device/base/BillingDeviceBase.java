@@ -7,7 +7,7 @@ import java.util.Map;
 import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 
 /**
  * The base class for all BillableDevices
@@ -195,35 +195,36 @@ public abstract class BillingDeviceBase implements BillableDevice {
 
         ReadingType type = null;
 
-        switch (unitOfMeasure) {
+        UnitOfMeasure uom = UnitOfMeasure.getForId(unitOfMeasure);
+        switch (uom) {
 
-        case PointUnits.UOMID_KVARH:
-        case PointUnits.UOMID_KVAR:
+        case KVARH:
+        case KVAR:
             type = ReadingType.KVAR;
 
             break;
 
-        case PointUnits.UOMID_KVAH:
-        case PointUnits.UOMID_KVA:
+        case KVAH:
+        case KVA:
             type = ReadingType.KVA;
 
             break;
 
-        case PointUnits.UOMID_GALLONS:
-        case PointUnits.UOMID_CUBIC_FEET:
-        case PointUnits.UOMID_CUBIC_METERS:
-        case PointUnits.UOMID_GAL_PM:
+        case GALLONS:
+        case CUBIC_FEET:
+        case CUBIC_METERS:
+        case GAL_PM:
             type = ReadingType.WATER;
 
             break;
 
-        case PointUnits.UOMID_GAS_CFT:
+        case GAS_CFT:
             type = ReadingType.GAS;
 
             break;
             
-        case PointUnits.UOMID_KWH:
-        case PointUnits.UOMID_KW:
+        case KWH:
+        case KW:
         default:
             type = ReadingType.ELECTRIC;
 

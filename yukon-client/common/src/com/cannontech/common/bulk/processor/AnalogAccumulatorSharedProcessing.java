@@ -6,12 +6,12 @@ import com.cannontech.common.csvImport.ImportRow;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.AnalogAccumulatorPointBuilderBase;
 import com.cannontech.common.point.PointBuilderFactory;
-import com.cannontech.common.point.UnitOfMeasure;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.database.data.point.UnitOfMeasure;;
 
 public abstract class AnalogAccumulatorSharedProcessing extends PointImportProcessor {
     

@@ -2,12 +2,12 @@ package com.cannontech.common.pao.definition.model;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
-import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 
@@ -19,7 +19,7 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private PointIdentifier pointIdentifier;
     private String name = null;
     private double multiplier = 1.0;
-    private int unitOfMeasure = PointUnits.UOMID_INVALID;
+    private int unitOfMeasure = UnitOfMeasure.INVALID.getId();
     private int stateGroupId = StateGroupUtils.STATEGROUP_ANALOG;
     private int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
     private PointArchiveInterval pointArchiveInterval = PointArchiveInterval.ZERO;

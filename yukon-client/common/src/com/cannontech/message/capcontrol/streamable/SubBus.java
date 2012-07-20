@@ -1,11 +1,10 @@
 package com.cannontech.message.capcontrol.streamable;
 
-import java.util.Arrays;
 import java.util.Vector;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 
 /**
  * Insert the type's description here. Creation date: (8/18/00 4:23:32 PM)
@@ -648,14 +647,15 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
         return switchOverStatus;
     }
 
-    public Integer getCurrentPtQuality(int pointType) {        
-        if (Arrays.asList(PointUnits.CAP_CONTROL_VAR_UOMIDS).contains(pointType))
-        	return getCurrentVarPtQuality();
-	    if (Arrays.asList(PointUnits.CAP_CONTROL_WATTS_UOMIDS).contains(pointType))
-	        return getCurrentwattpointquality();
-	    if (Arrays.asList(PointUnits.CAP_CONTROL_VOLTS_UOMIDS).contains(pointType))
-	        return getCurrentvoltpointquality();
-    	return null;
+    public Integer getCurrentPtQuality(int uomid) {
+        UnitOfMeasure uom = UnitOfMeasure.getForId(uomid);
+        if (uom.isCapControlVar())
+            return getCurrentVarPtQuality();
+        if (uom.isCapControlWatt())
+            return getCurrentwattpointquality();
+        if (uom.isCapControlVolt())
+            return getCurrentvoltpointquality();
+        return null;
     }
 
     public Integer getCurrentvoltpointquality() {

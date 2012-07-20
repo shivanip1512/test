@@ -52,7 +52,6 @@ import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
-import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -94,7 +93,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
@@ -1818,9 +1817,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         pointNameMap = new HashMap();
         List<Integer> pointIds = new ArrayList<Integer>();
         
-        pointIds.add(getControlPoint(PointUnits.UOMID_KVAR));
-        pointIds.add(getControlPoint(PointUnits.UOMID_KW));
-        pointIds.add(getControlPoint(PointUnits.UOMID_KVOLTS));
+        pointIds.add(getControlPoint(UnitOfMeasure.KVAR.getId()));
+        pointIds.add(getControlPoint(UnitOfMeasure.KW.getId()));
+        pointIds.add(getControlPoint(UnitOfMeasure.KVOLTS.getId()));
 
         if (getDbPersistent() instanceof CapControlSubBus) {
             CapControlSubBus sub = (CapControlSubBus) getDbPersistent();
@@ -1862,9 +1861,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         paoNameMap = new HashMap<Integer, String>();
         List<Integer> pointIds = new ArrayList<Integer>();
         
-        pointIds.add(getControlPoint(PointUnits.UOMID_KVAR));
-        pointIds.add(getControlPoint(PointUnits.UOMID_KW));
-        pointIds.add(getControlPoint(PointUnits.UOMID_KVOLTS));
+        pointIds.add(getControlPoint(UnitOfMeasure.KVAR.getId()));
+        pointIds.add(getControlPoint(UnitOfMeasure.KW.getId()));
+        pointIds.add(getControlPoint(UnitOfMeasure.KVOLTS.getId()));
         
         if(getDbPersistent() instanceof CapControlSubBus) {
             CapControlSubstationBus subBus = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
@@ -1903,30 +1902,31 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
      
     private int getControlPoint(int uomid) {
         int pointID = 0;
+        UnitOfMeasure uom = UnitOfMeasure.getForId(uomid);
         if (getPAOBase() instanceof CapControlSubBus) {
             CapControlSubstationBus sub = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
-            switch (uomid) {
-                case PointUnits.UOMID_KVAR:
+            switch (uom) {
+                case KVAR:
                     pointID = sub.getCurrentVarLoadPointID();
                     break;                        
-                case PointUnits.UOMID_KW:
+                case KW:
                     pointID = sub.getCurrentWattLoadPointID();
                     break;
-                case PointUnits.UOMID_KVOLTS: 
+                case KVOLTS: 
                     pointID = sub.getCurrentVoltLoadPointID();
                     break;
             }
         }
         if (getPAOBase() instanceof CapControlFeeder) {
             com.cannontech.database.db.capcontrol.CapControlFeeder feeder = ((CapControlFeeder) getPAOBase()).getCapControlFeeder();
-            switch (uomid) {
-                case PointUnits.UOMID_KVAR:
+            switch (uom) {
+                case KVAR:
                     pointID = feeder.getCurrentVarLoadPointID();
                     break;                        
-                case PointUnits.UOMID_KW:
+                case KW:
                     pointID = feeder.getCurrentWattLoadPointID();
                     break;
-                case PointUnits.UOMID_KVOLTS: 
+                case KVOLTS: 
                     pointID = feeder.getCurrentVoltLoadPointID();
                     break;
             }

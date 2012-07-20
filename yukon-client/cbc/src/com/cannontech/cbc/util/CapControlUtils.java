@@ -33,7 +33,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOFactory;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
@@ -674,14 +674,12 @@ public final class CapControlUtils {
 
     public static boolean signalQualityNormal(PointQualityCheckable checkable, Integer type) {
         boolean pointQualNormal = isPointQualNormal(checkable, type);
-
-        if (Arrays.asList(PointUnits.CAP_CONTROL_VAR_UOMIDS).contains(type)) 
-            return (pointQualNormal);
-        if (Arrays.asList(PointUnits.CAP_CONTROL_WATTS_UOMIDS).contains(type))
+        UnitOfMeasure uom = UnitOfMeasure.getForId(type);
+        if (uom.isCapControlVar() || uom.isCapControlWatt() || uom.isCapControlVolt()) { 
             return pointQualNormal;
-        if (Arrays.asList(PointUnits.CAP_CONTROL_VOLTS_UOMIDS).contains(type))
-            return pointQualNormal;
-        return false;
+        } else {
+            return false;
+        }
     }
 
     public static boolean isPointQualNormal(PointQualityCheckable checkable, Integer type) {

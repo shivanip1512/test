@@ -36,7 +36,7 @@ import com.cannontech.common.dynamicBilling.model.DynamicBillingField;
 import com.cannontech.common.dynamicBilling.model.DynamicFormat;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.TextView;
 
@@ -442,7 +442,7 @@ public class DynamicBillingController extends MultiActionController {
 		BillingData data = new BillingData();
 		data.setData("total kWh");
 		data.setValue(123456789.0123456);
-		data.setUnitOfMeasure(PointUnits.UOMID_KWH);
+		data.setUnitOfMeasure(UnitOfMeasure.KWH.getId());
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
 		setAllReadingTypes(device, BillableField.totalConsumption, data);
@@ -451,7 +451,7 @@ public class DynamicBillingController extends MultiActionController {
 		data = new BillingData();
 		data.setData("rate A kWh");
 		data.setValue(123456789.12345);
-		data.setUnitOfMeasure(PointUnits.UOMID_KWH);
+		data.setUnitOfMeasure(UnitOfMeasure.KWH.getId());
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
         setAllReadingTypes(device, BillableField.rateAConsumption, data);
@@ -460,7 +460,7 @@ public class DynamicBillingController extends MultiActionController {
 		data = new BillingData();
 		data.setData("rate B kWh");
 		data.setValue(123456789.54321);
-		data.setUnitOfMeasure(PointUnits.UOMID_KWH);
+		data.setUnitOfMeasure(UnitOfMeasure.KWH.getId());
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
         setAllReadingTypes(device, BillableField.rateBConsumption, data);
@@ -469,7 +469,7 @@ public class DynamicBillingController extends MultiActionController {
 		data = new BillingData();
 		data.setData("rate C kWh");
 		data.setValue(123456789.01234);
-		data.setUnitOfMeasure(PointUnits.UOMID_KWH);
+		data.setUnitOfMeasure(UnitOfMeasure.KWH.getId());
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
         setAllReadingTypes(device, BillableField.rateCConsumption, data);
@@ -478,7 +478,7 @@ public class DynamicBillingController extends MultiActionController {
 		data = new BillingData();
 		data.setData("rate D kWh");
 		data.setValue(123456789.0);
-		data.setUnitOfMeasure(PointUnits.UOMID_KWH);
+		data.setUnitOfMeasure(UnitOfMeasure.KWH.getId());
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
         setAllReadingTypes(device, BillableField.rateDConsumption, data);
@@ -487,7 +487,7 @@ public class DynamicBillingController extends MultiActionController {
 		data = new BillingData();
 		data.setData("total peak kW");
 		data.setValue(9413.95);
-		data.setUnitOfMeasure(PointUnits.UOMID_KW);
+		data.setUnitOfMeasure(UnitOfMeasure.KW.getId());
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
         setAllReadingTypes(device, BillableField.totalPeakDemand, data);
@@ -496,7 +496,7 @@ public class DynamicBillingController extends MultiActionController {
 		data = new BillingData();
 		data.setData("rate A kW");
 		data.setValue(9713.012345);
-		data.setUnitOfMeasure(PointUnits.UOMID_KW);
+		data.setUnitOfMeasure(UnitOfMeasure.KW.getId());
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
         setAllReadingTypes(device, BillableField.rateADemand, data);
@@ -505,7 +505,7 @@ public class DynamicBillingController extends MultiActionController {
 		data = new BillingData();
 		data.setData("rate B kW");
 		data.setValue(9413.0);
-		data.setUnitOfMeasure(PointUnits.UOMID_KW);
+		data.setUnitOfMeasure(UnitOfMeasure.KW.getId());
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
         setAllReadingTypes(device, BillableField.rateBDemand, data);
@@ -514,7 +514,7 @@ public class DynamicBillingController extends MultiActionController {
 		data = new BillingData();
 		data.setData("rate C kW");
 		data.setValue(9413.0);
-		data.setUnitOfMeasure(PointUnits.UOMID_KW);
+		data.setUnitOfMeasure(UnitOfMeasure.KW.getId());
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
         setAllReadingTypes(device, BillableField.rateCDemand, data);
@@ -523,7 +523,7 @@ public class DynamicBillingController extends MultiActionController {
 		data = new BillingData();
 		data.setData("rate D kW");
 		data.setValue(9413.0);
-		data.setUnitOfMeasure(PointUnits.UOMID_KW);
+		data.setUnitOfMeasure(UnitOfMeasure.KW.getId());
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
         setAllReadingTypes(device, BillableField.rateDDemand, data);

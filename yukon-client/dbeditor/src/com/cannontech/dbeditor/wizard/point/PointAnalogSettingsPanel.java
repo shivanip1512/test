@@ -6,7 +6,7 @@ import javax.swing.JLabel;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 
 /**
  * This type was created in VisualAge.
@@ -345,7 +345,7 @@ private void initialize() {
     List<LiteUnitMeasure> unitMeasures = DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
     for (LiteUnitMeasure um : unitMeasures) {
         getUnitOfMeasureComboBox().addItem(um);
-        if(um.getUomID() == PointUnits.UOMID_KW) {
+        if(um.getUomID() == UnitOfMeasure.KW.getId()) {
             getUnitOfMeasureComboBox().setSelectedItem(um);
         }
     }

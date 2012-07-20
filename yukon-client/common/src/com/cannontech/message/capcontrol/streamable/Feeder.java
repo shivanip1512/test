@@ -1,12 +1,11 @@
 package com.cannontech.message.capcontrol.streamable;
 
-import java.util.Arrays;
 import java.util.Vector;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 
 /**
  * A feeder object
@@ -595,12 +594,14 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setMaxOperationDisableFlag(Boolean boolean1) {
 		maxOperationDisableFlag = boolean1;
 	}
-    public Integer getCurrentPtQuality(int pointType) {
-        if (Arrays.asList(PointUnits.CAP_CONTROL_VAR_UOMIDS).contains(pointType))
+	
+    public Integer getCurrentPtQuality(int uomid) {
+        UnitOfMeasure uom = UnitOfMeasure.getForId(uomid);
+        if (uom.isCapControlVar())
             return getCurrentVarPtQuality();
-        if (Arrays.asList(PointUnits.CAP_CONTROL_WATTS_UOMIDS).contains(pointType))
+        if (uom.isCapControlWatt())
             return getCurrentwattpointquality();
-        if (Arrays.asList(PointUnits.CAP_CONTROL_VOLTS_UOMIDS).contains(pointType))
+        if (uom.isCapControlVolt())
             return getCurrentvoltpointquality();
         return null;
     }

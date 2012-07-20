@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.AnalogPoint;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointAlarming;
 public class OneDevice_AnalogPointCreate extends PointCreate
 {
@@ -69,7 +69,7 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 			analogPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
 	
 			// set POINTUNIT defaults
-			analogPoint.getPointUnit().setUomID(new Integer(PointUnits.UOMID_KW));
+			analogPoint.getPointUnit().setUomID(UnitOfMeasure.KW.getId());
 			analogPoint.getPointUnit().setDecimalPlaces(new Integer(2));
 	
 			// set POINTANALOG defuaults

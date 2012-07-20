@@ -52,7 +52,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -713,7 +713,7 @@ public final class PointDaoImpl implements PointDao {
         int uofmId = rset.getInt("uomId");
 
         if (rset.wasNull()) { // if uomid is null, set it to an INVALID int
-            uofmId = PointUnits.UOMID_INVALID;
+            uofmId = UnitOfMeasure.INVALID.getId();
         }
 
         // process all the bit mask tags here

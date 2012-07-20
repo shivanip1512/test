@@ -4,7 +4,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
 
 /*
  */
@@ -15,7 +14,7 @@ public class LitePoint extends LiteBase
 	private int paobjectID = 0;
 	private int pointOffset = 0;
 	private int stateGroupID = 0;
-	private int uofmID = PointUnits.UOMID_INVALID;
+	private int uofmID = -1;
 	
 	
 	boolean showPointOffsets = true;
@@ -170,7 +169,7 @@ private synchronized void loadPointTags( String databaseAlias )
 			String formula = rset.getString(1);
 			setUofmID( rset.getInt(2) ); //null returns zero
 			if( rset.wasNull() ) //if uomid is null, set it to an INVALID int
-				uofmID = PointUnits.UOMID_INVALID;
+				uofmID = -1;
 
 
 			// tags may need to be changed here if there are more tags added to this bit field
@@ -258,7 +257,7 @@ public void retrieve(String databaseAlias)
 			String formula = rset.getString(6);
 			setUofmID( rset.getInt(7) ); //null returns zero
 			if( rset.wasNull() ) //if uomid is null, set it to an INVALID int
-				uofmID = PointUnits.UOMID_INVALID;
+				uofmID = -1;
 
 			
 			//process all the bit mask tags here

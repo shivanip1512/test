@@ -27,7 +27,7 @@ import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -693,7 +693,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case SUB_VAR_LOAD_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVAR)) {
+            if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KVAR.getId())) {
                 return "";
             } else {
                 return "hideElement";
@@ -702,7 +702,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case SUB_WATT_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(subBus, PointUnits.UOMID_KW)) {
+            if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KW.getId())) {
                 return "";
             } else {
                 return "hideElement";
@@ -711,7 +711,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case SUB_VOLT_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS)) {
+            if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KVOLTS.getId())) {
                 return "";
             } else {
                 return "hideElement";
@@ -943,7 +943,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case FDR_VAR_LOAD_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR)) {
+            if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KVAR.getId())) {
                 return "";
             } else {
                 return "hideElement";
@@ -952,7 +952,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case FDR_WATT_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW)) {
+            if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KW.getId())) {
                 return "";
             } else {
                 return "hideElement";
@@ -961,7 +961,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case FDR_VOLT_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS)) {
+            if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KVOLTS.getId())) {
                 return "";
             } else {
                 return "hideElement";

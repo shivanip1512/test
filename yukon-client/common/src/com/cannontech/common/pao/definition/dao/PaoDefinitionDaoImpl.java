@@ -89,8 +89,8 @@ import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.data.point.StateControlType;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.google.common.base.Predicate;
@@ -896,7 +896,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         template.setName(point.getName());
 
         double multiplier = 1.0;
-        int unitOfMeasure = PointUnits.UOMID_INVALID;
+        int unitOfMeasure = UnitOfMeasure.INVALID.getId();
         int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
         
         if(point.getMultiplier() != null) {

@@ -21,7 +21,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.message.dispatch.ClientConnection;
@@ -43,10 +43,10 @@ public final class CalcHistorical
 	public static Thread sleepThread = null;
 	private static LogWriter logger = null;
 	
-	private final int KW_UNITMEASURE = PointUnits.UOMID_KW;
-	private final int KVA_UNITMEASURE = PointUnits.UOMID_KVA;
-	private final int KVAR_UNITMEASURE = PointUnits.UOMID_KVAR;
-	private final int KQ_UNITMEASURE = PointUnits.UOMID_KQ;
+	private final int KW_UNITMEASURE = UnitOfMeasure.KW.getId();
+	private final int KVA_UNITMEASURE = UnitOfMeasure.KVA.getId();
+	private final int KVAR_UNITMEASURE = UnitOfMeasure.KVAR.getId();
+	private final int KQ_UNITMEASURE = UnitOfMeasure.KQ.getId();
 	
 	private final int KW_KVAR_PFTYPE = 0;
 	private final int KW_KQ_PFTYPE = 1;

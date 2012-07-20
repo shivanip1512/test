@@ -5,7 +5,7 @@ import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.types.StrictBoolean;
 import com.cannontech.common.pao.ImportPaoType;
 import com.cannontech.common.point.AccumulatorType;
-import com.cannontech.common.point.UnitOfMeasure;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.common.util.PositiveDouble;
 import com.cannontech.common.util.PositiveInteger;
 import com.cannontech.database.data.point.ControlType;

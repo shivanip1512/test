@@ -18,7 +18,7 @@ import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 public class PowerFailPointCreate extends PointCreate
@@ -75,7 +75,7 @@ public class PowerFailPointCreate extends PointCreate
 					   new Integer(litePaobject.getYukonID()),
 					   new Integer(pointID),
 					   PointOffsets.PT_OFFSET_BLINK_COUNT,
-					   PointUnits.UOMID_COUNTS,
+					   UnitOfMeasure.COUNTS.getId(),
 					   1.0,
 					   StateGroupUtils.STATEGROUP_ANALOG,
                        PointUnit.DEFAULT_DECIMAL_PLACES,

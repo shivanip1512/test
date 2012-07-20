@@ -11,7 +11,7 @@ import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.UpdaterHelper;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
@@ -161,13 +161,13 @@ public class SubUpdatableStats extends LxAbstractView implements
     private void initPointQualCheckable() {
         if (subBus != null) {
             varLoad.setPointCheckable(subBus);
-            varLoad.setType(PointUnits.UOMID_KVAR);
+            varLoad.setType(UnitOfMeasure.KVAR.getId());
 
             wattLoad.setPointCheckable(subBus);
-            wattLoad.setType(PointUnits.UOMID_KW);
+            wattLoad.setType(UnitOfMeasure.KW.getId());
 
             voltLoad.setPointCheckable(subBus);
-            voltLoad.setType(PointUnits.UOMID_KVOLTS);
+            voltLoad.setType(UnitOfMeasure.KVOLTS.getId());
         }
         allStats.add(varLoad);
         allStats.add(threePhase);

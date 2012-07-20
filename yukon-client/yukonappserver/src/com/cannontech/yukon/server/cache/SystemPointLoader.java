@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 
 /**
  * Insert the type's description here.
@@ -111,7 +111,7 @@ timerStart = new java.util.Date();
             String formula = rset.getString(7);
             int uofmID = rset.getInt(8);
             if( rset.wasNull() ) //if uomid is null, set it to an INVALID int
-                uofmID = PointUnits.UOMID_INVALID;
+                uofmID = UnitOfMeasure.INVALID.getId();
 
             
          //process all the bit mask tags here

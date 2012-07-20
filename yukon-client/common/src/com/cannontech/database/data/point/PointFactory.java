@@ -390,7 +390,7 @@ public final class PointFactory {
         return createCalculatedPoint(paoIdentifier,
                                      name,
                                      stateGroupId,
-                                     PointUnits.UOMID_UNDEF,
+                                     UnitOfMeasure.UNDEF.getId(),
                                      PointUnit.DEFAULT_DECIMAL_PLACES,
                                      PointArchiveType.NONE,
                                      PointArchiveInterval.ZERO,

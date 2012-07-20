@@ -16,7 +16,7 @@ import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -74,7 +74,7 @@ public class MCT410FrozenPointCreate extends PointCreate
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointOffsets.PT_OFFSET_FROZEN_PEAK_DEMAND,
-						PointUnits.UOMID_KW,
+						UnitOfMeasure.KW.getId(),
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
                         PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -91,7 +91,7 @@ public class MCT410FrozenPointCreate extends PointCreate
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointOffsets.PT_OFFSET_FROZEN_MAX_VOLT,
-						PointUnits.UOMID_VOLTS,
+						UnitOfMeasure.VOLTS.getId(),
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
                         PointUnit.DEFAULT_DECIMAL_PLACES,
@@ -110,7 +110,7 @@ public class MCT410FrozenPointCreate extends PointCreate
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointOffsets.PT_OFFSET_FROZEN_MIN_VOLT,
-						PointUnits.UOMID_VOLTS,
+						UnitOfMeasure.VOLTS.getId(),
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
                         PointUnit.DEFAULT_DECIMAL_PLACES,

@@ -44,7 +44,7 @@ import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointOffsets;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
@@ -185,7 +185,8 @@ public class CapBankEditorForm extends DBEditorForm {
                 List<LitePoint> allPoints = pointDao.getLitePointsByPaObjectId(controlDeviceId);
                 for (int i = 0; i < allPoints.size(); i++) {
                     LitePoint point = allPoints.get(i);
-                    if (point.getUofmID() == PointUnits.UOMID_VOLTS) {
+                    
+                    if (UnitOfMeasure.getForId(point.getUofmID()) == UnitOfMeasure.VOLTS) {
                         CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams(point);
                         monitorPoint.setDeviceId(capBank.getCapBank().getDeviceID().intValue());
                         // set the feeder limits by default

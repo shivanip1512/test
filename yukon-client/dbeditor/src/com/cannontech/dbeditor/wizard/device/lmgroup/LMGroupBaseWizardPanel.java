@@ -25,7 +25,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointOffsets;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -349,7 +349,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				paoID,
 				new Integer(ids[1]),
 				PointOffsets.PT_OFFSET_ANNUAL_HISTORY,
-				PointUnits.UOMID_COUNTS, 
+				UnitOfMeasure.COUNTS.getId(), 
 				StateGroupUtils.STATEGROUP_ANALOG) );			
 		
 		smartDB.addDBPersistent( 
@@ -358,7 +358,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 					paoID,
 					new Integer(ids[2]),
 					PointOffsets.PT_OFFSET_DAILY_HISTORY,
-					PointUnits.UOMID_COUNTS,
+					UnitOfMeasure.COUNTS.getId(),
 					StateGroupUtils.STATEGROUP_ANALOG) );			
 
 		smartDB.addDBPersistent( 
@@ -367,7 +367,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				paoID,
 				new Integer(ids[3]),
 				PointOffsets.PT_OFFSET_SEASONAL_HISTORY,
-				PointUnits.UOMID_COUNTS,
+				UnitOfMeasure.COUNTS.getId(),
 				StateGroupUtils.STATEGROUP_ANALOG) );			
 		
 		smartDB.addDBPersistent( 
@@ -376,7 +376,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				paoID,
 				new Integer(ids[4]),
 				PointOffsets.PT_OFFSET_MONTHLY_HISTORY,
-				PointUnits.UOMID_COUNTS,
+				UnitOfMeasure.COUNTS.getId(),
 				StateGroupUtils.STATEGROUP_ANALOG) );
 				
 		smartDB.addDBPersistent( 
@@ -385,7 +385,7 @@ private void createExtraObjects( LMGroup lmGroup, SmartMultiDBPersistent smartDB
 				paoID,
 				new Integer(ids[5]),
 				PointOffsets.PT_OFFSET_CONTROL_COUNTDOWN,
-				PointUnits.UOMID_COUNTS, 
+				UnitOfMeasure.COUNTS.getId(), 
 				StateGroupUtils.STATEGROUP_ANALOG) );				
 	
 	}

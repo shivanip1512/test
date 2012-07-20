@@ -2,7 +2,7 @@ package com.cannontech.billing.device.base;
 
 import java.sql.Timestamp;
 
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 
 /**
  * Data class which represents data for a BillableField
@@ -43,38 +43,38 @@ public class BillingData {
     }
 
     public void setUnitOfMeasure(Integer unitOfMeasure) {
+        UnitOfMeasure uom = UnitOfMeasure.getForId(unitOfMeasure);
+        switch (uom) {
 
-        switch (unitOfMeasure) {
-
-        case PointUnits.UOMID_KWH:
+        case KWH:
             this.unitOfMeasure = "KWH";
             break;
 
-        case PointUnits.UOMID_KW:
+        case KW:
             this.unitOfMeasure = "KW";
             break;
 
-        case PointUnits.UOMID_MWH:
+        case MWH:
             this.unitOfMeasure = "MWH";
             break;
 
-        case PointUnits.UOMID_MW:
+        case MW:
             this.unitOfMeasure = "MW";
             break;
 
-        case PointUnits.UOMID_KVA:
+        case KVA:
             this.unitOfMeasure = "KVA";
             break;
 
-        case PointUnits.UOMID_KVAH:
+        case KVAH:
             this.unitOfMeasure = "KVAH";
             break;
 
-        case PointUnits.UOMID_KVAR:
+        case KVAR:
             this.unitOfMeasure = "KVAR";
             break;
 
-        case PointUnits.UOMID_KVARH:
+        case KVARH:
             this.unitOfMeasure = "KVARH";
             break;
 

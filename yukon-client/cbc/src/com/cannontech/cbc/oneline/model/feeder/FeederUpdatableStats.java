@@ -11,7 +11,7 @@ import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.UpdaterHelper;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.user.YukonUserContext;
@@ -199,13 +199,13 @@ public class FeederUpdatableStats extends LxAbstractView implements
         Feeder streamable = parent.getStreamable();
         if (streamable != null) {
             varLoad.setPointCheckable(streamable);
-            varLoad.setType(PointUnits.UOMID_KVAR);
+            varLoad.setType(UnitOfMeasure.KVAR.getId());
 
             wattLoad.setPointCheckable(streamable);
-            wattLoad.setType(PointUnits.UOMID_KW);
+            wattLoad.setType(UnitOfMeasure.KW.getId());
 
             voltLoad.setPointCheckable(streamable);
-            voltLoad.setType(PointUnits.UOMID_KVOLTS);
+            voltLoad.setType(UnitOfMeasure.KVOLTS.getId());
 
         }
         allStats.add(varLoad); 
