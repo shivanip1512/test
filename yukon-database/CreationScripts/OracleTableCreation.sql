@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/19/2012 5:57:30 PM                         */
+/* Created on:     7/20/2012 11:36:40 AM                        */
 /*==============================================================*/
 
 
@@ -10076,7 +10076,8 @@ alter table CCFeederSubAssignment
 
 alter table CCHOLIDAYSTRATEGYASSIGNMENT
    add constraint FK_CCHSA_PAOID foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table CCHOLIDAYSTRATEGYASSIGNMENT
    add constraint FK_CCHSA_SCHEDID foreign key (HolidayScheduleId)
@@ -10093,7 +10094,8 @@ alter table CCMonitorBankList
 
 alter table CCSEASONSTRATEGYASSIGNMENT
    add constraint FK_CCSSA_PAOID foreign key (paobjectid)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table CCSEASONSTRATEGYASSIGNMENT
    add constraint FK_CCSSA_SCHEDID foreign key (seasonscheduleid)

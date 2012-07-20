@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/19/2012 5:58:31 PM                         */
+/* Created on:     7/20/2012 11:21:02 AM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -10693,6 +10693,7 @@ go
 alter table CCHOLIDAYSTRATEGYASSIGNMENT
    add constraint FK_CCHSA_PAOID foreign key (PAObjectId)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table CCHOLIDAYSTRATEGYASSIGNMENT
@@ -10714,6 +10715,7 @@ go
 alter table CCSEASONSTRATEGYASSIGNMENT
    add constraint FK_CCSSA_PAOID foreign key (paobjectid)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table CCSEASONSTRATEGYASSIGNMENT

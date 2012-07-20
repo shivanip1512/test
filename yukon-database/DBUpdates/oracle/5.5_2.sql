@@ -3,6 +3,7 @@
 /******************************************/ 
 
 /* Start YUK-11144 */
+/* @start-block */
 DECLARE 
     v_newDevConfigId NUMBER;
     v_internalRetries NUMBER;
@@ -49,9 +50,12 @@ BEGIN
     INSERT INTO DEVICECONFIGURATIONITEM VALUES (v_newItemId, v_newDevConfigId, 'Enable Unsolicited Messages', 'true');
     SELECT MAX(DeviceConfigurationItemId)+1 INTO v_newItemId FROM DEVICECONFIGURATIONITEM;
 END;
+/
+/* @end-block */
 /*
  * Find all DNP devices in the database and assign them to the new device configuration.
  */
+/* @start-block */
 DECLARE 
     v_newDevConfigId NUMBER;
     v_count NUMBER;
@@ -79,6 +83,8 @@ BEGIN
         v_count := v_count - 1;
     END LOOP;
 END;
+/
+/* @end-block */
 /* End YUK-11144 */
 
 /* Start YUK-11142 */
@@ -173,11 +179,12 @@ WHERE SUBSTR(Notification, 1,1) = '('
 /* End YUK-11129 */
   
 /* Start YUK-11087 */
-/* @start-block */
+/* If settements aren't being used by the customer delete their settlement tables */
 ALTER TABLE SettlementConfig DROP COLUMN CTISettlement;
 ALTER TABLE SettlementConfig DROP COLUMN YukonDefId;
 ALTER TABLE SettlementConfig DROP COLUMN EntryId;
 
+/* @start-block */
 DECLARE
     v_activeSettlementsCount INT;
 BEGIN
@@ -185,7 +192,6 @@ BEGIN
     FROM SettlementConfig
     WHERE ConfigId >= 0;
     
-    /* If settements aren't being used by the customer lets delete their settlement tables */ 
     IF 1 > v_activeSettlementsCount THEN
         DELETE FROM YukonListEntry WHERE ListId IN (SELECT ListId 
                                                     FROM YukonSelectionList 
@@ -391,6 +397,24 @@ WHERE YUG.UserId NOT IN (SELECT YUG2.UserId
                            JOIN YukonGroupRole YGR2 ON YUG2.GroupId = YGR2.GroupId
                          WHERE YGR2.RoleId = -110);
 /* End YUK-11154 */
+
+/* Start YUK-11151 */
+ALTER TABLE CCSEASONSTRATEGYASSIGNMENT 
+DROP CONSTRAINT FK_CCSSA_PAOID;
+
+ALTER TABLE CCSEASONSTRATEGYASSIGNMENT
+    ADD CONSTRAINT FK_CCSSA_PAOID FOREIGN KEY (paobjectid)
+        REFERENCES YukonPAObject (PAObjectID)
+            ON DELETE CASCADE;
+            
+ALTER TABLE CCHOLIDAYSTRATEGYASSIGNMENT 
+DROP CONSTRAINT FK_CCHSA_PAOID;
+
+ALTER TABLE CCHOLIDAYSTRATEGYASSIGNMENT
+    ADD CONSTRAINT FK_CCHSA_PAOID FOREIGN KEY (PAObjectId)
+        REFERENCES YukonPAObject (PAObjectID)
+            ON DELETE CASCADE;
+/* End YUK-11151 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 

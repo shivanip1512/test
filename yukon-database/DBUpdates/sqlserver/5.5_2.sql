@@ -3,10 +3,11 @@
 /******************************************/ 
 
 /* Start YUK-11144 */
+/* @start-block */
 DECLARE @newDevConfigId NUMERIC;
 SELECT @newDevConfigId = MAX(DeviceConfigurationID)+1 FROM DEVICECONFIGURATION;
 
-INSERT INTO DEVICECONFIGURATION VALUES (@newDevConfigId, 'Default DNP Configuration', 'DNP')
+INSERT INTO DEVICECONFIGURATION VALUES (@newDevConfigId, 'Default DNP Configuration', 'DNP');
 
 DECLARE @internalRetries NUMERIC;
 DECLARE @localTimeInt NUMERIC;
@@ -27,9 +28,9 @@ SELECT @enableTimeSyncs = 'false';
 DECLARE @localTime varchar(60);
 
 IF @localTimeInt = 0
-    SET @localTime = 'false'
+    SET @localTime = 'false';
 ELSE
-    SET @localTime = 'true'
+    SET @localTime = 'true';
 
 DECLARE @newItemId NUMERIC;
 SELECT @newItemId = MAX(DeviceConfigurationItemId)+1 FROM DEVICECONFIGURATIONITEM;
@@ -48,17 +49,14 @@ SELECT @newItemId = MAX(DeviceConfigurationItemId)+1 FROM DEVICECONFIGURATIONITE
 
 INSERT INTO DEVICECONFIGURATIONITEM VALUES (@newItemId, @newDevConfigId, 'Enable Unsolicited Messages', 'true');
 SELECT @newItemId = MAX(DeviceConfigurationItemId)+1 FROM DEVICECONFIGURATIONITEM;
-/*
- * Find all DNP devices in the database and assign them to the new device configuration.
- */
+
 DECLARE @count NUMERIC = (SELECT COUNT(*) 
                           FROM YukonPAObject 
-                          WHERE (Type LIKE 'CBC 702%' OR Type LIKE 'CBC 802%' OR TYPE LIKE '%DNP%'))
+                          WHERE (Type LIKE 'CBC 702%' OR Type LIKE 'CBC 802%' OR TYPE LIKE '%DNP%'));
                           
 DECLARE @deviceID NUMERIC = (SELECT MIN(PAObjectID) 
                              FROM YukonPAObject 
-                             WHERE (Type LIKE 'CBC 702%' OR Type LIKE 'CBC 802%' OR TYPE LIKE '%DNP%'))
-
+                             WHERE (Type LIKE 'CBC 702%' OR Type LIKE 'CBC 802%' OR TYPE LIKE '%DNP%'));
 WHILE(@count > 0)
 BEGIN
     INSERT INTO DEVICECONFIGURATIONDEVICEMAP VALUES (@deviceID, @newDevConfigId)
@@ -68,6 +66,7 @@ BEGIN
                             PAObjectID > @deviceID);
     SET @count -= 1;
 END
+/* @end-block */
 /* End YUK-11144 */
 
 /* Start YUK-11142 */
@@ -158,12 +157,11 @@ WHERE SUBSTRING(Notification, 1,1) = '('
 /* End YUK-11129 */
   
 /* Start YUK-11087 */
-/* @start-block */
 ALTER TABLE SettlementConfig DROP COLUMN CTISettlement;
 ALTER TABLE SettlementConfig DROP COLUMN YukonDefId;
 ALTER TABLE SettlementConfig DROP COLUMN EntryId;
 GO
-
+/* @start-block */
 IF 0 = (SELECT COUNT (*) 
         FROM SettlementConfig
         WHERE ConfigId >= 0)
@@ -351,6 +349,25 @@ WHERE YUG.UserId NOT IN (SELECT YUG2.UserId
                          WHERE YGR2.RoleId = -110);
 /* End YUK-11154 */
 
+/* Start YUK-11151 */
+ALTER TABLE CCSEASONSTRATEGYASSIGNMENT 
+DROP CONSTRAINT FK_CCSSA_PAOID;
+
+ALTER TABLE CCSEASONSTRATEGYASSIGNMENT
+    ADD CONSTRAINT FK_CCSSA_PAOID FOREIGN KEY (paobjectid)
+        REFERENCES YukonPAObject (PAObjectID)
+            ON DELETE CASCADE;
+GO
+ALTER TABLE CCHOLIDAYSTRATEGYASSIGNMENT 
+DROP CONSTRAINT FK_CCHSA_PAOID;
+
+ALTER TABLE CCHOLIDAYSTRATEGYASSIGNMENT
+    ADD CONSTRAINT FK_CCHSA_PAOID FOREIGN KEY (PAObjectId)
+        REFERENCES YukonPAObject (PAObjectID)
+            ON DELETE CASCADE;
+GO
+/* End YUK-11151 */
+                         
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
