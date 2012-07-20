@@ -43,7 +43,7 @@ import com.cannontech.database.data.device.VirtualDevice;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.fdemulator.fileio.AcsFileIO;
@@ -1009,7 +1009,7 @@ public class PointEditor extends JFrame implements ActionListener
 				exit = 1;
 			} else if ("Value".equalsIgnoreCase(type))
 			{
-				analogPoint = PointFactory.createAnalogPoint("VALMET " + name, virtDevice.getPAObjectID(), null, 0, PointUnits.UOMID_KW, -1);
+				analogPoint = PointFactory.createAnalogPoint("VALMET " + name, virtDevice.getPAObjectID(), null, 0, UnitOfMeasure.KW.getId(), -1);
 				
 				Integer pointID = analogPoint.getPoint().getPointID();
 
@@ -1279,7 +1279,7 @@ public class PointEditor extends JFrame implements ActionListener
 			} else if (type.equalsIgnoreCase("Value"))
 			{
 
-				analogPoint = PointFactory.createAnalogPoint("RDEX " + name, virtDevice.getPAObjectID(), null, 0, PointUnits.UOMID_KW, -1);
+				analogPoint = PointFactory.createAnalogPoint("RDEX " + name, virtDevice.getPAObjectID(), null, 0, UnitOfMeasure.KW.getId(), -1);
 				Integer pointID = analogPoint.getPoint().getPointID();
 
 				FDRTranslation newFDRTranslation = new FDRTranslation(pointID);
@@ -1561,7 +1561,7 @@ public class PointEditor extends JFrame implements ActionListener
 			} else if ("Value".equalsIgnoreCase(type))
 			{
 
-				analogPoint = PointFactory.createAnalogPoint("ACS " + remote + " " + point + " " + category, virtDevice.getPAObjectID(), null, 0, PointUnits.UOMID_KW, -1);
+				analogPoint = PointFactory.createAnalogPoint("ACS " + remote + " " + point + " " + category, virtDevice.getPAObjectID(), null, 0, UnitOfMeasure.KW.getId(), -1);
 				Integer pointID = analogPoint.getPoint().getPointID();
 
 				FDRTranslation newFDRTranslation = new FDRTranslation(pointID);
