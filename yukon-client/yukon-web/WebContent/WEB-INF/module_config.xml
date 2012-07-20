@@ -1303,6 +1303,9 @@
                         <option name="interfaces">
                             <link>/spring/multispeak/setup/home</link>
                         </option>
+                        <option name="lmMappings">
+                            <link>/spring/multispeak/setup/lmMappings/home</link>
+                        </option>
                         <option name="synchronization">
                             <link>/spring/multispeak/setup/deviceGroupSync/home</link>
                         </option>
@@ -1358,24 +1361,31 @@
                         <link>/spring/multispeak/setup/routemapping/mappings</link>
                     </page>
                 
-                    <page name="interfaces" type="BASIC">
+                    <page name="multispeak" type="BASIC">
                         <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
                         <menu>multispeak|interfaces</menu>
                         <link>/spring/multispeak/setup/home</link>
                         <pages>
+                            <page name="interfaces" type="BASIC">
+                                <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
+                                <menu>multispeak|interfaces</menu>
+                                <link>/spring/multispeak/setup/home</link>
+                            </page>
                             <page name="lmMappings" type="BASIC">
                                 <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-                                <menu>multispeak|lm_mappings</menu>
+                                <menu>multispeak|lmMappings</menu>
                                 <link>/spring/multispeak/setup/lmMappings/home</link>
                             </page>
                             <page name="deviceGroupSyncHome" type="BASIC">
                                 <menu>multispeak|synchronization</menu>
                                 <link>/spring/multispeak/setup/deviceGroupSync/home</link>
-                            </page>
-                            <page name="deviceGroupSyncProgress" type="BASIC">
-                                <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-                                <menu>multispeak|synchronization</menu>
-                                <link>/spring/multispeak/setup/deviceGroupSync/progress</link>
+                                <pages>
+                                	<page name="deviceGroupSyncProgress" type="BASIC">
+                                		<requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
+                                		<menu>multispeak|synchronization</menu>
+										<link>/spring/multispeak/setup/deviceGroupSync/progress</link>
+									</page>
+								</pages>
                             </page>
                         </pages>
                     </page>
