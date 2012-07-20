@@ -802,6 +802,7 @@ public class StarsAdminUtil {
         }
         
 		if (status != null) dbUser.setLoginStatus(status);
+		dbUser.setLastChangedDate(Instant.now().toDate());
 		
 		boolean groupChanged = false;
 		if (loginGroup != null) {

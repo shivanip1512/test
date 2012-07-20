@@ -15,8 +15,8 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -46,6 +46,8 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.authentication.service.PasswordPolicyService;
+import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -103,29 +105,32 @@ import com.google.common.collect.Maps;
 @RequestMapping(value = "/operator/account/*")
 public class OperatorAccountController {
 
-    private AccountEventLogService accountEventLogService;
-	private OperatorGeneralSearchService operatorGeneralSearchService;
-	private OperatorAccountService operatorAccountService;
-	private StarsDatabaseCache starsDatabaseCache;
-	private CustomerAccountDao customerAccountDao;
-	private AccountService accountService;
-	private AccountGeneralValidator accountGeneralValidator;
-	private RolePropertyDao rolePropertyDao;
-	private SubstationDao substationDao;
-    private AccountImportDataValidator accountImportDataValidator;
-    private AccountImportService accountImportService;
-    private GroupService groupService;
     private RecentResultsCache<AccountImportResult> recentResultsCache;
-    private YukonUserDao yukonUserDao;
-    private YukonGroupService yukonGroupService;
-    private AuthenticationService authenticationService;
-    private ResidentialLoginService residentialLoginService;
-    private TransactionOperations transactionTemplate;
-    private LoginValidatorFactory loginValidatorFactory;
-    private SystemEventLogService systemEventLogService;
-    private ECMappingDao ecMappingDao;
-    private YukonEnergyCompanyService yukonEnergyCompanyService;
+
+    @Autowired private AccountEventLogService accountEventLogService;
+    @Autowired private OperatorGeneralSearchService operatorGeneralSearchService;
+    @Autowired private OperatorAccountService operatorAccountService;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private AccountService accountService;
+    @Autowired private AccountGeneralValidator accountGeneralValidator;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private SubstationDao substationDao;
+    @Autowired private AccountImportDataValidator accountImportDataValidator;
+    @Autowired private AccountImportService accountImportService;
+    @Autowired private GroupService groupService;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private YukonGroupService yukonGroupService;
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired private ResidentialLoginService residentialLoginService;
+    @Autowired private TransactionOperations transactionTemplate;
+    @Autowired private LoginValidatorFactory loginValidatorFactory;
+    @Autowired private SystemEventLogService systemEventLogService;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private PasswordPolicyService passwordPolicyService;
+    @Autowired private YukonGroupDao yukonGroupDao;
     
     static private enum LoginModeEnum {
         CREATE,
@@ -373,7 +378,7 @@ public class OperatorAccountController {
             return "redirect:search";
         }
 	    
-	    LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(yukonUserDao.getLiteYukonUser(UserUtils.USER_DEFAULT_ID));
+	    LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(new LiteYukonUser());//yukonUserDao.getLiteYukonUser(UserUtils.USER_DEFAULT_ID));
 	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
 	    final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
 	    
@@ -532,10 +537,22 @@ public class OperatorAccountController {
 	
 	// GENERATE PASSWORD
     @RequestMapping(value="generatePassword")
-    public TextView generatePassword(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public TextView generatePassword(HttpServletRequest request, HttpServletResponse response, Integer userId, String loginGroupName) throws IOException {
+        LiteYukonUser user = null; 
+        if (userId != null) {
+            user = yukonUserDao.getLiteYukonUser(userId);
+        }
+        LiteYukonGroup liteYukonGroup = yukonGroupDao.findLiteYukonGroupByName(loginGroupName);
+        
+        String generatePassword = "";
+        try {
+            generatePassword = passwordPolicyService.generatePassword(user, liteYukonGroup);
+        } catch (IllegalArgumentException e) {
+            Log.error("No password could be generated for this login.", e);
+        }
+        
         response.setContentType("text/plain");
-        String generatedPassword = RandomStringUtils.randomAlphanumeric(6);
-        return new TextView(generatedPassword);
+        return new TextView(generatePassword);
     }
     
     /*
@@ -907,112 +924,6 @@ public class OperatorAccountController {
         return !didNotChange;
     }
 	
-    // DI Setters
-	@Autowired
-	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
-        this.accountEventLogService = accountEventLogService;
-    }
-	
-	@Autowired
-    public void setSystemEventLogService(SystemEventLogService systemEventLogService) {
-        this.systemEventLogService = systemEventLogService;
-    }
-	
-	@Autowired
-	public void setOperatorGeneralSearchService(OperatorGeneralSearchService operatorGeneralSearchService) {
-		this.operatorGeneralSearchService = operatorGeneralSearchService;
-	}
-	
-	@Autowired
-	public void setOperatorAccountService(OperatorAccountService operatorAccountService) {
-		this.operatorAccountService = operatorAccountService;
-	}
-	
-	@Autowired
-	public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-		this.starsDatabaseCache = starsDatabaseCache;
-	}
-	
-	@Autowired
-	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-		this.customerAccountDao = customerAccountDao;
-	}
-	
-	@Autowired
-	public void setAccountService(AccountService accountService) {
-		this.accountService = accountService;
-	}
-	
-	@Autowired
-	public void setAccountGeneralValidator(AccountGeneralValidator accountGeneralValidator) {
-		this.accountGeneralValidator = accountGeneralValidator;
-	}
-	
-	@Autowired
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-	
-	@Autowired
-	public void setSubstationDao(SubstationDao substationDao) {
-		this.substationDao = substationDao;
-	}
-	
-	@Autowired
-	public void setAccountImportDataValidator(AccountImportDataValidator accountImportDataValidator) {
-	    this.accountImportDataValidator = accountImportDataValidator;
-	}
-	
-	@Autowired
-	public void setAccountImportService(AccountImportService accountImportService) {
-	    this.accountImportService = accountImportService;
-	}
-	
-	@Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-	
-	@Autowired
-	public void setYukonGroupService(YukonGroupService yukonGroupService) {
-        this.yukonGroupService = yukonGroupService;
-    }
-	
-	@Autowired
-	public void setGroupService(GroupService groupService) {
-        this.groupService = groupService;
-    }
-	
-	@Autowired
-	public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
-	
-	@Autowired
-	public void setResidentialLoginService(ResidentialLoginService residentialLoginService) {
-        this.residentialLoginService = residentialLoginService;
-    }
-	
-	@Autowired
-    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
-    }
-	
-	@Autowired
-	public void setLoginValidatorFactory(LoginValidatorFactory loginValidatorFactory) {
-        this.loginValidatorFactory = loginValidatorFactory;
-    }
-	
-	@Autowired
-	public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
-	}
-	
-	@Autowired
-	public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-
     @Resource(name="accountImportResultsCache")
     public void setRecentResultsCache(RecentResultsCache<AccountImportResult> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;

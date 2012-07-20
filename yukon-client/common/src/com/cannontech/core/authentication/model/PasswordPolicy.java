@@ -122,6 +122,10 @@ public class PasswordPolicy {
      * Checks to see if the password is old enough to be changed.
      */
     public boolean isPasswordAgeRequirementMet(LiteYukonUser user) {
+        if (user == null) {
+            return true;
+        }
+        
         Duration passwordAge = getPasswordAge(user);
         
         if (passwordAge.isLongerThan(minPasswordAge)) {

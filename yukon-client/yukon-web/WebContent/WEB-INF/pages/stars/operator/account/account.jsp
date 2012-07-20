@@ -112,8 +112,14 @@
     	}
 
     	function generatePassword() {
+    		var generatedPasswordUrl = '/spring/stars/operator/account/generatePassword';
+    		generatedPasswordUrl  += '?loginGroupName='+$('loginBackingBean.loginGroupName').value;
+    		if ($('userId') != null) {
+    			generatedPasswordUrl += '&userId='+$('userId').value;
+    		}
+    		
             new jQuery.ajax({
-                    url: '/spring/stars/operator/account/generatePassword',
+                    url: generatedPasswordUrl,
                     success: function(data) {
                          jQuery(".password_editor_field").each(function(){
                              this.value = data;
@@ -149,12 +155,12 @@
             
             if(jQuery("#password1").val().length == 0 && jQuery("#password2").val().length == 0){
                 jQuery("#passwordDialog").addMessage({
-                    message: '<i:inline key=".loginInfoError.passwordTooShort"/>', 
+                    message: '<cti:msg2 key=".loginInfoError.passwordTooShort" javaScriptEscape="true"/>', 
                     messageClass: 'ERROR'});
                 jQuery("#password1, #password2").addClass('error');
             }else if(jQuery("#password1").val() != jQuery("#password2").val()){
                 jQuery("#passwordDialog").addMessage({
-                    message: '<i:inline key=".loginInfoError.passwordNoMatch"/>', 
+                    message: '<cti:msg2 key=".loginInfoError.passwordNoMatch" javaScriptEscape="true"/>', 
                     messageClass: 'ERROR'});
                 jQuery("#password1, #password2").addClass('error');
             }else{

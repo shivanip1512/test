@@ -140,4 +140,24 @@ public class RolePropertyDaoAdapter implements RolePropertyDao {
     public String getPropertyStringValue(LiteYukonGroup liteYukonGroup, YukonRoleProperty property) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    @Override
+    public int getPropertyIntegerValue(LiteYukonGroup liteYukonGroup, YukonRoleProperty property) {
+    	throw new UnsupportedOperationException("not implemented");
+    }
+
+	@Override
+	public boolean getPropertyBooleanValue(LiteYukonGroup liteYukonGroup, YukonRoleProperty property) {
+		throw new UnsupportedOperationException("not implemented");
+	}
+
+    @Override
+    public boolean checkRoleForRoleGroupId(YukonRole role, int roleGroupId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public Number getPropertyNumberValue(LiteYukonGroup roleGroup, YukonRoleProperty property) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

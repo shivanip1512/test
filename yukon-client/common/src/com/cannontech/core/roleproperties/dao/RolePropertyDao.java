@@ -242,10 +242,20 @@ public interface RolePropertyDao {
      * This method returns true if the user has the specified role.
      * 
      * @param role any valid role, may not be null
+     * @param liteYukonGroup any valid liteYukonGroup, may not be null
+     * @return true if user or one of the user's groups has the role
+     */
+    public boolean checkRoleForRoleGroupId(YukonRole role, int roleGroupId);
+
+    /**
+     * This method returns true if the  has the specified role.
+     * 
+     * @param role any valid role, may not be null
      * @param user any valid user, may not be null
      * @return true if user or one of the user's groups has the role
      */
     public boolean checkRole(YukonRole role, LiteYukonUser user);
+
     
     /**
      * This method returns true if one of the user's roles is in the 
@@ -342,4 +352,37 @@ public interface RolePropertyDao {
      * @throws UserNotInRoleException user must be in role to access a role property
      */
     public String getPropertyStringValue(LiteYukonGroup liteYukonGroup, YukonRoleProperty property);
+
+    /**
+     * Returns the liteYukonGroup's value of the specified role property as an integer.
+     * 
+     * Undefined values are returned as 0.
+     * 
+     * This method may only be called with properties that have a type return type 
+     * that can be cast to Number. Rounding or truncation may occur to return an int.
+     * 
+     * @param property any property with a Number return type
+     * @param liteYukonGroup a valid liteYukonGroup, may be null when accessing System properties
+     * @return  the value of the property or 0 if undefined
+     * @throws UserNotInRoleException user must be in role to access a role property
+     */
+	public int getPropertyIntegerValue(LiteYukonGroup liteYukonGroup, YukonRoleProperty property);
+
+    /**
+     * Returns the liteYukonGroup's value of the specified role property as a boolean.
+     * 
+     * Undefined values are returned as false.
+     * 
+     * This method may only be called with properties that have a type return type 
+     * that can be cast to Boolean.
+     * 
+     * @param property any property with a Boolean return type
+     * @param liteYukonGroup a valid liteYukonGroup, may be null when accessing System properties
+     * @return  the value of the property or false if undefined
+     * @throws UserNotInRoleException user must be in role to access a role property
+     */
+	public boolean getPropertyBooleanValue(LiteYukonGroup liteYukonGroup, YukonRoleProperty property);
+
+    Number getPropertyNumberValue(LiteYukonGroup roleGroup, YukonRoleProperty property)
+            throws UserNotInRoleException;
 }

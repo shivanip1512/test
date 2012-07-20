@@ -8,7 +8,10 @@
 
     <script>
     function generatePassword() {
-        new Ajax.Request('/spring/stars/operator/account/generatePassword', {
+    	var loginGroupName =$('loginGroupName').value;
+    	var userId = $('userId').value;
+
+        new Ajax.Request('/spring/stars/operator/account/generatePassword?userId='+userId+'&loginGroupName='+loginGroupName, {
             onSuccess: function(response) {
                  var generatedPassword = response.responseText;
 

@@ -187,6 +187,15 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         }        
         return group;
     }
+
+    @Override
+    public LiteYukonGroup findLiteYukonGroupByName(String groupName) {
+        try {
+            return getLiteYukonGroupByName(groupName);
+        } catch (NotFoundException e) {}
+
+        return null;
+    }
     
     @Override
     public void save(LiteYukonGroup group) {
@@ -253,5 +262,4 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
         this.dbPersistantDao = dbPersistantDao;
     }
-    
 }

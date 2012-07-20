@@ -100,7 +100,7 @@ public class PasswordHistoryDaoImpl implements PasswordHistoryDao, InitializingB
         sql.append("SELECT *");
         sql.append("FROM PasswordHistory");
         sql.append("WHERE UserId").eq(userId);
-        sql.append("ORDER BY PasswordChangedDate ASC");
+        sql.append("ORDER BY PasswordChangedDate DESC");
         
         List<PasswordHistory> passwordHistories = yukonJdbcTemplate.query(sql, new PasswordHistoryRowMapper());
         return passwordHistories;

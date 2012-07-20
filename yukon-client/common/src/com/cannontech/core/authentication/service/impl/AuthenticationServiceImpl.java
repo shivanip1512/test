@@ -29,7 +29,6 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.primitives.Ints;
 
 public class AuthenticationServiceImpl implements AuthenticationService, InitializingBean {
     private final static Logger log = YukonLogManager.getLogger(AuthenticationServiceImpl.class);
@@ -125,8 +124,11 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
     }
 
     @Override
-    public boolean isPasswordBeingReused(LiteYukonUser yukonUser, String newPassword) {
-
+    public boolean isPasswordBeingReused(LiteYukonUser yukonUser, String newPassword, int numberOfPasswordsToCheck) {
+        if (yukonUser == null) {
+            return false;
+        }
+        
         // Update to the current authentication type when password is changed.
         AuthType authType = getDefaultAuthType(yukonUser);
         boolean supportsSetPassword = supportsPasswordSet(authType);
@@ -134,12 +136,9 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
             throw new UnsupportedOperationException("setPassword not supported for type: " + authType);
         }
 
-        List<PasswordHistory> passwordHistories = passwordHistoryDao.getPasswordHistory(yukonUser.getUserID());
-        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(yukonUser);
-        
         // Check the passwords to see if any of them are attempting to be reused
-        int numberOfPasswordToCheck = Ints.min(passwordHistories.size(), passwordPolicy.getPasswordHistory());
-        for (int i = 0; i < numberOfPasswordToCheck ; i++) {
+        List<PasswordHistory> passwordHistories = passwordHistoryDao.getPasswordHistory(yukonUser.getUserID());
+        for (int i = 0; i < numberOfPasswordsToCheck && i < passwordHistories.size(); i++) {
             PasswordHistory passwordHistory = passwordHistories.get(i);
             String previousPassword = passwordHistory.getPassword(); 
             AuthType passwordAuthType = passwordHistory.getAuthType();

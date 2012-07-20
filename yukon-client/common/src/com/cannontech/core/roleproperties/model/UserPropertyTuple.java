@@ -1,0 +1,94 @@
+package com.cannontech.core.roleproperties.model;
+
+import org.apache.commons.lang.Validate;
+
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.roleproperties.NotInRoleException;
+import com.cannontech.core.roleproperties.UserNotInRoleException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.data.lite.LiteYukonUser;
+
+public class UserPropertyTuple implements PropertyTuple {
+    public Integer userId;
+    public YukonRoleProperty yukonRoleProperty;
+
+    public UserPropertyTuple(LiteYukonUser user, YukonRoleProperty yukonRoleProperty) {
+        if (user == null) {
+            this.userId = null;
+        } else {
+            this.userId = user.getUserID();
+        }
+        this.yukonRoleProperty = yukonRoleProperty;
+    }
+
+    @Override
+    public YukonRoleProperty getYukonRoleProperty() {
+        return yukonRoleProperty;
+    }
+    public Integer getUserId() {
+        return userId;
+    }
+
+    @Override
+    public boolean isSystemProperty() {
+        if(yukonRoleProperty.getRole().getCategory().isSystem()) {
+            return true;
+        }
+        Validate.notNull(userId, "The user id can only be null when requesting System properties");
+        return false;
+    }
+    
+    @Override
+    public NotInRoleException notInRoleException() {
+        return new UserNotInRoleException(yukonRoleProperty, userId);
+    }
+    
+    @Override
+    public String toString() {
+        return yukonRoleProperty + " for user id " + userId;
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+        result = prime
+                 * result
+                 + ((yukonRoleProperty == null) ? 0
+                         : yukonRoleProperty.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        UserPropertyTuple other = (UserPropertyTuple) obj;
+        if (userId == null) {
+            if (other.userId != null)
+                return false;
+        } else if (!userId.equals(other.userId))
+            return false;
+        if (yukonRoleProperty != other.yukonRoleProperty)
+            return false;
+        return true;
+    }
+
+    @Override
+    public SqlFragmentSource getRolePropertyValueLookupQuery() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YGR.Value");
+        sql.append("FROM YukonGroupRole YGR");
+        sql.append("  JOIN YukonUserGroup YUG ON YUG.GroupId = YGR.GroupId");
+        sql.append("WHERE YGR.RolePropertyId").eq(yukonRoleProperty.getPropertyId());
+        sql.append("  AND YUG.UserId").eq(userId);
+
+        return sql;
+    }
+}

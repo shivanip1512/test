@@ -19,7 +19,7 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.exception.PasswordExpiredException;
 import com.cannontech.core.authentication.model.AuthType;
-import com.cannontech.core.authentication.model.PasswordPolicy;
+import com.cannontech.core.authentication.model.PasswordPolicyError;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.YukonUserDao;
@@ -110,23 +110,9 @@ public class ChangeLoginController {
             return ChangeLoginMessage.NO_PASSWORDMATCH;
         } else {
             // Check the password against the password policy.
-            PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
-            if (passwordPolicy != null) {
-                if (newPassword.length() < passwordPolicy.getMinPasswordLength()) {
-                   return ChangeLoginMessage.MIN_PASSWORD_LENGTH_NOT_MET;
-                }
-                
-                if (!passwordPolicy.isPasswordAgeRequirementMet(user)) {
-                    return ChangeLoginMessage.MIN_PASSWORD_AGE_NOT_MET;
-                }
-                
-                if (authenticationService.isPasswordBeingReused(user, newPassword)) {
-                    return ChangeLoginMessage.PASSWORD_USED_TOO_RECENTLY;
-                }
-                
-                if (!passwordPolicy.isPasswordQualityCheckMet(newPassword)) {
-                    return ChangeLoginMessage.PASSWORD_DOES_NOT_MET_POLICY_QUALITY;
-                }
+            PasswordPolicyError passwordPolicyError = passwordPolicyService.checkPasswordPolicy(newPassword, user);
+            if (passwordPolicyError != null) {
+                return ChangeLoginMessage.valueOf(passwordPolicyError.name());
             }
         }
         

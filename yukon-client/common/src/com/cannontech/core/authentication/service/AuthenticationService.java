@@ -77,7 +77,7 @@ public interface AuthenticationService {
      * This method checks to see if the supplied password is being reused before it is valid to reuse it.  If the password is
      * being used before it's allows this method will return true.
      */
-    public boolean isPasswordBeingReused(LiteYukonUser yukonUser, String newPassword);
+    public boolean isPasswordBeingReused(LiteYukonUser yukonUser, String newPassword, int numberOfPasswordsToCheck);
 
     /**
      * This method expires all the passwords for a given group.  This will then force the users to reset their password when they login.

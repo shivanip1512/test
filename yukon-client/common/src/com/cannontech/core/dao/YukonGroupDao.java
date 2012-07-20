@@ -26,7 +26,15 @@ public interface YukonGroupDao {
 
     public Map<Integer, LiteYukonGroup> getLiteYukonGroups(Iterable<Integer> groupIds);
 
+    /**
+     * This method uses the group name supplied to get the corresponding liteYukonGroup.
+     */
     public LiteYukonGroup getLiteYukonGroupByName(String groupName);
+
+    /**
+     * This method tries to use the group name supplied to get the corresponding liteYukonGroup.
+     */
+    public LiteYukonGroup findLiteYukonGroupByName(String groupName);
 
     /** 
      * Saves a LiteYukonGroup, inserting it if is a new group or
@@ -36,5 +44,6 @@ public interface YukonGroupDao {
     public void save(LiteYukonGroup group);
 
     public void delete(int groupId);
+
 
 }

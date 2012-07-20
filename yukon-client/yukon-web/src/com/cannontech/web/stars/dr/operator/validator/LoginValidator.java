@@ -9,26 +9,28 @@ import org.springframework.validation.ValidationUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.PasswordPolicy;
-import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.authentication.model.PasswordPolicyError;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
+import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 import com.google.common.collect.Lists;
 
 public class LoginValidator extends SimpleValidator<LoginBackingBean> {
 
-    private AuthenticationService authenticationService;
     private PasswordPolicyService passwordPolicyService;
+    private YukonGroupDao yukonGroupDao;
     private YukonUserDao yukonUserDao;
 
     private LiteYukonUser user;
     
-    public LoginValidator(LiteYukonUser user, AuthenticationService authenticationService, PasswordPolicyService passwordPolicyService, YukonUserDao yukonUserDao){
+    public LoginValidator(LiteYukonUser user, PasswordPolicyService passwordPolicyService, YukonGroupDao yukonGroupDao, YukonUserDao yukonUserDao){
     	super(LoginBackingBean.class);
     	this.user = user;
-    	this.authenticationService = authenticationService;
     	this.passwordPolicyService = passwordPolicyService;
+    	this.yukonGroupDao = yukonGroupDao;
     	this.yukonUserDao = yukonUserDao;
     }
 
@@ -44,6 +46,7 @@ public class LoginValidator extends SimpleValidator<LoginBackingBean> {
             if (usernameCheckUser != null &&
                 user.getUserID() != usernameCheckUser.getUserID()) {
                 errors.rejectValue("username", "yukon.web.modules.operator.account.loginInfoError.usernameAlreadyExists");
+                return;
             }
         }
         
@@ -59,42 +62,27 @@ public class LoginValidator extends SimpleValidator<LoginBackingBean> {
             }
             
             // Check the password against the password policy.
-            PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user);
-            if (passwordPolicy != null && !errors.hasErrors()) {
-                String password = loginBackingBean.getPassword1();
+            LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroupByName(loginBackingBean.getLoginGroupName());
+            String password = loginBackingBean.getPassword1();
+            PasswordPolicyError passwordPolicyError = passwordPolicyService.checkPasswordPolicy(password, user, liteYukonGroup);
+
+            if (PasswordPolicyError.PASSWORD_DOES_NOT_MET_POLICY_QUALITY == passwordPolicyError) {
+                List<Object> errorArgs = Lists.newArrayList();
+                PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteYukonGroup);
+                errorArgs.add(passwordPolicy.numberOfRulesMet(password));
+                errorArgs.add(passwordPolicy.getPasswordQualityCheck());
                 
-                if (password.length() < passwordPolicy.getMinPasswordLength()) {
-                   passwordError(errors, "yukon.web.modules.passwordPolicy.minPasswordLengthNotMet");
-                   return;
-                }
-                
-                if (!passwordPolicy.isPasswordAgeRequirementMet(user)) {
-                    passwordError(errors, "yukon.web.modules.passwordPolicy.minPasswordAgeNotMet");
-                    return;
-                }
-                
-                if (authenticationService.isPasswordBeingReused(user, password)) {
-                    passwordError(errors, "yukon.web.modules.passwordPolicy.passwordUsedTooRecently");
-                    return;
-                }
-                
-                if (!passwordPolicy.isPasswordQualityCheckMet(password)) {
-                    List<Object> errorArgs = Lists.newArrayList();
-                    errorArgs.add(passwordPolicy.numberOfRulesMet(password));
-                    errorArgs.add(passwordPolicy.getPasswordQualityCheck());
-                    
-                    passwordError(errors, "yukon.web.modules.passwordPolicy.passwordDoesNotMetPolicyQuality", errorArgs.toArray());
-                    return;
-                }
+                passwordError(errors, passwordPolicyError.getFormatKey(), errorArgs.toArray());
+                return;
+            }
+            if (passwordPolicyError != null) {
+                passwordError(errors, passwordPolicyError.getFormatKey());
+                return;
             }
         }
     }
 
-    private void passwordError(Errors errors, String errorMessageKey) {
-        passwordError(errors, errorMessageKey, null);
-    }
-
-    private void passwordError(Errors errors, String errorMessageKey, Object[] errorArgs) {
+    private void passwordError(Errors errors, String errorMessageKey, Object... errorArgs) {
         YukonValidationUtils.rejectValues(errors, errorMessageKey, errorArgs, "password1", "password2");
     }
 }
