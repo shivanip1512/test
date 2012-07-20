@@ -17,12 +17,28 @@ using std::string;
 using std::endl;
 using std::list;
 
+
 INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList)
 {
     INT   nRet = NoError;
     string resultString;
 
-    if( parse.isKeyValid("hexraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
+    static const int DEFAULT_EXPIRATION_20_MINUTES = 20*60;
+
+    if( parse.isKeyValid("asciiraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
+    {
+        string outputValue = parse.getsValue("asciiraw");
+
+        std::vector<unsigned char> payload(outputValue.begin(), outputValue.end());
+
+        sendDRMessage(OutMessage->Priority, DEFAULT_EXPIRATION_20_MINUTES, payload);
+
+        resultString = "Device: " + getName() + " -- Raw ASCII Command sent \n\"" + outputValue + "\"";
+        retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
+
+        return nRet;
+    }
+    else if( parse.isKeyValid("hexraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
     {
         CtiString outputValue = parse.getsValue("hexraw");
         if( (outputValue.size()%2) != 0 )
@@ -35,17 +51,7 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
             payload.push_back(strtoul(outputValue.substr(i*2,2).c_str(), NULL, 16));
         }
 
-        resultString = "Device: " + getName() + " -- Raw hex Command sent \n\"" + (string)outputValue + "\"";
-
-        using namespace Cti::Messaging;
-        using namespace Cti::Messaging::Rfn;
-        std::auto_ptr<StreamableMessage> message(
-            RfnBroadcastMessage::createMessage(OutMessage->Priority, 
-                                               RfnBroadcastMessage::RfnMessageClass::DemandResponse, 
-                                               20*60/*20 minutes*/, 
-                                               payload));
-
-        gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_RfnBroadcast, message);
+        sendDRMessage(OutMessage->Priority, DEFAULT_EXPIRATION_20_MINUTES, payload);
 
         resultString = "Device: " + getName() + " -- Raw hex Command sent \n\"" + (string)outputValue + "\"";
         retList.push_back(CTIDBG_new CtiReturnMsg(getID(), string(OutMessage->Request.CommandStr), resultString, nRet, 0, 0, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec()));
@@ -94,20 +100,12 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
         }
 
         xcom.setUseCRC(false);
-        xcom.setUseASCII(false);
+        xcom.setUseASCII(true);
 
         std::vector<unsigned char> payload;
         xcom.getFullMessage(payload);
 
-        using namespace Cti::Messaging;
-        using namespace Cti::Messaging::Rfn;
-        std::auto_ptr<StreamableMessage> message(
-            RfnBroadcastMessage::createMessage(OutMessage->Priority, 
-                                               RfnBroadcastMessage::RfnMessageClass::DemandResponse, 
-                                               OutMessage->ExpirationTime - CtiTime::now().seconds(), 
-                                               payload));
-
-        gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_RfnBroadcast, message);
+        sendDRMessage(OutMessage->Priority, OutMessage->ExpirationTime - CtiTime::now().seconds(), payload);
 
         reportAndLogControlStart(parse, vgList, OutMessage->Request.CommandStr);
 
@@ -122,6 +120,19 @@ INT CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
 
         return nRet;
     }
+}
+
+void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDuration, std::vector<unsigned char> &payload)
+{
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::Rfn;
+    std::auto_ptr<StreamableMessage> message(
+        RfnBroadcastMessage::createMessage(priority, 
+                                           RfnBroadcastMessage::RfnMessageClass::DemandResponse, 
+                                           expirationDuration, 
+                                           payload));
+
+    gActiveMQConnection.enqueueMessage(ActiveMQConnectionManager::Queue_RfnBroadcast, message);
 }
 
 string CtiDeviceGroupRfnExpresscom::getSQLCoreStatement() const
