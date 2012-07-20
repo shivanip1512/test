@@ -95,10 +95,8 @@ public class OperatorLoginController {
     }
     
     @RequestMapping("home")
-    public String home(YukonUserContext userContext, 
-                       ModelMap modelMap, 
-                       int ecId, 
-                       EnergyCompanyInfoFragment energyCompanyInfoFragment) {
+    public String home(YukonUserContext userContext, ModelMap modelMap, int ecId,  EnergyCompanyInfoFragment energyCompanyInfoFragment) {
+
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
@@ -109,12 +107,10 @@ public class OperatorLoginController {
     }
     
     @RequestMapping("view")
-    public String viewOperatorLogin(YukonUserContext userContext, 
-                       ModelMap modelMap, 
-                       int ecId, 
-                       int operatorLoginId,
+    public String viewOperatorLogin(YukonUserContext userContext, ModelMap modelMap, int ecId, int operatorLoginId,
                        EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-      //check permissions
+
+        //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         LoginBackingBean login = loginBackingBeanFromYukonUser(yukonUserDao.getLiteYukonUser(operatorLoginId));
         
@@ -145,13 +141,11 @@ public class OperatorLoginController {
     }
     
     @RequestMapping(method=RequestMethod.POST, value="update", params="create")
-    public String createOperatorLogin(YukonUserContext userContext,
-                                      ModelMap modelMap,
-                                      int ecId,
+    public String createOperatorLogin(YukonUserContext userContext, ModelMap modelMap, int ecId,
                                       final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
-                                      BindingResult bindingResult,
-                                      FlashScope flashScope,
+                                      BindingResult bindingResult, FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) throws Exception {
+
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
@@ -175,11 +169,9 @@ public class OperatorLoginController {
         //save login
         LiteYukonGroup liteGroup = yukonGroupDao.getLiteYukonGroupByName(operatorLogin.getLoginGroupName());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
-        StarsAdminUtil.createOperatorLogin(operatorLogin.getUsername(), 
-                                            operatorLogin.getPassword1(), 
-                                            operatorLogin.getLoginStatus(), 
-                                            new LiteYukonGroup[] {liteGroup}, 
-                                            energyCompany);
+        StarsAdminUtil.createOperatorLogin(operatorLogin.getUsername(), operatorLogin.getPassword1(), 
+                                            operatorLogin.getLoginStatus(), new LiteYukonGroup[] {liteGroup}, energyCompany);
+
         //add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginCreated"));
         
@@ -204,13 +196,11 @@ public class OperatorLoginController {
     }
     
     @RequestMapping(method=RequestMethod.POST, value="update", params="update")
-    public String updateOperatorLogin(YukonUserContext userContext,
-                                      ModelMap modelMap,
-                                      int ecId,
+    public String updateOperatorLogin(YukonUserContext userContext, ModelMap modelMap, int ecId,
                                       final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
-                                      BindingResult bindingResult,
-                                      FlashScope flashScope,
+                                      BindingResult bindingResult, FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) throws Exception {
+
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
@@ -268,13 +258,7 @@ public class OperatorLoginController {
             returnJSON.put("message", new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginStatusEnabled").toString());
         }
         
-        StarsAdminUtil.updateLogin( liteUser, 
-                                    liteUser.getUsername(),
-                                    "",
-                                    liteUser.getLoginStatus(),
-                                    null,
-                                    null,
-                                    false);
+        StarsAdminUtil.updateLogin( liteUser, liteUser.getUsername(), "", liteUser.getLoginStatus(), null, null, false);
         
         returnJSON.put("loginStatus", liteUser.getLoginStatus());
         
