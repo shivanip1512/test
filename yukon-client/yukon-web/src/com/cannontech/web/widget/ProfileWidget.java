@@ -175,32 +175,26 @@ public class ProfileWidget extends WidgetControllerBase {
             WidgetParameterHelper.getStringParameter(request, "dailyUsageStopDateStr", "");
         if (StringUtils.isBlank(dailyUsageReportStartDateStr)
             && StringUtils.isBlank(dailyUsageReportStopDateStr)) {
-            mav.addObject("dailyUsageStartDateStr",
-                          dateFormattingService.format(DateUtils.addDays(new Date(), -5),
-                                                       DateFormattingService.DateFormatEnum.DATE,
-                                                       userContext));
-            mav.addObject("dailyUsageStopDateStr",
-                          dateFormattingService.format(new Date(),
-                                                       DateFormattingService.DateFormatEnum.DATE,
-                                                       userContext));
+            mav.addObject("dailyUsageStartDateStr", DateUtils.addDays(new Date(), -5));
+            mav.addObject("dailyUsageStopDateStr", new Date());
         }
 
         // initialize past profile dates
         String stopDateStr = WidgetParameterHelper.getStringParameter(request, "pastProfile_stop", "");
         String startDateStr = WidgetParameterHelper.getStringParameter(request, "pastProfile_start", "");
-        if (StringUtils.isBlank(startDateStr) && StringUtils.isBlank(stopDateStr)) {
-            mav.addObject("startDateStr",
-                          dateFormattingService.format(DateUtils.addDays(new Date(), -5),
-                                                       DateFormattingService.DateFormatEnum.DATE,
-                                                       userContext));
-            mav.addObject("stopDateStr",
-                          dateFormattingService.format(new Date(),
-                                                       DateFormattingService.DateFormatEnum.DATE,
-                                                       userContext));
-        } else {
-            mav.addObject("startDateStr", startDateStr);
-            mav.addObject("stopDateStr", stopDateStr);
-        }
+        // start date
+    	try{
+    		mav.addObject("startDateStr", dateFormattingService.parseLocalDate(startDateStr, userContext));
+    	}catch(ParseException e){
+    		mav.addObject("startDateStr", DateUtils.addDays(new Date(), -5));
+    	}
+        
+        // stop date
+    	try{
+    		mav.addObject("stopDateStr", dateFormattingService.parseLocalDate(stopDateStr, userContext));
+    	}catch(ParseException e){
+    		mav.addObject("stopDateStr", new Date());
+    	}
 
         // init future schedule date
         addFutureScheduleDateToMav(mav, userContext);
@@ -309,8 +303,8 @@ public class ProfileWidget extends WidgetControllerBase {
                                                    stopInstant.toDate(), callback, userContext);
             mav.addObject("channel", channel);
         } else {
-            mav.addObject("startDateStr", startDateStr);
-            mav.addObject("stopDateStr", stopDateStr);
+            mav.addObject("startDateStr", dateFormattingService.parseLocalDate(startDateStr, userContext));
+            mav.addObject("stopDateStr", dateFormattingService.parseLocalDate(stopDateStr, userContext));
             mav.addObject("errorMsgRequest", errorMsg);
         }
 
@@ -539,8 +533,8 @@ public class ProfileWidget extends WidgetControllerBase {
             mav.addObject("reportQueryString", url);
         } else {
             mav.addObject("errorMsgDailyUsage", errorMessages);
-            mav.addObject("dailyUsageStartDateStr", reportStartDateStr);
-            mav.addObject("dailyUsageStopDateStr", reportStopDateStr);
+            mav.addObject("dailyUsageStartDateStr", dateFormattingService.parseLocalDate(reportStartDateStr, userContext));
+            mav.addObject("dailyUsageStopDateStr", dateFormattingService.parseLocalDate(reportStopDateStr, userContext));
         }
         return mav;
     }
