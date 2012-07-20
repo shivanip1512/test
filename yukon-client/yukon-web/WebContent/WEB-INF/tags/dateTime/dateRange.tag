@@ -14,7 +14,7 @@
 
 <%@ include file="pickerIncludes.jspf" %>
 
-<div class="f_dateRange">
+<div class="f_dateRange oh">
 	<dt:date path="${pageScope.startPath}"
 			 name="${pageScope.startName}"
 			 value="${pageScope.startValue}"

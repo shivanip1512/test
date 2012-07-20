@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -67,6 +69,14 @@ public class UiDemosController {
         model.addAttribute("numberFiveNinths", 5.0 / 9.0);
         model.addAttribute("largeDecimal", 9523155.235);
         model.addAttribute("funArguments", new Object[] {7, "Cool Beans", 13, 54.231555});
+        Instant now = Instant.now();
+        Instant past = new Instant(now.minus(Duration.standardDays(5)).getMillis());
+        Instant start = new Instant(now.minus(Duration.standardDays(7)).getMillis());
+        Instant end = new Instant(now.plus(Duration.standardDays(7)).getMillis());
+        model.addAttribute("now", now);
+        model.addAttribute("past", past);
+        model.addAttribute("start", start);
+        model.addAttribute("end", end);
 
         List<BuiltInAttribute> atts =
             objectFormattingService.sortDisplayableValues(BuiltInAttribute.values(), null, null,

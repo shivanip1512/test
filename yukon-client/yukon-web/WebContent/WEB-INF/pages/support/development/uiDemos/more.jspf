@@ -1,0 +1,69 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="dialog" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="debug" tagdir="/WEB-INF/tags/debug"%>
+<%@ taglib prefix="dateTime" tagdir="/WEB-INF/tags/dateTime"%>
+
+<style>
+.labelGutter label {
+	width: 8em;
+	float: left;
+	minHeight: 2em;
+	text-align: right;
+	padding-right: 5px;
+}
+
+.dateContainer {
+	overflow: hidden;
+	float: left;
+	margin: 0 10px 10px 0;
+}
+
+.labelGutter small {
+	font-size: 70%;
+}
+
+hr {
+	float: none;
+	clear: both;
+	border: solid 1px #ccc;
+	border-style: dotted none none;	
+}
+</style>
+
+<p class="pageDescription">
+
+</p>
+
+<tags:sectionContainer title="HTML 5">
+    <h3>Placeholder</h3>
+    <input type="text" name="search" placeholder="Placeholder Text" >
+</tags:sectionContainer>
+
+<tags:sectionContainer title="Dates & Time" styleClass="labelGutter">
+
+    <h3>Date Picker</h3>
+    <div class="dateContainer"><label>Basic</label><dateTime:date value="${now}"/></div>
+    <div class="dateContainer"><label>Maximum Date<br><small>1 week from now</small></label><dateTime:date value="${now}" maxDate="${end}" /></div>
+    <div class="dateContainer"><label>Minimum Date<br><small>1 week ago</small></label><dateTime:date value="${now}" minDate="${start}" /></div>
+    <div class="dateContainer"><label>Limited Range<br><small>1 week ago -<br>1 week from now</small></label><dateTime:date value="${now}" minDate="${start}" maxDate="${end}" /></div>
+    <div class="dateContainer"><label>Date Range</label><dateTime:dateRange startValue="${now}" endValue="${end}" /></div>
+
+    <hr>
+
+    <h3>Time Picker</h3>
+    <div class="dateContainer"><label>Basic</label><dateTime:time value="${now}" /></div>
+
+    <hr>
+
+    <h3>Date & Time Picker</h3>
+    <div class="dateContainer"><label>Basic</label><dateTime:dateTime value="${now}"/></div>
+    <div class="dateContainer"><label>Maximum Date<br><small>1 week from now</small></label><dateTime:dateTime value="${now}" maxDate="${end}" /></div>
+    <div class="dateContainer"><label>Minimum Date<br><small>1 week ago</small></label><dateTime:dateTime value="${now}" minDate="${start}" /></div>
+    <div class="dateContainer"><label>Limited Range<br><small>1 week ago -<br>1 week from now</small></label><dateTime:dateTime value="${now}" minDate="${start}" maxDate="${end}" /></div>
+
+</tags:sectionContainer>

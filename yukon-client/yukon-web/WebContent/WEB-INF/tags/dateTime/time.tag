@@ -6,8 +6,8 @@
 <%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
 <%@ attribute name="cssClass" type="java.lang.String" description="Class added to the input of the widget" %>
 <%@ attribute name="cssDialogClass" type="java.lang.String" description="Class added to the outer dialog div" %>
-<%@ attribute name="maxDate" type="java.lang.String" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
-<%@ attribute name="minDate" type="java.lang.String" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
+<%@ attribute name="maxDate" type="java.lang.Object" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
+<%@ attribute name="minDate" type="java.lang.Object" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
 <%@ attribute name="stepHour" type="java.lang.String" description="Steps when incrementing/decrementing hours" %>
 <%@ attribute name="stepMinute" type="java.lang.String" description="Steps when incrementing/decrementing minutes" %>
 
@@ -22,7 +22,7 @@
 
 <c:if test="${empty id}">
 	<c:if test="${empty pageScope.path}">
-		<cti:uniqueIdentifier var="id" prefix="dateTimeInputId_"/>
+		<cti:uniqueIdentifier var="id" prefix="timeInputId_"/>
     </c:if>
     <c:if test="${!empty pageScope.path}">
 	    <c:set var="id" value="${path}"/>
@@ -30,9 +30,16 @@
 </c:if>
 
 <c:if test="${!empty pageScope.value}">
-    <cti:formatDate var="dateTime" value="${pageScope.value}" type="TIME24H"/>
+    <cti:formatDate var="timeValue" value="${pageScope.value}" type="TIME24H"/>
     <cti:formatDate var="timeZoneShort" value="${pageScope.value}" type="TIMEZONE"/>
     <cti:formatDate var="timeZoneFull" value="${pageScope.value}" type="TIMEZONE_EXTENDED"/>
+</c:if>
+
+<c:if test="${!empty pageScope.minDate}">
+    <cti:formatDate var="minFormattedDate" value="${pageScope.minDate}" type="DATE"/>
+</c:if>
+<c:if test="${!empty pageScope.maxDate}">
+    <cti:formatDate var="maxFormattedDate" value="${pageScope.maxDate}" type="DATE"/>
 </c:if>
 
 <c:if test="${!empty pageScope.disabled}">
@@ -45,17 +52,17 @@
 	<c:when test="${not empty pageScope.path}">
 		<spring:bind path="${path}">
 			<cti:displayForPageEditModes modes="VIEW">
-				${dateTime}
+				${timeValue}
 			</cti:displayForPageEditModes>
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
                 <form:input id="${id}" 
                             path="${path}"
-                            value="${dateTime}"
-                            cssClass="f_timePicker f_timePickerUI ${cssClass}"
+                            value="${timeValue}"
+                            cssClass="f_timePicker f_timePickerUI timePicker ${cssClass}"
                             disabled="${pageScope.disabled}"
                             data-date-time-format="${jsDateTimeFormat}"
-                            data-max-date="${pageScope.maxDate}"
-                            data-min-date="${pageScope.minDate}"
+                            data-max-date="${maxFormattedDate}"
+                            data-min-date="${minFormattedDate}"
                             data-step-hour="${pageScope.stepHour}"
                             data-step-minute="${pageScope.stepMinute}"
                             data-time-zone-short="${timeZoneShort}"
@@ -70,15 +77,15 @@
 	</c:when>
 	<c:otherwise>
 		<cti:displayForPageEditModes modes="VIEW">
-				${dateTime}
+				${timeValue}
 			</cti:displayForPageEditModes>
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
 				<input	id="${id}" 
-				        value="${dateTime}"
-						class="f_timePicker f_timePickerUI ${cssClass}"
+				        value="${timeValue}"
+						class="f_timePicker f_timePickerUI timePicker ${cssClass}"
 						<c:if test="${disabled}">disabled="true"</c:if>
-						data-max-date="${pageScope.maxDate}"
-						data-min-date="${pageScope.minDate}"
+						data-max-date="${maxFormattedDate}"
+						data-min-date="${minFormattedDate}"
                         data-step-hour="${pageScope.stepHour}"
                         data-step-minute="${pageScope.stepMinute}"
                         data-class="${pageScope.cssDialogClass}"

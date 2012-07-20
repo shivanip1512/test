@@ -19,6 +19,7 @@ jQuery(function() {
         <li><a href="#pickersTab">Pickers</a></li>
         <li><a href="#i18nTab">I18N</a></li>
         <li><a href="#dialogsTab">Dialogs</a></li>
+        <li><a href="#moreTab">More</a></li>
     </ul>
 
     <div id="pickersTab">
@@ -31,6 +32,10 @@ jQuery(function() {
 
     <div id="dialogsTab">
         <%@ include file="dialogs.jspf" %>
+    </div>
+
+    <div id="moreTab">
+        <%@ include file="more.jspf" %>
     </div>
 </div>
 
