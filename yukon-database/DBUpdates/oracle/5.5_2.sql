@@ -343,6 +343,55 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -10009;
 /* End YUK-11062 */
 
+/* Start YUK-11154 */
+INSERT INTO YukonGroup SELECT MAX(GroupId)+1, 'Password Policy Grp2', 'A set of roles that define the password policy rules.' FROM YukonGroup;
+
+/* Add a set of (default) Password Policy Role Properties */
+/* @start-block */
+DECLARE
+    v_maxGroupId NUMBER;
+    v_newGroupRoleId NUMBER;
+BEGIN
+    SELECT MAX(GroupId) INTO v_maxGroupId FROM YukonGroup;
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11001, '0');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11002, '0');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11003, '0');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11004, '0');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11005, '0');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11006, '0');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11050, '0');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11051, 'true');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11052, 'true');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11053, 'true');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11054, 'true');
+    SELECT MAX(GroupRoleID)+1 INTO v_newGroupRoleId FROM YukonGroupRole;
+    INSERT INTO YukonGroupRole VALUES (v_newGroupRoleId, v_maxGroupId, -110, -11055, 'true');
+END;
+/
+/* @end-block */
+
+INSERT INTO YukonUserGroup
+SELECT Distinct YUG.UserId, (SELECT MAX(GroupID) FROM YukonGroup)
+FROM YukonUserGroup YUG
+JOIN YukonGroupRole YGR ON YUG.GroupId = YGR.GroupId
+WHERE YUG.UserId NOT IN (SELECT YUG2.UserId
+                         FROM YukonUserGroup YUG2
+                           JOIN YukonGroupRole YGR2 ON YUG2.GroupId = YGR2.GroupId
+                         WHERE YGR2.RoleId = -110);
+/* End YUK-11154 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

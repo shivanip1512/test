@@ -324,6 +324,33 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -10009;
 /* End YUK-11062 */
 
+/* Start YUK-11154 */
+INSERT INTO YukonGroup SELECT MAX(GroupId)+1, 'Password Policy Grp2', 'A set of roles that define the password policy rules.' FROM YukonGroup;
+
+/* Add a set of (default) Password Policy Role Properties */
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11001, '0' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11002, '0' FROM YukonGroup YG ;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11003, '0' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11004, '0' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11005, '0' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11006, '0' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11050, '0' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11051, 'true' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11052, 'true' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11053, 'true' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11054, 'true' FROM YukonGroup YG;
+INSERT INTO YukonGroupRole SELECT (SELECT MAX(GroupRoleID)+1 FROM YukonGroupRole), MAX(GroupId), -110, -11055, 'true' FROM YukonGroup YG;
+
+INSERT INTO YukonUserGroup
+SELECT Distinct YUG.UserId, (SELECT MAX(GroupID) FROM YukonGroup)
+FROM YukonUserGroup YUG
+JOIN YukonGroupRole YGR ON YUG.GroupId = YGR.GroupId
+WHERE YUG.UserId NOT IN (SELECT YUG2.UserId
+                         FROM YukonUserGroup YUG2
+                           JOIN YukonGroupRole YGR2 ON YUG2.GroupId = YGR2.GroupId
+                         WHERE YGR2.RoleId = -110);
+/* End YUK-11154 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
