@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/22/2012 10:50:22 PM                        */
+/* Created on:     7/22/2012 11:07:39 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9730,7 +9730,7 @@ create table YukonUser (
    AuthType             varchar(16)          not null,
    LastChangedDate      datetime             not null,
    ForceReset           char(1)              not null,
-   constraint PK_YUKONUSER primary key nonclustered (UserID)
+   constraint PK_YUKONUSER primary key (UserID)
 )
 go
 
