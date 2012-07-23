@@ -270,7 +270,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         if (propertyTuple instanceof UserPropertyTuple) {
             UserPropertyTuple userPropertyTuple = (UserPropertyTuple) propertyTuple;
             Set<YukonRole> rolesForUser = userRoleCache.getUnchecked(userPropertyTuple.getUserId());
-            return rolesForUser.contains(userPropertyTuple.getYukonRoleProperty());
+            return rolesForUser.contains(userPropertyTuple.getYukonRoleProperty().getRole());
         } else if (propertyTuple instanceof RoleGroupPropertyTuple) {
             RoleGroupPropertyTuple roleGroupPropertyTuple = (RoleGroupPropertyTuple) propertyTuple;
             return checkRoleForRoleGroupId(roleGroupPropertyTuple.getYukonRoleProperty().getRole(), roleGroupPropertyTuple.getRoleGroupId());
