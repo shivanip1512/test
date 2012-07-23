@@ -65,7 +65,7 @@ BEGIN
                      WHERE (Type LIKE 'CBC 702%' OR Type LIKE 'CBC 802%' OR TYPE LIKE '%DNP%') AND
                             PAObjectID > @deviceID);
     SET @count -= 1;
-END
+END;
 /* @end-block */
 /* End YUK-11144 */
 
