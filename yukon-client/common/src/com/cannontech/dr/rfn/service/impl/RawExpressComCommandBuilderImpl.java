@@ -4,6 +4,8 @@ import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
+import javax.security.auth.login.AccountNotFoundException;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -103,7 +105,9 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                 outputBuffer.put((byte) 0xA2);
                 break;
         }
-        return outputBuffer;
+        ByteBuffer trimmedOutput = ByteBuffer.allocate(outputBuffer.position());
+        trimmedOutput.put(outputBuffer.array(), 0, outputBuffer.position());
+        return trimmedOutput;
     }
 
     private ByteBuffer getExpressComForConfigCommand(LmHardwareCommand parameters) {
@@ -161,6 +165,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                 if (device.getAccountID() > 0) {
                     LiteAccountInfo liteAcctInfo = caiDao.getByAccountId(device.getAccountID());
     
+                    boolean configFound = false;
                     for (LiteStarsAppliance liteApp : liteAcctInfo.getAppliances()) {
                         int appInventoryId = liteApp.getInventoryID();
                         int inventoryId = device.getInventoryID();
@@ -170,6 +175,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                             try {
                                 ByteBuffer addressing = buildAddressingConfig(addressingGroupId);
                                 configCommand.put(addressing.array(),0,addressing.position());
+                                configFound=true;
                             } catch (NotFoundException e) {
                                 log.error(e.getMessage(), e);
                             }
@@ -177,6 +183,11 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                             throw new BadConfigurationException("Unable to config since no Addressing Group is assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
                         }
                     }
+                    if(configFound == false) {
+                        throw new BadConfigurationException("Unable to config since no Addressing Group is assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
+                    }
+                } else {
+                    throw new BadConfigurationException("Unable to find STARS account info for device: " + device.getDeviceLabel());
                 }
             }
         }
