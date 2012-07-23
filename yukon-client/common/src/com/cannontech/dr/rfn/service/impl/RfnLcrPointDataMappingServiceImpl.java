@@ -58,7 +58,7 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
                         device.getName() + " of type: " + device.getPaoIdentifier().getPaoType());
                 continue;
             } catch (NotFoundException e) {
-                log.warn("Point for attribute (" + entry.getAttribute().toString() +
+                log.debug("Point for attribute (" + entry.getAttribute().toString() +
                         ") does not exist for device: " + device.getName());
                 continue;
             }
