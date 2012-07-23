@@ -27,11 +27,11 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.ConfigurationBase;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -223,7 +223,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
         if (paoDefinitionDao.isTagSupported(cbcImportData.getCbcType(), PaoTag.DEVICE_CONFIGURATION_DNP)) {
             ConfigurationBase config = deviceConfigurationDao.getDefaultDNPConfiguration();
             try {
-                YukonDevice device = (YukonDevice) yukonPao;
+                SimpleDevice device = new SimpleDevice(pao.getPaoIdentifier());
                 deviceConfigurationDao.assignConfigToDevice(config, device);
             } catch (InvalidDeviceTypeException e) {
                 /*

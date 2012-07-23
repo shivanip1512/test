@@ -39,6 +39,10 @@ public class UpdateDB
     private Double version = null;
     private boolean starsToBeCreated = false;
 
+    private static final Pattern cparmPattern = Pattern.compile(DBMSDefines.START_CPARM_REGEX);
+    private static final Pattern varPattern = 
+            Pattern.compile("SELECT @[A-Za-z_]+ = \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
+
 	/**
 	 * 
 	 */
@@ -414,8 +418,6 @@ public class UpdateDB
 		{
 			try
 			{
-			    Pattern pattern = Pattern.compile(DBMSDefines.START_CPARM_REGEX);
-			    Pattern varPattern = Pattern.compile("SELECT @[A-Za-z_]+ = \\'?([A-Za-z0-9\\.\\-\\s,]+)\\'?;");
 				List<UpdateLine> validLines = new ArrayList<UpdateLine>(512);
 				java.io.RandomAccessFile fileReader = new java.io.RandomAccessFile(file, "r");
 				String token = "";
@@ -430,7 +432,7 @@ public class UpdateDB
 				while( fileReader.getFilePointer() < fileReader.length() )
 				{
 					token = fileReader.readLine().trim();
-					cparmMatcher = pattern.matcher(token);
+					cparmMatcher = cparmPattern.matcher(token);
 
 					if( isValidString(token) )
 					{

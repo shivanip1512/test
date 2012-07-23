@@ -53,10 +53,12 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         this.configurationTemplateList = configurationTemplateList;
     }
 
+    @Override
     public List<ConfigurationTemplate> getAllConfigurationTemplates() {
         return configurationTemplateList;
     }
 
+    @Override
     public ConfigurationTemplate getConfigurationTemplate(String name) {
 
         for (ConfigurationTemplate currTemplate : configurationTemplateList) {
@@ -69,6 +71,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return null;
     }
 
+    @Override
     @Transactional
     public void save(ConfigurationBase configuration) {
 
@@ -141,6 +144,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     }
 
+    @Override
     public ConfigurationBase getConfiguration(int id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
@@ -160,6 +164,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         }
     }
     
+    @Override
     public ConfigurationBase findConfigurationForDevice(YukonDevice device) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
@@ -175,6 +180,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         }
     }
 
+    @Override
     public List<ConfigurationBase> getAllConfigurations() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
@@ -192,6 +198,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return configList;
     }
     
+    @Override
     public List<ConfigurationBase> getAllConfigurationsByType(ConfigurationType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
@@ -208,6 +215,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return configList;
     }
 
+    @Override
     @Transactional
     public void delete(int id) {
         ConfigurationBase configuration = getConfiguration(id);
@@ -237,6 +245,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         dbPersistentDao.processDBChange(dbChange);
     }
 
+    @Override
     public List<SimpleDevice> getAssignedDevices(ConfigurationBase configuration) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT dcdm.DeviceId paobjectid, ypo.type");
@@ -247,10 +256,57 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return jdbcTemplate.query(sql, new YukonDeviceRowMapper());
     }
 
+    @Override
+    @Transactional
     public void assignConfigToDevice(ConfigurationBase configuration, YukonDevice device) throws InvalidDeviceTypeException {
-        boolean dnpDevice = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), PaoTag.DEVICE_CONFIGURATION_DNP);
+        if (configuration == null || device == null) {
+            throw new InvalidDeviceTypeException("Unable to assign device configuration with a null " +
+                                                 "device or a null configuration.");
+        }
+
+        // Get the device types that the configuration supports
+        PaoTag tag = configuration.getType().getSupportedDeviceTag();
         
-        if (dnpDevice && (configuration == null)) {
+        // Only add the devices whose type is supported by the configuration
+        if (!paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), tag)) {
+            throw new InvalidDeviceTypeException("Device type: " 
+                    + device.getPaoIdentifier().getPaoType().name() 
+                    + " is invalid for config: " + configuration.getName());
+        }
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink params;
+        DbChangeType dbChangeType;
+        boolean isConfigUpdate = findConfigurationForDevice(device) != null;
+        if (isConfigUpdate) {
+            params = sql.update("DeviceConfigurationDeviceMap");
+            params.addValue("DeviceConfigurationId", configuration.getId());
+            sql.append("WHERE DeviceId").eq(device.getPaoIdentifier().getPaoId());
+            dbChangeType = DbChangeType.UPDATE;
+        } else {
+            params = sql.insertInto("DeviceConfigurationDeviceMap");
+            params.addValue("DeviceID", device.getPaoIdentifier().getPaoId());
+            params.addValue("DeviceConfigurationId", configuration.getId());
+            dbChangeType = DbChangeType.ADD;
+        }
+        
+        jdbcTemplate.update(sql);
+
+        DBChangeMsg dbChange = new DBChangeMsg(device.getPaoIdentifier().getPaoId(),
+                                               DBChangeMsg.CHANGE_CONFIG_DB,
+                                               DBChangeMsg.CAT_DEVICE_CONFIG,
+                                               "device",
+                                               dbChangeType);
+        // Send DBChangeMsgs
+        dbPersistentDao.processDBChange(dbChange);
+    }
+
+    @Override
+    @Transactional
+    public void unassignConfig(YukonDevice device) throws InvalidDeviceTypeException {
+        boolean dnpDevice = paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), PaoTag.DEVICE_CONFIGURATION_DNP);
+
+        if (dnpDevice) {
             throw new InvalidDeviceTypeException("Device type: " 
                     + device.getPaoIdentifier().getPaoType().name() 
                     + " cannot be unassigned from a configuration.");
@@ -260,40 +316,15 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         removeSql.append("DELETE FROM DeviceConfigurationDeviceMap");
         removeSql.append("WHERE DeviceId").eq(device.getPaoIdentifier().getPaoId());
         
-        // Clean out any assigned configs - device can only be assigned one config
         jdbcTemplate.update(removeSql);
-
-        // Check if we need to assign a new config or if it was just a removal.
-        if (configuration != null) {
-            // Get the device types that the configuration supports
-            PaoTag tag = configuration.getType().getSupportedDeviceTag();
-            
-            // Only add the devices whose type is supported by the configuration
-            if (!paoDefinitionDao.isTagSupported(device.getPaoIdentifier().getPaoType(), tag)) {
-                throw new InvalidDeviceTypeException("Device type: " 
-                        + device.getPaoIdentifier().getPaoType().name() 
-                        + " is invalid for config: " + configuration.getName());
-            }
-            
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            SqlParameterSink params = sql.insertInto("DeviceConfigurationDeviceMap");
-            params.addValue("DeviceConfigurationId", configuration.getId());
-            params.addValue("DeviceID", device.getPaoIdentifier().getPaoId());
-            
-            jdbcTemplate.update(sql);
-        }
-
+        
         DBChangeMsg dbChange = new DBChangeMsg(device.getPaoIdentifier().getPaoId(),
                                                DBChangeMsg.CHANGE_CONFIG_DB,
                                                DBChangeMsg.CAT_DEVICE_CONFIG,
                                                "device",
-                                               DbChangeType.UPDATE);
+                                               DbChangeType.DELETE);
         // Send DBChangeMsgs
         dbPersistentDao.processDBChange(dbChange);
-    }
-
-    public void unassignConfig(YukonDevice device) throws InvalidDeviceTypeException {
-        assignConfigToDevice(null, device);
     }
 
     /**

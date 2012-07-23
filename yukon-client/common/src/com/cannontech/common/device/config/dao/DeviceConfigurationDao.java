@@ -51,7 +51,9 @@ public interface DeviceConfigurationDao {
     public void delete(int id);
 
     /**
-     * Method to assign a configuration to a single device
+     * This method will assign a configuration to a device if it doesn't already have an entry
+     * in the DeviceConfigurationDeviceMap table or update the device's entry if it already has
+     * a device configuration.
      * @param device - Device to assgin configuration to
      * @throws InvalidDeviceTypeException 
      */
