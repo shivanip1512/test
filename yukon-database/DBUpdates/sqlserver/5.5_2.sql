@@ -5,7 +5,7 @@
 /* Start YUK-11144 */
 /* @start-block */
 DECLARE @newDevConfigId NUMERIC;
-SELECT @newDevConfigId = MAX(DeviceConfigurationID)+1 FROM DEVICECONFIGURATION;
+SELECT @newDevConfigId = ISNULL(MAX(DeviceConfigurationID)+1,0) FROM DEVICECONFIGURATION;
 
 INSERT INTO DEVICECONFIGURATION VALUES (@newDevConfigId, 'Default DNP Configuration', 'DNP');
 
@@ -33,7 +33,7 @@ ELSE
     SET @localTime = 'true';
 
 DECLARE @newItemId NUMERIC;
-SELECT @newItemId = MAX(DeviceConfigurationItemId)+1 FROM DEVICECONFIGURATIONITEM;
+SELECT @newItemId = ISNULL(MAX(DeviceConfigurationItemId)+1,0) FROM DEVICECONFIGURATIONITEM;
 
 INSERT INTO DEVICECONFIGURATIONITEM VALUES (@newItemId,   @newDevConfigId, 'Internal Retries', @internalRetries);
 SELECT @newItemId = MAX(DeviceConfigurationItemId)+1 FROM DEVICECONFIGURATIONITEM;
