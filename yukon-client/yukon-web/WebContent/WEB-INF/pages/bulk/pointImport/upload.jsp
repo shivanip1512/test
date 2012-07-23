@@ -4,46 +4,37 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="amr" page="pointImport">
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        <%-- point import --%>
-        <cti:crumbLink><i:inline key="yukon.web.modules.amr.pointImport.pageName"/></cti:crumbLink>
-    </cti:breadCrumbs>
-    
     <cti:includeScript link="/JavaScript/pointImport.js"/>
     
     <tags:boxContainer2 nameKey="mainBox">
         <div style="width: 50%; float: left;">
             <div class="bottomPadded">
-            <h3><i:inline key="yukon.web.modules.amr.pointImport.importHeader"/></h3>
-            <i:inline key="yukon.web.modules.amr.pointImport.importDescription"/>
+            <h3><i:inline key=".importHeader"/></h3>
+            <i:inline key=".importDescription"/>
             </div>
             <form id="importForm" method="post" action="/spring/bulk/pointImport/submitImport" enctype="multipart/form-data">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey="yukon.web.modules.amr.pointImport.importTypeSelectLabel">
+                    <tags:nameValue2 nameKey=".importTypeSelectLabel">
                         <select name="importType" id="importTypeSelect">
                             <c:forEach var="importType" items="${importTypes}">
                                 <option value="${importType}">
-                                    <i:inline key="${importType}"/>
+                                    <cti:msg2 key="${importType}"/>
                                 </option>
                             </c:forEach>
                         </select>
                     </tags:nameValue2>
                     <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
-                    <tags:nameValue2 nameKey="yukon.web.modules.amr.pointImport.calculationUploadLabel" rowId="calculationFile">
+                    <tags:nameValue2 nameKey=".calculationUploadLabel" rowId="calculationFile">
                         <img src="${folderImg}">
                         <input type="file" name="calculationFile">
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.web.modules.amr.pointImport.pointUploadLabel">
+                    <tags:nameValue2 nameKey=".pointUploadLabel">
                         <img src="${folderImg}">
                         <input type="file" name="dataFile">
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey="yukon.web.modules.amr.pointImport.empty" excludeColon="true">
+                    <tags:nameValue2 nameKey=".empty" excludeColon="true">
                         <input type="checkbox" name="ignoreInvalidColumns" style="padding-left:0; margin-left:0;">
-                        <i:inline key="yukon.web.modules.amr.pointImport.ignoreInvalidText"/>
+                        <i:inline key=".ignoreInvalidText"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <br><cti:button type="submit" nameKey="importSubmitButton"/>
@@ -51,8 +42,8 @@
             <br><br>
             <div id="calculationInstructions" style="display:none;">
                 <div class="bottomPadded">
-                    <h3><i:inline key="yukon.web.modules.amr.pointImport.calculationImportInstructionsHeader"/></h3>
-                    <i:inline key="yukon.web.modules.amr.pointImport.importInstructions"/>
+                    <h3><i:inline key=".calculationImportInstructionsHeader"/></h3>
+                    <i:inline key=".importInstructions"/>
                 </div>
                 <div>
                     <tags:importFormatDisplay format="${calculationFormat}" formatName="calculationFormat"/>
@@ -63,8 +54,8 @@
         
         <div style="width: 50%; float: left;">
             <div class="bottomPadded">
-                <h3><i:inline key="yukon.web.modules.amr.pointImport.importInstructionsHeader"/></h3>
-                <i:inline key="yukon.web.modules.amr.pointImport.importInstructions"/>
+                <h3><i:inline key=".importInstructionsHeader"/></h3>
+                <i:inline key=".importInstructions"/>
             </div>
             <div id="ANALOG_instructions" class=" instructions">
                 <tags:importFormatDisplay format="${analogPointFormat}" formatName="analogFormat"/>

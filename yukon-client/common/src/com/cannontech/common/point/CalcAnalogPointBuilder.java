@@ -16,7 +16,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.point.PointLimit;
 import com.google.common.collect.Maps;
 
-public class CalcAnalogPointBuilder extends AnalogAccumulatorPointBuilderBase {
+public class CalcAnalogPointBuilder extends ScalarPointBuilder {
     private PaoDao paoDao;
     private final Logger log = YukonLogManager.getLogger(CalcAnalogPointBuilder.class);
     private PointCalculation calculation = new PointCalculation();
@@ -105,26 +105,26 @@ public class CalcAnalogPointBuilder extends AnalogAccumulatorPointBuilderBase {
         return point;
     }
     
-    public void forceQualityNormal(boolean forceQualityNormal) {
+    public void setForceQualityNormal(boolean forceQualityNormal) {
         this.forceQualityNormal = forceQualityNormal;
     }
     
-    public void calculation(PointCalculation calculation) {
+    public void setCalculation(PointCalculation calculation) {
         this.calculation = calculation;
     }
     
-    public void updateType(AnalogPointUpdateType updateType) {
+    public void setUpdateType(AnalogPointUpdateType updateType) {
         this.updateType = updateType;
     }
     
-    public void updateRate(PointPeriodicRate updateRate) {
+    public void setUpdateRate(PointPeriodicRate updateRate) {
         this.updateRate = updateRate;
     }
     
     /**
      * Must be a non-negative value.
      */
-    public void pointOffset(int pointOffset) {
+    public void setPointOffset(int pointOffset) {
         if(pointOffset < 0) throw new IllegalArgumentException("Point Offset cannot be negative.");
         this.pointOffset = pointOffset;
     }

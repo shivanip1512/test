@@ -15,6 +15,7 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointUnit;
@@ -521,11 +522,7 @@ public final class PointFactory {
         try {
             connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
             point.setDbConnection(connection);
-            point.add();
-            DaoFactory.getDbPersistentDao().performDBChange(point, Transaction.INSERT);
-
-        } catch (SQLException e) {
-            CTILogger.error(e);
+            DaoFactory.getDbPersistentDao().performDBChange(point, TransactionType.INSERT);
         } catch (PersistenceException te) {
             CTILogger.error(te);
         }

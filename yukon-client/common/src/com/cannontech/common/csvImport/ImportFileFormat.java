@@ -231,14 +231,11 @@ public class ImportFileFormat implements Cloneable {
         this.ignoreInvalidHeaders = ignoreInvalidHeaders;
     }
     
+    /**
+     * @return an immutable set of the column group names
+     */
     public Set<String> getColumnGroupNames() {
-        Set<String> groupedColumnNames = groupedColumns.keySet();
-        Set<String> copy = Sets.newHashSetWithExpectedSize(groupedColumnNames.size());
-        for(String name : groupedColumnNames) {
-            copy.add(name);
-        }
-        
-        return copy;
+        return Collections.unmodifiableSet(groupedColumns.keySet());
     }
     
     public boolean isIgnoreInvalidHeaders() {

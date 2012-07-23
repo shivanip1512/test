@@ -118,7 +118,13 @@ public interface PointDao {
     public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset,
                                                                int pointType)
             throws NotFoundException;
-
+    
+    /**
+     * @return True if the specified device has a point with the specified offset and type,
+     * otherwise false.
+     */
+    public boolean deviceHasPoint(int deviceId, int pointOffset, int pointType);
+    
     /**
      * Similar to getPointIDByDeviceID_Offset_PointType, but will returns the actual LitePoint
      * and throws a NotFoundException if the point doesn't exist (instead of returning 0).

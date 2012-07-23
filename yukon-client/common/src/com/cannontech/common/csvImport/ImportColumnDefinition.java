@@ -139,6 +139,6 @@ public abstract class ImportColumnDefinition {
      */
     public String getValidValuesString() {
         List<String> validValuesList = getValidValuesList();
-        return StringUtils.join(validValuesList.toArray(), ", ");
+        return StringUtils.join(validValuesList, ", ");
     }
 }

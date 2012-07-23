@@ -46,26 +46,26 @@ public class CalcStatusPointImportProcessor extends PointImportProcessor {
             String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.invalidCalculation");
             throw new ProcessingException(error);
         }
-        builder.calculation(calculation);
+        builder.setCalculation(calculation);
         
         StatusPointUpdateType updateType = StatusPointUpdateType.valueOf(row.getValue("UPDATE TYPE"));
-        builder.updateType(updateType);
+        builder.setUpdateType(updateType);
         if(updateType.hasRate()) {
-            builder.updateRate(PointPeriodicRate.valueOf(row.getValue("UPDATE RATE")));
+            builder.setUpdateRate(PointPeriodicRate.valueOf(row.getValue("UPDATE RATE")));
         }
 
-        builder.stateGroup(row.getValue("STATE GROUP"));
-        builder.initialState(row.getValue("INITIAL STATE"));
+        builder.setStateGroup(row.getValue("STATE GROUP"));
+        builder.setInitialState(row.getValue("INITIAL STATE"));
         
         if(row.hasValue("STALE DATA TIME")) {
             int staleDataTime = Integer.valueOf(row.getValue("STALE DATA TIME"));
             int staleDataUpdate = StaleDataUpdateStyle.valueOf(row.getValue("STALE DATA UPDATE")).getIndex();
-            builder.staleDataTime(staleDataTime);
-            builder.staleDataUpdate(staleDataUpdate);
+            builder.setStaleDataTime(staleDataTime);
+            builder.setStaleDataUpdate(staleDataUpdate);
         }
         
         if(row.hasValue("ARCHIVE DATA")) {
-            builder.archiveData(StrictBoolean.valueOf(row.getValue("ARCHIVE DATA")));
+            builder.setArchiveData(StrictBoolean.valueOf(row.getValue("ARCHIVE DATA")));
         }
         
         try {

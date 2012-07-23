@@ -14,7 +14,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.PointTypes;
 
-public class AnalogPointImportProcessor extends AnalogAccumulatorSharedProcessing {
+public class AnalogPointImportProcessor extends ScalarPointImportProcessor {
     
     public AnalogPointImportProcessor(ImportFileFormat format, MessageSourceAccessor messageSourceAccessor, 
                                       PaoDao paoDao, PointDao pointDao, DBPersistentDao dbPersistentDao,
@@ -43,24 +43,24 @@ public class AnalogPointImportProcessor extends AnalogAccumulatorSharedProcessin
                 //No point on device with this type and offset - import can continue
             }
             
-            builder.pointOffset(pointOffset);
+            builder.setPointOffset(pointOffset);
         }
         
         if(row.hasValue("DEADBAND")) {
             double deadband = Double.valueOf(row.getValue("DEADBAND"));
-            builder.deadband(deadband);
+            builder.setDeadband(deadband);
         }
         
         doSharedProcessing(builder, row);
     
         double multiplier = Double.valueOf(row.getValue("MULTIPLIER"));
-        builder.multiplier(multiplier);
+        builder.setMultiplier(multiplier);
     
         double dataOffset = Double.valueOf(row.getValue("DATA OFFSET"));
-        builder.dataOffset(dataOffset);
+        builder.setDataOffset(dataOffset);
     
         int meterDials = Integer.valueOf(row.getValue("METER DIALS"));
-        builder.meterDials(meterDials);
+        builder.setMeterDials(meterDials);
         
         builder.insert();
     }

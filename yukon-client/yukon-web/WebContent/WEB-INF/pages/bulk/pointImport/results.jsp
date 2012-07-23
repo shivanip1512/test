@@ -8,18 +8,6 @@
 </cti:url>
 
 <cti:standardPage module="amr" page="pointImport.results">
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-        <%-- bulk home --%>
-        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
-        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
-        <%-- point import --%>
-        <cti:msg var="pointImportPageTitle" key="yukon.web.modules.amr.pointImport.pageName"/>
-        <cti:crumbLink url="/spring/bulk/pointImport/upload" title="${pointImportPageTitle}"/>
-        <%-- import results --%>
-        <cti:crumbLink><i:inline key="yukon.web.modules.amr.pointImport.results.pageName"/></cti:crumbLink>
-    </cti:breadCrumbs>
-    
     <cti:includeScript link="/JavaScript/importLogger.js"/>
     <script>
         jQuery(document).ready(function(){
@@ -32,7 +20,7 @@
             <cti:url var="folderImg" value="/WebConfig/yukon/Icons/folder_edit.gif"/>
             <img src="${folderImg}">&nbsp;<span style="color: gray">${fileName}</span><br>
             <c:if test="${ignoreInvalidColumns}">
-                <cti:msg2 key="yukon.web.modules.amr.pointImport.results.ignoringInvalidColumns"/>
+                <cti:msg2 key=".ignoringInvalidColumns"/>
             </c:if>
         </div>
         <div class="bottomPadded">
@@ -48,7 +36,7 @@
         </tags:boxContainer2>
         <br>
         <div id="downloadFailedSection" style="display:none">
-            <i:inline key="yukon.web.modules.amr.pointImport.results.downloadFailedLabel"/>
+            <i:inline key=".downloadFailedLabel"/>
             <cti:url var="downloadUrl" value="/spring/bulk/pointImport/downloadFailed">
                 <cti:param name="resultId" value="${resultId}"/>
             </cti:url>

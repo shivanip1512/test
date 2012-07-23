@@ -480,19 +480,26 @@
                 </page>   
             </pages>
         </page>
-        <page name="fdrTranslationManagement" type="BASIC">
+        <page name="bulkOperations" type="BASIC">
             <menu></menu>
+            <link>/spring/bulk/bulkHome</link>
             <pages>
-                <page name="fdrTranslationManagement.import" type="DETAIL">
+                <page name="fdrTranslationManagement" type="BASIC">
                     <menu></menu>
+                    <pages>
+                        <page name="fdrTranslationManagement.import" type="DETAIL">
+                            <menu></menu>
+                        </page>
+                    </pages>
                 </page>
-            </pages>
-        </page>
-        <page name="pointImport" type="BASIC">
-            <menu></menu>
-            <pages>
-                <page name="pointImport.results" type="DETAIL">
+                <page name="pointImport" type="BASIC">
                     <menu></menu>
+                    <link>/spring/bulk/pointImport/upload</link>
+                    <pages>
+                        <page name="pointImport.results" type="DETAIL">
+                            <menu></menu>
+                        </page>
+                    </pages>
                 </page>
             </pages>
         </page>

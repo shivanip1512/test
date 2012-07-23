@@ -15,7 +15,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.PointTypes;
 
-public class AccumulatorPointImportProcessor extends AnalogAccumulatorSharedProcessing {
+public class AccumulatorPointImportProcessor extends ScalarPointImportProcessor {
     
     public AccumulatorPointImportProcessor(ImportFileFormat format, MessageSourceAccessor messageSourceAccessor,
                                            PaoDao paoDao, PointDao pointDao, DBPersistentDao dbPersistentDao,
@@ -37,27 +37,32 @@ public class AccumulatorPointImportProcessor extends AnalogAccumulatorSharedProc
         if(row.hasValue("POINT OFFSET")) {
             int pointOffset = Integer.valueOf(row.getValue("POINT OFFSET"));
             
-            try {
+            if(pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.ANALOG_POINT)) {
+                String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.pointOffsetInUse", pointOffset, deviceName);
+                throw new ProcessingException(error);
+            }
+            
+            /*try {
                 pointDao.getLitePointIdByDeviceId_Offset_PointType(paoId, pointOffset, PointTypes.ANALOG_POINT);
                 String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.pointOffsetInUse", pointOffset, deviceName);
                 throw new ProcessingException(error);
             } catch(NotFoundException e) {
                 //No point on device with this type and offset - import can continue
-            }
+            }*/
             
-            builder.pointOffset(pointOffset);
+            builder.setPointOffset(pointOffset);
         }
         
         doSharedProcessing(builder, row);
     
         double multiplier = Double.valueOf(row.getValue("MULTIPLIER"));
-        builder.multiplier(multiplier);
+        builder.setMultiplier(multiplier);
     
         double dataOffset = Double.valueOf(row.getValue("DATA OFFSET"));
-        builder.dataOffset(dataOffset);
+        builder.setDataOffset(dataOffset);
     
         int meterDials = Integer.valueOf(row.getValue("METER DIALS"));
-        builder.meterDials(meterDials);
+        builder.setMeterDials(meterDials);
         
         builder.insert();
     }

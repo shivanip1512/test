@@ -2,7 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-    
+    <entry key="yukon.web.modules.amr.bulkOperations.pageName">Bulk Operations</entry>
     <!-- BULK OPERATIONS HOME PAGE bulkHome.jsp -->
     <entry key="yukon.common.device.bulk.bulkHome.pageTitle">Bulk Operations</entry>
     <entry key="yukon.common.device.bulk.bulkHome.header">Choose Type Of Bulk Operation:</entry>

@@ -90,27 +90,27 @@ public class CalcStatusPointBuilder extends PointBuilder {
         return point;
     }
     
-    public void calculation(PointCalculation calculation) {
+    public void setCalculation(PointCalculation calculation) {
         this.calculation = calculation;
     }
     
-    public void updateType(StatusPointUpdateType updateType) {
+    public void setUpdateType(StatusPointUpdateType updateType) {
         this.updateType = updateType;
     }
     
-    public void updateRate(PointPeriodicRate updateRate) {
+    public void setUpdateRate(PointPeriodicRate updateRate) {
         this.updateRate = updateRate;
     }
     
-    public void stateGroup(String stateGroupName) {
+    public void setStateGroup(String stateGroupName) {
         this.stateGroupName = stateGroupName;
     }
     
-    public void initialState(String initialStateName) {
+    public void setInitialState(String initialStateName) {
         this.initialStateName = initialStateName;
     }
     
-    public void archiveData(boolean archiveData) {
+    public void setArchiveData(boolean archiveData) {
         this.archiveData = archiveData;
     }
 }

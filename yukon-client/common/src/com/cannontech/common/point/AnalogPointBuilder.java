@@ -13,7 +13,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.point.PointLimit;
 import com.google.common.collect.Maps;
 
-public class AnalogPointBuilder extends AnalogAccumulatorPointBuilderBase {
+public class AnalogPointBuilder extends ScalarPointBuilder {
     private final Logger log = YukonLogManager.getLogger(AnalogPointBuilder.class);
     private int pointOffset = 0; //no physical point offset unless specified
     private double multiplier = 1.0;
@@ -91,7 +91,7 @@ public class AnalogPointBuilder extends AnalogAccumulatorPointBuilderBase {
     /**
      * Must be a non-negative value.
      */
-    public void pointOffset(int pointOffset) {
+    public void setPointOffset(int pointOffset) {
         if(pointOffset < 0) throw new IllegalArgumentException("Point Offset cannot be negative.");
         this.pointOffset = pointOffset;
     }
@@ -99,23 +99,23 @@ public class AnalogPointBuilder extends AnalogAccumulatorPointBuilderBase {
     /**
      * Must be a non-negative value.
      */
-    public void multiplier(double multiplier) {
+    public void setMultiplier(double multiplier) {
         if(multiplier < 0.0) throw new IllegalStateException("Multiplier cannot be negative.");
         this.multiplier = multiplier;
     }
     
-    public void dataOffset(double dataOffset) {
+    public void setDataOffset(double dataOffset) {
         this.dataOffset = dataOffset;
     }
     
-    public void deadband(double deadband) {
+    public void setDeadband(double deadband) {
         this.deadband = deadband;
     }
     
     /**
      * Must be a non-negative value.
      */
-    public void meterDials(int meterDials) {
+    public void setMeterDials(int meterDials) {
         if(meterDials < 0) throw new IllegalStateException("Meter Dials cannot be negative.");
         this.meterDials = meterDials;
     }

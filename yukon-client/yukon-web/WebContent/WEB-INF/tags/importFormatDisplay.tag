@@ -19,7 +19,7 @@
                 <th colspan="3" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.requiredColumnsName"/>
                     <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
-                    <img src="${infoImg}" title="<i:inline key="yukon.web.import.display.requiredColumnsIntro"/>"/>
+                    <img src="${infoImg}" title="<cti:msg2 key="yukon.web.import.display.requiredColumnsIntro"/>"/>
                 </th>
             </tr>
             <tr>
@@ -56,7 +56,7 @@
                 <th colspan="3" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.optionalColumnsName" />
                     <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
-                    <img src="${infoImg}" title="<i:inline key="yukon.web.import.display.optionalColumnsIntro"/>"/>
+                    <img src="${infoImg}" title="<cti:msg2 key="yukon.web.import.display.optionalColumnsIntro"/>"/>
                 </th>
             </tr>
             <tr>
@@ -93,7 +93,7 @@
                 <th colspan="3" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.groupedColumnsName" />
                     <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
-                    <img src="${infoImg}" title="<i:inline key="yukon.web.import.display.groupedColumnsIntro"/>"/>
+                    <img src="${infoImg}" title="<cti:msg2 key="yukon.web.import.display.groupedColumnsIntro"/>"/>
                 </th>
             </tr>
             <c:forEach var="groupedColumns" items="${groupedColumnsMap}">
@@ -135,7 +135,7 @@
                 <th colspan="5" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.valueDependentColumnsName" />
                     <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
-                    <img src="${infoImg}" title="<i:inline key="yukon.web.import.display.valueDependentColumnsIntro"/>"/>
+                    <img src="${infoImg}" title="<cti:msg2 key="yukon.web.import.display.valueDependentColumnsIntro"/>"/>
                 </th>
             </tr>
             <tr>

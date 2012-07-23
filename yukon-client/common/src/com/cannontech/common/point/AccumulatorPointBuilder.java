@@ -1,6 +1,6 @@
 package com.cannontech.common.point;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -12,7 +12,7 @@ import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.point.PointLimit;
 import com.google.common.collect.Maps;
 
-public class AccumulatorPointBuilder extends AnalogAccumulatorPointBuilderBase {
+public class AccumulatorPointBuilder extends ScalarPointBuilder {
     private final Logger log = YukonLogManager.getLogger(AccumulatorPointBuilder.class);
     private AccumulatorType accumulatorType;
     private int pointOffset = 0; //no physical point offset unless specified
@@ -50,7 +50,7 @@ public class AccumulatorPointBuilder extends AnalogAccumulatorPointBuilderBase {
         point.getPointUnit().setMeterDials(meterDials);
         point.getPointAccumulator().setDataOffset(dataOffset);
         
-        HashMap<Integer, PointLimit> limitMap = Maps.newHashMap();
+        Map<Integer, PointLimit> limitMap = Maps.newHashMap();
         if(highLimit1 != null && lowLimit1 != null) {
             PointLimit limit1 = new PointLimit();
             limit1.setHighLimit(highLimit1);
@@ -94,7 +94,7 @@ public class AccumulatorPointBuilder extends AnalogAccumulatorPointBuilderBase {
     /**
      * Must be a non-negative value.
      */
-    public void pointOffset(int pointOffset) {
+    public void setPointOffset(int pointOffset) {
         if(pointOffset < 0) throw new IllegalArgumentException("Point Offset cannot be negative.");
         this.pointOffset = pointOffset;
     }
@@ -102,7 +102,7 @@ public class AccumulatorPointBuilder extends AnalogAccumulatorPointBuilderBase {
     /**
      * Must be a non-negative value.
      */
-    public void multiplier(double multiplier) {
+    public void setMultiplier(double multiplier) {
         if(multiplier < 0.0) throw new IllegalStateException("Multiplier cannot be negative.");
         this.multiplier = multiplier;
     }
@@ -110,12 +110,12 @@ public class AccumulatorPointBuilder extends AnalogAccumulatorPointBuilderBase {
     /**
      * Must be a non-negative value.
      */
-    public void meterDials(int meterDials) {
+    public void setMeterDials(int meterDials) {
         if(meterDials < 0) throw new IllegalStateException("Meter Dials cannot be negative.");
         this.meterDials = meterDials;
     }
     
-    public void dataOffset(double dataOffset) {
+    public void setDataOffset(double dataOffset) {
         this.dataOffset = dataOffset;
     }
 }

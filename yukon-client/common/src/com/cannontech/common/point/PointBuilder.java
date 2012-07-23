@@ -61,11 +61,11 @@ public abstract class PointBuilder {
         return point;
     }
     
-    public void staleDataTime(int staleDataTime) {
+    public void setStaleDataTime(int staleDataTime) {
         this.staleDataTime = staleDataTime;
     }
     
-    public void staleDataUpdate(int staleDataUpdate) {
+    public void setStaleDataUpdate(int staleDataUpdate) {
         this.staleDataUpdate = staleDataUpdate;
     }
 }

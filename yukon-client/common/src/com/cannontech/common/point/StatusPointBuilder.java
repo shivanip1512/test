@@ -92,9 +92,8 @@ public class StatusPointBuilder extends PointBuilder {
         }
         
         if(controlType.hasSettings()) {
-            point.getPointStatusControl().setControlType(controlType.getControlName());
             if(closeTime1 != null) point.getPointStatusControl().setCloseTime1(closeTime1);
-            if(closeTime1 != null) point.getPointStatusControl().setCloseTime2(closeTime2);
+            if(closeTime2 != null) point.getPointStatusControl().setCloseTime2(closeTime2);
             if(commandTimeout != null) point.getPointStatusControl().setCommandTimeOut(commandTimeout);
         } else {
             if(closeTime1 != null || closeTime2 != null) {
@@ -121,53 +120,53 @@ public class StatusPointBuilder extends PointBuilder {
         return (StatusPoint) super.insert();
     }
     
-    public void pointOffset(int pointOffset) {
+    public void setPointOffset(int pointOffset) {
         if(pointOffset < 0) throw new IllegalArgumentException("Point Offset cannot be negative.");
         this.pointOffset = pointOffset;
     }
     
-    public void stateGroup(String stateGroupName) {
+    public void setStateGroup(String stateGroupName) {
         this.stateGroupName = stateGroupName;
     }
     
-    public void initialState(String stateName) {
+    public void setInitialState(String stateName) {
         this.initialStateName = stateName;
     }
     
-    public void controlOffset(int controlOffset) {
+    public void setControlOffset(int controlOffset) {
         this.controlOffset = controlOffset;
     }
     
-    public void controlType(ControlType controlType) {
+    public void setControlType(ControlType controlType) {
         if(controlType == null) throw new IllegalArgumentException("Control Type cannot be null.");
         this.controlType = controlType;
     }
     
-    public void state1Command(StateControlType state1Command) {
+    public void setState1Command(StateControlType state1Command) {
         this.state1Command = state1Command;
     }
     
-    public void state2Command(StateControlType state2Command) {
+    public void setState2Command(StateControlType state2Command) {
         this.state2Command = state2Command;
     }
     
-    public void archive(boolean isArchive) {
+    public void setArchive(boolean isArchive) {
         this.isArchive = isArchive;
     }
     
-    public void controlInhibit(boolean isControlInhibit) {
+    public void setControlInhibit(boolean isControlInhibit) {
         this.isControlInhibit = isControlInhibit;
     }
     
-    public void closeTime1(int closeTime1) {
+    public void setCloseTime1(int closeTime1) {
         this.closeTime1 = closeTime1;
     }
     
-    public void closeTime2(int closeTime2) {
+    public void setCloseTime2(int closeTime2) {
         this.closeTime2 = closeTime2;
     }
     
-    public void commandTimeout(int commandTimeout) {
+    public void setCommandTimeout(int commandTimeout) {
         this.commandTimeout = commandTimeout;
     }
 }

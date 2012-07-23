@@ -17,7 +17,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 
-public class CalcAnalogPointImportProcessor extends AnalogAccumulatorSharedProcessing {
+public class CalcAnalogPointImportProcessor extends ScalarPointImportProcessor {
 private Map<String, PointCalculation> calcMap;
     
     public CalcAnalogPointImportProcessor(ImportFileFormat format, Map<String, PointCalculation> calcMap, 
@@ -45,18 +45,18 @@ private Map<String, PointCalculation> calcMap;
             String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.invalidCalculation");
             throw new ProcessingException(error);
         }
-        builder.calculation(calculation);
+        builder.setCalculation(calculation);
         
         AnalogPointUpdateType updateType = AnalogPointUpdateType.valueOf(row.getValue("UPDATE TYPE"));
-        builder.updateType(updateType);
+        builder.setUpdateType(updateType);
         if(updateType.hasRate()) {
-            builder.updateRate(PointPeriodicRate.valueOf(row.getValue("UPDATE RATE")));
+            builder.setUpdateRate(PointPeriodicRate.valueOf(row.getValue("UPDATE RATE")));
         }
         
         doSharedProcessing(builder, row);
         
         boolean forceQualityNormal = StrictBoolean.valueOf(row.getValue("FORCE QUALITY NORMAL"));
-        builder.forceQualityNormal(forceQualityNormal);
+        builder.setForceQualityNormal(forceQualityNormal);
         
         builder.insert();
     }

@@ -32,8 +32,8 @@ import com.cannontech.tools.csv.CSVReader;
 import com.google.common.collect.Maps;
 
 public class CalculationImportServiceImpl implements CalculationImportService {
-    @Autowired PointDao pointDao;
-    @Autowired PaoDao paoDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private PaoDao paoDao;
     
     private static ImportFileFormat CALCULATION_FORMAT;
     
@@ -61,10 +61,12 @@ public class CalculationImportServiceImpl implements CalculationImportService {
         CALCULATION_FORMAT.setDescriptionKey("FUNCTION", "yukon.web.modules.amr.pointImport.column.function");
     }
     
+    @Override
     public ImportFileFormat getFormat() {
         return CALCULATION_FORMAT;
     }
     
+    @Override
     public Map<String, PointCalculation> parseCalcFile(CSVReader csvReader, List<String> results, boolean ignoreInvalidColumns) throws IOException {
         CALCULATION_FORMAT.setIgnoreInvalidHeaders(ignoreInvalidColumns);
         ImportParser calculationParser = new ImportParser(CALCULATION_FORMAT);

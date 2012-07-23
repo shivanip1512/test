@@ -33,51 +33,51 @@ public class StatusPointImportProcessor extends PointImportProcessor {
         
         StatusPointBuilder builder = pointBuilderFactory.getStatusPointBuilder(paoId, pointDao.getNextPointId(), pointName, isDisabled);
         
-        builder.stateGroup(row.getValue("STATE GROUP"));
-        builder.initialState(row.getValue("INITIAL STATE"));
+        builder.setStateGroup(row.getValue("STATE GROUP"));
+        builder.setInitialState(row.getValue("INITIAL STATE"));
         
         if(row.hasValue("POINT OFFSET")) {
-            builder.pointOffset(Integer.valueOf(row.getValue("POINT OFFSET")));
+            builder.setPointOffset(Integer.valueOf(row.getValue("POINT OFFSET")));
         }
         
         if(row.hasValue("ARCHIVE DATA")) {
-            builder.archive(StrictBoolean.valueOf(row.getValue("ARCHIVE DATA")));
+            builder.setArchive(StrictBoolean.valueOf(row.getValue("ARCHIVE DATA")));
         }
         
         if(row.hasValue("CONTROL INHIBIT")) {
-            builder.controlInhibit(StrictBoolean.valueOf(row.getValue("CONTROL INHIBIT")));
+            builder.setControlInhibit(StrictBoolean.valueOf(row.getValue("CONTROL INHIBIT")));
         }
         
         if(row.hasValue("STALE DATA TIME")) {
-            builder.staleDataTime(Integer.valueOf(row.getValue("STALE DATA TIME")));
+            builder.setStaleDataTime(Integer.valueOf(row.getValue("STALE DATA TIME")));
             StaleDataUpdateStyle dataUpdateStyle = StaleDataUpdateStyle.valueOf(row.getValue("STALE DATA UPDATE"));
-            builder.staleDataUpdate(dataUpdateStyle.getIndex());
+            builder.setStaleDataUpdate(dataUpdateStyle.getIndex());
         }
         
         ControlType controlType = null;
         if(row.hasValue("CONTROL TYPE")) {
             controlType = ControlType.valueOf(row.getValue("CONTROL TYPE"));
-            builder.controlType(controlType);
+            builder.setControlType(controlType);
         }
         
         if(controlType != null) {
             if(row.hasValue("CONTROL POINT OFFSET")) {
-                builder.controlOffset(Integer.valueOf(row.getValue("CONTROL POINT OFFSET")));
+                builder.setControlOffset(Integer.valueOf(row.getValue("CONTROL POINT OFFSET")));
             }
             if(row.hasValue("CLOSE TIME 1")) {
-                builder.closeTime1(Integer.valueOf(row.getValue("CLOSE TIME 1")));
+                builder.setCloseTime1(Integer.valueOf(row.getValue("CLOSE TIME 1")));
             }
             if(row.hasValue("CLOSE TIME 2")) {
-                builder.closeTime2(Integer.valueOf(row.getValue("CLOSE TIME 2")));
+                builder.setCloseTime2(Integer.valueOf(row.getValue("CLOSE TIME 2")));
             }
             if(row.hasValue("STATE 1 COMMAND")) {
-                builder.state1Command(StateControlType.valueOf(row.getValue("STATE 1 COMMAND")));
+                builder.setState1Command(StateControlType.valueOf(row.getValue("STATE 1 COMMAND")));
             }
             if(row.hasValue("STATE 2 COMMAND")) {
-                builder.state2Command(StateControlType.valueOf(row.getValue("STATE 2 COMMAND")));
+                builder.setState2Command(StateControlType.valueOf(row.getValue("STATE 2 COMMAND")));
             }
             if(row.hasValue("COMMAND TIMEOUT")) {
-                builder.commandTimeout(Integer.valueOf(row.getValue("COMMAND TIMEOUT")));
+                builder.setCommandTimeout(Integer.valueOf(row.getValue("COMMAND TIMEOUT")));
             }
         }
         

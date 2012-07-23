@@ -165,7 +165,12 @@ public class MockPointDao implements PointDao {
             int pointType) throws NotFoundException {
         return null;
     }
-
+    
+    @Override
+    public boolean deviceHasPoint(int deviceId, int pointOffset, int pointType) {
+        return false;
+    }
+    
     @Override
     public PaoPointIdentifier getPaoPointIdentifier(int pointId) {
         return null;

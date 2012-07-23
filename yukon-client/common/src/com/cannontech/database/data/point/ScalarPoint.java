@@ -5,6 +5,7 @@ package com.cannontech.database.data.point;
  */
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.point.PointLimit;
@@ -13,7 +14,7 @@ import com.cannontech.database.db.point.PointUnit;
 public class ScalarPoint extends PointBase {
 
 	//contains <Integer:limitNumber, PointLimit>
-	private HashMap<Integer, PointLimit> pointLimitsMap = null;
+	private Map<Integer, PointLimit> pointLimitsMap = null;
 
 	private PointUnit pointUnit = null;
 
@@ -76,7 +77,7 @@ public void deletePartial() throws java.sql.SQLException {
 /**
  * A map of PointLimits
  */
-public HashMap<Integer, PointLimit> getPointLimitsMap() {
+public Map<Integer, PointLimit> getPointLimitsMap() {
 
 	if( pointLimitsMap == null )
 		pointLimitsMap = new HashMap<Integer, PointLimit>();
@@ -183,7 +184,7 @@ public void setPointID(Integer pointID) {
  * This method was created in VisualAge.
  * @param newValue java.util.Vector
  */
-public void setPointLimitsMap(HashMap<Integer, PointLimit> newValue) {
+public void setPointLimitsMap(Map<Integer, PointLimit> newValue) {
 	this.pointLimitsMap = newValue;
 }
 /**

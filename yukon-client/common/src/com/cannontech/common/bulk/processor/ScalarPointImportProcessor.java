@@ -4,7 +4,7 @@ import com.cannontech.common.bulk.model.StaleDataUpdateStyle;
 import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.ImportRow;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.point.AnalogAccumulatorPointBuilderBase;
+import com.cannontech.common.point.ScalarPointBuilder;
 import com.cannontech.common.point.PointBuilderFactory;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
@@ -13,9 +13,9 @@ import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.UnitOfMeasure;;
 
-public abstract class AnalogAccumulatorSharedProcessing extends PointImportProcessor {
+public abstract class ScalarPointImportProcessor extends PointImportProcessor {
     
-    public AnalogAccumulatorSharedProcessing(ImportFileFormat format, 
+    public ScalarPointImportProcessor(ImportFileFormat format, 
                                              MessageSourceAccessor messageSourceAccessor, 
                                              PaoDao paoDao,
                                              PointDao pointDao,
@@ -25,54 +25,54 @@ public abstract class AnalogAccumulatorSharedProcessing extends PointImportProce
         super(format, messageSourceAccessor, paoDao, pointDao, dbPersistentDao, pointBuilderFactory);
     }
     
-    public void doSharedProcessing(AnalogAccumulatorPointBuilderBase builder, ImportRow row) {
+    public void doSharedProcessing(ScalarPointBuilder builder, ImportRow row) {
         
         if(row.hasValue("ARCHIVE TYPE")) {
             PointArchiveType archiveType = PointArchiveType.valueOf(row.getValue("ARCHIVE TYPE"));
             PointArchiveInterval archiveInterval = PointArchiveInterval.valueOf(row.getValue("ARCHIVE INTERVAL"));
-            builder.archiveType(archiveType);
-            builder.archiveInterval(archiveInterval);
+            builder.setArchiveType(archiveType);
+            builder.setArchiveInterval(archiveInterval);
         }
         
         if(row.hasValue("HIGH REASONABILITY")) {
             double highReasonability = Double.valueOf(row.getValue("HIGH REASONABILITY"));
-            builder.highReasonability(highReasonability);
+            builder.setHighReasonability(highReasonability);
         }
         
         if(row.hasValue("LOW REASONABILITY")) {
             double lowReasonability = Double.valueOf(row.getValue("LOW REASONABILITY"));
-            builder.lowReasonability(lowReasonability);
+            builder.setLowReasonability(lowReasonability);
         }
         
         if(row.hasValue("HIGH LIMIT 1")) {
             double highLimit1 = Double.valueOf(row.getValue("HIGH LIMIT 1"));
             double lowLimit1 = Double.valueOf(row.getValue("LOW LIMIT 1"));
             int limitDuration1 = Integer.valueOf(row.getValue("LIMIT DURATION 1"));
-            builder.highLimit1(highLimit1);
-            builder.lowLimit1(lowLimit1);
-            builder.limitDuration1(limitDuration1);
+            builder.setHighLimit1(highLimit1);
+            builder.setLowLimit1(lowLimit1);
+            builder.setLimitDuration1(limitDuration1);
         }
         
         if(row.hasValue("HIGH LIMIT 2")) {
             double highLimit2 = Double.valueOf(row.getValue("HIGH LIMIT 2"));
             double lowLimit2 = Double.valueOf(row.getValue("LOW LIMIT 2"));
             int limitDuration2 = Integer.valueOf(row.getValue("LIMIT DURATION 2"));
-            builder.highLimit2(highLimit2);
-            builder.lowLimit2(lowLimit2);
-            builder.limitDuration2(limitDuration2);
+            builder.setHighLimit2(highLimit2);
+            builder.setLowLimit2(lowLimit2);
+            builder.setLimitDuration2(limitDuration2);
         }
         
         if(row.hasValue("STALE DATA TIME")) {
             int staleDataTime = Integer.valueOf(row.getValue("STALE DATA TIME"));
             int staleDataUpdate = StaleDataUpdateStyle.valueOf(row.getValue("STALE DATA UPDATE")).getIndex();
-            builder.staleDataTime(staleDataTime);
-            builder.staleDataUpdate(staleDataUpdate);
+            builder.setStaleDataTime(staleDataTime);
+            builder.setStaleDataUpdate(staleDataUpdate);
         }
         
         int unitOfMeasure = UnitOfMeasure.valueOf(row.getValue("UNIT OF MEASURE")).getId();
-        builder.unitOfMeasure(unitOfMeasure);
+        builder.setUnitOfMeasure(unitOfMeasure);
     
         int decimalPlaces = Integer.valueOf(row.getValue("DECIMAL PLACES"));
-        builder.decimalPlaces(decimalPlaces);
+        builder.setDecimalPlaces(decimalPlaces);
     }
 }
