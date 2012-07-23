@@ -99,8 +99,8 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
             Long firstIntervalTimestamp = decodedXml.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
             Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp * 1000);
             for (Integer interval : intervalData) {
-                Integer runTime = interval & 0xFF;
-                Integer shedTime = (interval & 0xFF00) >>> 8;
+                Integer runTime = (interval & 0xFF00) >>> 8;
+                Integer shedTime = interval & 0xFF;
 
                 PointData runTimePointData = createPointData(runTimePoint.getPointID(), 
                         runTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(runTime));
@@ -114,7 +114,7 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
                 intervalPointData.add(shedTimePointData);
                 intervalPointData.add(controlTimePointData);
                 currentIntervalTimestamp = currentIntervalTimestamp
-                        .withDurationAdded(Duration.standardHours(1), 1);
+                        .withDurationAdded(Duration.standardHours(1), -1);
             }
         }
         return intervalPointData;
