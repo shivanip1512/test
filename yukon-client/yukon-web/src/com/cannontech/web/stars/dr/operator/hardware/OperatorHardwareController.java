@@ -776,22 +776,24 @@ public class OperatorHardwareController {
         /*  Add Pao Specifics */
         Integer deviceId = hardware.getDeviceId();
         if (deviceId != null && deviceId > 0 && !type.isZigbee()) {  // points for ZigBee device have their own special box
-            List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
-            if (!points.isEmpty()) {
-                ListMultimap<PointType, LitePoint> pointsMap = ArrayListMultimap.create();
-                for (LitePoint point : points) {
-                    pointsMap.put(point.getPointTypeEnum(), point);
+            if (type.isRf()) { // Only showing points list for rf devices for now
+                List<LitePoint> points = pointDao.getLitePointsByPaObjectId(deviceId);
+                if (!points.isEmpty()) {
+                    ListMultimap<PointType, LitePoint> pointsMap = ArrayListMultimap.create();
+                    for (LitePoint point : points) {
+                        pointsMap.put(point.getPointTypeEnum(), point);
+                    }
+                    for (PointType pointTypeKey : pointsMap.keySet()) {
+                        Collections.sort(pointsMap.get(pointTypeKey), new Comparator<LitePoint>() {
+                            @Override
+                            public int compare(LitePoint o1, LitePoint o2) {
+                                return o1.getPointName().compareTo(o2.getPointName());
+                            }
+                        });
+                    }
+                    model.addAttribute("showPoints", true);
+                    model.addAttribute("points", pointsMap.asMap());
                 }
-                for (PointType pointTypeKey : pointsMap.keySet()) {
-                    Collections.sort(pointsMap.get(pointTypeKey), new Comparator<LitePoint>() {
-                        @Override
-                        public int compare(LitePoint o1, LitePoint o2) {
-                            return o1.getPointName().compareTo(o2.getPointName());
-                        }
-                    });
-                }
-                model.addAttribute("showPoints", true);
-                model.addAttribute("points", pointsMap.asMap());
             }
         }
 
