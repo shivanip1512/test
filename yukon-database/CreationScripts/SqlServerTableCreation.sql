@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/20/2012 11:21:02 AM                        */
+/* Created on:     7/22/2012 10:50:22 PM                        */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -9730,7 +9730,7 @@ create table YukonUser (
    AuthType             varchar(16)          not null,
    LastChangedDate      datetime             not null,
    ForceReset           char(1)              not null,
-   constraint PK_YUKONUSER primary key (UserID)
+   constraint PK_YUKONUSER primary key nonclustered (UserID)
 )
 go
 
@@ -9740,9 +9740,9 @@ INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-
 INSERT INTO yukonuser VALUES (-1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
 
 /*==============================================================*/
-/* Index: Indx_YkUsIDNm                                         */
+/* Index: Indx_YukonUser_Username                               */
 /*==============================================================*/
-create unique index Indx_YkUsIDNm on YukonUser (
+create unique index Indx_YukonUser_Username on YukonUser (
 UserName ASC
 )
 go

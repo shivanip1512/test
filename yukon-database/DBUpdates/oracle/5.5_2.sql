@@ -141,7 +141,7 @@ MODIFY Username NVARCHAR2(64);
 ALTER TABLE YukonUser
 MODIFY Password NVARCHAR2(64);
 /* @error ignore-begin */
-CREATE INDEX INDX_YukonUser_Username_FB ON YukonUser (
+CREATE INDEX Indx_YukonUser_Username ON YukonUser (
     LOWER(Username)
 );
 /* @error ignore-end */
@@ -420,3 +420,4 @@ ALTER TABLE CCHOLIDAYSTRATEGYASSIGNMENT
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.5', 'Garrett D', '22-JUL-2012', 'Latest Update', 2 );

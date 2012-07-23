@@ -120,7 +120,7 @@ ALTER TABLE YukonUser
 ALTER COLUMN Username NVARCHAR(64) NOT NULL;
 ALTER TABLE YukonUser
 ALTER COLUMN Password NVARCHAR(64) NOT NULL;
-CREATE INDEX Indx_YkUsIDNm ON YukonUser(
+CREATE INDEX Indx_YukonUser_Username ON YukonUser(
     Username ASC
 );
 /* End YUK-11149 */
@@ -372,3 +372,4 @@ GO
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.5', 'Garrett D', '22-JUL-2012', 'Latest Update', 2 );
