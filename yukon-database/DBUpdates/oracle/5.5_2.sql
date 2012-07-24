@@ -350,7 +350,7 @@ WHERE RolePropertyId = -10009;
 /* End YUK-11062 */
 
 /* Start YUK-11154 */
-INSERT INTO YukonGroup SELECT MAX(GroupId)+1, 'Password Policy Grp2', 'A set of roles that define the password policy rules.' FROM YukonGroup;
+INSERT INTO YukonGroup SELECT MAX(GroupId)+1, 'Password Policy Grp', 'A set of roles that define the password policy rules.' FROM YukonGroup;
 
 /* Add a set of (default) Password Policy Role Properties */
 /* @start-block */
