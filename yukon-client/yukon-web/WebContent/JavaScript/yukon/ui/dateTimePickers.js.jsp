@@ -85,7 +85,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
     			jQuery("input.f_datePicker").each(function(){
     			    var self = jQuery(this);
     				self.datetimeEntry({
-    					datetimeFormat: self.attr('data-date-format'),
+    					datetimeFormat: self.attr('data-date-time-format'),
     					spinnerImage: '',
     					maxDatetime: self.attr('data-max-date'),
 						minDatetime: self.attr('data-min-date')
@@ -105,11 +105,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
     			}).removeClass('f_datePicker');
 				jQuery("input.f_datePickerUI").each(function(){
 					var self = jQuery(this);
-					var args = {
-				        beforeShow: outer_self._onBeforeShow,
-						maxDate: self.attr('data-max-date'),
-						minDate: self.attr('data-min-date')
-					};
+					var args = outer_self._getPickerArgs(self);
 					
 					if(self.hasClass('f_dateStart')){
 						args.onSelect = function(selectedDate) {
@@ -140,14 +136,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 				}).removeClass('f_dateTimePicker');
 				jQuery("input.f_dateTimePickerUI").each(function(){
 					var self = jQuery(this);
-					var args = {
-				        beforeShow: outer_self._onBeforeShow,
-						maxDate: self.attr('data-max-date'),
-						minDate: self.attr('data-min-date'),
-                        stepHour: outer_self._getStepHour(self),
-                        stepMinute: outer_self._getStepMinute(self)
-					};
-					self.datetimepicker(jQuery.extend(datetimepickerArgs, args));
+					self.datetimepicker(jQuery.extend(datetimepickerArgs, outer_self._getPickerArgs(self)));
 					outer_self._insertTimezone(self);
 				}).removeClass('f_dateTimePickerUI');
 				
@@ -155,21 +144,14 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
 				jQuery("input.f_timePicker").each(function(){
 				    var self = jQuery(this);
 					self.datetimeEntry({
-						datetimeFormat: self.attr('data-time-format'),
+						datetimeFormat: self.attr('data-date-time-format'),
 						timeSteps: outer_self._getTimeSteps(self),
 						spinnerImage: ''
 					});
 				}).removeClass('f_timePicker');
 				jQuery("input.f_timePickerUI").each(function(){
 					var self = jQuery(this);
-					var args = {
-				        beforeShow: outer_self._onBeforeShow,
-						maxDate: self.attr('data-max-date'),
-						minDate: self.attr('data-min-date'),
-                        stepHour: outer_self._getStepHour(self),
-                        stepMinute: outer_self._getStepMinute(self)
-					};
-					self.timepicker(jQuery.extend(jQuery.extend(datetimepickerArgs, timepickerArgs), args));
+					self.timepicker(jQuery.extend(jQuery.extend(datetimepickerArgs, timepickerArgs), outer_self._getPickerArgs(self)));
 					outer_self._insertTimezone(self);
 				}).removeClass('f_timePickerUI');
     		//}
@@ -180,6 +162,22 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
     	_onBeforeShow: function(input){
     	    jQuery('#ui-datepicker-div').addClass(jQuery(input).attr('data-class'));
     	},
+    	_getPickerArgs: function(self){
+            var args = {
+                beforeShow: this._onBeforeShow,
+                stepHour: this._getStepHour(self),
+                stepMinute: this._getStepMinute(self)
+            };
+            var max_date = self.attr('data-max-date');
+            if (typeof(max_date) !== 'undefined' && max_date !== "") {
+                args.maxDate = max_date;
+            }
+            var min_date = self.attr('data-min-date');
+            if (typeof(min_date) !== 'undefined' && min_date !== "") {
+                args.minDate = min_date;
+            }
+            return args;
+    	},
         /**
          * Gets the step hour for the datetimepicker and timepicker plugins. Defaults to .05.
          * @param {Object} self The jQuery object of the input field
@@ -187,7 +185,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
          */
     	_getStepHour: function(self){
     	    var step_hour = self.attr('data-step-hour');
-    	    return typeof(step_hour) !== 'undefined' ? parseFloat(step_hour) : .05;
+    	    return typeof(step_hour) !== 'undefined' && step_hour !== "" ? parseFloat(step_hour) : .05;
     	},
         /**
          * Gets the step minute for the datetimepicker and timepicker plugins. Defaults to .05.
@@ -196,7 +194,7 @@ if(typeof(Yukon.ui.dateTimePickers) == 'undefined') {
          */
     	_getStepMinute: function(self){
             var step_minute = self.attr('data-step-minute');
-            return typeof(step_minute) !== 'undefined' ? parseFloat(step_minute) : .05;
+            return typeof(step_minute) !== 'undefined' && step_minute !== "" ? parseFloat(step_minute) : .05;
     	},
         /**
          * Gets the timeSteps for the dateTimeEntry (keyboard & mouse manipulation) plugin. Both hour and minute default to 1.

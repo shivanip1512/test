@@ -2,6 +2,7 @@
 
 <%@ attribute name="path" required="false" description="Spring binding path"%>
 <%@ attribute name="id" description="Name of the field in the supplied object"%>
+<%@ attribute name="name" description="Name of the field in the supplied object"%>
 <%@ attribute name="value" type="java.lang.Object" description="Default: null. Sets the initial value of the input." %>
 <%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
 <%@ attribute name="cssClass" type="java.lang.String" description="Class added to the input of the widget" %>
@@ -81,6 +82,7 @@
 			</cti:displayForPageEditModes>
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
 				<input	id="${id}" 
+                        <c:if test="${!empty pageScope.name}">name="${pageScope.name}"</c:if>
                         value="${dateTimeValue}"
 						class="f_dateTimePicker f_dateTimePickerUI dateTimePicker ${cssClass}"
 						<c:if test="${disabled}">disabled="true"</c:if>
