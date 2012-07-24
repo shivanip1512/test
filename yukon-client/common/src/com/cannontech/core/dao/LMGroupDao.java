@@ -1,5 +1,7 @@
 package com.cannontech.core.dao;
 
+import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
+
 public interface LMGroupDao {
 
     /**
@@ -9,4 +11,10 @@ public interface LMGroupDao {
      * @return
      */
     public byte getUtilityEnrollmentGroupForSepGroup(int groupId);
+
+    /**
+     * Returns the java object representation of the ExpressComAddress_View table.
+     */
+    public ExpressComAddressView getExpressComAddressing(int groupId);
+
 }

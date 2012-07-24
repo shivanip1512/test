@@ -4,8 +4,6 @@ import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-import javax.security.auth.login.AccountNotFoundException;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,11 +11,10 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
-import com.cannontech.database.db.device.lm.LMGroupExpressCom;
 import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -25,6 +22,7 @@ import com.cannontech.stars.database.data.lite.LiteAccountInfo;
 import com.cannontech.stars.database.data.lite.LiteLMConfiguration;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsAppliance;
+import com.cannontech.stars.dr.hardware.model.ExpressComAddressView;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
@@ -37,7 +35,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
     @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao;
     @Autowired private StarsCustAccountInformationDao caiDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private LMGroupDao lmGroupDao;
     
     @Override
     public byte[] getCommand(LmHardwareCommand lmHardwareCommand) {
@@ -116,7 +114,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         boolean trackAddressing = ecRolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING, yec);
         
         // Either we have track hardware addressing on or we need a group/appliance category.
-        if(trackAddressing) {
+        if (trackAddressing) {
             //Use per-device addressing info.
             LiteLMConfiguration config = parameters.getDevice().getLMConfiguration();
             if (config == null) {
@@ -149,7 +147,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
              
             }
             */
-        } else if(!trackAddressing) {
+        } else if (!trackAddressing) {
             Integer optionalGroupId = null;
             Object param = parameters.findParam(LmHardwareCommandParam.OPTIONAL_GROUP_ID,
                     LmHardwareCommandParam.OPTIONAL_GROUP_ID.getClass());
@@ -183,7 +181,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                             throw new BadConfigurationException("Unable to config since no Addressing Group is assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
                         }
                     }
-                    if(configFound == false) {
+                    if (configFound == false) {
                         throw new BadConfigurationException("Unable to config since no Addressing Group is assigned.  If no groups are available in the Assigned Group column, please verify that your programs are valid Yukon LM Programs with assigned load groups.");
                     }
                 } else {
@@ -194,78 +192,75 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         return configCommand;
     }
 
-    private ByteBuffer buildAddressingConfig(Integer groupId) {
+    private ByteBuffer buildAddressingConfig(int groupId) {
         ByteBuffer addressing = ByteBuffer.allocate(1024);
-        LMGroupExpressCom group = new LMGroupExpressCom();
-        group.setLmGroupID(groupId);
-        dbPersistentDao.retrieveDBPersistent(group);
+        ExpressComAddressView config = lmGroupDao.getExpressComAddressing(groupId);
         
         // Build GEO addressing byte buffer based on the address usage of the group.
-        String addressUsage = group.getAddressUsage().toLowerCase();
+        String addressUsage = config.getUsage().toLowerCase();
         
         // Config 0x01 - GEO addressing
         // Format: 0x10 0x01 <length> <data>
         byte xcomAddressField = 0;
+        final int xcomAddressFieldSize = 1; //Size of the xcomAddressField in bytes.
         ByteBuffer geoBuffer = ByteBuffer.allocate(1024);
 
         // Parse addressUsage to find what data is available. 
         if (addressUsage.contains("s")) { 
             xcomAddressField |= 0x80; 
-            geoBuffer.putShort((short) group.getServiceProviderID().intValue()); 
+            geoBuffer.putShort((short) config.getSpid()); 
         }
         if (addressUsage.contains("g")) { 
             xcomAddressField |= 0x40;
-            geoBuffer.putShort((short) group.getGeoID().intValue()); 
+            geoBuffer.putShort((short) config.getGeo()); 
         }
         if (addressUsage.contains("b")) { 
             xcomAddressField |= 0x20; 
-            geoBuffer.putShort((short) group.getSubstationID().intValue()); 
+            geoBuffer.putShort((short) config.getSubstation()); 
         } 
         if (addressUsage.contains("f")) { 
             xcomAddressField |= 0x10; 
-            geoBuffer.putShort((short) group.getFeederID().intValue()); 
+            geoBuffer.putShort((short) config.getFeeder()); 
         }
         if (addressUsage.contains("z")) { 
             xcomAddressField |= 0x08; 
-            geoBuffer.put((byte) ((group.getZipID().intValue() >>> 16) & 0xFF)); 
-            geoBuffer.put((byte) ((group.getZipID().intValue() >>> 8) & 0xFF));
-            geoBuffer.put((byte)  (group.getZipID().intValue() & 0xFF));
+            geoBuffer.put((byte) ((config.getZip() >>> 16) & 0xFF)); 
+            geoBuffer.put((byte) ((config.getZip() >>> 8) & 0xFF));
+            geoBuffer.put((byte)  (config.getZip() & 0xFF));
         }
         if (addressUsage.contains("u")) { 
             xcomAddressField |= 0x04; 
-            geoBuffer.putShort((short) group.getUserID().intValue()); 
+            geoBuffer.putShort((short) config.getUser()); 
         }
 
-        if(xcomAddressField != 0) {
+        if (xcomAddressField != 0) {
             //One of these address levels was provided, lets send it:
             addressing.put((byte) 0x10); // Denotes a Config message.
             addressing.put((byte) 0x01); // GEO level addressing config message.
-            addressing.put((byte) geoBuffer.position()); // Length
+            addressing.put((byte) (geoBuffer.position() + xcomAddressFieldSize)); // Length
+            addressing.put((byte) xcomAddressField);
             addressing.put(geoBuffer.array(),0,geoBuffer.position()); 
         }
       
         // Config 0x07 - Program, splinter, load addressing
         // Format: 0x10 0x07 <length> <data>
         ByteBuffer loadBuffer = ByteBuffer.allocate(1024);
-        final int xcomAddressFieldSize = 1; //Size of the xcomAddressField in bytes.
         
         xcomAddressField = 0;  // Clear all address field flags.
         
-        if(addressUsage.contains("p")) {
+        if (addressUsage.contains("p")) {
             xcomAddressField |= 0x20; 
-            loadBuffer.put((byte) group.getProgramID().intValue()); 
+            loadBuffer.put((byte) config.getProgram()); 
         }
-        if(addressUsage.contains("r")) {
+        if (addressUsage.contains("r")) {
             xcomAddressField |= 0x10; 
-            loadBuffer.put((byte) group.getSplinterID().intValue()); 
+            loadBuffer.put((byte) config.getSplinter()); 
         }
         
-        if(xcomAddressField != 0) {
+        if (xcomAddressField != 0) {
             Boolean foundRelay = false;
-            for(int i = 1; i < 10; i++)
-            {
-                if(group.getRelayUsage().contains(Integer.toString(i)))
-                {
+            for(int i = 1; i < 10; i++) {
+                if (config.getRelay().contains(Integer.toString(i))) {
                     foundRelay = true;
                     
                     addressing.put((byte) 0x10); // Denotes a Config message.
@@ -276,7 +271,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                 }
             }
             
-            if(!foundRelay) {
+            if (!foundRelay) {
                 addressing.put((byte) 0x10); // Denotes a Config message.
                 addressing.put((byte) 0x07); // Load level addressing config message.
                 addressing.put((byte) (loadBuffer.position() + xcomAddressFieldSize));
