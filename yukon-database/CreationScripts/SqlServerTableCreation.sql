@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/24/2012 9:18:15 AM                         */
+/* Created on:     7/24/2012 3:54:19 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -10691,14 +10691,14 @@ alter table CCFeederSubAssignment
 go
 
 alter table CCHOLIDAYSTRATEGYASSIGNMENT
-   add constraint FK_CCHSA_PAOID foreign key (PAObjectId)
-      references YukonPAObject (PAObjectID)
-         on delete cascade
+   add constraint FK_CCHSA_SCHEDID foreign key (HolidayScheduleId)
+      references HolidaySchedule (HolidayScheduleID)
 go
 
 alter table CCHOLIDAYSTRATEGYASSIGNMENT
-   add constraint FK_CCHSA_SCHEDID foreign key (HolidayScheduleId)
-      references HolidaySchedule (HolidayScheduleID)
+   add constraint FK_CCHolidayStratAssign_PAO foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table CCHOLIDAYSTRATEGYASSIGNMENT
@@ -10713,14 +10713,14 @@ alter table CCMonitorBankList
 go
 
 alter table CCSEASONSTRATEGYASSIGNMENT
-   add constraint FK_CCSSA_PAOID foreign key (paobjectid)
-      references YukonPAObject (PAObjectID)
-         on delete cascade
+   add constraint FK_CCSSA_SCHEDID foreign key (seasonscheduleid)
+      references SeasonSchedule (ScheduleID)
 go
 
 alter table CCSEASONSTRATEGYASSIGNMENT
-   add constraint FK_CCSSA_SCHEDID foreign key (seasonscheduleid)
-      references SeasonSchedule (ScheduleID)
+   add constraint FK_CCSeasonStratAssign_PAO foreign key (paobjectid)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table CCSEASONSTRATEGYASSIGNMENT
