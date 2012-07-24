@@ -53798,7 +53798,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCSSA_PAOID</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCSeasonStratAssign_PAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>paobjectid</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
@@ -53852,7 +53852,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CCHSA_PAOID</i__foreignKeyName>
+            <i__foreignKeyName>FK_CCHolidayStratAssign_PAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PAObjectId</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
