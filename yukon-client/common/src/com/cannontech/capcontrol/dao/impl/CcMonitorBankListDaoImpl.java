@@ -223,8 +223,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE CcMonitorBankList");
-        sql.append("SET Phase").eq_k(phase);
+        sql.append("UPDATE CcMonitorBankList").set("Phase", phase);
         sql.append("WHERE PointId").eq(zonePointPhase.pointId);
         sql.append("AND DeviceId").eq(regulatorId);
         
