@@ -214,7 +214,9 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                 on_time  = 0,
                 off_time = 0;
 
-            if( const int pointid = parse.getiValue("point") > 0 )
+            const int pointid = parse.getiValue("point");
+
+            if( pointid > 0 )
             {
                 //  select by raw pointid
                 if( CtiPointSPtr point = getDevicePointEqual(pointid) )
@@ -708,7 +710,7 @@ int DnpDevice::recvCommRequest( OUTMESS *OutMessage )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device " << getName() << " is not assigned a DNP configuration. " 
+                dout << CtiTime() << " Device " << getName() << " is not assigned a DNP configuration. "
                      << "Unable to process comm request. " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }

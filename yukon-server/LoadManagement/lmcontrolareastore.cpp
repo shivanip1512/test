@@ -317,9 +317,14 @@ void CtiLMControlAreaStore::reset()
             RWTValHashMap<LONG,LONG,id_hash,equal_to<LONG> > controlPointHashMap;
             {//loading controllable statuses
 
-                static const string sql =  "SELECT DISTINCT PS.pointid "
-                                           "FROM pointstatus PS "
-                                           "WHERE PS.controloffset = 1";
+                static const string sql =
+                    "SELECT"
+                        " PSC.PointId"
+                    " FROM"
+                        " PointStatusControl PSC"
+                        " JOIN PointControl PC on PSC.PointId = PC.PointId"
+                    " WHERE"
+                        " PC.ControlOffset = 1";
 
                 Cti::Database::DatabaseReader rdr(connection);
 

@@ -798,17 +798,26 @@ INT GetPIDFromDeviceAndOffset(int device, int offset)
 
 INT GetPIDFromDeviceAndControlOffset(int device, int offset)
 {
-    string sql("SELECT POINTID FROM POINTSTATUS WHERE CONTROLOFFSET = ");
-    INT id = 0;
-
-    sql += CtiNumStr(offset);
-    sql += " AND POINTID IN (SELECT POINTID FROM POINT WHERE PAOBJECTID = ";
-    sql += CtiNumStr(device);
-    sql += ")";
+    const string sql =
+        "SELECT"
+            " PT.PointId"
+        " FROM"
+            " Point PT"
+            " JOIN PointStatus PS ON PT.PointId = PS.PointId"
+            " JOIN PointControl PC ON PT.PointId = PC.PointId"
+        " WHERE"
+            " PC.ControlOffset = ?"
+            " AND PT.PAObjectId = ?";
 
     DatabaseConnection conn;
     DatabaseReader rdr(conn, sql);
+
+    rdr << offset;
+    rdr << device;
+
     rdr.execute();
+
+    INT id = 0;
 
     if(rdr())
     {
