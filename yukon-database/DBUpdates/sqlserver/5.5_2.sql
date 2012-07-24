@@ -78,7 +78,7 @@ CREATE TABLE PointControl(
 );
 
 ALTER TABLE PointControl
-    CONSTRAINT FK_PointCont_Point FOREIGN KEY (PointId)
+    ADD CONSTRAINT FK_PointCont_Point FOREIGN KEY (PointId)
         REFERENCES Point (PointId);
 GO
 CREATE TABLE PointStatusControl (
