@@ -74,7 +74,7 @@ CREATE TABLE PointControl(
     PointId NUMERIC NOT NULL,
     ControlOffset NUMERIC NOT NULL,
     ControlInhibit VARCHAR(1) NOT NULL,
-    CONSTRAINT PK_PointControl PRIMARY KEY (PointId),
+    CONSTRAINT PK_PointControl PRIMARY KEY (PointId)
 );
 
 ALTER TABLE PointControl
@@ -89,7 +89,7 @@ CREATE TABLE PointStatusControl (
     StateZeroControl VARCHAR(100) NOT NULL,
     StateOneControl VARCHAR(100) NOT NULL,
     CommandTimeOut NUMERIC NOT NULL,
-    CONSTRAINT PK_PointStatusControl PRIMARY KEY (PointId),
+    CONSTRAINT PK_PointStatusControl PRIMARY KEY (PointId)
 );
 
 ALTER TABLE PointStatusControl
