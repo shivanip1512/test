@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/22/2012 11:07:39 PM                        */
+/* Created on:     7/24/2012 9:18:15 AM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -12764,13 +12764,13 @@ alter table PointAlarming
 go
 
 alter table PointControl
-   add constraint FK_Point_PointControl foreign key (PointId)
+   add constraint FK_PointCont_Point foreign key (PointId)
       references POINT (POINTID)
          on delete cascade
 go
 
 alter table PointStatusControl
-   add constraint FK_PointCntrl_PointStatusCntrl foreign key (PointId)
+   add constraint FK_PointStatusCont_PointCont foreign key (PointId)
       references PointControl (PointId)
          on delete cascade
 go

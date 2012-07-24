@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/22/2012 10:48:12 PM                        */
+/* Created on:     7/24/2012 9:42:00 AM                         */
 /*==============================================================*/
 
 
@@ -11750,12 +11750,12 @@ alter table PointAlarming
       references NotificationGroup (NotificationGroupID);
 
 alter table PointControl
-   add constraint FK_Point_PointControl foreign key (PointId)
+   add constraint FK_PointCont_Point foreign key (PointId)
       references POINT (POINTID)
       on delete cascade;
 
 alter table PointStatusControl
-   add constraint FK_PointCntrl_PointStatusCntrl foreign key (PointId)
+   add constraint FK_PointStatusCont_PointCont foreign key (PointId)
       references PointControl (PointId)
       on delete cascade;
 

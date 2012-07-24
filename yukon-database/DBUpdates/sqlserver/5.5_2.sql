@@ -75,10 +75,12 @@ CREATE TABLE PointControl(
     ControlOffset NUMERIC NOT NULL,
     ControlInhibit VARCHAR(1) NOT NULL,
     CONSTRAINT PK_PointControl PRIMARY KEY (PointId),
-    CONSTRAINT FK_Point_PointControl FOREIGN KEY(PointId)
-        REFERENCES POINT(POINTID)
 );
 
+ALTER TABLE PointControl
+    CONSTRAINT FK_PointCont_Point FOREIGN KEY (PointId)
+        REFERENCES Point (PointId);
+GO
 CREATE TABLE PointStatusControl (
     PointId NUMERIC NOT NULL,
     ControlType VARCHAR(12) NOT NULL,
@@ -87,11 +89,13 @@ CREATE TABLE PointStatusControl (
     StateZeroControl VARCHAR(100) NOT NULL,
     StateOneControl VARCHAR(100) NOT NULL,
     CommandTimeOut NUMERIC NOT NULL,
-    CONSTRAINT PK_PointStatusControl PRIMARY KEY (POINTID),
-    CONSTRAINT FK_PointCntrl_PointStatusCntrl FOREIGN KEY(POINTID)
-        REFERENCES PointControl (PointId)
+    CONSTRAINT PK_PointStatusControl PRIMARY KEY (PointId),
 );
 
+ALTER TABLE PointStatusControl
+    ADD CONSTRAINT FK_PointStatusCont_PointCont FOREIGN KEY (PointId)
+        REFERENCES PointControl (PointId);
+GO        
 INSERT INTO PointControl (PointId, ControlOffset, ControlInhibit)
    (SELECT PointId, ControlOffset, ControlInhibit
     FROM PointStatus

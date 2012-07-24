@@ -88,14 +88,16 @@ END;
 /* End YUK-11144 */
 
 /* Start YUK-11142 */
-CREATE TABLE PointControl(
+CREATE TABLE PointControl (
     PointId NUMBER NOT NULL,
     ControlOffset NUMBER NOT NULL,
     ControlInhibit VARCHAR2(1) NOT NULL,
     CONSTRAINT PK_PointControl PRIMARY KEY (PointId),
-    CONSTRAINT FK_Point_PointControl FOREIGN KEY(PointId)
-        REFERENCES POINT(POINTID)
 );
+
+ALTER TABLE PointControl
+    ADD CONSTRAINT FK_PointCont_Point FOREIGN KEY(PointId)
+        REFERENCES Point(PointId);
 
 CREATE TABLE PointStatusControl (
     PointId NUMBER NOT NULL,
@@ -105,10 +107,12 @@ CREATE TABLE PointStatusControl (
     StateZeroControl VARCHAR2(100) NOT NULL,
     StateOneControl VARCHAR2(100) NOT NULL,
     CommandTimeOut NUMBER NOT NULL,
-    CONSTRAINT PK_PointStatusControl PRIMARY KEY (POINTID),
-    CONSTRAINT FK_PointCntrl_PointStatusCntrl FOREIGN KEY(POINTID)
-        REFERENCES PointControl (PointId)
+    CONSTRAINT PK_PointStatusControl PRIMARY KEY (PointId),
 );
+
+ALTER TABLE PointStatusControl
+    ADD CONSTRAINT FK_PointStatusCont_PointCont FOREIGN KEY (PointId)
+        REFERENCES PointControl (PointId);
 
 INSERT INTO PointControl (PointId, ControlOffset, ControlInhibit)
    (SELECT PointId, ControlOffset, ControlInhibit
