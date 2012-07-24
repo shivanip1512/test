@@ -178,7 +178,7 @@ BEGIN
         
         DROP TABLE SettlementConfig;
 
-END
+END;
 /* @end-block */
 /* End YUK-11087 */
 
