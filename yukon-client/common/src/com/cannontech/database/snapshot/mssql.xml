@@ -11515,7 +11515,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_Point_PointControl</i__foreignKeyName>
+            <i__foreignKeyName>FK_PointCont_Point</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PointId</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -35747,7 +35747,7 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_PointCntrl_PointStatusCntrl</i__foreignKeyName>
+            <i__foreignKeyName>FK_PointStatusCont_PointCont</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PointId</i__columnName>
             <i__foreignColumnName>PointId</i__foreignColumnName>
