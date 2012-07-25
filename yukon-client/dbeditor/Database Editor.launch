@@ -12,5 +12,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.cannontech.dbeditor.DatabaseEditor"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="dbeditor"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dcom.cannontech.yukon.forceRemoteLogin=false"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dcom.cannontech.yukon.forceRemoteLogin=false&#13;&#10;-Dcom.cooperindustries.dev.wsdir=&quot;${workspace_loc}&quot;"/>
 </launchConfiguration>

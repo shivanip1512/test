@@ -16,6 +16,7 @@ import javax.swing.event.CaretListener;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
+import com.cannontech.common.i18n.DisplayableEnumCellRenderer;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -212,6 +213,7 @@ private javax.swing.JLabel getJLabelAuthType() {
 private javax.swing.JComboBox getJListAuthType() {
     if (ivjJListAuthType == null) {
         ivjJListAuthType = new javax.swing.JComboBox(AuthType.values());
+        ivjJListAuthType.setRenderer(new DisplayableEnumCellRenderer());
         ivjJListAuthType.setName("JListAuthType");
         java.awt.Dimension dimension = new java.awt.Dimension(122, 17);
         ivjJListAuthType.setMaximumSize(dimension);
