@@ -8,7 +8,7 @@
 <%@ attribute name="cssClass" type="java.lang.String" description="Class added to the input of the widget" %>
 <%@ attribute name="cssDialogClass" type="java.lang.String" description="Class added to the outer dialog div" %>
 <%@ attribute name="maxDate" type="java.lang.Object" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
-<%@ attribute name="minDate" type="java.lang.Object" description="Set a maximum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
+<%@ attribute name="minDate" type="java.lang.Object" description="Set a minimum selectable date via a Date object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
 <%@ attribute name="stepHour" type="java.lang.String" description="Steps when incrementing/decrementing hours" %>
 <%@ attribute name="stepMinute" type="java.lang.String" description="Steps when incrementing/decrementing minutes" %>
 

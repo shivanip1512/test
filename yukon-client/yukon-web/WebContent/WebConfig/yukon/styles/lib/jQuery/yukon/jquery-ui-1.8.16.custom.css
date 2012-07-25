@@ -664,10 +664,6 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 	border: solid 1px #999;
 	margin-top: 6px;
 }
-/* .ui-datepicker::before { */
-/* 	right:auto; */
-/* 	left: 3em; */
-/* } */
 .ui-datepicker-calendar thead,.ui-datepicker-calendar tbody {
 	border-bottom: dotted 1px #ccc;
 }
@@ -699,7 +695,9 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-timepicker-div .ui-widget-header {
 	margin: -10px -10px 10px;
 	border-bottom: solid 1px #999;
-	border-radius: 3px 3px 0 0;
+    -webkit-border-radius: 3px 3px 0 0;
+    -moz-border-radius: 3px 3px 0 0;
+    border-radius: 3px 3px 0 0;
 }
 
 .ui-timepicker-div .ui-widget-header { margin-bottom: 8px; }
