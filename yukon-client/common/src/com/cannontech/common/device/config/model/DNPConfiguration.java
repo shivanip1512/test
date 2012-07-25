@@ -1,20 +1,16 @@
 package com.cannontech.common.device.config.model;
 
+import java.io.Serializable;
+
 import com.cannontech.common.device.config.dao.ConfigurationType;
 
-public class DNPConfiguration extends ConfigurationBase {
-
-    public static final int InternalRetriesDefault = 2;
-    public static final boolean LocalTimeDefault = false;
-    public static final boolean EnableTimesyncsDefault = false;
-    public static final boolean OmitTimeRequestDefault = false;
-    public static final boolean EnableUnsolicitedDefault = true;
+public class DNPConfiguration extends ConfigurationBase implements Serializable {
     
-    private int internalRetries = InternalRetriesDefault;
-    private boolean localTime = LocalTimeDefault;
-    private boolean enableDnpTimesyncs = EnableTimesyncsDefault;
-    private boolean omitTimeRequest = OmitTimeRequestDefault;
-    private boolean enableUnsolicitedMessages = EnableTimesyncsDefault;
+    private int internalRetries = 2;
+    private boolean localTime = false;
+    private boolean enableDnpTimesyncs = false;
+    private boolean omitTimeRequest = false;
+    private boolean enableUnsolicitedMessages = true;
     
     @Override
     public ConfigurationType getType() {
