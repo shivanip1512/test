@@ -5,7 +5,7 @@
 /* Start YUK-11144 */
 /* @start-block */
 DECLARE @newDevConfigId NUMERIC;
-SELECT @newDevConfigId = ISNULL(MAX(DeviceConfigurationID)+1,0) FROM DEVICECONFIGURATION;
+SELECT @newDevConfigId = -1;
 
 INSERT INTO DEVICECONFIGURATION VALUES (@newDevConfigId, 'Default DNP Configuration', 'DNP');
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/24/2012 3:55:17 PM                         */
+/* Created on:     7/25/2012 1:38:32 PM                         */
 /*==============================================================*/
 
 
@@ -1950,7 +1950,7 @@ create table DEVICECONFIGURATION  (
    constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
 );
 
-INSERT INTO DEVICECONFIGURATION VALUES (0, 'Default DNP Configuration', 'DNP');
+INSERT INTO DEVICECONFIGURATION VALUES (-1, 'Default DNP Configuration', 'DNP');
 
 /*==============================================================*/
 /* Table: DEVICECONFIGURATIONDEVICEMAP                          */
@@ -1972,11 +1972,11 @@ create table DEVICECONFIGURATIONITEM  (
    constraint PK_DEVICECONFIGURATIONITEM primary key (DeviceConfigurationItemId)
 );
 
-INSERT INTO DEVICECONFIGURATIONITEM VALUES (0, 0, 'Internal Retries', 2);
-INSERT INTO DEVICECONFIGURATIONITEM VALUES (1, 0, 'Omit Time Request', 'false');
-INSERT INTO DEVICECONFIGURATIONITEM VALUES (2, 0, 'Enable DNP Timesyncs', 'false');
-INSERT INTO DEVICECONFIGURATIONITEM VALUES (3, 0, 'Local Time', 'false');
-INSERT INTO DEVICECONFIGURATIONITEM VALUES (4, 0, 'Enable Unsolicited Messages', 'true');
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (0, -1, 'Internal Retries', 2);
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (1, -1, 'Omit Time Request', 'false');
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (2, -1, 'Enable DNP Timesyncs', 'false');
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (3, -1, 'Local Time', 'false');
+INSERT INTO DEVICECONFIGURATIONITEM VALUES (4, -1, 'Enable Unsolicited Messages', 'true');
 
 /*==============================================================*/
 /* Table: DEVICEDIALUPSETTINGS                                  */

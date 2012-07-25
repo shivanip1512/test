@@ -12,7 +12,7 @@ DECLARE
     v_enableTimeSyncs VARCHAR2(60);
     v_newItemId NUMBER;
 BEGIN
-    SELECT NVL(MAX(DeviceConfigurationID)+1,0) INTO v_newDevConfigId FROM DEVICECONFIGURATION;
+    v_newDevConfigId := -1;
     INSERT INTO DEVICECONFIGURATION VALUES (v_newDevConfigId, 'Default DNP Configuration', 'DNP');
 
     /* @start-cparm YUKON_DNP_INTERNAL_RETRIES */
