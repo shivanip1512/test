@@ -3582,7 +3582,7 @@
                 <init>true</init>
                 <name>Relay 2 Run Time Data Log</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
+                <unitofmeasure value="Minutes"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="21">
@@ -3610,7 +3610,7 @@
                 <init>true</init>
                 <name>Relay 3 Run Time Data Log</name>
                 <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
+                <unitofmeasure value="Minutes"/>
                 <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="25">
