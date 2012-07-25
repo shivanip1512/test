@@ -31,13 +31,16 @@
                             <c:when test="${point.pointName == 'Neutral Current Sensor'}">
                                 <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertNeutralCurrent}"/>
                             </c:when>
+                            <c:when test="${point.pointName == 'Serial Number'}">
+                                <cti:pointValue pointId="${point.pointID}" format="{rawValue|com.cannontech.cbc.util.CapControlUtils.convertSerialNumber}"/>
+                            </c:when>
                             <c:when test="${point.pointName == 'Last Control Reason'}">
                                 <cti:pointStatusColor pointId="${point.pointID}">
                                     <cti:pointValue pointId="${point.pointID}" format="{state}"/>
                                 </cti:pointStatusColor>
                             </c:when>
                             <c:otherwise>
-                                <cti:pointValue pointId="${point.pointID}" format="VALUE"/>
+                                <cti:pointValue pointId="${point.pointID}" format="SHORT"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -58,7 +61,7 @@
             <c:forEach var="point" items="${pointMap.ACCUMULATOR}">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody></td>
-                    <td><cti:pointValue pointId="${point.pointID}" format="VALUE"/></td>
+                    <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
                     <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                 </tr>
             </c:forEach>
@@ -100,7 +103,7 @@
             <c:forEach var="point" items="${pointMap.CONFIGURABLE_PARAMETERS}">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
-                    <td><cti:pointValue pointId="${point.pointID}" format="VALUE"/></td>
+                    <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
                     <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                 </tr>
             </c:forEach>
@@ -120,7 +123,7 @@
                 <c:forEach var="point" items="${pointMap.MISC}">
                     <tr class="<tags:alternateRow odd="" even="altRow"/>">
                         <td><spring:escapeBody htmlEscape="true">${point.pointName}</spring:escapeBody>
-                        <td><cti:pointValue pointId="${point.pointID}" format="VALUE"/></td>
+                        <td><cti:pointValue pointId="${point.pointID}" format="SHORT"/></td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                     </tr>
                 </c:forEach>

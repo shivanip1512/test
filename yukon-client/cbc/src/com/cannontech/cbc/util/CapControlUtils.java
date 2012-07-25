@@ -866,4 +866,8 @@ public final class CapControlUtils {
       
         return sb.reverse().toString();
     }
+    
+    public static String convertSerialNumber(Double value) {
+        return Long.toString(value.longValue());
+    }
 }

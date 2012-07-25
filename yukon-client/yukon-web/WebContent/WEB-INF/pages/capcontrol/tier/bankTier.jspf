@@ -94,7 +94,7 @@ Event.observe(window, 'load', function() {
                     <c:if test="${viewableCapBank.twoWayCbc}">
                         <cti:msg2 var="timestampInfo" key=".timestampInfo"/>
                         <span onmouseover="statusMsgAbove(this,'${timestampInfo}');">
-                            <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}"/>
+                            <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}" javaScriptEscape="true"/>
                             <cti:img nameKey="view" href="javascript:showDialog('${cbcPointsTitle}', '../capbank/cbcPoints?cbcId=${viewableCapBank.controlDevice.liteID}')" styleClass="tierIconLink"/>
                         </span>
                     </c:if>
@@ -115,7 +115,7 @@ Event.observe(window, 'load', function() {
                     </c:if>
                     <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
                         <cti:msg2 var="addInfo" key=".addInfo"/>
-                        <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/>
+                        <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
                         <span onmouseover="statusMsgAbove(this, '${addInfo}');">
                             <cti:img nameKey="view" href="javascript:showDialog('${addInfoTitle}', '../addInfo/bank?bankId=${bankId}')" styleClass="tierIconLink"/>
                         </span>
