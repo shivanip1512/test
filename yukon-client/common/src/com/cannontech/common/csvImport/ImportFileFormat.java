@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -12,6 +13,7 @@ import com.cannontech.common.csvImport.types.StrictBoolean;
 import com.cannontech.common.util.PositiveDouble;
 import com.cannontech.common.util.PositiveInteger;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -210,7 +212,8 @@ public class ImportFileFormat implements Cloneable {
      * @return an immutable map of group names to grouped column definitions
      */
     public Map<String, Collection<ImportColumnDefinition>> getGroupedColumnsAsMap() {
-        return getGroupedColumns().asMap();
+        Map<String, Collection<ImportColumnDefinition>> sortedMap = new TreeMap<String, Collection<ImportColumnDefinition>>(getGroupedColumns().asMap());
+        return sortedMap;
     }
     
     /**
@@ -232,10 +235,12 @@ public class ImportFileFormat implements Cloneable {
     }
     
     /**
-     * @return an immutable set of the column group names
+     * @return an immutable list of the column group names in alphabetical order
      */
-    public Set<String> getColumnGroupNames() {
-        return Collections.unmodifiableSet(groupedColumns.keySet());
+    public List<String> getColumnGroupNames() {
+        List<String> groupNamesList = Lists.newArrayList(groupedColumns.keySet());
+        Collections.sort(groupNamesList);
+        return ImmutableList.copyOf(groupNamesList);
     }
     
     public boolean isIgnoreInvalidHeaders() {

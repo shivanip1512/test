@@ -10,7 +10,6 @@ import com.cannontech.common.point.AccumulatorType;
 import com.cannontech.common.point.PointBuilderFactory;
 import com.cannontech.common.point.AccumulatorPointBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.PointTypes;
@@ -41,14 +40,6 @@ public class AccumulatorPointImportProcessor extends ScalarPointImportProcessor 
                 String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.pointOffsetInUse", pointOffset, deviceName);
                 throw new ProcessingException(error);
             }
-            
-            /*try {
-                pointDao.getLitePointIdByDeviceId_Offset_PointType(paoId, pointOffset, PointTypes.ANALOG_POINT);
-                String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.pointOffsetInUse", pointOffset, deviceName);
-                throw new ProcessingException(error);
-            } catch(NotFoundException e) {
-                //No point on device with this type and offset - import can continue
-            }*/
             
             builder.setPointOffset(pointOffset);
         }

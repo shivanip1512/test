@@ -633,8 +633,7 @@ public final class PointDaoImpl implements PointDao {
     
     public boolean deviceHasPoint(int deviceId, int pointOffset, int pointType) {
         int pointId = getPointIDByDeviceID_Offset_PointType(deviceId, pointOffset, pointType);
-        
-        return pointId == 0 ? false : true;
+        return pointId != 0;
     }
     
     private int getAccumulatorPointDataOffset(int pointId) {

@@ -17,10 +17,10 @@ import com.cannontech.core.dao.PointDao;
  * the autowired dependencies that the processors require.
  */
 public class PointImportProcessorFactory {
-    @Autowired PaoDao paoDao;
-    @Autowired PointDao pointDao;
-    @Autowired DBPersistentDao dbPersistentDao;
-    @Autowired PointBuilderFactory pointBuilderFactory;
+    @Autowired private PaoDao paoDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private PointBuilderFactory pointBuilderFactory;
     
     public AnalogPointImportProcessor getAnalogProcessor(ImportFileFormat format, MessageSourceAccessor messageSourceAccessor) {
         return new AnalogPointImportProcessor(format, messageSourceAccessor, paoDao, pointDao, dbPersistentDao, pointBuilderFactory);

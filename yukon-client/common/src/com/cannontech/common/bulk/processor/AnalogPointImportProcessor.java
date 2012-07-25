@@ -35,12 +35,9 @@ public class AnalogPointImportProcessor extends ScalarPointImportProcessor {
         if(row.hasValue("POINT OFFSET")) {
             int pointOffset = Integer.valueOf(row.getValue("POINT OFFSET"));
             
-            try {
-                pointDao.getLitePointIdByDeviceId_Offset_PointType(paoId, pointOffset, PointTypes.ANALOG_POINT);
+            if(pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.ANALOG_POINT)) {
                 String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.pointOffsetInUse", pointOffset, deviceName);
                 throw new ProcessingException(error);
-            } catch(NotFoundException e) {
-                //No point on device with this type and offset - import can continue
             }
             
             builder.setPointOffset(pointOffset);

@@ -182,8 +182,7 @@ public class ImportFileValidator {
 
         //Get all group names and associated columns
         Multimap<String, ImportColumnDefinition> groupedColumns = format.getGroupedColumns();
-        Set<String> groupNames = format.getColumnGroupNames();
-        for(String groupName : groupNames) {
+        for(String groupName : format.getColumnGroupNames()) {
             Collection<ImportColumnDefinition> columnsInGroup =  groupedColumns.get(groupName);
             int numberOfColumnsInGroup = columnsInGroup.size();
             Set<String> missingColumnsInGroup = Sets.newHashSet();
