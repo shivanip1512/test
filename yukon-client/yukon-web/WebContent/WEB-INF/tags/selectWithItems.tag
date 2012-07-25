@@ -48,7 +48,7 @@
     </c:if>
     
     <c:choose>
-        <c:when test="${groupItems}">
+        <c:when test="${pageScope.groupItems}">
             <c:forEach var="group" items="${items}">
                 <optgroup label="<cti:msg2 key="${group.key}"/>">
                     <c:forEach var="item" items="${group.value}">

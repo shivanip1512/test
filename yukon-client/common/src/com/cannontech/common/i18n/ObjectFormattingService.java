@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.ImmutableList;
 
 public interface ObjectFormattingService {
     /**
@@ -51,5 +52,5 @@ public interface ObjectFormattingService {
      * @param toSort The list to sort. This list will not be modified.
      * @return The sorted list.
      */
-    public <S,T> Map<S, List<T>> sortDisplayableValues(Map<S, List<T>> toSort, YukonUserContext context); 
+    public <S,T> Map<S, List<T>> sortDisplayableValues(Map<S, ImmutableList<T>> toSort, YukonUserContext context); 
 }

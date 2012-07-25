@@ -14,6 +14,7 @@ import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -91,7 +92,7 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
     }
 
     @Override
-    public <S, T> Map<S, List<T>> sortDisplayableValues(Map<S, List<T>> toSort, YukonUserContext context) {
+    public <S, T> Map<S, List<T>> sortDisplayableValues(Map<S, ImmutableList<T>> toSort, YukonUserContext context) {
         Map<S, List<T>> sortedResult = Maps.newLinkedHashMap();
         List<S> sortedKeys = sortDisplayableValues(
                 Lists.newArrayList(toSort.keySet()), null, null, context); 

@@ -10,10 +10,11 @@
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="emptyValueKey" required="false" type="java.lang.String"%>
 <%@ attribute name="onchange" required="false" type="java.lang.String"%>
+<%@ attribute name="inputClass" required="false" type="java.lang.String"%>
 
 <tags:nameValue2 nameKey="${nameKey}">
-	<tags:selectWithItems path="${path}" items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}" 
+	<tags:selectWithItems path="${path}" items="${items}" itemValue="${pageScope.itemValue}" itemLabel="${pageScope.itemLabel}" 
                           defaultItemValue="${pageScope.defaultItemValue}" defaultItemLabel="${pageScope.defaultItemLabel}" 
-                          emptyValueKey="${pageScope.emptyValueKey}" onchange="${onchange}" inputClass="${inputClass}"
+                          emptyValueKey="${pageScope.emptyValueKey}" onchange="${pageScope.onchange}" inputClass="${pageScope.inputClass}"
                           groupItems="${pageScope.groupItems}"/>
 </tags:nameValue2>

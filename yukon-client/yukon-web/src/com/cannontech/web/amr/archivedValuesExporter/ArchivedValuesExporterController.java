@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +47,8 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute.AttributeGroup;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -64,6 +65,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/archivedValuesExporter/*")
@@ -88,9 +90,10 @@ public class ArchivedValuesExporterController {
     public BuiltInAttribute[] getAttributes() {
         return BuiltInAttribute.values();
     }
-    
+
     @ModelAttribute("groupedAttributes")
     public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributes(YukonUserContext userContext) {
+        Map<AttributeGroup, ArrayList<Integer>> l1 = Maps.newHashMap();
         return objectFormattingService.sortDisplayableValues(
                 BuiltInAttribute.getStandardGroupedAttributes(), userContext);
     }

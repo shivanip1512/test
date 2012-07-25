@@ -55,22 +55,22 @@
 
 <entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 
-<entry key="yukon.common.attributeGroups.current">Current</entry>
-<entry key="yukon.common.attributeGroups.demand">Demand</entry>
-<entry key="yukon.common.attributeGroups.general">General</entry>
-<entry key="yukon.common.attributeGroups.profile">Profile</entry>
-<entry key="yukon.common.attributeGroups.relay">Relay</entry>
-<entry key="yukon.common.attributeGroups.status">Status</entry>
-<entry key="yukon.common.attributeGroups.usage">Usage</entry>
-<entry key="yukon.common.attributeGroups.voltage">Voltage</entry>
+<entry key="yukon.common.attributeGroups.BLINK_AND_OUTAGE">Blink &amp; Outage</entry>
+<entry key="yukon.common.attributeGroups.CURRENT">Current</entry>
+<entry key="yukon.common.attributeGroups.DEMAND">Demand</entry>
+<entry key="yukon.common.attributeGroups.OTHER">Other</entry>
+<entry key="yukon.common.attributeGroups.PROFILE">Profile</entry>
+<entry key="yukon.common.attributeGroups.RELAY">Relay</entry>
+<entry key="yukon.common.attributeGroups.STATUS">Status</entry>
+<entry key="yukon.common.attributeGroups.USAGE">Usage</entry>
+<entry key="yukon.common.attributeGroups.VOLTAGE">Voltage</entry>
 
-<entry key="yukon.common.attributeGroups.rfnHardware">Hardware</entry>
-<entry key="yukon.common.attributeGroups.rfnSoftware">Software</entry>
-<entry key="yukon.common.attributeGroups.rfnVoltage">Voltage</entry>
-<entry key="yukon.common.attributeGroups.rfnCurrent">Current</entry>
-<entry key="yukon.common.attributeGroups.rfnBlinkAndOutage">Blink &amp; Outage</entry>
-<entry key="yukon.common.attributeGroups.rfnDisconnect">Disconnect</entry>
-<entry key="yukon.common.attributeGroups.rfnDemand">Demand</entry>
-<entry key="yukon.common.attributeGroups.rfnOther">Other</entry>
+<entry key="yukon.common.attributeGroups.RFN_CURRENT_EVENT">Current Events</entry>
+<entry key="yukon.common.attributeGroups.RFN_DEMAND_EVENT">Demand Events</entry>
+<entry key="yukon.common.attributeGroups.RFN_DISCONNECT_EVENT">Disconnect Events</entry>
+<entry key="yukon.common.attributeGroups.RFN_HARDWARE_EVENT">Hardware Evemts</entry>
+<entry key="yukon.common.attributeGroups.RFN_OTHER_EVENT">Other Events</entry>
+<entry key="yukon.common.attributeGroups.RFN_SOFTWARE_EVENT">Software Events</entry>
+<entry key="yukon.common.attributeGroups.RFN_VOLTAGE_EVENT">Voltage Events</entry>
         
 </properties>
