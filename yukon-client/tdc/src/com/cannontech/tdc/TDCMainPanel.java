@@ -67,7 +67,8 @@ import com.cannontech.tdc.data.DisplayData;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.roweditor.AltScanRatePanel;
-import com.cannontech.tdc.roweditor.AnalogPanel;
+import com.cannontech.tdc.roweditor.AnalogPanelControlEntry;
+import com.cannontech.tdc.roweditor.AnalogPanelManualEntry;
 import com.cannontech.tdc.roweditor.EditorDialogData;
 import com.cannontech.tdc.roweditor.ManualEntryJPanel;
 import com.cannontech.tdc.roweditor.RowEditorDialog;
@@ -482,12 +483,18 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
 		EditorDialogData data = new EditorDialogData( pt, pt.getAllText() );
 
 			
-		if( PointTypes.getType(ptType) == PointTypes.ANALOG_POINT ||
-			 PointTypes.getType(ptType) == PointTypes.PULSE_ACCUMULATOR_POINT ||
-			 PointTypes.getType(ptType) == PointTypes.DEMAND_ACCUMULATOR_POINT ||
-			 PointTypes.getType(ptType) == PointTypes.CALCULATED_POINT )
+        if( PointTypes.getType(ptType) == PointTypes.ANALOG_POINT
+            && ( TagUtils.isControllablePoint(data.getTags()) && TagUtils.isControlEnabled(data.getTags()) )
+            && source != getJMenuItemPopUpManualEntry() )
+        {
+            return new AnalogPanelControlEntry( data, currentValue );
+        }
+        else if( PointTypes.getType(ptType) == PointTypes.ANALOG_POINT ||
+    			 PointTypes.getType(ptType) == PointTypes.PULSE_ACCUMULATOR_POINT ||
+    			 PointTypes.getType(ptType) == PointTypes.DEMAND_ACCUMULATOR_POINT ||
+    			 PointTypes.getType(ptType) == PointTypes.CALCULATED_POINT )
 		{
-			return new AnalogPanel( data, currentValue );
+			return new AnalogPanelManualEntry( data, currentValue );
 		}
 		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT
 					&& ( TagUtils.isControllablePoint(data.getTags()) && TagUtils.isControlEnabled(data.getTags()) )
@@ -3914,10 +3921,14 @@ private void showRowEditor( Object source )
 		{
 			d.addRowEditorDialogListener( (StatusPanelManualEntry)panel );
 		}
-		else if( panel instanceof AnalogPanel )
-		{
-			d.addRowEditorDialogListener( (AnalogPanel)panel );
-		}
+        else if( panel instanceof AnalogPanelManualEntry )
+        {
+            d.addRowEditorDialogListener( (AnalogPanelManualEntry)panel );
+        }
+        else if( panel instanceof AnalogPanelControlEntry )
+        {
+            d.addRowEditorDialogListener( (AnalogPanelControlEntry)panel );
+        }
 		else if( panel instanceof StatusPanelControlEntry )
 		{
 			d.addRowEditorDialogListener( (StatusPanelControlEntry)panel );

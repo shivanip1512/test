@@ -15,7 +15,7 @@ import com.cannontech.tdc.TDCMainFrame;
 import com.cannontech.tdc.alarms.gui.AlarmingRow;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 
-public class AnalogPanel extends ManualEntryJPanel implements RowEditorDialogListener 
+public class AnalogPanelManualEntry extends ManualEntryJPanel implements RowEditorDialogListener
 {
 	public static final double MIN_INPUT_VALUE = -99999.99999;
 	public static final double MAX_INPUT_VALUE = 99999.99999;
@@ -28,14 +28,14 @@ public class AnalogPanel extends ManualEntryJPanel implements RowEditorDialogLis
 /**
  * EditDataPanel constructor comment.
  */
-private AnalogPanel() {
+private AnalogPanelManualEntry() {
 	super();
 	initialize();
 }
 /**
  * EditDataPanel constructor comment.
  */
-public AnalogPanel( EditorDialogData data, Object currentValue, AlarmingRow alarmRow_ )
+public AnalogPanelManualEntry( EditorDialogData data, Object currentValue, AlarmingRow alarmRow_ )
 {
 	super( data, currentValue, alarmRow_ );
 		
@@ -44,7 +44,7 @@ public AnalogPanel( EditorDialogData data, Object currentValue, AlarmingRow alar
 /**
  * EditDataPanel constructor comment.
  */
-public AnalogPanel(EditorDialogData data, Object currentValue) 
+public AnalogPanelManualEntry(EditorDialogData data, Object currentValue)
 {
 	super(data, currentValue);
 	initialize();
@@ -196,7 +196,7 @@ public String getPanelTitle()
 private void handleException(java.lang.Throwable exception) {
 
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	CTILogger.info("--------- UNCAUGHT EXCEPTION AnalogPanel() ---------");
+	CTILogger.info("--------- UNCAUGHT EXCEPTION AnalogPanelManualEntry() ---------");
 	CTILogger.error( exception.getMessage(), exception );;
 
 	TDCMainFrame.messageLog.addMessage(exception.toString() + " in : " + this.getClass(), MessageBoxFrame.ERROR_MSG );

@@ -35,7 +35,7 @@ public:
                 " UNT.uomid, UNT.decimalplaces, UNT.decimaldigits,"
                 " UM.calctype,"
                 " ALG.multiplier, ALG.dataoffset, ALG.deadband,"
-				" PC.controloffset, PC.controlinhibit"
+                " PC.controloffset, PC.controlinhibit"
             " FROM"
                 " Point PT "
                 " JOIN PointUnit UNT on PT.pointid = UNT.pointid"
@@ -71,7 +71,7 @@ public:
 
     UINT adjustStaticTags(UINT &tag) const
     {
-        if( getType() == AnalogOutputPointType )
+        if( _pointControl || getType() == AnalogOutputPointType )
         {
             tag |= TAG_ATTRIB_CONTROL_AVAILABLE;
         }
