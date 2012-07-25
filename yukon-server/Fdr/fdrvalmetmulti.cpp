@@ -11,6 +11,8 @@
 #include "ctidate.h"
 #include "utility.h"
 
+#include "ThreadStatusKeeper.h"
+
 #include "cparms.h"
 #include "msg_multi.h"
 #include "msg_ptreg.h"
@@ -37,6 +39,7 @@
 using std::string;
 using std::endl;
 using namespace Fdr::Valmet;
+using Cti::ThreadStatusKeeper;
 
 /** local definitions **/
 
@@ -244,7 +247,7 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
         valmetPortId.PortNumber = atoi(portNumber.c_str());
         valmetPortId.PointName = pointName;
 
-        if (valmetPortId.PortNumber != 0)
+        if (valmetPortId.PortNumber > 0)
         {
             CtiLockGuard<CtiMutex> lockGuard(_listeningThreadManagementMutex);
             _listeningPortNumbers.insert(valmetPortId.PortNumber);
@@ -1119,9 +1122,13 @@ bool CtiFDR_ValmetMulti::alwaysSendRegistrationPoints()
 void CtiFDR_ValmetMulti::threadListenerStartupMonitor( void )
 {
     RWRunnableSelf pSelf = rwRunnable();
-    int refreshDelaySeconds = 5;
+    const int refreshDelaySeconds = 5;
     CtiTime timeNow;
     CtiTime refreshTime = timeNow + refreshDelaySeconds;
+
+    ThreadStatusKeeper threadStatus("FDR VALMETMULTI Listener Startup Monitor");
+    long threadMonitorPointId = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDR);
+    CtiTime nextThreadMonitorReportTime;
 
     try
     {
@@ -1141,6 +1148,16 @@ void CtiFDR_ValmetMulti::threadListenerStartupMonitor( void )
             {
                 startMultiListeners();
                 refreshTime = timeNow + refreshDelaySeconds;
+            }
+
+            threadStatus.monitorCheck();
+            if (threadMonitorPointId != 0)
+            {
+                if(CtiTime::now() > nextThreadMonitorReportTime)
+                {
+                    nextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime );
+                    sendMessageToDispatch(CTIDBG_new CtiPointDataMsg(threadMonitorPointId, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+                }
             }
         }
     }
