@@ -94,7 +94,6 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
 
             LitePoint runTimePoint = attributeService.getPointForAttribute(device, relay.getRunTimeAttribute());
             LitePoint shedTimePoint = attributeService.getPointForAttribute(device, relay.getShedTimeAttribute());
-            LitePoint controlTimePoint = attributeService.getPointForAttribute(device, relay.getControlTimeAttribute());
 
             Long firstIntervalTimestamp = decodedXml.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
             Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp * 1000);
@@ -104,15 +103,11 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
 
                 PointData runTimePointData = createPointData(runTimePoint.getPointID(), 
                         runTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(runTime));
-                // Shed time is recorded in minutes, control time is recorded in seconds.
                 PointData shedTimePointData = createPointData(shedTimePoint.getPointID(), 
                         shedTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(shedTime));
-                PointData controlTimePointData = createPointData(controlTimePoint.getPointID(), 
-                        controlTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(shedTime * 60));
 
                 intervalPointData.add(runTimePointData);
                 intervalPointData.add(shedTimePointData);
-                intervalPointData.add(controlTimePointData);
                 currentIntervalTimestamp = currentIntervalTimestamp
                         .withDurationAdded(Duration.standardHours(1), -1);
             }

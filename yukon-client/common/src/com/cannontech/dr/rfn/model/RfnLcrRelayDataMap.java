@@ -12,25 +12,22 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 
 public enum RfnLcrRelayDataMap {
-    RELAY_1("[@id=0]", BuiltInAttribute.RELAY_1_RUN_TIME, BuiltInAttribute.RELAY_1_SHED_TIME, BuiltInAttribute.RELAY_1_CONTROL_TIME),
-    RELAY_2("[@id=1]", BuiltInAttribute.RELAY_2_RUN_TIME, BuiltInAttribute.RELAY_2_SHED_TIME, BuiltInAttribute.RELAY_2_CONTROL_TIME),
-    RELAY_3("[@id=2]", BuiltInAttribute.RELAY_3_RUN_TIME, BuiltInAttribute.RELAY_3_SHED_TIME, BuiltInAttribute.RELAY_3_CONTROL_TIME);
+    RELAY_1("[@id=0]", BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG),
+    RELAY_2("[@id=1]", BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG, BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG),
+    RELAY_3("[@id=2]", BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG, BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG);
     
     private String relayIdXPathString;
     private BuiltInAttribute runTimeAttribute;
     private BuiltInAttribute shedTimeAttribute;
-    private BuiltInAttribute controlTimeAttribute;
     
     private static final Logger log = YukonLogManager.getLogger(RfnLcrRelayDataMap.class);
     private static final Set<RfnLcrRelayDataMap> lcr6200RelayMap;
     private static final Set<RfnLcrRelayDataMap> lcr6600RelayMap;
     
-    RfnLcrRelayDataMap(String xPathQuery, BuiltInAttribute runTime, 
-            BuiltInAttribute shedTime, BuiltInAttribute controlTime) {
+    RfnLcrRelayDataMap(String xPathQuery, BuiltInAttribute runTime, BuiltInAttribute shedTime) {
         this.relayIdXPathString = xPathQuery;
         this.runTimeAttribute = runTime;
         this.shedTimeAttribute = shedTime;
-        this.controlTimeAttribute = controlTime;
     }
 
     static {
@@ -57,19 +54,21 @@ public enum RfnLcrRelayDataMap {
     public String getRelayIdXPathString() {
         return relayIdXPathString;
     }
+    
     public BuiltInAttribute getRunTimeAttribute() {
         return runTimeAttribute;
     }
+    
     public BuiltInAttribute getShedTimeAttribute() {
         return shedTimeAttribute;
     }
-    public BuiltInAttribute getControlTimeAttribute() {
-        return controlTimeAttribute;
-    }
+    
     public static Set<RfnLcrRelayDataMap> getLcr6200RelayMap() {
         return lcr6200RelayMap;
     }
+    
     public static Set<RfnLcrRelayDataMap> getLcr6600RelayMap() {
         return lcr6600RelayMap;
     }
+    
 }

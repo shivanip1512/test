@@ -3453,68 +3453,61 @@
             </point>
             <point type="Analog" offset="10">
                 <init>true</init>
-                <name>Relay 1 Run Time</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="11">
-                <init>true</init>
-                <name>Relay 1 Control Time</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="12">
-                <init>true</init>
-                <name>Relay 1 Shed Time</name>
+                <name>Relay 1 Run Time Data Log</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="13">
+            <point type="Analog" offset="11">
+                <init>true</init>
+                <name>Relay 1 Shed Time Data Log</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="12">
                 <init>true</init>
                 <name>Relay 1 kW Load Size</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
-            <point type="Analog" offset="14">
+            <point type="Analog" offset="13">
                 <init>true</init>
                 <name>Relay 1 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="15">
+            <point type="Analog" offset="14">
                 <init>true</init>
                 <name>Temp Out of Service Duration</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="16">
+            <point type="Analog" offset="15">
                 <init>true</init>
                 <name>Reporting Interval</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="17">
+            <point type="Analog" offset="16">
                 <init>true</init>
                 <name>Recording Interval</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="18">
+            <point type="Analog" offset="17">
                 <init>false</init>
                 <name>Total LUF Event Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="19">
+            <point type="Analog" offset="18">
                 <init>false</init>
                 <name>Total LUV Event Count</name>
                 <multiplier value="1.0"/>
@@ -3555,14 +3548,11 @@
             <attribute name="RELAY_1_REMAINING_CONTROL">
                 <basicLookup point="Relay 1 Remaining Control Time"/>
             </attribute>
-            <attribute name="RELAY_1_CONTROL_TIME">
-                <basicLookup point="Relay 1 Control Time"/>
+            <attribute name="RELAY_1_RUN_TIME_DATA_LOG">
+                <basicLookup point="Relay 1 Run Time Data Log"/>
             </attribute>
-            <attribute name="RELAY_1_RUN_TIME">
-                <basicLookup point="Relay 1 Run Time"/>
-            </attribute>
-            <attribute name="RELAY_1_SHED_TIME">
-                <basicLookup point="Relay 1 Shed Time"/>
+            <attribute name="RELAY_1_SHED_TIME_DATA_LOG">
+                <basicLookup point="Relay 1 Shed Time Data Log"/>
             </attribute>
             <attribute name="REPORTING_INTERVAL">
                 <basicLookup point="Reporting Interval" />
@@ -3588,70 +3578,56 @@
     <pao id="LCR6600_RFN" inherits="RF_LCR, LCR6200_RFN">
         <displayName>LCR-6600 RFN</displayName>
         <points>
-            <point type="Analog" offset="22">
+            <point type="Analog" offset="20">
                 <init>true</init>
-                <name>Relay 2 Run Time</name>
+                <name>Relay 2 Run Time Data Log</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="23">
+            <point type="Analog" offset="21">
                 <init>true</init>
-                <name>Relay 2 Control Time</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="24">
-                <init>true</init>
-                <name>Relay 2 Shed Time</name>
+                <name>Relay 2 Shed Time Data Log</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="25">
+            <point type="Analog" offset="22">
                 <init>true</init>
                 <name>Relay 2 kW Load Size</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
-            <point type="Analog" offset="26">
+            <point type="Analog" offset="23">
                 <init>true</init>
                 <name>Relay 2 Remaining Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="29">
+            <point type="Analog" offset="24">
                 <init>true</init>
-                <name>Relay 3 Run Time</name>
+                <name>Relay 3 Run Time Data Log</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="30">
+            <point type="Analog" offset="25">
                 <init>true</init>
-                <name>Relay 3 Control Time</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-                <decimalplaces value="0"/>
-            </point>
-            <point type="Analog" offset="31">
-                <init>true</init>
-                <name>Relay 3 Shed Time</name>
+                <name>Relay 3 Shed Time Data Log</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Minutes"/>
                 <decimalplaces value="0"/>
             </point>
-            <point type="Analog" offset="32">
+            <point type="Analog" offset="26">
                 <init>true</init>
                 <name>Relay 3 kW Load Size</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
                 <decimalplaces value="4"/>
             </point>
-            <point type="Analog" offset="33">
+            <point type="Analog" offset="27">
                 <init>true</init>
                 <name>Relay 3 Remaining Control Time</name>
                 <multiplier value="1.0"/>
@@ -3666,14 +3642,11 @@
             <attribute name="RELAY_2_REMAINING_CONTROL">
                 <basicLookup point="Relay 2 Remaining Control Time"/>
             </attribute>
-            <attribute name="RELAY_2_CONTROL_TIME">
-                <basicLookup point="Relay 2 Control Time"/>
+            <attribute name="RELAY_2_RUN_TIME_DATA_LOG">
+                <basicLookup point="Relay 2 Run Time Data Log"/>
             </attribute>
-            <attribute name="RELAY_2_RUN_TIME">
-                <basicLookup point="Relay 2 Run Time"/>
-            </attribute>
-            <attribute name="RELAY_2_SHED_TIME">
-                <basicLookup point="Relay 2 Shed Time"/>
+            <attribute name="RELAY_2_SHED_TIME_DATA_LOG">
+                <basicLookup point="Relay 2 Shed Time Data Log"/>
             </attribute>
             <attribute name="RELAY_3_LOAD_SIZE">
                 <basicLookup point="Relay 3 kW Load Size"/>
@@ -3681,14 +3654,11 @@
             <attribute name="RELAY_3_REMAINING_CONTROL">
                 <basicLookup point="Relay 3 Remaining Control Time"/>
             </attribute>
-            <attribute name="RELAY_3_CONTROL_TIME">
-                <basicLookup point="Relay 3 Control Time"/>
+            <attribute name="RELAY_3_RUN_TIME_DATA_LOG">
+                <basicLookup point="Relay 3 Run Time Data Log"/>
             </attribute>
-            <attribute name="RELAY_3_RUN_TIME">
-                <basicLookup point="Relay 3 Run Time"/>
-            </attribute>
-            <attribute name="RELAY_3_SHED_TIME">
-                <basicLookup point="Relay 3 Shed Time"/>
+            <attribute name="RELAY_3_SHED_TIME_DATA_LOG">
+                <basicLookup point="Relay 3 Shed Time Data Log"/>
             </attribute>
         </attributes>
     </pao>
