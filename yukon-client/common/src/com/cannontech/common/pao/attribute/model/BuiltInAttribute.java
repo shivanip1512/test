@@ -250,21 +250,18 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         statusAttributes = status.build();
         
         ImmutableList.Builder<BuiltInAttribute> relay = ImmutableList.builder();
-        relay.add(RELAY_1_CONTROL_TIME);
         relay.add(RELAY_1_LOAD_SIZE);
         relay.add(RELAY_1_REMAINING_CONTROL);
-        relay.add(RELAY_1_RUN_TIME);
-        relay.add(RELAY_1_SHED_TIME);
-        relay.add(RELAY_2_CONTROL_TIME);
+        relay.add(RELAY_1_RUN_TIME_DATA_LOG);
+        relay.add(RELAY_1_SHED_TIME_DATA_LOG);
         relay.add(RELAY_2_LOAD_SIZE);
         relay.add(RELAY_2_REMAINING_CONTROL);
-        relay.add(RELAY_2_RUN_TIME);
-        relay.add(RELAY_2_SHED_TIME);
-        relay.add(RELAY_3_CONTROL_TIME);
+        relay.add(RELAY_2_RUN_TIME_DATA_LOG);
+        relay.add(RELAY_2_SHED_TIME_DATA_LOG);
         relay.add(RELAY_3_LOAD_SIZE);
         relay.add(RELAY_3_REMAINING_CONTROL);
-        relay.add(RELAY_3_RUN_TIME);
-        relay.add(RELAY_3_SHED_TIME);
+        relay.add(RELAY_3_RUN_TIME_DATA_LOG);
+        relay.add(RELAY_3_SHED_TIME_DATA_LOG);
         relayAttributes = relay.build();
         
         
