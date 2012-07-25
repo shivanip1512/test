@@ -1,4 +1,4 @@
-package com.cannontech.core.roleproperties.model;
+package com.cannontech.core.roleproperties.dao.impl;
 
 import org.apache.commons.lang.Validate;
 
@@ -9,7 +9,7 @@ import com.cannontech.core.roleproperties.RoleGroupNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 
-public class RoleGroupPropertyTuple implements PropertyTuple{
+class RoleGroupPropertyTuple implements PropertyTuple{
     public Integer roleGroupId;
     public YukonRoleProperty yukonRoleProperty;
 

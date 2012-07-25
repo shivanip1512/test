@@ -2,6 +2,8 @@ package com.cannontech.core.authentication.model;
 
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.RandomStringUtils;
+
 import com.cannontech.common.i18n.DisplayableEnum;
 
 /**
@@ -11,11 +13,36 @@ import com.cannontech.common.i18n.DisplayableEnum;
  * Ex.  POLICY_RULE_UPPERCASE_CHARACTERS is the matching role property for UPPERCASE_CHARACTERS.
  */
 public enum PolicyRule implements DisplayableEnum {
-    UPPERCASE_CHARACTERS("[\\p{Lu}&&["+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]"), 
-    LOWERCASE_CHARACTERS("[\\p{Ll}&&["+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]"),
-    BASE_10_DIGITS("\\d"),
-    NONALPHANUMERIC_CHARACTERS("\\p{Punct}"),
-    UNICODE_CHARACTERS("[\\p{L}&&[^"+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]"),
+    UPPERCASE_CHARACTERS("[\\p{Lu}&&["+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]") {
+        @Override
+        public String generateRandomCharacter() {
+            return RandomStringUtils.random(1, 65, 90, true, false);
+        }
+    }, 
+    LOWERCASE_CHARACTERS("[\\p{Ll}&&["+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]") {
+        @Override
+        public String generateRandomCharacter() {
+            return RandomStringUtils.random(1, 97, 122, true, false);
+        }
+    },
+    BASE_10_DIGITS("\\d") {
+        @Override
+        public String generateRandomCharacter() {
+            return RandomStringUtils.random(1, 48, 57, false, true);
+        }
+    },
+    NONALPHANUMERIC_CHARACTERS("\\p{Punct}") {
+        @Override
+        public String generateRandomCharacter() {
+            return RandomStringUtils.random(1, 32, 47, false, false);
+        }
+    },
+    UNICODE_CHARACTERS("[\\p{L}&&[^"+PolicyRuleRegexSupport.EUROPEAN_LANG_CHAR_REGEX+"]]") {
+        @Override
+        public String generateRandomCharacter() {
+            return RandomStringUtils.random(1, 250, 5000, false, false);
+        }
+    },
     ;
     
     private static final String formatKeyPrefix = "yukon.web.modules.passwordPolicy.policyRule.";
@@ -30,6 +57,8 @@ public enum PolicyRule implements DisplayableEnum {
         return regexPattern;
     }
 
+    public abstract String generateRandomCharacter();
+    
     @Override
     public String getFormatKey() {
         return formatKeyPrefix + name();

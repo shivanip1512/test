@@ -66,7 +66,7 @@ public class LoginValidator extends SimpleValidator<LoginBackingBean> {
             String password = loginBackingBean.getPassword1();
             PasswordPolicyError passwordPolicyError = passwordPolicyService.checkPasswordPolicy(password, user, liteYukonGroup);
 
-            if (PasswordPolicyError.PASSWORD_DOES_NOT_MET_POLICY_QUALITY == passwordPolicyError) {
+            if (PasswordPolicyError.PASSWORD_DOES_NOT_MEET_POLICY_QUALITY == passwordPolicyError) {
                 List<Object> errorArgs = Lists.newArrayList();
                 PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteYukonGroup);
                 errorArgs.add(passwordPolicy.numberOfRulesMet(password));

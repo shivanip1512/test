@@ -36,6 +36,8 @@
         </div>
     </i:simplePopup>
 
+    <cti:url var="generatedPasswordUrl" value="/spring/stars/operator/account/generatePassword" />
+
     <script type="text/javascript">
 
         //YukonGeneral.js
@@ -112,22 +114,23 @@
     	}
 
     	function generatePassword() {
-    		var generatedPasswordUrl = '/spring/stars/operator/account/generatePassword';
-    		generatedPasswordUrl  += '?loginGroupName='+$('loginBackingBean.loginGroupName').value;
-    		if ($('userId') != null) {
-    			generatedPasswordUrl += '&userId='+$('userId').value;
-    		}
-    		
+            var dataHash = {loginGroupName : $('loginBackingBean.loginGroupName').value}
+            var userId = $('userId');
+            if (userId != null && userId.value != 0) {
+                dataHash[ 'userId'] = userId.value;
+            }
+            
             new jQuery.ajax({
-                    url: generatedPasswordUrl,
-                    success: function(data) {
-                         jQuery(".password_editor_field").each(function(){
-                             this.value = data;
-                         });
-                        // Check and show the password fields
-                        jQuery('#showPasswordCheckbox').attr('checked', true);
-                        showPassword();
-                     }
+                url: '${generatedPasswordUrl}',
+                data: dataHash,
+                success: function(data) {
+                     jQuery(".password_editor_field").each(function(){
+                         this.value = data;
+                     });
+                    // Check and show the password fields
+                    jQuery('#showPasswordCheckbox').attr('checked', true);
+                    showPassword();
+                }
             });
 
         }

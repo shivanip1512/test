@@ -1,13 +1,20 @@
 package com.cannontech.core.authentication.model;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.naming.ConfigurationException;
+
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.primitives.Ints;
 
 public class PasswordPolicy {
     // Lockouts/Expirations
@@ -133,5 +140,53 @@ public class PasswordPolicy {
         }
         
         return false;
+    }
+    
+    /**
+     * This method will generate a password for the password policy following all the needed rules to be valid.
+     * 
+     * IMPORTANT NOTE:  This method will only use NONALPHANUMERIC_CHARACTERS and UNICODE_CHARACTERS characters if
+     * it has to to meet the password policy requirements.  If they are not needed, the generated password will only consist
+     * of alphanumeric characters.
+     * 
+     * @throws ConfigurationException - Throws a ConfigurationException if there is no way to generate a valid password with this policy.
+     */
+    public String generatePassword() throws ConfigurationException {
+
+        int numberOfPolicies = policyRules.size();
+        if (numberOfPolicies - passwordQualityCheck < 0) {
+            throw new ConfigurationException("The password being generated cannot meet the password policy requirements.  Please reconfigure your password policy settings.");
+        }
+        
+        String genPass = PolicyRule.UPPERCASE_CHARACTERS.generateRandomCharacter();
+        genPass = genPass.concat(PolicyRule.LOWERCASE_CHARACTERS.generateRandomCharacter());
+        genPass = genPass.concat(PolicyRule.BASE_10_DIGITS.generateRandomCharacter());
+        if (numberOfPolicies - passwordQualityCheck  == 1) {
+            if (policyRules.contains(PolicyRule.NONALPHANUMERIC_CHARACTERS) &&
+                policyRules.contains(PolicyRule.UNICODE_CHARACTERS)) {
+                genPass = genPass.concat(PolicyRule.NONALPHANUMERIC_CHARACTERS.generateRandomCharacter());
+            }
+            
+        // All the rules are needed.
+        } else if (numberOfPolicies - passwordQualityCheck  == 0) {
+            if (policyRules.contains(PolicyRule.NONALPHANUMERIC_CHARACTERS)) {
+                genPass = genPass.concat(PolicyRule.NONALPHANUMERIC_CHARACTERS.generateRandomCharacter());
+            }
+            if (policyRules.contains(PolicyRule.UNICODE_CHARACTERS)) {
+                genPass = genPass.concat(PolicyRule.UNICODE_CHARACTERS.generateRandomCharacter());
+            }
+        } 
+
+        // Fill in the remaining needed characters
+        int numberOfNeededCharacters = Ints.max(passwordQualityCheck, minPasswordLength) - genPass.length(); 
+        genPass = genPass.concat(RandomStringUtils.randomAlphanumeric(numberOfNeededCharacters));
+
+        // Shuffle the characters around to make the password more random.
+        List<Character> passwordCharacters = Arrays.asList(ArrayUtils.toObject(genPass.toCharArray()));
+        Collections.shuffle(passwordCharacters);
+        Character[] characters = (Character[]) passwordCharacters.toArray();
+        String finalGeneratedPassword = String.valueOf(ArrayUtils.toPrimitive(characters));
+        
+        return finalGeneratedPassword;
     }
 }

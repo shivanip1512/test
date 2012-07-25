@@ -21,12 +21,6 @@ public interface PasswordPolicyService {
     public PasswordPolicy getPasswordPolicy(LiteYukonUser user, LiteYukonGroup... yukonGroups);
     
     /**
-     * This method will use the supplied information to generate a random password that follows the password policy for that user.
-     * @throws IllegalArgumentException - This exception is thrown if a password can't be generated.
-     */
-    public String generatePassword(LiteYukonUser user, LiteYukonGroup... yukonGroups);
-
-    /**
      * This method checks the supplied password against the desired password policy.  It will first try to use the
      * liteYukonGroups to figure out the password policy and then fall back onto the user's password policy.  If neither are found
      * it will use the yukon password policy.

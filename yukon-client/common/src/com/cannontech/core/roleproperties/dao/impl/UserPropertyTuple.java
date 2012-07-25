@@ -1,4 +1,4 @@
-package com.cannontech.core.roleproperties.model;
+package com.cannontech.core.roleproperties.dao.impl;
 
 import org.apache.commons.lang.Validate;
 
@@ -9,7 +9,7 @@ import com.cannontech.core.roleproperties.UserNotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public class UserPropertyTuple implements PropertyTuple {
+class UserPropertyTuple implements PropertyTuple {
     public Integer userId;
     public YukonRoleProperty yukonRoleProperty;
 

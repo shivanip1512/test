@@ -2,7 +2,6 @@ package com.cannontech.core.authentication.service.impl;
 
 import java.util.List;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.Validate;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
-import com.google.common.primitives.Ints;
 
 public class PasswordPolicyServiceImpl implements PasswordPolicyService {
 
@@ -96,24 +94,6 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
     }
 
     @Override
-    public String generatePassword(LiteYukonUser user, LiteYukonGroup... yukonGroups) {
-        
-        PasswordPolicy passwordPolicy = getPasswordPolicy(user, yukonGroups);
-        
-        for (int i = 0; i < 1000; i++) {
-            int passwordCharacterLength = Ints.max(passwordPolicy.getMinPasswordLength(),passwordPolicy.getPasswordQualityCheck());
-            String generatedPassword = RandomStringUtils.randomAlphanumeric(passwordCharacterLength);
-            
-            PasswordPolicyError checkPasswordPolicy = checkPasswordPolicy(generatedPassword, user, yukonGroups);
-            if (checkPasswordPolicy == null) {
-                return generatedPassword;
-            }
-        }
-        
-        throw new IllegalArgumentException("A password could not be generated for this login.");
-    }
-
-    @Override
     public PasswordPolicyError checkPasswordPolicy(String password, LiteYukonUser user, LiteYukonGroup... liteYukonGroups) {
         
         PasswordPolicy passwordPolicy = getPasswordPolicy(user, liteYukonGroups);
@@ -130,7 +110,7 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         }
         
         if (!passwordPolicy.isPasswordQualityCheckMet(password)) {
-            return PasswordPolicyError.PASSWORD_DOES_NOT_MET_POLICY_QUALITY;
+            return PasswordPolicyError.PASSWORD_DOES_NOT_MEET_POLICY_QUALITY;
         }
         
         return null;

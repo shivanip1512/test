@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
+import javax.naming.ConfigurationException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,6 +46,7 @@ import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.YukonGroupDao;
@@ -544,14 +546,16 @@ public class OperatorAccountController {
         }
         LiteYukonGroup liteYukonGroup = yukonGroupDao.findLiteYukonGroupByName(loginGroupName);
         
+        
+        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteYukonGroup);
         String generatePassword = "";
         try {
-            generatePassword = passwordPolicyService.generatePassword(user, liteYukonGroup);
-        } catch (IllegalArgumentException e) {
+            generatePassword = passwordPolicy.generatePassword();
+        } catch (ConfigurationException e) {
             Log.error("No password could be generated for this login.", e);
         }
         
-        response.setContentType("text/plain");
+        response.setContentType("text/plain; charset=UTF-8");
         return new TextView(generatePassword);
     }
     

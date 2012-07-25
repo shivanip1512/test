@@ -6,39 +6,38 @@
 
 <cti:standardPage module="adminSetup" page="operatorLogin.${mode}">
 
+    <cti:url var="generatedPasswordUrl" value="/spring/stars/operator/account/generatePassword" />
+    
     <script>
-    function generatePassword() {
-    	var loginGroupName =$('loginGroupName').value;
-    	var userId = $('userId').value;
+    
+        function generatePassword() {
+            var dataHash = {loginGroupName : $('loginGroupName').value}
+            var userId = $('userId');
+            if (userId != null && userId.value != 0) {
+                dataHash[ 'userId'] = userId.value;
+            }
 
-        new Ajax.Request('/spring/stars/operator/account/generatePassword?userId='+userId+'&loginGroupName='+loginGroupName, {
-            onSuccess: function(response) {
-                 var generatedPassword = response.responseText;
+            jQuery.ajax({
+              url: '${generatedPasswordUrl}',
+              data: dataHash,
+              success: function(data){
+                   jQuery('#password1').val(data);
+                   jQuery('#password2').val(data);
+                   jQuery("#showPasswordCheckbox").attr('checked', true);
+                   showPassword();
+              }
+           });
+        };
 
-                 var password1 = $('password1');
-                 password1.value = generatedPassword;
-
-                 var password2 = $('password2');
-                 password2.value = generatedPassword;
-             }
-        });
-
-        // Check and show the password fields
-        var showPasswordCheckbox = $('showPasswordCheckbox');
-        showPasswordCheckbox.checked = true;
-        showPassword();
-    }
-
-    function showPassword() {
-        var showPasswordCheckbox = $('showPasswordCheckbox');
-        if (showPasswordCheckbox.checked) {
-            changeInputType('password1', 'text');
-            changeInputType('password2', 'text');
-        } else {
-            changeInputType('password1', 'password');
-            changeInputType('password2', 'password');
-        }
-    }
+        function showPassword() {
+            if(jQuery("#showPasswordCheckbox").is(":checked")) {
+                changeInputType('password1', 'text');
+                changeInputType('password2', 'text');
+            }else{
+                changeInputType('password1', 'password');
+                changeInputType('password2', 'password');
+            }
+    	}
     </script>
     
      <tags:setFormEditMode mode="${mode}"/>

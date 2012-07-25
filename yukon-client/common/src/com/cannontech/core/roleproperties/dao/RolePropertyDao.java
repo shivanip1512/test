@@ -239,7 +239,7 @@ public interface RolePropertyDao {
     public boolean checkFalseProperty(YukonRoleProperty property, LiteYukonUser user);
     
     /**
-     * This method returns true if the user has the specified role.
+     * This method returns true if the role group has the specified role.
      * 
      * @param role any valid role, may not be null
      * @param liteYukonGroup any valid liteYukonGroup, may not be null
@@ -248,7 +248,7 @@ public interface RolePropertyDao {
     public boolean checkRoleForRoleGroupId(YukonRole role, int roleGroupId);
 
     /**
-     * This method returns true if the  has the specified role.
+     * This method returns true if the user has the specified role.
      * 
      * @param role any valid role, may not be null
      * @param user any valid user, may not be null

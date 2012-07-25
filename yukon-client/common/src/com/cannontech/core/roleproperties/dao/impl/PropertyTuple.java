@@ -1,10 +1,10 @@
-package com.cannontech.core.roleproperties.model;
+package com.cannontech.core.roleproperties.dao.impl;
 
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.roleproperties.NotInRoleException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 
-public interface PropertyTuple {
+interface PropertyTuple {
     /**
      * Returns the YukonRolePropery value of the specific tuple we're looking for.
      */

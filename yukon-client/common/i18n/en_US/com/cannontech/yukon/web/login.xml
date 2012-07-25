@@ -91,7 +91,7 @@ When you go to this location you will be allowed to set a new password for your 
     <entry key="yukon.web.modules.passwordPolicyError.MIN_PASSWORD_LENGTH_NOT_MET">Password does not meet the required password length.</entry>
     <entry key="yukon.web.modules.passwordPolicyError.MIN_PASSWORD_AGE_NOT_MET">Not enough time has passed since your last reset.</entry>
     <entry key="yukon.web.modules.passwordPolicyError.PASSWORD_USED_TOO_RECENTLY">Password has been used too recently.</entry>
-    <entry key="yukon.web.modules.passwordPolicyError.PASSWORD_DOES_NOT_MET_POLICY_QUALITY">Password does not meet enough of the policy rules.  ({0} of {1})</entry>
+    <entry key="yukon.web.modules.passwordPolicyError.PASSWORD_DOES_NOT_MEET_POLICY_QUALITY">Password does not meet enough of the policy rules.  ({0} of {1})</entry>
 
     <entry key="yukon.web.login.passwordChange.successful">Password changed.</entry>
     <entry key="yukon.web.login.passwordExpired">The password for this login has expired.</entry>
