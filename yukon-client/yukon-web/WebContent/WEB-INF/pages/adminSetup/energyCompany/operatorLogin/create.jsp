@@ -13,9 +13,9 @@
         function generatePassword() {
             var dataHash = {loginGroupName : $('loginGroupName').value}
             var userId = $('userId');
-            if (userId != null && userId.value != 0) {
-                dataHash[ 'userId'] = userId.value;
-            }
+            if (userId != null && userId.value != 0) {
+                dataHash[ 'userId'] = userId.value;
+            }
 
             jQuery.ajax({
               url: '${generatedPasswordUrl}',
