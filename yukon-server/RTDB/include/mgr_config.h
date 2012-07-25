@@ -16,10 +16,15 @@ private:
 
     bool insertValueIntoConfig(Cti::Config::DeviceConfigSPtr config, const std::string &value, const std::string &valueid);
 
-    void loadData(long ID = 0);
-    void loadConfigs(long ID = 0);
-    void updateDeviceConfigs(long configID = 0, long deviceID = 0);
-    void removeFromMaps(long configID = 0);
+    enum ConfigValue
+    {
+        NoConfigIdSpecified = -1000
+    };
+
+    void loadData(long configID = NoConfigIdSpecified);
+    void loadConfigs(long configID = NoConfigIdSpecified);
+    void updateDeviceConfigs(long configID = NoConfigIdSpecified, long deviceID = 0);
+    void removeFromMaps(long configID = NoConfigIdSpecified);
 
     void refreshConfigurations();
     void setDeviceManager(CtiDeviceManager &mgr);

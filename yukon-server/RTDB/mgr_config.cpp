@@ -80,7 +80,7 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
 {
     CtiToLower(category);
     CtiToLower(objectType);
-    if( category == "device config" && identifier != 0 )
+    if( category == "device config" && identifier != NoConfigIdSpecified )
     {
         if( objectType == "config" )
         {
@@ -133,7 +133,7 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
             }
         }
     }
-    else if( category == "config" && identifier == 0 )
+    else if( category == "config" && identifier == NoConfigIdSpecified )
     {
         refreshConfigurations();
     }
@@ -157,7 +157,7 @@ void CtiConfigManager::loadData(long configID)
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection);
 
-        if(configID != 0)
+        if(configID != NoConfigIdSpecified)
         {
             rdr.setCommandText(sqlID);
             rdr << configID;
@@ -221,7 +221,7 @@ void CtiConfigManager::loadConfigs(long configID)
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection);
 
-        if(configID != 0)
+        if(configID != NoConfigIdSpecified)
         {
             _deviceConfig.remove(configID);//Give us a fresh start
             sql += " WHERE DCF.deviceconfigurationid = ?";
@@ -233,7 +233,7 @@ void CtiConfigManager::loadConfigs(long configID)
 
         rdr.setCommandText(sql);
 
-        if(configID != 0)
+        if(configID != NoConfigIdSpecified)
         {
             rdr << configID;
         }
@@ -288,7 +288,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection);
 
-        if( configID != 0 )
+        if( configID != NoConfigIdSpecified )
         {
             rdr.setCommandText(sqlConfig);
             rdr << configID;
@@ -309,7 +309,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
         // If we specify a device, this may be the equivalent of a "delete"
         // If we also specified a config, we cant risk the "delete" operation,
         // As it would be too specific and could result in a delete that was not desired
-        if( deviceID != 0 && configID == 0 )
+        if( deviceID != 0 && configID == NoConfigIdSpecified )
         {
             if( rdr() )
             {
@@ -368,7 +368,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
 
 void CtiConfigManager::removeFromMaps(long configID)
 {
-    if( configID )
+    if( configID != NoConfigIdSpecified )
     {
         _deviceConfig.remove(configID);
     }
