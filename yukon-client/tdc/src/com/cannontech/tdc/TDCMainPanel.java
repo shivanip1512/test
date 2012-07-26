@@ -67,14 +67,14 @@ import com.cannontech.tdc.data.DisplayData;
 import com.cannontech.tdc.filter.ITDCFilter;
 import com.cannontech.tdc.logbox.MessageBoxFrame;
 import com.cannontech.tdc.roweditor.AltScanRatePanel;
-import com.cannontech.tdc.roweditor.AnalogPanelControlEntry;
-import com.cannontech.tdc.roweditor.AnalogPanelManualEntry;
+import com.cannontech.tdc.roweditor.AnalogControlEntryPanel;
+import com.cannontech.tdc.roweditor.AnalogManualEntryPanel;
 import com.cannontech.tdc.roweditor.EditorDialogData;
 import com.cannontech.tdc.roweditor.ManualEntryJPanel;
 import com.cannontech.tdc.roweditor.RowEditorDialog;
 import com.cannontech.tdc.roweditor.SendData;
-import com.cannontech.tdc.roweditor.StatusPanelControlEntry;
-import com.cannontech.tdc.roweditor.StatusPanelManualEntry;
+import com.cannontech.tdc.roweditor.StatusControlEntryPanel;
+import com.cannontech.tdc.roweditor.StatusManualEntryPanel;
 import com.cannontech.tdc.roweditor.TagWizardPanel;
 import com.cannontech.tdc.roweditor.TagsEditorPanel;
 import com.cannontech.tdc.toolbar.AlarmToolBar;
@@ -487,25 +487,25 @@ private ManualEntryJPanel createManualEditorPanel(int selectedRow, Object source
             && ( TagUtils.isControllablePoint(data.getTags()) && TagUtils.isControlEnabled(data.getTags()) )
             && source != getJMenuItemPopUpManualEntry() )
         {
-            return new AnalogPanelControlEntry( data, currentValue );
+            return new AnalogControlEntryPanel( data, currentValue );
         }
         else if( PointTypes.getType(ptType) == PointTypes.ANALOG_POINT ||
     			 PointTypes.getType(ptType) == PointTypes.PULSE_ACCUMULATOR_POINT ||
     			 PointTypes.getType(ptType) == PointTypes.DEMAND_ACCUMULATOR_POINT ||
     			 PointTypes.getType(ptType) == PointTypes.CALCULATED_POINT )
 		{
-			return new AnalogPanelManualEntry( data, currentValue );
+			return new AnalogManualEntryPanel( data, currentValue );
 		}
 		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT
 					&& ( TagUtils.isControllablePoint(data.getTags()) && TagUtils.isControlEnabled(data.getTags()) )
 					&& source != getJMenuItemPopUpManualEntry() )
 		{			
-			return new StatusPanelControlEntry( data, currentValue );
+			return new StatusControlEntryPanel( data, currentValue );
 		}
 		else if( PointTypes.getType(ptType) == PointTypes.STATUS_POINT
 				 || PointTypes.getType(ptType) == PointTypes.CALCULATED_STATUS_POINT )
 		{			
-			return new StatusPanelManualEntry( data, currentValue );
+			return new StatusManualEntryPanel( data, currentValue );
 		}
 		else
 			CTILogger.info("** Unhandled POINTTYPE (" + ptType +") for a Manual Entry Panel **");
@@ -3917,21 +3917,21 @@ private void showRowEditor( Object source )
 		d.pack();
 		d.setTitle( panel.getPanelTitle() );
 		
-		if( panel instanceof StatusPanelManualEntry )
+		if( panel instanceof StatusManualEntryPanel )
 		{
-			d.addRowEditorDialogListener( (StatusPanelManualEntry)panel );
+			d.addRowEditorDialogListener( (StatusManualEntryPanel)panel );
 		}
-        else if( panel instanceof AnalogPanelManualEntry )
+        else if( panel instanceof AnalogManualEntryPanel )
         {
-            d.addRowEditorDialogListener( (AnalogPanelManualEntry)panel );
+            d.addRowEditorDialogListener( (AnalogManualEntryPanel)panel );
         }
-        else if( panel instanceof AnalogPanelControlEntry )
+        else if( panel instanceof AnalogControlEntryPanel )
         {
-            d.addRowEditorDialogListener( (AnalogPanelControlEntry)panel );
+            d.addRowEditorDialogListener( (AnalogControlEntryPanel)panel );
         }
-		else if( panel instanceof StatusPanelControlEntry )
+		else if( panel instanceof StatusControlEntryPanel )
 		{
-			d.addRowEditorDialogListener( (StatusPanelControlEntry)panel );
+			d.addRowEditorDialogListener( (StatusControlEntryPanel)panel );
 			d.setUpdateButtonVisible( false );
 		}
 		

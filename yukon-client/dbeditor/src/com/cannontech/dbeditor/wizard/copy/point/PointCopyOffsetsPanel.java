@@ -92,11 +92,11 @@ private void connEtoC3(com.klg.jclass.util.value.JCValueEvent arg1) {
  */
 public void controlTypeComboBox_ItemStateChanged(java.awt.event.ItemEvent itemEvent) 
 {
-    boolean value = getControlTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(ControlType.NONE.getControlName());
+    boolean isControlTypeNone = getControlTypeComboBox().getSelectedItem().toString().equalsIgnoreCase(ControlType.NONE.getControlName());
 
-	getControlOffsetLabel().setEnabled( value );
+	getControlOffsetLabel().setEnabled( ! isControlTypeNone );
 	
-	getControlOffsetSpinner().setEnabled( value );
+	getControlOffsetSpinner().setEnabled( ! isControlTypeNone );
 
 	revalidate();
 	repaint();
