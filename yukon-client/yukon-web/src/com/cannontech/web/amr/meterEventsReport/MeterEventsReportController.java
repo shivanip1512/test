@@ -1,6 +1,5 @@
 package com.cannontech.web.amr.meterEventsReport;
 
-import java.beans.PropertyEditor;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,6 +29,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -49,13 +50,13 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -67,6 +68,7 @@ import com.cannontech.web.amr.meterEventsReport.model.MeterReportEvent;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -90,6 +92,8 @@ public class MeterEventsReportController {
 	@Autowired private MeterEventLookupService meterEventLookupService;
 	@Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	
+	private final static String reportJspPath = "meterEventsReport/report.jsp";
+	private final static String baseKey = "yukon.web.modules.amr.meterEventsReport.report";
 	private Map<String, Comparator<MeterReportEvent>> sorters;
 
     @PostConstruct
@@ -104,6 +108,27 @@ public class MeterEventsReportController {
         sorters = builder.build();
     }
     
+    private Validator filterValidator =
+            new SimpleValidator<MeterEventsReportFilterBackingBean>(MeterEventsReportFilterBackingBean.class) {
+                @Override
+                public void doValidation(MeterEventsReportFilterBackingBean backingBean, Errors errors) {
+                    /* Dates & Hours */
+                    if (backingBean.getFromInstant() == null && !errors.hasFieldErrors("fromInstant")) {
+                        errors.rejectValue("fromInstant", "yukon.web.error.required");
+                    } else if (backingBean.getToInstant() == null && !errors.hasFieldErrors("toInstant")) {
+                        errors.rejectValue("toInstant", "yukon.web.error.required");
+                    } else if(backingBean.getFromInstant().isAfterNow()) {
+                        // If the from Instant is in the future
+                        errors.rejectValue("fromInstant", baseKey + ".validation.fromDateInFuture");
+                    } else if (!backingBean.getFromInstant().isBefore(backingBean.getToInstant())) {
+                        errors.rejectValue("fromInstant", baseKey + ".validation.fromDateAfterToDate");
+                    } else if(backingBean.getToInstant().isAfterNow()) {
+                        // If the to Instant is in the future
+                        errors.rejectValue("toInstant", baseKey + ".validation.toDateInFuture");
+                    }
+                }
+            };
+    
     @RequestMapping
     public String selectDevices(YukonUserContext userContext, ModelMap model) {
         return "meterEventsReport/selectDevices.jsp";
@@ -113,16 +138,24 @@ public class MeterEventsReportController {
     public String selected(HttpServletRequest request, YukonUserContext userContext, ModelMap model)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         setupModelMap(new MeterEventsReportFilterBackingBean(), request, model, null, null, userContext, null);
-        return "meterEventsReport/report.jsp";
+        return reportJspPath;
     }
     
     @RequestMapping
-    public String report(@ModelAttribute("meterEventsReportFilterBackingBean") MeterEventsReportFilterBackingBean backingBean,
+    public String report(@ModelAttribute("backingBean") MeterEventsReportFilterBackingBean backingBean,
                          BindingResult bindingResult, HttpServletRequest request, ModelMap model,
                          FlashScope flashScope, YukonUserContext userContext, String attrNames)
                                  throws ServletRequestBindingException, DeviceCollectionCreationException {
+        filterValidator.validate(backingBean, bindingResult);
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            setupBackingBean(backingBean, request, attrNames);
+            setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
+            return reportJspPath;
+        }
         setupModelMap(backingBean, request, model, bindingResult, flashScope, userContext, attrNames);
-		return "meterEventsReport/report.jsp";
+		return reportJspPath;
 	}
 
 
@@ -130,11 +163,11 @@ public class MeterEventsReportController {
     public String reportAll(HttpServletRequest request, ModelMap model, YukonUserContext userContext, boolean includeDisabledPaos)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         MeterEventsReportFilterBackingBean backingBean = new MeterEventsReportFilterBackingBean();
-        backingBean.setFromDate(null);
-        backingBean.setToDate(null);
+        backingBean.setFromInstant(null);
+        backingBean.setToInstant(null);
         backingBean.setIncludeDisabledPaos(includeDisabledPaos);
         setupModelMap(backingBean, request, model, null, null, userContext, null);
-        return "meterEventsReport/report.jsp";
+        return reportJspPath;
     }
 
     private void setupModelMap(MeterEventsReportFilterBackingBean backingBean,
@@ -143,7 +176,7 @@ public class MeterEventsReportController {
                                YukonUserContext userContext, String attrNames)
                                        throws ServletRequestBindingException, DeviceCollectionCreationException {
         setupBackingBean(backingBean, request, attrNames);
-        setupCommonPageAttributes(bindingResult, flashScope, userContext, model);
+        setupCommonPageAttributes(backingBean, bindingResult, flashScope, userContext, model);
         setupReportFromFilter(backingBean, userContext, model);
     }
 
@@ -151,7 +184,7 @@ public class MeterEventsReportController {
     public String reset(HttpServletRequest request, ModelMap model, YukonUserContext userContext)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         setupModelMap(new MeterEventsReportFilterBackingBean(), request, model, null, null, userContext, null);
-        return "meterEventsReport/report.jsp";
+        return reportJspPath;
     }
     
     @RequestMapping
@@ -288,9 +321,7 @@ public class MeterEventsReportController {
         
         filterResult.setResultList(events);
         model.addAttribute("filterResult", filterResult);
-        model.addAttribute("backingBean", backingBean);
         model.addAllAttributes(backingBean.getDeviceCollection().getCollectionParameters());
-        model.addAttribute("meterEventTypesMap", getJSONObject(backingBean.getMeterEventTypesMap()));
     }
     
     private DeviceCollection getDeviceCollectionFromReportResults(List<MeterReportEvent> events, YukonUserContext userContext) {
@@ -314,7 +345,7 @@ public class MeterEventsReportController {
         return retVal;
     }
 
-    private void setupCommonPageAttributes(BindingResult bindingResult, FlashScope flashScope,
+    private void setupCommonPageAttributes(MeterEventsReportFilterBackingBean backingBean, BindingResult bindingResult, FlashScope flashScope,
                                                YukonUserContext userContext, ModelMap model) throws ServletRequestBindingException, DeviceCollectionCreationException {
         if (bindingResult != null && flashScope != null) {
             boolean hasFilterErrors = false;
@@ -326,6 +357,9 @@ public class MeterEventsReportController {
             }
             model.addAttribute("hasFilterErrors", hasFilterErrors);
         }
+        
+        model.addAttribute("backingBean", backingBean);
+        model.addAttribute("meterEventTypesMap", getJSONObject(backingBean.getMeterEventTypesMap()));
         
         model.addAttribute("generalEvents", getJSONArray(MeterEventStatusTypeGroupings.getGeneral()));
         model.addAttribute("hardwareEvents", getJSONArray(MeterEventStatusTypeGroupings.getHardware()));
@@ -351,8 +385,8 @@ public class MeterEventsReportController {
             if (backingBean.isOnlyLatestEvent()) {
                 attributeData = rawPointHistoryDao.getLimitedAttributeData(meters,
                                                            type.getKey(),
-                                                           backingBean.getFromDate(),
-                                                           backingBean.getToDate(),
+                                                           backingBean.getFromInstant().toDate(),
+                                                           backingBean.getToInstant().toDate(),
                                                            1,
                                                            !backingBean.isIncludeDisabledPaos(),
                                                            Clusivity.INCLUSIVE_INCLUSIVE,
@@ -360,8 +394,8 @@ public class MeterEventsReportController {
             } else {
                 attributeData = rawPointHistoryDao.getAttributeData(meters,
                                                     type.getKey(),
-                                                    backingBean.getFromDate(),
-                                                    backingBean.getToDate(),
+                                                    backingBean.getFromInstant().toDate(),
+                                                    backingBean.getToInstant().toDate(),
                                                     !backingBean.isIncludeDisabledPaos(),
                                                     Clusivity.INCLUSIVE_INCLUSIVE,
                                                     Order.FORWARD);
@@ -483,10 +517,7 @@ public class MeterEventsReportController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder, final YukonUserContext userContext) {
-        PropertyEditor fromDateEditor = datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.START_OF_DAY, userContext);
-        PropertyEditor toDateEditor = datePropertyEditorFactory.getPropertyEditor(DateOnlyMode.END_OF_DAY, userContext);
-        binder.registerCustomEditor(Date.class, "fromDate", fromDateEditor);
-        binder.registerCustomEditor(Date.class, "toDate", toDateEditor);
+        datePropertyEditorFactory.setupInstantPropertyEditor(binder, userContext, BlankMode.CURRENT);
     }
     
 }

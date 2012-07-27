@@ -1,13 +1,12 @@
 package com.cannontech.web.amr.meterEventsReport.model;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
@@ -19,8 +18,8 @@ import com.google.common.collect.Maps;
 public class MeterEventsReportFilterBackingBean extends ListBackingBean {
 
     private DeviceCollection deviceCollection;
-    private Date toDate = new Date();
-    private Date fromDate = new DateTime().minus(Duration.standardDays(7)).toDate();
+    private Instant toInstant = new Instant();
+    private Instant fromInstant = new Instant().minus(Duration.standardDays(7));
     private Map<BuiltInAttribute, Boolean> meterEventTypesMap;
     private boolean onlyAbnormalEvents = true;
     private boolean onlyLatestEvent = true;
@@ -41,20 +40,20 @@ public class MeterEventsReportFilterBackingBean extends ListBackingBean {
         this.deviceCollection = deviceCollection;
     }
 
-    public Date getToDate() {
-        return toDate;
+    public Instant getToInstant() {
+        return toInstant;
     }
 
-    public void setToDate(Date toDate) {
-        this.toDate = toDate;
+    public void setToInstant(Instant toInstant) {
+        this.toInstant = toInstant;
     }
 
-    public Date getFromDate() {
-        return fromDate;
+    public Instant getFromInstant() {
+        return fromInstant;
     }
 
-    public void setFromDate(Date fromDate) {
-        this.fromDate = fromDate;
+    public void setFromInstant(Instant fromInstant) {
+        this.fromInstant = fromInstant;
     }
 
     public Map<BuiltInAttribute, Boolean> getMeterEventTypesMap() {

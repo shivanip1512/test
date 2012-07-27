@@ -6,6 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="jsTree" tagdir="/WEB-INF/tags/jsTree" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage page="meterEventsReport.report" module="amr">
 
@@ -13,11 +14,6 @@
 
     <script type="text/javascript">
 	    jQuery(document).ready(function() {
-	        if ('${hasFilterErrors}' === 'true') {
-	            adjustDialogSizeAndPosition('filterPopup');
-	            jQuery('#filterPopup').show();
-	        }
-	        
 	        jQuery("#resetButton").click(function () {
 	        	jQuery("#csvForm").attr("action", "reset");
 	        	jQuery("#csvForm").submit();
@@ -158,11 +154,11 @@
 				<tags:formElementContainer nameKey="filterSectionHeader">
 					<tags:nameValueContainer2>
 						<tags:nameValue2 nameKey=".filter.dateFrom">
-							<tags:dateInputCalendar fieldName="fromDate" springInput="true" />
+                            <dt:date path="fromInstant" value="${backingBean.fromInstant}"/>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.dateTo">
-							<tags:dateInputCalendar fieldName="toDate" springInput="true" />
+                            <dt:date path="toInstant" value="${backingBean.toInstant}"/>
 						</tags:nameValue2>
 			
 						<tags:nameValue2 nameKey=".filter.onlyLatestEvent">
@@ -263,8 +259,8 @@
 		<form:form id="csvForm" action="csv" method="post" commandName="backingBean" cssClass="fr">
 			<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
 			<tags:sortFields backingBean="${backingBean}" />
-			<form:hidden path="toDate" id="toDate_csv"/>
-			<form:hidden path="fromDate" id="fromDate_csv"/>
+			<form:hidden path="toInstant" id="toInstant_csv"/>
+			<form:hidden path="fromInstant" id="fromInstant_csv"/>
 			<form:hidden path="onlyAbnormalEvents" id="onlyAbnormalEvents_csv"/>
 			<form:hidden path="onlyLatestEvent" id="onlyLatestEvent_csv"/>
 			<form:hidden path="includeDisabledPaos" id="includeDisabledPaos_csv"/>
@@ -317,7 +313,7 @@
 			
 			<c:if test="${fn:length(filterResult.resultList) == 0}">
 				<tr>
-					<td class="noResults subtleGray" colspan="3">
+					<td class="noResults subtleGray" colspan="6">
 						<i:inline key=".noEvents"/>
 					</td>
 				</tr>

@@ -57,6 +57,10 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.report.eventTypesMag.imageUrl">/WebConfig/yukon/Icons/magnifier.gif</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.eventTypesMag.hoverText">View Selected Event Types</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.results.deviceCollectionDescription">Meter Events Report Results</entry>
+
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.validation.fromDateAfterToDate">From date must be before to date</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.validation.fromDateInFuture">From date must be in the past</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.validation.toDateInFuture">To date must be in the past</entry>
     
     <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.header">Select Devices</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.bulkActionContainer.noteLabel"></entry>
