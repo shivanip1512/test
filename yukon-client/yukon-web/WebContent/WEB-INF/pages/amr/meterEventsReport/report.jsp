@@ -15,8 +15,7 @@
     <script type="text/javascript">
 	    jQuery(document).ready(function() {
 	        jQuery("#resetButton").click(function () {
-	        	jQuery("#csvForm").attr("action", "reset");
-	        	jQuery("#csvForm").submit();
+	        	jQuery("#resetForm").submit();
 	        });
 
 	        jQuery(".selectedDevicesLink").hover(function() {
@@ -254,6 +253,10 @@
 		</cti:dataGrid>
 	</form:form>
 	<br>
+	
+	<form:form id="resetForm" action="reset" method="get">
+	   <cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
+	</form:form>
 
     <c:if test="${filterResult.hitCount > 0}">
 		<form:form id="csvForm" action="csv" method="post" commandName="backingBean" cssClass="fr">
