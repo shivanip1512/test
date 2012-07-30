@@ -867,6 +867,12 @@ public final class CapControlUtils {
         return sb.reverse().toString();
     }
     
+    /**
+     * Converts the serial number stored as a double to a Long for display purposes
+     * Any digits stored after the decimal point will be lost
+     * @param value - Serial Number
+     * @return Serial number in display form
+     */
     public static String convertSerialNumber(Double value) {
         return Long.toString(value.longValue());
     }
