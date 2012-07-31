@@ -329,6 +329,7 @@ public class PointForm extends DBEditorForm
             initItem( point.getPoint().getPointID().intValue() );
             CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
             capControlForm.getPointTreeForm().resetPointList();
+            getWizData().reset();
         }catch (TransactionException e){
             fcsMessage.setDetail("ERROR creating point -- PointForm.create" + e.getMessage());
             edType =  "";
