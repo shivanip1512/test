@@ -39,12 +39,14 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
 
     public List<PointData> mapPointData(RfnLcrReadingArchiveRequest archiveRequest, 
             SimpleXPathTemplate decodedMessage) {
+        
         List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrPointDataMap> rfnLcrPointDataMap = Sets.newHashSet();
 
         RfnDevice device = rfnDeviceLookupService.getDevice(archiveRequest.getRfnIdentifier());
 
         rfnLcrPointDataMap = RfnLcrPointDataMap.getRelayMapByPaoType(device.getPaoIdentifier().getPaoType());
+        
         for (RfnLcrPointDataMap entry : rfnLcrPointDataMap) {
             PaoPointIdentifier paoPointIdentifier = null;
             Integer pointId = null;
@@ -64,7 +66,19 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
             }
             Double value = evaluateArchiveReadValue(decodedMessage, entry);
             if (value != null) {
-                if(entry.getAttribute() == BuiltInAttribute.SERVICE_STATUS) { value += 1; } // temporary until we know what firmware is sending.
+                if (entry.getAttribute() == BuiltInAttribute.SERVICE_STATUS) {
+                    /** Adjust value for state group 'LCR Service Status'
+                     * The service status is represented in two bits:
+                     * 00 (decimal value 0) - State name: 'In Service', RawState 1 
+                     * 01 (decimal value 1) - State name: 'Temporarily Out of Serivice', RawState 3
+                     * 10 (decimal value 2) - State Name: 'Out of Service', RawState 2
+                     */
+                    if (value == 0) {
+                        value = 1.0;
+                    } else if (value == 1) {
+                        value = 3.0;
+                    }
+                }
                 Integer pointTypeId = paoPointIdentifier.getPointIdentifier().getPointType().getPointTypeId();
                 Long timeInSec = decodedMessage.evaluateAsLong("/DRReport/@utc");
                 Date timeOfReading = new Instant(timeInSec * 1000).toDate();
@@ -72,13 +86,17 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
                 messagesToSend.add(pointData);
             }
         }
+        
         List<PointData> intervalData = mapIntervalData(archiveRequest, decodedMessage, device);
         messagesToSend.addAll(intervalData);
+        
         return messagesToSend;
     }
 
     private List<PointData> mapIntervalData(RfnLcrReadingArchiveRequest archiveRequest, 
-            SimpleXPathTemplate decodedXml, RfnDevice device) {
+            SimpleXPathTemplate decodedXml, 
+            RfnDevice device) {
+        
         List<PointData> intervalPointData = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();
 
@@ -88,6 +106,7 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
             log.error("Cannot retrieve relay point data map for device type: " + device.getPaoIdentifier().getPaoType(), e);
             throw new RuntimeException();
         }
+        
         for (RfnLcrRelayDataMap relay : rfnLcrRelayDataMap) {
             List<Integer> intervalData = decodedXml.evaluateAsIntegerList("/DRReport/Relays/Relay" + 
                     relay.getRelayIdXPathString() + "/IntervalData/Interval");
@@ -112,10 +131,12 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
                         .withDurationAdded(Duration.standardHours(1), -1);
             }
         }
+        
         return intervalPointData;
     }
 
     private PointData createPointData(Integer pointId, Integer pointType, Date timestamp, Double value) {
+        
         PointData pointData = new PointData();
         pointData.setTagsPointMustArchive(true);    
         pointData.setPointQuality(PointQuality.Normal);
@@ -124,10 +145,12 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
         pointData.setType(pointType);
         pointData.setTime(timestamp);
         pointData.setValue(value);
+        
         return pointData;
     }
 
     private Double evaluateArchiveReadValue(SimpleXPathTemplate xPathTemplate, RfnLcrPointDataMap entry) {
+        
         Integer value = null;
         value = xPathTemplate.evaluateAsInt(entry.getxPathQuery());
         if (value == null) {
@@ -141,7 +164,8 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
         if (entry.getShift() != null) {
             value = value >>> entry.getShift();
         }
+        
         return new Double(value);
     }
-}
 
+}
