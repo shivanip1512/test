@@ -69,9 +69,9 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
                 if (entry.getAttribute() == BuiltInAttribute.SERVICE_STATUS) {
                     /** Adjust value for state group 'LCR Service Status'
                      * The service status is represented in two bits:
-                     * 00 (decimal value 0) - State name: 'In Service', RawState 1 
-                     * 01 (decimal value 1) - State name: 'Temporarily Out of Serivice', RawState 3
-                     * 10 (decimal value 2) - State Name: 'Out of Service', RawState 2
+                     * 00 (decimal value 0) - State name: 'In Service', RawState: 1 
+                     * 01 (decimal value 1) - State name: 'Temporarily Out of Serivice', RawState: 3
+                     * 10 (decimal value 2) - State Name: 'Out of Service', RawState: 2
                      */
                     if (value == 0) {
                         value = 1.0;
