@@ -71,247 +71,213 @@ Suggested DBUpdate Process Steps
  * 3) File name must have the version number as the first 4 chars (ex: 2.40, 2.41)
  * 4) All meta data tags (the @ sign) should be nested in a comment
  */
-public class DBUpdater extends MessageFrameAdaptor
-{
-	//local class to execute update functions
-	private UpdateDB updateDB = null;
-    
-	private boolean isIgnoreAllErrors = false;
+public class DBUpdater extends MessageFrameAdaptor {
+    // local class to execute update functions
+    private UpdateDB updateDB = null;
+
+    private boolean isIgnoreAllErrors = false;
     private boolean isIgnoreBlockErrors = false;
 
-	
-	private static final SimpleDateFormat frmt = new SimpleDateFormat("_MM-dd-yyyy_HH-mm-ss");
-	
-	//less typing for these
-	private static final String FS = System.getProperty("file.separator");
-	private static final String LF = System.getProperty("line.separator");
+    private static final SimpleDateFormat frmt = new SimpleDateFormat("_MM-dd-yyyy_HH-mm-ss");
 
-	public final static String[] CMD_LINE_PARAM_NAMES = 
-	{
-		IRunnableDBTool.PROP_VALUE,
-		"verbose"
-	};
+    // less typing for these
+    private static final String FS = System.getProperty("file.separator");
+    private static final String LF = System.getProperty("line.separator");
 
-	/**
-	 * 
-	 */
-	public DBUpdater()
-	{
-		super();
-	}
+    public final static String[] CMD_LINE_PARAM_NAMES = { IRunnableDBTool.PROP_VALUE, "verbose" };
 
-	public String getName()
-	{
-		return "DBUpdater";
-	}
-
-	public String getParamText()
-	{
-		return "Update Files Directory:";
-	}
-
-	public String getDefaultValue()
-	{
-		return CtiUtilities.CURRENT_DIR;
-	}
-
-	public static void initApp( String[] args )
-	{
-		final CommandLineParser parser;
-		parser = new CommandLineParser( CMD_LINE_PARAM_NAMES );
-		String[] values = parser.parseArgs( args );
-			
-		//store all the command line args we want
-		for( int i = 0; i < values.length; i++ )
-			if( values[i] != null )
-				System.setProperty(CMD_LINE_PARAM_NAMES[i], values[i]);
-	}
-
-	public void run()
-	{
-		updateDB = new UpdateDB( getIMessageFrame() );
-
-		try
-		{
-			CTIDatabase db = VersionTools.getDBVersionRefresh();
-			getIMessageFrame().addOutput("CONNECTING TO THE FOLLOWING DATABASE:");
-			getIMessageFrame().addOutput("   DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild() );
-			getIMessageFrame().addOutput("   DB Alias     : " + CtiUtilities.getDatabaseAlias() );			
-			
-			getUpdateCommands();
-			
-			getIMessageFrame().addOutput("   Lines read from files successfully, starting DB transactions..." );
-			getIMessageFrame().addOutput("");			
-
-			//do a final check to make sure STARS exist or will exist.  If not, it will need to be manually addressed.
-			if (updateDB.starsExistsOrWillExist()) {
-	
-				if( executeCommands() )
-					getIMessageFrame().finish( "Database Update Completed Successfully" );
-				else
-					getIMessageFrame().addOutput( "Database update was unsuccessfully executed" );
-			} else {
-				throw new StarsNotCreatedException("STARS tables not present in this database");
-			}
-			
-		} catch (StarsNotCreatedException e) {
-			String errorString = "WARNING!!!  STARS database tables are missing and cannot be automatically created." + 
-							"\r\nContact Technical Support or TSSL immediately to get the STARS Database Creation script\r\n before continuing with this tool.";
-			getIMessageFrame().addOutput(errorString);
-			CTILogger.error(errorString, e );
-		
-		} catch( Exception e ) {
-			getIMessageFrame().addOutput( "Database update was unsuccessfully executed" );
-			CTILogger.warn( "A problem occurred in the execution", e );
-		}
-
-	}
-	
-	
-	/**
-	 * Main entry point
-	 * @param args java.lang.String[]
-	 */
-	public static void main(String[] args) throws java.io.IOException 
-	{
-		System.setProperty("cti.app.name", "DBUpdater");
-		DBUpdater updater = new DBUpdater();
-
-		if( args.length < 1 )  // the user did not enter any params
-		{
-			System.out.println("Updates the database with the DBupdate script files given directory.");
-			System.out.println("An intermediate file is generated in the " + CtiUtilities.getClientLogDir() );
-			System.out.println("directory for each DBUpdate file found.");
-			System.out.println("");
-			System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false]");
-			System.out.println("");
-			System.out.println("   " + IRunnableDBTool.PROP_VALUE + "   : directory that contains the script files for updating the DB");
-			System.out.println("   verbose  : should we show the most output possible (default true)");
-			System.out.println("");
-			System.out.println(" example: DBUpdater " + IRunnableDBTool.PROP_VALUE + "=d:" +
-						FS + "YukonMiscInstall" + FS + "YukonDatabase" + FS + "DatabaseUpdates" +
-						FS + "SqlServer");
-			
-			System.exit(1);
-		}
-		
-
-		initApp( args );
-
-		updater.run();
-	}
-
-
-	private synchronized boolean executeCommands()
-	{
-		//get all the files in the log DIR
-		FileVersion[] fileVers = updateDB.getDBUpdateFiles( CtiUtilities.getClientLogDir() );
-
-		Connection conn = 
-			PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-
-		String cmd = null;
-		File sqlFile = null;
-		UpdateLine[] validLines = null;
-
-		try
-		{
-			//be sure every trx commits after its execution automatically
-			conn.setAutoCommit( true );
-
-			for( int i = 0; i < fileVers.length; i++ )
-			{
-				sqlFile = fileVers[i].getFile();
-				getIMessageFrame().addOutput("***** Begin Proceessing File: " + sqlFile + " ******");
-				validLines = updateDB.readFile( sqlFile );
-				isIgnoreAllErrors = false;
-                isIgnoreBlockErrors = false;
-
-				for( int j = 0; j < validLines.length; j++ )
-				{
-					cmd = validLines[j].getValue().toString(); 
-					processLine( validLines[j], conn );					
-				}
-
-				//print a new version of this file
-				printUpdateLines( validLines, sqlFile );
-
-				//we will rename the file since it was a success
-				renameFile( sqlFile );
-				getIMessageFrame().addOutput("***** End Proceessing File: " + sqlFile + " ******");
-			}
-			
-			
-
-			getIMessageFrame().addOutput("   SUCCESS for ALL_COMMANDS");
-			getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
-
-			
-			return true;
-		}
-		catch( Exception e )
-		{
-			getIMessageFrame().addOutput( "   **FAILURE : " + cmd );
-			getIMessageFrame().addOutput( "     Please fix in file : " + 
-					sqlFile.getAbsolutePath() );
-
-			handleException( e );  //array-index, SQLException, .....
-			
-			//write the last file being processed with errors
-			printUpdateLines( validLines, sqlFile );
-
-			return false;
-		}
-		finally
-		{	//no mattter what, close the conn
-			try
-			{
-				conn.close();
-			}
-			catch( Exception e )
-			{
-				handleException( e );
-			}
-		}
-		
-	}
-    
-    private void setIgnoreState( final UpdateLine line_ )
-    {
-        //once True, always True
-        isIgnoreAllErrors |= line_.isIgnoreRemainingErrors();
-        
-        if( line_.isIgnoreBegin() )
-            isIgnoreBlockErrors = true; 
-
-        if( line_.isIgnoreEnd() )
-            isIgnoreBlockErrors = false;
+    public DBUpdater() {
+        super();
     }
 
-	private void processLine( UpdateLine line_, Connection conn ) throws SQLException
-	{
-		if( line_ == null || conn == null )
-			return;
+    @Override
+    public String getName() {
+        return "DBUpdater";
+    }
 
-		String cmd = null;
+    @Override
+    public String getParamText() {
+        return "Update Files Directory:";
+    }
 
-        //set any error ignore flags
-        setIgnoreState( line_ );
+    @Override
+    public String getDefaultValue() {
+        return CtiUtilities.CURRENT_DIR;
+    }
 
-        if( line_.isSuccess() == null )
-		{
-			Statement stat = conn.createStatement();
-			
-            if(line_.getValue().toString().startsWith(DBMSDefines.START_BLOCK)) {
+    public static void initApp(String[] args) {
+        final CommandLineParser parser;
+        parser = new CommandLineParser(CMD_LINE_PARAM_NAMES);
+        String[] values = parser.parseArgs(args);
+
+        // store all the command line args we want
+        for (int i = 0; i < values.length; i++)
+            if (values[i] != null)
+                System.setProperty(CMD_LINE_PARAM_NAMES[i], values[i]);
+    }
+
+    @Override
+    public void run() {
+        updateDB = new UpdateDB(getIMessageFrame());
+
+        try {
+            CTIDatabase db = VersionTools.getDBVersionRefresh();
+            getIMessageFrame().addOutput("CONNECTING TO THE FOLLOWING DATABASE:");
+            getIMessageFrame().addOutput("   DB Version   : " + db.getVersion() + "  Build:  " + db.getBuild());
+            getIMessageFrame().addOutput("   DB Alias     : " + CtiUtilities.getDatabaseAlias());
+
+            getUpdateCommands();
+
+            getIMessageFrame().addOutput("   Lines read from files successfully, starting DB transactions...");
+            getIMessageFrame().addOutput("");
+
+            // do a final check to make sure STARS exist or will exist. If not, it will need to be
+            // manually addressed.
+            if (updateDB.starsExistsOrWillExist()) {
+                if (executeCommands()) {
+                    getIMessageFrame().finish("Database Update Completed Successfully");
+                } else {
+                    getIMessageFrame().addOutput("Database update was unsuccessfully executed");
+                }
+            } else {
+                throw new StarsNotCreatedException("STARS tables not present in this database");
+            }
+
+        } catch (StarsNotCreatedException e) {
+            String errorString =
+                "WARNING!!!  STARS database tables are missing and cannot be automatically created."
+                        + "\r\nContact Technical Support or TSSL immediately to get the STARS Database Creation script\r\n before continuing with this tool.";
+            getIMessageFrame().addOutput(errorString);
+            CTILogger.error(errorString, e);
+        } catch (Exception e) {
+            getIMessageFrame().addOutput("Database update was unsuccessfully executed");
+            CTILogger.warn("A problem occurred in the execution", e);
+        }
+
+    }
+
+    /**
+     * Main entry point
+     */
+    public static void main(String[] args) throws java.io.IOException {
+        System.setProperty("cti.app.name", "DBUpdater");
+        DBUpdater updater = new DBUpdater();
+
+        if (args.length < 1) // the user did not enter any params
+        {
+            System.out.println("Updates the database with the DBupdate script files given directory.");
+            System.out.println("An intermediate file is generated in the " + CtiUtilities.getClientLogDir());
+            System.out.println("directory for each DBUpdate file found.");
+            System.out.println("");
+            System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false]");
+            System.out.println("");
+            System.out.println("   " + IRunnableDBTool.PROP_VALUE
+                    + "   : directory that contains the script files for updating the DB");
+            System.out.println("   verbose  : should we show the most output possible (default true)");
+            System.out.println("");
+            System.out.println(" example: DBUpdater " + IRunnableDBTool.PROP_VALUE + "=d:" + FS + "YukonMiscInstall"
+                    + FS + "YukonDatabase" + FS + "DatabaseUpdates" + FS + "SqlServer");
+
+            System.exit(1);
+        }
+
+        initApp(args);
+
+        updater.run();
+    }
+
+    private synchronized boolean executeCommands() {
+        // get all the files in the log DIR
+        FileVersion[] fileVers = updateDB.getDBUpdateFiles(CtiUtilities.getClientLogDir());
+
+        Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+        String cmd = null;
+        File sqlFile = null;
+        UpdateLine[] validLines = null;
+
+        try {
+            // be sure every trx commits after its execution automatically
+            conn.setAutoCommit(true);
+
+            for (int i = 0; i < fileVers.length; i++) {
+                sqlFile = fileVers[i].getFile();
+                getIMessageFrame().addOutput("***** Begin Proceessing File: " + sqlFile + " ******");
+                validLines = updateDB.readFile(sqlFile);
+                isIgnoreAllErrors = false;
+                isIgnoreBlockErrors = false;
+
+                for (int j = 0; j < validLines.length; j++) {
+                    cmd = validLines[j].getValue().toString();
+                    processLine(validLines[j], conn);
+                }
+
+                // print a new version of this file
+                printUpdateLines(validLines, sqlFile);
+
+                // we will rename the file since it was a success
+                renameFile(sqlFile);
+                getIMessageFrame().addOutput("***** End Proceessing File: " + sqlFile + " ******");
+            }
+
+            getIMessageFrame().addOutput("   SUCCESS for ALL_COMMANDS");
+            getIMessageFrame().addOutput(
+                    "----------------------------------------------------------------------------------------------");
+
+            return true;
+        } catch (Exception e) {
+            getIMessageFrame().addOutput("   **FAILURE : " + cmd);
+            getIMessageFrame().addOutput("     Please fix in file : " + sqlFile.getAbsolutePath());
+
+            handleException(e); // array-index, SQLException, .....
+
+            // write the last file being processed with errors
+            printUpdateLines(validLines, sqlFile);
+
+            return false;
+        } finally { // no matter what, close the connection
+            try {
+                conn.close();
+            } catch (Exception e) {
+                handleException(e);
+            }
+        }
+
+    }
+
+    private void setIgnoreState(final UpdateLine line_) {
+        // once True, always True
+        isIgnoreAllErrors |= line_.isIgnoreRemainingErrors();
+
+        if (line_.isIgnoreBegin()) {
+            isIgnoreBlockErrors = true;
+        }
+        if (line_.isIgnoreEnd()) {
+            isIgnoreBlockErrors = false;
+        }
+    }
+
+    private void processLine(UpdateLine line_, Connection conn) throws SQLException {
+        if (line_ == null || conn == null)
+            return;
+
+        String cmd = null;
+
+        // set any error ignore flags
+        setIgnoreState(line_);
+
+        if (line_.isSuccess() == null) {
+            Statement stat = conn.createStatement();
+
+            if (line_.getValue().toString().startsWith(DBMSDefines.START_BLOCK)) {
                 cmd = line_.getValue().toString();
+            } else {
+                cmd =
+                    line_.getValue().toString()
+                            .substring(0, line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM));
             }
-            else {
-    			cmd = line_.getValue().toString().substring( 
-    						0,
-    						line_.getValue().toString().indexOf(DBMSDefines.LINE_TERM) );
-            }
-            
-            getIMessageFrame().addOutput( "EXECUTING: " + cmd ); 
+
+            getIMessageFrame().addOutput("EXECUTING: " + cmd);
 
             if (line_.isWarnOnce()) {
                 try {
@@ -319,164 +285,134 @@ public class DBUpdater extends MessageFrameAdaptor
                     line_.setSuccess(true);
                     getIMessageFrame().addOutput("   SUCCESS : " + cmd);
                 } catch (SQLException ex) {
-                    // We want this error to interrupt execution, but it will be marked as success in the valids file.
-                    // This allows users to not have to edit the valids file after being prompted for certain errors.
+                    // We want this error to interrupt execution, but it will be marked as success
+                    // in the valids file.
+                    // This allows users to not have to edit the valids file after being prompted
+                    // for certain errors.
                     line_.setSuccess(true);
                     getIMessageFrame().addOutput("");
                     getIMessageFrame().addOutput("");
-                    getIMessageFrame().addOutput(" ************************************************************************** ");
+                    getIMessageFrame().addOutput(
+                            " ************************************************************************** ");
                     getIMessageFrame().addOutput("   Warning Message:");
-                    getIMessageFrame().addOutput("   After you understand and act on the below warning, press Start again to continue execution.");
+                    getIMessageFrame().addOutput(
+                            "   After you understand and act on the below warning, press Start again to continue execution.");
                     getIMessageFrame().addOutput("");
                     getIMessageFrame().addOutput("   " + ex.getMessage());
-                    getIMessageFrame().addOutput(" ************************************************************************** ");
+                    getIMessageFrame().addOutput(
+                            " ************************************************************************** ");
                     getIMessageFrame().addOutput("");
                     getIMessageFrame().addOutput("");
-                    getIMessageFrame().finish("Please see Output Messages to review an error that has been raised. Once resolution has been implemented, you may click Start to resume processing.");
+                    getIMessageFrame()
+                            .finish("Please see Output Messages to review an error that has been raised. Once resolution has been implemented, you may click Start to resume processing.");
                     throw ex; // Re-Throw to interrupt execution.
                 }
+            } else if (line_.isIgnoreError() || isIgnoreAllErrors || isIgnoreBlockErrors) {
+                try {
+                    stat.execute(cmd);
+                    line_.setSuccess(true);
+                    getIMessageFrame().addOutput("   SUCCESS : " + cmd);
+                } catch (Exception ex) // SQLException ex )
+                {
+                    // since we are ignoring errors, do not let the SQL error force use to exit
+                    line_.setSuccess(false);
+                    getIMessageFrame().addOutput("   UNSUCCESSFUL : " + cmd);
+                    getIMessageFrame().addOutput("     (IGNORING ERROR) : " + ex.getMessage());
+                }
+
+            } else {
+                stat.execute(cmd);
+                line_.setSuccess(true);
+                getIMessageFrame().addOutput("   SUCCESS : " + cmd);
             }
-            else if( line_.isIgnoreError() 
-                || isIgnoreAllErrors
-                || isIgnoreBlockErrors )
-			{
-				try
-				{
-                    stat.execute( cmd );
-					line_.setSuccess( true );
-					getIMessageFrame().addOutput( "   SUCCESS : " + cmd );				
-				}
-				catch( Exception ex ) //SQLException ex )
-				{
-					//since we are ignoring errors, do not let the SQL error force use to exit
-					line_.setSuccess( false );
-					getIMessageFrame().addOutput( "   UNSUCCESSFUL : " + cmd );
-					getIMessageFrame().addOutput( "     (IGNORING ERROR) : " + ex.getMessage() );
-				}
 
-			}
-			else
-			{
-				stat.execute( cmd );
-				line_.setSuccess( true );
-				getIMessageFrame().addOutput( "   SUCCESS : " + cmd );
-			}
+            try {
+                if (stat != null) {
+                    stat.close(); // free up any open cursors please
+                }
+            } catch (Exception e) {} // ain't no thang
+        }
 
-			try
-			{
-				if( stat != null )
-					stat.close(); //free up any open cursors please
-			}
-			catch( Exception e ) {} //ain't no thang
-		}
-	
-	}
+    }
 
+    private void renameFile(File sqlFile) throws IOException {
+        // upon completion of this file, rename it
+        if (!sqlFile.renameTo(new File(sqlFile.getParentFile().getCanonicalPath() + FS + sqlFile.getName()
+                + frmt.format(new java.util.Date())))) {
+            throw new IOException("Unable to rename " + sqlFile.getName() + " file");
+        }
+    }
 
-	private void renameFile( File sqlFile ) throws IOException
-	{
-		//upon completion of this file, rename it
-		if( !sqlFile.renameTo(
-				new File(
-						sqlFile.getParentFile().getCanonicalPath()
-						+ FS
-						+ sqlFile.getName()
-						+ frmt.format(new java.util.Date()) ) ) )
-			throw new IOException(
-					"Unable to rename " + sqlFile.getName() + " file"); 		
-	}
+    private void getUpdateCommands() {
+        final String srcPath = System.getProperty(CMD_LINE_PARAM_NAMES[0]);
+        // "d:/eclipse/head/yukon-database/DBUpdates/oracle" );
 
+        UpdateLine[] validLines = new UpdateLine[0];
 
-	private void getUpdateCommands()
-	{		
-		final String srcPath = System.getProperty(CMD_LINE_PARAM_NAMES[0]);
-		//"d:/eclipse/head/yukon-database/DBUpdates/oracle" );
+        // get all the files in the DIR
+        FileVersion[] filesVers = updateDB.getDBUpdateFiles(srcPath);
 
+        for (int i = 0; i < filesVers.length; i++) {
+            File sqlFile = filesVers[i].getFile();
 
-		UpdateLine[] validLines = new UpdateLine[0];		
+            getIMessageFrame().addOutput(
+                    "----------------------------------------------------------------------------------------------");
+            getIMessageFrame().addOutput("Start reading file : " + sqlFile);
 
-		//get all the files in the DIR
-		FileVersion[] filesVers = updateDB.getDBUpdateFiles( srcPath );
+            try {
+                validLines = updateDB.readFile(sqlFile);
+            } catch (DBUpdateException e) {
+                handleException(e);
+            }
 
+            getIMessageFrame().addOutput("Done reading file");
 
+            // find out if we need to right the valid file for this version
+            if (!UpdateDB.isValidUpdateFile(sqlFile))
+                printUpdateLines(validLines, new File(CtiUtilities.getClientLogDir() + filesVers[i].getVersion() + "_"
+                        + filesVers[i].getBuild() + DBMSDefines.NAME_VALID));
 
-		for( int i = 0; i < filesVers.length; i++ )
-		{
-			File sqlFile = filesVers[i].getFile();
+            getIMessageFrame().addOutput(
+                    "----------------------------------------------------------------------------------------------");
+        }
 
+        getIMessageFrame().addOutput("");
+        getIMessageFrame().addOutput(
+                "----------------------------------------------------------------------------------------------");
+        getIMessageFrame().addOutput("Valid SQL strings LOADED (" + validLines.length + ")");
+        getIMessageFrame().addOutput(
+                "----------------------------------------------------------------------------------------------");
+    }
 
-			getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
-			getIMessageFrame().addOutput("Start reading file : " + sqlFile );
+    private void printUpdateLines(final UpdateLine[] values_, final File file_) {
+        if (values_ == null || file_ == null)
+            return;
 
-			try
-			{
-				validLines = updateDB.readFile( sqlFile );
-			}
-			catch( DBUpdateException e )
-			{
-				handleException( e );
-			}
-			
-			getIMessageFrame().addOutput("Done reading file");
-			
-			//find out if we need to right the valid file for this version			
-			if( !UpdateDB.isValidUpdateFile(sqlFile) )
-				printUpdateLines( validLines, 
-						new File( CtiUtilities.getClientLogDir() + 
-							filesVers[i].getVersion() +
-							"_" + filesVers[i].getBuild() +
-							DBMSDefines.NAME_VALID) );
-			
-			getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
-		}
+        try {
+            FileWriter fileWriter = new FileWriter(file_);
 
-		getIMessageFrame().addOutput("");
-		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
-		getIMessageFrame().addOutput("Valid SQL strings LOADED (" + validLines.length + ")" );
-		getIMessageFrame().addOutput("----------------------------------------------------------------------------------------------");
-	}	
+            for (int i = 0; i < values_.length; i++) {
+                String[] lines = values_[i].getPrintableText();
+                for (int j = 0; j < lines.length; j++) {
+                    fileWriter.write(lines[j] + LF);
+                }
+            }
 
-	private void printUpdateLines( final UpdateLine[] values_, final File file_ )
-	{ 	
-		if( values_ == null || file_ == null )
-			return;
+            fileWriter.close();
+        } catch (Exception e) {
+            CTILogger.error(e.getMessage(), e);
+        }
+    }
 
-		try
-		{			
-			FileWriter fileWriter = new FileWriter(file_);
+    /**
+     * Called whenever the part throws an exception.
+     * @param exception java.lang.Throwable
+     */
+    private void handleException(java.lang.Throwable exception) {
+        getIMessageFrame().addOutput("--------- CAUGHT EXCEPTION ---------");
+        getIMessageFrame().addOutput("    " + exception.getMessage());
 
-			for( int i = 0; i < values_.length; i++ )
-			{
-				String[] lines = values_[i].getPrintableText();
-				for( int j = 0; j < lines.length; j++ )
-				{
-					fileWriter.write( lines[j] + LF );
-				}
-
-			}
-
-			fileWriter.close();						
-		}		
-		catch( Exception e)
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-
-	}
-
-	
-	/**
-	 * Called whenever the part throws an exception.
-	 * @param exception java.lang.Throwable
-	 */
-	private void handleException(java.lang.Throwable exception) 
-	{
-		getIMessageFrame().addOutput("--------- CAUGHT EXCEPTION ---------");
-		getIMessageFrame().addOutput("    " + exception.getMessage() );
-
-		CTILogger.error("--------- CAUGHT EXCEPTION ---------");
-		CTILogger.error( exception.getMessage(), exception );
-	}
-	
-
+        CTILogger.error("--------- CAUGHT EXCEPTION ---------");
+        CTILogger.error(exception.getMessage(), exception);
+    }
 }
