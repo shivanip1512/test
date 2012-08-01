@@ -340,11 +340,6 @@ pointattribute.obj:	precompiled.h PointAttribute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h
 point_change.obj:	precompiled.h point_change.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h
-portsup.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
-		queues.h dsm2.h cticonnect.h yukon.h ctidbgmem.h netports.h \
-		mutex.h guard.h utility.h ctitime.h numstr.h dsm2err.h \
-		words.h optional.h dllbase.h color.h devicetypes.h logger.h \
-		thread.h CtiPCPtrQueue.h
 queent.obj:	precompiled.h queent.h dlldefs.h
 queue.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h yukon.h \
 		types.h ctidbgmem.h database_connection.h dbaccess.h \

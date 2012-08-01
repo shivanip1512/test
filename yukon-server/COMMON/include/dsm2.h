@@ -23,49 +23,15 @@ IM_EX_CTIBASE LONG OutMessageCount();
 #define STANDNAMLEN           20
 #define MAX_VERSACOM_MESSAGE  40
 
-#define ERRLOGENTS      10
-
 #define MAXPRIORITY     15
-
-#ifndef FLOAT
-   #define FLOAT float
-#endif
-
-#ifndef DOUBLE
-   #define DOUBLE double
-#endif
-
-/* Port Definitions */
-#define PORTMAX         120
-#define MAXPORT         (PORTMAX+1)
-#define MAXPROC         52
 
 /* Misc. definitions */
 #define MAXIDLC         128
-#define CCUMAX_700      3
-#define CCUMAX_710      31
-#define CCUMAX_711      99
 #define CCUGLOBAL       127
 #define RTUGLOBAL       126
 #define TIMEOUT         5
 #define PREAMLEN        3
 
-
-/* Address definitions */
-#define UNIQUE_BASE     0L
-#define GOLD_BASE       60
-#define SILVER_BASE     0
-#define BRONZE_BASE     0x3ff000L
-#define LEAD_LOAD_BASE  0x3fd000L
-#define LEAD_DATA_BASE  0x3fe000L
-#define UNIQUE_MAX      0x3fffffL
-#define GOLD_MAX        4
-#define SILVER_MAX      60
-#define BRONZE_MAX      256
-#define LEAD_MAX        4096
-#define FCT_ADDRESS     0x155555L
-#define UNIV_ADDRESS    0x3fffffL
-#define RPT_UN_MIN      4190464L
 
 #pragma pack(push, message_packing, 1)
 
@@ -128,14 +94,6 @@ struct RSTRUCT
    BYTE Message[7];
 };
 
-
-/* Structure used for REMS 100 */
-struct REMSSTRUCT
-{
-   USHORT AddressHigh;
-   USHORT AddressLow;
-   USHORT Function;
-};
 
 /* Structures used for VERSACOM */
 struct VRELAY
@@ -380,7 +338,6 @@ public:
       FPSTRUCT        FPSt;
       RSTRUCT         RSt;
       VSTRUCT         VSt;
-      REMSSTRUCT      RemsSt;
       TAPSTRUCT       TAPSt;
       DIALUPREQUEST   DUPReq;
       CtiSAData       SASt;
@@ -583,26 +540,7 @@ struct collect_inmess_target_device
 };
 
 
-#define PEXEC_DEVID        -1;
 #define PORTERSU_DEVID     -2;
-
-
-/* Definitions for the statistics system */
-typedef struct _STATS
-{
-   ULONG   FailureCount;
-   USHORT  ErrorDSTFlags;
-   ULONG   LastGoodTime;
-   ULONG   ErrorResetTime;
-   ULONG   ErrorLog[ERRLOGENTS + 1];
-   ULONG   Error24ResetTime;
-   ULONG   Error24Log[ERRLOGENTS + 1];
-   ULONG   ErrorPrev24ResetTime;
-   ULONG   ErrorPrev24Log[ERRLOGENTS + 1];
-   ULONG   Error24RollTime;
-   ULONG   Error24Roll[24][ERRLOGENTS + 1];
-} STATS;
-
 
 /* Prototypes from UCTTime.C */
 IM_EX_CTIBASE int            UCTFTime (struct timeb *);
@@ -611,19 +549,8 @@ IM_EX_CTIBASE time_t         UCTMakeTime (struct tm *);
 IM_EX_CTIBASE ULONG          LongTime (void);
 IM_EX_CTIBASE ULONG          DSTFlag (void);
 IM_EX_CTIBASE void           UCTLocoTime (time_t, USHORT, struct tm *);
-IM_EX_CTIBASE void           UCTAsciiTime (time_t, USHORT, PCHAR);
 IM_EX_CTIBASE ULONG          setNextInterval(time_t, ULONG);
-IM_EX_CTIBASE int            FindMidNight (time_t *, USHORT, time_t *);
-IM_EX_CTIBASE time_t         MidNight (time_t, USHORT);
 IM_EX_CTIBASE time_t         MidNightWas (time_t, USHORT);
-
-typedef struct _DSM2_SEASON
-{
-   SHORT StartMonth;
-   SHORT StartDay;
-   SHORT StopMonth;
-   SHORT StopDay;
-} DSM2_SEASON;
 
 #pragma pack(pop, message_packing)     // Restore the prior packing alignment..
 

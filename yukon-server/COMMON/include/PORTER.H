@@ -12,31 +12,6 @@ class CtiHashKey;
 #include "devicetypes.h"
 #include "queues.h"
 
-/* Data structures used to access Btrieve records */
-struct PORT
-{
-    USHORT Port;
-    CHAR Description[STANDNAMLEN];
-    CHAR PortName[STANDNAMLEN];
-    USHORT BaudRate;
-    USHORT Protocol;
-    USHORT Unused;
-    USHORT RadioDelay[8];
-    USHORT RTSSense;
-    USHORT DCDSense;
-    USHORT Status;
-    STATS Stats;           /* Start of dynamic portion of record */
-};
-
-/* Structure used for performance update */
-struct REMOTEPERF
-{
-    USHORT Port;
-    USHORT Remote;
-    USHORT Error;
-};
-
-
 /* IDLC command definitions */
 
 #define HDLC_UD         0x13

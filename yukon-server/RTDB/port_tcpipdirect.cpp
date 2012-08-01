@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   port_tcpip
-*
-* Date:   5/9/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.37.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:20 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
@@ -33,8 +18,6 @@ using std::pair;
 CtiPortTCPIPDirect::CtiPortTCPIPDirect() :
 _dialable(0),
 _socket(INVALID_SOCKET),
-_open(false),
-_connected(false),
 _lastConnect(0UL)
 {
 }
@@ -42,8 +25,6 @@ _lastConnect(0UL)
 CtiPortTCPIPDirect::CtiPortTCPIPDirect(CtiPortDialable *dial) :
 _dialable(dial),
 _socket(INVALID_SOCKET),
-_open(false),
-_connected(false),
 _lastConnect(0UL)
 {
     if(_dialable != 0)
@@ -68,158 +49,167 @@ INT           CtiPortTCPIPDirect::getIPPort()    const  {  return _tcpIpInfo.get
 
 INT CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT stopbits)
 {
-    INT      status = NORMAL;
-
-    if( !isSimulated() )
+    if( isSimulated() )
     {
-        CtiLockGuard<CtiMutex> guard(_classMutex);
+        return NORMAL;
+    }
 
-        if(_socket != INVALID_SOCKET)
+    CtiLockGuard<CtiMutex> guard(_classMutex);
+
+    if(_socket != INVALID_SOCKET)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    if(isViable())
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Port " << getName() << " closing port " << _socket << endl;
+        }
+        close(FALSE);
+
+        Sleep(1000);
+    }
+
+    if(isInhibited())
+    {
+        return PORTINHIBITED;
+    }
+
+    if(isViable())
+    {
+        return NORMAL;
+    }
+
+    const unsigned short ipport = getIPPort();
+
+    /* Take a crack at hooking up */
+    /* set up client for stuff we will send */
+    struct sockaddr_in   server;
+    memset (&server, 0, sizeof (server));
+    unsigned long ip;
+
+    if( isalpha(getIPAddress()[(size_t)0]) )
+    {
+        LPHOSTENT lpHostEntry = gethostbyname(getIPAddress().data());
+
+        if( ! lpHostEntry )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Port " << getName() << " could not resolve IP for DNS name \"" << getIPAddress() << "\"" << endl;
             }
+
+            return ErrorDnsLookupFailed;
         }
 
-        if(isViable())
+        ip = *(unsigned long*)(lpHostEntry->h_addr);
+    }
+    else
+    {
+        ip = inet_addr ( getIPAddress().data() );
+    }
+
+    server.sin_family = AF_INET;
+    server.sin_port = htons( ipport );
+    server.sin_addr = *(in_addr*)&ip;
+
+    INT status = NORMAL;
+
+    /* get a stream socket. */
+    if((_socket = socket (AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Error getting Socket for Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
+        }
+        shutdownClose(__FILE__, __LINE__);
+        status = TCPCONNECTERROR;
+    }
+    else
+    {
+        //  this delay is here for ports that allow connections but then immediately disconnect;
+        //    if we connected more than 15 seconds ago, we can connect immediately
+        CtiTime nextConnect = _lastConnect + 15;
+
+        int connect_delay = nextConnect.seconds() - CtiTime::now().seconds();
+
+        if( connect_delay > 0 )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << getName() << " closing port " << _socket << endl;
+                dout << CtiTime() << " Port " << getName() << " next connect at " << nextConnect << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            close(FALSE);
-
-            Sleep(1000);
+            CTISleep(connect_delay * 1000);
         }
 
-        if(isInhibited())
+        if( connect(_socket, (const struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
         {
-            status = PORTINHIBITED;
-        }
-        else if(!isViable())
-        {
-            ULONG    i, j;
-
-            int      OptVal;
-            USHORT   ipport = getIPPort();
-
-            /* Take a crack at hooking up */
-            /* set up client for stuff we will send */
-            struct sockaddr_in   server;
-            memset (&server, 0, sizeof (server));
-            unsigned long ip;
-
-            if( isalpha(getIPAddress()[(size_t)0]) )
-            {
-                LPHOSTENT lpHostEntry = gethostbyname(getIPAddress().data());
-                ip = *(unsigned long*)(lpHostEntry->h_addr);
-            }
-            else
-            {
-                ip = inet_addr ( getIPAddress().data() );
-            }
-
-            server.sin_family = AF_INET;
-            server.sin_port = htons( ipport );
-            server.sin_addr = *(in_addr*)&ip;
-
-            /* get a stream socket. */
-            if((_socket = socket (AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error getting Socket for Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
-                }
-                shutdownClose(__FILE__, __LINE__);
-                status = TCPCONNECTERROR;
-            }
-            else
-            {
-                //  this delay is here for ports that allow connections but then immediately disconnect;
-                //    if we connected more than 15 seconds ago, we can connect immediately
-                CtiTime nextConnect = _lastConnect + 15;
-
-                int connect_delay = nextConnect.seconds() - CtiTime::now().seconds();
-
-                if( connect_delay > 0 )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Port " << getName() << " next connect at " << nextConnect << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    CTISleep(connect_delay * 1000);
-                }
-
-                if( connect(_socket, (const struct sockaddr*)&server, sizeof(server)) == SOCKET_ERROR)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Error Connecting to Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
-                    }
-                    shutdownClose(__FILE__, __LINE__);
-                    return(TCPCONNECTERROR);
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Port " << getName() << " acquiring socket handle " << _socket << endl;
-                }
-
-                _open = true;
-
-                /* Make sure we time out on our writes after 5 seconds */
-                OptVal = gConfigParms.getValueAsInt("PORTER_SOCKET_WRITE_TIMEOUT", 5);
-                if(setsockopt (_socket, SOL_SOCKET, SO_SNDTIMEO, (char *) &OptVal, sizeof (OptVal)))
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
-                }
-
-                /* Turn on the keepalive timer */
-                OptVal = 1;
-                if(setsockopt (_socket, SOL_SOCKET, SO_KEEPALIVE, (char *) &OptVal, sizeof (OptVal)))
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
-                }
-
-                LINGER ling;
-                ling.l_onoff = 1;
-                ling.l_linger = 0;
-
-                if(setsockopt (_socket, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling)))
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error setting Linger Mode (Hard) for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
-                }
-
-                unsigned long nonblocking = 1;
-
-                if(ioctlsocket(_socket, FIONBIO, &nonblocking))
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error setting nonblocking mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
-                }
-
-                _connected   = true;
-
-                _lastConnect = CtiTime::now();
-            }
-
-            if((status = reset(true)) != NORMAL)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error resetting port for dialup on " << getName() << endl;
+                dout << CtiTime() << " Error Connecting to Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
             }
-
-            /* set the modem parameters */
-            if((status = setup(true)) != NORMAL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error setting port for dialup modem on " << getName() << endl;
-            }
+            shutdownClose(__FILE__, __LINE__);
+            return(TCPCONNECTERROR);
         }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Port " << getName() << " acquiring socket handle " << _socket << endl;
+        }
+
+        /* Make sure we time out on our writes after 5 seconds */
+        const int socketWriteTimeout = gConfigParms.getValueAsInt("PORTER_SOCKET_WRITE_TIMEOUT", 5);
+        if(setsockopt (_socket, SOL_SOCKET, SO_SNDTIMEO, (char *) &socketWriteTimeout, sizeof (socketWriteTimeout)))
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+        }
+
+        /* Turn on the keepalive timer */
+        const int keepaliveTimer = 1;
+        if(setsockopt (_socket, SOL_SOCKET, SO_KEEPALIVE, (char *) &keepaliveTimer, sizeof (keepaliveTimer)))
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+        }
+
+        LINGER ling;
+        ling.l_onoff = 1;
+        ling.l_linger = 0;
+
+        if(setsockopt (_socket, SOL_SOCKET, SO_LINGER, (char *)&ling, sizeof(ling)))
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Error setting Linger Mode (Hard) for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+        }
+
+        unsigned long nonblocking = 1;
+
+        if(ioctlsocket(_socket, FIONBIO, &nonblocking))
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Error setting nonblocking mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+        }
+
+        _lastConnect = CtiTime::now();
+    }
+
+    if((status = reset(true)) != NORMAL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Error resetting port for dialup on " << getName() << endl;
+    }
+
+    /* set the modem parameters */
+    if((status = setup(true)) != NORMAL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Error setting port for dialup modem on " << getName() << endl;
     }
 
     return status;
@@ -303,180 +293,178 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessa
         //  simulate the inbound delay as best we can
         CTISleep(byteTime(Xfer.getInCountExpected()) * 1000);
 
-        status = ErrPortSimulated;
+        return ErrPortSimulated;
     }
-    else
+
+    if(Xfer.getNonBlockingReads())         // We need to get all that are out there.
     {
-        if(Xfer.getNonBlockingReads())         // We need to get all that are out there.
+        ULONG bytesavail = 0;
+        INT   lpcnt = 0;
+        ULONG expected = Xfer.getInCountExpected();
+
+        while( Xfer.getInTimeout() * 4 >= lpcnt++ )  // Must do this at least once.
         {
-            ULONG bytesavail = 0;
-            INT   lpcnt = 0;
-            ULONG expected = Xfer.getInCountExpected();
+            Sleep(250);
 
-            while( Xfer.getInTimeout() * 4 >= lpcnt++ )  // Must do this at least once.
+            bytesavail = 0;
+            if(_socket != INVALID_SOCKET)
             {
-                Sleep(250);
-
-                bytesavail = 0;
-                if(_socket != INVALID_SOCKET)
-                {
-                    ioctlsocket (_socket, FIONREAD, &bytesavail);
-                }
-
-                if( (expected > 0 && bytesavail >= expected) ||  (expected == 0 && bytesavail > 0) )
-                {
-                    /*
-                     *   If we specified a byte count, we will wait one timeout amount of time before returning (and
-                     *   return whatever is available). If not we will wait for any bytes to become available and
-                     *   return them.
-                     */
-                    break; // the while loop
-                }
+                ioctlsocket (_socket, FIONREAD, &bytesavail);
             }
 
-            if(bytesavail <= Xfer.getInCountExpected())  // Make sure we don't acquire more data than we have space for!
+            if( (expected > 0 && bytesavail >= expected) ||  (expected == 0 && bytesavail > 0) )
             {
-                Xfer.setInCountExpected( bytesavail );
+                /*
+                 *   If we specified a byte count, we will wait one timeout amount of time before returning (and
+                 *   return whatever is available). If not we will wait for any bytes to become available and
+                 *   return them.
+                 */
+                break; // the while loop
             }
         }
 
-        /* If getInCountExpected() is 0 just return */
-        if(Xfer.getInCountExpected() == 0)  // Don't ask me for it then!
+        if(bytesavail <= Xfer.getInCountExpected())  // Make sure we don't acquire more data than we have space for!
         {
-            return(NORMAL);
+            Xfer.setInCountExpected( bytesavail );
+        }
+    }
+
+    /* If getInCountExpected() is 0 just return */
+    if(Xfer.getInCountExpected() == 0)  // Don't ask me for it then!
+    {
+        return(NORMAL);
+    }
+
+    /* set the read timeout */
+    Told = (Xfer.getInTimeout() + getDelay(EXTRA_DELAY));
+    Tnew = (byteTime(Xfer.getInCountExpected()) + getDelay(EXTRA_DELAY) );
+    Tmot = (Told > Tnew) ? Told : Tnew;
+
+    if(Xfer.isMessageStart())           // Are we the initial request?
+    {
+        if(getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY))
+        {
+            CTISleep ((ULONG) getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY));
+            status = inClear();
+
+            if( status != NORMAL )
+            {
+                shutdownClose(__FILE__, __LINE__);
+            }
         }
 
-        /* set the read timeout */
-        Told = (Xfer.getInTimeout() + getDelay(EXTRA_DELAY));
-        Tnew = (byteTime(Xfer.getInCountExpected()) + getDelay(EXTRA_DELAY) );
-        Tmot = (Told > Tnew) ? Told : Tnew;
-
-        if(Xfer.isMessageStart())           // Are we the initial request?
+        if(status == NORMAL && getTablePortSettings().getCDWait() != 0)
         {
-            if(getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY))
+            status = NODCD;
+            /* Check if we have DCD */
+            while(!(dcdTest()) && DCDCount < getTablePortSettings().getCDWait())
             {
-                CTISleep ((ULONG) getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY));
-                status = inClear();
+                /* We do not have DCD... Wait 1/20 second and try again */
+                CTISleep (50L);
+                DCDCount += 50;
+            }
 
-                if( status != NORMAL )
+            if(DCDCount < getTablePortSettings().getCDWait())
+            {
+                status = NORMAL;
+            }
+        }
+    }
+
+    if(status == NORMAL)
+    {
+        /* If neccesary wait for IDLC flag character */
+        if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Xfer.isMessageStart())
+        {
+            do
+            {
+                if((status = receiveData(Message, 1, Tmot, &byteCount)) || byteCount != 1)
+                {
+                    break;
+                }
+
+                SomeMessage[SomeRead] = Message[0];
+                SomeRead++;
+
+                if(SomeRead == sizeof(SomeMessage))
+                {
+                    // oh no we stomped memory
+                    status = FRAMEERR;
+                    break;               // the while loop
+                }
+            }  while(Message[0] != 0x7e && Message[0] != 0xfc);
+
+            if(status != NORMAL && SomeRead)
+            {
+                ::memcpy (Message, SomeMessage, SomeRead);
+                byteCount = SomeRead;
+            }
+
+            if(status == NORMAL)
+            {
+                if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Message[0] == 0xfc)
+                {
+                    Message[0] = 0x7e;
+                }
+
+                if((status = receiveData(&Message[1], Xfer.getInCountExpected() - 1, Tmot, &byteCount)) != NORMAL)
+                {
+                    if(status == BADSOCK)
+                    {
+                        shutdownClose(__FILE__, __LINE__);
+                    }
+                }
+
+                if(status == NORMAL)
+                {
+                    byteCount += 1;  // Add the 7e byte into the count
+                }
+            }
+        }
+        else
+        {
+            if((status = receiveData(Message, Xfer.getInCountExpected(), Tmot, &byteCount)) != NORMAL)
+            {
+                if(status == BADSOCK)
+                {
+                    shutdownClose(__FILE__, __LINE__);
+                }
+            }
+        }
+    }
+
+    if(status == NORMAL)
+    {
+        if(byteCount != Xfer.getInCountExpected())
+        {
+            INT oldcount = byteCount;
+
+            if((status = receiveData(Message + byteCount, Xfer.getInCountExpected() - byteCount, Tmot, &byteCount)) != NORMAL)
+            {
+                if(status == BADSOCK)
                 {
                     shutdownClose(__FILE__, __LINE__);
                 }
             }
 
-            if(status == NORMAL && getTablePortSettings().getCDWait() != 0)
-            {
-                status = NODCD;
-                /* Check if we have DCD */
-                while(!(dcdTest()) && DCDCount < getTablePortSettings().getCDWait())
-                {
-                    /* We do not have DCD... Wait 1/20 second and try again */
-                    CTISleep (50L);
-                    DCDCount += 50;
-                }
-
-                if(DCDCount < getTablePortSettings().getCDWait())
-                {
-                    status = NORMAL;
-                }
-            }
-        }
-
-        if(status == NORMAL)
-        {
-            /* If neccesary wait for IDLC flag character */
-            if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Xfer.isMessageStart())
-            {
-                do
-                {
-                    if((status = receiveData(Message, 1, Tmot, &byteCount)) || byteCount != 1)
-                    {
-                        break;
-                    }
-
-                    SomeMessage[SomeRead] = Message[0];
-                    SomeRead++;
-
-                    if(SomeRead == sizeof(SomeMessage))
-                    {
-                        // oh no we stomped memory
-                        status = FRAMEERR;
-                        break;               // the while loop
-                    }
-                }  while(Message[0] != 0x7e && Message[0] != 0xfc);
-
-                if(status != NORMAL && SomeRead)
-                {
-                    ::memcpy (Message, SomeMessage, SomeRead);
-                    byteCount = SomeRead;
-                }
-
-                if(status == NORMAL)
-                {
-                    if(_tblPortBase.getProtocol() == ProtocolWrapIDLC && Message[0] == 0xfc)
-                    {
-                        Message[0] = 0x7e;
-                    }
-
-                    if((status = receiveData(&Message[1], Xfer.getInCountExpected() - 1, Tmot, &byteCount)) != NORMAL)
-                    {
-                        if(status == BADSOCK)
-                        {
-                            shutdownClose(__FILE__, __LINE__);
-                        }
-                    }
-
-                    if(status == NORMAL)
-                    {
-                        byteCount += 1;  // Add the 7e byte into the count
-                    }
-                }
-            }
-            else
-            {
-                if((status = receiveData(Message, Xfer.getInCountExpected(), Tmot, &byteCount)) != NORMAL)
-                {
-                    if(status == BADSOCK)
-                    {
-                        shutdownClose(__FILE__, __LINE__);
-                    }
-                }
-            }
-        }
-
-        if(status == NORMAL)
-        {
             if(byteCount != Xfer.getInCountExpected())
             {
-                INT oldcount = byteCount;
-
-                if((status = receiveData(Message + byteCount, Xfer.getInCountExpected() - byteCount, Tmot, &byteCount)) != NORMAL)
-                {
-                    if(status == BADSOCK)
-                    {
-                        shutdownClose(__FILE__, __LINE__);
-                    }
-                }
-
-                if(byteCount != Xfer.getInCountExpected())
-                {
-                    byteCount += oldcount;
-                    status = READTIMEOUT;
-                }
+                byteCount += oldcount;
+                status = READTIMEOUT;
             }
+        }
 
-            Xfer.setInCountActual((ULONG)byteCount);      // This is the number of bytes filled into the buffer!
+        Xfer.setInCountActual((ULONG)byteCount);      // This is the number of bytes filled into the buffer!
 
-            /* Do the extra delay if the message is a completing type */
-            if( Xfer.isMessageComplete() )
-            {
-                if(Dev->getPostDelay()) CTISleep((ULONG)Dev->getPostDelay());
-            }
+        /* Do the extra delay if the message is a completing type */
+        if( Xfer.isMessageComplete() )
+        {
+            if(Dev->getPostDelay()) CTISleep((ULONG)Dev->getPostDelay());
+        }
 
-            if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), Xfer.getInCountActual()))    // CRC check failed.
-            {
-                status = BADCRC;
-            }
+        if(Xfer.verifyCRC() && CheckCCITT16CRC(Dev->getType(), Xfer.getInBuffer(), Xfer.getInCountActual()))    // CRC check failed.
+        {
+            status = BADCRC;
         }
     }
 
@@ -486,11 +474,9 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessa
 INT CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList)
 {
     INT      status = NORMAL;
-    INT      i = 0;
 
     ULONG    Written;
     ULONG    MSecs;
-    ULONG    ByteCount;
     ULONG    StartWrite;
     ULONG    ReturnWrite;
 
@@ -627,7 +613,6 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
         }
 
         shutdown(_socket, 2);
-        _open = false;
 
         if(closesocket(_socket))
         {
@@ -638,8 +623,6 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
                 dout << CtiTime() << " Socket close failed. Error = " << iRet << endl;
             }
         }
-
-        _connected = false;
     }
 
     _socket = INVALID_SOCKET;
@@ -658,7 +641,6 @@ INT CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, P
     INT status = NORMAL;
     int WaitCount = 0;
     ULONG bytes_available = 0;
-
 
     *ReceiveLength = 0;  // no lies here
 
@@ -762,34 +744,27 @@ INT CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG TimeOut, P
 /* Routine to send a message to a TCP/IP Terminal Server port */
 INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
 {
-    int i;
-    INT status = NORMAL;
-    USHORT CharsToSend;
-    ULONG TimeToSend;
-    INT retval;
-    ULONG ulTemp;
+    INT bytesSent;
 
     if(_socket == INVALID_SOCKET)
     {
         openPort();
     }
 
-    if( (retval = send (_socket, (CHAR*)Message, Length, 0)) == SOCKET_ERROR )
+    if( (bytesSent = send (_socket, (CHAR*)Message, Length, 0)) == SOCKET_ERROR )
     {
         shutdownClose(__FILE__, __LINE__);
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Error Sending Message to Terminal Server:  " << WSAGetLastError() << endl;
         }
-        status = TCPWRITEERROR;
-    }
-    else
-    {
-        *Written = retval;
+        return TCPWRITEERROR;
     }
 
+    *Written = bytesSent;
+
     /* On normal terminal server it does not matter if we sit */
-    return status;
+    return NORMAL;
 }
 
 void CtiPortTCPIPDirect::DecodeDatabaseReader(Cti::RowReader &rdr)

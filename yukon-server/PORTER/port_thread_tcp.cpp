@@ -175,7 +175,31 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
             }
             else if( paoProperty.getPropertyName() == "TcpIpAddress" )
             {
-                tmp_ip_addresses[paoProperty.getPaoId()] = resolveIp(paoProperty.getPropertyValue());
+                const unsigned long ip_address = resolveIp(paoProperty.getPropertyValue());
+
+                if( ip_address == INADDR_NONE )
+                {
+                    const CtiDeviceSPtr device = DeviceManager.getDeviceByID(paoProperty.getPaoId());
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << describePort() << " cannot resolve IP for device ";
+
+                        if( device )
+                        {
+                            dout << "\"" << device->getName() << "\"";
+                        }
+                        else
+                        {
+                            dout << "id " << paoProperty.getPaoId();
+                        }
+
+                        dout << " from entry \"" << paoProperty.getPropertyValue() << "\"" << endl;
+                    }
+                }
+
+                tmp_ip_addresses[paoProperty.getPaoId()] = ip_address;
             }
         }
 
@@ -234,6 +258,11 @@ u_long TcpPortHandler::resolveIp(const string &ip)
     if( isalpha(ip[0]) )
     {
         LPHOSTENT lpHostEntry = gethostbyname(ip.c_str());
+
+        if( ! lpHostEntry )
+        {
+            return INADDR_NONE;
+        }
 
         return *(u_long *)(lpHostEntry->h_addr_list[0]);
     }

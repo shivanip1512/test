@@ -1,39 +1,3 @@
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        Don Neidviki
-
-    FileName:
-        UCTTIME.C
-
-    Purpose:
-        Routines to support time on the system
-
-    The following procedures are contained in this module:
-        UCTSetFTime                 UCTFTime
-        UCTLocalTime                UCTMakeTime
-        Holiday                     LongTime
-        DSTFlag                     UCTLocoTime
-        UCTAsciiTime                UCTAscTime
-        setNextInterval             FindMidNight
-        MidNight                    MidNightWas
-        MakeDailyTime               MakeControlHours
-
-
-    Initial Date:
-        7-92
-
-    Revision History:
-        Unknown prior to 8-93
-        09-06-93  Converted to 32 bit                             WRO
-        11-02-93  Changed timezone conversion to accept decimals  DLS
-        12-28-93  Changed to use TZ environment var.              BDW
-        12-28-93  Changed holiday schedule to support a year val. BDW
-        12-28-93  Changed name on dst file and shared mem name.   BDW
-        03-30-99  Convert to Win32 API for YUKON                  CGP
-
-   -------------------------------------------------------------------- */
 #include "precompiled.h"
 
 #include <stdlib.h>
@@ -49,7 +13,6 @@
 #include "logger.h"
 
 #define DST_FILE_NAME    "DATA\\DSM2_DST.DAT"
-#define DST_TIME_NAME    "DATA\\DSM2_TIM.DAT"
 
 typedef struct
 {
@@ -61,7 +24,6 @@ _dstFlags_t *Flags = NULL;
 
 
 
-int IM_EX_CTIBASE setUCTMemoryFlags (struct timeb *);
 int IM_EX_CTIBASE getUCTMemoryFlags (void);
 
 void IM_EX_CTIBASE freeUCTMemory(void)
@@ -71,38 +33,6 @@ void IM_EX_CTIBASE freeUCTMemory(void)
         free(Flags);
         Flags = NULL;
     }
-}
-
-/* this function loads and sets some global flags for our
-   DSM/2 time system */
-int IM_EX_CTIBASE setUCTMemoryFlags(struct timeb *timebuffer)
-{
-
-    FILE *fptr;
-    int rc;
-
-    /* get our memory block from the system  and set
-       is values for a time change or adjustment */
-    if((rc = getUCTMemoryFlags ()) != NORMAL)
-    {
-        /* could not get the memeory */
-        return(rc);
-    }
-
-    /* set the new dst flag and store it */
-    Flags->MyDSTFlag = timebuffer->dstflag;
-
-    /* Write a file that will remember dst for us  */
-    if((fptr = fopen(DST_FILE_NAME,"w+")) == NULL)
-    {
-        return(BADFILE);
-    }
-
-    /* write the dst status value */
-    fprintf (fptr,"%ld", timebuffer->dstflag);
-    fclose (fptr);
-
-    return(NORMAL);
 }
 
 /* check if the uct environment is initalized */
@@ -361,15 +291,6 @@ void IM_EX_CTIBASE UCTLocoTime (time_t LTime,
 }
 
 
-/* routine to convert unix style to string */
-void IM_EX_CTIBASE UCTAsciiTime (time_t LTime,
-                                 USHORT MyDSTFlag,
-                                 PCHAR STime)
-{
-    strcpy (STime, asctime (UCTLocalTime (LTime, MyDSTFlag)));
-}
-
-
 /* Return to find the next scan time */
 ULONG IM_EX_CTIBASE setNextInterval(time_t TimeNow, ULONG ScanRate)
 {
@@ -383,59 +304,6 @@ ULONG IM_EX_CTIBASE setNextInterval(time_t TimeNow, ULONG ScanRate)
     }
 
     return(TimeNow - (SecsPastHour % ScanRate) + ScanRate);
-}
-
-int IM_EX_CTIBASE FindMidNight (time_t *LTime, USHORT MyDSTFlag, time_t *LMidNight)
-{
-    struct tm TStruct, *Temp;
-    time_t LocalLTime;
-
-    LocalLTime = *LTime;
-    LocalLTime += 86400L;
-
-    /* get time 24 hours from now */
-    if((Temp = UCTLocalTime (LocalLTime, MyDSTFlag)) == NULL)
-    {
-        return(!NORMAL);
-    }
-
-    /* it was safe to copy this guy */
-    memcpy (&TStruct, Temp, sizeof (TStruct));
-
-    /* set time to midnight */
-    TStruct.tm_sec = 0;
-    TStruct.tm_min = 0;
-    TStruct.tm_hour = 0;
-
-    /*  get midnight time  */
-    *LMidNight = UCTMakeTime (&TStruct);
-
-    /* fix if dst doesn't jive */
-    if(TStruct.tm_isdst && !(MyDSTFlag))
-    {
-        *LMidNight+= Flags->DSTFixOffset;
-    }
-    else if(!(TStruct.tm_isdst) && MyDSTFlag)
-    {
-        *LMidNight-= Flags->DSTFixOffset;
-    }
-
-    return(NORMAL);
-}
-
-
-/* this routine call findmidnight and is here to be compatable with BASIC */
-time_t IM_EX_CTIBASE MidNight (time_t LTime, USHORT MyDSTFlag)
-{
-    time_t TempLTime;
-
-    if(FindMidNight (&LTime, MyDSTFlag, &TempLTime))
-    {
-        /* had an error */
-        return(0L);
-    }
-
-    return(TempLTime);
 }
 
 time_t IM_EX_CTIBASE MidNightWas (time_t LTime, USHORT MyDSTFlag)

@@ -267,6 +267,8 @@ enum YukonError_t
 
     ErrorInvalidStartDate,
 
+    ErrorDnsLookupFailed,
+
     FinalError
 };
 

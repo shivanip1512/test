@@ -20,10 +20,7 @@
 
 #define P_TIMESYNC_EVENT               0
 #define P_QUEUE_EVENT                  1
-#define P_SCANNER_EVENT                2
-#define P_PERFORM_EVENT                3
 #define P_QUIT_EVENT                   4
-#define P_GWRESULT_EVENT               5
 
 #define NUMPORTEREVENTS                6
 

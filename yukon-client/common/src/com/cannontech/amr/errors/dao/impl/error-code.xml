@@ -1031,9 +1031,21 @@
     <error code="279">
         <category>Yukon System</category>
         <porter>Command requires a valid date.</porter>
-        <description>In order to this, the command must supply a valid date.</description>
+        <description>In order to execute, the command must be provided a valid date.</description>
         <troubleshooting>
             Verify that the date provided for the command is valid and submit the request again.
+            <ul>
+                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+            </ul>
+        </troubleshooting>
+    </error>
+    <error code="280">
+        <category>Yukon System</category>
+        <porter>Failed to resolve an IP for the given DNS name.</porter>
+        <description>The system attempted to look up a network name, but the operating system 
+            returned an error.</description>
+        <troubleshooting>
+            Verify that the DNS name is correct and that your networking settings are valid.
             <ul>
                 <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
             </ul>

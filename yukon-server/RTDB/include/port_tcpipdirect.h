@@ -15,8 +15,6 @@ private:
 
    SOCKET               _socket;
 
-   bool                 _open;
-   bool                 _connected;
    CtiTime              _lastConnect;
 
    CtiPortDialable      *_dialable;

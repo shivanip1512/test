@@ -443,6 +443,7 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
         {
             //  return an error - this deletes the OM
             INMESS im;
+            OutEchoToIN(om, &im);
             ReturnResultMessage(DEVICEINHIBITED, &im, om);
             return;
         }
@@ -451,6 +452,7 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
         {
             //  return an error - this deletes the OM
             INMESS im;
+            OutEchoToIN(om, &im);
             ReturnResultMessage(ErrorDeviceNotConnected, &im, om);
             return;
         }

@@ -1,28 +1,3 @@
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert
-
-    FileName:
-        ERROR.C
-
-    Purpose:
-        To open and retrieve message from the error message database
-
-    The following procedures are contained in this module:
-        InitError                   getError
-        CloseError                  PrintError
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-        Unknown prior to 8-93
-        9-6-93  Converted to 32 bit                             WRO
-
-
-   -------------------------------------------------------------------- */
 #include "precompiled.h"
 
 // These next few are required for Win32
@@ -34,7 +9,6 @@ using namespace std;
 #include "os2_2w32.h"
 #include "cticalls.h"
 
-
 #include <stdlib.h>
 
 #include <stdio.h>
@@ -42,12 +16,6 @@ using namespace std;
 #include "dsm2err.h"
 #include "dllbase.h"
 #include "logger.h"
-
-BYTE ErrorPosBlk[128];
-
-#define CTIERRORHASHBINS   256
-
-INT AddErrorToHashTable(ERRSTRUCT* ErrSt);
 
 static bool beenInitialized = false;
 
@@ -247,6 +215,10 @@ ERRSTRUCT CTIErrors[] = {
 
     { ErrorNeedsChannelConfig,      "Command needs channel config to continue.",    ERRTYPESYSTEM   },
 
+    { ErrorInvalidStartDate,        "Command requires a valid date.",               ERRTYPESYSTEM   },
+
+    { ErrorDnsLookupFailed,         "Failed to resolve an IP for the given DNS name.",  ERRTYPESYSTEM },
+
     { UnknownError,                 "Unknown Error",                                ERRTYPESYSTEM   },
 
 };
@@ -306,7 +278,7 @@ IM_EX_CTIBASE INT GetErrorString (USHORT Error, char *ErrStr)
 
     ESt.Error = Error;
 
-    GetError( ESt );
+    GetErrorStruct( ESt );
 
     /* and copy it */
     strcpy(ErrStr, ESt.ErrorMessage);
@@ -316,7 +288,7 @@ IM_EX_CTIBASE INT GetErrorString (USHORT Error, char *ErrStr)
 
 
 /* routine to retrieve error messages from error message file */
-IM_EX_CTIBASE INT GetError(ERRSTRUCT &ESt)
+IM_EX_CTIBASE INT GetErrorStruct(ERRSTRUCT &ESt)
 {
     INT status = NORMAL;
     USHORT err = ESt.Error;
