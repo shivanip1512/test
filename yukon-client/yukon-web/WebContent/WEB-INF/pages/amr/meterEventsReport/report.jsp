@@ -38,7 +38,7 @@
 	        	jQuery('#eventTypesList').hide();
 	        });
 	        
-	        jQuery('#eventsFilterForm, #csvForm').submit(function() {
+	        jQuery('.eventForm').submit(function() {
 	        	var attrNames = '';
 		    	jQuery("#eventTree").dynatree("getSelectedNodes").each(function(node) {
 		    		if (ignoreTitle(node.data.title) === false) {
@@ -50,7 +50,7 @@
 	   			    type: 'hidden',
 	   			    name: 'attrNames',
 	   			    value: attrNames
-	   			}).appendTo('#eventsFilterForm');
+	   			}).appendTo('.eventForm');
 	   			return true;
 	        });
 	        
@@ -145,7 +145,7 @@
         }
     </script>
 
-	<form:form id="eventsFilterForm" action="report" method="get" commandName="backingBean">
+	<form:form id="eventsFilterForm" action="report" method="get" commandName="backingBean" cssClass="eventForm">
         <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
 
             <%-- LEFT SIDE COLUMN --%>
@@ -259,7 +259,7 @@
 	</form:form>
 
     <c:if test="${filterResult.hitCount > 0}">
-		<form:form id="csvForm" action="csv" method="post" commandName="backingBean" cssClass="fr">
+		<form:form action="csv" method="post" commandName="backingBean" cssClass="fr eventForm">
 			<cti:deviceCollection deviceCollection="${backingBean.deviceCollection}" />
 			<tags:sortFields backingBean="${backingBean}" />
 			<form:hidden path="toInstant" id="toInstant_csv"/>
