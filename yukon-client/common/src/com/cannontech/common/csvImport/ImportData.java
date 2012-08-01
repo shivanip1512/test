@@ -21,16 +21,17 @@ public class ImportData {
     private List<ImportRow> rows = Lists.newArrayList();
     
     public ImportData(List<String[]> stringData, ImportFileFormat format) {
-        originalData = Lists.newArrayList(stringData);
+        List<String[]> stringDataCopy = Lists.newArrayList(stringData);
+        originalData = Lists.newArrayList(stringDataCopy);
         this.format = format;
         
         columnNames = Lists.newArrayList();
-        for(String header : stringData.get(0)) {
+        for(String header : stringDataCopy.get(0)) {
             columnNames.add(header.trim().toUpperCase());
         }
-        stringData.remove(0);
+        stringDataCopy.remove(0);
         
-        for(String[] stringRow : stringData) {
+        for(String[] stringRow : stringDataCopy) {
             ImportRow newImportRow = new ImportRow(columnNames, stringRow);
             rows.add(newImportRow);
         }
