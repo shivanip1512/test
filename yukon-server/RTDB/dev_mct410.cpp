@@ -2776,7 +2776,6 @@ int Mct410Device::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParser &
 INT Mct410Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
-    INT tags = 0;
     CtiTime pointTime;
     bool valid_data = true;
 
@@ -2842,18 +2841,12 @@ INT Mct410Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
                 if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_Accum ||
                     InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_KWH )
                 {
-                    //  normal KWH read, nothing too special
-                    tags = TAG_POINT_MUST_ARCHIVE;
-
                     pi = getAccumulatorData(DSt->Message + offset, 3, 0);
 
                     pointTime -= pointTime.seconds() % 60;
                 }
                 else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenKWH )
                 {
-                    //  but this is where the action is - frozen decode
-                    tags = 0;
-
                     if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
 
                     pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
@@ -2890,7 +2883,7 @@ INT Mct410Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
 
                 //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
                 insertPointDataReport(PulseAccumulatorPointType, i + 1,
-                                      ReturnMsg, pi, point_name, pointTime, 0.1, tags);
+                                      ReturnMsg, pi, point_name, pointTime, 0.1, TAG_POINT_MUST_ARCHIVE);
 
                 //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
                 if( pi.quality == InvalidQuality && !status && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
@@ -2911,7 +2904,6 @@ INT Mct410Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, CtiMess
 INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     INT status = NORMAL;
-    INT tags = 0;
     CtiTime pointTime;
 
     INT ErrReturn  = InMessage->EventCode & 0x3fff;
@@ -2954,18 +2946,12 @@ INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, CtiM
 
             if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_TOUkWh )
             {
-                //  normal KWH read, nothing too special
-                tags = TAG_POINT_MUST_ARCHIVE;
-
                 pi = getAccumulatorData(DSt->Message + offset, 3, 0);
 
                 pointTime -= pointTime.seconds() % 60;
             }
             else if( InMessage->Sequence == Cti::Protocols::EmetconProtocol::GetValue_FrozenTOUkWh )
             {
-                //  but this is where the action is - frozen decode
-                tags = 0;
-
                 pi = getAccumulatorData(DSt->Message + offset, 3, freeze_counter);
 
                 if( pi.freeze_bit != getExpectedFreezeParity() )
@@ -2995,7 +2981,8 @@ INT Mct410Device::decodeGetValueTOUkWh(INMESS *InMessage, CtiTime &TimeNow, CtiM
 
             //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
             insertPointDataReport(PulseAccumulatorPointType, 1 + PointOffset_TOUBase + i * PointOffset_RateOffset,
-                                  ReturnMsg, pi, string("TOU rate ") + (char)('A' + i) + " kWh", pointTime, 0.1, tags);
+                                  ReturnMsg, pi, string("TOU rate ") + (char)('A' + i) + " kWh", pointTime, 0.1,
+                                  TAG_POINT_MUST_ARCHIVE);
 
             //  if the quality's invalid, throw the status to abnormal if there's a point defined
             if( pi.quality == InvalidQuality && !status && getDevicePointOffsetTypeEqual(1 + PointOffset_TOUBase + i * PointOffset_RateOffset, PulseAccumulatorPointType) )
@@ -3800,7 +3787,8 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                 else
                 {
                     insertPointDataReport(PulseAccumulatorPointType, channel, ReturnMsg,
-                                          reading, consumption_pointname,  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day
+                                          reading, consumption_pointname,  CtiTime(_daily_read_info.request.begin + 1), //  add on 24 hours - end of day
+                                          TAG_POINT_MUST_ARCHIVE);
 
                     insertPointDataReport(DemandAccumulatorPointType, channel, ReturnMsg,
                                           peak, demand_pointname,  CtiTime(_daily_read_info.request.begin) + (time_peak * 60));

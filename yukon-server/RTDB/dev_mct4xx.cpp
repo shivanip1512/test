@@ -3328,7 +3328,7 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
     }
 
     insertPointDataReport(PulseAccumulatorPointType, pointoffset,
-                          ReturnMsg, pi_kwh, meter_reading_str, kwh_time, 0.1);
+                          ReturnMsg, pi_kwh, meter_reading_str, kwh_time, 0.1, TAG_POINT_MUST_ARCHIVE);
 
     if( !result_string.empty() )
     {
