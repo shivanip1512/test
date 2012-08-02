@@ -653,8 +653,6 @@ public class PaoPersistenceServiceImpl implements PaoPersistenceService {
                     }
                      
                     jdbcTemplate.update(insertSql);
-                     
-                    System.out.println(insertSql.getSql());
                 }
             }
         }
