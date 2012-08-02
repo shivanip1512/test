@@ -35,7 +35,10 @@ public class JsonReportDataUtils {
             rows.add(rowData);
         }
         
-        root.put("root", rows);
+        root.put("rows", rows);
+        root.put("page", 1);
+        root.put("total", rows.size());
+        
         
         JSONObject jsonObj = new JSONObject(root);
         

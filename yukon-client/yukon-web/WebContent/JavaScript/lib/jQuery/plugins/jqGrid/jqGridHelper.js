@@ -19,24 +19,34 @@ Yukon.GridHelper = {
             
             var opts = {
                     altRows: true,
+                    autowidth: true,
                     caption: args.title,
                     colModel: args.colModel,
                     datatype: 'json',
                     height: args.height || 'auto',
                     width: args.width || 'auto',
                     jsonReader : {
-                        root: "root",
-                        page: "",
-                        total: "",
-                        records: "",
+                        root: "rows",
+                        page: "page",
                         repeatitems: false,
-                        cell: "",
-                        id: 0
+                        cell: ""
                       },
                     loadonce: true,
                     loadui: args.loadui, //currently not loading locale file
                     mtype: 'GET',
-                    scroll: true,
+                    
+                    /*pagination*/
+                    pagination:true,
+                    page: 1,
+                	rowNum: 50,
+                	rowList: [20,50,100],
+                	loadonce:true,
+                	viewrecords: false,
+                	gridview: true,
+                	pagerpos: 'right',
+                	/*end pagination*/
+
+                	scroll: false,
                     toolbar: args.toolbar || [false, ""],
                     url: args.url
                   };
@@ -45,14 +55,15 @@ Yukon.GridHelper = {
             
             if (args.width == null) {
                 opts.autowidth = true;
-                opts.shrinkToFit = 200;
+                opts.shrinkToFit = true;
             }
             
             jQuery(document.getElementById(args.id)).jqGrid(opts);
+            jQuery(window).trigger('resize');
         },
         
         _createToolbar: function(args){
-            jQuery(document.getElementById("t_" + args.id))
+            jQuery(document.getElementById("t_" + args.id)).prev()
             .append(document.getElementById(args.id + "_toolbar_buttons"));
             
             //now create the buttons (jQueryUI)
@@ -82,6 +93,11 @@ Yukon.GridHelper = {
 
 var jqGridHelper = Yukon.GridHelper;
 
-jQuery(window).delegate(".ui-jqgrid", 'onresize', function(event){
-    jQuery(this).jqGrid();
+jQuery(window).resize(function() {
+	jQuery('.ui-jqgrid-btable').each(function(index, elem){
+	var parent = jQuery(elem).closest(".jqgrid-container");
+		if(parent.length > 0){
+			jQuery(elem).setGridWidth(parent.width(), true);
+		}
+	});
 });

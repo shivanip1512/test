@@ -52,9 +52,16 @@
 
 	<%-- jqGrid REPORT TABLE --%>
 	<c:when test="${!pureHtml}">
+	
+		<c:set var="gridWidth" value=""/>
+		<c:if test="${not empty pageScope.width}">
+			<c:set var="gridWidth" value="${pageScope.width}" />
+		</c:if>
+		
+		
 		<jqGrid:reportGrid title="${reportTitle}" 
             height="${height}" 
-            width="${width}" 
+            width="${gridWidth}" 
             columnInfo="${columnInfo}" 
             dataUrl="${dataUrl}" 
             csvUrl="${csvUrl}" 

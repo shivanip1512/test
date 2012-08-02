@@ -644,7 +644,8 @@ div.boxContainerFooter .footer{
 }
 
 div.boxContainer .boxContainer_titleBar .boxContainer_title,
-div.pagedBox .title, div.pagedBox .footer, div.boxContainerFooter .footer {
+div.pagedBox .title, div.pagedBox .footer, div.boxContainerFooter .footer,
+.ui-jqgrid .ui-jqgrid-titlebar {
 	color: #0066CC;
 	line-height: 1.5em;
 	font-weight: bold;
@@ -1189,8 +1190,8 @@ a.imgLink {
     text-decoration: none;
 }
 
-table.rowHighlighting tr:hover td {
-    background-color: yellow;
+table.rowHighlighting tr:hover td, .jqgrow:hover {
+    background-color: yellow !important;
 }
 
 .editable:hover {
@@ -2134,4 +2135,16 @@ table th.small_width {
 	float: left;
 	color: #999;
 	font-size: 13px;
+}
+
+input.datePicker {
+	width: 7.5em;
+}
+
+input.timePicker {
+	width: 5em;
+}
+
+input.dateTimePicker {
+/* 	width:  */
 }
