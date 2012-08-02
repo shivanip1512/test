@@ -307,6 +307,14 @@ public:
     string getDbColumnString(Cti::CapControl::CapControlType objectType);
 
     template<class T>
+    T findInMap(const long paoId, const std::map< long, T > *paobjectMap)
+    {
+        if (paobjectMap->find(paoId) == paobjectMap->end())
+            return NULL;
+        return paobjectMap->find(paoId)->second;
+    }
+
+    template<class T>
     void setOperationSuccessPercents(const T &object, CCStatsObject userDef, CCStatsObject daily, CCStatsObject weekly, CCStatsObject monthly)
     {
         object->getOperationStats().setUserDefOpSuccessPercent( userDef.getAverage() );

@@ -61,6 +61,7 @@ using Cti::CapControl::PointIdVector;
 
 CtiTime timeSaver;
 
+
 /*---------------------------------------------------------------------------
     Constructor
 ---------------------------------------------------------------------------*/
@@ -3922,9 +3923,8 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                 long currentSubstationId;
 
                 rdr["substationid"] >> currentSubstationId;
-                CtiCCSubstationPtr currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
-
-                if (currentCCSubstation->getPaoId() == currentSubstationId)
+                
+                if (CtiCCSubstationPtr currentCCSubstation = findInMap(currentSubstationId, paobject_substation_map))
                 {
                      currentCCSubstation->setDynamicData(rdr);
                      CtiCCSpecialPtr currentSA = findSpecialAreaByPAObjectID(currentCCSubstation->getSaEnabledId());
@@ -3974,10 +3974,9 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                 rdr["areaid"] >> currentAreaId;
                 rdr["substationbusid"] >> currentSubstationId;
                 rdr["displayorder"] >>displayOrder;
-                currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
+                CtiCCSubstationPtr currentCCSubstation = findInMap(currentSubstationId, paobject_substation_map);
                 if (currentCCSubstation != NULL)
                 {
-
                     currentCCSubstation->setParentId(currentAreaId);
                     currentCCSubstation->setDisplayOrder(displayOrder);
                     CtiCCAreaPtr currentCCArea = NULL;
@@ -3986,8 +3985,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                         currentCCArea = findAreaByPAObjectID(currentAreaId);
                     else
                     {
-                        if (paobject_area_map->find(currentAreaId) != paobject_area_map->end())
-                            currentCCArea = paobject_area_map->find(currentAreaId)->second;
+                        currentCCArea = findInMap(currentAreaId, paobject_area_map);
                     }
                     substation_area_map->insert(make_pair(currentSubstationId, currentAreaId));
                     if (currentCCArea != NULL)
@@ -4101,9 +4099,11 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                 long currentStationId;
 
                 rdr["paobjectid"] >> currentStationId;
-                CtiCCSubstationPtr currentStation = paobject_substation_map->find(currentStationId)->second;
-
-
+                CtiCCSubstationPtr currentStation = findInMap(currentStationId, paobject_substation_map);
+                if (!currentStation)
+                {
+                    continue;
+                }
                 if ( !rdr["pointid"].isNull() )
                 {
                     long tempPointId = -1000;
@@ -4320,7 +4320,9 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                      if (areaId > 0)
                           currentCCArea = findAreaByPAObjectID(currentAreaId);
                      else
-                         currentCCArea = paobject_area_map->find(currentAreaId)->second;
+                     {
+                         currentCCArea = findInMap(currentAreaId, paobject_area_map);
+                     }
 
                      if (currentCCArea != NULL)
                      {
@@ -4393,7 +4395,9 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                      if (currAreaId > 0)
                           currentArea = findAreaByPAObjectID(currAreaId);
                      else
-                         currentArea = paobject_area_map->find(currAreaId)->second;
+                     {
+                         currentArea = findInMap(currAreaId, paobject_area_map);
+                     }
 
                      if (currentArea != NULL)
                      {
@@ -4437,9 +4441,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                 long currentAreaId;
 
                 rdr["areaid"] >> currentAreaId;
-                CtiCCAreaPtr currentCCArea = paobject_area_map->find(currentAreaId)->second;
-
-                if (currentCCArea->getPaoId() == currentAreaId)
+                if (CtiCCAreaPtr currentCCArea = findInMap(currentAreaId, paobject_area_map))
                 {
                      currentCCArea->setDynamicData(rdr);
                 }
@@ -4481,9 +4483,12 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                 long currentAreaId;
 
                 rdr["paobjectid"] >> currentAreaId;
-                CtiCCAreaPtr currentArea = paobject_area_map->find(currentAreaId)->second;
-
-
+                CtiCCAreaPtr currentArea = findInMap(currentAreaId, paobject_area_map);
+                if (!currentArea)
+                {
+                    continue;
+                }
+                
                 if ( !rdr["pointid"].isNull() )
                 {
                     long tempPointId = -1000;
@@ -4671,12 +4676,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                      long currentAreaId, stratId;
                      rdr["paobjectid"] >> currentAreaId;
                      rdr["strategyid"] >> stratId;
-
-
-                     CtiCCSpecialPtr currentCCSpArea = NULL;
-                     currentCCSpArea = paobject_specialarea_map->find(currentAreaId)->second;
-
-                     if (currentCCSpArea != NULL)
+                     if (CtiCCSpecialPtr currentCCSpArea = findInMap(currentAreaId, paobject_specialarea_map))
                      {
                          currentCCSpArea->setStrategy( stratId );
                      }
@@ -4766,9 +4766,8 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                 long currentSpAreaId;
 
                 rdr["areaid"] >> currentSpAreaId;
-                CtiCCSpecialPtr currentCCSpArea = paobject_specialarea_map->find(currentSpAreaId)->second;
-
-                if (currentCCSpArea->getPaoId() == currentSpAreaId)
+                
+                if (CtiCCSpecialPtr currentCCSpArea = findInMap(currentSpAreaId, paobject_specialarea_map))
                 {
                      currentCCSpArea->setDynamicData(rdr);
                 }
@@ -4799,8 +4798,11 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                 long currentAreaId;
 
                 rdr["paobjectid"] >> currentAreaId;
-                CtiCCSpecialPtr currentSpArea = paobject_specialarea_map->find(currentAreaId)->second;
-
+                CtiCCSpecialPtr currentSpArea = findInMap(currentAreaId, paobject_specialarea_map);
+                if ( currentSpArea == NULL)
+                {
+                    continue;
+                }
 
                 if ( !rdr["pointid"].isNull() )
                 {
@@ -4934,7 +4936,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 rdr["AltSubID"] >> altBusId;
                 if (subBusId > 0 && busId != subBusId && altBusId == subBusId && paobject_subbus_map->find(busId) != paobject_subbus_map->end() )
                 {
-                    currentCCSubstationBus = paobject_subbus_map->find( busId )->second;
+                    currentCCSubstationBus = findInMap(busId, paobject_subbus_map);
                 }
                 else
                 {
@@ -5037,10 +5039,9 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 dbRdr["substationid"] >> currentSubstationId;
                 dbRdr["substationbusid"] >> currentSubBusId;
                 dbRdr["displayorder"] >>displayOrder;
-                CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
-                if (currentCCSubstationBus != NULL)
+                
+                if (CtiCCSubstationBusPtr currentCCSubstationBus = findInMap(currentSubBusId, paobject_subbus_map))
                 {
-
                     currentCCSubstationBus->setParentId(currentSubstationId);
                     currentCCSubstationBus->setDisplayOrder(displayOrder);
                     CtiCCSubstationPtr currentCCSubstation = NULL;
@@ -5049,8 +5050,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                         currentCCSubstation = findSubstationByPAObjectID(currentSubstationId);
                     else
                     {
-                        if (paobject_substation_map->find(currentSubstationId) != paobject_substation_map->end())
-                            currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
+                        currentCCSubstation = findInMap(currentSubstationId, paobject_substation_map);
                     }
 
                     if (currentCCSubstation != NULL)
@@ -5133,8 +5133,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                      if (!dbRdr["substationbusid"].isNull())
                      {
                          dbRdr["substationbusid"] >> busId;
-                         if (subBusId == 0 && paobject_subbus_map->find(busId) != paobject_subbus_map->end())
-                             currentCCSubstationBus = paobject_subbus_map->find(busId)->second;
+                         if (subBusId == 0)
+                             currentCCSubstationBus = findInMap(busId, paobject_subbus_map);
                      }
                      else if (!dbRdr["areaid"].isNull())
                      {
@@ -5226,8 +5226,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                          if (!dbRdr["substationbusid"].isNull())
                          {
                              dbRdr["substationbusid"] >> busId;
-                             if (subBusId == 0 && paobject_subbus_map->find(busId) != paobject_subbus_map->end())
-                                 currentCCSubstationBus = paobject_subbus_map->find(busId)->second;
+                             if (subBusId == 0)
+                                 currentCCSubstationBus = findInMap(busId, paobject_subbus_map);
                          }
                          else if (!dbRdr["areaid"].isNull())
                          {
@@ -5251,13 +5251,10 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                     long dualBusId  = iter->second;
                     iter++;
 
-                    if (paobject_subbus_map->find(dualBusId) != paobject_subbus_map->end())
+                    if (CtiCCSubstationBusPtr currentCCSubstationBus = findInMap(dualBusId, paobject_subbus_map))
                     {
-                        CtiCCSubstationBusPtr dualBus = NULL;
-                        CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(dualBusId)->second;
-                        if (paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId()) != paobject_subbus_map->end())
+                        if (CtiCCSubstationBusPtr dualBus = findInMap(currentCCSubstationBus->getAltDualSubId(), paobject_subbus_map))
                         {
-                            dualBus = paobject_subbus_map->find(currentCCSubstationBus->getAltDualSubId())->second;
                             if (ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
                                 ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
                                 ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
@@ -5329,9 +5326,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 long currentSubBusId;
                 long tempDecimalPlaces;
                 rdr["substationbusid"] >> currentSubBusId;
-
-                CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
-                if (currentCCSubstationBus != NULL)
+                if (CtiCCSubstationBusPtr currentCCSubstationBus = findInMap(currentSubBusId, paobject_subbus_map))
                 {
                     rdr["decimalplaces"] >> tempDecimalPlaces;
                     currentCCSubstationBus->setDecimalPlaces(tempDecimalPlaces);
@@ -5387,9 +5382,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 long currentSubBusId;
 
                 rdr["substationbusid"] >> currentSubBusId;
-                CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
-
-                if (currentCCSubstationBus->getPaoId() == currentSubBusId)
+                if (CtiCCSubstationBusPtr currentCCSubstationBus = findInMap(currentSubBusId, paobject_subbus_map))
                 {
                      currentCCSubstationBus->setDynamicData(rdr);
                 }
@@ -5466,8 +5459,12 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 long currentSubBusId;
 
                 rdr["paobjectid"] >> currentSubBusId;
-                CtiCCSubstationBusPtr currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
-
+                CtiCCSubstationBusPtr currentCCSubstationBus = findInMap(currentSubBusId, paobject_subbus_map);
+                if (!currentCCSubstationBus)
+                {
+                    continue;
+                }
+                
                 if ( !rdr["pointid"].isNull() )
                 {
                     long tempPointId = -1000;
@@ -5885,7 +5882,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                 rdr["feederid"] >> currentFeederId;
                 rdr["substationbusid"] >> currentSubBusId;
                 rdr["displayorder"] >>displayOrder;
-                currentCCFeeder = paobject_feeder_map->find(currentFeederId)->second;
+                currentCCFeeder = findInMap(currentFeederId, paobject_feeder_map);
+                if (!currentCCFeeder)
+                {
+                    continue;
+                }
                 currentCCFeeder->setParentId(currentSubBusId);
                 currentCCFeeder->setDisplayOrder(displayOrder);
                 CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
@@ -5894,8 +5895,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                     currentCCSubstationBus = findSubBusByPAObjectID(currentSubBusId);
                 else
                 {
-                    if (paobject_subbus_map->find(currentSubBusId) != paobject_subbus_map->end())
-                        currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
+                    currentCCSubstationBus = findInMap(currentSubBusId, paobject_subbus_map);
                 }
 
                 if (currentCCSubstationBus != NULL)
@@ -5983,8 +5983,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                          currentCCFeeder = findFeederByPAObjectID(feedId);
                      else
                      {
-                         if (paobject_feeder_map->find(feedId) != paobject_feeder_map->end())
-                             currentCCFeeder = paobject_feeder_map->find(feedId)->second;
+                         currentCCFeeder = findInMap(feedId, paobject_feeder_map);
                      }
                      if (currentCCFeeder != NULL)
                      {
@@ -6099,9 +6098,8 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                           &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
             }
 
-            CtiCCFeederPtr currentFeeder = paobject_feeder_map->find(feederId)->second;
-            if (currentFeeder != NULL)
-            {
+            if (CtiCCFeederPtr currentFeeder = findInMap(feederId, paobject_feeder_map))
+            {   
                 reloadMonitorPointsFromDatabase(currentFeeder->getParentId(), &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
             }
         }
@@ -6141,7 +6139,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                 long tempDecimalPlaces;
                 rdr["feederid"] >> currentFeederId;
 
-                CtiCCFeederPtr currentFeeder = paobject_feeder_map->find(currentFeederId)->second;
+                CtiCCFeederPtr currentFeeder = findInMap(currentFeederId, paobject_feeder_map);
+                if (currentFeeder == NULL)
+                {
+                    continue;
+                }
                 rdr["decimalplaces"] >> tempDecimalPlaces;
                 currentFeeder->setDecimalPlaces(tempDecimalPlaces);
             }
@@ -6198,7 +6200,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                 rdr["feederid"] >> currentCCFeederId;
                 if (currentCCFeederId != NULL)
                 {
-                    CtiCCFeederPtr currentCCFeeder = paobject_feeder_map->find(currentCCFeederId)->second;
+                    CtiCCFeederPtr currentCCFeeder = findInMap(currentCCFeederId, paobject_feeder_map);
+                    if (currentCCFeeder == NULL)
+                    {
+                        continue;
+                    }
                     currentCCFeeder->setDynamicData(rdr);
                     if(feederId > 0 )
                     {
@@ -6247,8 +6253,12 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                 long currentCCFeederId;
 
                 rdr["paobjectid"] >> currentCCFeederId;
-                CtiCCFeederPtr currentCCFeeder = paobject_feeder_map->find(currentCCFeederId)->second;
-
+                CtiCCFeederPtr currentCCFeeder = findInMap(currentCCFeederId, paobject_feeder_map);
+                if (currentCCFeeder == NULL)
+                {
+                    continue;
+                }
+                
                 long tempPAObjectId = 0;
                 rdr["paobjectid"] >> tempPAObjectId;
                 if (    tempPAObjectId == currentCCFeeder->getPaoId() )
@@ -6439,7 +6449,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 string tempBoolString;
 
                 rdr["deviceid"] >> deviceid;
-                CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(deviceid)->second;
+                CtiCCCapBankPtr currentCCCapBank = findInMap(deviceid, paobject_capbank_map);
+                if (currentCCCapBank == NULL )
+                {
+                    continue;
+                }
 
                 rdr["alarminhibit"] >> tempBoolString;
                 std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), ::tolower);
@@ -6493,8 +6507,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 rdr["deviceid"] >> currentCapBankId;
                 rdr["controldeviceid"] >> controlDeviceId;
                 rdr["type"] >> controlDeviceType;
-                CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentCapBankId)->second;
-
+                CtiCCCapBankPtr currentCCCapBank = findInMap(currentCapBankId, paobject_capbank_map);
+                if (currentCCCapBank == NULL )
+                {
+                    continue;
+                }
                 if (currentCCCapBank->getControlDeviceId() == controlDeviceId)
                 {
                     currentCCCapBank->setControlDeviceType(controlDeviceType);
@@ -6553,12 +6570,20 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 rdr["closeorder"] >> closeOrder;
                 rdr["triporder"] >> tripOrder;
 
-                CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(deviceid)->second;
+                CtiCCCapBankPtr currentCCCapBank = findInMap(deviceid, paobject_capbank_map);
+                if (currentCCCapBank == NULL )
+                {
+                    continue;
+                }
+                CtiCCFeederPtr currentCCFeeder = findInMap(feederid, paobject_feeder_map);
+                if (currentCCFeeder == NULL )
+                {
+                    continue;
+                }
                 currentCCCapBank->setControlOrder(controlOrder);
                 currentCCCapBank->setTripOrder(tripOrder);
                 currentCCCapBank->setCloseOrder(closeOrder);
                 currentCCCapBank->setParentId(feederid);
-                CtiCCFeederPtr currentCCFeeder = paobject_feeder_map->find(feederid)->second;
 
                 if (!ciStringEqual(currentCCCapBank->getOperationalState(),CtiCCCapBank::UninstalledState))
                 {
@@ -6613,8 +6638,11 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
             {
                 long currentCCCapBankId;
                 rdr["capbankid"] >> currentCCCapBankId;
-                CtiCCCapBankPtr currentCCCapBank = paobject_capbank_map->find(currentCCCapBankId)->second;
-
+                CtiCCCapBankPtr currentCCCapBank = findInMap(currentCCCapBankId, paobject_capbank_map);
+                if (currentCCCapBank == NULL)
+                {
+                    continue;
+                }
                 currentCCCapBank->setDynamicData(rdr);
             }
         }
@@ -6653,12 +6681,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 long currentCCCapBankId;
                 rdr["paobjectid"] >> currentCCCapBankId;
 
-                CtiCCCapBankPtr currentCCCapBank = NULL;
-
-                if (paobject_capbank_map->find(currentCCCapBankId) != paobject_capbank_map->end())
-                    currentCCCapBank = paobject_capbank_map->find(currentCCCapBankId)->second;
-
-                if ( currentCCCapBank != NULL )
+                if (CtiCCCapBankPtr currentCCCapBank = findInMap(currentCCCapBankId, paobject_capbank_map))
                 {
                     if ( !rdr["pointid"].isNull() )
                     {
@@ -6753,18 +6776,13 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
             while ( rdr() )
             {
                 long currentCbcId;
-                long currentCapBankId;
+                long currentCapBankId = 0;
                 rdr["paobjectid"] >> currentCbcId;
-
-                CtiCCCapBankPtr currentCCCapBank = NULL;
 
                 if (cbc_capbank_map->find(currentCbcId) != cbc_capbank_map->end())
                     currentCapBankId = cbc_capbank_map->find(currentCbcId)->second;
-                if (paobject_capbank_map->find(currentCapBankId) != paobject_capbank_map->end())
-                    currentCCCapBank = paobject_capbank_map->find(currentCapBankId)->second;
 
-
-                if ( currentCCCapBank != NULL )
+                if (CtiCCCapBankPtr currentCCCapBank = findInMap(currentCapBankId, paobject_capbank_map))
                 {
                     if (currentCCCapBank->isControlDeviceTwoWay())
                     {
@@ -6843,18 +6861,14 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
             while ( rdr() )
             {
                 long currentCbcId;
-                long currentCapBankId;
+                long currentCapBankId = 0;
                 rdr["deviceid"] >> currentCbcId;
 
                 CtiCCCapBankPtr currentCCCapBank = NULL;
 
                 if (cbc_capbank_map->find(currentCbcId) != cbc_capbank_map->end())
                     currentCapBankId = cbc_capbank_map->find(currentCbcId)->second;
-                if (paobject_capbank_map->find(currentCapBankId) != paobject_capbank_map->end())
-                    currentCCCapBank = paobject_capbank_map->find(currentCapBankId)->second;
-
-
-                if ( currentCCCapBank != NULL )
+                if (CtiCCCapBankPtr currentCCCapBank = findInMap(currentCapBankId, paobject_capbank_map))
                 {
                     if (stringContainsIgnoreCase(currentCCCapBank->getControlDeviceType(), "CBC 702"))
                     {
@@ -6930,21 +6944,11 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, PaoId
             {
                 long currentPaoId;
                 rdr["paobjectid"] >> currentPaoId;
-                if (paobject_capbank_map->find(currentPaoId) != paobject_capbank_map->end())
-                    currentCCCapBank = paobject_capbank_map->find(currentPaoId)->second;
-                else
-                    currentCCCapBank = NULL;
-
-                if (paobject_feeder_map->find(currentPaoId) != paobject_feeder_map->end())
-                    currentFeeder = paobject_feeder_map->find(currentPaoId)->second;
-                else
-                    currentFeeder = NULL;
-
-                if (paobject_subbus_map->find(currentPaoId) != paobject_subbus_map->end())
-                    currentSubBus = paobject_subbus_map->find(currentPaoId)->second;
-                else
-                    currentSubBus = NULL;
-
+                
+                currentCCCapBank = findInMap(currentPaoId, paobject_capbank_map);
+                currentFeeder = findInMap(currentPaoId, paobject_feeder_map);
+                currentSubBus = findInMap(currentPaoId, paobject_subbus_map);
+                
                 currentStation = findSubstationByPAObjectID(currentPaoId);
                 currentArea = findAreaByPAObjectID(currentPaoId);
                 currentSpArea = findSpecialAreaByPAObjectID(currentPaoId);
@@ -7066,12 +7070,13 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
                     }
                 }
                 //Get all banks on SubBus all Feeders.
-                if (paobject_subbus_map->find(currentBusId) == paobject_subbus_map->end())
+                CtiCCSubstationBusPtr subBusPtr = findInMap(currentBusId, paobject_subbus_map);
+                if (subBusPtr == NULL)
                 {
                     continue;
                 }
 
-                CtiCCSubstationBusPtr subBusPtr = paobject_subbus_map->find(currentBusId)->second;
+                
                 if (!subBusPtr->addMonitorPoint(currentPointId, currentMonPoint))
                 {
                     currentMonPoint.reset();
@@ -7140,11 +7145,11 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
                 rdr["pointid"] >> currentPointId;
                 rdr["substationbusid"] >> currentBusId;
 
-                if ( paobject_subbus_map->find(currentBusId) ==  paobject_subbus_map->end())
+                CtiCCSubstationBusPtr bus = findInMap(currentBusId, paobject_subbus_map);
+                if ( bus == NULL)
                 {
                     continue;
                 }
-                CtiCCSubstationBusPtr bus = paobject_subbus_map->find(currentBusId)->second;
                 CtiCCMonitorPointPtr currentMonPoint = bus->getMonitorPoint(currentPointId);
                 if (currentMonPoint != NULL)
                     currentMonPoint->setDynamicData(rdr);
@@ -7171,19 +7176,15 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
             {
                 requiredPointResponses.erase( std::make_pair(pointResponse.getPointId(), pointResponse.getDeviceId() ) );
 
-                PaoIdToCapBankMap::const_iterator bank_itr = paobject_capbank_map->find(pointResponse.getDeviceId());
-                if (bank_itr != paobject_capbank_map->end())
+                if (CtiCCCapBankPtr bank = findInMap(pointResponse.getDeviceId(), paobject_capbank_map))
                 {
-                    CtiCCCapBankPtr bank = bank_itr->second;
                     bank->addPointResponse(pointResponse);
                 }
 
-                if ( paobject_subbus_map->find(pointResponse.getSubBusId()) ==  paobject_subbus_map->end())
+                if (CtiCCSubstationBusPtr bus = findInMap(pointResponse.getSubBusId(), paobject_subbus_map))
                 {
-                    continue;
+                    bus->updatePointResponse(PointResponseKey(pointResponse.getDeviceId(),pointResponse.getPointId()), PointResponsePtr(new PointResponse(pointResponse)));
                 }
-                CtiCCSubstationBusPtr bus = paobject_subbus_map->find(pointResponse.getSubBusId())->second;
-                bus->updatePointResponse(PointResponseKey(pointResponse.getDeviceId(),pointResponse.getPointId()), PointResponsePtr(new PointResponse(pointResponse)));
 
             }
             for each ( std::pair<long, int>  thePair in requiredPointResponses )
@@ -7195,9 +7196,8 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
                 }
 
                 PointResponse defaultPointResponse(thePair.first, thePair.second, 0, _IVVC_DEFAULT_DELTA, false, busId);
-                if (paobject_capbank_map->find(thePair.second) != paobject_capbank_map->end())
+                if (CtiCCCapBankPtr bank = findInMap(thePair.second, paobject_capbank_map))
                 {
-                    CtiCCCapBankPtr bank = paobject_capbank_map->find(thePair.second)->second;
                     bank->addPointResponse(defaultPointResponse);
                 }
             }
@@ -7220,11 +7220,11 @@ bool CtiCCSubstationBusStore::loadCapBankMonitorPoint(CtiCCMonitorPointPtr curre
                                                         PaoIdToSubBusMap *paobject_subbus_map,
                                                         PointIdToCapBankMultiMap *pointid_capbank_map)
 {
-    if (paobject_capbank_map->find(currentMonPoint->getDeviceId()) == paobject_capbank_map->end())
+    CtiCCCapBankPtr currentBankPtr = findInMap(currentMonPoint->getDeviceId(), paobject_capbank_map);
+    if (currentBankPtr == NULL)
     {
         return false;
     }
-    CtiCCCapBankPtr currentBankPtr = paobject_capbank_map->find(currentMonPoint->getDeviceId())->second;
 
     //This is to store and track the monitor point
     if (!currentBankPtr->addMonitorPoint(currentMonPoint))
@@ -7240,21 +7240,20 @@ bool CtiCCSubstationBusStore::loadCapBankMonitorPoint(CtiCCMonitorPointPtr curre
         //This is an orphaned Bank
         return false;
     }
-
-    if (paobject_feeder_map->find(currentBankPtr->getParentId()) == paobject_feeder_map->end())
+    CtiCCFeederPtr feederPtr = findInMap(currentBankPtr->getParentId(), paobject_feeder_map);
+    if (feederPtr == NULL)
     {
         return false;
     }
-    CtiCCFeederPtr feederPtr = paobject_feeder_map->find(currentBankPtr->getParentId())->second;
 
     if(ciStringEqual(feederPtr->getStrategy()->getControlMethod(),ControlStrategy::SubstationBusControlMethod))
     {
         //Get all banks on SubBus all Feeders.
-        if (paobject_subbus_map->find(feederPtr->getParentId()) == paobject_subbus_map->end())
+        CtiCCSubstationBusPtr subBusPtr = findInMap(feederPtr->getParentId(), paobject_subbus_map);
+        if (subBusPtr == NULL)
         {
             return false;
         }
-        CtiCCSubstationBusPtr subBusPtr = paobject_subbus_map->find(feederPtr->getParentId())->second;
         for each (CtiCCFeeder* feeder in subBusPtr->getCCFeeders())
         {
             for each (CtiCCCapBankPtr bank in feeder->getCCCapBanks())
