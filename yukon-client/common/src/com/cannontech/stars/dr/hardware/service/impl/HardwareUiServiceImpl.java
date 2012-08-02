@@ -656,9 +656,6 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             lmHardware.setDeviceLabel(lmHardware.getManufacturerSerialNumber());
         }
         
-        lmHardware.setAlternateTrackingNumber(SqlUtils.convertStringToDbValue(hardware.getAltTrackingNumber()));
-        lmHardware.setNotes(SqlUtils.convertStringToDbValue(hardware.getDeviceNotes()));
-        
         return lmHardware;
     }
     
@@ -681,10 +678,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         if(StringUtils.isBlank(meterHardware.getDeviceLabel())){
             meterHardware.setDeviceLabel(meterHardware.getMeterNumber());
         }
-        
-        meterHardware.setAlternateTrackingNumber(SqlUtils.convertStringToDbValue(hardware.getAltTrackingNumber()));
-        meterHardware.setNotes(SqlUtils.convertStringToDbValue(hardware.getDeviceNotes()));
-        
+                
         return meterHardware;
     }
     
@@ -703,9 +697,6 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(liteInventoryBase.getDeviceID());
             liteInventoryBase.setDeviceLabel(device.getPaoName());
         }
-        
-        liteInventoryBase.setAlternateTrackingNumber(SqlUtils.convertStringToDbValue(hardware.getAltTrackingNumber()));
-        liteInventoryBase.setNotes(SqlUtils.convertStringToDbValue(hardware.getDeviceNotes()));
         
         return liteInventoryBase;
     }
@@ -748,8 +739,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             liteInventoryBase.setDeviceID(hardware.getDeviceId());
         }
         
-        liteInventoryBase.setAlternateTrackingNumber(SqlUtils.convertStringToDbValue(hardware.getAltTrackingNumber()));
-        liteInventoryBase.setNotes(SqlUtils.convertStringToDbValue(hardware.getDeviceNotes()));
+        liteInventoryBase.setAlternateTrackingNumber(hardware.getAltTrackingNumber());
+        liteInventoryBase.setNotes(hardware.getDeviceNotes());
     }
 
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {

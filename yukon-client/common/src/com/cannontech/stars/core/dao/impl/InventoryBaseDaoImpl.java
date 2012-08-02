@@ -55,6 +55,7 @@ import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public class InventoryBaseDaoImpl implements InventoryBaseDao, InitializingBean {
@@ -671,9 +672,9 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao, InitializingBean 
             p.addValue("ReceiveDate", new Timestamp(o.getReceiveDate()));
             p.addValue("InstallDate", new Timestamp(o.getInstallDate()));
             p.addValue("RemoveDate", new Timestamp(o.getRemoveDate()));
-            p.addValue("AlternateTrackingNumber", o.getAlternateTrackingNumber());
+            p.addValue("AlternateTrackingNumber", SqlUtils.convertStringToDbValue(Strings.nullToEmpty(o.getAlternateTrackingNumber())));
             p.addValue("VoltageID", o.getVoltageID());
-            p.addValue("Notes", o.getNotes());
+            p.addValue("Notes", SqlUtils.convertStringToDbValue(Strings.nullToEmpty(o.getNotes())));
             p.addValue("DeviceID", o.getDeviceID());
             p.addValue("DeviceLabel", o.getDeviceLabel());
             p.addValue("CurrentStateID", o.getCurrentStateID());

@@ -19,12 +19,12 @@ public class Hardware {
     private String displayType;
     private String categoryName;
     private String serialNumber;
-    private String altTrackingNumber = "";
+    private String altTrackingNumber;
     private Integer voltageEntryId;
     private Date fieldInstallDate;
     private Date fieldReceiveDate;
     private Date fieldRemoveDate;
-    private String deviceNotes = "";
+    private String deviceNotes;
     private int routeId = 0;
     private Integer serviceCompanyId;
     private Integer warehouseId;
