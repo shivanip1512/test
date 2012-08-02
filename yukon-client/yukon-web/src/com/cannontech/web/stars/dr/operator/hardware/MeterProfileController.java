@@ -42,6 +42,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.HardwareModelHelper;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
+import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.google.common.collect.Sets;
 
 @RequestMapping("/operator/hardware/mp/*")
@@ -54,6 +55,7 @@ public class MeterProfileController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private HardwareModelHelper helper;
+    @Autowired private OperatorAccountService operatorAccountService;
     
     /**
      * View page GET
@@ -137,6 +139,7 @@ public class MeterProfileController {
         hardware.setHardwareType(HardwareType.NON_YUKON_METER);
         hardware.setHardwareTypeEntryId(typeEntry.getEntryID());
         hardware.setFieldInstallDate(new Date());
+        hardware.setAccountId(fragment.getAccountId());
         
         for (SwitchAssignment assignement : hardwareUiService.getSwitchAssignments(new ArrayList<Integer>(), fragment.getAccountId())) {
             hardware.getSwitchAssignments().add(assignement);
@@ -166,9 +169,9 @@ public class MeterProfileController {
                                  ModelMap model, 
                                  YukonUserContext context,
                                  HttpServletRequest request,
-                                 FlashScope flash,
-                                 AccountInfoFragment fragment) throws ServletRequestBindingException {
+                                 FlashScope flash) throws ServletRequestBindingException {
         
+        AccountInfoFragment fragment = operatorAccountService.getAccountInfoFragment(hardware.getAccountId());
         AccountInfoFragmentHelper.setupModelMapBasics(fragment, model);
         int accountId = fragment.getAccountId();
         

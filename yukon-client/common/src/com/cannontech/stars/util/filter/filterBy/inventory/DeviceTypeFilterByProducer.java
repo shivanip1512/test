@@ -25,7 +25,7 @@ public class DeviceTypeFilterByProducer extends AbstractInventoryFilterByProduce
 
         int defId = inventoryDao.getYukonDefinitionIdByEntryId(filterId);
         
-        boolean isMCT = defId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT;
+        boolean isMCT = defId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER;
         if (isMCT) {
         	filterList.add(0, MCT_METER);
         	return filterList;

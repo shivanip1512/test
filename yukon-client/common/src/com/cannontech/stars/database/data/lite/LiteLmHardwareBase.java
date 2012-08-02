@@ -1,7 +1,5 @@
 package com.cannontech.stars.database.data.lite;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
@@ -163,16 +161,4 @@ public class LiteLmHardwareBase extends LiteInventoryBase {
 	public boolean isThermostat() {
 		return isOneWayThermostat() || isTwoWayThermostat();
 	}
-	
-	@Override
-	public String getDeviceLabel() {
-		
-		String deviceLabel = super.getDeviceLabel();
-		if (!StringUtils.isBlank(deviceLabel)) {
-			return deviceLabel;
-		}
-		
-		return this.manufacturerSerialNumber;
-	}
-
 }

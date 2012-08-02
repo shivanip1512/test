@@ -92,14 +92,15 @@ jQuery(document).delegate('#cancelDeleteBtn', 'click', function() {
                                     <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardware.serialNumber"/></th>
                                     <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardware.label"/></th>
                                 </tr>
-                                <c:forEach var="switch" items="${hardware.switchAssignments}" varStatus="switchRow">
+
+                                <c:forEach var="switchAssignment" items="${hardware.switchAssignments}" varStatus="switchRow">
                                     <tr>
                                         <td nowrap="nowrap">
-                                            <tags:checkbox path="switchAssignments[${switchRow.index}].assigned" /><span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${switch.serialNumber}</spring:escapeBody></span>
+                                            <tags:checkbox path="switchAssignments[${switchRow.index}].assigned" /><span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${switchAssignment.serialNumber}</spring:escapeBody></span>
                                             <form:hidden path="switchAssignments[${switchRow.index}].inventoryId"/>
                                             <form:hidden path="switchAssignments[${switchRow.index}].serialNumber"/>
                                         </td>
-                                        <td nowrap="nowrap"><spring:escapeBody htmlEscape="true">${switch.label}</spring:escapeBody></td>
+                                        <td nowrap="nowrap"><spring:escapeBody htmlEscape="true">${switchAssignment.label}</spring:escapeBody></td>
                                     </tr>
                                     
                                 </c:forEach>
@@ -131,7 +132,7 @@ jQuery(document).delegate('#cancelDeleteBtn', 'click', function() {
                 </cti:checkRolesAndProperties>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <cti:button nameKey="save" type="submit" styleClass="f_blocker"/>
+                <cti:button nameKey="save" type="submit"/>
 
                 <cti:displayForPageEditModes modes="EDIT">
                     <cti:button nameKey="delete" id="deleteBtn"/>

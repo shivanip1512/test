@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.constants.DisplayableSelectionList;
 import com.cannontech.common.constants.SelectionListCategory;
 import com.cannontech.common.constants.YukonDefinition;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListEnum;
@@ -26,15 +27,24 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole.MeteringType;
+import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.dr.selectionList.dao.SelectionListDao;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFragment;
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.SortedSetMultimap;
 
 @Controller
@@ -42,11 +52,13 @@ import com.google.common.collect.SortedSetMultimap;
 public class ListController {
     private final static String baseKey = "yukon.web.modules.adminSetup.list.";
 
-    private YukonListDao yukonListDao;
-    private SelectionListDao selectionListDao;
-    private SelectionListService selectionListService;
-    private EnergyCompanyService energyCompanyService;
-    private ObjectFormattingService objectFormattingService;
+    @Autowired private YukonListDao yukonListDao;
+    @Autowired private SelectionListDao selectionListDao;
+    @Autowired private SelectionListService selectionListService;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private ObjectFormattingService objectFormattingService;
+    @Autowired private EnergyCompanyRolePropertyDao ecRolePropertyDao; 
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
 
     private Validator validator = new SimpleValidator<SelectionListDto>(SelectionListDto.class) {
         @Override
@@ -102,7 +114,7 @@ public class ListController {
         YukonSelectionList list = yukonListDao.getYukonSelectionList(listId);
         model.addAttribute("list", list);
         model.addAttribute("isInherited", selectionListService.isListInherited(ecId, list));
-        addListDefinitionsToModel(model, list.getEnergyCompanyId(), list.getType(), context);
+        addListDefinitionsToModel(model, list, context);
 
         model.addAttribute("mode", PageEditMode.VIEW);
         return "list/view.jsp";
@@ -126,7 +138,7 @@ public class ListController {
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(),
                                                   list.getEnergyCompanyId());
 
-        addListDefinitionsToModel(model, list.getEnergyCompanyId(), list.getType(), context);
+        addListDefinitionsToModel(model, list.getYukonSelectionList(), context);
 
         model.addAttribute("mode", PageEditMode.EDIT);
         return "list/edit.jsp";
@@ -140,17 +152,43 @@ public class ListController {
         model.addAttribute("list", list);
         
         energyCompanyService.verifyEditPageAccess(context.getYukonUser(), list.getEnergyCompanyId());
-        addListDefinitionsToModel(model, list.getEnergyCompanyId(), list.getType(), context);
+        addListDefinitionsToModel(model, list, context);
 
         return "list/entry.jsp";
     }
 
-    private void addListDefinitionsToModel(ModelMap model, int ecId, YukonSelectionListEnum type,
+    private void addListDefinitionsToModel(ModelMap model, YukonSelectionList list,
                                            YukonUserContext context) {
         List<YukonDefinition> listDefinitions =
-            selectionListService.getValidDefinitions(ecId, type);
+            selectionListService.getValidDefinitions(list.getEnergyCompanyId(), list.getType());
         listDefinitions =
             objectFormattingService.sortDisplayableValues(listDefinitions, null, null, context);
+
+        YukonEnergyCompany energyCompany =
+            yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
+        MeteringType meteringType =
+            ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION,
+                                                   EnergyCompanyRole.MeteringType.class,
+                                                   energyCompany);
+        /*
+         * For metering type yukon (z_meter_mct_base_desig = yukon) the  "Meter" type should be
+         * displayed in selection list only if entry with the "Meter" type already exists.
+         */
+        if (meteringType == MeteringType.yukon) {
+            List<YukonListEntry> entries = list.getYukonListEntries();
+            final Predicate<YukonListEntry> meterTypeEntry = new Predicate<YukonListEntry>() {
+                public boolean apply(YukonListEntry entry) {
+                    return entry.getDefinition() == YukonDefinition.DEV_TYPE_METER;
+                }
+            };
+            final List<YukonListEntry> meterTypeEntries = Lists.newArrayList(Iterables.filter(entries, meterTypeEntry));
+            if (meterTypeEntries.isEmpty()) {
+                // If the entry with the "Meter" type was not found, the type is removed from the
+                // selection list.
+                listDefinitions.remove(YukonDefinition.DEV_TYPE_METER);
+            }
+        }
+
         model.addAttribute("listDefinitions", listDefinitions);
         model.addAttribute("usesType", !listDefinitions.isEmpty());
     }
@@ -223,30 +261,5 @@ public class ListController {
         model.addAttribute("listId", list.getListId());
         model.addAttribute("ecId", ecId);
         return "redirect:view";
-    }
-
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
-    }
-
-    @Autowired
-    public void setSelectionListDao(SelectionListDao selectionListDao) {
-        this.selectionListDao = selectionListDao;
-    }
-
-    @Autowired
-    public void setSelectionListService(SelectionListService selectionListService) {
-        this.selectionListService = selectionListService;
-    }
-
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-
-    @Autowired
-    public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
-        this.objectFormattingService = objectFormattingService;
     }
 }

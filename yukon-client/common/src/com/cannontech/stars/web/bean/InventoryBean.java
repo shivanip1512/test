@@ -393,7 +393,7 @@ public class InventoryBean {
 				deviceName = litePao.getPaoName();
 			}
 			else if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {
-				deviceType = getEnergyCompany().getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT).getEntryText();
+				deviceType = getEnergyCompany().getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER).getEntryText();
 				if (liteInv.getDeviceLabel() != null && liteInv.getDeviceLabel().length() > 0)
 					deviceName = liteInv.getDeviceLabel();
 			}

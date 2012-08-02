@@ -31,9 +31,8 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     YUKON_METER(CtiUtilities.NONE_ZERO_ID, MCT, METER, null, false, false, false),
 
     /* These are meters that only exist in stars in the MeterHardwareBase table. 
-     * They do not represent MCT's or link to pao tables.
-     * The yukon list entry text for their definition is 'MCT' which is unfortunate and should probably change.*/
-    NON_YUKON_METER(YUK_DEF_ID_DEV_TYPE_MCT, InventoryCategory.NON_YUKON_METER, METER, null, false, false, false),
+     * They do not represent MCT's or link to pao tables.*/
+    NON_YUKON_METER(YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER, InventoryCategory.NON_YUKON_METER, METER, null, false, false, false),
 
     /* Switches */
     LCR_6600_ZIGBEE(YUK_DEF_ID_DEV_TYPE_LCR_6600_ZIGBEE, TWO_WAY_RECEIVER, SWITCH, SEP, false, false, false),

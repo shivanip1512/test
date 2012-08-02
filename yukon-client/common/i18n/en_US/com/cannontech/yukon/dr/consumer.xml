@@ -270,8 +270,8 @@
 
     <!-- Hardware Types -->
     <entry key="yukon.dr.consumer.hardware.type.EXPRESSSTAT">ExpressStat</entry>
-    <entry key="yukon.dr.consumer.hardware.type.YUKON_METER">Meter</entry>
-    <entry key="yukon.dr.consumer.hardware.type.MCT">MCT</entry>
+    <entry key="yukon.dr.consumer.hardware.type.YUKON_METER">MCT</entry>
+    <entry key="yukon.dr.consumer.hardware.type.NON_YUKON_METER">Meter</entry>
     <entry key="yukon.dr.consumer.hardware.type.COMMERCIAL_EXPRESSSTAT">Commercial ExpressStat</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_5000_EXPRESSCOM">LCR 5000 ExpressCom</entry>
     <entry key="yukon.dr.consumer.hardware.type.LCR_5000_VERSACOM">LCR 5000 VERSACOM</entry>

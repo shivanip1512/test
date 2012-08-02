@@ -26,6 +26,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -172,7 +173,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             } else {
                 /* Not attached to a real MCT yet. Use label for name if you can */
                 /* and use the MCT list enty of the energy company as the device type. */
-                YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
+                YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
                 hardware.setDisplayType(mctDeviceType.getEntryText());
                 if (StringUtils.isNotBlank(liteInventoryBase.getDeviceLabel())) {
                     hardware.setDisplayName(liteInventoryBase.getDeviceLabel());
@@ -189,7 +190,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             HardwareType hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
             hardware.setHardwareType(hardwareType);
             
-            YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
+            YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
             String deviceType = mctDeviceType.getEntryText();
             hardware.setDisplayName(deviceType + " " + meterNumber);
             hardware.setDisplayType(deviceType);
@@ -444,7 +445,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 if (hardware.getAccountId() > 0) {
                     starsInventoryBaseService.addInstallHardwareEvent(inventoryBase, energyCompany, user);
                 }
-                
+                                
                 // label for Logging hardware creation
                 deviceLabel = inventoryBase.getDeviceLabel();
             } else {
@@ -500,7 +501,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         
         return inventoryId;
     }
-    
+   
     @Override
     public void addDeviceToAccount(LiteInventoryBase liteInventoryBase, int accountId, boolean fromAccount, 
                                    LiteStarsEnergyCompany energyCompany,
@@ -651,6 +652,13 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             lmHardware.setRouteID(hardware.getRouteId());
         }
         
+        if(StringUtils.isBlank(lmHardware.getDeviceLabel())){
+            lmHardware.setDeviceLabel(lmHardware.getManufacturerSerialNumber());
+        }
+        
+        lmHardware.setAlternateTrackingNumber(SqlUtils.convertStringToDbValue(hardware.getAltTrackingNumber()));
+        lmHardware.setNotes(SqlUtils.convertStringToDbValue(hardware.getDeviceNotes()));
+        
         return lmHardware;
     }
     
@@ -669,7 +677,14 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         meterHardware.setMeterNumber(hardware.getMeterNumber());
         YukonListEntry typeEntry = energyCompany.getYukonListEntry(HardwareType.NON_YUKON_METER.getDefinitionId());
         meterHardware.setMeterTypeID(typeEntry.getEntryID());
-
+        
+        if(StringUtils.isBlank(meterHardware.getDeviceLabel())){
+            meterHardware.setDeviceLabel(meterHardware.getMeterNumber());
+        }
+        
+        meterHardware.setAlternateTrackingNumber(SqlUtils.convertStringToDbValue(hardware.getAltTrackingNumber()));
+        meterHardware.setNotes(SqlUtils.convertStringToDbValue(hardware.getDeviceNotes()));
+        
         return meterHardware;
     }
     
@@ -684,6 +699,14 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         /* InventoryBase fields from Dto*/
         setInventoryFieldsFromDto(liteInventoryBase, hardware);
         
+        if(StringUtils.isBlank(liteInventoryBase.getDeviceLabel())){
+            LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(liteInventoryBase.getDeviceID());
+            liteInventoryBase.setDeviceLabel(device.getPaoName());
+        }
+        
+        liteInventoryBase.setAlternateTrackingNumber(SqlUtils.convertStringToDbValue(hardware.getAltTrackingNumber()));
+        liteInventoryBase.setNotes(SqlUtils.convertStringToDbValue(hardware.getDeviceNotes()));
+        
         return liteInventoryBase;
     }
     
@@ -692,8 +715,10 @@ public class HardwareUiServiceImpl implements HardwareUiService {
      */
     private void setInventoryFieldsFromDto(LiteInventoryBase liteInventoryBase, Hardware hardware) {
         liteInventoryBase.setAccountID(hardware.getAccountId());
-        liteInventoryBase.setDeviceLabel(hardware.getDisplayLabel());
-        liteInventoryBase.setAlternateTrackingNumber(hardware.getAltTrackingNumber());
+        
+        if(!StringUtils.isBlank(hardware.getDisplayLabel())){
+            liteInventoryBase.setDeviceLabel(hardware.getDisplayLabel());
+        } 
         
         if (hardware.getVoltageEntryId() != null) {
             liteInventoryBase.setVoltageID(hardware.getVoltageEntryId());
@@ -709,9 +734,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         
         if (hardware.getFieldRemoveDate() != null) {
             liteInventoryBase.setRemoveDate(hardware.getFieldRemoveDate().getTime());
-        }
-        
-        liteInventoryBase.setNotes(hardware.getDeviceNotes());
+        } 
         
         if (hardware.getDeviceStatusEntryId() != null) {
             liteInventoryBase.setCurrentStateID(hardware.getDeviceStatusEntryId());
@@ -724,6 +747,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         if (hardware.getDeviceId() != null) {
             liteInventoryBase.setDeviceID(hardware.getDeviceId());
         }
+        
+        liteInventoryBase.setAlternateTrackingNumber(SqlUtils.convertStringToDbValue(hardware.getAltTrackingNumber()));
+        liteInventoryBase.setNotes(SqlUtils.convertStringToDbValue(hardware.getDeviceNotes()));
     }
 
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {

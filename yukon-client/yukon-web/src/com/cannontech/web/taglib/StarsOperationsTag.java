@@ -69,7 +69,7 @@ public class StarsOperationsTag extends YukonTagSupport {
 				if (YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY
 						.equals(custSelectionList.getListName())) {
 					YukonListEntry devTypeMCT = liteEC
-							.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
+							.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER);
 
 					StarsSelectionListEntry[] selectionListValues = custSelectionList
 							.getStarsSelectionListEntry();

@@ -862,9 +862,9 @@ public class OperatorHardwareController {
             model.addAttribute("showDeviceName", true);
             if (type == HardwareType.YUKON_METER) {
                 model.addAttribute("showMeterConfigAction", true);
-            }
-            if (rolePropertyDao.checkRole(YukonRole.METERING, context.getYukonUser())) {
-                model.addAttribute("showMeterDetailAction", true);
+                if (rolePropertyDao.checkRole(YukonRole.METERING, context.getYukonUser())) {
+                    model.addAttribute("showMeterDetailAction", true);
+                }
             }
             if (allowAccountEditing) {
                 if (inventoryChecking) {

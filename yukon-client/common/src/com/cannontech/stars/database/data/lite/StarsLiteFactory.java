@@ -1600,7 +1600,7 @@ public class StarsLiteFactory {
 		}
 		else if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
-					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT),
+					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER),
 					DeviceType.class) );
 			
 			MCT mct = new MCT();

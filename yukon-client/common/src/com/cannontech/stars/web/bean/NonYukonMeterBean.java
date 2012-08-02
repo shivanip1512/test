@@ -81,7 +81,7 @@ public class NonYukonMeterBean
         {
             availableMeterTypes = new YukonSelectionList();
             List<YukonListEntry> tempList = Lists.newArrayList();
-            tempList.add(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT));
+            tempList.add(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_NON_YUKON_METER));
             availableMeterTypes.setYukonListEntries(tempList);
         }
         return availableMeterTypes;
