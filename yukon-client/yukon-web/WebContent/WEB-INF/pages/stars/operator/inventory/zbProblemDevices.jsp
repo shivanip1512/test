@@ -28,9 +28,8 @@
                     <cti:param name="accountId" value="${device.first.accountId}"/>
                     <cti:param name="energyCompanyId" value="${device.first.energyCompanyId}"/>
                 </cti:url>
-                <cti:url value="/operator/Hardware/InventoryDetail.jsp" var="invDetailUrl">
-                    <cti:param name="src" value="Inventory"/>
-                    <cti:param name="InvId" value="${device.first.identifier.inventoryId}"/>
+				<cti:url value="/spring/stars/operator/inventory/view" var="invDetailUrl">
+                    <cti:param name="inventoryId" value="${device.first.identifier.inventoryId}"/>
                 </cti:url>
                 <cti:url value="/spring/stars/operator/account/view" var="accountUrl">
                     <cti:param name="accountId" value="${device.first.accountId}"/>

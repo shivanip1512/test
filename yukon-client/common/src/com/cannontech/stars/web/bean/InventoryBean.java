@@ -274,19 +274,6 @@ public class InventoryBean {
 		String uri = req.getRequestURI();
 		String pageName = uri.substring( uri.lastIndexOf('/') + 1 );
 		
-		String srcStr = "";
-		if ((style & HTML_STYLE_SELECT_INVENTORY) != 0
-			|| (style & HTML_STYLE_SELECT_LM_HARDWARE) != 0)
-		{
-			srcStr = "&src=SelectInv";
-		}
-		else if ((style & HTML_STYLE_LIST_INVENTORY) != 0) {
-			srcStr = "&src=Inventory";
-		}
-		else if (style == HTML_STYLE_INVENTORY_SET) {
-			srcStr = "&src=ResultSet";
-		}
-		
 		if (page < 1) page = 1;
 		int maxPageNo = (int) Math.ceil(numberOfHardware * 1.0 / pageSize);
 		if (page > maxPageNo) page = maxPageNo;
@@ -418,7 +405,7 @@ public class InventoryBean {
 	        
 			htmlBuf.append("          <td class='TableCell' width='17%'>");
 			if (liteInv.getAccountID() == 0) {
-			    htmlBuf.append("<a href='").append(req.getContextPath()).append("/operator/Hardware/InventoryDetail.jsp?InvId=").append(liteInv.getInventoryID()).append(srcStr).append("'>").append(deviceName).append("</a>");
+                htmlBuf.append("<a href='").append(req.getContextPath()).append("/spring/stars/operator/inventory/view?inventoryId=").append(liteInv.getInventoryID()).append("'>").append(deviceName).append("</a>");
 			} else if (!showEnergyCompany || member.equals(energyCompany) || isManagable) {
 			    htmlBuf.append("<a href='").append(req.getContextPath()).append("/spring/stars/operator/hardware/edit?accountId=").append(liteInv.getAccountID()).append("&inventoryId=").append(liteInv.getInventoryID()).append("'>").append(deviceName).append("</a>");
 			} else {
