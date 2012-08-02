@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/25/2012 2:06:34 PM                         */
+/* Created on:     8/2/2012 5:49:04 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -8221,6 +8221,32 @@ INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 
 /*==============================================================*/
+/* Table: UserGroup                                             */
+/*==============================================================*/
+create table UserGroup (
+   UserGroupId          numeric              not null,
+   UserGroupName        varchar(1000)        not null,
+   UserGroupDescription varchar(200)         not null,
+   constraint PK_UserGroup primary key (UserGroupId)
+)
+go
+
+INSERT INTO UserGroup VALUES(-1, 'Admin User Group', 'A user group that gives limited user interaction to its users.');
+
+/*==============================================================*/
+/* Table: UserGroupToYukonGroupMapping                          */
+/*==============================================================*/
+create table UserGroupToYukonGroupMapping (
+   UserGroupId          numeric              not null,
+   GroupId              numeric              not null,
+   constraint PK_UserGroupToYukonGroupMap primary key (UserGroupId, GroupId)
+)
+go
+
+INSERT INTO UserGroupToYukonGroupMapping VALUES(-1, -1);
+INSERT INTO UserGroupToYukonGroupMapping VALUES(-1, -2);
+
+/*==============================================================*/
 /* Table: UserPaoPermission                                     */
 /*==============================================================*/
 create table UserPaoPermission (
@@ -9730,14 +9756,15 @@ create table YukonUser (
    AuthType             varchar(16)          not null,
    LastChangedDate      datetime             not null,
    ForceReset           char(1)              not null,
+   UserGroupId          numeric              null,
    constraint PK_YUKONUSER primary key (UserID)
 )
 go
 
-INSERT INTO yukonuser VALUES (-9999, '(none)', '(none)', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
-INSERT INTO yukonuser VALUES (-100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
-INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
-INSERT INTO yukonuser VALUES (-1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'N');
+INSERT INTO yukonuser VALUES (-9999, '(none)', '(none)', 'Enabled', 'PLAIN', '01-JAN-2000', 'N', null);
+INSERT INTO yukonuser VALUES (-100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN', '01-JAN-2000', 'N', -1);
+INSERT INTO yukonuser VALUES (-2, 'yukon', 'yukon', 'Enabled', 'PLAIN', '01-JAN-2000', 'N', -1);
+INSERT INTO yukonuser VALUES (-1, 'admin', 'admin', 'Enabled', 'PLAIN', '01-JAN-2000', 'N', -1);
 
 /*==============================================================*/
 /* Index: Indx_YukonUser_Username                               */
@@ -9746,23 +9773,6 @@ create unique index Indx_YukonUser_Username on YukonUser (
 UserName ASC
 )
 go
-
-/*==============================================================*/
-/* Table: YukonUserGroup                                        */
-/*==============================================================*/
-create table YukonUserGroup (
-   UserID               numeric              not null,
-   GroupID              numeric              not null,
-   constraint PK_YUKONUSERGROUP primary key (UserID, GroupID)
-)
-go
-
-INSERT INTO YukonUserGroup VALUES(-1,-1);
-INSERT INTO YukonUserGroup VALUES(-1,-2);
-INSERT INTO YukonUserGroup VALUES(-2,-1);
-INSERT INTO YukonUserGroup VALUES(-2,-2);
-INSERT INTO YukonUserGroup VALUES(-100,-1);
-INSERT INTO YukonUserGroup VALUES(-100,-2);
 
 /*==============================================================*/
 /* Table: YukonWebConfiguration                                 */
@@ -13051,6 +13061,18 @@ alter table ThermostatEventHistory
          on delete cascade
 go
 
+alter table UserGroupToYukonGroupMapping
+   add constraint FK_UserGrpYukGrpMap_UserGroup foreign key (UserGroupId)
+      references UserGroup (UserGroupId)
+         on delete cascade
+go
+
+alter table UserGroupToYukonGroupMapping
+   add constraint FK_UserGrpYukGrpMap_YukGrp foreign key (GroupId)
+      references YukonGroup (GroupID)
+         on delete cascade
+go
+
 alter table UserPaoPermission
    add constraint FK_USERPAOP_REF_YKUSR_YUKONUSE foreign key (UserID)
       references YukonUser (UserID)
@@ -13126,14 +13148,10 @@ alter table YukonSelectionList
       references EnergyCompany (EnergyCompanyID)
 go
 
-alter table YukonUserGroup
-   add constraint FK_YkUsGr_YkGr foreign key (GroupID)
-      references YukonGroup (GroupID)
-go
-
-alter table YukonUserGroup
-   add constraint FK_YUKONUSE_REF_YKUSG_YUKONUSE foreign key (UserID)
-      references YukonUser (UserID)
+alter table YukonUser
+   add constraint FK_YukonUser_UserGroup foreign key (UserGroupId)
+      references UserGroup (UserGroupId)
+         on delete set null
 go
 
 alter table ZBControlEvent
