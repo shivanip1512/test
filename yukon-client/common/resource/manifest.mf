@@ -65,4 +65,5 @@ Class-Path: ./
  jaxb-impl.jar 
  exificient.jar 
  xml-apis.jar
+ jasypt-1.9.0.jar 
  

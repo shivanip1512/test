@@ -12,14 +12,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public interface YukonUserPasswordDao {
     /**
-     * Checks that the password matches the stored password for the user.
-     * @return true if password matches value stored in the password field
+     * Gets the digested password for the given user.
      */
-    public boolean checkPassword(LiteYukonUser user, String password);
+    public String getDigest(LiteYukonUser user) throws IllegalArgumentException;
 
     /**
-     * Updates the stored password for the user.
+     * Updates the stored digested password for the user.
      * @return true if update was successful
      */
-    public boolean setPassword(LiteYukonUser user, AuthType authType, String newPassword);
+    public boolean setPassword(LiteYukonUser user, AuthType authType, String newDigest);
 }

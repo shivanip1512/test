@@ -9,9 +9,8 @@
     <cti:url var="generatedPasswordUrl" value="/spring/stars/operator/account/generatePassword" />
     
     <script>
-    
         function generatePassword() {
-            var dataHash = {loginGroupName : $('loginGroupName').value}
+            var dataHash = {loginGroupName : $('loginGroupName').value};
             var userId = $('userId');
             if (userId != null && userId.value != 0) {
                 dataHash[ 'userId'] = userId.value;
@@ -66,8 +65,10 @@
                     <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
                         <button type="button" onclick="generatePassword();"><i:inline key=".generatePassword" /></button>
                         <br>
-                        <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()" />
-                        <i:inline key=".showPassword" />
+                        <label>
+                            <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/>
+                            <i:inline key=".showPassword"/>
+                        </label>
                     </tags:nameValue2>
                 </c:if>
            </cti:displayForPageEditModes>

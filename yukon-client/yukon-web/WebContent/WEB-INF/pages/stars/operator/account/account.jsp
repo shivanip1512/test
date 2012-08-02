@@ -449,7 +449,6 @@
                         <form:hidden path="loginGroupName" />
                         <form:hidden path="loginEnabled" />
                         <form:hidden path="username" />
-                        <form:hidden path="authType" />
 
                         <tags:nameValueContainer2 id="passwordFields">
                             <tags:nameValue2 nameKey=".newPassword">

@@ -5,20 +5,20 @@ import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 final class MockYukonUserPasswordDao implements YukonUserPasswordDao {
-    private String currentPassword;
+    private String digest;
 
-    public MockYukonUserPasswordDao(String initialPassword) {
-        currentPassword = initialPassword;
+    public MockYukonUserPasswordDao(String initialDigest) {
+        digest = initialDigest;
     }
 
     @Override
-    public boolean checkPassword(LiteYukonUser user, String password) {
-        return password.equals(currentPassword);
-    }
-
-    @Override
-    public boolean setPassword(LiteYukonUser user, AuthType authType, String newPassword) {
-        currentPassword = newPassword;
+    public boolean setPassword(LiteYukonUser user, AuthType authType, String newDigest) {
+        digest = newDigest;
         return true;
+    }
+
+    @Override
+    public String getDigest(LiteYukonUser user) throws IllegalArgumentException {
+        return digest;
     }
 }

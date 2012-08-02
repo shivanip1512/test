@@ -35,10 +35,7 @@ public class LoginValidator extends SimpleValidator<LoginBackingBean> {
     }
 
     @Override
-    public void doValidation(LoginBackingBean target, Errors errors) {
-
-        LoginBackingBean loginBackingBean = (LoginBackingBean)target;
-
+    public void doValidation(LoginBackingBean loginBackingBean, Errors errors) {
         if (user != null) {
             ValidationUtils.rejectIfEmpty(errors, "username", "yukon.web.modules.operator.account.loginInfoError.usernameRequired");
             YukonValidationUtils.checkExceedsMaxLength(errors, "username", loginBackingBean.getUsername(), 64);

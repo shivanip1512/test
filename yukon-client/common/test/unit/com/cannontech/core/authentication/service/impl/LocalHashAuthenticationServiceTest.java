@@ -1,32 +1,34 @@
 package com.cannontech.core.authentication.service.impl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+
+import java.security.NoSuchAlgorithmException;
+
+import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
+/**
+ * Note: If this test ever fails, there is a good chance that something has changed
+ * that will prevent customers from logging into their system.
+ */
 public class LocalHashAuthenticationServiceTest {
-    static final String INITIAL_PASSWORD = "test$$";
+    private final static String INITIAL_PASSWORD = "test$$";
+    private final static String INITIAL_PASSWORD_ENCRYPTED = "ce2fa859f3669918b9f5d836f394cc94722771a";
     private LocalHashAuthenticationService service;
     private LiteYukonUser someUser;
     private MockYukonUserPasswordDao singleUserPasswordDao;
-    private PasswordHasher hasher;
 
     @Before
     public void setUp() throws Exception {
         service = new LocalHashAuthenticationService();
-        hasher = new PasswordHasher() {
-                    public String hashPassword(String password) {
-                        return password + "*";
-                    }
-                };
-        service.setPasswordHasher(hasher);
-        singleUserPasswordDao = new MockYukonUserPasswordDao(hasher.hashPassword(INITIAL_PASSWORD));
-        service.setYukonUserPasswordDao(singleUserPasswordDao);
+        singleUserPasswordDao = new MockYukonUserPasswordDao(INITIAL_PASSWORD_ENCRYPTED);
+        ReflectionTestUtils.setField(service, "yukonUserPasswordDao", singleUserPasswordDao);
         someUser = new LiteYukonUser(100, "testuser", LoginStatusEnum.ENABLED);
     }
 
@@ -44,5 +46,24 @@ public class LocalHashAuthenticationServiceTest {
         assertFalse("Login succeeded when it should have failed", b);
         b = service.login(someUser, "new pass");
         assertTrue("Login failed when it should have succeeded", b);
+    }
+
+    @Test
+    public void testSetPassword() {
+        String before = singleUserPasswordDao.getDigest(null);
+        // attempt change with correct password
+        service.setPassword(someUser, "deadman");
+        String after = singleUserPasswordDao.getDigest(null);
+        assertNotSame("Password didn't change", before, after);
+
+        // check that password isn't stored as plain text
+        assertEquals("Password doesn't match computed hash", "34a8f998bb5b9b2f7b19465caafc4e98039447", after);
+    }
+
+    @Test
+    public void testSHAPassword() throws NoSuchAlgorithmException {
+        service.setPassword(someUser, "Algebra Geometry Banana");
+        String hashed = singleUserPasswordDao.getDigest(null);
+        Assert.assertEquals("Hash doesn't match precomputed value", "fe6335916832f16b198396e8b27f743bd81ff", hashed);
     }
 }

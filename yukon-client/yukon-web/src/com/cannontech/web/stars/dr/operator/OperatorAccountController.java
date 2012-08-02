@@ -427,7 +427,8 @@ public class OperatorAccountController {
     	         * TLDR - make sure you never set the login fields on the AccountDto here and only use the login fields on the LoginBackingBean */
     	        Integer accountId = transactionTemplate.execute(new TransactionCallback<Integer>() {
     	            
-    	            public Integer doInTransaction(TransactionStatus status) {
+    	            @Override
+                    public Integer doInTransaction(TransactionStatus status) {
     	                /* Create the account */
             	        int accountId = operatorAccountService.addAccount(updatableAccount, user, accountGeneral.getOperatorGeneralUiExtras());
             	        if(createLogin) {
@@ -539,24 +540,23 @@ public class OperatorAccountController {
 	
 	// GENERATE PASSWORD
     @RequestMapping(value="generatePassword")
-    public TextView generatePassword(HttpServletRequest request, HttpServletResponse response, Integer userId, String loginGroupName) throws IOException {
+    public TextView generatePassword(HttpServletResponse response, Integer userId, String loginGroupName) throws IOException {
         LiteYukonUser user = null; 
         if (userId != null) {
             user = yukonUserDao.getLiteYukonUser(userId);
         }
         LiteYukonGroup liteYukonGroup = yukonGroupDao.findLiteYukonGroupByName(loginGroupName);
         
-        
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteYukonGroup);
-        String generatePassword = "";
+        String generatedPassword = "";
         try {
-            generatePassword = passwordPolicy.generatePassword();
+            generatedPassword = passwordPolicy.generatePassword();
         } catch (ConfigurationException e) {
             Log.error("No password could be generated for this login.", e);
         }
         
         response.setContentType("text/plain; charset=UTF-8");
-        return new TextView(generatePassword);
+        return new TextView(generatedPassword);
     }
     
     /*
@@ -702,6 +702,7 @@ public class OperatorAccountController {
 			    
                 transactionTemplate.execute(new TransactionCallback<Object>() {
                     
+                    @Override
                     public Object doInTransaction(TransactionStatus status) {
                         /* see IMPORTANT NOTE comment in createAccount method, same rules apply here */
         				accountService.updateAccount(updatableAccount, accountId, userContext.getYukonUser());

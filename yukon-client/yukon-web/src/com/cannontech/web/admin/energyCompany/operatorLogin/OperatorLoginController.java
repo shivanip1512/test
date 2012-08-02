@@ -86,7 +86,6 @@ public class OperatorLoginController {
             login.setLoginGroupName(userResidentialGroupName.getGroupName());
         }
         
-        login.setAuthType(user.getAuthType());
         login.setLoginEnabled(user.getLoginStatus());
         login.setUserId(user.getUserID());
         login.setUsername(user.getUsername());
@@ -148,12 +147,10 @@ public class OperatorLoginController {
 
         //check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
-        
-        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null );
-        
-        //enforce the default AuthType for new logins
-        operatorLogin.setAuthType(defaultAuthType);
-        
+
+        AuthType defaultAuthType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE,
+                                                                        AuthType.class, null);
+
         //validate login
         LoginValidator loginValidator = loginValidatorFactory.getLoginValidator(new LiteYukonUser());
         loginValidator.validate(operatorLogin, bindingResult);

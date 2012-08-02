@@ -20,6 +20,7 @@
         <map>
           <entry key="PLAIN" value-ref="localPlainAuthentication"/>
           <entry key="HASH_SHA" value-ref="localShaAuthentication"/>
+          <entry key="HASH_SHA_V2" value-ref="localShaV2Authentication"/>
           <entry key="RADIUS" value-ref="radiusLoginProvider"/>
           <entry key="NONE" value-ref="nullAuthentication"/>
           <entry key="AD" value-ref="ADAuthentication"/>
@@ -38,14 +39,11 @@
       <property name="yukonUserPasswordDao" ref="yukonUserPasswordDao"/>
     </bean>
     
-    <bean id="localShaAuthentication" class="com.cannontech.core.authentication.service.impl.LocalHashAuthenticationService">
-      <property name="passwordHasher">
-        <bean class="com.cannontech.core.authentication.service.impl.YukonPasswordHasher">
-          <constructor-arg value="SHA"/>
-        </bean>
-      </property>
-    </bean>
-    
+    <bean id="localShaAuthentication" class="com.cannontech.core.authentication.service.impl.LocalHashAuthenticationService"/>
+
+    <bean id="localShaV2Authentication"
+        class="com.cannontech.core.authentication.service.impl.LocalHashV2AuthenticationService"/>
+
     <bean id="simpleMD5Hasher" class="com.cannontech.core.authentication.service.impl.SimpleMessageDigestHasher">
         <constructor-arg value="MD5"/>
     </bean>

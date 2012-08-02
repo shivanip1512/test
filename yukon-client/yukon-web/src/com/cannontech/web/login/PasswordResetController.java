@@ -118,7 +118,6 @@ public class PasswordResetController {
         /* LoginBackingBean */
         LoginBackingBean loginBackingBean = new LoginBackingBean();
         loginBackingBean.setUserId(passwordResetUser.getUserID());
-        loginBackingBean.setAuthType(passwordResetUser.getAuthType());
         loginBackingBean.setUsername(passwordResetUser.getUsername());
         
         model.addAttribute("k", k);

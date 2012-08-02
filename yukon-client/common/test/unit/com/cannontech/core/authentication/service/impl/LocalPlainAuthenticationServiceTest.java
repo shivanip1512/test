@@ -1,7 +1,6 @@
 package com.cannontech.core.authentication.service.impl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +44,6 @@ public class LocalPlainAuthenticationServiceTest {
         service.setPassword(someUser, "bobbob");
 
         // check that password actually changed.
-        assertTrue("Password didn't actually change",
-                   singleUserPasswordDao.checkPassword(someUser, "bobbob"));
+        assertTrue("Password didn't actually change", service.login(someUser, "bobbob"));
     }
 }

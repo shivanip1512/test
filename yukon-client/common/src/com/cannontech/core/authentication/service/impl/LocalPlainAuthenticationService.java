@@ -1,5 +1,6 @@
 package com.cannontech.core.authentication.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.authentication.dao.YukonUserPasswordDao;
@@ -13,7 +14,8 @@ public class LocalPlainAuthenticationService implements AuthenticationProvider, 
 
     @Override
     public boolean login(LiteYukonUser user, String password) {
-        return yukonUserPasswordDao.checkPassword(user, password);
+        String digest = yukonUserPasswordDao.getDigest(user);
+        return StringUtils.equals(password, digest);
     }
 
     @Override
@@ -22,8 +24,8 @@ public class LocalPlainAuthenticationService implements AuthenticationProvider, 
     }
 
     @Override
-    public boolean comparePassword(LiteYukonUser yukonUser, String newPassword, String previousPassword) {
-        return newPassword.equals(previousPassword);
+    public boolean comparePassword(LiteYukonUser yukonUser, String newPassword, String previousDigest) {
+        return newPassword.equals(previousDigest);
     }
 
     public void setYukonUserPasswordDao(YukonUserPasswordDao yukonUserPasswordDao) {
