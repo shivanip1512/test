@@ -70,6 +70,17 @@
 					else
 						input.blurred = true;
 				})
+				.keydown(function(e){
+					if(e.keyCode === 13){
+						if( input.val() == "" ) {
+							input.blurred = false;
+							input.val(placeholderText);
+							input.addClass(parameters.className);
+						}
+						else
+							input.blurred = true;
+					}
+				})
 				.trigger('blur');
 
 			// Ensuring not to submit placeholder data
@@ -79,5 +90,5 @@
 						input.val("");
 				});
 		});
-	}
+	};
 })(jQuery);
