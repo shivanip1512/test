@@ -105,7 +105,7 @@ public class PointImportFormats {
         STATUS_POINT_FORMAT.addValueDependentColumn("STATE GROUP", String.class, false, "ACTION", ImportAction.ADD);
         STATUS_POINT_FORMAT.addValueDependentColumn("INITIAL STATE", String.class, false, "ACTION", ImportAction.ADD);
         //CONTROL TYPE dependent
-        Object[] dependentTypes = {ControlType.NORMAL, ControlType.LATCH, ControlType.SBOLATCH, ControlType.SBOPULSE};
+        Object[] dependentTypes = {ControlType.NORMAL, ControlType.LATCH, ControlType.PSEUDO, ControlType.SBOLATCH, ControlType.SBOPULSE};
         STATUS_POINT_FORMAT.addValueDependentColumn("CONTROL POINT OFFSET", Integer.class, false, "CONTROL TYPE", dependentTypes);
         STATUS_POINT_FORMAT.addValueDependentColumn("CLOSE TIME 1", Integer.class, false, "CONTROL TYPE", dependentTypes);
         STATUS_POINT_FORMAT.addValueDependentColumn("CLOSE TIME 2", Integer.class, false, "CONTROL TYPE", dependentTypes);

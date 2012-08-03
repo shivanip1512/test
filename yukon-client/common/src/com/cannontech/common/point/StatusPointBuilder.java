@@ -91,7 +91,7 @@ public class StatusPointBuilder extends PointBuilder {
             point.getPointStatusControl().setControlInhibited(true);
         }
         
-        if(controlType.hasSettings()) {
+        if(point.getPointStatusControl().hasControl()) {
             if(closeTime1 != null) point.getPointStatusControl().setCloseTime1(closeTime1);
             if(closeTime2 != null) point.getPointStatusControl().setCloseTime2(closeTime2);
             if(commandTimeout != null) point.getPointStatusControl().setCommandTimeOut(commandTimeout);

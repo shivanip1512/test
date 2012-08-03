@@ -3,23 +3,17 @@ package com.cannontech.database.data.point;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
 public enum ControlType implements DatabaseRepresentationSource {
-    NONE("None", false),
-    NORMAL("Normal", true),
-    LATCH("Latch", true),
-    PSEUDO("Pseudo", false),
-    SBOLATCH("SBO Latch", true),
-    SBOPULSE("SBO Pulse", true);
+    NONE("None"),
+    NORMAL("Normal"),
+    LATCH("Latch"),
+    PSEUDO("Pseudo"),
+    SBOLATCH("SBO Latch"),
+    SBOPULSE("SBO Pulse");
     
     String controlName;
-    boolean hasSettings;
     
-    private ControlType(String controlName, boolean hasSettings) {
+    private ControlType(String controlName) {
         this.controlName = controlName;
-        this.hasSettings = hasSettings;
-    }
-    
-    public boolean hasSettings() {
-        return hasSettings;
     }
     
     public String getControlName() {
