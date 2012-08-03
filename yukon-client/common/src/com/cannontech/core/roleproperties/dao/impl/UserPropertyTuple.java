@@ -85,9 +85,10 @@ class UserPropertyTuple implements PropertyTuple {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT YGR.Value");
         sql.append("FROM YukonGroupRole YGR");
-        sql.append("  JOIN YukonUserGroup YUG ON YUG.GroupId = YGR.GroupId");
+        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.GroupId = YGR.GroupId");
+        sql.append("  JOIN YukonUser YU ON YU.UserGroupId = UGYGM.UserGroupId");
         sql.append("WHERE YGR.RolePropertyId").eq(yukonRoleProperty.getPropertyId());
-        sql.append("  AND YUG.UserId").eq(userId);
+        sql.append("  AND YU.UserId").eq(userId);
 
         return sql;
     }
