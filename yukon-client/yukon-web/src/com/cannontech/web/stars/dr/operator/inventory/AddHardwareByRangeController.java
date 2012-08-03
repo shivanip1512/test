@@ -76,17 +76,17 @@ public class AddHardwareByRangeController {
             HardwareType type = HardwareType.valueOf(entry.getYukonDefID());
             validateSN(errors, abr.getFrom(), "from", type);
             validateSN(errors, abr.getTo(), "to", type);
-            if (Long.parseLong(abr.getFrom()) > Long.parseLong(abr.getTo())) {
+            if (!errors.hasErrors() && Long.parseLong(abr.getFrom()) > Long.parseLong(abr.getTo())) {
                 errors.rejectValue("from", "yukon.web.modules.operator.abr.error.sn.fromGreaterThanTo");
             }
         }
         
         private void validateSN(Errors errors, String sn, String path, HardwareType type) {
             if (StringUtils.isBlank(sn)) {
-                errors.rejectValue(path, "yukon.web.modules.operator.abr.error.sn.required");
+                errors.rejectValue(path, "yukon.web.modules.operator.abr.error.sn."+path+".required");
             } else {
                 if (!StringUtils.isNumeric(sn)) {
-                    errors.rejectValue(path, "yukon.web.modules.operator.abr.error.nonNumericSerialNumber");
+                    errors.rejectValue(path, "yukon.web.modules.operator.abr.error."+path+".nonNumericSerialNumber");
                 }
                 /* For LCR 3102's the serial number must be a valid integer since it has to match the 
                  * address in DeviceCarrierSettings which is a varchar(18) */
@@ -94,7 +94,7 @@ public class AddHardwareByRangeController {
                    try {
                        Integer.parseInt(sn);
                    } catch(NumberFormatException e) {
-                       errors.rejectValue(path, "yukon.web.modules.operator.abr.error.tooLong.lcr3102");
+                       errors.rejectValue(path, "yukon.web.modules.operator.abr.error."+path+".tooLong.lcr3102");
                    }
                 } else {
                     YukonValidationUtils.checkExceedsMaxLength(errors, path, sn, 30);
