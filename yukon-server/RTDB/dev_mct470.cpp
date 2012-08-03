@@ -38,8 +38,6 @@ const Mct470Device::ConfigPartsList  Mct470Device::_config_parts_470 = Mct470Dev
 const Mct470Device::ValueMapping Mct470Device::_memoryMap = Mct470Device::initMemoryMap();
 const Mct470Device::FunctionReadValueMappings Mct470Device::_functionReadValueMaps = Mct470Device::initFunctionReadValueMaps();
 
-const Mct470Device::IedTypesToCommands Mct470Device::ResetCommandsByIedType = Mct470Device::initIedResetCommands();
-
 const Mct470Device::error_map Mct470Device::_error_info_old_lp    = Mct470Device::initErrorInfoOldLP();
 const Mct470Device::error_map Mct470Device::_error_info_lgs4      = Mct470Device::initErrorInfoLGS4();
 const Mct470Device::error_map Mct470Device::_error_info_alphaa3   = Mct470Device::initErrorInfoAlphaA3();
@@ -718,6 +716,17 @@ void Mct470Device::sendIntervals( OUTMESS *&OutMessage, OutMessageList &outList 
 
     outList.push_back(OutMessage);
     OutMessage = NULL;
+}
+
+void Mct470Device::sendBackground(const OUTMESS &TemplateOutMessage, OutMessageList &outList) const
+{
+    std::auto_ptr<OUTMESS> OutMessage(new OUTMESS(TemplateOutMessage));
+
+    //  Set the connection to NULL so it doesn't make it back to MACS,
+    //    but leave the GroupMsgID alone so it can still be canceled
+    OutMessage->Request.Connection = NULL;
+
+    outList.push_back(OutMessage.release());
 }
 
 boost::shared_ptr<DataAccessLoadProfile> Mct470Device::getLoadProfile()
@@ -1643,8 +1652,7 @@ INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                    sendBackground(*OutMessage, outList);
                 }
             }
 
@@ -1670,8 +1678,7 @@ INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, "getconfig ied time", COMMAND_STR_SIZE );
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                    sendBackground(*OutMessage, outList);
                 }
             }
             if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) ||
@@ -1693,8 +1700,7 @@ INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                    sendBackground(*OutMessage, outList);
                 }
             }
             if( !isPrecannedTableCurrent() )
@@ -1715,8 +1721,7 @@ INT Mct470Device::executeGetValue(CtiRequestMsg *pReq,
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, "getconfig intervals", COMMAND_STR_SIZE );
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                    sendBackground(*OutMessage, outList);
                 }
             }
 
@@ -2162,8 +2167,7 @@ INT Mct470Device::executeGetConfig(CtiRequestMsg *pReq,
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                    sendBackground(*OutMessage, outList);
                 }
             }
 
@@ -2202,8 +2206,7 @@ INT Mct470Device::executeGetConfig(CtiRequestMsg *pReq,
                     OutMessage->Request.RouteID   = getRouteID();
 
                     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                    sendBackground(*OutMessage, outList);
                 }
 
                 function = EmetconProtocol::GetConfig_IEDDNP;
@@ -2637,9 +2640,8 @@ boost::optional<Mct470Device::IED_Types> Mct470Device::tryDetermineIedTypeFromDe
 }
 
 
-Mct470Device::IedTypesToCommands Mct470Device::initIedResetCommands()
-{
-    return boost::assign::map_list_of
+const Mct470Device::IedTypesToCommands
+    Mct470Device::ResetCommandsByIedType = boost::assign::map_list_of
         (IED_Type_Alpha_PP, IedResetCommand
             (FuncWrite_IEDCommand, list_of
                 //  SPID, meter type, meter num, function Alpha reset
@@ -2668,7 +2670,6 @@ Mct470Device::IedTypesToCommands Mct470Device::initIedResetCommands()
             (FuncWrite_IEDCommandWithData, list_of
                 //  SPID, meter type, meter num, command, data length, demand reset bit set
                 (0xff)(IED_Type_Sentinel)(0)(9)(1)(1)));
-}
 
 
 INT Mct470Device::executePutValue(CtiRequestMsg *pReq,
@@ -5723,28 +5724,6 @@ void Mct470Device::getBytesFromString(string &values, BYTE* buffer, int buffLen,
 
             }
         }
-    }
-}
-
-void Mct470Device::DecodeDatabaseReader(Cti::RowReader &rdr)
-{
-    INT iTemp;
-
-    Inherited::DecodeDatabaseReader(rdr);
-
-    _iedPort.DecodeDatabaseReader( rdr );
-
-    if( isDebugLudicrous() )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - in Mct470Device::DecodeDatabaseReader for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Default data class: " << _iedPort.getDefaultDataClass() << endl;
-        dout << "Default data offset: " << _iedPort.getDefaultDataOffset() << endl;
-        dout << "Device ID: " << _iedPort.getDeviceID() << endl;
-        dout << "IED Scan Rate: " << _iedPort.getIEDScanRate() << endl;
-        dout << "IED Type: " << _iedPort.getIEDType() << endl;
-        dout << "Password: " << _iedPort.getPassword() << endl;
-        dout << "Real Time Scan Flag: " << _iedPort.getRealTimeScanFlag() << endl;
     }
 }
 

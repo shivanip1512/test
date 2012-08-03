@@ -42,10 +42,8 @@ private:
     typedef map<int, IedResetCommand> IedTypesToCommands;
 
     static const IedTypesToCommands ResetCommandsByIedType;
-    static       IedTypesToCommands initIedResetCommands();
 
-    CtiTableDeviceMCTIEDPort _iedPort;
-    CtiTime                  _iedTime;
+    CtiTime _iedTime;
 
     boost::shared_ptr<Cti::DataAccessLoadProfile> _deviceConfigLp;
     boost::shared_ptr<Cti::DataAccessLoadProfile> getDeviceConfigLp(Config::DeviceConfigSPtr deviceConfig);
@@ -462,6 +460,7 @@ protected:
     void requestDynamicInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key, OUTMESS *&OutMessage, OutMessageList &outList);
 
     void sendIntervals(OUTMESS *&OutMessage, OutMessageList &outList);
+    void sendBackground(const OUTMESS &TemplateOutMessage, OutMessageList &outList) const;
 
     virtual const ValueMapping *getMemoryMap() const;
     virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const;
@@ -538,8 +537,6 @@ public:
 
     virtual ULONG calcNextLPScanTime( void );
     virtual void changeDeviceConfig(Config::DeviceConfigSPtr config);
-
-    virtual void DecodeDatabaseReader(RowReader &rdr);
 
     static point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
 };
