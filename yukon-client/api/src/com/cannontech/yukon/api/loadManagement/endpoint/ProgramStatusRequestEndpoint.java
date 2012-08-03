@@ -28,8 +28,8 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 @Endpoint
 public class ProgramStatusRequestEndpoint {
 
-    private LoadControlService loadControlService;
-    private RolePropertyDao rolePropertyDao;
+    @Autowired private LoadControlService loadControlService;
+    @Autowired private RolePropertyDao rolePropertyDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
     private String programNameExpressionStr = "/y:programStatusRequest/y:programName";
@@ -53,61 +53,52 @@ public class ProgramStatusRequestEndpoint {
         XmlVersionUtils.addVersionAttribute(resp, XmlVersionUtils.YUKON_MSG_VERSION_1_0);
         
         // run service
-        ProgramStatus programStatus = null;
         try {
-        
             // Check authorization
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
    
-            programStatus = loadControlService.getProgramStatusByProgramName(programName, user);
+            ProgramStatus programStatus = loadControlService.getProgramStatusByProgramName(programName, user);
+            
+            // build response
+            Element programStatusElement = new Element("programStatus", ns);
+            
+            programStatusElement.addContent(XmlUtils.createStringElement("programName", ns, programStatus.getProgramName()));
+            
+            programStatusElement.addContent(XmlUtils.createStringElement("currentStatus", ns, getStatus(programStatus)));
+            
+            programStatusElement.addContent(XmlUtils.createDateElement("startDateTime", ns, programStatus.getStartTime()));
+            if (programStatus.getStopTime() != null) {
+                programStatusElement.addContent(XmlUtils.createDateElement("stopDateTime", ns, programStatus.getStopTime()));
+            }
+            programStatusElement.addContent(XmlUtils.createStringElement("gearName", ns, programStatus.getGearName()));
+            
+            resp.addContent(programStatusElement);
         
         } catch (NotFoundException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "InvalidProgramName", "No program named: "+ programName);
             resp.addContent(fe);
-            return resp;
         } catch (NotAuthorizedException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "UserNotAuthorized", "The user is not authorized to request program status.");
             resp.addContent(fe);
-            return resp;
         } catch (BadServerResponseException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "ServerCommunicationError", e.getMessage());
             resp.addContent(fe);
-            return resp;
         } catch (ConnectionException e) {
             Element fe = XMLFailureGenerator.generateFailure(programStatusRequest, e, "ServerCommunicationError", e.getMessage());
             resp.addContent(fe);
-            return resp;
         }
-        
-        // build response
-        Element programStatusElement = new Element("programStatus", ns);
-        
-        programStatusElement.addContent(XmlUtils.createStringElement("programName", ns, programStatus.getProgramName()));
+        return resp;       
+    }    
+    
+    private String getStatus(ProgramStatus programStatus){
+        String status = "";
         if (programStatus.isActive()) {
-            programStatusElement.addContent(XmlUtils.createStringElement("currentStatus", ns, "Active"));
-        } else {
-            programStatusElement.addContent(XmlUtils.createStringElement("currentStatus", ns, "Inactive"));
-        }
-        programStatusElement.addContent(XmlUtils.createDateElement("startDateTime", ns, programStatus.getStartTime()));
-        if (programStatus.getStopTime() != null) {
-            programStatusElement.addContent(XmlUtils.createDateElement("stopDateTime", ns, programStatus.getStopTime()));
-        }
-        programStatusElement.addContent(XmlUtils.createStringElement("gearName", ns, programStatus.getGearName()));
-        
-        resp.addContent(programStatusElement);
-        
-        return resp;
+            status = "Active";
+        } else if(programStatus.isScheduled()){
+            status = "Scheduled";
+        } else if(programStatus.isInactive()){
+            status = "Inactive";
+        } 
+        return status;
     }
-    
-    
-    @Autowired
-    public void setLoadControlService(LoadControlService loadControlService) {
-        this.loadControlService = loadControlService;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
 }

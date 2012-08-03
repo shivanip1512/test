@@ -17,6 +17,8 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 public class ProgramUtils {
 
     private static final Set<Integer> activeStatii = new HashSet<Integer>();
+    private static final Set<Integer> scheduledStatii = new HashSet<Integer>();
+    private static final Set<Integer> inactiveStatii = new HashSet<Integer>();
     private static final long nullDateTime = CtiUtilities.get1990GregCalendar().getTime().getTime();
     
     static {
@@ -24,6 +26,14 @@ public class ProgramUtils {
         activeStatii.add(LMProgramBase.STATUS_MANUAL_ACTIVE);
         activeStatii.add(LMProgramBase.STATUS_FULL_ACTIVE);
         activeStatii.add(LMProgramBase.STATUS_TIMED_ACTIVE);
+        
+        scheduledStatii.add(LMProgramBase.STATUS_SCHEDULED);
+        scheduledStatii.add(LMProgramBase.STATUS_NOTIFIED);
+        
+        inactiveStatii.add(LMProgramBase.STATUS_INACTIVE);
+        inactiveStatii.add(LMProgramBase.STATUS_STOPPING);
+        inactiveStatii.add(LMProgramBase.STATUS_CNTRL_ATTEMPT);
+        inactiveStatii.add(LMProgramBase.STATUS_NON_CNTRL);
     }
     
     public static int getProgramId(LMProgramBase program) {
@@ -164,4 +174,11 @@ public class ProgramUtils {
         return activeStatii.contains(program.getProgramStatus());
     }
     
+    public static boolean isScheduled(LMProgramBase program) {
+        return scheduledStatii.contains(program.getProgramStatus());
+    }
+    
+    public static boolean isInactive(LMProgramBase program) {
+        return inactiveStatii.contains(program.getProgramStatus());
+    }
 }

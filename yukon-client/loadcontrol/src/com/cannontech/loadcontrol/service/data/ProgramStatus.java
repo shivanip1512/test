@@ -44,6 +44,14 @@ public class ProgramStatus {
         return ProgramUtils.isActive(program);
     }
     
+    public boolean isScheduled() {
+        return ProgramUtils.isScheduled(program);
+    }
+    
+    public boolean isInactive() {
+        return ProgramUtils.isInactive(program);
+    }
+    
     public Date getStartTime() {
         return ProgramUtils.getStartTime(program);
     }
