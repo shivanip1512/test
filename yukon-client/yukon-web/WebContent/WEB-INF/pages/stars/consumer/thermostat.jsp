@@ -18,7 +18,7 @@
         <cti:flashScopeMessages/>
         
         <script type="text/javascript">
-        Event.observe(window, 'load', function(){
+        jQuery(function(){
             Yukon.ThermostatManualEditor.init({
                 thermostat: {
                     HEAT: {
@@ -36,7 +36,7 @@
                     deadband: ${deadband},
                     autoEnabled: ${autoModeEnabledCommandView}
                 },
-                initialUnit: '${temperatureUnit}'
+                unit: '${temperatureUnit}'
             });
         });
         </script> 

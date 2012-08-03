@@ -19,7 +19,7 @@
     <cti:msg2 var="holdConfirmOff" key="yukon.web.modules.operator.thermostatManual.hold.off" javaScriptEscape="true"/>
 
 <script type="text/javascript">
-Event.observe(window, 'load', function(){
+jQuery(function(){
     Yukon.ThermostatManualEditor.init({
         thermostat: {
             HEAT: {
@@ -35,7 +35,7 @@ Event.observe(window, 'load', function(){
             mode: '${event.mode}',
             fan: '${event.fanState}'
         },
-        initialUnit: '${temperatureUnit}'
+        unit: '${temperatureUnit}'
     });
 });
 </script>

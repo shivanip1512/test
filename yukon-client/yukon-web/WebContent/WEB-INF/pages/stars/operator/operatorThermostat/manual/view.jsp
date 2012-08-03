@@ -37,7 +37,7 @@ jQuery(function(){
             deadband: ${deadband},
             autoEnabled: ${autoModeEnabledCommandView}
         },
-        initialUnit: '${temperatureUnit}'
+        unit: '${temperatureUnit}'
     });
 });
 </script>

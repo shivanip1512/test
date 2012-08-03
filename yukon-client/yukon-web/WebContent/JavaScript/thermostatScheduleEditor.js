@@ -672,7 +672,7 @@ Yukon.ThermostatManualEditor = {
 
         //prep schedule editor data
         _self.thermostat = new Yukon.Thermostat(args.thermostat);
-        _self.thermostat.setUnit(args.initialUnit);
+        _self.thermostat.setUnit(args.unit);
         
         jQuery(".manualThermostat .state").click(_self.changeFanState);
         jQuery(".manualThermostat .mode").click(_self.changeThermostatMode);
@@ -882,7 +882,7 @@ Yukon.ThermostatManualEditor = {
                     unit: 'F'
                 });
             
-            elem.innerhtml = temperature.sanitizedString(unit);
+            elem.innerHTML = temperature.sanitizedString(unit);
         });
     }
 };
