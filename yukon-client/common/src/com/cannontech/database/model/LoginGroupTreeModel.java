@@ -1,5 +1,8 @@
 package com.cannontech.database.model;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.yukon.IDatabaseCache;
@@ -35,8 +38,8 @@ public void update() {
 
 	synchronized(cache)
 	{
-		java.util.List loginGroups = cache.getAllYukonGroups();
-		java.util.Collections.sort( loginGroups, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
+		List<LiteYukonGroup> loginGroups = cache.getAllYukonGroups();
+		Collections.sort( loginGroups, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();

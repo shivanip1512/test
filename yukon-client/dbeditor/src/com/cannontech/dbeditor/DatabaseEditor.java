@@ -245,6 +245,7 @@ public class DatabaseEditor
 			TreeModelEnum.SEASON,
 			TreeModelEnum.TAG,
 			TreeModelEnum.TOUSCHEDULE,
+			TreeModelEnum.USER_GROUPS,
             TreeModelEnum.SYSTEM_DEVICE,
 		};
 	private static final TreeModelEnum[] NONLOGIN_SYSTEM_MODELS =
@@ -1140,16 +1141,11 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 				"You must select something to be edited", "Edit Error", 
 				JOptionPane.INFORMATION_MESSAGE);
 		 
-   }
-   catch (Exception e)
-   {
-       handleException( e );
-   }
-   finally
-   {
-	  owner.setCursor(savedCursor);
-   }
-   
+   } catch (Exception e) {
+        handleException( e );
+    } finally {
+        owner.setCursor(savedCursor);
+    }
 }
 
 private void showEditor(DBPersistent userObject) {
@@ -1325,16 +1321,11 @@ private DBChangeMsg[] getDBChangeMsgs(com.cannontech.database.db.DBPersistent ob
     
     com.cannontech.message.dispatch.message.DBChangeMsg[] dbChanges = null;
     
-    if( object instanceof CTIDbChange )
-    {
-        dbChanges = DefaultDatabaseCache.getInstance().createDBChangeMessages(
-                    (CTIDbChange)object, dbChangeType );
+    if( object instanceof CTIDbChange ) {
+        dbChanges = DefaultDatabaseCache.getInstance().createDBChangeMessages((CTIDbChange)object, dbChangeType );
     } else {
-        
-        throw new IllegalArgumentException("Non " + 
-         CTIDbChange.class.getName() + 
-         " class tried to generate a " + DBChangeMsg.class.getName() + 
-            " its class was : " + object.getClass().getName() );
+        throw new IllegalArgumentException("Non " +CTIDbChange.class.getName() + 
+         " class tried to generate a " + DBChangeMsg.class.getName() + " its class was : " + object.getClass().getName() );
     }
     
     return dbChanges;
@@ -2266,42 +2257,36 @@ public void selectionPerformed( PropertyPanelEvent event)
 {
 		
 	//these events tells us the user modified a DB object before clicking the OK/APPLY button
-	if( event.getID() == PropertyPanelEvent.EVENT_DB_INSERT )
-	{
+	if( event.getID() == PropertyPanelEvent.EVENT_DB_INSERT ) {
 		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
 		insertDBPersistent( dbPersist );
 		return;		
-	}
-	else if( event.getID() == PropertyPanelEvent.EVENT_DB_DELETE )
-	{
+
+	} else if( event.getID() == PropertyPanelEvent.EVENT_DB_DELETE ) {
 		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
 		deleteDBPersistent( dbPersist );
 		return;		
-	}
-	else if( event.getID() == PropertyPanelEvent.EVENT_DB_UPDATE )
-	{
+
+	} else if( event.getID() == PropertyPanelEvent.EVENT_DB_UPDATE ) {
 		DBPersistent dbPersist = (DBPersistent)event.getDataChanged();
 		updateDBPersistent( dbPersist );
 		return;		
 	}
 
-
-	if( !( event.getSource() instanceof PropertyPanel) )
+	if( !( event.getSource() instanceof PropertyPanel) ) {
 		return;
+	}
 	
 	PropertyPanel panel = (PropertyPanel) event.getSource();
 	int frameLocation = getFrameLocationByPanel(panel);
 	
 	// if the input entered is not legit and the user wants to commit the changes
 	if( (event.getID() == PropertyPanelEvent.APPLY_SELECTION ||
-		  event.getID() == PropertyPanelEvent.OK_SELECTION) && !panel.isInputValid() )
-	{
-		if( panel.getErrorString() != null )
-			javax.swing.JOptionPane.showMessageDialog( panel, 
-						panel.getErrorString(), 
-						"Input Error", 
-						javax.swing.JOptionPane.WARNING_MESSAGE );
-	
+		  event.getID() == PropertyPanelEvent.OK_SELECTION) && !panel.isInputValid() ) {
+		if( panel.getErrorString() != null ) {
+			javax.swing.JOptionPane.showMessageDialog( panel, panel.getErrorString(), "Input Error", javax.swing.JOptionPane.WARNING_MESSAGE );
+		}
+
 		return;
 	}
 

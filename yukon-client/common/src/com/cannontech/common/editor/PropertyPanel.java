@@ -47,37 +47,29 @@ public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataI
 			
 		try
 		{
-			if( owner != null )
+			if( owner != null ) {
 				owner.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
-			 
-			if( newEvent.getSource() == getPropertyButtonPanel().getOkJButton() )
-			{
-				firePropertyPanelEvent( new PropertyPanelEvent(
-							this, 
-							PropertyPanelEvent.OK_SELECTION ) );
 			}
-			else
-			if( newEvent.getSource() == getPropertyButtonPanel().getCancelJButton() )
-			{
+			 
+			if( newEvent.getSource() == getPropertyButtonPanel().getOkJButton() ) {
+				firePropertyPanelEvent( new PropertyPanelEvent(this, PropertyPanelEvent.OK_SELECTION ) );
+
+			} else if( newEvent.getSource() == getPropertyButtonPanel().getCancelJButton() ) {
 				this.cancelled = true;
 				firePropertyPanelEvent( new PropertyPanelEvent( this, PropertyPanelEvent.CANCEL_SELECTION ) );
-			}
-			else
-			if( newEvent.getSource() == getPropertyButtonPanel().getApplyJButton() )
-			{
+
+			} else if( newEvent.getSource() == getPropertyButtonPanel().getApplyJButton() ) {
 				firePropertyPanelEvent( new PropertyPanelEvent( this, PropertyPanelEvent.APPLY_SELECTION ) );
 			}
-		}
-		catch(Exception e)
-		{
+		} catch(Exception e) {
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			if( owner != null )
+		} finally {
+			if( owner != null ) {
 				owner.setCursor( savedCursor );
+			}
 		}
 	}
+	
 	/**
 	 * This method was created in VisualAge.
 	 * @param listener com.cannontech.common.editor.PropertyPanelListener
@@ -346,8 +338,7 @@ public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataI
 					if( getInputPanels()[i].getErrorString() == null )
 						setErrorString( null );
 					else
-						setErrorString( "The '" + getTabNames()[i] + "' panel had the following error(s): \n   -> " +
-								getInputPanels()[i].getErrorString() );
+						setErrorString( "The '" + getTabNames()[i] + "' panel had the following error(s): \n   -> " + getInputPanels()[i].getErrorString() );
 					
 					return false;
 				}
