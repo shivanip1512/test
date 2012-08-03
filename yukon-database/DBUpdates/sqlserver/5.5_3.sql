@@ -97,7 +97,7 @@ WHILE (@@fetch_status = 0)
 
         /* Now that we have a group assign the user to that group. */
         UPDATE YukonUser SET UserGroupId = (SELECT UG.UserGroupId FROM UserGroup UG WHERE UG.GroupIdStr = @userGroupIdStr) WHERE UserId = @userId;
-        FETCH NEXT FROM userId_curs;
+        FETCH NEXT FROM userId_curs INTO @userId;
     END;
 CLOSE userId_curs;
 DEALLOCATE userId_curs;
