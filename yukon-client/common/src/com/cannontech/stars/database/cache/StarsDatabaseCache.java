@@ -378,7 +378,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 						try {
 						    customerAccount = customerAccountDao.getAccountByContactId(liteContact.getContactID());
 						}catch(EmptyResultDataAccessException e) {
-						    CTILogger.error("Unable to find CustomerAccount for contact id: " + liteContact.getContactID(), e);
+						    CTILogger.warn("Unable to find CustomerAccount for contact id: " + liteContact.getContactID(), e);
 						}
                         if (customerAccount != null) {
                             ECMappingDao ecMappingDao = YukonSpringHook.getBean("ecMappingDao", ECMappingDao.class);

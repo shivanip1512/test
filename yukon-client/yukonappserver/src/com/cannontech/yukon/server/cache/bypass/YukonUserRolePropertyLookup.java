@@ -43,8 +43,9 @@ public class YukonUserRolePropertyLookup {
         sql.append("SELECT Distinct YR.RoleId, YR.RoleName, YR.Category, YR.RoleDescription");
         sql.append("FROM YukonGroupRole YGR");
         sql.append("  JOIN YukonRole YR ON YR.RoleId = YGR.RoleId");
-        sql.append("  JOIN YukonUserGroup YUG ON YUG.GroupId = YGR.GroupId");
-        sql.append("WHERE YUG.UserId").eq(user.getUserID());
+        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.GroupId = YGR.GroupId");
+        sql.append("  JOIN YukonUser YU ON YU.UserGroupId = UGYGM.UserGroupId");
+        sql.append("WHERE YU.UserId").eq(user.getUserID());
         sql.append("  AND YGR.RoleId").eq(roleId);
 
         LiteYukonRole yukonRole = yukonJdbcTemplate.queryForObject(sql, liteYukonRoleMapper);

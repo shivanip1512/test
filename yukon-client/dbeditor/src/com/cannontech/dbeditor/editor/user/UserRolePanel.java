@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.naming.ConfigurationException;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.event.TreeSelectionEvent;
@@ -33,19 +34,20 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.roleproperties.UserNotInRoleException;
+import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
-import com.cannontech.database.data.user.IYukonRoleContainer;
 import com.cannontech.database.data.user.YukonGroup;
 import com.cannontech.database.data.user.YukonUser;
-import com.cannontech.database.db.user.IDefinedYukonRole;
 import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.database.model.DBTreeNode;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.application.WebClientRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -62,7 +64,7 @@ public class UserRolePanel extends DataInputPanel implements TreeSelectionListen
 	private javax.swing.JTable ivjJTableProperties = null;
 	private RolePropertyTableModel propertyModel = null;
 
-	private IYukonRoleContainer roleCont = null;
+	private YukonGroup yukonGroup = null;
 
 	private CheckNodeSelectionListener nodeListener = null;
 
@@ -240,15 +242,13 @@ private javax.swing.JTable getJTableProperties() {
 	return ivjJTableProperties;
 }
 
-
-private RolePropertyTableModel getJTablePropertyModel()
-{
-	if( propertyModel == null )
+private RolePropertyTableModel getJTablePropertyModel() {
+	if( propertyModel == null ) {
 		propertyModel = new RolePropertyTableModel();
-		
+	}
+
 	return propertyModel;
 }
-
 
 /**
  * Return the JTextPaneDescription property value.
@@ -306,7 +306,7 @@ private javax.swing.JTree getJTreeRoles() {
 			
 			synchronized( cache )
 			{
-				List roles = cache.getAllYukonRoles();
+				List<LiteYukonRole> roles = cache.getAllYukonRoles();
 				Collections.sort( roles, LiteComparators.liteRoleCategoryComparator );
 				String tmpCat = null;
 				DefaultMutableTreeNode categoryParent = null;
@@ -377,85 +377,66 @@ private javax.swing.JTree getJTreeRoles() {
 }
 
 /**
- * 
  * Returns the correct Role for the specified object
  * 
+ * @throws ConfigurationException - The role trying to be added already to this role group already exists in one of its attached user groups.
  */
-private void createRoleEntry( LiteYukonRole role_, LiteYukonRoleProperty prop_, IYukonRoleContainer rc_, Hashtable ridMap_ )
-{
-	String strVal = getJTablePropertyModel().getPropertyChange( prop_ );
+private void createRoleEntry( LiteYukonRole role_, LiteYukonRoleProperty prop_, YukonGroup yukonGroup, Hashtable<Integer, Integer> ridMap_ ) throws ConfigurationException {
+
+    String strVal = getJTablePropertyModel().getPropertyChange( prop_ );
 	Integer roleEntryID = (Integer) ridMap_.get( new Integer(prop_.getRolePropertyID()) ); 
-	IDefinedYukonRole defRole = null;
+	YukonGroupRole yukonGroupRole = null;
 	
-	if( rc_ instanceof YukonGroup ) {
-		defRole = new YukonGroupRole( 
-						roleEntryID,
-						rc_.getID(),
-						new Integer(role_.getRoleID()),
-						new Integer(prop_.getRolePropertyID()),
-						" ");	//Default value for YukonGroupRole is one single space
+	yukonGroupRole = new YukonGroupRole( roleEntryID, yukonGroup.getID(), role_.getRoleID(), prop_.getRolePropertyID(), " ");	//Default value for YukonGroupRole is one single space
 						
-	} else
-		throw new IllegalArgumentException("Unable to create role entry for class : " + rc_.getClass().getName() );
-
-
-
 	//process the roles defined value here
-	if( strVal != null && defRole != null )
-		defRole.setValue( strVal );
+	if( strVal != null && yukonGroupRole != null )
+		yukonGroupRole.setValue( strVal );
 
 	//add the role to our role Vector
-	if( defRole != null )
-		rc_.getYukonRoles().add( defRole );
+	if( yukonGroupRole != null ) {
+		yukonGroup.addYukonGroupRole(yukonGroupRole);
+	}
 }
 
 /**
  * getValue method comment.
  */
-public Object getValue(Object obj) 
-{
-	IYukonRoleContainer roleContainer = null;
-	Hashtable roleEntryIDMap = new Hashtable();
+@Override
+public Object getValue(Object obj) {
+    YukonGroup yukonGroup = (YukonGroup) obj;
+	Hashtable<Integer, Integer> roleEntryIDMap = new Hashtable<Integer, Integer>();
 
-	if( obj instanceof IYukonRoleContainer )
-	{
-		roleContainer = (IYukonRoleContainer)obj;
-		
-		// Create map: RolePropertyID -> GroupRoleID or UserRoleID
-		for (int i = 0; i < roleContainer.getYukonRoles().size(); i++) {
-			if (roleContainer.getYukonRoles().get(i) instanceof YukonGroupRole) {
-				YukonGroupRole groupRole = (YukonGroupRole) roleContainer.getYukonRoles().get(i);
-				roleEntryIDMap.put( groupRole.getRolePropertyID(), groupRole.getGroupRoleID() );
-			}
+	// Create map: RolePropertyID -> GroupRoleID or UserRoleID
+	for (int i = 0; i < yukonGroup.getYukonRoles().size(); i++) {
+		if (yukonGroup.getYukonRoles().get(i) instanceof YukonGroupRole) {
+			YukonGroupRole groupRole = (YukonGroupRole) yukonGroup.getYukonRoles().get(i);
+			roleEntryIDMap.put( groupRole.getRolePropertyID(), groupRole.getGroupRoleID() );
 		}
-		
-		roleContainer.getYukonRoles().removeAllElements();
 	}
+	
+	yukonGroup.removeAllYukonRoles();
 
+	DefaultMutableTreeNode root = (DefaultMutableTreeNode)getJTreeRoles().getModel().getRoot();
+	List<?> allRoleNodes = getJTreeModel().getAllLeafNodes( new TreePath(root) );
 
-	DefaultMutableTreeNode
-		root = (DefaultMutableTreeNode)getJTreeRoles().getModel().getRoot();
+	for( int i = 0; i < allRoleNodes.size(); i++  ) {
+		if( allRoleNodes.get(i) instanceof LiteBaseNode 
+		        && ((LiteBaseNode)allRoleNodes.get(i)).isSelected() ) {
+			
+		    LiteBaseNode rNode = (LiteBaseNode)allRoleNodes.get(i);
+			LiteYukonRole role = (LiteYukonRole)rNode.getUserObject();
 
-	List allRoleNodes = getJTreeModel().getAllLeafNodes( new TreePath(root) );
-
-	for( int i = 0; i < allRoleNodes.size(); i++  )
-	{
-		if( allRoleNodes.get(i) instanceof LiteBaseNode
-			 && ((LiteBaseNode)allRoleNodes.get(i)).isSelected() )
-		{
-			LiteBaseNode rNode = 
-					(LiteBaseNode)allRoleNodes.get(i);
-
-			LiteYukonRole role = 
-				(LiteYukonRole)rNode.getUserObject();
-
-			LiteYukonRoleProperty[] props = DaoFactory.getRoleDao().getRoleProperties( role.getRoleID() );
-			for( int j = 0; j < props.length; j++ )
-			{
-				//modifies o role vector
-				createRoleEntry( role, props[j], roleContainer, roleEntryIDMap );
+			try {
+    			LiteYukonRoleProperty[] props = DaoFactory.getRoleDao().getRoleProperties( role.getRoleID() );
+    			for(LiteYukonRoleProperty prop : props) {
+    				//modifies o role vector
+                    createRoleEntry( role, prop, yukonGroup, roleEntryIDMap );
+    			}
+			} catch (ConfigurationException e) {
+			    // TODO Auto-generated catch block
+			    e.printStackTrace();
 			}
-
 		}
 	}
 	
@@ -522,37 +503,17 @@ private void initialize() {
 }
 
 
-private String getRoleValue( int rolePropID_, String defValue_ )
-{
-	if( getRoleContainer() instanceof YukonUser )
-	{
-		try {
-            return DaoFactory.getAuthDao().getRolePropertyValue(
-            		getRoleContainer().getID(),
-            		rolePropID_);
-        } catch (UserNotInRoleException e) {
-            return defValue_;
-        }
-	}
-	else if( getRoleContainer() instanceof YukonGroup )
-	{
-		return DaoFactory.getRoleDao().getRolePropValueGroup(
-				getRoleContainer().getID(),
-				rolePropID_,
-				defValue_ );
-	}
-	else if( getRoleContainer() == null )
-	{
+private String getRolePropertyValue( int rolePropID_, String defValue_ ) {
+	if( getRoleContainer() instanceof YukonGroup ) {
+		return DaoFactory.getRoleDao().getRolePropValueGroup( getRoleContainer().getID(), rolePropID_, defValue_ );
+	} else if( getRoleContainer() == null ) {
 		return defValue_;
-	}
-	else 
-    {
+	} else  {
 		throw new IllegalArgumentException("Unrecognized role container: " + ( getRoleContainer() == null ? "(null)" : getRoleContainer().getClass().getName()) );
     }
 }
 
-private void initConnections()
-{
+private void initConnections() {
 	
 	MouseListener tableMl = new MouseAdapter()
 	{
@@ -591,70 +552,56 @@ private void initConnections()
 
 }
 
-public void valueChanged(TreeSelectionEvent e) 
-{
-    if( getJTableProperties().isEditing() )
+public void valueChanged(TreeSelectionEvent e) {
+    if(getJTableProperties().isEditing()) {
         getJTableProperties().getCellEditor().stopCellEditing();
+    }
     
     int selRow = getJTreeRoles().getMaxSelectionRow();
-    if(selRow != -1) 
-    {
-        TreeNode node = 
-            (TreeNode)getJTreeRoles().getPathForRow( selRow ).getLastPathComponent();
+    if(selRow != -1) {
+        TreeNode node = (TreeNode)getJTreeRoles().getPathForRow( selRow ).getLastPathComponent();
 
-        if( node instanceof LiteBaseNode )
-        {
-            LiteYukonRole ly =
-                (LiteYukonRole)((LiteBaseNode)node).getUserObject();
+        if( node instanceof LiteBaseNode) {
+            LiteBaseNode liteBaseNode = (LiteBaseNode)node;
+            LiteYukonRole ly = (LiteYukonRole)liteBaseNode.getUserObject();
             
-            getJTextPaneDescription().setText(
-                //ly.getRoleName() + " : " +
-                ly.getDescription() );
+            getJTextPaneDescription().setText(ly.getDescription() );
 
             getJTablePropertyModel().clear();
             LiteYukonRoleProperty[] props = DaoFactory.getRoleDao().getRoleProperties( ly.getRoleID() );
 
             //sort by keys
             Arrays.sort( props, LiteComparators.liteStringComparator );
-            for( int j = 0; j < props.length; j++ )
-                getJTablePropertyModel().addRolePropertyRow(
-                        props[j],
-                        getRoleValue(props[j].getRolePropertyID(), props[j].getDefaultValue()) );
+            for(LiteYukonRoleProperty yukonRolePropery : props) {
+                String rolePropertyValue = getRolePropertyValue(yukonRolePropery.getRolePropertyID(), yukonRolePropery.getDefaultValue());
+                getJTablePropertyModel().addRolePropertyRow(yukonRolePropery, rolePropertyValue);
+            }
 
             //if we are read only, dont do any enabling/disabling
-            if( isReadOnlyTree() )
-            {
+            if( isReadOnlyTree() ) {
                 //do nothing
-            }
-            else if( !((CheckNode)node).isSelected() )
-            {
+            } else if( !((CheckNode)liteBaseNode).isSelected() ) {
                 //always disable the property if the role is NOT selected
                 getJTableProperties().setEnabled( false );
-            }
-            else if( getRoleContainer() instanceof YukonGroup
-                  && getRoleContainer().getID().intValue() == YukonGroupRoleDefs.GRP_YUKON )
-            {
+
+            } else if( getRoleContainer() instanceof YukonGroup
+                  && getRoleContainer().getID().intValue() == YukonGroupRoleDefs.GRP_YUKON ) {
                 //allow the Yukon Group to edit any properties
                 getJTableProperties().setEnabled( true );
-            }
-            else
-            {
-                //if the ROLE_CATEGORY is SystemReserved, dont allow editing
-                getJTableProperties().setEnabled( 
-                    !((LiteBaseNode)node).isSystemReserved() );
-            }
 
-        }
-        else
-        {
+            } else {
+                //if the ROLE_CATEGORY is SystemReserved, dont allow editing
+                getJTableProperties().setEnabled(!(liteBaseNode.isSystemReserved()));
+            }
+        } else {
             getJTablePropertyModel().clear();
             getJTextPaneDescription().setText("");  //clear out any text
         }
         
         //this must fire here because the NodeCheckBox only fires these events
-        if( node instanceof CheckNode && !isReadOnlyTree() )
-            getJTableProperties().setEnabled( 
-                        ((CheckNode)node).isSelected() );
+        if( node instanceof CheckNode && !isReadOnlyTree() ) {
+            getJTableProperties().setEnabled(((CheckNode)node).isSelected());
+        }
 
         fireInputUpdate();
     }
@@ -743,23 +690,62 @@ public static void main(java.lang.String[] args) {
 	    for(int i = 0; i < getJTablePropertyModel().getRowCount(); i++) {
 	        RolePropertyRow propertyRow = getJTablePropertyModel().getRowAt(i);
 	        if(propertyRow.getLiteProperty().getRolePropertyID() == WebClientRole.DEFAULT_TIMEZONE) {
-	            String value = propertyRow.getValue();
-	            if(StringUtils.isBlank(value)) {
-	                return true;
-	            } else {
-                    try {
-                        CtiUtilities.getValidTimeZone(value);
-                    } catch (BadConfigurationException e) {
-                        setErrorString("Invalid value in WebClientRole Default TimeZone property: " + value 
-                                       + " \nTimezones should be in the form \"America/Chicago\".");
-                        return false;
-                    }
+	            if (!isDefaultTimeZoneValid(propertyRow)) {
+	                return false;
 	            }
+	        }
+	        
+	        if(!isRoleSelectionValid()) {
+	            return false;
 	        }
 	    }
 	    return true;
 	}
 
+	/**
+	 * Checks to see if the roles selected are valid for the role group as well as the user groups attached to that role group
+	 */
+	private boolean isRoleSelectionValid() {
+	    DefaultMutableTreeNode root = (DefaultMutableTreeNode)getJTreeRoles().getModel().getRoot();
+        List<LiteBaseNode> allRoleNodes = getJTreeModel().getAllLeafNodes( new TreePath(root) );
+        YukonGroup yukonGroup = getRoleContainer();
+
+	    for (LiteBaseNode rNode : allRoleNodes) {
+            if (rNode.isSelected()) {
+                LiteYukonRole role = (LiteYukonRole)rNode.getUserObject();
+            
+                YukonRole newRole = YukonRole.getForId(role.getRoleID());
+                if (!yukonGroup.isYukonGroupRoleAddable(yukonGroup.getGroupID(), newRole)){
+                    
+                    YukonGroupDao yukonGroupDao = YukonSpringHook.getBean("yukonGroupDao", YukonGroupDao.class);
+                    LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(yukonGroup.getGroupID());
+                    setErrorString("The "+newRole+" role already exists on one of the user groups that use the group "+liteYukonGroup.getGroupName());
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+	/**
+	 * Checks to see if the default time zone supplied is valid.
+	 */
+    private boolean isDefaultTimeZoneValid(RolePropertyRow propertyRow) {
+	    String value = propertyRow.getValue();
+        if(StringUtils.isBlank(value)) {
+            return true;
+        }
+        
+        try {
+            CtiUtilities.getValidTimeZone(value);
+            return true;
+        } catch (BadConfigurationException e) {
+            setErrorString("Invalid value in WebClientRole Default TimeZone property: " + value 
+                           + " \nTimezones should be in the form \"America/Chicago\".");
+            return false;
+        }
+	}
+	
 	/**
 	 * setValue method comment.
 	 */
@@ -768,47 +754,44 @@ public static void main(java.lang.String[] args) {
 		if( o == null )
 			return;
 		
-		IYukonRoleContainer rc = (IYukonRoleContainer)o;
-		roleCont = rc;
+		YukonGroup yukonGroup = (YukonGroup)o;
 		//be sure the rest of the panel knows what user we are dealing with
-		setRoleContainer( rc );
+		setRoleContainer( yukonGroup );
 
 
        /* *******
         *
-        * RoleProperty has the DefaultValue for YukonGroupRole or YukonUserRole.
-        * YukonGroupRole and YukonUserRole have the exact same row count as
+        * RoleProperty has the DefaultValue for YukonGroupRole.
+        * YukonGroupRole have the exact same row count as
         * RoleProperty if the user has the given YukonRole.
         *    
         * *****/ 
-		for( int i = 0; i < rc.getYukonRoles().size(); i++ )
-		{
-			IDefinedYukonRole dbDefRole = (IDefinedYukonRole)rc.getYukonRoles().get(i);			
-
+		for (YukonGroupRole yukonGroupRole : yukonGroup.getYukonRoles()) {
+            
 			//set the selected node
 			DefaultMutableTreeNode tnode = getJTreeModel().findNode( 
 				new TreePath(getJTreeModel().getRoot()),
-				new LiteYukonRole(dbDefRole.getRoleID().intValue())  );
+				new LiteYukonRole(yukonGroupRole.getRoleID().intValue())  );
 				
 			if( tnode != null )
 				((CheckNode)tnode).setSelected( true );
 
 
 			LiteYukonRoleProperty[] props = DaoFactory.getRoleDao().getRoleProperties( 
-							dbDefRole.getRoleID().intValue() );
+							yukonGroupRole.getRoleID().intValue() );
 
 			// (none) or empty string value means we use the default, don't do anything in that case
-			if( StringUtils.isNotBlank(dbDefRole.getValue()) &&
-					!(dbDefRole.getValue().trim().equals(CtiUtilities.STRING_NONE)))
+			if( StringUtils.isNotBlank(yukonGroupRole.getValue()) &&
+					!(yukonGroupRole.getValue().trim().equals(CtiUtilities.STRING_NONE)))
 			{
 				for( int j = 0; j < props.length; j++ )
 				{
-					if( props[j].getRoleID() == dbDefRole.getRoleID().intValue()
-						 && props[j].getRolePropertyID() == dbDefRole.getRolePropertyID().intValue() )
+					if( props[j].getRoleID() == yukonGroupRole.getRoleID().intValue()
+						 && props[j].getRolePropertyID() == yukonGroupRole.getRolePropertyID().intValue() )
 					{
 						getJTablePropertyModel().addPropertyValue( 
 								props[j],
-								dbDefRole.getValue() );
+								yukonGroupRole.getValue() );
 					}
 
 				}
@@ -859,22 +842,11 @@ public static void main(java.lang.String[] args) {
 		}
 
 	}
-	/**
-	 * Returns the userID.
-	 * @return Integer
-	 */
-	private IYukonRoleContainer getRoleContainer()
-	{
-		return roleCont;
-	}
 
-	/**
-	 * Sets the userID.
-	 * @param userID The userID to set
-	 */
-	private void setRoleContainer( IYukonRoleContainer rc_ )
-	{
-		roleCont = rc_;
+	private YukonGroup getRoleContainer() {
+		return yukonGroup;
 	}
-
+	private void setRoleContainer(YukonGroup yukonGroup) {
+		this.yukonGroup = yukonGroup;
+	}
 }

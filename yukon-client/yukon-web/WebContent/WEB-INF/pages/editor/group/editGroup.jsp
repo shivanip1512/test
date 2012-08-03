@@ -6,7 +6,7 @@
 
 <cti:standardPage module="adminSetup" page="groupPermissions">
 
-    <tags:widgetContainer groupId="${param.groupId}" identify="true">
+    <tags:widgetContainer groupId="${param.roleGroupId}" identify="true">
         
         <cti:dataGrid cols="2" tableClasses="twoColumnLayout">
             

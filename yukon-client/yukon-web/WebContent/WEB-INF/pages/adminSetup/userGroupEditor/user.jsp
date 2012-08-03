@@ -75,6 +75,33 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                             </tags:nameValue2>
                         </c:otherwise>
                     </c:choose>
+                    
+                    <c:choose>
+                        <c:when test="${editNameAndStatus}">
+                            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                <tags:selectNameValue nameKey=".userGroup" items="${userGroups}" itemValue="userGroupId" itemLabel="userGroupName" path="userGroupId"/>
+                            </cti:displayForPageEditModes>
+                            <cti:displayForPageEditModes modes="VIEW">
+                                <cti:url value="/spring/adminSetup/userGroup/view" var="userGroupUrl">
+                                    <cti:param name="userGroupId" value="${user.userGroupId}" />
+                                </cti:url>
+                                <tags:nameValue2 nameKey=".userGroup">
+                                    <a href="${userGroupUrl}">Generated User Group 18</a>
+                                </tags:nameValue2>
+                            </cti:displayForPageEditModes>
+                        </c:when>
+                        
+                        <c:otherwise>
+                            <tags:hidden path="userGroupId"/>
+                            <tags:nameValue2 nameKey=".userGroup">
+                                <cti:url value="/spring/adminSetup/userGroup/view" var="userGroupUrl">
+                                    <cti:param name="userGroupId" value="${user.userGroupId}" />
+                                </cti:url>
+                                <a href="${userGroupUrl}"><spring:escapeBody htmlEscape="true"><i:inline key="${user.userGroupId}"/></spring:escapeBody></a>
+                            </tags:nameValue2>
+                        </c:otherwise>
+                    </c:choose>
+                    
                 </tags:nameValueContainer2>
                 
                 <div class="pageActionArea">
@@ -112,11 +139,7 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                                             <ul class="role">
                                                 <c:forEach var="roleGroupPair" items="${category.value}">
                                                     <li>
-                                                        <cti:url value="/spring/adminSetup/roleEditor/view" var="roleUrl">
-                                                            <cti:param name="roleId" value="${roleGroupPair.first.roleId}"/>
-                                                            <cti:param name="groupId" value="${roleGroupPair.second.groupID}"/>
-                                                        </cti:url>
-                                                        <a href="${roleUrl}"><cti:formatObject value="${roleGroupPair.first}"/></a>
+                                                        <cti:formatObject value="${roleGroupPair.first}"/>
                                                         &nbsp;<span class="subtleGray"><spring:escapeBody htmlEscape="true">(${roleGroupPair.second})</spring:escapeBody></span>
                                                     </li>
                                                 </c:forEach>

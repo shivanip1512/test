@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.ConfigurationException;
+
 import org.joda.time.Instant;
 
 import com.cannontech.clientutils.CTILogger;
@@ -641,8 +643,8 @@ public class StarsAdminUtil {
 	}
 	
 	public static LiteYukonGroup copyYukonGroup(LiteYukonGroup srcGrp, String grpName)
-		throws TransactionException
-	{
+		throws TransactionException, ConfigurationException {
+
 		com.cannontech.database.data.user.YukonGroup newGroup = new com.cannontech.database.data.user.YukonGroup();
 		com.cannontech.database.db.user.YukonGroup groupDB = newGroup.getYukonGroup();
 		
@@ -662,7 +664,7 @@ public class StarsAdminUtil {
 				groupRole.setRoleID( new Integer(liteRoleProp.getRoleID()) );
 				groupRole.setRolePropertyID( new Integer(liteRoleProp.getRolePropertyID()) );
 				groupRole.setValue( value );
-				newGroup.getYukonGroupRoles().add( groupRole );
+				newGroup.addYukonGroupRole(groupRole);
 			}
 		}
 		
@@ -675,8 +677,8 @@ public class StarsAdminUtil {
 	}
 	
 	public static LiteYukonGroup createOperatorAdminGroup(final String grpName, final boolean topLevelEc)
-		throws TransactionException
-	{
+		throws TransactionException, ConfigurationException {
+
 		com.cannontech.database.data.user.YukonGroup adminGrp = new com.cannontech.database.data.user.YukonGroup();
 		com.cannontech.database.db.user.YukonGroup groupDB = adminGrp.getYukonGroup();
 		
@@ -691,7 +693,7 @@ public class StarsAdminUtil {
 			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
 		    groupRole.setValue(" ");	// default value is a single space
 			
-			adminGrp.getYukonGroupRoles().add( groupRole );
+			adminGrp.addYukonGroupRole(groupRole);
 		}
 		
 		roleProps = DaoFactory.getRoleDao().getRoleProperties( AdministratorRole.ROLEID );
@@ -707,7 +709,7 @@ public class StarsAdminUtil {
 				groupRole.setValue(" ");	// default value is a single space
             }
 			
-			adminGrp.getYukonGroupRoles().add( groupRole );
+			adminGrp.addYukonGroupRole(groupRole);
 		}
 		
 		adminGrp = Transaction.createTransaction(Transaction.INSERT, adminGrp).execute();

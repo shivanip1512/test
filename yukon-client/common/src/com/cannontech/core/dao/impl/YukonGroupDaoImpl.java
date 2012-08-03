@@ -36,11 +36,12 @@ import com.google.common.collect.Maps;
 
 public class YukonGroupDaoImpl implements YukonGroupDao {
 
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    private SimpleTableAccessTemplate<LiteYukonGroup> simpleTableTemplate;
-    private NextValueHelper nextValueHelper;
+    @Autowired private DBPersistentDao dbPersistantDao;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+
     private PaoPermissionDao<LiteYukonGroup> groupPaoPermissionDao;
-    private DBPersistentDao dbPersistantDao;
+    private SimpleTableAccessTemplate<LiteYukonGroup> simpleTableTemplate;
     
     private final static FieldMapper<LiteYukonGroup> fieldMapper = new FieldMapper<LiteYukonGroup>() {
         @Override
@@ -125,12 +126,13 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     public List<LiteYukonGroup> getGroupsForUser(int userId, boolean excludeYukonGroup) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT yug.UserId, yug.GroupId, yg.GroupName, yg.GroupDescription ");
-        sql.append("FROM YukonUserGroup yug");
-        sql.append(  "JOIN YukonGroup yg ON yg.GroupId = yug.GroupId");
-        sql.append("WHERE UserId").eq(userId);
+        sql.append("SELECT YU.UserId, YG.GroupId, YG.GroupName, YG.GroupDescription ");
+        sql.append("FROM YukonGroup YG");
+        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON YG.GroupId = UGYGM.GroupId");
+        sql.append("  JOIN YukonUser YU ON UGYGM.UserGroupId = YU.UserGroupId");
+        sql.append("WHERE YU.UserId").eq(userId);
         if (excludeYukonGroup) {
-            sql.append("AND yg.GroupId").neq_k(YukonGroup.YUKON_GROUP_ID);
+            sql.append("AND YG.GroupId").neq_k(YukonGroup.YUKON_GROUP_ID);
         }
         
         List<LiteYukonGroup> groupList = yukonJdbcTemplate.query(sql, liteYukonGroupRowMapper);
@@ -233,6 +235,18 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         sendGroupDbChangeMsg(groupId, DbChangeType.DELETE);
     }
     
+    @Override
+    public List<LiteYukonGroup> getRoleGroupsForUserGroupId(int userGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT YG.GroupId, YG.GroupName, YG.GroupDescription ");
+        sql.append("FROM UserGroupToYukonGroupMapping UGYGM");
+        sql.append("  JOIN YukonGroup YG ON YG.GroupId = UGYGM.GroupId");
+        sql.append("WHERE UGYGM.UserGroupId").eq(userGroupId);
+
+        List<LiteYukonGroup> roleGroupList = yukonJdbcTemplate.query(sql, liteYukonGroupRowMapper);
+        return roleGroupList;
+    }
+    
     private void sendGroupDbChangeMsg(Integer groupId, DbChangeType dbChangeType) {
         DBChangeMsg changeMsg = new DBChangeMsg(groupId,
                                                 DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -243,23 +257,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     }
     
     /* Depenencies */
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
-    @Autowired
-    public void setNextValueHelper(NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
-    }
-    
     public void setGroupPaoPermissionDao(PaoPermissionDao<LiteYukonGroup> groupPaoPermissionDao) {
         this.groupPaoPermissionDao = groupPaoPermissionDao;
-    }
-    
-    @Autowired
-    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
-        this.dbPersistantDao = dbPersistantDao;
     }
 }

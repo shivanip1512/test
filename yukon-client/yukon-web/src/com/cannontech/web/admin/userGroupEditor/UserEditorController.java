@@ -33,6 +33,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.YukonGroupService;
+import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -46,58 +47,24 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 
 @Controller
-@RequestMapping("/userEditor/*")
+@RequestMapping("/user/*")
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class UserEditorController {
 
-    private YukonUserDao yukonUserDao;
-    private YukonGroupDao yukonGroupDao;
-    private RoleDao roleDao;
-    private YukonUserValidator yukonUserValidator;
-    private YukonGroupService yukonGroupService;
-    private AuthenticationService authenticationService;
-    
-    private class PasswordValidator extends SimpleValidator<PasswordChange>{
-        
-        public PasswordValidator() {
-            super(PasswordChange.class);
-        }
-
-        @Override
-        protected void doValidation(PasswordChange target, Errors errors) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "password", target.getPassword(), 64);
-            YukonValidationUtils.checkExceedsMaxLength(errors, "confirmPassword", target.getConfirmPassword(), 64);
-            if (!StringUtils.isBlank(target.getPassword()) || !StringUtils.isBlank(target.getConfirmPassword())) {
-                
-                if (!target.getPassword().equals(target.getConfirmPassword())) {
-                    errors.rejectValue("password", "password.mismatch");
-                    errors.rejectValue("confirmPassword", "password.mismatch");
-                }
-            }
-        }
-    };
-    
-    public static class PasswordChange {
-        
-        public PasswordChange() {}
-        
-        private String password;
-        private String confirmPassword;
-        public String getPassword() {
-            return password;
-        }
-        public void setPassword(String password) {
-            this.password = password;
-        }
-        public String getConfirmPassword() {
-            return confirmPassword;
-        }
-        public void setConfirmPassword(String confirmPassword) {
-            this.confirmPassword = confirmPassword;
-        }
-    }
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired private RoleDao roleDao;
+    @Autowired private UserGroupDao userGroupDao;
+    @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private YukonGroupService yukonGroupService;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private YukonUserValidator yukonUserValidator;
     
     /* Group Editor View Page */
+    @RequestMapping
+    public String home(YukonUserContext userContext, ModelMap modelMap) {
+        return "userGroupEditor/userHome.jsp";
+    }
+    
     @RequestMapping
     public String view(ModelMap model, int userId) {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
@@ -142,7 +109,7 @@ public class UserEditorController {
     /* Update Group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
     public String update(@ModelAttribute("user") LiteYukonUser user, BindingResult result, ModelMap model, FlashScope flash) {
-        
+
         yukonUserValidator.validate(user, result);
         
         if (result.hasErrors()) {
@@ -161,7 +128,7 @@ public class UserEditorController {
         
         return "redirect:view";
     }
-    
+
     /* Login Groups Page */
     @RequestMapping
     public String groups(ModelMap model, int userId) {
@@ -253,6 +220,7 @@ public class UserEditorController {
         model.addAttribute("editingUsername", yukonUserDao.getLiteYukonUser(user.getUserID()).getUsername());
         model.addAttribute("authTypes", AuthType.values());
         model.addAttribute("loginStatusTypes", LoginStatusEnum.values());
+        model.addAttribute("userGroups", userGroupDao.getAllLiteUserGroups());
         model.addAttribute("showChangePassword", authenticationService.supportsPasswordSet(user.getAuthType()));
         model.addAttribute("pwChangeFormMode", PageEditMode.EDIT);
 
@@ -261,34 +229,43 @@ public class UserEditorController {
         model.addAttribute("roles", sortedRoles.asMap());
     }
     
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
+    private class PasswordValidator extends SimpleValidator<PasswordChange>{
+        
+        public PasswordValidator() {
+            super(PasswordChange.class);
+        }
+
+        @Override
+        protected void doValidation(PasswordChange target, Errors errors) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "password", target.getPassword(), 64);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "confirmPassword", target.getConfirmPassword(), 64);
+            if (!StringUtils.isBlank(target.getPassword()) || !StringUtils.isBlank(target.getConfirmPassword())) {
+                
+                if (!target.getPassword().equals(target.getConfirmPassword())) {
+                    errors.rejectValue("password", "password.mismatch");
+                    errors.rejectValue("confirmPassword", "password.mismatch");
+                }
+            }
+        }
+    };
     
-    @Autowired
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
+    public static class PasswordChange {
+        
+        public PasswordChange() {}
+        
+        private String password;
+        private String confirmPassword;
+        public String getPassword() {
+            return password;
+        }
+        public void setPassword(String password) {
+            this.password = password;
+        }
+        public String getConfirmPassword() {
+            return confirmPassword;
+        }
+        public void setConfirmPassword(String confirmPassword) {
+            this.confirmPassword = confirmPassword;
+        }
     }
-    
-    @Autowired
-    public void setYukonUserValidator(YukonUserValidator yukonUserValidator) {
-        this.yukonUserValidator = yukonUserValidator;
-    }
-    
-    @Autowired
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
-    }
-    
-    @Autowired
-    public void setYukonGroupService(YukonGroupService yukonGroupService) {
-        this.yukonGroupService = yukonGroupService;
-    }
-    
-    @Autowired
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
-    
 }

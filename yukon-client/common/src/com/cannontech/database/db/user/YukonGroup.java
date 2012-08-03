@@ -11,16 +11,16 @@ import com.cannontech.spring.YukonSpringHook;
 /**
  * @author alauinger
  */
-public class YukonGroup extends DBPersistent 
-{
-	public static final String TABLE_NAME = "YukonGroup";
+public class YukonGroup extends DBPersistent {
 
-	//a mapping table that does not have a DBPersistent
-	public static final String TBL_YUKON_USER_GROUP = "YukonUserGroup";
+    public static final String TABLE_NAME = "YukonGroup";
 
-	//what group IDs can be modified
-	public static final int EDITABLE_MIN_GROUP_ID  = 0;
-	
+    //a mapping table that does not have a DBPersistent
+    public static final String TBL_YUKON_USER_GROUP = "YukonUserGroup";
+
+    //what group IDs can be modified
+    public static final int EDITABLE_MIN_GROUP_ID  = 0;
+    
 	// Default group ids
 	public static final int YUKON_GROUP_ID = -1;
 	public static final int SYSTEM_ADMINISTRATOR_GROUP_ID = -2;
@@ -73,11 +73,12 @@ public class YukonGroup extends DBPersistent
 		try 
 		{		
 			 pstmt = conn_.prepareStatement(
-					"select g.GroupID id, g.GroupName name, g.GroupDescription descr " +
-					"from " + TABLE_NAME + " g, " + TBL_YUKON_USER_GROUP + " u " +
-					"where u.UserID = ? " +
-					"and g.GroupID = u.GroupID " + 
-					"order by g.GroupName");
+					"SELECT YG.GroupId id, YG.GroupName name, YG.GroupDescription descr " +
+					"FROM YukonGroup YG " +
+			        "  JOIN UserGroupToYukonGroupMapping UGYGM ON YG.GroupId = UGYGM.GroupId " +
+					"  JOIN YukonUser YU ON UGYGM.UserGroupId = YU.UserGroupId " +
+					"WHERE YU.UserId = ? " +
+					"ORDER BY YG.GroupName");
 		    	
 			 pstmt.setInt( 1, userID_ );
 			 

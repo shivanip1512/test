@@ -200,8 +200,7 @@ public class Msg2Tag extends YukonTagSupport {
         this.blankIfMissing = blankIfMissing;
     }
     
-    public void setObjectFormattingService(
-            ObjectFormattingService objectFormattingService) {
+    public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
         this.objectFormattingService = objectFormattingService;
     }
 }

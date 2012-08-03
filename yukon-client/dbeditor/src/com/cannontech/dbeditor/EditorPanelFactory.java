@@ -9,13 +9,54 @@ package com.cannontech.dbeditor;
 
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.editor.PropertyPanel;
+import com.cannontech.database.data.baseline.Baseline;
+import com.cannontech.database.data.config.ConfigTwoWay;
+import com.cannontech.database.data.customer.Contact;
+import com.cannontech.database.data.customer.Customer;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.lm.LMControlArea;
+import com.cannontech.database.data.device.lm.LMGroup;
+import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMScenario;
+import com.cannontech.database.data.holiday.HolidaySchedule;
+import com.cannontech.database.data.notification.NotificationGroup;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.TcpPort;
+import com.cannontech.database.data.route.RouteBase;
 import com.cannontech.database.data.season.SeasonSchedule;
+import com.cannontech.database.data.state.GroupState;
 import com.cannontech.database.data.tou.TOUSchedule;
+import com.cannontech.database.data.user.UserGroup;
+import com.cannontech.database.data.user.YukonGroup;
+import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.lm.LMProgramConstraint;
+import com.cannontech.database.db.notification.AlarmCategory;
+import com.cannontech.database.db.tags.Tag;
+import com.cannontech.dbeditor.editor.alarmcategories.AlarmCategoriesEditorPanel;
+import com.cannontech.dbeditor.editor.baseline.BaselineEditorPanel;
+import com.cannontech.dbeditor.editor.config.ConfigEditorPanel;
+import com.cannontech.dbeditor.editor.contact.ContactEditor;
+import com.cannontech.dbeditor.editor.contact.CustomerEditor;
+import com.cannontech.dbeditor.editor.device.DeviceEditorPanel;
+import com.cannontech.dbeditor.editor.device.lmconstraint.LMConstraintEditorPanel;
+import com.cannontech.dbeditor.editor.device.lmcontrolarea.LMControlAreaEditor;
+import com.cannontech.dbeditor.editor.device.lmgroup.LMGroupEditor;
+import com.cannontech.dbeditor.editor.device.lmprogram.LMProgramEditor;
+import com.cannontech.dbeditor.editor.device.lmscenario.LMScenarioEditorPanel;
+import com.cannontech.dbeditor.editor.holidayschedule.HolidayScheduleEditor;
+import com.cannontech.dbeditor.editor.notification.group.NotificationGroupEditorPanel;
+import com.cannontech.dbeditor.editor.point.PointEditorPanel;
+import com.cannontech.dbeditor.editor.port.PortEditorPanel;
+import com.cannontech.dbeditor.editor.route.RouteEditorPanel;
 import com.cannontech.dbeditor.editor.season.SeasonEditorPanel;
+import com.cannontech.dbeditor.editor.state.StateEditorPanel;
+import com.cannontech.dbeditor.editor.tags.TagEditorPanel;
 import com.cannontech.dbeditor.editor.tou.TOUEditorPanel;
+import com.cannontech.dbeditor.editor.user.LoginEditorPanel;
+import com.cannontech.dbeditor.editor.user.RoleGroupEditorPanel;
+import com.cannontech.dbeditor.editor.user.UserGroupEditorPanel;
 
 public final class EditorPanelFactory
 {
@@ -27,78 +68,33 @@ public final class EditorPanelFactory
 	public static final Class[][] EDITOR_CLASSES =
 	{
 		//{Object.class,Object.class}
-   	{com.cannontech.database.db.notification.AlarmCategory.class,
-		 com.cannontech.dbeditor.editor.alarmcategories.AlarmCategoriesEditorPanel.class},
+   	{AlarmCategory.class, AlarmCategoriesEditorPanel.class},
+	{Customer.class, CustomerEditor.class},
+   	{Contact.class, ContactEditor.class},
+   	{com.cannontech.database.db.contact.Contact.class, ContactEditor.class},
+   	{YukonUser.class, LoginEditorPanel.class},
+	{YukonGroup.class, RoleGroupEditorPanel.class},
+	{UserGroup.class, UserGroupEditorPanel.class}, 
+   	{DeviceBase.class, DeviceEditorPanel.class},
+   	{DirectPort.class, PortEditorPanel.class},
+   	{NotificationGroup.class, NotificationGroupEditorPanel.class},
+	//{com.cannontech.database.data.notification.ContactNotification.class, com.cannontech.dbeditor.editor.notification.recipient.NotificationRecipientEditorPanel.class},
+
+   	{GroupState.class, StateEditorPanel.class},
+	{LMControlArea.class, LMControlAreaEditor.class},
+   	{LMProgramBase.class, LMProgramEditor.class},
+   	{LMGroup.class, LMGroupEditor.class},
+   	{PointBase.class, PointEditorPanel.class},
+   	{RouteBase.class, RouteEditorPanel.class},
+   	{HolidaySchedule.class, HolidayScheduleEditor.class},
+	{Baseline.class, BaselineEditorPanel.class},
+	{ConfigTwoWay.class, ConfigEditorPanel.class},
 		
-		{com.cannontech.database.data.customer.Customer.class,
-		 com.cannontech.dbeditor.editor.contact.CustomerEditor.class},
-
-   	{com.cannontech.database.data.customer.Contact.class,
-		 com.cannontech.dbeditor.editor.contact.ContactEditor.class},
-
-   	{com.cannontech.database.db.contact.Contact.class,
-		 com.cannontech.dbeditor.editor.contact.ContactEditor.class},
-
-   	{com.cannontech.database.data.user.YukonUser.class,
-		 com.cannontech.dbeditor.editor.user.LoginEditorPanel.class},
-
-	{com.cannontech.database.data.user.YukonGroup.class,
-		 com.cannontech.dbeditor.editor.user.RoleGroupEditorPanel.class},
-
-   	{com.cannontech.database.data.device.DeviceBase.class,
-	  	com.cannontech.dbeditor.editor.device.DeviceEditorPanel.class},
-   	
-   	{com.cannontech.database.data.port.DirectPort.class,
-	  	com.cannontech.dbeditor.editor.port.PortEditorPanel.class},
-
-   	{com.cannontech.database.data.notification.NotificationGroup.class,
-		 com.cannontech.dbeditor.editor.notification.group.NotificationGroupEditorPanel.class},
-
-	//{com.cannontech.database.data.notification.ContactNotification.class,
-	//com.cannontech.dbeditor.editor.notification.recipient.NotificationRecipientEditorPanel.class},
-
-   	{com.cannontech.database.data.state.GroupState.class,
-	  	com.cannontech.dbeditor.editor.state.StateEditorPanel.class},
-
-	{com.cannontech.database.data.device.lm.LMControlArea.class,
-		com.cannontech.dbeditor.editor.device.lmcontrolarea.LMControlAreaEditor.class},
-
-   	{com.cannontech.database.data.device.lm.LMProgramBase.class,
-	  	com.cannontech.dbeditor.editor.device.lmprogram.LMProgramEditor.class},
-
-   	{com.cannontech.database.data.device.lm.LMGroup.class,
-	  	com.cannontech.dbeditor.editor.device.lmgroup.LMGroupEditor.class},
-   	
-   	{com.cannontech.database.data.point.PointBase.class,
-	  	com.cannontech.dbeditor.editor.point.PointEditorPanel.class},
-
-   	{com.cannontech.database.data.route.RouteBase.class,
-	  	com.cannontech.dbeditor.editor.route.RouteEditorPanel.class},
-
-   	{com.cannontech.database.data.holiday.HolidaySchedule.class,
-	   com.cannontech.dbeditor.editor.holidayschedule.HolidayScheduleEditor.class},
-	   
-	{com.cannontech.database.data.baseline.Baseline.class,
-		com.cannontech.dbeditor.editor.baseline.BaselineEditorPanel.class},
-		
-	{com.cannontech.database.data.config.ConfigTwoWay.class,
-		com.cannontech.dbeditor.editor.config.ConfigEditorPanel.class},
-		
-	{com.cannontech.database.db.tags.Tag.class,
-		com.cannontech.dbeditor.editor.tags.TagEditorPanel.class},
-		
-	{com.cannontech.database.db.device.lm.LMProgramConstraint.class,
-		com.cannontech.dbeditor.editor.device.lmconstraint.LMConstraintEditorPanel.class},
-	
-	{LMScenario.class,
-		com.cannontech.dbeditor.editor.device.lmscenario.LMScenarioEditorPanel.class},
-		
-	{SeasonSchedule.class,
-		SeasonEditorPanel.class},
-		
-	{TOUSchedule.class,
-		TOUEditorPanel.class},
-		
+	{Tag.class,TagEditorPanel.class},
+	{LMProgramConstraint.class, LMConstraintEditorPanel.class},
+	{LMScenario.class, LMScenarioEditorPanel.class},
+	{SeasonSchedule.class, SeasonEditorPanel.class},
+	{TOUSchedule.class,TOUEditorPanel.class},
 	{TcpPort.class, com.cannontech.dbeditor.editor.port.PortEditorPanel.class},
         
 	};
@@ -123,14 +119,12 @@ public static PropertyPanel createEditorPanel(EditorPanel o)
 {
    Class panelClass = null;
 	
-   for( int i = 0; i < EDITOR_CLASSES.length; i++ )
-   {
-   	if( o.equals(EDITOR_CLASSES[i][0]) )
-   	{
-			panelClass = EDITOR_CLASSES[i][1];
-			break;
-   	}			
-   }
+    for( int i = 0; i < EDITOR_CLASSES.length; i++ ) {
+        if( o.equals(EDITOR_CLASSES[i][0]) ) {
+            panelClass = EDITOR_CLASSES[i][1];
+            break;
+        }			
+    }
 
    //if we still havent found our class,
    //  find the first super class and use that
@@ -177,11 +171,11 @@ public static PropertyPanel createEditorPanel(EditorPanel o)
  * @return com.cannontech.common.editor.PropertyPanel
  * @param o com.cannontech.database.db.DBPersistent
  */
-public static PropertyPanel createEditorPanel(DBPersistent o)
-{
-	if( o instanceof EditorPanel )
+public static PropertyPanel createEditorPanel(DBPersistent o) {
+	if( o instanceof EditorPanel ) {
 		return createEditorPanel( (EditorPanel)o );
-	else
+	} else {
 	   throw new IllegalArgumentException("The object of type: " + o.getClass().getName() + " is not a " + EditorPanel.class.getName() );
+	}
 }
 }

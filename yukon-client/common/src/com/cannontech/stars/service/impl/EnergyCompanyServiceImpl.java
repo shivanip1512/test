@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.naming.ConfigurationException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,8 +106,8 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
 
     @Override
     @Transactional
-    public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user,
-            Integer parentId) throws WebClientException, TransactionException, CommandExecutionException {
+    public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user, Integer parentId)
+    throws WebClientException, TransactionException, CommandExecutionException, ConfigurationException {
         
         boolean topLevelEc = parentId == null;
         

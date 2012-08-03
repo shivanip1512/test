@@ -53,6 +53,7 @@ public enum TreeModelEnum
 	MCTBROADCAST (MCTBroadcastGroupTreeModel.class, "MCT Broadcast"),
 	LOGINS (LoginTreeModel.class, "Login"),
 	LOGIN_GROUPS (LoginGroupTreeModel.class, "Login Group"),
+	USER_GROUPS (UserGroupTreeModel.class, "User Group"),
 	BASELINE (BaselineModel.class, "Baseline"),
 	TWOWAYCONFIG (ConfigModel.class, "MCT Config"),
 	TAG (TagModel.class, "Tag"),

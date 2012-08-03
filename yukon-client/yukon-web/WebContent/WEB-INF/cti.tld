@@ -2057,10 +2057,17 @@
     <body-content>scriptless</body-content>
      <attribute>
         <name>selectorName</name>
-        <required>true</required>
+        <required>false</required>
         <rtexprvalue>true</rtexprvalue>
         <description>Tab name</description>
     </attribute>
+     <attribute>
+        <name>key</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>The key (code) to use when looking up the message.
+            If key is not provided, the text attribute will be used.</description>
+     </attribute>
      <attribute>
         <name>cssClass</name>
         <required>false</required>

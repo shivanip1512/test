@@ -18,6 +18,7 @@ public final class LiteYukonUserMapper implements YukonRowMapper<LiteYukonUser> 
         user.setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
         user.setLastChangedDate(rs.getInstant("LastChangedDate"));
         user.setForceReset(rs.getEnum("ForceReset", YNBoolean.class).getBoolean());
+        user.setUserGroupId(rs.getInt("UserGroupId"));
         return user;
     }
 }

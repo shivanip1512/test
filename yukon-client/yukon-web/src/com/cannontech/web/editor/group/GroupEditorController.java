@@ -20,26 +20,21 @@ public class GroupEditorController extends MultiActionController {
 
     private YukonGroupDao yukonGroupDao;
 
-    public YukonGroupDao getYukonGroupDao() {
-        return yukonGroupDao;
-    }
-
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
-    }
-
     public ModelAndView editGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
         ModelAndView mav = new ModelAndView("group/editGroup.jsp");
 
-        int groupId = ServletRequestUtils.getRequiredIntParameter(request, "groupId");
-        LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(groupId);
+        int roleGroupId = ServletRequestUtils.getRequiredIntParameter(request, "roleGroupId");
+        LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         mav.addObject("group", group);
-        mav.addObject("groupId", groupId);
+        mav.addObject("roleGroupId", roleGroupId);
         mav.addObject("groupName", group.getGroupName());
 
         return mav;
     }
 
+    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
+        this.yukonGroupDao = yukonGroupDao;
+    }
 }

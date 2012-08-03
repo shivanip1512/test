@@ -16,7 +16,7 @@
 
             <form:form commandName="group" action="/spring/adminSetup/groupEditor/edit" method="post">
                 <form:hidden path="groupID"/>
-                <input type="hidden" value="${group.groupID}" name="groupId">
+                <input type="hidden" value="${group.groupID}" name="roleGroupId">
                 
                 <tags:nameValueContainer2>
                     
@@ -72,7 +72,7 @@
                                                     <li>
                                                         <cti:url value="/spring/adminSetup/roleEditor/view" var="roleUrl">
                                                             <cti:param name="roleId" value="${role.roleId}"/>
-                                                            <cti:param name="groupId" value="${groupId}"/>
+                                                            <cti:param name="roleGroupId" value="${roleGroupId}"/>
                                                         </cti:url>
                                                         <a href="${roleUrl}"><cti:formatObject value="${role}"/></a>
                                                     </li>
@@ -86,7 +86,7 @@
                     </c:choose>
                     <div class="actionArea">
                         <form action="/spring/adminSetup/groupEditor/addRole" method="post">
-                            <input type="hidden" value="${groupId}" name="groupId">
+                            <input type="hidden" value="${roleGroupId}" name="roleGroupId">
                             <select name="newRoleId">
                                 <c:forEach var="availableCategory" items="${availableRolesMap}">
                                     <optgroup label="<cti:formatObject value="${availableCategory.key}"/>">

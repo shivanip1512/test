@@ -19,6 +19,7 @@ public class LiteYukonUser extends LiteBase {
     private AuthType authType;
     private Instant lastChangedDate;
     private boolean forceReset;
+    private int userGroupId;
 
     public LiteYukonUser() {
         this(0,null,null);
@@ -33,10 +34,11 @@ public class LiteYukonUser extends LiteBase {
     }
 
     public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus) {
-        this(id, username, loginStatus, AuthType.PLAIN, Instant.now(), false);
+        this(id, username, loginStatus, AuthType.PLAIN, Instant.now(), false, 0);
     }
 
-    public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus, AuthType authType, Instant lastChangedDate, boolean forceReset) {
+    public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus, AuthType authType, Instant lastChangedDate,
+                         boolean forceReset, int userGroupId) {
         setLiteType(LiteTypes.YUKON_USER);
         setUserID(id);
         setUsername(username);
@@ -44,6 +46,7 @@ public class LiteYukonUser extends LiteBase {
         setAuthType(authType);
         setLastChangedDate(lastChangedDate);
         setForceReset(forceReset);
+        setUserGroupId(userGroupId);
     }
 
     public void retrieve( String dbAlias ) {
@@ -51,7 +54,7 @@ public class LiteYukonUser extends LiteBase {
         YukonJdbcTemplate yukonJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", YukonJdbcTemplate.class);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Username, Status, AuthType, LastChangedDate, ForceReset");
+        sql.append("SELECT Username, Status, AuthType, LastChangedDate, ForceReset, UserGroupId");
         sql.append("FROM YukonUser");
         sql.append("WHERE  UserId").eq(getUserID());
 
@@ -63,6 +66,7 @@ public class LiteYukonUser extends LiteBase {
                 setAuthType(AuthType.valueOf(rs.getString("AuthType")));
                 setLastChangedDate(new Instant(rs.getDate("lastChangedDate")));
                 setForceReset("Y".equals(rs.getString("ForceReset")));
+                setUserGroupId(rs.getInt("UserGroupId"));
                 return null;
             }
         });
@@ -114,5 +118,12 @@ public class LiteYukonUser extends LiteBase {
     }
     public void setForceReset(boolean forceReset) {
         this.forceReset = forceReset;
+    }
+
+    public int getUserGroupId() {
+        return userGroupId;
+    }
+    public void setUserGroupId(int userGroupId) {
+        this.userGroupId = userGroupId;
     }
 }

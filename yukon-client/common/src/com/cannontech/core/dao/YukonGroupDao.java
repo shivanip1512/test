@@ -44,6 +44,10 @@ public interface YukonGroupDao {
     public void save(LiteYukonGroup group);
 
     public void delete(int groupId);
-
+    
+    /**
+     * This method returns all of the role groups that are mapped to the user group id supplied.
+     */
+    public List<LiteYukonGroup> getRoleGroupsForUserGroupId(int userGroupId);
 
 }

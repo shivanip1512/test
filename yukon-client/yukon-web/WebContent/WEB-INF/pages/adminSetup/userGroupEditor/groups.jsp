@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="adminSetup" page="groups">
+<cti:standardPage module="adminSetup" page="roleGroups">
 
 <script type="text/javascript">
 

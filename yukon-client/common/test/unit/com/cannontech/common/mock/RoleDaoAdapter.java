@@ -76,4 +76,8 @@ public class RoleDaoAdapter implements RoleDao {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public Map<YukonRole, LiteYukonGroup> getRolesAndRoleGroupsForUserGroup(int userGroupId) {
+        throw new UnsupportedOperationException();
+    }
 }

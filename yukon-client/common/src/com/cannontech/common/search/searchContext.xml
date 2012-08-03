@@ -39,6 +39,18 @@
         <property name="jdbcTemplate" ref="jdbcTemplate" />
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
     </bean>
+
+    <bean id="userGroupSearcherLucene" class="com.cannontech.common.search.UserGroupLuceneSearcher" singleton="true" autowire="byType">
+        <property name="indexManager" ref="userGroupIndexManager" />
+    </bean>
+
+    <alias name="userGroupSearcherLucene" alias="userGroupSearcher" />
+
+    <bean id="userGroupIndexManager" class="com.cannontech.common.search.index.UserGroupIndexManager" 
+          singleton="true" autowire="default" init-method="initialize" destroy-method="shutdown">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+    </bean>
     
     <bean id="loginGroupSearcherLucene" class="com.cannontech.common.search.LoginGroupLuceneSearcher" singleton="true" autowire="byType">
         <property name="indexManager" ref="loginGroupIndexManager" />

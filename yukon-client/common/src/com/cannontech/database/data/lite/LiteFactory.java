@@ -6,6 +6,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.customer.CICustomerBase;
@@ -16,6 +17,7 @@ import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
@@ -205,6 +207,13 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			((com.cannontech.database.data.user.YukonGroup)returnObject).getYukonGroup().setGroupName( ((LiteYukonGroup)liteObject).getGroupName() );
 			((com.cannontech.database.data.user.YukonGroup)returnObject).getYukonGroup().setGroupDescription( ((LiteYukonGroup)liteObject).getGroupDescription() );
 			break;
+        case LiteTypes.USER_GROUP:
+            returnObject = new com.cannontech.database.data.user.UserGroup();
+            LiteUserGroup liteUserGroup = (LiteUserGroup)liteObject;
+            ((UserGroup)returnObject).getLiteUserGroup().setUserGroupId(liteUserGroup.getUserGroupId());
+            ((UserGroup)returnObject).getLiteUserGroup().setUserGroupName(liteUserGroup.getUserGroupName());
+            ((UserGroup)returnObject).getLiteUserGroup().setUserGroupDescription(liteUserGroup.getUserGroupDescription());
+            break;
 		case LiteTypes.DEVICE_TYPE_COMMAND:
 			returnObject = new DeviceTypeCommand();
 			((DeviceTypeCommand)returnObject).setDeviceCommandID(new Integer(((LiteDeviceTypeCommand)liteObject).getDeviceCommandID()));
@@ -408,17 +417,16 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteDeviceMeterNumber(
 				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue(),
 				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getMeterNumber());
-	}
-	else if( val instanceof YukonUser )
-	{
-	    YukonUser user = (YukonUser)val;
-	    
-		returnLite = new LiteYukonUser(user.getUserID().intValue(), user.getYukonUser().getUsername(), user.getYukonUser().getLoginStatus(),
-		                               user.getYukonUser().getAuthType(), new Instant(user.getYukonUser().getLastChangedDate()), user.getYukonUser().isForceReset());
-	}
-	else if( val instanceof YukonGroup )
-	{
-		returnLite = new LiteYukonGroup(
+
+	} else if( val instanceof YukonUser ) {
+	       com.cannontech.database.db.user.YukonUser user = ((YukonUser)val).getYukonUser();
+
+	        returnLite = new LiteYukonUser(user.getUserID(), user.getUsername(), user.getLoginStatus(), user.getAuthType(), 
+	                                       new Instant(user.getLastChangedDate()), user.isForceReset(), user.getUserGroupId());
+
+	} else if( val instanceof YukonGroup ) {
+
+	    returnLite = new LiteYukonGroup(
 			((YukonGroup)val).getGroupID().intValue(),
 			((YukonGroup)val).getGroupName() );
 		

@@ -47,6 +47,7 @@ public final class LiteTypes
 	public final static int SETTLEMENT = 37;
 	public final static int DEVICE_CONFIGURATION    = 38;
 	public final static int DEVICE_CONFIGURATION_CATEGORY    = 39;
+	public final static int USER_GROUP = 40;
 		
 	// Stars lite types
 	public final static int STARS_CUST_ACCOUNT_INFO = 100;

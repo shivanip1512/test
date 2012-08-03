@@ -1548,6 +1548,7 @@
 
 	<bean id="energyCompanyInfoService" class="com.cannontech.web.admin.energyCompany.service.impl.EnergyCompanyInfoServiceImpl"/>
 	<bean id="yukonUserValidator" class="com.cannontech.web.admin.userGroupEditor.model.YukonUserValidator"/>
+    <bean id="userGroupValidator" class="com.cannontech.web.admin.userGroupEditor.model.UserGroupValidator"/>
 
     <!-- OPERATOR -->
     <bean id="operatorAccountService" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorAccountServiceImpl"/>
@@ -1698,6 +1699,10 @@
 
     <bean name="userPicker" class="com.cannontech.web.picker.v2.UserPicker">
         <property name="searcher" ref="userSearcherLucene"/>
+    </bean>
+
+    <bean name="userGroupPicker" class="com.cannontech.web.picker.v2.UserGroupPicker">
+        <property name="searcher" ref="userGroupSearcherLucene"/>
     </bean>
     
     <bean name="customerAccountPicker" class="com.cannontech.web.picker.v2.CustomerAccountPicker">

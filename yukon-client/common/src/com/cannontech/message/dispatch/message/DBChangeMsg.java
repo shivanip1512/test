@@ -63,6 +63,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
     public static final int CHANGE_STARS_PUBLISHED_PROGRAM_DB = 34;
     public static final int CHANGE_IVVC_ZONE = 35;
     public static final int CHANGE_STATIC_PAO_INFO_DB = 36;
+    public static final int CHANGE_USER_GROUP_DB = 37;
 
     /*Possible values for the Categories field
      *NOTE: If you are using the CHANGE_PAO_DB database field you will
@@ -78,6 +79,7 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final String CAT_HOLIDAY_SCHEDULE = "HolidaySchedule";
 	public static final String CAT_ENERGY_COMPANY = "EnergyCompany";
 	public static final String CAT_YUKON_USER = "YukonUser";
+    public static final String CAT_USER_GROUP = "UserGroup";
 	public static final String CAT_CUSTOMER = "Customer";
 	public static final String CAT_CI_CUSTOMER = "CICustomer";
 	public static final String CAT_YUKON_USER_GROUP = "YukonUserGroup";

@@ -29,6 +29,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
+import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.user.YukonGroup;
@@ -237,34 +238,43 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 		return tableModel;
 	}
 
+	public Object getValue(Object o)  {
+	    
+	    if (o instanceof YukonUser) {
+    		YukonUser login = (YukonUser)o;
+    
+    		login.getYukonGroups().removeAllElements();
+    
+    		for( int i = 0; i < getTableModel().getRowCount(); i++ ) {
+    			if( getTableModel().getRowAt(i).isSelected().booleanValue() ) {
+    				LiteYukonGroup group = getTableModel().getRowAt(i).getLiteYukonGroup(); 
+    				
+    				//add a new DBPersistant YukonGroup to our Login
+    				YukonGroup grp = new YukonGroup(group.getGroupID(), group.getGroupName());
+    				grp.setGroupDescription( group.getGroupDescription() );
+    				
+    				login.getYukonGroups().add( grp );
+    			}
+    		}		
 
-	/**
-	 * This method was created in VisualAge.
-	 * @return java.lang.Object
-	 * @param val java.lang.Object
-	 */
-	public Object getValue(Object o) 
-	{
-		YukonUser login = (YukonUser)o;
+    		return login;
+	    } else if (o instanceof UserGroup) {
+	        UserGroup userGroup = (UserGroup)o;
+	        
+	        // Clear out the existing login groups
+	        userGroup.clearRolesToGroupMap();
+    
+            for( int i = 0; i < getTableModel().getRowCount(); i++ ) {
+                if( getTableModel().getRowAt(i).isSelected().booleanValue() ) {
+                    LiteYukonGroup group = getTableModel().getRowAt(i).getLiteYukonGroup(); 
+                    userGroup.addRoleGroups(group);
+                }
+            }
 
-		login.getYukonGroups().removeAllElements();
+            return userGroup;
+	    }
 
-		for( int i = 0; i < getTableModel().getRowCount(); i++ )
-		{
-			if( getTableModel().getRowAt(i).isSelected().booleanValue() )
-			{
-				LiteYukonGroup group = getTableModel().getRowAt(i).getLiteYukonGroup(); 
-				
-				//add a new DBPersistant YukonGroup to our Login
-				YukonGroup grp = new YukonGroup( new Integer(group.getGroupID()), group.getGroupName() );
-				grp.setGroupDescription( group.getGroupDescription() );
-				
-				login.getYukonGroups().add( grp );
-			}
-
-		}		
-	
-		return login;
+	    return null;
 	}
 
 
@@ -493,23 +503,14 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 			//re-init our conflicts
 			row.clearConflicts();
 
-			for( int j = 0; j < unqSet.length; j++ )
-			{
+			for( int j = 0; j < unqSet.length; j++ ) {
 				UniqueSet us = unqSet[j];
 							
-				if( row.getLiteYukonGroup().equals(us.getKey()) )
-				{
+				if( row.getLiteYukonGroup().equals(us.getKey()) ) {
 					row.addConflict( (LiteYukonRole)us.getValue() );
 				}
-														
 			}
-
 		}
-					
-//		UniqueSet p = (UniqueSet)conflictList.get(i);
-//		LiteYukonGroup grp = (LiteYukonGroup)p.getKey();
-//		LiteYukonRole r = (LiteYukonRole)p.getValue();
-//		CTILogger.info( "  " + r.getRoleName() + "  in  " + grp.getGroupName() );
 					
 		fireInputUpdate();
 		getTableModel().fireTableRowsUpdated( 0, getTableModel().getRowCount()-1 );
@@ -683,26 +684,39 @@ public static void main(java.lang.String[] args) {
 	 * This method was created in VisualAge.
 	 * @param val java.lang.Object
 	 */
-	public void setValue(Object o) 
-	{
-		if( o == null )
+	public void setValue(Object o) {
+	    if( o == null ) {
 			return;
 
-		YukonUser login = (YukonUser)o;
-		
-		for( int i = 0; i < login.getYukonGroups().size(); i++ )
-		{
-			LiteYukonGroup group = 
-				(LiteYukonGroup)LiteFactory.createLite((YukonGroup)login.getYukonGroups().get(i));
+	    } else if (o instanceof YukonUser) {
+	        
+    		YukonUser login = (YukonUser)o;
+    		
+    		for( int i = 0; i < login.getYukonGroups().size(); i++ ) {
+    			LiteYukonGroup group = 
+    				(LiteYukonGroup)LiteFactory.createLite((YukonGroup)login.getYukonGroups().get(i));
+    
+    			int indx = getTableModel().indexOf( group ); 
+    
+    			if( indx >= 0 ) {
+    				getTableModel().setValueAt(new Boolean(true), indx, UserGroupTableModel.COL_SELECTED);
+    			}
+    		}
+    		
+    		checkBoxAction();
+	    } else if (o instanceof UserGroup) {
+            UserGroup userGroup = (UserGroup)o;
 
-			int indx = getTableModel().indexOf( group ); 
-
-			if( indx >= 0 ) {
-				getTableModel().setValueAt(new Boolean(true), indx, UserGroupTableModel.COL_SELECTED);
-			}
-		}
-		
-		checkBoxAction();
+            for (LiteYukonGroup group : userGroup.getRoleGroups()) {
+                 int indx = getTableModel().indexOf(group); 
+            
+                 if( indx >= 0 ) {
+                     getTableModel().setValueAt(new Boolean(true), indx, UserGroupTableModel.COL_SELECTED);
+                 }
+            }
+            
+            checkBoxAction();
+	    }
 	}
 	
 	/**

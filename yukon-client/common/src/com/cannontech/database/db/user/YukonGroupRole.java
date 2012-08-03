@@ -14,14 +14,11 @@ import com.cannontech.spring.YukonSpringHook;
 /**
  * @author alauinger
  */
-public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole, CTIDbChange
-{
+public class YukonGroupRole extends DBPersistent implements CTIDbChange {
+    
 	public static final String TABLE_NAME = "YukonGroupRole";
 
-	public static final String[] SETTER_COLUMNS  = 
-	{ 
-		"GroupID","RoleID","RolePropertyID","Value" 
-	};
+	public static final String[] SETTER_COLUMNS  = {"GroupID","RoleID","RolePropertyID","Value"};
 
 	public static final String[] CONSTRAINT_COLUMNS  = { "GroupRoleID" }; 
 	

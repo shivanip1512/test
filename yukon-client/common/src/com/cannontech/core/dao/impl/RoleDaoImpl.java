@@ -43,9 +43,9 @@ import com.google.common.collect.Sets;
 public class RoleDaoImpl implements RoleDao {
     
     private IDatabaseCache databaseCache;
-    private DBPersistentDao dbPersistentDao;
-    private RolePropertyDao rolePropertyDao;
-    private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.RoleDao#getRoleProperties(int)
@@ -236,14 +236,41 @@ public class RoleDaoImpl implements RoleDao {
         sql.append("SELECT DISTINCT YGR.RoleId, YG.GroupId, YG.GroupName, YG.GroupDescription");
         sql.append("FROM YukonGroupRole YGR");
         sql.append("  JOIN YukonGroup YG ON YGR.GroupId = YG.GroupId");
-        sql.append("  JOIN YukonUserGroup YUG ON YG.GroupId = YUG.GroupId");
-        sql.append("WHERE YUG.UserId").eq(userId);
+        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON YG.GroupId = UGYGM.GroupId");
+        sql.append("  JOIN YukonUser YU ON UGYGM.UserGroupId = YU.UserGroupId");
+        sql.append("WHERE YU.UserId").eq(userId);
 
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
 
+                YukonRole yukonRole = rs.getEnum("RoleId", YukonRole.class);
+                LiteYukonGroup liteYukonGroup = YukonGroupDaoImpl.liteYukonGroupRowMapper.mapRow(rs);
+
+                results.put(yukonRole, liteYukonGroup);
+                
+            }
+        });
+        
+        return results;
+    }
+    
+    @Override
+    public Map<YukonRole, LiteYukonGroup> getRolesAndRoleGroupsForUserGroup(int userGroupId) {
+        
+        final Map<YukonRole, LiteYukonGroup> results = Maps.newHashMap();
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT YGR.RoleId, YG.GroupId, YG.GroupName, YG.GroupDescription");
+        sql.append("FROM YukonGroupRole YGR");
+        sql.append("  JOIN YukonGroup YG ON YGR.GroupId = YG.GroupId");
+        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON YG.GroupId = UGYGM.GroupId");
+        sql.append("WHERE UGYGM.UserGroupId").eq(userGroupId);
+
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
                 YukonRole yukonRole = rs.getEnum("RoleId", YukonRole.class);
                 LiteYukonGroup liteYukonGroup = YukonGroupDaoImpl.liteYukonGroupRowMapper.mapRow(rs);
 
@@ -290,25 +317,8 @@ public class RoleDaoImpl implements RoleDao {
         }
     }
     
-    // DI Setters
     @Autowired
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
     }
-
-    @Autowired
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-    
 }

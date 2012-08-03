@@ -46,7 +46,6 @@ public class RolePropertyController {
 
     private RolePropertyEditorDao rolePropertyEditorDao;
     private YukonGroupDao yukonGroupDao;
-//    private CsrfTokenService csrfTokenService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private Map<YukonRole, MappedPropertiesHelper<DescriptiveRoleProperty>> helperLookup;
@@ -62,8 +61,8 @@ public class RolePropertyController {
     }
     
     @RequestMapping(method=RequestMethod.GET, value="view")
-    public String view(YukonUserContext context, ModelMap map, FlashScope flashScope, int groupId, int roleId) throws Exception {
-        LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(groupId);
+    public String view(YukonUserContext context, ModelMap map, FlashScope flashScope, int roleGroupId, int roleId) throws Exception {
+        LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         YukonRole role = YukonRole.getForId(roleId);
         
         GroupRolePropertyValueCollection propertyValues = rolePropertyEditorDao.getForGroupAndRole(liteYukonGroup, role, true);
@@ -99,7 +98,7 @@ public class RolePropertyController {
         map.addAttribute("groupName", liteYukonGroup.getGroupName());
         map.addAttribute("roleName", messageSourceAccessor.getMessage(role.getFormatKey()));
         map.addAttribute("roleId", role.getRoleId());
-        map.addAttribute("groupId", liteYukonGroup.getGroupID());
+        map.addAttribute("roleGroupId", liteYukonGroup.getGroupID());
         map.addAttribute("showDelete", role.getCategory().isSystem() ? false : true);
     }
 
@@ -117,10 +116,10 @@ public class RolePropertyController {
 
     @RequestMapping(value="update", method=RequestMethod.POST, params="save")
     public String save(HttpServletRequest request, @ModelAttribute("command")GroupRolePropertyEditorBean command, BindingResult result, 
-                       YukonUserContext context, ModelMap map, FlashScope flashScope, int groupId, int roleId) throws Exception {
+                       YukonUserContext context, ModelMap map, FlashScope flashScope, int roleGroupId, int roleId) throws Exception {
 
 //        csrfTokenService.checkRequest(request, result);
-        LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(groupId);
+        LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroup(roleGroupId);
         YukonRole role = YukonRole.getForId(roleId);
         if (result.hasErrors()) {
             setupModelMap(context, map, liteYukonGroup, role);
@@ -138,21 +137,21 @@ public class RolePropertyController {
         
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roles.loginGroupRoleUpdated"));
         setupModelMap(context, map, liteYukonGroup, role);
-        return "redirect:/spring/adminSetup/groupEditor/view";
+        return "redirect:/spring/adminSetup/roleGroup/view";
     }
     
     @RequestMapping(value="update", method=RequestMethod.POST, params="delete")
-    public String delete(ModelMap map, FlashScope flash, int groupId, int roleId) {
-        rolePropertyEditorDao.removeRoleFromGroup(groupId, roleId);
-        map.addAttribute("groupId", groupId);
+    public String delete(ModelMap map, FlashScope flash, int roleGroupId, int roleId) {
+        rolePropertyEditorDao.removeRoleFromGroup(roleGroupId, roleId);
+        map.addAttribute("roleGroupId", roleGroupId);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.groupEditor.updateSuccessful"));
-        return "redirect:/spring/adminSetup/groupEditor/view";
+        return "redirect:/spring/adminSetup/roleGroup/view";
     }
     
     @RequestMapping(value="update", method=RequestMethod.POST, params="cancel")
-    public String cancel(ModelMap map, FlashScope flash, int groupId, int roleId) {
-        map.addAttribute("groupId", groupId);
-        return "redirect:/spring/adminSetup/groupEditor/view";
+    public String cancel(ModelMap map, FlashScope flash, int roleGroupId, int roleId) {
+        map.addAttribute("roleGroupId", roleGroupId);
+        return "redirect:/spring/adminSetup/roleGroup/view";
     }
     
     public static class GroupRolePropertyEditorBean {

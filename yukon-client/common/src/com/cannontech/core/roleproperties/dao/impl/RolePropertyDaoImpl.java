@@ -81,12 +81,12 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     private LeastRecentlyUsedCacheMap<PropertyTuple, Object> convertedValueCache = new LeastRecentlyUsedCacheMap<PropertyTuple, Object>(10000);
     private final Object NULL_CACHE_VALUE = new Object();
     private LoadingCache<Integer, Set<YukonRole>> userRoleCache =
-        CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<Integer, Set<YukonRole>>(){
-            @Override
-            public Set<YukonRole> load(Integer userId) throws Exception {
-                return getRolesForUserFromDatabase(userId);
-            }});
-    
+            CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<Integer, Set<YukonRole>>(){
+                @Override
+                public Set<YukonRole> load(Integer userId) throws Exception {
+                    return getRolesForUserFromDatabase(userId);
+                }});
+        
     private Set<YukonRoleProperty> propertyExceptions = EnumSet.noneOf(YukonRoleProperty.class);
     private boolean allowRoleConflicts = false;
     private ImmutableSet<YukonRoleProperty> missingProperties;
@@ -284,7 +284,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     
     @Override
     public boolean checkRoleForRoleGroupId(YukonRole role, int roleGroupId) {
-    	
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT RoleId");
         sql.append("FROM YukonGroupRole YGR");
@@ -530,8 +530,9 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RoleId");
         sql.append("FROM YukonGroupRole YGR");
-        sql.append("  JOIN YukonUserGroup YUG ON YUG.GroupId = YGR.GroupId ");
-        sql.append("WHERE YUG.UserId").eq(userId);
+        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.GroupId = YGR.GroupId");
+        sql.append("  JOIN YukonUser YU ON YU.UserGroupId = UGYGM.UserGroupId");
+        sql.append("WHERE YU.UserId").eq(userId);
         
         List<Integer> roleIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
         
@@ -660,5 +661,4 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     public long getRoleCacheSize() {
     	return userRoleCache.size();
     }
-
 }

@@ -1,11 +1,13 @@
 package com.cannontech.dbeditor.editor.user;
 
+import com.cannontech.common.editor.IMultiPanelEditor;
+import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
 
 /**
  * This type was created in VisualAge.
  */
-public class RoleGroupEditorPanel extends com.cannontech.common.editor.PropertyPanel implements com.cannontech.common.editor.IMultiPanelEditor
+public class RoleGroupEditorPanel extends PropertyPanel implements IMultiPanelEditor
 {
 	private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
@@ -139,6 +141,6 @@ public class RoleGroupEditorPanel extends com.cannontech.common.editor.PropertyP
 	 * @return java.lang.String
 	 */
 	public String toString() {
-		return "Login Group Editor";
+		return "Role Group Editor";
 	}
 }

@@ -7,6 +7,7 @@ import org.springframework.dao.DataAccessException;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -99,10 +100,9 @@ public interface YukonUserDao {
 
     public void callbackWithAllYukonUsers(SimpleCallback<LiteYukonUser> callback);
 
-    public void callbackWithYukonUsersInGroup(
-            LiteYukonGroup liteGroup,
-            SimpleCallback<LiteYukonUser> simpleCallback);
+    public void callbackWithYukonUsersInGroup(LiteYukonGroup liteGroup, SimpleCallback<LiteYukonUser> simpleCallback);
 
+    public void callbackWithYukonUsersInUserGroup(LiteUserGroup userGroup, SimpleCallback<LiteYukonUser> simpleCallback);
     
     /**
      * This method removes a user from the supplied groups and sends out the necessary db change messages
@@ -134,6 +134,11 @@ public interface YukonUserDao {
     public SearchResult<LiteYukonUser> getUsersForGroup(int groupId, final int start, final int count);
 
     /**
+     * Returns a SearchResult<LiteYukonUser> of the users that are members of the group provided
+     */
+    public SearchResult<LiteYukonUser> getUsersForUserGroup(int userGroupId, final int start, final int count);
+
+    /**
      * This method returns all of the operators that are directly associated with the given energy
      * company ids.
      */
@@ -143,6 +148,16 @@ public interface YukonUserDao {
      * Inserts or updates a lite yukon user.
      */
     public void save(LiteYukonUser user);
+
+    /**
+     * This method returns all of the users associated with the supplied user group id 
+     */
+    public List<LiteYukonUser> getUsersByUserGroupId(int userGroupId);
+    
+    /**
+     * Updates which user group a user is apart of 
+     */
+    public void updateUserGroupId(int userId, int userGroupId);
     
     /**
      * Changes all the forceReset values for a given group.

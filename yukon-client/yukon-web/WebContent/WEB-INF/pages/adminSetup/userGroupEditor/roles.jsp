@@ -20,7 +20,7 @@
 
     <form:form action="/spring/adminSetup/roleEditor/update" id="loginGroupRoleForm" method="post">
         <input type="hidden" name="roleId" value="${roleId}">
-        <input type="hidden" name="groupId" value="${groupId}">
+        <input type="hidden" name="roleGroupId" value="${roleGroupId}">
         <table class="nameValueTable naturalWidth">
             <c:forEach items="${mappedPropertiesHelper.mappableProperties}" var="prop">
                 <tr>

@@ -19,6 +19,7 @@ public class YukonUser extends DBPersistent  {
     private AuthType authType = AuthType.PLAIN;
     private Date lastChangedDate = null;
     private boolean forceReset = false;
+    private Integer userGroupId = null;
 
 	private static final String[] SELECT_COLUMNS = 
 	{ 	
@@ -26,7 +27,8 @@ public class YukonUser extends DBPersistent  {
 		"Status",
         "AuthType",
 		"LastChangedDate",
-		"ForceReset"
+		"ForceReset",
+		"UserGroupId",
 	};
 	
 	
@@ -39,7 +41,7 @@ public class YukonUser extends DBPersistent  {
         // that column.
         String dummyPasswordValue = "";
         Object[] addValues = { getUserID(), getUsername(), dummyPasswordValue, getLoginStatus().getDatabaseRepresentation(), 
-                               getAuthType().name(), getLastChangedDate(), isForceReset() ? "Y":"N"};
+                               getAuthType().name(), getLastChangedDate(), isForceReset() ? "Y":"N", getUserGroupId()};
 
         add(TABLE_NAME, addValues);
     }
@@ -77,7 +79,8 @@ public class YukonUser extends DBPersistent  {
 			setLoginStatus(LoginStatusEnum.retrieveLoginStatus((String) results[1]));
 			setAuthType(AuthType.valueOf((String) results[2]));
 			setLastChangedDate((Date) results[3]);
-			setForceReset("Y".equals((String) results[4]));
+            setForceReset("Y".equals((String) results[4]));
+			setUserGroupId(((Integer) results[5]));
 		}
 	}
 
@@ -86,7 +89,7 @@ public class YukonUser extends DBPersistent  {
 	 */
 	public void update() throws SQLException {
 		Object[] setValues = { getUsername(), getLoginStatus().getDatabaseRepresentation(), 
-		                       getAuthType().name(), getLastChangedDate(), isForceReset() ? 'Y': 'N'};
+		                       getAuthType().name(), getLastChangedDate(), isForceReset() ? 'Y': 'N', getUserGroupId()};
 		
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };
@@ -136,10 +139,10 @@ public class YukonUser extends DBPersistent  {
         this.forceReset = forceReset;
     }
 
-//    public Integer getUserGroupId() {
-//        return userGroupId;
-//    }
-//    public void setUserGroupId(Integer userGroupId) {
-//        this.userGroupId = userGroupId;
-//    }
+    public Integer getUserGroupId() {
+        return userGroupId;
+    }
+    public void setUserGroupId(Integer userGroupId) {
+        this.userGroupId = userGroupId;
+    }
 }
