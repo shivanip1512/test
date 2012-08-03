@@ -41,6 +41,8 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
@@ -52,10 +54,14 @@ import com.cannontech.database.db.web.EnergyCompanyOperatorLoginList;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class UserLoginBasePanel extends DataInputPanel {
-    private AuthenticationService authenticationService =
-            (AuthenticationService) YukonSpringHook.getBean("authenticationService");
+    
+    private AuthenticationService authenticationService = YukonSpringHook.getBean("authenticationService", AuthenticationService.class);
+    private UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
+
     private JLabel ivjJLabelUserName = null;
     private JPanel ivjJPanelLoginPanel = null;
     private JTextField ivjJTextFieldUserID = null;
@@ -63,9 +69,12 @@ public class UserLoginBasePanel extends DataInputPanel {
     private JButton ivjJButtonChangePassword = null;
     private JComboBox ivjJListAuthType = null;
     private JLabel ivjJLabelAuthType = null;
+    private JComboBox ivjJListUserGroup = null;
+    private JLabel ivjJLabelUserGroup = null;
     private JLabel ivjJLabelErrorMessage = null;
     private JPanel ivjJPanelError = null;
     private AuthType initialAuthType = AuthType.PLAIN;
+    private LiteUserGroup initialLiteUserGroup = null;
     private String newPasswordValue = null;
     private boolean passwordRequiresChanging = false;
     private long oldEnergyCompanyID = -1;
@@ -252,6 +261,59 @@ public class UserLoginBasePanel extends DataInputPanel {
         return ivjJLabelUserName;
     }
 
+    private JLabel getJLabelUserGroup() {
+        if (ivjJLabelUserGroup == null) {
+            try {
+                ivjJLabelUserGroup = new javax.swing.JLabel();
+                ivjJLabelUserGroup.setName("JLabelUserGroup");
+                ivjJLabelUserGroup.setText("User Group:");
+                ivjJLabelUserGroup.setMaximumSize(new java.awt.Dimension(122, 17));
+                ivjJLabelUserGroup.setPreferredSize(new java.awt.Dimension(122, 17));
+                ivjJLabelUserGroup.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjJLabelUserGroup.setMinimumSize(new java.awt.Dimension(122, 17));
+            } catch (Exception ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjJLabelUserGroup;
+    }
+    
+    private JComboBox getJListUserGroup() {
+        
+        List<LiteUserGroup> allUserGroups = userGroupDao.getAllLiteUserGroups();
+        
+        List<String> userGroupNames = 
+            Lists.transform(allUserGroups, new Function<LiteUserGroup, String>() {
+                @Override
+                public String apply(LiteUserGroup liteUserGroup) {
+                    return liteUserGroup.getUserGroupName();
+                }
+            });
+        
+        if (ivjJListUserGroup == null) {
+            ivjJListUserGroup = new javax.swing.JComboBox(userGroupNames.toArray());
+            ivjJListUserGroup.setName("JListUserGroup");
+            java.awt.Dimension dimension = new java.awt.Dimension(400, 17);
+            ivjJListUserGroup.setMaximumSize(dimension);
+            ivjJListUserGroup.setPreferredSize(dimension);
+            ivjJListUserGroup.setMinimumSize(dimension);
+            ivjJListUserGroup.setFont(new java.awt.Font("dialog", 0, 12));
+            ivjJListUserGroup.setEnabled(true);
+            ivjJListUserGroup.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent e) {
+                    if (e.getStateChange() == ItemEvent.DESELECTED) return;
+                    String userGroupName = String.valueOf(ivjJListUserGroup.getSelectedItem());
+                    LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(userGroupName);
+    
+                    if (liteUserGroup != initialLiteUserGroup) {
+                        fireInputUpdate();
+                    }
+                }
+            });
+        }
+        return ivjJListUserGroup;
+    }
+    
     private JPanel getJPanelError() {
         if (ivjJPanelError == null) {
             try {
@@ -370,9 +432,21 @@ public class UserLoginBasePanel extends DataInputPanel {
                 constraintsJListAuthType.insets = new Insets(0, 4, 1, 22);
                 getJPanelLoginPanel().add(getJListAuthType(), constraintsJListAuthType);
 
+                GridBagConstraints constraintsJLabelUserGroup = new GridBagConstraints();
+                constraintsJLabelUserGroup.gridx = 1; constraintsJLabelUserGroup.gridy = 3;
+                constraintsJLabelUserGroup.anchor = java.awt.GridBagConstraints.WEST;
+                constraintsJLabelUserGroup.insets = new java.awt.Insets(2, 20, 2, 3);
+                getJPanelLoginPanel().add(getJLabelUserGroup(), constraintsJLabelUserGroup);
+                
+                GridBagConstraints constraintsJListUserGroup = new GridBagConstraints();
+                constraintsJListUserGroup.gridx = 2; constraintsJListUserGroup.gridy = 3;
+                constraintsJListUserGroup.anchor = java.awt.GridBagConstraints.WEST;
+                constraintsJListUserGroup.insets = new java.awt.Insets(0, 4, 1, 22);
+                getJPanelLoginPanel().add(getJListUserGroup(), constraintsJListUserGroup);
+
                 GridBagConstraints constraintsJButtonChangePassword = new GridBagConstraints();
                 constraintsJButtonChangePassword.gridx = 1;
-                constraintsJButtonChangePassword.gridy = 3;
+                constraintsJButtonChangePassword.gridy = 4;
                 constraintsJButtonChangePassword.gridwidth = 2;
                 constraintsJButtonChangePassword.anchor = GridBagConstraints.CENTER;
                 constraintsJButtonChangePassword.insets = new Insets(15, 15, 2, 15);
@@ -428,6 +502,10 @@ public class UserLoginBasePanel extends DataInputPanel {
                 newPasswordValue = null;
             }
         }
+
+        String userGroupName = String.valueOf(getJListUserGroup().getSelectedItem());
+        LiteUserGroup newUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(userGroupName);
+        login.getYukonUser().setUserGroupId(newUserGroup.getUserGroupId());
 
         if (passwordRequiresChanging && newPasswordValue == null) {
             // prompt for new password
@@ -671,6 +749,9 @@ public class UserLoginBasePanel extends DataInputPanel {
         getJListAuthType().setSelectedItem(initialAuthType);
         boolean authSupportsPasswordSet = authenticationService.supportsPasswordSet(initialAuthType);
         getJButtonChangePassword().setEnabled(authSupportsPasswordSet);
+
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(login.getYukonUser().getUserGroupId());
+        getJListUserGroup().setSelectedItem(userGroup.getUserGroupName());
 
         if (login.getUserID().intValue() == UserUtils.USER_ADMIN_ID) {
             getJTextFieldUserID().setEnabled(false);
