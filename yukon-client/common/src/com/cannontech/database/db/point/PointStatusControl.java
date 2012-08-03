@@ -142,6 +142,7 @@ public class PointStatusControl extends PointControl
         return 
             controlType.equalsIgnoreCase(ControlType.NORMAL.getControlName()) ||
             controlType.equalsIgnoreCase(ControlType.LATCH.getControlName()) ||
+            controlType.equalsIgnoreCase(ControlType.PSEUDO.getControlName()) ||
             controlType.equalsIgnoreCase(ControlType.SBOPULSE.getControlName()) ||
             controlType.equalsIgnoreCase(ControlType.SBOLATCH.getControlName());
     }
