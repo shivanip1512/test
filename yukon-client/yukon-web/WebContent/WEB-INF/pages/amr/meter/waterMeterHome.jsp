@@ -27,6 +27,13 @@
 						<ct:widget bean="${cisInfoWidgetName}" />
 					</c:if>
 	
+					<!-- Including deviceGroupWidget's resources here since this particular
+					     widget is being added to the page via ajax  -->
+					<cti:includeScript link="JQUERY_COOKIE" />
+					<cti:includeScript link="JQUERY_SCROLLTO" />
+					<cti:includeScript link="JQUERY_TREE" />
+					<cti:includeScript link="JQUERY_TREE_HELPERS" />
+					<cti:includeCss link="/WebConfig/yukon/styles/lib/dynatree/ui.dynatree.css"/>
 	                <ct:widget bean="deviceGroupWidget"/>
 
 					<ct:boxContainer2 nameKey="actions" styleClass="widgetContainer">
