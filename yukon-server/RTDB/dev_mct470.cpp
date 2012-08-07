@@ -722,8 +722,8 @@ void Mct470Device::sendBackground(const OUTMESS &TemplateOutMessage, OutMessageL
 {
     std::auto_ptr<OUTMESS> OutMessage(new OUTMESS(TemplateOutMessage));
 
-    //  Set the connection to NULL so it doesn't make it back to MACS,
-    //    but leave the GroupMsgID alone so it can still be canceled
+    //  Set the connection to NULL so it doesn't make it back to the requesting client,
+    //    but leave the GroupMsgID alone so it can still be canceled by MACS or the web
     OutMessage->Request.Connection = NULL;
 
     outList.push_back(OutMessage.release());
