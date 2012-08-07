@@ -61,7 +61,7 @@ DECLARE
     v_count NUMBER;
     v_deviceID NUMBER;
 BEGIN
-    SELECT MAX(DeviceConfigurationID) INTO v_newDevConfigId FROM DEVICECONFIGURATION;
+    v_newDevConfigId := -1;
 
     SELECT COUNT(*) INTO v_count
     FROM YukonPAObject 
