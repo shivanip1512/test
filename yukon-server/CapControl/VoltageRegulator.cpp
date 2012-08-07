@@ -290,7 +290,7 @@ void VoltageRegulator::executeRemoteControlHelper( const LitePoint & point,
 
 void VoltageRegulator::executeKeepAliveHelper( const LitePoint & point, const int keepAliveValue )
 {
-    CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointOffset(), "Keep Alive" ) );
+    CtiCapController::getInstance()->sendMessageToDispatch( createDispatchMessage( point.getPointId(), "Keep Alive" ) );
 
     const long pointOffset=
         point.getControlOffset() ?

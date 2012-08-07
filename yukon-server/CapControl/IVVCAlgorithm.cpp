@@ -2295,9 +2295,12 @@ void IVVCAlgorithm::sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAna
 
 void IVVCAlgorithm::updateCommsState( const long busCommsPointId, const bool isCommsLost ) const
 {
-    DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
+    if (busCommsPointId > 0)
+    {
+        DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
 
-    dispatchConnection->WriteConnQue(
-        new CtiPointDataMsg( busCommsPointId, isCommsLost ? 1.0 : 0.0 ) ); // NormalQuality, StatusPointType
+        dispatchConnection->WriteConnQue(
+            new CtiPointDataMsg( busCommsPointId, isCommsLost ? 1.0 : 0.0 ) ); // NormalQuality, StatusPointType
+    }
 }
 
