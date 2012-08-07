@@ -49,7 +49,10 @@
 	                </td>
 	                <td>
 	                    <select id="configuration" name="configuration">
-                            <option value="-1">(none)</option>
+                            <!-- -1000 is used here to match the server code as a result of YUK-10944 -->
+                            <!-- -1 was used previously but had to be changed since the Default DNP   -->
+                            <!-- configuration has a configurationId of -1, which caused problems.    -->
+                            <option value="-1000">(none)</option>
 	                        <c:forEach var="config" items="${existingConfigs}">
 	                            <option value="${config.id}">${config.name}</option>
 	                        </c:forEach>
