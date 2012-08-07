@@ -28,7 +28,7 @@ import com.cannontech.yukon.api.util.XmlVersionUtils;
 @Endpoint
 public class ProgramStatusRequestEndpoint {
 
-    @Autowired private LoadControlService loadControlService;
+    private LoadControlService loadControlService;
     @Autowired private RolePropertyDao rolePropertyDao;
     
     private Namespace ns = YukonXml.getYukonNamespace();
@@ -101,4 +101,10 @@ public class ProgramStatusRequestEndpoint {
         } 
         return status;
     }
+    
+    @Autowired
+    public void setLoadControlService(LoadControlService loadControlService) {
+        this.loadControlService = loadControlService;
+    }
+    
 }
