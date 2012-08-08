@@ -123,9 +123,13 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
 
     unsigned amp = 0;
 
-    if( CtiDeviceCCU *ccu = dynamic_cast<CtiDeviceCCU *>(_transmitterDevice.get()) )
+    if( transmitterType == TYPE_CCU700 ||
+        transmitterType == TYPE_CCU710 ||
+        transmitterType == TYPE_CCU711 )
     {
-        amp = ccu->getIDLC().getAmp();
+        CtiDeviceIDLC *idlc = static_cast<CtiDeviceIDLC *>(_transmitterDevice.get());
+
+        amp = idlc->getIDLC().getAmp();
     }
 
     /* Load up the hunks of the B structure that we need */
@@ -546,9 +550,13 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
 
     unsigned amp = 0;
 
-    if( CtiDeviceCCU *ccu = dynamic_cast<CtiDeviceCCU *>(_transmitterDevice.get()) )
+    if( transmitterType == TYPE_CCU700 ||
+        transmitterType == TYPE_CCU710 ||
+        transmitterType == TYPE_CCU711 )
     {
-        amp = ccu->getIDLC().getAmp();
+        CtiDeviceIDLC *idlc = static_cast<CtiDeviceIDLC *>(_transmitterDevice.get());
+
+        amp = idlc->getIDLC().getAmp();
     }
 
     /* Load up the hunks of the B structure that we need */
