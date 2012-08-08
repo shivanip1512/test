@@ -123,6 +123,8 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
 
     unsigned amp = 0;
 
+    const int transmitterType = _transmitterDevice->getType();
+
     if( transmitterType == TYPE_CCU700 ||
         transmitterType == TYPE_CCU710 ||
         transmitterType == TYPE_CCU711 )
@@ -549,6 +551,8 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
     memset(&BSt, 0, sizeof(BSTRUCT));
 
     unsigned amp = 0;
+
+    const int transmitterType = _transmitterDevice->getType();
 
     if( transmitterType == TYPE_CCU700 ||
         transmitterType == TYPE_CCU710 ||
