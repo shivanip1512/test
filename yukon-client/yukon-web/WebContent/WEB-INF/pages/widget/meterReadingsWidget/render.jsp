@@ -77,8 +77,6 @@ function ${widgetParameters.widgetId}_updateDifference(firstUpdate) {
   var currentUsage = ${widgetParameters.widgetId}_currentUsage;
   if (currentUsage == null) return;
   var previousVal = jQuery(document.getElementById('${widgetParameters.widgetId}_prevSelect')).val();
-  debug("curr " + currentUsage);
-  debug("prev " + previousVal);
   var totalUsage = currentUsage - previousVal;
   var elem = jQuery(document.getElementById('${widgetParameters.widgetId}_totalConsumption'));
   elem.html(totalUsage.toFixed(3));
