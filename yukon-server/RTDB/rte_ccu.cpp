@@ -121,10 +121,17 @@ INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
 
     ::memset(&BSt, 0, sizeof(BSTRUCT));
 
+    unsigned amp = 0;
+
+    if( CtiDeviceCCU *ccu = dynamic_cast<CtiDeviceCCU *>(_transmitterDevice.get()) )
+    {
+        amp = ccu->getIDLC().getAmp();
+    }
+
     /* Load up the hunks of the B structure that we need */
     BSt.Port                = _transmitterDevice->getPortID();
     BSt.Remote              = _transmitterDevice->getAddress();
-    BSt.DlcRoute.Amp        = ((CtiDeviceCCU *)(_transmitterDevice.get()))->getIDLC().getAmp();
+    BSt.DlcRoute.Amp        = amp;
     BSt.DlcRoute.Bus        = Carrier.getBus();
     BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
     BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
@@ -319,16 +326,27 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
 {
     INT           status = NORMAL;
 
-    CtiReturnMsg *retReturn = new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), string(), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
-
     if(OutMessage->EventCode & BWORD)
     {
         BSTRUCT &BSt = OutMessage->Buffer.BSt;
 
+        unsigned amp = 0;
+
+        const int transmitterType = _transmitterDevice->getType();
+
+        if( transmitterType == TYPE_CCU700 ||
+            transmitterType == TYPE_CCU710 ||
+            transmitterType == TYPE_CCU711 )
+        {
+            CtiDeviceIDLC *idlc = static_cast<CtiDeviceIDLC *>(_transmitterDevice.get());
+
+            amp = idlc->getIDLC().getAmp();
+        }
+
         /* Load up the hunks of the B structure that we know/need */
         BSt.Port                = _transmitterDevice->getPortID();
         BSt.Remote              = _transmitterDevice->getAddress();
-        BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(_transmitterDevice.get()))->getIDLC().getAmp();
+        BSt.DlcRoute.Amp        = amp;
         BSt.DlcRoute.Bus        = Carrier.getBus();
         BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
         BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
@@ -426,18 +444,20 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         }
     }
 
-    string resultString = "Emetcon DLC command sent on route " + getName();
-
-    retReturn->setResultString(resultString);
-
-    if( (OutMessage->MessageFlags & MessageFlag_ExpectMore)
-        || parse.isTwoWay()
-        || parse.isDisconnect())
+    //  Only send a notice if the response from this request will be sent back to the client
+    if( OutMessage->Request.Connection )
     {
-        retReturn->setExpectMore(true);
-    }
+        CtiReturnMsg *retReturn = new CtiReturnMsg(OutMessage->TargetID, string(OutMessage->Request.CommandStr), "Emetcon DLC command sent on route " + getName(), status, OutMessage->Request.RouteID, OutMessage->Request.MacroOffset, OutMessage->Request.Attempt, OutMessage->Request.GrpMsgID, OutMessage->Request.UserID, OutMessage->Request.SOE, CtiMultiMsg_vec());
 
-    retList.push_back(retReturn);
+        if( (OutMessage->MessageFlags & MessageFlag_ExpectMore)
+            || parse.isTwoWay()
+            || parse.isDisconnect())
+        {
+            retReturn->setExpectMore(true);
+        }
+
+        retList.push_back(retReturn);
+    }
 
     outList.push_back(OutMessage);
     OutMessage = 0;
@@ -524,10 +544,17 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
 
     memset(&BSt, 0, sizeof(BSTRUCT));
 
+    unsigned amp = 0;
+
+    if( CtiDeviceCCU *ccu = dynamic_cast<CtiDeviceCCU *>(_transmitterDevice.get()) )
+    {
+        amp = ccu->getIDLC().getAmp();
+    }
+
     /* Load up the hunks of the B structure that we need */
     BSt.Port                = _transmitterDevice->getPortID();
     BSt.Remote              = _transmitterDevice->getAddress();
-    BSt.DlcRoute.Amp        = ((CtiDeviceCCU *)(_transmitterDevice.get()))->getIDLC().getAmp();
+    BSt.DlcRoute.Amp        = amp;
     BSt.DlcRoute.Bus        = Carrier.getBus();
     BSt.DlcRoute.RepVar     = Carrier.getCCUVarBits();
     BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
