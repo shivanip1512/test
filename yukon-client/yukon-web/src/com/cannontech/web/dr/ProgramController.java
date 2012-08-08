@@ -23,6 +23,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
@@ -40,9 +41,11 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.dr.LoadGroupControllerHelper.LoadGroupListBackingBean;
 import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 @RequestMapping("/program/*")
 public class ProgramController extends ProgramControllerBase {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;

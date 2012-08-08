@@ -10,7 +10,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CheckRoleProperty {
-
     YukonRoleProperty[] value() default {};
-    
+    boolean requireAll() default false;
 }

@@ -13,8 +13,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.util.SpringWebUtil;
 
 public class WebSecurityChecker {
-    private RolePropertyDao rolePropertyDao;
-    private ConfigurationSource configurationSource;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ConfigurationSource configurationSource;
     
     public void checkDevelopmentMode() {
         final LiteYukonUser user = getYukonUser();
@@ -35,15 +35,21 @@ public class WebSecurityChecker {
         throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
     }
     
-    public void checkRoleProperty(YukonRoleProperty... rolePropertyIds) {
+    public void checkRoleProperty(boolean requireAll, YukonRoleProperty... rolePropertyIds) {
         final LiteYukonUser user = getYukonUser();
         
+        // Authorized starts out true before AND operation
+        // and false before OR operation
+        boolean authorized = requireAll;
+        
         for (final YukonRoleProperty property : rolePropertyIds) {
-            boolean hasRoleProperty = rolePropertyDao.checkProperty(property, user);
-            if (hasRoleProperty) return;
+            boolean checkProperty = rolePropertyDao.checkProperty(property, user);
+            authorized = requireAll ? authorized && checkProperty : authorized || checkProperty;
         }
         
-        throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
+        if (!authorized) {
+            throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
+        }
     }
     
     public void checkFalseRoleProperty(YukonRoleProperty... rolePropertyIds) {
@@ -65,15 +71,4 @@ public class WebSecurityChecker {
             throw new UnsupportedOperationException("Web security checks cannont be done outside of a DispatcherServlet request");
         }
     }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setConfigurationSource(ConfigurationSource configurationSource) {
-        this.configurationSource = configurationSource;
-    }
-    
 }

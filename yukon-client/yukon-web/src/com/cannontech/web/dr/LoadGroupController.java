@@ -21,6 +21,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
@@ -28,15 +29,17 @@ import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 public class LoadGroupController {
-    private LoadGroupService loadGroupService = null;
-    private PaoAuthorizationService paoAuthorizationService;
-    private ProgramService programService;
-    private LoadGroupControllerHelper loadGroupControllerHelper;
-    private DemandResponseEventLogService demandResponseEventLogService;
-    private FavoritesDao favoritesDao;
+    @Autowired private LoadGroupService loadGroupService;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private ProgramService programService;
+    @Autowired private LoadGroupControllerHelper loadGroupControllerHelper;
+    @Autowired private DemandResponseEventLogService demandResponseEventLogService;
+    @Autowired private FavoritesDao favoritesDao;
 
     private final static Map<Integer, String> shedTimeOptions;
     static {
@@ -217,37 +220,5 @@ public class LoadGroupController {
             binder.setMessageCodesResolver(msgCodesResolver);
         }
         loadGroupControllerHelper.initBinder(binder, userContext);
-    }
-    
-    @Autowired
-    public void setLoadGroupService(LoadGroupService loadGroupService) {
-        this.loadGroupService = loadGroupService;
-    }
-
-    @Autowired
-    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
-    }
-
-    @Autowired
-    public void setProgramService(
-            ProgramService programService) {
-        this.programService = programService;
-    }
-
-    @Autowired
-    public void setLoadGroupControllerHelper(
-            LoadGroupControllerHelper loadGroupControllerHelper) {
-        this.loadGroupControllerHelper = loadGroupControllerHelper;
-    }
-    
-    @Autowired
-    public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
-        this.demandResponseEventLogService = demandResponseEventLogService;
-    }
-
-    @Autowired
-    public void setFavoritesDao(FavoritesDao favoritesDao) {
-        this.favoritesDao = favoritesDao;
     }
 }

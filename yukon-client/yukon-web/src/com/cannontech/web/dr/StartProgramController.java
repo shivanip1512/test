@@ -26,7 +26,6 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.RolePropertyTypeHelper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -42,10 +41,12 @@ import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 @RequestMapping("/program/start/*")
 public class StartProgramController extends ProgramControllerBase {
     private StartProgramDatesValidator datesValidator =

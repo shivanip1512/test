@@ -26,17 +26,19 @@ import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 public class HomeController {
-    private FavoritesDao favoritesDao;
-    private FavoritesService favoritesService;
-    private RolePropertyDao rolePropertyDao;
-    private PaoAuthorizationService paoAuthorizationService;
-    private DemandResponseService demandResponseService;
+    @Autowired private FavoritesDao favoritesDao;
+    @Autowired private FavoritesService favoritesService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private DemandResponseService demandResponseService;
 
     @RequestMapping("/home")
     public String home(ModelMap model, YukonUserContext userContext,
@@ -130,30 +132,5 @@ public class HomeController {
         ModelAndView mav = new ModelAndView(new JsonView());
         mav.addObject("favoriteDidUpdate", true);
         return mav;
-    }
-
-    @Autowired
-    public void setFavoritesDao(FavoritesDao favoritesDao) {
-        this.favoritesDao = favoritesDao;
-    }
-
-    @Autowired
-    public void setFavoritesService(FavoritesService favoritesService) {
-        this.favoritesService = favoritesService;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
-    }
-
-    @Autowired
-    public void setDemandResponseService(DemandResponseService demandResponseService) {
-        this.demandResponseService = demandResponseService;
     }
 }

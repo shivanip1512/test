@@ -33,8 +33,10 @@ import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 @RequestMapping("/program/stop/*")
 public class StopProgramController extends ProgramControllerBase {
 	

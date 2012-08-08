@@ -40,13 +40,13 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
 
 @Controller
-@CheckRoleProperty(YukonRoleProperty.SHOW_SCENARIOS)
+@CheckRoleProperty(value={YukonRoleProperty.SHOW_SCENARIOS,YukonRoleProperty.DEMAND_RESPONSE}, requireAll=true)
 public class ScenarioController {
-    private ScenarioDao scenarioDao;
-    private ScenarioService scenarioService;
-    private PaoAuthorizationService paoAuthorizationService;
-    private ProgramControllerHelper programControllerHelper;
-    private FavoritesDao favoritesDao;
+    @Autowired private ScenarioDao scenarioDao;
+    @Autowired private ScenarioService scenarioService;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private ProgramControllerHelper programControllerHelper;
+    @Autowired private FavoritesDao favoritesDao;
 
     @RequestMapping("/scenario/list")
     public String list(ModelMap model,
@@ -127,31 +127,5 @@ public class ScenarioController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         programControllerHelper.initBinder(binder, userContext, "programList");
-    }
-
-    @Autowired
-    public void setScenarioDao(ScenarioDao scenarioDao) {
-        this.scenarioDao = scenarioDao;
-    }
-    
-    @Autowired
-    public void setScenarioService(ScenarioService scenarioService) {
-        this.scenarioService = scenarioService;
-    }
-
-    @Autowired
-    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
-    }
-
-    @Autowired
-    public void setProgramControllerHelper(
-            ProgramControllerHelper programControllerHelper) {
-        this.programControllerHelper = programControllerHelper;
-    }
-
-    @Autowired
-    public void setFavoritesDao(FavoritesDao favoritesDao) {
-        this.favoritesDao = favoritesDao;
     }
 }

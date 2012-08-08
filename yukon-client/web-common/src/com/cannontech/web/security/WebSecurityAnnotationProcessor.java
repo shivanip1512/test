@@ -14,7 +14,7 @@ import com.cannontech.web.widget.support.WidgetMultiActionController;
 
 
 public class WebSecurityAnnotationProcessor {
-    private WebSecurityChecker webSecurityChecker;
+    @Autowired private WebSecurityChecker webSecurityChecker;
 
     public void process(final Object bean) throws Exception {
         final Class<?> clazz = getClass(bean);
@@ -65,7 +65,8 @@ public class WebSecurityAnnotationProcessor {
 
     private void doHasCheckRoleProperty(CheckRoleProperty checkRoleProperty) throws Exception {
         YukonRoleProperty[] roleProperties = checkRoleProperty.value();
-        webSecurityChecker.checkRoleProperty(roleProperties);
+        boolean requireAll = checkRoleProperty.requireAll();
+        webSecurityChecker.checkRoleProperty(requireAll,roleProperties);
     }
     
     private void doHasCheckFalseRoleProperty(CheckFalseRoleProperty checkFalseRoleProperty) throws Exception {
@@ -125,10 +126,4 @@ public class WebSecurityAnnotationProcessor {
         }
         return false;
     }
-    
-    @Autowired
-    public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
-        this.webSecurityChecker = webSecurityChecker;
-    }
-
 }

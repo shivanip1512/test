@@ -59,8 +59,18 @@ import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Ordering;
 
 @Controller
-@CheckRoleProperty(YukonRoleProperty.SHOW_CONTROL_AREAS)
+@CheckRoleProperty(value={YukonRoleProperty.SHOW_CONTROL_AREAS, YukonRoleProperty.DEMAND_RESPONSE},requireAll=true)
 public class ControlAreaController {
+    @Autowired private ControlAreaService controlAreaService;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private ProgramControllerHelper programControllerHelper;
+    @Autowired private DurationFormattingService durationFormattingService;
+    @Autowired private DemandResponseEventLogService demandResponseEventLogService;
+    @Autowired private ControlAreaFieldService controlAreaFieldService;
+    @Autowired private TriggerFieldService triggerFieldService;
+    @Autowired private FavoritesDao favoritesDao;
+    @Autowired private ControlAreaNameField controlAreaNameField;
+
     public static class ControlAreaListBackingBean extends ListBackingBean {
         private String state;
         private IntegerRange priority = new IntegerRange();
@@ -97,16 +107,6 @@ public class ControlAreaController {
             this.loadCapacity = loadCapacity;
         }
     }
-
-    private ControlAreaService controlAreaService = null;
-    private PaoAuthorizationService paoAuthorizationService;
-    private ProgramControllerHelper programControllerHelper;
-    private DurationFormattingService durationFormattingService;
-    private DemandResponseEventLogService demandResponseEventLogService;
-    private ControlAreaFieldService controlAreaFieldService;
-    private TriggerFieldService triggerFieldService;
-    private FavoritesDao favoritesDao;
-    private ControlAreaNameField controlAreaNameField;
 
     private SimpleValidator<ControlAreaListBackingBean> filterValidator =
         new SimpleValidator<ControlAreaListBackingBean>(ControlAreaListBackingBean.class) {
@@ -565,51 +565,5 @@ public class ControlAreaController {
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
         programControllerHelper.initBinder(binder, userContext, "controlArea");
-    }
-
-    @Autowired
-    public void setControlAreaService(ControlAreaService controlAreaService) {
-        this.controlAreaService = controlAreaService;
-    }
-
-    @Autowired
-    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
-    }
-
-    @Autowired
-    public void setProgramControllerHelper(
-            ProgramControllerHelper programControllerHelper) {
-        this.programControllerHelper = programControllerHelper;
-    }
-
-    @Autowired
-    public void setDurationFormattingService(DurationFormattingService durationFormattingService) {
-        this.durationFormattingService = durationFormattingService;
-    }
-
-    @Autowired
-    public void setDemandResponseEventLogService(DemandResponseEventLogService demandResponseEventLogService) {
-        this.demandResponseEventLogService = demandResponseEventLogService;
-    }
-
-    @Autowired
-    public void setControlAreaFieldService(ControlAreaFieldService controlAreaFieldService) {
-        this.controlAreaFieldService = controlAreaFieldService;
-    }
-
-    @Autowired
-    public void setTriggerFieldService(TriggerFieldService triggerFieldService) {
-        this.triggerFieldService = triggerFieldService;
-    }
-
-    @Autowired
-    public void setFavoritesDao(FavoritesDao favoritesDao) {
-        this.favoritesDao = favoritesDao;
-    }
-    
-    @Autowired
-    public void setControlAreaNameField(ControlAreaNameField controlAreaNameField) {
-        this.controlAreaNameField = controlAreaNameField;
     }
 }

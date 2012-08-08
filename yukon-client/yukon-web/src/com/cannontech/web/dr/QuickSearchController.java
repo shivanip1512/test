@@ -42,21 +42,23 @@ import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.pao.PaoDetailUrlHelper;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Ordering;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.DEMAND_RESPONSE)
 /**
  * Controller for DR quick search
  */
 public class QuickSearchController {
-    private FilterService filterService;
-    private RolePropertyDao rolePropertyDao;
-    private FavoritesDao favoritesDao;
-    private PaoDetailUrlHelper paoDetailUrlHelper;
-    private DemandResponseService demandResponseService;
-    private PaoAuthorizationService paoAuthorizationService;
-    private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private FilterService filterService;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private FavoritesDao favoritesDao;
+    @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
+    @Autowired private DemandResponseService demandResponseService;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     public class QuickSearchRowMapper implements RowMapperWithBaseQuery<DisplayablePao> {
 
@@ -160,39 +162,4 @@ public class QuickSearchController {
 
         return "dr/searchResults.jsp";
     }
-
-    @Autowired
-    public void setFilterService(FilterService filterService) {
-        this.filterService = filterService;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setFavoritesDao(FavoritesDao favoritesDao) {
-        this.favoritesDao = favoritesDao;
-    }
-
-    @Autowired
-    public void setPaoDetailUrlHelper(PaoDetailUrlHelper paoDetailUrlHelper) {
-        this.paoDetailUrlHelper = paoDetailUrlHelper;
-    }
-
-    @Autowired
-    public void setDemandResponseService(DemandResponseService demandResponseService) {
-        this.demandResponseService = demandResponseService;
-    }
-
-    @Autowired
-    public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
-        this.paoAuthorizationService = paoAuthorizationService;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-		this.paoDefinitionDao = paoDefinitionDao;
-	}
 }

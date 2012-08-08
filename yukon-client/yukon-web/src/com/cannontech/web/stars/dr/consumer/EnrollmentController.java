@@ -111,7 +111,7 @@ public class EnrollmentController extends AbstractConsumerController {
                                          Integer[] inventoryIds,
                                          HttpSession session,
                                          YukonUserContext yukonUserContext) {
-        webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE);
+        webSecurityChecker.checkRoleProperty(false,YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE);
         
         if(isCommunicationDisabled(yukonUserContext)){
             return "consumer/enrollment/enrollmentDisabled.jsp";
