@@ -484,6 +484,15 @@ jQuery.fn.toggleDisabled = function() {
     });
 };
 
+jQuery.fn.flashYellow = function (duration) {
+	return this.each(function(){
+		if(typeof(duration) != 'number'){
+			duration = 0.8;
+		}
+		jQuery(this).flashColor({color: "#FF0", duration: duration*1000});
+	});
+};
+
 // initialize the lib
 jQuery(document).ready(function(){
     Yukon.ui.init();

@@ -103,16 +103,16 @@ function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
     return true;
 }
 
-function yukonGeneral_addOtpionToTopOfSelect(selectObj,optValue,optText) {
+function yukonGeneral_addOptionToTopOfSelect(selectObj,optValue,optText) {
     
     // new option
     var newOpt = document.createElement("option");
 
     // get first option group - there will always be at least one [prototype function]
-    var firstOptGroup = selectObj.immediateDescendants()[0];
+    var firstOptGroup = jQuery(selectObj).find("optgroup")[0];
     
     // get first option in first group
-    var firstGroupOptions = firstOptGroup.immediateDescendants();
+    var firstGroupOptions = firstOptGroup.find("option");
     
     // either stick new opt in before the opt that is currently first in the first option group [DOM function] 
     // or, if there are no current opts, just append it to that first group
@@ -252,10 +252,7 @@ function alignTableColumnsByTable() {
  * @param duration  [float] how long the effect should last in seconds
  */
 function flashYellow(element, duration) {
-    if(!duration) {
-        duration = 0.8;
-    }
-    jQuery(element).flashColor({color: "#FF0", duration: duration*1000});
+	jQuery(element).flashYellow(duration);
 }
 
 var YEvent = new Object();

@@ -29,10 +29,10 @@
     
         <cti:button nameKey="${nameKey}" id="${buttonId}"/>
         <script type="text/javascript">
-            $("${buttonId}").observe("click", function() {
+            jQuery(document.getElementById("${buttonId}")).click(function() {
                 var confirmText = '${cti:escapeJavaScript(pageScope.confirmText)}';
                 var confirmed = true;
-                if (confirmText != null && confirmText.strip() != '') {
+                if (confirmText.strip() != '') {
                     confirmed = confirm(confirmText);
                 }
                 if (confirmed) {

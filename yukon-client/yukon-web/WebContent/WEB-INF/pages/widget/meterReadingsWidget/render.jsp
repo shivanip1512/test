@@ -61,7 +61,7 @@ function ${widgetParameters.widgetId}_prependPrevious(allIdentifierValues) {
     var fullIdentifier = allIdentifierValues.get('fullIdentifier');
 
     // adjust the drop down (won't add duplicates)
-    yukonGeneral_addOtpionToTopOfSelect($('${widgetParameters.widgetId}'+'_prevSelect'),valueIdentifier,fullIdentifier);
+    yukonGeneral_addOptionToTopOfSelect(jQuery(document.getElementById('${widgetParameters.widgetId}'+'_prevSelect')),valueIdentifier,fullIdentifier);
 
     // update difference
     ${widgetParameters.widgetId}_updateDifference();
@@ -73,13 +73,19 @@ function ${widgetParameters.widgetId}_updateCurrent(allIdentifierValues) {
     ${widgetParameters.widgetId}_updateDifference();
 }
 
-function ${widgetParameters.widgetId}_updateDifference() {
+function ${widgetParameters.widgetId}_updateDifference(firstUpdate) {
   var currentUsage = ${widgetParameters.widgetId}_currentUsage;
   if (currentUsage == null) return;
-  var previousVal = $('${widgetParameters.widgetId}_prevSelect').value;
+  var previousVal = jQuery(document.getElementById('${widgetParameters.widgetId}_prevSelect')).val();
+  debug("curr " + currentUsage);
+  debug("prev " + previousVal);
   var totalUsage = currentUsage - previousVal;
-  
-  $('${widgetParameters.widgetId}_totalConsumption').innerHTML = totalUsage.toFixed(3);
+  var elem = jQuery(document.getElementById('${widgetParameters.widgetId}_totalConsumption'));
+  elem.html(totalUsage.toFixed(3));
+  //only makes sense to draw attention to the updated value if it actually changed
+  if(previousVal){
+	  flashYellow(elem, 3.5);
+  }
 }
 ${widgetParameters.widgetId}_updateDifference();
 </script>
