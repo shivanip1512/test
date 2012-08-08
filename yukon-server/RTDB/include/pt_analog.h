@@ -26,6 +26,7 @@ public:
 
     typedef CtiPointNumeric Inherited;
 
+    //  NOTE - no WHERE clause, you will need to add your own!
     static std::string getSQLCoreStatement()
     {
         static const std::string sql =
@@ -74,6 +75,10 @@ public:
         if( _pointControl || getType() == AnalogOutputPointType )
         {
             tag |= TAG_ATTRIB_CONTROL_AVAILABLE;
+        }
+        else
+        {
+            tag &= ~TAG_ATTRIB_CONTROL_AVAILABLE;
         }
         return Inherited::adjustStaticTags(tag);
     }

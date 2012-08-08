@@ -37,6 +37,7 @@ BOOST_AUTO_TEST_CASE(test_resolveControlType)
 
     BOOST_CHECK_EQUAL(resolveControlType("normal"),    ControlType_Normal);
     BOOST_CHECK_EQUAL(resolveControlType("latch"),     ControlType_Latch);
+    BOOST_CHECK_EQUAL(resolveControlType("pseudo"),    ControlType_Pseudo);
     BOOST_CHECK_EQUAL(resolveControlType("sbo pulse"), ControlType_SBOPulse);
     BOOST_CHECK_EQUAL(resolveControlType("sbo latch"), ControlType_SBOLatch);
 }

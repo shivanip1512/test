@@ -31,6 +31,7 @@ enum CtiControlType_t
 {
     ControlType_Normal,
     ControlType_Latch,
+    ControlType_Pseudo,
     ControlType_SBOLatch,
     ControlType_SBOPulse,
 

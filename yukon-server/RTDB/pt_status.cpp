@@ -11,6 +11,7 @@ const boost::optional<CtiTablePointStatusControl> CtiPointStatus::getControlPara
     return _pointStatusControl;
 }
 
+//  NOTE - no WHERE clause, you will need to add your own!
 string CtiPointStatus::getSQLCoreStatement()
 {
     static const string sql =

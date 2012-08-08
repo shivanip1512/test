@@ -20,9 +20,9 @@
 
 #define P_TIMESYNC_EVENT               0
 #define P_QUEUE_EVENT                  1
-#define P_QUIT_EVENT                   4
+#define P_QUIT_EVENT                   2
 
-#define NUMPORTEREVENTS                6
+#define NUMPORTEREVENTS                3
 
 extern IM_EX_PORTGLOB INT           PorterRefreshRate;
 

@@ -20,8 +20,12 @@ void CtiTablePointControl::DecodeDatabaseReader(Cti::RowReader &rdr)
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
+    string tempControlInhibit;
+
     rdr["controloffset"] >> _controlOffset;
-    rdr["controlinhibit"] >> _controlInhibit;
+    rdr["controlinhibit"] >> tempControlInhibit;
+
+    _controlInhibit = ciStringEqual(tempControlInhibit, "y");
 }
 
 int CtiTablePointControl::getControlOffset() const

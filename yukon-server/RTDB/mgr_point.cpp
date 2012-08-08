@@ -200,8 +200,10 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Status/Control" << endl;
                 }
 
-                string sql = CtiPointStatus::getSQLCoreStatement() +
-                                          " AND (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS')";
+                string sql =
+                    CtiPointStatus::getSQLCoreStatement() +
+                    " WHERE"
+                        " (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS')";
 
                 if( pntID != 0 )
                 {
@@ -258,13 +260,17 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
 
                 string sql = CtiPointAnalog::getSQLCoreStatement();
 
-                if( pntID != 0 )
+                if( pntID && paoID )
                 {
-                    sql += " AND PT.pointid = ?";
+                    sql += " WHERE PT.pointid = ? AND PT.paobjectid = ?";
                 }
-                if( paoID != 0 )
+                else if( pntID )
                 {
-                    sql += " AND PT.paobjectid = ?";
+                    sql += " WHERE PT.pointid = ?";
+                }
+                else if( paoID )
+                {
+                    sql += " WHERE PT.paobjectid = ?";
                 }
 
                 Cti::Database::DatabaseConnection connection;
@@ -503,7 +509,7 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
     const string sql_accum  = CtiPointAccumulator::getSQLCoreStatement() + " AND PT.";
 
     //  ANALOG points
-    const string sql_analog = CtiPointAnalog::getSQLCoreStatement() + " AND PT.";
+    const string sql_analog = CtiPointAnalog::getSQLCoreStatement() + " WHERE PT.";
 
     //  CALC points
     const string sql_calc   = CtiPointNumeric::getSQLCoreStatement() +
@@ -512,8 +518,9 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
 
     //  STATUS points
     const string sql_status = CtiPointStatus::getSQLCoreStatement() +
-                              " AND (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS') "
-                              " AND PT.";
+                              " WHERE"
+                                  " (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS') "
+                                  " AND PT.";
 
     //  SYSTEM points
     const string sql_system = CtiPointBase::getSQLCoreStatement() +

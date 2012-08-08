@@ -1427,6 +1427,7 @@ static const std::map<std::string, CtiControlType_t> ControlTypes =
     boost::assign::map_list_of
         ("normal",    ControlType_Normal)
         ("latch",     ControlType_Latch)
+        ("pseudo",    ControlType_Pseudo)
         ("sbo pulse", ControlType_SBOPulse)
         ("sbo latch", ControlType_SBOLatch);
 
