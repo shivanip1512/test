@@ -165,6 +165,7 @@
               <include name="**/*.jar" />
               <exclude name="jsp-api.jar"/>
               <exclude name="servlet-api.jar"/>
+              <exclude name="catalina.jar"/>
               <exclude name="tomcat-api.jar"/>
               <exclude name="tomcat-util.jar"/>
            </fileset>
