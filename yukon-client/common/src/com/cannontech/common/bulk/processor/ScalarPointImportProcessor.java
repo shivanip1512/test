@@ -29,9 +29,11 @@ public abstract class ScalarPointImportProcessor extends PointImportProcessor {
         
         if(row.hasValue("ARCHIVE TYPE")) {
             PointArchiveType archiveType = PointArchiveType.valueOf(row.getValue("ARCHIVE TYPE"));
-            PointArchiveInterval archiveInterval = PointArchiveInterval.valueOf(row.getValue("ARCHIVE INTERVAL"));
             builder.setArchiveType(archiveType);
-            builder.setArchiveInterval(archiveInterval);
+            if(archiveType.isIntervalRequired()) {
+                PointArchiveInterval archiveInterval = PointArchiveInterval.valueOf(row.getValue("ARCHIVE INTERVAL"));
+                builder.setArchiveInterval(archiveInterval);
+            }
         }
         
         if(row.hasValue("HIGH REASONABILITY")) {
