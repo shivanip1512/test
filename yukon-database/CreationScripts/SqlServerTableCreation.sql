@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/2/2012 5:49:04 PM                          */
+/* Created on:     8/8/2012 1:39:10 PM                          */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -8225,13 +8225,13 @@ INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 /*==============================================================*/
 create table UserGroup (
    UserGroupId          numeric              not null,
-   UserGroupName        varchar(1000)        not null,
-   UserGroupDescription varchar(200)         not null,
+   Name                 varchar(1000)        not null,
+   Description          varchar(200)         not null,
    constraint PK_UserGroup primary key (UserGroupId)
 )
 go
 
-INSERT INTO UserGroup VALUES(-1, 'Admin User Group', 'A user group that gives limited user interaction to its users.');
+INSERT INTO UserGroup VALUES(-1, 'Admin User Group', 'A user group with basic admin rights for configuring Yukon.');
 
 /*==============================================================*/
 /* Table: UserGroupToYukonGroupMapping                          */
@@ -13151,7 +13151,6 @@ go
 alter table YukonUser
    add constraint FK_YukonUser_UserGroup foreign key (UserGroupId)
       references UserGroup (UserGroupId)
-         on delete set null
 go
 
 alter table ZBControlEvent

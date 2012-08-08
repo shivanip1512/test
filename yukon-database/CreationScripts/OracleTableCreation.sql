@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/2/2012 5:48:08 PM                          */
+/* Created on:     8/8/2012 1:40:29 PM                          */
 /*==============================================================*/
 
 
@@ -7743,12 +7743,12 @@ INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 /*==============================================================*/
 create table UserGroup  (
    UserGroupId          NUMBER                          not null,
-   UserGroupName        VARCHAR2(1000)                  not null,
-   UserGroupDescription VARCHAR2(200)                   not null,
+   Name                 VARCHAR2(1000)                  not null,
+   Description          VARCHAR2(200)                   not null,
    constraint PK_UserGroup primary key (UserGroupId)
 );
 
-INSERT INTO UserGroup VALUES(-1, 'Admin User Group', 'A user group that gives limited user interaction to its users.');
+INSERT INTO UserGroup VALUES(-1, 'Admin User Group', 'A user group with basic admin rights for configuring Yukon.');
 
 /*==============================================================*/
 /* Table: UserGroupToYukonGroupMapping                          */
@@ -12065,8 +12065,7 @@ alter table YukonSelectionList
 
 alter table YukonUser
    add constraint FK_YukonUser_UserGroup foreign key (UserGroupId)
-      references UserGroup (UserGroupId)
-      on delete set null;
+      references UserGroup (UserGroupId);
 
 alter table ZBControlEvent
    add constraint FK_ZBContEvent_LMContHist foreign key (LMControlHistoryId)

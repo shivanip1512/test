@@ -3,16 +3,15 @@
 /******************************************/ 
 
 /* Start YUK-11015 */
-/* @start-block */
 CREATE TABLE UserGroup  (
    UserGroupId              NUMERIC                        NOT NULL,
-   UserGroupName            VARCHAR(1000)                  NOT NULL,
-   UserGroupDescription     VARCHAR(200)                   NOT NULL,
+   Name                     VARCHAR(1000)                  NOT NULL,
+   Description              VARCHAR(200)                   NOT NULL,
    GroupIdStr               VARCHAR(150)                   NULL,
    CONSTRAINT PK_UserGroup PRIMARY KEY (UserGroupId)
 );
 
-INSERT INTO UserGroup VALUES(-1, 'Admin User Group', 'A user group that gives limited user interaction to its users.', '-2,-1');
+INSERT INTO UserGroup VALUES(-1, 'Admin User Group', 'A user group with basic admin rights for configuring Yukon.', '-2,-1');
 
 /* Setting up the UserGroupToYukonGroupMapping table, which will link UserGroups to LoginGroups */
 CREATE TABLE UserGroupToYukonGroupMapping  (
@@ -37,18 +36,17 @@ ALTER TABLE UserGroupToYukonGroupMapping
 /* Adding the UserGroupId column to YukonUser to link users to the new yukon user groups */         
 ALTER TABLE YukonUser
     ADD UserGroupId NUMERIC;
-
+GO
 UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -1;
 UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -2;
 UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -100;
 
 ALTER TABLE YukonUser
     ADD CONSTRAINT FK_YukonUser_UserGroup FOREIGN KEY (UserGroupId)
-        REFERENCES UserGroup (UserGroupId)
-            ON DELETE SET NULL;
+        REFERENCES UserGroup (UserGroupId);
 
 /* @start-block */
-DECLARE @maxUserGroupId NUMERIC;
+DECLARE @newUserGroupId NUMERIC;
 DECLARE @newUserGroupNeeded NUMERIC;
 DECLARE @userId NUMERIC;
 DECLARE @userGroupIdStr VARCHAR(150);
@@ -85,11 +83,11 @@ WHILE (@@fetch_status = 0)
 
             IF 0 = @newUserGroupNeeded 
             BEGIN
-                SELECT @maxUserGroupId = MAX(UserGroupId)+1 FROM UserGroup;
-                INSERT INTO UserGroup VALUES (@maxUserGroupId, @userGroupName, 'Generated User Group', @userGroupIdStr);
+                SELECT @newUserGroupId = MAX(UserGroupId)+1 FROM UserGroup;
+                INSERT INTO UserGroup VALUES (@newUserGroupId, @userGroupName, 'Generated User Group', @userGroupIdStr);
                 
                 INSERT INTO UserGroupToYukonGroupMapping 
-                SELECT @maxUserGroupId, YUG.GroupId
+                SELECT @newUserGroupId, YUG.GroupId
                 FROM YukonUserGroup YUG
                 WHERE YUG.UserId = @userId;
             END;
@@ -104,6 +102,9 @@ DEALLOCATE userId_curs;
 /* @end-block */
 
 /* Clean up old tables and detact the foreign keys */
+ALTER TABLE UserGroup
+    DROP COLUMN GroupIdStr;
+
 sp_rename 'YukonUserGroup', 'YukonUserGroup_Old';
 
 ALTER TABLE YukonUserGroup_Old
