@@ -34,7 +34,8 @@
                     <td style="max-width: 300px;">
                         <c:choose>
                             <c:when test="${not empty requiredColumn.validValuesKey}">
-                                <i:inline key="${requiredColumn.validValuesKey}"/>
+                                <cti:msg2 var="validValues" key="${requiredColumn.validValuesKey}"/>
+                                <tags:expandableString name="${formatName}_${requiredColumn.name}" value="${validValues}"/>
                             </c:when>
                             <c:otherwise>
                                 <c:if test="${not empty requiredColumn.validValuesList}">
@@ -71,7 +72,8 @@
                     <td style="max-width: 300px;">
                         <c:choose>
                             <c:when test="${not empty optionalColumn.validValuesKey}">
-                                <i:inline key="${optionalColumn.validValuesKey}"/>
+                                <cti:msg2 var="validValues" key="${optionalColumn.validValuesKey}"/>
+                                <tags:expandableString name="${formatName}_${optionalColumn.name}" value="${validValues}"/>
                             </c:when>
                             <c:otherwise>
                                 <c:if test="${not empty optionalColumn.validValuesList}">
@@ -112,7 +114,8 @@
                         <td style="max-width: 300px;">
                             <c:choose>
                                 <c:when test="${not empty groupedColumn.validValuesKey}">
-                                    <i:inline key="${groupedColumn.validValuesKey}"/>
+                                    <cti:msg2 var="validValues" key="${groupedColumn.validValuesKey}"/>
+                                <tags:expandableString name="${formatName}_${groupedColumn.name}" value="${validValues}"/>
                                 </c:when>
                                 <c:otherwise>
                                     <c:if test="${not empty groupedColumn.validValuesList}">
@@ -154,7 +157,8 @@
                         <td style="max-width: 300px;">
                             <c:choose>
                                 <c:when test="${not empty valueDepColumn.validValuesKey}">
-                                    <i:inline key="${valueDepColumn.validValuesKey}"/>
+                                    <cti:msg2 var="validValues" key="${valueDepColumn.validValuesKey}"/>
+                                <tags:expandableString name="${formatName}_${valueDepColumn.name}" value="${validValues}"/>
                                 </c:when>
                                 <c:otherwise>
                                     <c:if test="${not empty valueDepColumn.validValuesList}">

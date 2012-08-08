@@ -80,6 +80,7 @@
     <entry key="yukon.web.modules.amr.pointImport.column.meterDials">The number of meter dials for the point.</entry>
     <entry key="yukon.web.modules.amr.pointImport.column.decimalPlaces">The decimal precision of this point's value.</entry>
     <entry key="yukon.web.modules.amr.pointImport.column.archiveInterval">How frequently to archive the point's value.</entry>
+    <entry key="yukon.web.modules.amr.pointImport.validValues.archiveInterval">ONE_SECOND, TWO_SECOND, FIVE_SECOND, TEN_SECOND, FIFTEEN_SECOND, THIRTY_SECOND, ONE_MINUTE, TWO_MINUTE, THREE_MINUTE, FIVE_MINUTE, TEN_MINUTE, FIFTEEN_MINUTE, THIRTY_MINUTE, ONE_HOUR, TWO_HOUR, SIX_HOUR, TWELVE_HOUR, DAILY, WEEKLY,  MONTHLY</entry>
     <entry key="yukon.web.modules.amr.pointImport.column.controlType">The control type of the point.</entry>
     <entry key="yukon.web.modules.amr.pointImport.column.archiveData">Whether or not to archive the point's data.</entry>
     <entry key="yukon.web.modules.amr.pointImport.column.controlInhibit">Whether or not to inhibit control.</entry>

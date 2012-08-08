@@ -9,7 +9,6 @@ import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.common.util.PositiveDouble;
 import com.cannontech.common.util.PositiveInteger;
 import com.cannontech.database.data.point.ControlType;
-import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.StateControlType;
 
@@ -62,7 +61,7 @@ public class PointImportFormats {
         analogAccumulatorSharedImportFormat.addOptionalGroupedColumn("LOW LIMIT 2", Double.class, false, "LIMIT2");
         analogAccumulatorSharedImportFormat.addOptionalGroupedColumn("LIMIT DURATION 2", PositiveInteger.class, false, "LIMIT2");
         //ARCHIVE TYPE dependent
-        analogAccumulatorSharedImportFormat.addValueDependentColumn("ARCHIVE INTERVAL", PointArchiveInterval.class, false, "ARCHIVE TYPE", PointArchiveType.ON_TIMER, PointArchiveType.ON_TIMER_OR_UPDATE);
+        analogAccumulatorSharedImportFormat.addValueDependentColumn("ARCHIVE INTERVAL", ImportPointArchiveInterval.class, false, "ARCHIVE TYPE", PointArchiveType.ON_TIMER, PointArchiveType.ON_TIMER_OR_UPDATE);
         //ACTION dependent
         analogAccumulatorSharedImportFormat.addValueDependentColumn("UNIT OF MEASURE", UnitOfMeasure.class, false, "ACTION", ImportAction.ADD);
         analogAccumulatorSharedImportFormat.addValueDependentColumn("DECIMAL PLACES", PositiveInteger.class, false, "ACTION", ImportAction.ADD);
@@ -77,6 +76,7 @@ public class PointImportFormats {
         analogAccumulatorSharedImportFormat.setDescriptionKey("LOW LIMIT 2", "yukon.web.modules.amr.pointImport.column.lowLimit2");
         analogAccumulatorSharedImportFormat.setDescriptionKey("LIMIT DURATION 2", "yukon.web.modules.amr.pointImport.column.limitDuration2");
         analogAccumulatorSharedImportFormat.setDescriptionKey("ARCHIVE INTERVAL", "yukon.web.modules.amr.pointImport.column.archiveInterval");
+        analogAccumulatorSharedImportFormat.setValidValuesKey("ARCHIVE INTERVAL", "yukon.web.modules.amr.pointImport.validValues.archiveInterval");
         analogAccumulatorSharedImportFormat.setDescriptionKey("UNIT OF MEASURE", "yukon.web.modules.amr.pointImport.column.unitOfMeasure");
         analogAccumulatorSharedImportFormat.setDescriptionKey("DECIMAL PLACES", "yukon.web.modules.amr.pointImport.column.decimalPlaces");
         
