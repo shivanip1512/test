@@ -1,14 +1,15 @@
 package com.cannontech.web.util;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.FileReader;
 
+import javax.naming.directory.Attributes;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.naming.resources.FileDirContext;
+import org.apache.naming.resources.ResourceAttributes;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -18,53 +19,51 @@ import com.cannontech.common.util.CtiUtilities;
 
 public class YukonBaseStaticController extends AbstractController {
     private UrlPathHelper urlPathHelper = new UrlPathHelper();
-    private String prefix = "";
-    
+    private String docBase;
+    private final FileDirContext dirContext = new FileDirContext();
+
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         String pathWithinServletMapping = urlPathHelper.getPathWithinServletMapping(request);
-        File base = new File(getYukonBase() + prefix);
-        String path = base.getPath() + pathWithinServletMapping;
-        
-        File file = new File(path);
-        boolean badFile = !isFileRootedInBase(base, file);
-        if (badFile) {
+
+        Attributes atts = dirContext.getAttributes(pathWithinServletMapping);
+        if (!(atts instanceof ResourceAttributes)) {
+            atts = new ResourceAttributes(atts);
+        }
+        ResourceAttributes attributes = (ResourceAttributes) atts;
+
+        String filename = attributes.getCanonicalPath();
+        if (!filename.startsWith(docBase)) {
             throw new RuntimeException("illegal file access");
         }
-        
-        InputStream inputStream = new FileInputStream(path);
-        OutputStream outputStream = response.getOutputStream();
-        
-        FileCopyUtils.copy(inputStream, outputStream);
-        
+
+        response.setContentLength((int) attributes.getContentLength());
+        ServletContext servletContext = request.getServletContext();
+        String contentType = servletContext.getMimeType(pathWithinServletMapping);
+        response.setContentType(contentType);
+        response.setHeader("ETag", attributes.getETag());
+        response.setHeader("Last-Modified", attributes.getLastModifiedHttp());
+
+        // Text files need to take character encoding into account.  We determine what is a text
+        // file the same way Tomcat does in DefaultServlet.serveResource.
+        if (contentType == null || contentType.startsWith("text") || contentType.endsWith("xml")
+                || contentType.contains("/javascript")) {
+            response.setCharacterEncoding("UTF-8");
+            FileCopyUtils.copy(new FileReader(filename), response.getWriter());
+        } else {
+            FileCopyUtils.copy(new FileInputStream(filename), response.getOutputStream());
+        }
+
         return null;
     }
 
-    private boolean isFileRootedInBase(File base, File file) throws IOException {
-        String canonicalPath = file.getCanonicalPath();
-        boolean result = canonicalPath.startsWith(base.getCanonicalPath());
-        return result;
-    }
-    
-    protected String getYukonBase() {
-        return CtiUtilities.getYukonBase();
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
     public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-    public UrlPathHelper getUrlPathHelper() {
-        return urlPathHelper;
+        dirContext.setDocBase(CtiUtilities.getYukonBase() + prefix);
+        docBase = dirContext.getDocBase();
     }
 
     public void setUrlPathHelper(UrlPathHelper urlPathHelper) {
         this.urlPathHelper = urlPathHelper;
     }
-
 }
