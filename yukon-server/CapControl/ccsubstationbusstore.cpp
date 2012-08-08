@@ -3974,8 +3974,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                 rdr["areaid"] >> currentAreaId;
                 rdr["substationbusid"] >> currentSubstationId;
                 rdr["displayorder"] >>displayOrder;
-                CtiCCSubstationPtr currentCCSubstation = findInMap(currentSubstationId, paobject_substation_map);
-                if (currentCCSubstation != NULL)
+                if (CtiCCSubstationPtr currentCCSubstation = findInMap(currentSubstationId, paobject_substation_map))
                 {
                     currentCCSubstation->setParentId(currentAreaId);
                     currentCCSubstation->setDisplayOrder(displayOrder);
@@ -6638,12 +6637,10 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
             {
                 long currentCCCapBankId;
                 rdr["capbankid"] >> currentCCCapBankId;
-                CtiCCCapBankPtr currentCCCapBank = findInMap(currentCCCapBankId, paobject_capbank_map);
-                if (currentCCCapBank == NULL)
+                if (CtiCCCapBankPtr currentCCCapBank = findInMap(currentCCCapBankId, paobject_capbank_map))
                 {
-                    continue;
+                    currentCCCapBank->setDynamicData(rdr);
                 }
-                currentCCCapBank->setDynamicData(rdr);
             }
         }
         {
