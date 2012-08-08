@@ -710,6 +710,7 @@ Picker.prototype = {
 		$(this.selectAllPagesLink.parentNode).hide();
 		this.allPagesSelected.innerHTML = this.allPagesSelectedMsg;
 		$(this.allPagesSelected.parentNode).show();
+		this.unblock();
 	},
 
 	clearEntireSelection : function() {
