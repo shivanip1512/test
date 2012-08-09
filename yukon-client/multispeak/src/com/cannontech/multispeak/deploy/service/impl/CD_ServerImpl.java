@@ -40,7 +40,7 @@ import com.cannontech.multispeak.service.MultispeakMeterService;
 
 public class CD_ServerImpl implements CD_ServerSoap_PortType
 {
-    private final Logger log = YukonLogManager.getLogger(OD_ServerImpl.class);
+    private final Logger log = YukonLogManager.getLogger(CD_ServerImpl.class);
     
     @Autowired public MultispeakMeterService multispeakMeterService;
     @Autowired public MultispeakFuncs multispeakFuncs;
