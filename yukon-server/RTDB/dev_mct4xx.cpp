@@ -380,7 +380,6 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                                                        CtiMultiMsg_vec( ));
 
         int year, month, day, hour, minute;
-        int interval_len, block_len;
 
         string cmd = parse.getsValue(str_lp_command);
 
@@ -494,20 +493,18 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
             }
             else
             {
-                interval_len = getLoadProfileInterval(request_channel);
+                const int interval_len = getLoadProfileInterval(request_channel);
 
-                if( interval_len == 0 )
+                if( interval_len <= 0 )
                 {
-                    // The interval length was zero. No execution needs to happen.
+                    // The interval length is invalid. We cannot execute.
                     CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
                     ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
 
-                    string lp_status_string;
-                    lp_status_string += getName() + " / Load profile request status:\n";
-                    lp_status_string += "Channel " + CtiNumStr(request_channel + 1) + " LP Interval returned 0.\n";
-                    lp_status_string += "Retrieve the correct LP Interval and attempt the request again.\n";
-
-                    ReturnMsg->setResultString(lp_status_string.c_str());
+                    ReturnMsg->setResultString(
+                        getName() + " / Load profile request status:\n"
+                        "Channel " + CtiNumStr(request_channel + 1) + " LP Interval returned " + CtiNumStr(interval_len) + ".\n"
+                        "Retrieve the correct LP Interval and attempt the request again.\n");
 
                     retMsgHandler( OutMessage->Request.CommandStr, MISCONFIG, ReturnMsg, vgList, retList );
 
@@ -518,7 +515,7 @@ INT Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,
                 }
                 else
                 {
-                    block_len    = interval_len * 6;
+                    const int block_len = interval_len * 6;
 
                     //  grab the beginning date
                     CtiTokenizer date_tok(parse.getsValue("lp_date_start"));
@@ -1713,20 +1710,21 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
         const int interval_len = getLoadProfileInterval(request_channel - 1);
 
         // Only do things if our interval length is valid!
-        if( interval_len == 0 )
+        if( interval_len <= 0 )
         {
             InterlockedExchange(&_llpRequest.request_id, 0); // Reset this guy, there's no lp request active.
 
-            string temp = getName() + " / Load profile request status: \n"
-                        + "Channel " + CtiNumStr(request_channel) + " LP Interval returned 0."
-                        + "Retrieve the correct LP Interval and attempt the request again.";
+            string temp =
+                getName() + " / Load profile request status: \n"
+                "Channel " + CtiNumStr(request_channel) + " LP Interval returned " + CtiNumStr(interval_len) + ".\n"
+                "Retrieve the correct LP Interval and attempt the request again.";
 
             returnErrorMessage(ErrorNeedsChannelConfig, OutMessage, retList, temp);
 
             delete OutMessage;
             OutMessage = NULL;
 
-            return ErrorNeedsChannelConfig;
+            nRet = ExecutionComplete;
         }
         else if( ! is_valid_time(interest_time) )
         {
@@ -2048,9 +2046,7 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
 
 INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    INT   status = NORMAL,
-          j;
-    ULONG pfCount = 0;
+    INT   status = NoError;
     string resultString;
 
     std::auto_ptr<CtiReturnMsg> ReturnMsg(CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr));
@@ -2086,37 +2082,58 @@ INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, CtiMessag
 
         case EmetconProtocol::PutConfig_LoadProfileReportPeriod:
         {
-            unsigned delay = getUsageReportDelay(getLoadProfileInterval(_llpPeakInterest.channel), _llpPeakInterest.period);
-
-            if( delay > 2 && !strstr(InMessage->Return.CommandStr, " noqueue") )
-            {
-                //  take two seconds off if it's queued
-                delay -= 2;
-            }
-
-            CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
-                                                      InMessage->Return.CommandStr,
-                                                      InMessage->Return.UserID,
-                                                      InMessage->Return.GrpMsgID,
-                                                      InMessage->Return.RouteID,
-                                                      0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
-                                                      0,
-                                                      InMessage->Return.OptionsField,
-                                                      InMessage->Priority);
-
-            newReq->setConnectionHandle((void *)InMessage->Return.Connection);
-            newReq->setCommandString(newReq->CommandString() + " read");
-
-            //  set it to execute in the future
-            newReq->setMessageTime(CtiTime::now().seconds() + delay);
-
-            retList.push_back(newReq);
+            const int interval_len = getLoadProfileInterval(_llpPeakInterest.channel);
 
             ReturnMsg->setUserMessageId(InMessage->Return.UserID);
             ReturnMsg->setConnectionHandle(InMessage->Return.Connection);
-            ReturnMsg->setResultString(getName() + " / delaying " + CtiNumStr(delay) + " seconds for device peak report processing (until " + (CtiTime::now() + delay).asString() + ")");
 
-            retMsgHandler(InMessage->Return.CommandStr, NoError, ReturnMsg.release(), vgList, retList, true);
+            if( interval_len <= 0 )
+            {
+                status = MISCONFIG;
+
+                resultString =
+                    getName() + " / Channel " + CtiNumStr(_llpPeakInterest.channel + 1)
+                    + " LP Interval returned " + CtiNumStr(interval_len) + ".\n"
+                    "Verify the LP Interval and attempt the request again.";
+            }
+            else
+            {
+                int delay = getUsageReportDelay(interval_len, _llpPeakInterest.period);
+
+                if( delay > 2 && !strstr(InMessage->Return.CommandStr, " noqueue") )
+                {
+                    //  take two seconds off if it's queued
+                    delay -= 2;
+                }
+
+                CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
+                                                          InMessage->Return.CommandStr,
+                                                          InMessage->Return.UserID,
+                                                          InMessage->Return.GrpMsgID,
+                                                          InMessage->Return.RouteID,
+                                                          0,  //  PIL will recalculate this;  if we include it, we will potentially be bypassing the initial macro routes
+                                                          0,
+                                                          InMessage->Return.OptionsField,
+                                                          InMessage->Priority);
+
+                newReq->setConnectionHandle((void *)InMessage->Return.Connection);
+                newReq->setCommandString(newReq->CommandString() + " read");
+
+                //  set it to execute in the future
+                newReq->setMessageTime(CtiTime::now().seconds() + delay);
+
+                retList.push_back(newReq);
+
+                resultString =
+                    getName() + " / delaying " + CtiNumStr(delay)
+                    + " seconds for device peak report processing (until "
+                    + (CtiTime::now() + delay).asString() + ")";
+
+                ReturnMsg->setExpectMore(true);
+            }
+
+            ReturnMsg->setResultString(resultString);
+            retMsgHandler(InMessage->Return.CommandStr, status, ReturnMsg.release(), vgList, retList);
 
             break;
         }
@@ -2629,21 +2646,33 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow,
 
     ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-    unsigned char interest[5];
-
     const int interval_len = getLoadProfileInterval(_llpRequest.channel);
 
     const unsigned long interval_beginning_time = _llpInterest.time - interval_len;
 
-    interest[0] = interval_beginning_time >> 24;
-    interest[1] = interval_beginning_time >> 16;
-    interest[2] = interval_beginning_time >>  8;
-    interest[3] = interval_beginning_time;
-    interest[4] = _llpRequest.channel + 1;
+    const unsigned char interest[5] =
+    {
+        interval_beginning_time >> 24,
+        interval_beginning_time >> 16,
+        interval_beginning_time >>  8,
+        interval_beginning_time,
+        _llpRequest.channel + 1
+    };
 
     if( InMessage->Return.OptionsField != _llpRequest.request_id && !_llpRequest.request_id )
     {
         resultString += "Load profile request cancelled\n";
+    }
+    else if( interval_len <= 0 )
+    {
+        resultString =
+            "Channel " + CtiNumStr(_llpRequest.channel + 1) + " LP Interval returned " + CtiNumStr(interval_len) + ".\n"
+            "Retrieve the correct LP Interval and attempt the request again.";
+
+        status = MISCONFIG;
+
+        //  reset, we're not executing any more
+        InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage->Return.OptionsField);
     }
     else if( crc8(interest, 5) == DSt->Message[0] )
     {
@@ -2655,15 +2684,10 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow,
 
         for( int i = 0; i < 6; i++, _llpRequest.begin += interval_len )
         {
-            long lp_interval = getLoadProfileInterval(_llpRequest.channel);
+            point_info pi = getLoadProfileData(_llpRequest.channel, interval_len, DSt->Message + (i * 2) + 1, 2);
 
-            if( lp_interval != 0 )
-            {
-                point_info pi = getLoadProfileData(_llpRequest.channel, lp_interval, DSt->Message + (i * 2) + 1, 2);
-
-                insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + 1 + _llpRequest.channel,
-                                      ReturnMsg, pi, point_name, _llpRequest.begin, 1.0, TAG_POINT_LOAD_PROFILE_DATA);
-            }
+            insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + 1 + _llpRequest.channel,
+                                  ReturnMsg, pi, point_name, _llpRequest.begin, 1.0, TAG_POINT_LOAD_PROFILE_DATA);
         }
 
         if( _llpRequest.begin < _llpRequest.end )
@@ -2697,7 +2721,7 @@ INT Mct4xxDevice::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow,
         }
         else
         {
-            resultString += "Load profile request complete\n";
+            resultString = "Load profile request complete\n";
 
             //  reset, we're not executing any more
             if( InMessage->Return.OptionsField == InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage->Return.OptionsField) )
@@ -2964,7 +2988,7 @@ INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, Cti
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
     string         val_report;
-    int            channel, block, interval_len;
+    int            channel, block;
     unsigned long  timestamp, pulses;
     point_info   pi;
 
@@ -2995,15 +3019,33 @@ INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, Cti
         //  parse is 1-based, we need it 0-based
         channel--;
 
-        interval_len = getLoadProfileInterval(channel);
+        const int interval_len = getLoadProfileInterval(channel);
 
         //  this is where the block started...
         timestamp  = TimeNow.seconds();
         timestamp -= interval_len * 6 * block;
         timestamp -= timestamp % (interval_len * 6);
 
+        if( interval_len <= 0 )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - LP error for device \"" << getName() << "\"; ";
+                dout << "interval_len = " << interval_len;
+                dout << " in " __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << "commandstr = " << InMessage->Return.CommandStr << endl;
+            }
+/*
+            if( isIedChannel(channel) )
+            {
+                //  We need to re-read this value from the IED
+                purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval);
+            }
+*/
+            status = MISCONFIG;
+        }
         //  make sure we're getting the same block we're expecting
-        if( ! isProfileTablePointerCurrent(DSt->Message[0], TimeNow, interval_len) )
+        else if( ! isProfileTablePointerCurrent(DSt->Message[0], TimeNow, interval_len) )
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -3044,16 +3086,10 @@ INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, Cti
             {
                 for( int offset = 5; offset >= 0; offset-- )
                 {
-                    long lp_interval = getLoadProfileInterval(channel);
+                    pi = getLoadProfileData(channel, interval_len, DSt->Message + offset*2 + 1, 2);
 
-                    if( lp_interval != 0 )
-                    {
-                        // getLoadProfileInterval would have squawked if it were zero, no need to log here.
-                        pi = getLoadProfileData(channel, lp_interval, DSt->Message + offset*2 + 1, 2);
-
-                        insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + channel + 1,
-                                              ret_msg, pi, "", timestamp + interval_len * (6 - offset), 1.0, TAG_POINT_LOAD_PROFILE_DATA);
-                    }
+                    insertPointDataReport(DemandAccumulatorPointType, PointOffset_LoadProfileOffset + channel + 1,
+                                          ret_msg, pi, "", timestamp + interval_len * (6 - offset), 1.0, TAG_POINT_LOAD_PROFILE_DATA);
                 }
             }
 
@@ -3192,7 +3228,22 @@ INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, 
     //  turn raw pulses into a demand reading - TOU reads use LP interval
     if( InMessage->Sequence == EmetconProtocol::GetValue_TOUPeak )
     {
-        pi_kw.value *= double(3600 / getLoadProfileInterval(channel));
+        const int interval_len = getLoadProfileInterval(channel);
+
+        if( interval_len <= 0 )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - interval_len = " << interval_len << " in " << __FUNCTION__ << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            pi_kw.quality = InvalidQuality;
+            pi_kw.description = "Invalid demand interval, cannot adjust reading";
+        }
+        else
+        {
+            pi_kw.value *= double(3600 / interval_len);
+        }
     }
     else
     {

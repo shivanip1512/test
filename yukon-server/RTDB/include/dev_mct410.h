@@ -363,7 +363,7 @@ protected:
     static int makeDynamicDemand(double input);
 
     long getLoadProfileInterval(unsigned channel);
-    point_info getLoadProfileData(unsigned channel, long lp_interval, const unsigned char *buf, unsigned len);
+    point_info getLoadProfileData(unsigned channel, long interval_len, const unsigned char *buf, unsigned len);
 
     bool _intervalsSent;
 

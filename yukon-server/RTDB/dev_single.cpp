@@ -2083,6 +2083,12 @@ void CtiDeviceSingle::decrementGroupMessageCount(long userID, long comID, int en
 
 unsigned CtiDeviceSingle::intervalsPerDay(unsigned intervalLength)
 {
+    //  TODO: Perhaps it's more appropriate to throw an exception here?
+    if( intervalLength == 0 )
+    {
+        return 0;
+    }
+
     return 86400 / intervalLength;
 }
 

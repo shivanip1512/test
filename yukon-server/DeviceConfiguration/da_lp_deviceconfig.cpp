@@ -9,7 +9,7 @@ using namespace Cti;
 using namespace Cti::Config;
 using std::endl;
 
-const int DeviceConfigurationLoadProfileData::SecondsPerMinute = 60;
+const int SecondsPerMinute = 60;
 
 DeviceConfigurationLoadProfileData::DeviceConfigurationLoadProfileData()
 {
@@ -26,6 +26,16 @@ int DeviceConfigurationLoadProfileData::getLastIntervalDemandRate() const
 int DeviceConfigurationLoadProfileData::getLoadProfileDemandRate() const
 {
     long lpInterval_minutes = _deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileInterval);
+
+    if( lpInterval_minutes <= 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** getLoadProfileDemandRate() - \"" << MCTStrings::LoadProfileInterval << "\" returned \"" << lpInterval_minutes << "\", returning 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        return 0;
+    }
 
     return lpInterval_minutes * SecondsPerMinute;
 }

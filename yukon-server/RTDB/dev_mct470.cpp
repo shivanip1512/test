@@ -569,9 +569,8 @@ void Mct470Device::requestDynamicInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key, O
 
 ULONG Mct470Device::calcNextLPScanTime( void )
 {
-    CtiTime        Now;
-    unsigned long next_time    = YUKONEOT,
-                  planned_time = YUKONEOT;
+    const CtiTime Now;
+    unsigned long next_time = YUKONEOT;
 
     if( !isLPDynamicInfoCurrent() )
     {
@@ -590,99 +589,77 @@ ULONG Mct470Device::calcNextLPScanTime( void )
     }
     else
     {
-        int interval_len, block_len;
-
-        for( int i = 0; i < LPChannels; i++ )
+        for( int channel = 0; channel < LPChannels; channel++ )
         {
-            interval_len = getLoadProfileInterval(i);
-            block_len  = interval_len * 6;
+            const int interval_len = getLoadProfileInterval(channel);
+            const int block_len = interval_len * 6;
 
             if( interval_len <= 0 )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" has invalid LP rate (" << interval_len << ") for channel (" << i << ") - setting nextLPtime out 30 minutes **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" has invalid LP rate (" << interval_len << ") for channel (" << channel << ") - setting nextLPtime out 30 minutes **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 next_time = Now.seconds() + (30 * 60);
             }
             else
             {
-                CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i+1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+                CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual(1 + channel + + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
                 //  if we're not collecting load profile, or there's no point defined, don't scan
-                if( !getLoadProfile()->isChannelValid(i) || !pPoint )
+                if( !getLoadProfile()->isChannelValid(channel) || !pPoint )
                 {
-                    _lp_info[i].collection_point = YUKONEOT;
+                    _lp_info[channel].collection_point = YUKONEOT;
 
                     continue;
                 }
 
                 //  uninitialized - get the readings from the DB
-                if( !_lp_info[i].collection_point )
+                if( !_lp_info[channel].collection_point )
                 {
                     //  so we haven't talked to it yet
-                    _lp_info[i].collection_point = 86400;
+                    _lp_info[channel].collection_point = 86400;
 
                     CtiTablePointDispatch pd(pPoint->getPointID());
 
                     if(pd.Restore())
                     {
-                        _lp_info[i].collection_point = pd.getTimeStamp().seconds();
+                        _lp_info[channel].collection_point = pd.getTimeStamp().seconds();
                     }
 
-                    if( _lp_info[i].collection_point < (CtiTime::now().seconds() - block_len * 16) )
+                    if( _lp_info[channel].collection_point < (CtiTime::now().seconds() - block_len * 16) )
                     {
                         //  start collecting the most recent block
-                        _lp_info[i].collection_point  = CtiTime::now().seconds();
-                        _lp_info[i].collection_point -= _lp_info[i].collection_point % block_len;
+                        _lp_info[channel].collection_point  = CtiTime::now().seconds();
+                        _lp_info[channel].collection_point -= _lp_info[channel].collection_point % block_len;
                     }
                 }
 
                 //  basically, we plan to request again after a whole block has been recorded...
                 //    then we add on a little bit to make sure the MCT is out of the memory
-                planned_time  = _lp_info[i].collection_point + block_len;
+                unsigned long planned_time;
+                planned_time  = _lp_info[channel].collection_point + block_len;
                 planned_time -= planned_time % block_len;  //  make double sure we're block-aligned
                 planned_time += LPBlockEvacuationTime;      //  add on the safeguard time
 
-                /*
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "planned_time = " << planned_time << endl;
-                    dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
-                    dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
-                }
-                */
-
-                _lp_info[i].current_schedule = planned_time;
+                _lp_info[channel].current_schedule = planned_time;
 
                 //  if we're overdue, request at the overdue_rate
-                if( _lp_info[i].collection_point <= (Now.seconds() - block_len - LPBlockEvacuationTime) )
+                if( _lp_info[channel].collection_point <= (Now.seconds() - block_len - LPBlockEvacuationTime) )
                 {
-                    unsigned int overdue_rate = getLPRetryRate(interval_len);
+                    unsigned overdue_rate = getLPRetryRate(interval_len);
 
-                    _lp_info[i].current_schedule  = (Now.seconds() - LPBlockEvacuationTime) + overdue_rate;
-                    _lp_info[i].current_schedule -= (Now.seconds() - LPBlockEvacuationTime) % overdue_rate;
+                    _lp_info[channel].current_schedule  = (Now.seconds() - LPBlockEvacuationTime) + overdue_rate;
+                    _lp_info[channel].current_schedule -= (Now.seconds() - LPBlockEvacuationTime) % overdue_rate;
 
-                    _lp_info[i].current_schedule += LPBlockEvacuationTime;
+                    _lp_info[channel].current_schedule += LPBlockEvacuationTime;
                 }
 
-                if( next_time > _lp_info[i].current_schedule )
+                if( next_time > _lp_info[channel].current_schedule )
                 {
-                    next_time = _lp_info[i].current_schedule;
+                    next_time = _lp_info[channel].current_schedule;
                 }
-
-                /*
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "planned_time = " << planned_time << endl;
-                    dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
-                    dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
-                    dout << "next_time = " << next_time << endl;
-                }
-                */
             }
         }
     }
@@ -1123,7 +1100,7 @@ bool Mct470Device::hasPulseInputs() const
 }
 
 
-Mct470Device::point_info Mct470Device::getLoadProfileData(unsigned channel, long lp_interval, const unsigned char *buf, unsigned len)
+Mct470Device::point_info Mct470Device::getLoadProfileData(unsigned channel, long interval_len, const unsigned char *buf, unsigned len)
 {
     point_info pi;
     string config;
@@ -1183,8 +1160,21 @@ Mct470Device::point_info Mct470Device::getLoadProfileData(unsigned channel, long
 
     pi = getData(buf, len, vt);
 
-    //  adjust for the demand interval
-    pi.value *= 3600 / lp_interval;
+    if( interval_len <= 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - interval_len = \"" << interval_len << "\" in Mct410Device::getLoadProfileData() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        pi.quality = InvalidQuality;
+        pi.description = "Invalid demand interval, cannot adjust reading";
+    }
+    else
+    {
+        //  adjust for the demand interval
+        pi.value *= 3600 / interval_len;
+    }
 
     return pi;
 }
@@ -1195,7 +1185,6 @@ INT Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
     int nRet = NoError;
 
     CtiTime        Now;
-    unsigned int   interval_len, block_len;
     int            channel, block;
     string         descriptor;
     OUTMESS       *tmpOutMess;
@@ -1232,10 +1221,13 @@ INT Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
             {
                 if( (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) * 60) != getLoadProfile()->getLoadProfileDemandRate() )
                 {
-                    OUTMESS *om = CTIDBG_new OUTMESS(*OutMessage);
+                    if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) )
+                    {
+                        OUTMESS *om = CTIDBG_new CtiOutMessage(*OutMessage);
 
-                    //  send the intervals....
-                    sendIntervals(om, outList);
+                        //  send the intervals....
+                        sendIntervals(om, outList);
+                    }
                     //  then verify them - the ordering here does matter
                     requestDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval, OutMessage, outList);
                 }
@@ -1280,61 +1272,61 @@ INT Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
     }
     else if( useScanFlags() )
     {
-        for( int i = 0; i < LPChannels; i++ )
+        for( int channel = 0; channel < LPChannels; channel++ )
         {
-            interval_len = getLoadProfileInterval(i);
+            const int interval_len = getLoadProfileInterval(channel);
+            const int block_len    = interval_len * 6;
 
-            // Only do work if we have a valid LP interval.
-            if( interval_len != 0 )
+            if( interval_len <= 0 )
             {
-                block_len    = interval_len * 6;
-
-                if( getLoadProfile()->isChannelValid(i) )
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - interval_len = " << interval_len << " in " << __FUNCTION__ << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            else if( getLoadProfile()->isChannelValid(channel) )
+            {
+                if( _lp_info[channel].collection_point <= (Now - block_len - LPBlockEvacuationTime) &&
+                    _lp_info[channel].current_schedule <= Now )
                 {
-                    if( _lp_info[i].collection_point <= (Now - block_len - LPBlockEvacuationTime) &&
-                        _lp_info[i].current_schedule <= Now )
+                    tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
+
+                    //  make sure we only ask for what the function reads can access
+                    if( (Now.seconds() - _lp_info[channel].collection_point) >= (unsigned long)(LPRecentBlocks * block_len) )
                     {
-                        tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
-
-                        //  make sure we only ask for what the function reads can access
-                        if( (Now.seconds() - _lp_info[i].collection_point) >= (unsigned long)(LPRecentBlocks * block_len) )
-                        {
-                            //  go back as far as we can
-                            _lp_info[i].collection_point  = Now.seconds();
-                            _lp_info[i].collection_point -= LPRecentBlocks * block_len;
-                        }
-
-                        if( getMCTDebugLevel(DebugLevel_LoadProfile) )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "Now.seconds() = " << Now.seconds() << endl;
-                            dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
-                            dout << "MCT4XX_LPRecentBlocks * block_size = " << LPRecentBlocks * block_len << endl;
-                        }
-
-                        //  make sure we're aligned
-                        _lp_info[i].collection_point -= _lp_info[i].collection_point % block_len;
-
-                        //  which block to grab?
-                        channel = i + 1;
-                        block   = (Now.seconds() - _lp_info[i].collection_point) / block_len;
-
-                        descriptor = " channel " + CtiNumStr(channel) + string(" block ") + CtiNumStr(block);
-
-                        strncat( tmpOutMess->Request.CommandStr,
-                                 descriptor.c_str(),
-                                 sizeof(tmpOutMess->Request.CommandStr) - ::strlen(tmpOutMess->Request.CommandStr));
-
-                        if( getMCTDebugLevel(DebugLevel_LoadProfile) )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
-                        }
-
-                        outList.push_back(tmpOutMess);
+                        //  go back as far as we can
+                        _lp_info[channel].collection_point  = Now.seconds();
+                        _lp_info[channel].collection_point -= LPRecentBlocks * block_len;
                     }
+
+                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "Now.seconds() = " << Now.seconds() << endl;
+                        dout << "_lp_info[" << channel << "].collection_point = " << _lp_info[channel].collection_point << endl;
+                        dout << "MCT4XX_LPRecentBlocks * block_size = " << LPRecentBlocks * block_len << endl;
+                    }
+
+                    //  make sure we're aligned
+                    _lp_info[channel].collection_point -= _lp_info[channel].collection_point % block_len;
+
+                    //  which block to grab?
+                    channel = channel + 1;
+                    block   = (Now.seconds() - _lp_info[channel].collection_point) / block_len;
+
+                    descriptor = " channel " + CtiNumStr(channel) + string(" block ") + CtiNumStr(block);
+
+                    strncat( tmpOutMess->Request.CommandStr,
+                             descriptor.c_str(),
+                             sizeof(tmpOutMess->Request.CommandStr) - ::strlen(tmpOutMess->Request.CommandStr));
+
+                    if( getMCTDebugLevel(DebugLevel_LoadProfile) )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
+                    }
+
+                    outList.push_back(tmpOutMess);
                 }
             }
         }
@@ -2050,8 +2042,7 @@ INT Mct470Device::executeScan(CtiRequestMsg *pReq,
                         createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
                         strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
-                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                        sendBackground(*OutMessage, outList);
                     }
                     else
                     {

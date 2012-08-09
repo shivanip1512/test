@@ -389,7 +389,7 @@ Mct4xxDevice::point_info Mct410Device::getData(const unsigned char *buf, const u
 }
 
 
-Mct410Device::point_info Mct410Device::getLoadProfileData(unsigned channel, long lp_interval, const unsigned char *buf, unsigned len)
+Mct410Device::point_info Mct410Device::getLoadProfileData(unsigned channel, long interval_len, const unsigned char *buf, unsigned len)
 {
     point_info pi;
 
@@ -399,7 +399,21 @@ Mct410Device::point_info Mct410Device::getLoadProfileData(unsigned channel, long
     if( channel <= ChannelCount )
     {
         pi = getData(buf, len, ValueType_LoadProfile_DynamicDemand);
-        pi.value *= 3600 / lp_interval;
+
+        if( interval_len <= 0 )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - interval_len = " << interval_len << " in Mct410Device::getLoadProfileData() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+
+            pi.quality = InvalidQuality;
+            pi.description = "Invalid demand interval, cannot adjust reading";
+        }
+        else
+        {
+            pi.value *= 3600 / interval_len;
+        }
     }
     else if( channel == Channel_Voltage )
     {
@@ -558,7 +572,6 @@ ULONG Mct410Device::calcNextLPScanTime( void )
 {
     CtiTime       Now;
     unsigned long next_time, planned_time;
-    int           interval_len, block_len;
 
     next_time = YUKONEOT;
 
@@ -571,84 +584,93 @@ ULONG Mct410Device::calcNextLPScanTime( void )
     }
     else
     {
-        for( int i = 0; i < LPChannels; i++ )
+        for( int channel = 0; channel < LPChannels; channel++ )
         {
-            interval_len = getLoadProfileInterval(i);
-            block_len    = interval_len * 6;
+            const int interval_len = getLoadProfileInterval(channel);
+            const int block_len    = interval_len * 6;
 
-            CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((i + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+            CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((channel + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
-            //  if we're not collecting load profile, or there's no point defined, don't scan
-            if( !getLoadProfile()->isChannelValid(i) || !pPoint )
+            if( interval_len <= 0 )
             {
-                _lp_info[i].current_schedule = YUKONEOT;
-
-                continue;
-            }
-
-            //  uninitialized - get the readings from the DB
-            if( !_lp_info[i].collection_point )
-            {
-                //  so we haven't talked to it yet
-                _lp_info[i].collection_point = 86400;
-
-                CtiTablePointDispatch pd(pPoint->getPointID());
-
-                if(pd.Restore())
                 {
-                    _lp_info[i].collection_point = pd.getTimeStamp().seconds();
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" has invalid LP rate (" << interval_len << ") for channel (" << channel << ") - setting nextLPtime out 30 minutes **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                //  allow us to have missed up to 4 days before giving up and starting at the current time again
-                //    this should only affect us on startup or when someone (re-)enables LP on a device
-                if( _lp_info[i].collection_point < (CtiTime::now().seconds() - 86400 * 4) )
+                _lp_info[channel].current_schedule = Now.seconds() + (30 * 60);
+            }
+            else if( !getLoadProfile()->isChannelValid(channel) || !pPoint )
+            {
+                //  if we're not collecting load profile, or there's no point defined, don't scan
+                _lp_info[channel].current_schedule = YUKONEOT;
+            }
+            else
+            {
+                //  uninitialized - get the readings from the DB
+                if( !_lp_info[channel].collection_point )
                 {
-                    //  start collecting the most recent block
-                    _lp_info[i].collection_point  = CtiTime::now().seconds();
-                    _lp_info[i].collection_point -= _lp_info[i].collection_point % block_len;
+                    //  so we haven't talked to it yet
+                    _lp_info[channel].collection_point = 86400;
+
+                    CtiTablePointDispatch pd(pPoint->getPointID());
+
+                    if(pd.Restore())
+                    {
+                        _lp_info[channel].collection_point = pd.getTimeStamp().seconds();
+                    }
+
+                    //  allow us to have missed up to 4 days before giving up and starting at the current time again
+                    //    this should only affect us on startup or when someone (re-)enables LP on a device
+                    if( _lp_info[channel].collection_point < (CtiTime::now().seconds() - 86400 * 4) )
+                    {
+                        //  start collecting the most recent block
+                        _lp_info[channel].collection_point  = CtiTime::now().seconds();
+                        _lp_info[channel].collection_point -= _lp_info[channel].collection_point % block_len;
+                    }
+                }
+
+                //  basically, we plan to request again after a whole block has been recorded...
+                //    then we add on a little bit to make sure the MCT is out of the memory
+                planned_time  = _lp_info[channel].collection_point + block_len;
+                planned_time -= planned_time % block_len;  //  make double sure we're block-aligned
+                planned_time += LPBlockEvacuationTime;      //  add on the safeguard time
+
+                if( getMCTDebugLevel(DebugLevel_LoadProfile) )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "planned_time = " << planned_time << endl;
+                    dout << "_lp_info[" << channel << "].collection_point = " << _lp_info[channel].collection_point << endl;
+                    dout << "_lp_info[" << channel << "].current_schedule = " << _lp_info[channel].current_schedule << endl;
+                }
+
+                _lp_info[channel].current_schedule = planned_time;
+
+                //  if we're overdue, request at the overdue_rate
+                if( _lp_info[channel].collection_point <= (Now.seconds() - block_len - LPBlockEvacuationTime) )
+                {
+                    unsigned int overdue_rate = getLPRetryRate(interval_len);
+
+                    _lp_info[channel].current_schedule  = (Now.seconds() - LPBlockEvacuationTime) + overdue_rate;
+                    _lp_info[channel].current_schedule -= (Now.seconds() - LPBlockEvacuationTime) % overdue_rate;
+
+                    _lp_info[channel].current_schedule += LPBlockEvacuationTime;
                 }
             }
 
-            //  basically, we plan to request again after a whole block has been recorded...
-            //    then we add on a little bit to make sure the MCT is out of the memory
-            planned_time  = _lp_info[i].collection_point + block_len;
-            planned_time -= planned_time % block_len;  //  make double sure we're block-aligned
-            planned_time += LPBlockEvacuationTime;      //  add on the safeguard time
+            if( next_time > _lp_info[channel].current_schedule )
+            {
+                next_time = _lp_info[channel].current_schedule;
+            }
 
             if( getMCTDebugLevel(DebugLevel_LoadProfile) )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 dout << "planned_time = " << planned_time << endl;
-                dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
-                dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
-            }
-
-            _lp_info[i].current_schedule = planned_time;
-
-            //  if we're overdue, request at the overdue_rate
-            if( _lp_info[i].collection_point <= (Now.seconds() - block_len - LPBlockEvacuationTime) )
-            {
-                unsigned int overdue_rate = getLPRetryRate(interval_len);
-
-                _lp_info[i].current_schedule  = (Now.seconds() - LPBlockEvacuationTime) + overdue_rate;
-                _lp_info[i].current_schedule -= (Now.seconds() - LPBlockEvacuationTime) % overdue_rate;
-
-                _lp_info[i].current_schedule += LPBlockEvacuationTime;
-            }
-
-            if( next_time > _lp_info[i].current_schedule )
-            {
-                next_time = _lp_info[i].current_schedule;
-            }
-
-            if( getMCTDebugLevel(DebugLevel_LoadProfile) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "planned_time = " << planned_time << endl;
-                dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
-                dout << "_lp_info[" << i << "].current_schedule = " << _lp_info[i].current_schedule << endl;
+                dout << "_lp_info[" << channel << "].collection_point = " << _lp_info[channel].collection_point << endl;
+                dout << "_lp_info[" << channel << "].current_schedule = " << _lp_info[channel].current_schedule << endl;
                 dout << "next_time = " << next_time << endl;
             }
         }
@@ -690,7 +712,6 @@ INT Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
     int nRet = NoError;
 
     CtiTime       Now;
-    unsigned int  interval_len, block_len;
     int           channel, block;
     string        descriptor;
     OUTMESS      *tmpOutMess;
@@ -711,24 +732,29 @@ INT Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
     }
     else
     {
-        for( int i = 0; i < LPChannels; i++ )
+        for( int channel = 0; channel < LPChannels; channel++ )
         {
-            interval_len = getLoadProfileInterval(i);
-            block_len    = interval_len * 6;
+            const int interval_len = getLoadProfileInterval(channel);
+            const int block_len    = interval_len * 6;
 
-            if( getLoadProfile()->isChannelValid(i) )
+            if( interval_len <= 0 )
             {
-                if( _lp_info[i].collection_point <= (Now - block_len - LPBlockEvacuationTime) &&
-                    _lp_info[i].current_schedule <= Now )
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - interval_len = " << interval_len << " in " << __FUNCTION__ << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            else if( getLoadProfile()->isChannelValid(channel) )
+            {
+                if( _lp_info[channel].collection_point <= (Now - block_len - LPBlockEvacuationTime) &&
+                    _lp_info[channel].current_schedule <= Now )
                 {
                     tmpOutMess = CTIDBG_new OUTMESS(*OutMessage);
 
                     //  make sure we only ask for what the function reads can access
-                    if( (Now.seconds() - _lp_info[i].collection_point) >= (unsigned long)(LPRecentBlocks * block_len) )
+                    if( (Now.seconds() - _lp_info[channel].collection_point) >= (unsigned long)(LPRecentBlocks * block_len) )
                     {
                         //  go back as far as we can
-                        _lp_info[i].collection_point  = Now.seconds();
-                        _lp_info[i].collection_point -= LPRecentBlocks * block_len;
+                        _lp_info[channel].collection_point  = Now.seconds();
+                        _lp_info[channel].collection_point -= LPRecentBlocks * block_len;
                     }
 
                     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
@@ -736,16 +762,16 @@ INT Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         dout << "Now.seconds() = " << Now.seconds() << endl;
-                        dout << "_lp_info[" << i << "].collection_point = " << _lp_info[i].collection_point << endl;
+                        dout << "_lp_info[" << channel << "].collection_point = " << _lp_info[channel].collection_point << endl;
                         dout << "MCT4XX_LPRecentBlocks * block_len = " << LPRecentBlocks * block_len << endl;
                     }
 
                     //  make sure we're aligned
-                    _lp_info[i].collection_point -= _lp_info[i].collection_point % block_len;
+                    _lp_info[channel].collection_point -= _lp_info[channel].collection_point % block_len;
 
                     //  which block to grab?
-                    channel = i + 1;
-                    block   = (Now.seconds() - _lp_info[i].collection_point) / block_len;
+                    channel = channel + 1;
+                    block   = (Now.seconds() - _lp_info[channel].collection_point) / block_len;
 
                     descriptor = " channel " + CtiNumStr(channel) + string(" block ") + CtiNumStr(block);
 
@@ -3424,11 +3450,27 @@ INT Mct410Device::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiTime
             }
             case FuncRead_LLPPeakIntervalPos:
             {
-                int intervals_per_hour = 3600 / getLoadProfile()->getLoadProfileDemandRate();
-
                 result_string += "Peak interval: " + CtiTime(max_demand_timestamp).asString() + "\n";
                 result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
-                result_string += "Demand: " + CtiNumStr(max_usage * intervals_per_hour, 1) + string(" kW\n");
+
+                const int interval_len = getLoadProfile()->getLoadProfileDemandRate();
+
+                if( interval_len <= 0 )
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - interval_len = " << interval_len << " in " << __FUNCTION__ << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    result_string += "Demand: (cannot calculate, invalid load profile interval)\n";
+                }
+                else
+                {
+                    const int intervals_per_hour = 3600 / interval_len;
+
+                    result_string += "Demand: " + CtiNumStr(max_usage * intervals_per_hour, 1) + string(" kW\n");
+                }
+
                 result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");
                 result_string += "Total usage over range: " + CtiNumStr(total_usage, 1) + string(" kWH\n");
 
@@ -3701,7 +3743,7 @@ INT Mct410Device::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow, C
                 resultString += "(" + CtiNumStr(day) + "/" + CtiNumStr(month + 1) + ", expecting " + CtiNumStr(_daily_read_info.request.begin.dayOfMonth()) + "/" + CtiNumStr(((_daily_read_info.request.begin.month() - 1) % 4) + 1) + ")";
 
                 //  These come back as 0x7ff.. if daily reads are disabled, but also if the request really was out of range
-                //  Ideally, this check would be against an enum or similar rather than a string, 
+                //  Ideally, this check would be against an enum or similar rather than a string,
                 //    but unless getAccumulatorData is refactored to provide more than a text description and quality, this will have to do.
                 if( reading.description == ErrorText_OutOfRange
                     && peak.description == ErrorText_OutOfRange )

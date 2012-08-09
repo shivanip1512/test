@@ -228,7 +228,7 @@ protected:
     static point_info decodePulseAccumulator(const unsigned char *buf, const unsigned len, const unsigned char *freeze_counter);
 
     virtual long getLoadProfileInterval(unsigned channel) = 0;
-    virtual point_info getLoadProfileData(unsigned channel, long lp_interval, const unsigned char *buf, unsigned len) = 0;
+    virtual point_info getLoadProfileData(unsigned channel, long interval_len, const unsigned char *buf, unsigned len) = 0;
 
     virtual bool hasChannelConfig    (const unsigned channel) const                                                {  return true;  }
     virtual bool requestChannelConfig(const unsigned channel, const OUTMESS &OutMessage, OutMessageList &outList)  {  return false;  }

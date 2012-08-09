@@ -15,7 +15,6 @@ class IM_EX_CONFIG DeviceConfigurationLoadProfileData : public DataAccessLoadPro
     private:
         Cti::Config::DeviceConfigSPtr _deviceConfig;
         boost::shared_ptr<DataAccessLoadProfile> _lpTable;
-        static const int SecondsPerMinute;
 
     public:
         DeviceConfigurationLoadProfileData();
