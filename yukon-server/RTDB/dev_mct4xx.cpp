@@ -1721,9 +1721,6 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
 
             returnErrorMessage(ErrorNeedsChannelConfig, OutMessage, retList, temp);
 
-            delete OutMessage;
-            OutMessage = NULL;
-
             nRet = ExecutionComplete;
         }
         else if( ! is_valid_time(interest_time) )
@@ -1734,9 +1731,6 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
 
             returnErrorMessage(ErrorInvalidStartDate, OutMessage, retList, temp);
 
-            delete OutMessage;
-            OutMessage = NULL;
-
             nRet = ExecutionComplete;
         }
         else if( !request_channel || request_channel > LPChannels )
@@ -1744,9 +1738,6 @@ INT Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq,
             InterlockedExchange(&_llpRequest.request_id, 0); // Reset this guy, there's no lp request active.
 
             returnErrorMessage(BADPARAM, OutMessage, retList, "Bad channel \"" + CtiNumStr(request_channel) + "\"");
-
-            delete OutMessage;
-            OutMessage = NULL;
 
             nRet = ExecutionComplete;
         }

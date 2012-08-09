@@ -605,7 +605,7 @@ ULONG Mct470Device::calcNextLPScanTime( void )
             }
             else
             {
-                CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual(1 + channel + + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+                CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual(1 + channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
                 //  if we're not collecting load profile, or there's no point defined, don't scan
                 if( !getLoadProfile()->isChannelValid(channel) || !pPoint )
