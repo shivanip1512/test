@@ -20,6 +20,6 @@ public enum PeakReportPeakType implements DisplayableEnum {
 
 	@Override
 	public String getFormatKey() {
-		return getDisplayName();
+		return baseKey + getDisplayName();
 	}
 }
