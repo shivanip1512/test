@@ -1,5 +1,8 @@
 package com.cannontech.yukon.server.cache;
 
+import java.util.ArrayList;
+
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 
@@ -11,12 +14,12 @@ import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
  */
 public class DeviceMeterGroupLoader implements Runnable
 {
-	private java.util.ArrayList devMetNumList = null;
+	private ArrayList<LiteDeviceMeterNumber> devMetNumList = null;
 	private String databaseAlias = null;
 /**
  * DeviceLoader constructor comment.
  */
-public DeviceMeterGroupLoader(java.util.ArrayList deviceList, String alias) {
+public DeviceMeterGroupLoader(ArrayList<LiteDeviceMeterNumber> deviceList, String alias) {
 	super();
 	this.devMetNumList = deviceList;
 	this.databaseAlias = alias;
@@ -27,7 +30,9 @@ public DeviceMeterGroupLoader(java.util.ArrayList deviceList, String alias) {
 public void run()
 {
 	long timer = System.currentTimeMillis();
-	String sqlString = "SELECT DEVICEID, METERNUMBER FROM DEVICEMETERGROUP ORDER BY METERNUMBER";
+	String sqlString = "SELECT DeviceId, MeterNumber, Type FROM DeviceMeterGroup dmg " + 
+	                    " JOIN YukonPaobject pao ON dmg.DeviceId = pao.PaobjectId " +
+	                    " ORDER BY MeterNumber";
 
 	java.sql.Connection conn = null;
 	java.sql.Statement stmt = null;
@@ -43,13 +48,11 @@ public void run()
 		{
 			int deviceID = rset.getInt(1);
 			String meterNumber = rset.getString(2).trim();
-			
-			//20050602 - SN - removed this check, we want all of them in the cache
-//			if(meterNumber.compareToIgnoreCase("default") != 0)
-//			{
-				LiteDeviceMeterNumber liteDevMetNum = new LiteDeviceMeterNumber(deviceID, meterNumber);
-				devMetNumList.add(liteDevMetNum);
-//			}
+			String paoTypeStr = rset.getString(3);
+			PaoType paoType = PaoType.getForDbString(paoTypeStr);
+		    
+			LiteDeviceMeterNumber liteDevMetNum = new LiteDeviceMeterNumber(deviceID, meterNumber, paoType);
+			devMetNumList.add(liteDevMetNum);
 		}
 	}
 	catch (java.sql.SQLException e)

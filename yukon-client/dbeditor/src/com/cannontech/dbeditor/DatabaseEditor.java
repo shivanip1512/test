@@ -194,6 +194,7 @@ public class DatabaseEditor
 			TreeModelEnum.TWOWAYCONFIG,         
 			TreeModelEnum.METER,
 			TreeModelEnum.DEVICE_METERNUMBER,
+			TreeModelEnum.RFMESH,
 			TreeModelEnum.ROUTE,
 			TreeModelEnum.RTU,
 			TreeModelEnum.STATEGROUP,

@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 import org.joda.time.Instant;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.Transaction;
@@ -13,6 +14,7 @@ import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
 import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
@@ -412,11 +414,12 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 				((com.cannontech.database.data.customer.Contact)val).getContact().getContLastName() );
 
 	}
-	else if( val instanceof com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)
-	{
+	else if (val instanceof DeviceMeterGroupBase) {
+        YukonPao yukonPao = DaoFactory.getPaoDao().getYukonPao(((DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue());
 		returnLite = new LiteDeviceMeterNumber(
-				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue(),
-				((com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase)val).getDeviceMeterGroup().getMeterNumber());
+				((DeviceMeterGroupBase)val).getDeviceMeterGroup().getDeviceID().intValue(),
+				((DeviceMeterGroupBase)val).getDeviceMeterGroup().getMeterNumber(),
+				yukonPao.getPaoIdentifier().getPaoType());
 
 	} else if( val instanceof YukonUser ) {
 	       com.cannontech.database.db.user.YukonUser user = ((YukonUser)val).getYukonUser();

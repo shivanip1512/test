@@ -44,6 +44,7 @@ import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -743,37 +744,35 @@ public class YC extends Observable implements MessageListener
 
         return false;
     }
-    
-	/**
+
+   /**
      * Set the commandFileName based on the item instance.
-     * @param item_ Object
+     * @param litebase LiteBase
      */
-	public void setDeviceType(Object item_)
-	{
-		if( item_ instanceof DeviceBase)					//TreeModelEnum.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
-		{
-			deviceType = ((DeviceBase)item_).getPAOType();
-		}
-		else if(item_ instanceof DeviceMeterGroupBase)	//TreeModelEnum.DEVICE_METERNUMBER,		
-		{
-			int devID = ((DeviceMeterGroupBase)item_).getDeviceMeterGroup().getDeviceID().intValue();
-			LiteYukonPAObject litePao = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
-			deviceType = litePao.getPaoType().getDbString();
-		}
-		else if (item_ instanceof String)				//TreeModelEnum.COLLECTION_GROUP, TESTCOLLECTIONGROUP, LCRSERIAL
-		{
-			deviceType = (String) item_;
-		}
-		else 
-		{
-			deviceType = "";			
-			//*TODO - This is a really bad catch all...revise!*/
-			CTILogger.error("Device Type undefined. Item instance of " + (item_ == null ? null :item_.getClass()));
-		}
-		CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
-		setLiteDeviceTypeCommandsVector(DaoFactory.getCommandDao().getAllDevTypeCommands(deviceType));
-	}
-	
+    public void setDeviceType(LiteBase liteBase)
+    {
+        if (liteBase instanceof LiteYukonPAObject) {    //TreeModelEnum.DEVICE,MCTBROADCAST,LMGROUPS,CAPBANKCONTROLLER
+            setDeviceType(((LiteYukonPAObject)liteBase).getPaoType().getDbString());  
+        } else if(liteBase instanceof LiteDeviceMeterNumber) { //TreeModelEnum.DEVICE_METERNUMBER
+            setDeviceType(((LiteDeviceMeterNumber)liteBase).getPaoType().getDbString());
+        }  else {
+            //*TODO - This is a really bad catch all...revise!*/
+            CTILogger.error("Device Type undefined. Item instance of " + (liteBase == null ? null :liteBase.getClass()));
+            setDeviceType("");
+        }
+    }
+
+    /**
+     * Set the commandFileName based on the item instance.
+     * @param typeString String
+     */
+    public void setDeviceType(String typeString)
+    {
+        deviceType = typeString;
+        CTILogger.debug(" DEVICE TYPE for command lookup: " + deviceType);
+        setLiteDeviceTypeCommandsVector(DaoFactory.getCommandDao().getAllDevTypeCommands(deviceType));
+    }
+    
 	/**
 	 * Set the commandMode
 	 * Valid values are:

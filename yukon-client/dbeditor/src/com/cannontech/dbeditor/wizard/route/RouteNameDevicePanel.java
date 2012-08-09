@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -144,7 +145,8 @@ private javax.swing.JComboBox getSignalTransmitterComboBox() {
             for (LiteYukonPAObject litePAO : allDevices) {
                         
                if( litePAO.getPaoType().getPaoClass() == PaoClass.TRANSMITTER
-                   && !DeviceTypesFuncs.isRepeater(litePAO.getPaoType().getDeviceTypeId()) )
+                   && !DeviceTypesFuncs.isRepeater(litePAO.getPaoType().getDeviceTypeId()) 
+                   && litePAO.getPaoType() != PaoType.DIGIGATEWAY)
                {
                   getSignalTransmitterComboBox().addItem(litePAO);
                }

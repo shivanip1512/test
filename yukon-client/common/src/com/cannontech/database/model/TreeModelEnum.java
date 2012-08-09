@@ -66,7 +66,9 @@ public enum TreeModelEnum
 	SEASON (SeasonModel.class, "Season Schedule"),
 	TOUSCHEDULE (TOUScheduleModel.class, "TOU Schedule"),
 	RECEIVERS (ReceiverTreeModel.class, "Receivers"),
-	SYSTEM_DEVICE (SystemDeviceModel.class, "System Points");
+	SYSTEM_DEVICE (SystemDeviceModel.class, "System Points"),
+	RFMESH (RFNTreeModel.class, "RF Mesh"),
+	;
 
 	private TreeModelEnum(Class<? extends LiteBaseTreeModel> treeModelClass, String treeModelName) {
 		this.treeModelClass = treeModelClass;

@@ -15,6 +15,8 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class DeviceTreeModel extends AbstractDeviceTreeModel {
 
+    private static final PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
+
     public DeviceTreeModel() {
         this(true);
     } 
@@ -31,11 +33,26 @@ public class DeviceTreeModel extends AbstractDeviceTreeModel {
         super(rootNode);
     }
 
+    @Override
     public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
-        PaoDefinitionDao paoDefinitionDao;
-        paoDefinitionDao = (PaoDefinitionDao) YukonSpringHook.getBean("paoDefinitionDao");
-        return DeviceClasses.isCoreDeviceClass(paoClass.getPaoClassId())
-               && paoCategory == PaoCategory.DEVICE
-               && !paoDefinitionDao.isTagSupported(paoType, PaoTag.DB_EDITOR_INCOMPATIBLE);
+        
+        // if not compatible with DBEditor (representing any "hard client"), return false.
+        if (paoDefinitionDao.isTagSupported(paoType, PaoTag.DB_EDITOR_INCOMPATIBLE)) {
+            return false;
+        }
+        
+        if (paoType.isMeter()) {    // "meters" are of valid "type", but need to do a little more checking
+            
+            if (isPorterDevicesOnly()) {    // for "meters", need to check if we're limiting only to porter supported devices
+                return paoDefinitionDao.isTagSupported(paoType, PaoTag.PORTER_COMMAND_REQUESTS);
+            } else {
+                return true;
+            }
+        } else if (DeviceClasses.isCoreDeviceClass(paoClass.getPaoClassId()) 
+                && paoCategory == PaoCategory.DEVICE) {
+            return true;
+        }
+
+        return false;
     }
 }

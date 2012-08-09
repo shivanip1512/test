@@ -47,6 +47,7 @@ import com.cannontech.common.gui.util.JTextPanePrintable;
 import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -61,18 +62,20 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
-import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.CommandCategory;
+import com.cannontech.database.model.CapBankControllerModel;
+import com.cannontech.database.model.DeviceMeterGroupModel;
+import com.cannontech.database.model.DeviceTreeModel;
 import com.cannontech.database.model.EditableExpresscomModel;
 import com.cannontech.database.model.EditableSA205Model;
 import com.cannontech.database.model.EditableSA305Model;
 import com.cannontech.database.model.EditableTextModel;
 import com.cannontech.database.model.EditableVersacomModel;
+import com.cannontech.database.model.LMGroupsModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
+import com.cannontech.database.model.TransmitterTreeModel;
 import com.cannontech.database.model.TreeModelEnum;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -1267,7 +1270,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                     getRootPane().setCursor(new Cursor(Cursor.WAIT_CURSOR));
                     
                     // Update the route combo box - if necessary
-                    if(msg.getCategory().equals(PAOGroups.STRING_CAT_ROUTE)){
+                    if (msg.getCategory().equals(PaoCategory.ROUTE.getDbString())) {
                         updateRouteCombo(msg.getDbChangeType(), object);
                     }
                     
@@ -1368,16 +1371,25 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		TreeModelEnum[] modelIds = getTreeModels();
         for (int i = 0; i < modelIds.length; i++)
 		{
-			if( modelIds[i] == TreeModelEnum.DEVICE)
-				models.add(new com.cannontech.database.model.DeviceTreeModel(false));
-			else if ( modelIds[i] == TreeModelEnum.LMGROUPS)
-				models.add(new com.cannontech.database.model.LMGroupsModel(false));
-			else if ( modelIds[i] == TreeModelEnum.CAPBANKCONTROLLER )
-				models.add(new com.cannontech.database.model.CapBankControllerModel(false));
-			else if ( modelIds[i] == TreeModelEnum.TRANSMITTER )
-				models.add(new com.cannontech.database.model.TransmitterTreeModel(false));
-			else
+			if (modelIds[i] == TreeModelEnum.DEVICE) {
+			    DeviceTreeModel deviceTreeModel = new DeviceTreeModel(false);
+			    deviceTreeModel.setPorterDevicesOnly(true);
+				models.add(deviceTreeModel);
+			} else if (modelIds[i] == TreeModelEnum.DEVICE_METERNUMBER) {
+			    DeviceMeterGroupModel deviceMeterGroupModel = new DeviceMeterGroupModel();
+                deviceMeterGroupModel.setPorterDevicesOnly(true);
+                models.add(deviceMeterGroupModel);
+			} else if (modelIds[i] == TreeModelEnum.LMGROUPS) {
+			    LMGroupsModel lmGroupsModel = new LMGroupsModel(false);
+			    lmGroupsModel.setPorterDevicesOnly(true);
+				models.add(lmGroupsModel);
+			} else if (modelIds[i] == TreeModelEnum.CAPBANKCONTROLLER) {
+				models.add(new CapBankControllerModel(false));
+			} else if (modelIds[i] == TreeModelEnum.TRANSMITTER) {
+				models.add(new TransmitterTreeModel(false));
+			} else {
 				models.add(TreeModelEnum.create(modelIds[i]));
+			}
 		}
         
         // add the group model
@@ -1905,7 +1917,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		    if( TreeModelEnum.isEditableSerial(getModelType())) {
 		        getYC().setDeviceType(savedDevType);
 		    } else {
-		        getYC().setDeviceType(null);
+		        getYC().setDeviceType("");
 		    }
 			return;
 		}
@@ -1919,11 +1931,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		updateCommandMenu(selectedItem);
 		if ( selectedItem instanceof LiteBase)
 		{
-			DBPersistent dbp = LiteFactory.createDBPersistent( (LiteBase) selectedItem);
-			if (dbp == null)
-				return;
-	
-			getYC().setDeviceType(dbp);
+			getYC().setDeviceType((LiteBase)selectedItem);
 			if( selectedItem instanceof LiteYukonPAObject)
 			{
 				LiteYukonPAObject lpao = (LiteYukonPAObject)selectedItem;
@@ -2158,12 +2166,12 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		{
 			//Vector of ints (TreeModelEnum types), (Changed from array to remove size constraints)
 			List<TreeModelEnum> tempModel = new ArrayList<TreeModelEnum>();
-			tempModel.add(	TreeModelEnum.DEVICE);
-			tempModel.add( TreeModelEnum.DEVICE_METERNUMBER);
-			tempModel.add( TreeModelEnum.MCTBROADCAST);
-			tempModel.add( TreeModelEnum.TRANSMITTER);
-			tempModel.add( TreeModelEnum.LMGROUPS);
-			tempModel.add( TreeModelEnum.CAPBANKCONTROLLER);
+			tempModel.add(TreeModelEnum.DEVICE);
+			tempModel.add(TreeModelEnum.DEVICE_METERNUMBER);
+			tempModel.add(TreeModelEnum.MCTBROADCAST);
+			tempModel.add(TreeModelEnum.TRANSMITTER);
+			tempModel.add(TreeModelEnum.LMGROUPS);
+			tempModel.add(TreeModelEnum.CAPBANKCONTROLLER);
 
 			boolean needDefault = true;
 			ClientSession session = ClientSession.getInstance();

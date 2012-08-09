@@ -1,5 +1,8 @@
 package com.cannontech.database.model;
 
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
@@ -7,12 +10,13 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceMeterGroupModel extends DBTreeModel 
 {
-
+    private static final PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
+    
     public DeviceMeterGroupModel() {
     	super( new DBTreeNode("Meter Numbers") );
     }
@@ -34,7 +38,7 @@ public class DeviceMeterGroupModel extends DBTreeModel
     		java.util.List<LiteDeviceMeterNumber> deviceMeterGroupsList = cache.getAllDeviceMeterGroups();
     		
     		for (LiteDeviceMeterNumber liteDeviceMeterNumber : deviceMeterGroupsList) {
-    			lBase = (LiteBase)liteDeviceMeterNumber;
+    			lBase = liteDeviceMeterNumber;
     			if( lBase.equals(liteYuk) ) {
     				lBase = liteDeviceMeterNumber;
     				break;
@@ -58,10 +62,15 @@ public class DeviceMeterGroupModel extends DBTreeModel
         return false;
     }
     
-    public boolean isDeviceValid( int category_, int class_, int type_ )
+    private boolean isDeviceValid(PaoType paoType)
     {
-    	return ( (DeviceTypesFuncs.isMCT(type_) || DeviceTypesFuncs.isMeter(type_))
-    			    && category_ == PAOGroups.CAT_DEVICE );
+        if (isPorterDevicesOnly()) {
+            if (!paoDefinitionDao.isTagSupported(paoType, PaoTag.PORTER_COMMAND_REQUESTS)) {
+                // only devices read through porter
+                return false;
+            }
+        }
+    	return DeviceTypesFuncs.usesDeviceMeterGroup(paoType.getDeviceTypeId());
     }
     
     public void update()
@@ -77,7 +86,9 @@ public class DeviceMeterGroupModel extends DBTreeModel
     		
     		for (LiteDeviceMeterNumber liteDeviceMeterNumber : deviceMeterGroupsList) {
     			DBTreeNode deviceNode = new DBTreeNode( liteDeviceMeterNumber);
-    			rootNode.add( deviceNode );
+    			if (isDeviceValid(liteDeviceMeterNumber.getPaoType())) {
+    			    rootNode.add( deviceNode );
+    			}
     		}
     	}
     

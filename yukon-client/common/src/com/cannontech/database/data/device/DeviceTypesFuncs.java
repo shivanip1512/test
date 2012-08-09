@@ -57,25 +57,6 @@ public final static boolean allowRebroadcast(int type) {
 			return false;
 	}
 }
-/**
- * This method was created in VisualAge.
- * @return boolean
- * @param type java.lang.String
- */
-public final static boolean allowRebroadcast(String type) 
-{
-	int intType = com.cannontech.database.data.pao.PAOGroups.getDeviceType(type);
-
-	switch( intType )
-	{
-		case CCU710A:
-		case CCU711:
-		case CCU721:
-			return true;
-		default:
-			return false;
-	}
-}
 
 /**
  * This method was created in VisualAge.
@@ -831,8 +812,7 @@ public final static boolean isTouMCT(int deviceType)
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (1/15/2001 1:46:22 PM)
+ * This is for electronic meters. It should not include RFN or MCT meters.
  * @return boolean
  * @param deviceType int
  */
@@ -1021,7 +1001,7 @@ public final static boolean isVirtualDevice(int deviceType)
 
 public final static boolean usesDeviceMeterGroup(int deviceType)
 {
-    if (isMCT(deviceType) || isMeter(deviceType)) {
+    if (isMCT(deviceType) || isMeter(deviceType) || isRfn(deviceType)) {
         return true;
     }
 	return false;
@@ -1594,7 +1574,7 @@ public static Object changeType (String newType,
     }
     
     /**
-     * Depricated, Use Paotype.isRfn
+     * Deprecated, Use Paotype.isRfn
      */
     @Deprecated
     public static boolean isRfn(int deviceType) {

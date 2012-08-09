@@ -1,17 +1,16 @@
 package com.cannontech.database.data.lite;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.spring.YukonSpringHook;
 
-/**
- * Insert the type's description here.
- * Creation date: (9/5/2001 5:12:39 PM)
- * @author: 
- */
 public class LiteDeviceMeterNumber extends LiteBase
 {
-	String meterNumber = null;
+	private String meterNumber = null;
+	private PaoType paoType;
 /**
  * LiteDeviceMeterNumber constructor comment.
  */
@@ -30,33 +29,38 @@ public LiteDeviceMeterNumber(int devID)
 /**
  * LiteDeviceMeterNumber constructor comment.
  */
-public LiteDeviceMeterNumber(int devID, String meterNum)
+public LiteDeviceMeterNumber(int devID, String meterNum, PaoType paoType)
 {
 	super();
 	setDeviceID(devID);
-	meterNumber = new String(meterNum);
-
-	setLiteType(LiteTypes.DEVICE_METERNUMBER);	
+	setMeterNumber(meterNum);
+	setLiteType(LiteTypes.DEVICE_METERNUMBER);
+	setPaoType(paoType);
 }
-/**
- * This method was created by Cannon Technologies Inc.
- */
+
 public int getDeviceID() {
 	return getLiteID();
 }
-/**
- * This method was created by Cannon Technologies Inc.
- */
+
 public String getMeterNumber() {
 	return meterNumber;
 }
-/**
- * retrieve method comment.
- */
+
+public PaoType getPaoType() {
+    if(paoType == null) {
+        // Hope we never get here, but protection in case we do.
+        // LiteDeviceMeterNumber has paoType, but (heavy) DeviceMeterGroup does not
+        PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+        paoType = paoDao.getYukonPao(getDeviceID()).getPaoIdentifier().getPaoType();
+    }
+    return paoType;
+}
+
 public void retrieve(String databaseAlias) 
 {
    SqlStatement s = new SqlStatement(
-         "SELECT METERNUMBER FROM DEVICEMETERGROUP WHERE DEVICEID = " + getDeviceID(),
+         "SELECT MeterNumber, Type FROM DeviceMeterGroup dmg JOIN YukonPaobject pao ON dmg.DeviceId = pao.PaobjectId " +
+                 " WHERE DeviceId = " + getDeviceID(),
          CtiUtilities.getDatabaseAlias() );
 
 	try 
@@ -66,8 +70,8 @@ public void retrieve(String databaseAlias)
       if( s.getRowCount() <= 0 )
          throw new IllegalStateException("Unable to find DeviceMeterGroup with deviceID = " + getLiteID() );
 
-
-      setMeterNumber( s.getRow(0)[0].toString() );
+      setMeterNumber(s.getRow(0)[0].toString());
+      setPaoType(PaoType.getForDbString(s.getRow(0)[1].toString()));
 	}
 	catch( Exception e )
 	{
@@ -75,22 +79,20 @@ public void retrieve(String databaseAlias)
 	}
 
 }
-/**
- * This method was created by Cannon Technologies Inc.
- */
+
 public void setDeviceID(int newValue) 
 {
 	setLiteID(newValue);
 }
-/**
- * This method was created by Cannon Technologies Inc.
- */
+
 public void setMeterNumber(String newValue) {
 	this.meterNumber = new String(newValue);
 }
-/**
- * This method was created by Cannon Technologies Inc.
- */
+
+public void setPaoType(PaoType paoType) {
+    this.paoType = paoType;
+}
+
 public String toString() {
 	return meterNumber;
 }

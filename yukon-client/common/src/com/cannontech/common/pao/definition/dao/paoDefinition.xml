@@ -4814,6 +4814,9 @@
                 <stategroup value="TwoStateStatus"/>
             </point>        
         </points>
+        <tags>
+    		<tag name="PORTER_COMMAND_REQUESTS"/>
+        </tags>
 	</pao>
 	<pao id="ION_7330" inherits="ELECTRONIC_METER_ION_BASE">
         <displayName>ION-7330</displayName>
