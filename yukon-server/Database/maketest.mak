@@ -33,6 +33,7 @@ $(COMPILEBASE)\lib\ctidbsrc.lib \
 
 DATABASE_TEST_OBJS=\
 test_main.obj \
+test_tbl_dyn_paoinfo.obj \
 test_tbl_dv_idlcremote.obj
 
 
