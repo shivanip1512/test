@@ -355,8 +355,8 @@ public class InventoryController {
         boolean showVoltage = !type.isZigbee() && !clazz.isGateway() && !clazz.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
         
-        /* Hide route for meters and zigbee devices */
-        if (!clazz.isMeter() && !type.isZigbee()) {
+        /* Hide route for meters, zigbee devices, and RF devices */
+        if (!clazz.isMeter() && !type.isZigbee() && !type.isRf()) {
             model.addAttribute("showRoute", true);
         }
         
