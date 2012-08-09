@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <iomanip>
 
-
+#include "ctistring.h"
 #include "cparms.h"
 #include "utility.h"
 #include "shlwapi.h"
+#include "encryption.h"
 
 using namespace std;
 
@@ -100,9 +101,9 @@ int CtiConfigParameters::RefreshConfigParameters()
                             {
                                 HeadAndTail(pch, chValue, MAX_CONFIG_VALUE);
 
-                                //CtiConfigKey   *Key = new CtiConfigKey(string(chKey));
+                                string configValue = checkAndDecryptValue(chValue);
 
-                                CtiConfigValue *Val = new CtiConfigValue(string(chValue));
+                                CtiConfigValue *Val = new CtiConfigValue(configValue);
                                 mHash_pair2 p = mHash.insert( std::make_pair(string(chKey), Val) );
                                 if( !p.second )
                                 {
@@ -173,6 +174,34 @@ CtiConfigParameters::Dump()
         cout << "No configuration exists." << endl;
     }
 }
+
+
+// This checks if a master.cfg entry is encrypted and automatically decrypts it if found
+string CtiConfigParameters::checkAndDecryptValue( char * chValue )
+{
+    CtiString retVal( chValue );
+
+    if ( retVal.contains( "(AUTO_ENCRYPTED)" ) )
+    {
+        Encryption::Buffer  encrypted,
+                            decrypted;
+
+        convertHexStringToBytes( retVal.substr( 16 ), encrypted );
+
+        try
+        {
+            decrypted = Encryption::decrypt( Encryption::MasterCfg, encrypted );
+            retVal.assign( decrypted.begin(), decrypted.end() );
+        }
+        catch ( Encryption::Error e )
+        {
+            cout << "Decryption Exception thrown parsing master.cfg: " << e.what() << endl;
+        }
+    }
+
+    return retVal;
+}
+
 
 BOOL CtiConfigParameters::isOpt(const string& key)
 {

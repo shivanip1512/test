@@ -717,6 +717,23 @@ bool isExpresscomGroup(INT Type)
     return Type == TYPE_LMGROUP_EXPRESSCOM || Type == TYPE_LMGROUP_RFN_EXPRESSCOM;
 }
 
+
+// Converts a hex string such as "0a1002" to a vector of bytes
+// Adds a trailing 0 if the characters are not a multiple of 2
+void convertHexStringToBytes( string & stringInput, vector< unsigned char > & result )
+{
+    if ( (stringInput.size() % 2) != 0 )
+    {
+        stringInput.append( "0" );
+    }
+
+    for ( int i = 0; i < stringInput.size() / 2; i++ )
+    {
+        result.push_back( strtoul( stringInput.substr( i * 2, 2 ).c_str(), NULL, 16 ) );
+    }
+}
+
+
 bool isRepeater(INT Type)
 {
     switch(Type)

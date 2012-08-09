@@ -123,6 +123,8 @@ private:
    #endif
    map<string,CtiConfigValue*> mHash;
 
+   string checkAndDecryptValue(char *chValue);
+
 public:
 
    CtiConfigParameters();

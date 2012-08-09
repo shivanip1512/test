@@ -31,6 +31,7 @@
 #include "logger.h"
 #include "utility.h"
 #include "shlwapi.h"
+#include "encryption.h"
 
 #include "thread_monitor.h"
 
@@ -91,6 +92,8 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
         case DLL_PROCESS_ATTACH:
         {
             identifyProject(CompileInfo);
+
+            Encryption::initialize( getYukonBase() );
 
             gConfigParms.setYukonBase(getYukonBase());
             gConfigParms.RefreshConfigParameters();
