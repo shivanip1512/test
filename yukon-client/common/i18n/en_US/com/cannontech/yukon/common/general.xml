@@ -69,7 +69,7 @@
 <entry key="yukon.common.attributeGroups.RFN_CURRENT_EVENT">Current Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_DEMAND_EVENT">Demand Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_DISCONNECT_EVENT">Disconnect Events</entry>
-<entry key="yukon.common.attributeGroups.RFN_HARDWARE_EVENT">Hardware Evemts</entry>
+<entry key="yukon.common.attributeGroups.RFN_HARDWARE_EVENT">Hardware Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_OTHER_EVENT">Other Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_SOFTWARE_EVENT">Software Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_VOLTAGE_EVENT">Voltage Events</entry>
