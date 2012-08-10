@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/8/2012 1:40:29 PM                          */
+/* Created on:     8/9/2012 6:02:57 PM                          */
 /*==============================================================*/
 
 
@@ -7743,8 +7743,8 @@ INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 /*==============================================================*/
 create table UserGroup  (
    UserGroupId          NUMBER                          not null,
-   Name                 VARCHAR2(1000)                  not null,
-   Description          VARCHAR2(200)                   not null,
+   UserGroupName        VARCHAR2(1000)                  not null,
+   UserGroupDescription VARCHAR2(200)                   not null,
    constraint PK_UserGroup primary key (UserGroupId)
 );
 

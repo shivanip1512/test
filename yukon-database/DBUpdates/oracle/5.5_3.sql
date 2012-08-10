@@ -5,8 +5,8 @@
 /* Start YUK-11015 */
 CREATE TABLE UserGroup  (
    UserGroupId              NUMBER                          NOT NULL,
-   Name                     VARCHAR2(1000)                  NOT NULL,
-   Description              VARCHAR2(200)                   NOT NULL,
+   UserGroupName            VARCHAR2(1000)                  NOT NULL,
+   UserGroupDescription     VARCHAR2(200)                   NOT NULL,
    GroupIdStr               VARCHAR2(150)                   NULL,
    CONSTRAINT PK_UserGroup PRIMARY KEY (UserGroupId)
 );
@@ -36,7 +36,7 @@ ALTER TABLE UserGroupToYukonGroupMapping
 /* Adding the UserGroupId column to YukonUser to link users to the new yukon user groups */         
 ALTER TABLE YukonUser
     ADD UserGroupId NUMBER;
-COMMIT;
+
 UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -1;
 UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -2;
 UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -100;

@@ -5,8 +5,8 @@
 /* Start YUK-11015 */
 CREATE TABLE UserGroup  (
    UserGroupId              NUMERIC                        NOT NULL,
-   Name                     VARCHAR(1000)                  NOT NULL,
-   Description              VARCHAR(200)                   NOT NULL,
+   UserGroupName            VARCHAR(1000)                  NOT NULL,
+   UserGroupDescription     VARCHAR(200)                   NOT NULL,
    GroupIdStr               VARCHAR(150)                   NULL,
    CONSTRAINT PK_UserGroup PRIMARY KEY (UserGroupId)
 );
