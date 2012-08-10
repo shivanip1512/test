@@ -159,7 +159,7 @@
    	
    	<td>
    	<%-- OPERATIONS BOX --%>
-    <div style="width: 450px;height: 278px;"">
+    <div style="width: 450px;">
         
         <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.title" var="operationsTitle"/>
         <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.topLevelLabel" var="topLevelLabel"/>
