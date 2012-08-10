@@ -1,3 +1,7 @@
+<html>
+    <body>
+    <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <cti:url var="url" value="/spring/stars/hardware/deviceverification" />
@@ -11,9 +15,6 @@
     });
 </script>
 
-<html>
-    <body>
-    <head>
         <title>Device Verification</title>
     </head>
 

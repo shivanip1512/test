@@ -1,3 +1,6 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="include/oper_header.jspf" %> 
 
 <%
@@ -176,8 +179,6 @@
 %>
 <%@page import="com.cannontech.spring.YukonSpringHook"%>
 <%@page import="org.springframework.jdbc.core.simple.SimpleJdbcTemplate"%>
-<html>
-<head>
 <META NAME="robots" CONTENT="noindex, nofollow">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">

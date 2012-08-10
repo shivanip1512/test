@@ -1,3 +1,6 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page import="com.cannontech.stars.web.bean.WorkOrderBean" %>
@@ -38,8 +41,6 @@
 	workOrderBean.setFilters(filterWrappers);
 %>
 <jsp:setProperty name="workOrderBean" property="energyCompanyID" value="<%= user.getEnergyCompanyID() %>"/>
-<html>
-<head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">

@@ -5,6 +5,7 @@
 <cti:outputDoctype levels="${info.htmlLevel}, transitional"/>
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <title><c:out value="${info.title}" /></title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
         <!-- Layout CSS files -->

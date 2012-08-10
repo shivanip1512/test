@@ -1,4 +1,5 @@
 <html>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ page language="java" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>

@@ -1,12 +1,13 @@
+<html>
+    <body>
+    <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <cti:url var="url" value="/spring/stars/hardware/deviceactivation" />
 
-<html>
-    <body>
-    <head>
         <title>Device Activation Confirmation</title>
     </head>
     <center>

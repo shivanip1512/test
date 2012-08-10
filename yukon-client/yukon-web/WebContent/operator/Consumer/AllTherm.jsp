@@ -1,3 +1,6 @@
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ page import="org.apache.commons.lang.StringUtils" %>
 <%@ page import="org.apache.commons.lang.ArrayUtils" %>
 
@@ -13,8 +16,6 @@
     
 %>
 
-<html>
-  <head>
     <title>Energy Services Operations Center</title>
       <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
       <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">

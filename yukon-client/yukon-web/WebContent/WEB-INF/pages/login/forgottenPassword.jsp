@@ -15,6 +15,7 @@
 <html>
 
     <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
         <title><cti:msg2 key=".pageTitle"/></title>
 
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css">

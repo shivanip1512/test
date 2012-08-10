@@ -3,6 +3,7 @@
 <!-- Java script needed for the Calender Function--->
 <%@ include file="../include/user_header.jsp" %>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <title>Consumer Energy Services</title>
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">

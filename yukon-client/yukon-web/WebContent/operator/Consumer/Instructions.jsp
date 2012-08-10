@@ -1,7 +1,8 @@
-<%@ include file="include/StarsHeader.jsp" %>
-<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+<%@ include file="include/StarsHeader.jsp" %>
+<% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">

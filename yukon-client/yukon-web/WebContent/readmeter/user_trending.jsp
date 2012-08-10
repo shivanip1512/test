@@ -4,6 +4,7 @@
 <%@ include file="../include/trending_functions.jspf" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole"%>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <title>Trending</title>
 <link id="StyleSheet" rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link id="StyleSheet" rel="stylesheet" href="../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">

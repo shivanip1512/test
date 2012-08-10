@@ -4,6 +4,7 @@
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
     <head>
+    	<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
         <title></title>           
 
         <!-- Layout CSS files -->

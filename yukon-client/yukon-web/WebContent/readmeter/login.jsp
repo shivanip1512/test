@@ -13,6 +13,7 @@ if( loggingOut != null && loggingOut.equalsIgnoreCase("true"))
 %>
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <title>readmeter.com</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 

@@ -1,5 +1,6 @@
 <html>
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%
 	Integer programID = new Integer( checker.get("prog") );
 	Integer offerID = new Integer( checker.get("offer") );

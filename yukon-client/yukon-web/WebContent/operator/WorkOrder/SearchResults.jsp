@@ -1,3 +1,6 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.stars.web.bean.WorkOrderBean" %>
 <%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
@@ -20,8 +23,7 @@
 <jsp:setProperty name="workOrderBean" property="page" param="page"/>
 
 
-<%@page import="com.cannontech.stars.database.data.lite.LiteWorkOrderBase"%><html>
-<head>
+<%@page import="com.cannontech.stars.database.data.lite.LiteWorkOrderBase"%>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">

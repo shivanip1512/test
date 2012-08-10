@@ -1,3 +1,6 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%
 	int delay = 10;
@@ -8,8 +11,6 @@
 		((errorMsg == null)? session.getAttribute(ServletUtils.ATT_MSG_PAGE_REDIRECT) : session.getAttribute(ServletUtils.ATT_MSG_PAGE_REFERRER));
 	nextURL = ServletUtil.createSafeRedirectUrl(request, nextURL);
 %>
-<html>
-<head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <% if (delay > 0) { %>

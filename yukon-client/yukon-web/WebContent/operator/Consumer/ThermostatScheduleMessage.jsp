@@ -1,8 +1,9 @@
+<html>
+  <head>
+  <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
-<html>
-  <head>
     <title>Energy Services Operations Center</title>
       <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
       <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">

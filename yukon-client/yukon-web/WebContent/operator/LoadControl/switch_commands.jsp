@@ -1,3 +1,6 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@page import="com.cannontech.core.authorization.service.PaoAuthorizationService"%>
 <%@page import="com.cannontech.common.pao.YukonPao"%>
 <%@page import="java.util.List"%>
@@ -156,8 +159,6 @@ dropDownRouteIDArray[<%=ii%>] = <%=nameSerial[i][3]%>;
   //End hiding script -->
   </SCRIPT>
 
-<html>
-<head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">

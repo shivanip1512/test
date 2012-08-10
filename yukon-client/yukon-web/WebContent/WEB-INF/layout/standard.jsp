@@ -8,6 +8,8 @@
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
     <head>
+    	<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+    	
         <title>${pageDetail.pageTitle}</title>           
         <!-- Layout CSS files -->
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">

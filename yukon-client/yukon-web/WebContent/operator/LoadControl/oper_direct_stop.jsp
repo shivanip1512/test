@@ -1,3 +1,6 @@
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <%@ include file="include/oper_header.jspf" %>
 <%@ include file="include/oper_trendingheader.jspf" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
@@ -129,8 +132,6 @@
     }
 
 %>
-<html>
-<head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">

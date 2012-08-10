@@ -1,4 +1,5 @@
 <html>
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 <SCRIPT type="text/javascript" src="../../JavaScript/calendarControl.js"></SCRIPT>
 <%@ include file="include/metering_header.jsp" %>
 <%@ include file="../../include/trending_functions.jspf" %>
