@@ -19,12 +19,15 @@ import com.cannontech.common.util.CtiUtilities;
 
 public class YukonBaseStaticController extends AbstractController {
     private UrlPathHelper urlPathHelper = new UrlPathHelper();
-    private String docBase;
-    private final FileDirContext dirContext = new FileDirContext();
+    private String prefix;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
+        FileDirContext dirContext = new FileDirContext();
+        dirContext.setDocBase(CtiUtilities.getYukonBase() + prefix);
+        String docBase = dirContext.getDocBase();
+
         String pathWithinServletMapping = urlPathHelper.getPathWithinServletMapping(request);
 
         Attributes atts = dirContext.getAttributes(pathWithinServletMapping);
@@ -59,8 +62,7 @@ public class YukonBaseStaticController extends AbstractController {
     }
 
     public void setPrefix(String prefix) {
-        dirContext.setDocBase(CtiUtilities.getYukonBase() + prefix);
-        docBase = dirContext.getDocBase();
+        this.prefix = prefix;
     }
 
     public void setUrlPathHelper(UrlPathHelper urlPathHelper) {
