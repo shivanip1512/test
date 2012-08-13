@@ -33,7 +33,7 @@
     
     <tags:simpleDialog id="addRuleDialog" styleClass="smallSimplePopup"/>
     
-    <form:form id="selectionForm" commandName="filterModel" action="/spring/stars/operator/inventory/applyFilter" method="post">
+    <form:form id="selectionForm" cssClass="f_preventSubmitViaEnterKey" commandName="filterModel" action="/spring/stars/operator/inventory/applyFilter" method="post">
         <input type="hidden" name="removeRule" id="removeRule">
         
         <tags:nameValueContainer2>
@@ -222,7 +222,7 @@
                                 <option value="${ruleType}"><cti:formatObject value="${ruleType}"/></option>
                             </c:forEach>
                         </select>
-                        <cti:button nameKey="add" type="submit" name="addButton"/>
+                        <cti:button nameKey="add" type="submit" name="addButton" styleClass="f_allowSubmitViaEnterKey"/>
                      </td>
                 </tr>
             </tfoot>

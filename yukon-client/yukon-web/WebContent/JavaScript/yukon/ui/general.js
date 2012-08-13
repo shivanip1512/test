@@ -70,6 +70,17 @@ Yukon.ui = {
             return false;
         });
         
+        //prevent forms from submitting via enter key
+        jQuery(document).delegate("form.f_preventSubmitViaEnterKey", 'keydown', function(e){
+        	//allow override submission elements
+        	if(jQuery(e.target).hasClass("f_allowSubmitViaEnterKey")){
+        		return true;
+        	}
+        	if(e.keyCode == 13){
+        		return false;
+        	}
+        });
+        
         // close popup on submit event
         
         // close popup on submit event
