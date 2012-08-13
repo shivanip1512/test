@@ -200,6 +200,11 @@
                         <a href="/esub/home"><cti:msg key="yukon.web.esubstation"/></a>
                     </tags:sectionLink>
                 </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="CAP_CONTROL_IMPORTER">
+                    <tags:sectionLink>
+                        <a href="<cti:url value="/spring/capcontrol/import/view"/>"><cti:msg key="yukon.web.voltVarImporter"/></a>
+                    </tags:sectionLink>
+                </cti:checkRolesAndProperties>
             </tags:operationSection>
 
         </cti:checkRolesAndProperties>

@@ -61,6 +61,7 @@
 
 <entry key="yukon.web.viewBatchCommands">View Batch Commands</entry>
 <entry key="yukon.web.viewLogs">View Logs</entry>
+<entry key="yukon.web.voltVarImporter">Importer</entry>
 <entry key="yukon.web.voltVarManagement">Volt/Var Management</entry>
 
 <entry key="yukon.web.workOrders">Work Orders</entry>

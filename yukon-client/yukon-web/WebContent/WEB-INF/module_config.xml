@@ -827,12 +827,6 @@
             </option>
           </options>
         </option>
-        
-        <option name="import">
-            <requireRoleProperty value="CAP_CONTROL_IMPORTER" />
-            <link>/spring/capcontrol/import/view</link>
-        </option>
-        
       </options>
     </menu>
             
