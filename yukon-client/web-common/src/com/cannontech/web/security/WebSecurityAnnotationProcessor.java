@@ -4,9 +4,10 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.web.security.annotation.CheckDevelopmentMode;
+import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.security.annotation.CheckFalseRoleProperty;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -18,10 +19,10 @@ public class WebSecurityAnnotationProcessor {
 
     public void process(final Object bean) throws Exception {
         final Class<?> clazz = getClass(bean);
-        
-        boolean hasCheckDevelopmentMode = hasCheckDevelopmentMode(clazz);
-        if (hasCheckDevelopmentMode) {
-            doHasCheckDevelopmentMode(getCheckDevelopmentMode(clazz));
+
+        boolean hasAuthorizeByCparm = hasAuthorizeByCparm(clazz);
+        if (hasAuthorizeByCparm) {
+            doHasAuthorizeByCparm(getAuthorizeByCparm(clazz));
         }
         
         boolean hasCheckRole = hasCheckRole(clazz);
@@ -54,8 +55,9 @@ public class WebSecurityAnnotationProcessor {
         return bean.getClass();
     }
     
-    private void doHasCheckDevelopmentMode(CheckDevelopmentMode checkDevelopmentMode) {
-        webSecurityChecker.checkDevelopmentMode();
+    private void doHasAuthorizeByCparm(AuthorizeByCparm authorizeByCparm) {
+        MasterConfigBooleanKeysEnum configKey = authorizeByCparm.value();
+        webSecurityChecker.authorizeByCparm(configKey);
     }
     
     private void doHasCheckRole(CheckRole checkRole) throws Exception {
@@ -74,9 +76,9 @@ public class WebSecurityAnnotationProcessor {
         webSecurityChecker.checkFalseRoleProperty(roleProperties);
     }
     
-    private CheckDevelopmentMode getCheckDevelopmentMode(Class<?> clazz) {
-        CheckDevelopmentMode checkDevelopmentMode = AnnotationUtils.findAnnotation(clazz, CheckDevelopmentMode.class);
-        return checkDevelopmentMode;
+    private AuthorizeByCparm getAuthorizeByCparm(Class<?> clazz) {
+        AuthorizeByCparm authorizeByCparm = AnnotationUtils.findAnnotation(clazz, AuthorizeByCparm.class);
+        return authorizeByCparm;
     }
     
     private CheckRole getCheckRole(Class<?> clazz) {
@@ -94,10 +96,10 @@ public class WebSecurityAnnotationProcessor {
         return checkFalseRoleProperty;
     }
     
-    private boolean hasCheckDevelopmentMode(Class<?> clazz) {
-        CheckDevelopmentMode checkDevelopmentMode = getCheckDevelopmentMode(clazz);
-        boolean hasCheckDevelopmentMode = checkDevelopmentMode != null;
-        return hasCheckDevelopmentMode;
+    private boolean hasAuthorizeByCparm(Class<?> clazz) {
+        AuthorizeByCparm authorizeByCparm = getAuthorizeByCparm(clazz);
+        boolean hasAuthorizeByCparm = authorizeByCparm != null;
+        return hasAuthorizeByCparm;
     }
     
     private boolean hasCheckRole(Class<?> clazz) {

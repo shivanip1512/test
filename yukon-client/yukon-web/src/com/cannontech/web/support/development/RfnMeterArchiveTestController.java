@@ -37,8 +37,9 @@ import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingData;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
-import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReading;
@@ -50,14 +51,14 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
-import com.cannontech.web.security.annotation.CheckDevelopmentMode;
+import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.support.development.model.TestEvent;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Controller("/development/rfn/*")
-@CheckDevelopmentMode
+@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class RfnMeterArchiveTestController {
 
     @Autowired private ConnectionFactory connectionFactory;

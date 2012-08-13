@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
@@ -35,11 +36,11 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.type.PeriodType;
-import com.cannontech.web.security.annotation.CheckDevelopmentMode;
+import com.cannontech.web.security.annotation.AuthorizeByCparm;
 
 @Controller
 @RequestMapping("/development/bulkPointInjection/*")
-@CheckDevelopmentMode
+@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class BulkPointDataInjectionController {
     @Autowired private AttributeService attributeService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;

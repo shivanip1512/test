@@ -5,13 +5,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckDevelopmentMode;
+import com.cannontech.web.security.annotation.AuthorizeByCparm;
 
 @Controller
-@CheckDevelopmentMode
+@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class MiscellaneousMethodController {
     
     @Autowired YukonEnergyCompanyService yukonEnergyCompanyService;

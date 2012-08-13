@@ -35,15 +35,16 @@ import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckDevelopmentMode;
+import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.yukon.api.util.XmlApiUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/development/eimTest/*")
-@CheckDevelopmentMode
+@AuthorizeByCparm(MasterConfigBooleanKeysEnum.ENABLE_WEB_DEBUG_PAGES)
 public class EimTestController implements ApplicationContextAware {
     @Autowired private WebServiceTemplate webServiceTemplate;
 

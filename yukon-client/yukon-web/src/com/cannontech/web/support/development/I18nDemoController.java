@@ -6,12 +6,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.web.security.annotation.CheckDevelopmentMode;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.taglib.MessageScopeHelper;
 
 @Controller
 @RequestMapping("/development/i18nDemo/*")
-@CheckDevelopmentMode
+@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class I18nDemoController {
     public static class ScopePeeker {
         private HttpServletRequest request;

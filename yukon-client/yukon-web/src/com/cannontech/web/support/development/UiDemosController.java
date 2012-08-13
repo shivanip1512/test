@@ -11,16 +11,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckDevelopmentMode;
+import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.taglib.MessageScopeHelper;
 
 @Controller
 @RequestMapping("/development/uiDemos/*")
-@CheckDevelopmentMode
+@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class UiDemosController {
     @Autowired private ObjectFormattingService objectFormattingService;
 

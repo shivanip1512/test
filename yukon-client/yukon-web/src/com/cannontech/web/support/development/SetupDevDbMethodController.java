@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -21,13 +22,13 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckDevelopmentMode;
+import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.cannontech.web.support.development.database.objects.DevPaoType;
 import com.cannontech.web.support.development.database.service.DevDatabasePopulationService;
 
 @Controller
 @RequestMapping("/development/setupDatabase/*")
-@CheckDevelopmentMode
+@AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class SetupDevDbMethodController {
     private static final Logger log = YukonLogManager.getLogger(SetupDevDbMethodController.class);
     @Autowired private DevDatabasePopulationService devDatabasePopulationService;

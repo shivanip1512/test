@@ -16,12 +16,12 @@ public class WebSecurityChecker {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ConfigurationSource configurationSource;
     
-    public void checkDevelopmentMode() {
+    public void authorizeByCparm(MasterConfigBooleanKeysEnum configKey) {
         final LiteYukonUser user = getYukonUser();
-        boolean result = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
+        boolean result = configurationSource.getBoolean(configKey);
         if (!result) {
             throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
-        }
+        } 
     }
     
     public void checkRole(YukonRole... roles) {
