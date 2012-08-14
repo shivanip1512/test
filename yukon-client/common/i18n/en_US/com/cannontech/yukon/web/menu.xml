@@ -46,6 +46,7 @@
 <entry key="yukon.web.menu.portal.distributionAutomation">Distribution Automation</entry>
 <entry key="yukon.web.menu.portal.distributionAutomation.capControl">Volt/Var Management</entry>
 <entry key="yukon.web.menu.portal.distributionAutomation.eSub">eSubstation</entry>
+<entry key="yukon.web.menu.portal.distributionAutomation.importer">Importer</entry>
 
 <!-- Hardware Inventory -->
 <entry key="yukon.web.menu.portal.hardwareInventory">Hardware Inventory</entry>

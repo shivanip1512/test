@@ -103,6 +103,10 @@
             <requireRoleProperty value="OPERATOR_ESUBSTATION_DRAWINGS_VIEW" />
             <link>/esub/home</link>
           </option>
+          <option name="importer">
+            <link>/spring/capcontrol/import/view</link>
+            <requireRoleProperty value="CAP_CONTROL_IMPORTER" />
+          </option>
         </options>
       </option>
 
