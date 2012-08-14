@@ -14,10 +14,9 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang.ArrayUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import com.cannontech.encryption.CryptoAuthenticationException;
+import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.PasswordBasedCrypto;
-import com.cannontech.encryption.PasswordBasedCryptoException;
 
 public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 
@@ -50,7 +49,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      *
      * @throws PasswordBasedCryptoException
      */
-    public AESPasswordBasedCrypto() throws PasswordBasedCryptoException {
+    public AESPasswordBasedCrypto() throws CryptoException {
         this(CryptoUtils.generateRandomPasskey(keyByteLength));
     }
 
@@ -61,7 +60,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * @param password : char[] - password which is used to derive data used by the cipher
      * @throws PasswordBasedCryptoException
      */
-    public AESPasswordBasedCrypto(char[] password) throws PasswordBasedCryptoException {
+    public AESPasswordBasedCrypto(char[] password) throws CryptoException {
         this(password,defaultSaltIters,defaultIvIters,defaultHmacKeyIters,defaultAesKeyIters);
     }
 
@@ -79,7 +78,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * 
      * @throws PasswordBasedCryptoException
      */
-    public AESPasswordBasedCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters) throws PasswordBasedCryptoException {
+    public AESPasswordBasedCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters) throws CryptoException {
         try {
             Security.addProvider(new BouncyCastleProvider());
 
@@ -99,7 +98,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
             decryptingCipher = Cipher.getInstance("AES/CBC/PKCS5Padding", new BouncyCastleProvider());
             decryptingCipher.init(Cipher.DECRYPT_MODE, aesSpec, new IvParameterSpec(initVector));
         } catch (Exception e) {
-            throw new PasswordBasedCryptoException(e);
+            throw new CryptoException(e);
         }
     }
 
@@ -110,11 +109,10 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * object will be decrypted into its original byte array
      * 
      * @param plainText : byte[]
-     * @throws PasswordBasedCryptoException 
-     * @throws CryptoAuthenticationException 
+     * @throws CryptoException 
      */
     @Override
-    public byte[] encrypt(byte[] plainText) throws PasswordBasedCryptoException  {
+    public byte[] encrypt(byte[] plainText) throws CryptoException  {
         try {
             byte[] plainTextWithSalt = CryptoUtils.appendSalt(plainText, numRandomBytes);
             // update hMac hash
@@ -127,7 +125,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 
             return cipherText;
         } catch (Exception e) {
-            throw new PasswordBasedCryptoException("Unable to encrypt the plain-text",e);
+            throw new CryptoException("Unable to encrypt the plain-text",e);
         }
     }
 
@@ -139,15 +137,14 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * 
      * @param encryptedText : byte[]
      * @throws PasswordBasedCryptoException 
-     * @throws CryptoAuthenticationException 
      */
     @Override
-    public byte[] decrypt(byte[] cipherText) throws PasswordBasedCryptoException, CryptoAuthenticationException {
+    public byte[] decrypt(byte[] cipherText) throws CryptoException {
         try {
             byte[] blob = decryptingCipher.doFinal(cipherText, 0, cipherText.length);
             int numBytes = blob.length - hMac.getMacLength();
             if (!isAuthentic(cipherText)) {
-                throw new CryptoAuthenticationException("Cipher text is not authentic and may have been tampered with. Failed to decrypt");
+                throw new CryptoException("Cipher text is not authentic and may have been tampered with. Failed to decrypt");
             }
             byte[] plainTextAndHmac = CryptoUtils.removeSalt(blob,numRandomBytes);
             int plainTextLength = numBytes - numRandomBytes;
@@ -155,11 +152,9 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
 
             return plainText;
         } catch (BadPaddingException bpe) {
-            throw new CryptoAuthenticationException("Failed to decrypt cipher text. Cipher text may not be authentic",bpe);
-        } catch (CryptoAuthenticationException cae) {
-            throw cae;
-        } catch (Exception e) {
-            throw new PasswordBasedCryptoException("Unable to decrypt the encrypted text",e);
+            throw new CryptoException("Failed to decrypt cipher text. Cipher text is not authentic. Bad Padding",bpe);
+        } catch (IllegalBlockSizeException ibse) {
+            throw new CryptoException("Failed to decrypt cipher text. Cipher text is not authentic. Illegal Block Size",ibse);
         }
     }
 

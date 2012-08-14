@@ -5,8 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.cannontech.encryption.CryptoAuthenticationException;
-import com.cannontech.encryption.PasswordBasedCryptoException;
+import com.cannontech.encryption.CryptoException;
 
 public class AESEncryptedFileOutputStream extends ByteArrayOutputStream  {
 
@@ -25,9 +24,9 @@ public class AESEncryptedFileOutputStream extends ByteArrayOutputStream  {
      * 
      * @throws IOException
      * @throws PasswordBasedCryptoException
-     * @throws CryptoAuthenticationException
+     * @throws CryptoException
      */
-    public AESEncryptedFileOutputStream(File file, char[] password) throws IOException, PasswordBasedCryptoException, CryptoAuthenticationException {
+    public AESEncryptedFileOutputStream(File file, char[] password) throws IOException, CryptoException {
         super();
         this.aes = new AESPasswordBasedCrypto(password);
         fileOutputStream = new FileOutputStream(file);
@@ -37,7 +36,7 @@ public class AESEncryptedFileOutputStream extends ByteArrayOutputStream  {
         try {
             byte[] bytes = toByteArray();
             fileOutputStream.write(aes.encrypt(bytes));
-        } catch (PasswordBasedCryptoException e) {
+        } catch (CryptoException e) {
             throw new IOException("Failed to encrypt input to stream.",e);
         }
         fileOutputStream.close();

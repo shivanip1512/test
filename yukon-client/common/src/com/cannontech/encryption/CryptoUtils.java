@@ -31,7 +31,6 @@ public class CryptoUtils {
     private static final int passKeyLength = 32; //chars
     private static final int rsaKeySize = 512; //512 = 4096 bits
     private static final File keysFolder = new File(CtiUtilities.getKeysFolder());
-    private static final File masterCfgCryptoFile = new File(keysFolder,"masterConfigKeyfile.dat");
     private static final File sharedCryptoFile = new File(keysFolder,"sharedKeyfile.dat");
     private static final String passkeyAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"  
         + "0123456789_-+={}[];:,.?!@#$%^*()";
@@ -41,6 +40,8 @@ public class CryptoUtils {
         (byte)0xF2, (byte)0x9B, (byte)0x19, (byte)0x12,(byte)0x56, (byte)0x35, (byte)0x56, (byte)0x93};
     private static SecureRandom secureRandom = new SecureRandom();
 
+    private CryptoUtils() {/*Not instantiable. Utility class only */ }
+    
     /**
      * Generates a random password and returns it as a array of characters.
      * Uses a SecureRandom number generator and selects characters randomly
@@ -112,27 +113,15 @@ public class CryptoUtils {
     }
 
     /**
-     * Returns the results of getPassKey(masterCfgCryptoFile : File);
-     * @return char[]
-     * @throws JDOMException 
-     * @throws CryptoAuthenticationException 
-     * @throws PasswordBasedCryptoException 
-     * @throws IOException 
-     */
-    public static char[] getMasterCfgPasskey() throws IOException, PasswordBasedCryptoException, CryptoAuthenticationException, JDOMException {
-        return getPasskey(masterCfgCryptoFile);
-    }
-
-    /**
      * Returns the results of getPassKey(sharedCryptoFile : File);
      * @return char[]
      * @throws JDOMException 
-     * @throws CryptoAuthenticationException 
+     * @throws CryptoException 
      * @throws PasswordBasedCryptoException 
      * @throws IOException 
      */
-    public static char[] getSharedPasskey() throws IOException, PasswordBasedCryptoException, CryptoAuthenticationException, JDOMException {
-        return getPasskey(sharedCryptoFile);
+    public static char[] getSharedPasskey() throws IOException, CryptoException, JDOMException {
+        return getPasskeyFromFile(sharedCryptoFile);
     }
 
     /**
@@ -180,7 +169,6 @@ public class CryptoUtils {
             // File not found, Create a new one!
             file.setReadOnly();
             Runtime.getRuntime().exec("attrib +H " + file.getPath()); // Set file hidden
-
             AESEncryptedFileOutputStream outputStream = new AESEncryptedFileOutputStream(file, yukonPasskey);
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
             SimpleXmlWriter xmlFile = new SimpleXmlWriter(writer);
@@ -192,10 +180,7 @@ public class CryptoUtils {
         } catch (IOException e) {
             log.warn("Unable to save new passkey to file. Returning null", e);
             passkey = null;
-        } catch (PasswordBasedCryptoException e) {
-            log.warn("caught exception in createNewCryptoFile", e);
-            passkey = null;
-        } catch (CryptoAuthenticationException e) {
+        } catch (CryptoException e) {
             log.warn("caught exception in createNewCryptoFile", e);
         }
     }
@@ -209,13 +194,13 @@ public class CryptoUtils {
      *          <pk>...</pk>
      *      </root>
      * With the data found between <pk></pk> being returned as a character array.
-     * @throws CryptoAuthenticationException 
+     * @throws CryptoException 
      * @throws PasswordBasedCryptoException 
      * @throws IOException 
      * @throws JDOMException 
      * 
      */
-    private static char[] getPasskey(File cryptoFile) throws IOException, PasswordBasedCryptoException, CryptoAuthenticationException, JDOMException {
+    public static char[] getPasskeyFromFile(File cryptoFile) throws IOException, CryptoException, JDOMException {
         char [] passkey = null;
         try {
             AESEncryptedFileInputStream inputStream = new AESEncryptedFileInputStream(cryptoFile, yukonPasskey);
@@ -224,7 +209,7 @@ public class CryptoUtils {
         } catch (FileNotFoundException fnfe) {
             passkey = generateRandomPasskey(passKeyLength);
             createNewCryptoFile(cryptoFile, passkey);
-        }
+        } 
 
         return passkey;
     }

@@ -6,8 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.cannontech.encryption.CryptoAuthenticationException;
-import com.cannontech.encryption.PasswordBasedCryptoException;
+import com.cannontech.encryption.CryptoException;
 
 public class AESEncryptedFileInputStream extends ByteArrayInputStream {
     
@@ -21,15 +20,14 @@ public class AESEncryptedFileInputStream extends ByteArrayInputStream {
      * @param password : char[] - password used to decrypt the file
      * 
      * @throws IOException
-     * @throws PasswordBasedCryptoException
-     * @throws CryptoAuthenticationException
+     * @throws CryptoException
      */
-    public AESEncryptedFileInputStream(File file, char[] password) throws IOException, PasswordBasedCryptoException, CryptoAuthenticationException {
+    public AESEncryptedFileInputStream(File file, char[] password) throws IOException, CryptoException {
         super(getBuffer(file, password));
     }
 
     // Gets a decrypted byte array buffer to send the underlying ByteArrayInputStream
-    private static byte[] getBuffer(File file, char[] password) throws IOException, PasswordBasedCryptoException, CryptoAuthenticationException {
+    private static byte[] getBuffer(File file, char[] password) throws IOException, CryptoException {
         InputStream is = new FileInputStream(file);
         long length = file.length();
 
@@ -54,8 +52,4 @@ public class AESEncryptedFileInputStream extends ByteArrayInputStream {
         
         return aes.decrypt(bytes);
     }
-
-
-
-
 }

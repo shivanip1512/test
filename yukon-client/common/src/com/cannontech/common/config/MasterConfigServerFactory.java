@@ -1,7 +1,6 @@
 package com.cannontech.common.config;
 
 import java.io.File;
-import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.FactoryBean;
@@ -22,9 +21,8 @@ public class MasterConfigServerFactory implements FactoryBean<ConfigurationSourc
             File remoteFile = new File(CtiUtilities.getYukonBase(), "Server/Config/" + remoteFileName);
             boolean isRemoteVersionAvailable = remoteFile.canRead();
             if (isRemoteVersionAvailable) {
-                InputStream stream = remoteFile.toURI().toURL().openStream();
                 MasterConfigMap config = new MasterConfigMap();
-                config.setConfigSource(stream);
+                config.setConfigSource(remoteFile);
                 config.initialize();
                 log.info("Using remote configuation: " + remoteFileName);
                 return config;

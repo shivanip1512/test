@@ -22,38 +22,38 @@ public class AESPasswordBasedCryptoTest  {
     char[] preComputedPassword = {'?','W',')','s','8','!','D','h','I','o','f','1','=','G','F','2'};
 
     @Test
-    public void test_validityToPass1() throws PasswordBasedCryptoException {
+    public void test_validityToPass1() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
         Assert.assertEquals(true, aes.isAuthentic(preComputedCipherText1));
     }
     
     @Test
-    public void test_validityToPass2() throws PasswordBasedCryptoException {
+    public void test_validityToPass2() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
         Assert.assertEquals(true, aes.isAuthentic(preComputedCipherText2));
     }
     
     @Test
-    public void test_validityToPass3() throws PasswordBasedCryptoException {
+    public void test_validityToPass3() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
         Assert.assertEquals(true, aes.isAuthentic(preComputedCipherText3));
     }
     
     @Test
-    public void test_validityToFail() throws PasswordBasedCryptoException {
+    public void test_validityToFail() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
         Assert.assertEquals(false, aes.isAuthentic(badCipherText4));
     }
     
     @Test
-    public void test_deryptionWithPassword1() throws PasswordBasedCryptoException, CryptoAuthenticationException {
+    public void test_deryptionWithPassword1() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
         byte[] plainText1 = aes.decrypt(preComputedCipherText1);
         Assert.assertEquals(true, Arrays.equals(plainText1,preComputedPlainText));
     }
     
     @Test
-    public void test_deryptionWithPassword2() throws PasswordBasedCryptoException, CryptoAuthenticationException {
+    public void test_deryptionWithPassword2() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
         Assert.assertEquals(true, aes.isAuthentic(preComputedCipherText2));
         byte[] plainText2 = aes.decrypt(preComputedCipherText2);
@@ -61,7 +61,7 @@ public class AESPasswordBasedCryptoTest  {
     }
 
     @Test
-    public void test_deryptionWithPassword3() throws PasswordBasedCryptoException, CryptoAuthenticationException {
+    public void test_deryptionWithPassword3() throws CryptoException {
         AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
         Assert.assertEquals(true, aes.isAuthentic(preComputedCipherText3));
         byte[] plainText3 = aes.decrypt(preComputedCipherText3);
@@ -69,24 +69,24 @@ public class AESPasswordBasedCryptoTest  {
     }
     
     @Test
-    public void test_encryptionAndDecryptionDefault() throws CryptoAuthenticationException {
+    public void test_encryptionAndDecryptionDefault() {
         try {
             AESPasswordBasedCrypto aesDefaultConstructor = new AESPasswordBasedCrypto();
             testCipher(aesDefaultConstructor);
-        } catch (PasswordBasedCryptoException e) {
+        } catch (CryptoException e) {
             fail();
         }
     }
     
     @Test
-    public void test_encryptionAndDecryptionWithPassword() throws PasswordBasedCryptoException, CryptoAuthenticationException {
+    public void test_encryptionAndDecryptionWithPassword() throws CryptoException {
         char[] password = CryptoUtils.generateRandomPasskey(16);
         AESPasswordBasedCrypto aesWithPassword = new AESPasswordBasedCrypto(password);
         testCipher(aesWithPassword);
     }
     
     @Test
-    public void test_encryptionAndDecryptionWithFullConstructor() throws PasswordBasedCryptoException, CryptoAuthenticationException {
+    public void test_encryptionAndDecryptionWithFullConstructor() throws CryptoException {
         char[] password = CryptoUtils.generateRandomPasskey(16);
         Random rand = new Random();
         int salt = rand.nextInt(2000) + 1;
@@ -97,7 +97,7 @@ public class AESPasswordBasedCryptoTest  {
         testCipher(aesWithPassword);
     }
 
-    private void testCipher(AESPasswordBasedCrypto aes) throws PasswordBasedCryptoException, CryptoAuthenticationException {
+    private void testCipher(AESPasswordBasedCrypto aes) throws CryptoException {
         int numBytes = 128;
         int encryptionLayers = 10;
         byte [] knownData = new byte[numBytes];
