@@ -401,14 +401,8 @@ private javax.swing.JTextField getJTextFieldGroupName() {
 			ivjJTextFieldGroupName.setPreferredSize(new java.awt.Dimension(216, 20));
 			ivjJTextFieldGroupName.setEnabled(true);
 			ivjJTextFieldGroupName.setMinimumSize(new java.awt.Dimension(216, 20));
-			// user code begin {1}
-			ivjJTextFieldGroupName.setDocument(
-					new TextFieldDocument(120,
-						TextFieldDocument.INVALID_CHARS_PAO) );
-			// user code end
+			ivjJTextFieldGroupName.setDocument(new TextFieldDocument(120, TextFieldDocument.INVALID_CHARS_PAO) );
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
