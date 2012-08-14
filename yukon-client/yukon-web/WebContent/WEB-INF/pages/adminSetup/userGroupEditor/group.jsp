@@ -85,7 +85,7 @@
                         </c:otherwise>
                     </c:choose>
                     <div class="actionArea">
-                        <form action="/spring/adminSetup/groupEditor/addRole" method="post">
+                        <form action="/spring/adminSetup/roleGroup/addRole" method="post">
                             <input type="hidden" value="${roleGroupId}" name="roleGroupId">
                             <select name="newRoleId">
                                 <c:forEach var="availableCategory" items="${availableRolesMap}">
