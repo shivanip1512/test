@@ -35,7 +35,7 @@ import javax.swing.border.EtchedBorder;
 import com.cannontech.fdemulator.common.FDEProtocol;
 import com.cannontech.fdemulator.common.FDTestPanel;
 import com.cannontech.fdemulator.common.FDTestPanelNotifier;
-import com.cannontech.fdemulator.common.Logger;
+import com.cannontech.fdemulator.common.FdeLogger;
 import com.cannontech.fdemulator.common.TraceLogPanel;
 import com.cannontech.fdemulator.fileio.AcsFileIO;
 
@@ -237,7 +237,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 		{
             // this number is reset when we receive a heartbeat
 			retryHeartbeat++;
-			SwingUtilities.invokeLater(new Logger(log, "Heartbeat timeout: " + getTimeStamp(), 4));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Heartbeat timeout: " + getTimeStamp(), 4));
 			//write message to traffic log file
 			try
 			{
@@ -253,7 +253,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 			if (retryHeartbeat == 6)
 			{
                 // we haven't received a heartbeat in the last 6 * 10 seconds
-				SwingUtilities.invokeLater(new Logger(log, "Closing Connection: too many timeouts", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "Closing Connection: too many timeouts", 3));
 				closeConnection();
 
 				//write message to traffic log file
@@ -287,7 +287,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
                 }
 			} catch (Exception e)
 			{
-				SwingUtilities.invokeLater(new Logger(log, "Error writing heartbeat", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "Error writing heartbeat", 3));
 			}
 		}
 	}
@@ -412,7 +412,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 				System.out.println(getDebugTimeStamp() + "Error sending timesync");
 				e.printStackTrace(System.out);
 			}
-			SwingUtilities.invokeLater(new Logger(log, "SENT TimeSync Message " + getTimeStamp(), 1));
+			SwingUtilities.invokeLater(new FdeLogger(log, "SENT TimeSync Message " + getTimeStamp(), 1));
 
 			// Write message to traffic log file
 			try
@@ -541,23 +541,23 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 		try
 		{
 			fdeSocket = new Socket(server, yukon_port);
-			SwingUtilities.invokeLater(new Logger(log, "Connected to server socket", 0));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Connected to server socket", 0));
 		} catch (Exception e)
 		{
 			if (e.toString().equalsIgnoreCase("java.net.UnknownHostException"))
 			{
 				System.out.println(getDebugTimeStamp() + yukon_host + " not visible on the network: ");
-				SwingUtilities.invokeLater(new Logger(log, yukon_host + " is not visible on the network", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, yukon_host + " is not visible on the network", 3));
 				return false;
 			} else if (e.toString().equalsIgnoreCase("java.io.IOException"))
 			{
 				System.out.println(getDebugTimeStamp() + "IOException when creating socket");
-				SwingUtilities.invokeLater(new Logger(log, "IOException when creating socket", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "IOException when creating socket", 3));
 				return false;
 			} else if (e.toString().equalsIgnoreCase("java.net.ConnectException: Connection refused: connect"))
 			{
 				System.out.println(getDebugTimeStamp() + "ConnectException: connection refused");
-				SwingUtilities.invokeLater(new Logger(log, "ConnectException when creating socket: connection refused", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "ConnectException when creating socket: connection refused", 3));
 				return false;
 			} else
 			{
@@ -566,7 +566,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 			}
 		}
 
-		SwingUtilities.invokeLater(new Logger(log, "Connected on server " + retryStart, 0));
+		SwingUtilities.invokeLater(new FdeLogger(log, "Connected on server " + retryStart, 0));
 		if (retryStart == 1)
 		{
 			serverDataLabel.setBackground(Color.BLUE);
@@ -597,11 +597,11 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 		try
 		{
 			out = new DataOutputStream(fdeSocket.getOutputStream());
-			SwingUtilities.invokeLater(new Logger(log, "Output stream created successfully", 0));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Output stream created successfully", 0));
 		} catch (IOException e)
 		{
 			System.out.println(getDebugTimeStamp() + "Could not extablish output stream to " + yukon_host + ": " + e);
-			SwingUtilities.invokeLater(new Logger(log, "Could not establish output stream to " + yukon_host, 3));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Could not establish output stream to " + yukon_host, 3));
 		}
 
 		// Create buffered input stream
@@ -613,7 +613,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 		{
 			System.out.println(getDebugTimeStamp() + "Error creating input stream");
 			e.printStackTrace(System.out);
-			SwingUtilities.invokeLater(new Logger(log, "Error creating input stream", 3));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Error creating input stream", 3));
 		}
 
 		// Create recieve log random access file
@@ -623,7 +623,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 		} catch (Exception e)
 		{
 			System.out.println(getDebugTimeStamp() + "Error creating recv log file");
-			SwingUtilities.invokeLater(new Logger(log, "Error creating recv log file", 3));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Error creating recv log file", 3));
 		}
 
 		// Start thread for reading
@@ -828,7 +828,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	            System.out.println(getDebugTimeStamp() + "Error with traffic stream");
 	            e.printStackTrace(System.out);
 	        }
-	        SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: " + "Value" + " R: " + nextpoint.getPointRemote() + " P: " + nextpoint.getPointNumber() + " C: " + nextpoint.getPointCategory() + " Point: " + value + " " + getDebugTimeStamp() + "\n", 1));
+	        SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: " + "Value" + " R: " + nextpoint.getPointRemote() + " P: " + nextpoint.getPointNumber() + " C: " + nextpoint.getPointCategory() + " Point: " + value + " " + getDebugTimeStamp() + "\n", 1));
 	    } else if ("Status".equalsIgnoreCase(nextpoint.getPointType()))
 	    {
 	        String valueString = "";
@@ -870,7 +870,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	            e.printStackTrace(System.out);
 	        }
 	        
-	        SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: " + "Status" + " R: " + nextpoint.getPointRemote() + " P: " + nextpoint.getPointNumber() + " C: " + nextpoint.getPointCategory() + " Point: " + valueString + " " + getDebugTimeStamp() + "\n", 1));
+	        SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: " + "Status" + " R: " + nextpoint.getPointRemote() + " P: " + nextpoint.getPointNumber() + " C: " + nextpoint.getPointCategory() + " Point: " + valueString + " " + getDebugTimeStamp() + "\n", 1));
 	        
 	    } else if ("Control".equalsIgnoreCase(nextpoint.getPointType()))
 	    {
@@ -913,7 +913,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	            e.printStackTrace(System.out);
 	        }
 	        
-	        SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: " + "Control" + " R: " + nextpoint.getPointRemote() + " P: " + nextpoint.getPointNumber() + " C: " + nextpoint.getPointCategory() + " Point: " + valueString + " " + getDebugTimeStamp() + "\n", 1));
+	        SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: " + "Control" + " R: " + nextpoint.getPointRemote() + " P: " + nextpoint.getPointNumber() + " C: " + nextpoint.getPointCategory() + " Point: " + valueString + " " + getDebugTimeStamp() + "\n", 1));
 	        
 	    }
 	    return value;
@@ -965,7 +965,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	        }
 	    }
 	    
-	    SwingUtilities.invokeLater(new Logger(log, "Finished sending points: " + getFormalTimeStamp(), 0));
+	    SwingUtilities.invokeLater(new FdeLogger(log, "Finished sending points: " + getFormalTimeStamp(), 0));
 	}
 	
 	public void sendManual(String mtype, int mremote, int mpointNum, String mcategory, String mpoint, int mquality)
@@ -989,7 +989,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	                out.writeFloat(mfloat);
 	                out.writeShort(mquality);
 	            }
-	            SwingUtilities.invokeLater(new Logger(log, "SENT ON MANUAL: Value: R: " + mremote + " P: " + mpointNum + " C: " + mcategory + " Point: " + mpoint, 1));
+	            SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON MANUAL: Value: R: " + mremote + " P: " + mpointNum + " C: " + mcategory + " Point: " + mpoint, 1));
 	            
 	            // Write message to traffic log file
 	            try
@@ -1038,7 +1038,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	                state = "Close";
 	            } else
 	                state = "Open";
-	            SwingUtilities.invokeLater(new Logger(log, "SENT ON MANUAL: Status: R: " + mremote + " P: " + mpointNum + " C: " + mcategory + " Point: " + state, 1));
+	            SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON MANUAL: Status: R: " + mremote + " P: " + mpointNum + " C: " + mcategory + " Point: " + state, 1));
 	            
 	            // Write message to traffic log file
 	            try
@@ -1086,7 +1086,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 	                state = "Close";
 	            } else
 	                state = "Open";
-	            SwingUtilities.invokeLater(new Logger(log, "SENT ON MANUAL: Control: R: " + mremote + " P: " + mpointNum + " C: " + mcategory + " Point: " + state, 1));
+	            SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON MANUAL: Control: R: " + mremote + " P: " + mpointNum + " C: " + mcategory + " Point: " + state, 1));
 	            
 	            // Write message to traffic log file
 	            try
@@ -1136,8 +1136,8 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 					quit = 1;
 				}else
 				{
-					SwingUtilities.invokeLater(new Logger(log, "Read Failed from Yukon socket connection.", 3));
-					SwingUtilities.invokeLater(new Logger(log, "Stopping read thread and closing connection...", 3));
+					SwingUtilities.invokeLater(new FdeLogger(log, "Read Failed from Yukon socket connection.", 3));
+					SwingUtilities.invokeLater(new FdeLogger(log, "Stopping read thread and closing connection...", 3));
 					notifier.setActionCode(FDTestPanelNotifier.ACTION_CONNECTION_LOST);
 					closeConnection();
 					quit = 1;
@@ -1154,7 +1154,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 					case ACS_NULL :
 
 						// Recieved a heartbeat message
-					    SwingUtilities.invokeLater(new Logger(log, "RECV: heartbeat", 2));
+					    SwingUtilities.invokeLater(new FdeLogger(log, "RECV: heartbeat", 2));
 						in.read(time, 0, 16);
 						in.read(b, 0, 12);
 						FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1170,7 +1170,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
         							out.writeByte(0);
         						}
                             }
-                            SwingUtilities.invokeLater(new Logger(log, "SENT: heartbeat", 1));
+                            SwingUtilities.invokeLater(new FdeLogger(log, "SENT: heartbeat", 1));
     						FileWriter traffic2 = new FileWriter(trafficFile, true);
     						traffic2.write(getDebugTimeStamp() + "SENT              " + "Heartbeat messsage" + "\n");
     						traffic2.close();
@@ -1190,7 +1190,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 						in.readByte();
 						rFloatValue = in.readFloat();
 						quality = in.readShort();
-						SwingUtilities.invokeLater(new Logger(log, "RECV: Value R: " + remoteNum + " P: " + pointNum + " C: " + category + " Value: " + rFloatValue + " Quality: " + quality + " TStamp: " + new String(time, 0, 16), 2));
+						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Value R: " + remoteNum + " P: " + pointNum + " C: " + category + " Value: " + rFloatValue + " Quality: " + quality + " TStamp: " + new String(time, 0, 16), 2));
 						System.out.println(getDebugTimeStamp() + "ACS RECV: Value " + rFloatValue);
 						//sendAllPoints();
 						writeToFile("Value", remoteNum, pointNum, Character.toString(category), nf.format(rFloatValue));
@@ -1217,7 +1217,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 						}
 						quality = in.readShort();
 						in.readShort();
-						SwingUtilities.invokeLater(new Logger(log, "RECV: Status R: " + remoteNum + " P: " + pointNum + " C: " + category + " State: " + statusValueString + " Quality: " + quality + " TStamp: " + new String(time, 0, 16), 2));
+						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Status R: " + remoteNum + " P: " + pointNum + " C: " + category + " State: " + statusValueString + " Quality: " + quality + " TStamp: " + new String(time, 0, 16), 2));
 						System.out.println(getDebugTimeStamp() + "ACS RECV: Status " + statusValueString);
 						writeToFile("Status", remoteNum, pointNum, Character.toString(category), nf.format(rStatusValue));
 						quit = 1;
@@ -1242,7 +1242,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 							controlValueString = "Open";
 						}
 						in.readInt();
-						SwingUtilities.invokeLater(new Logger(log, "RECV: Control R: " + remoteNum + " P: " + pointNum + " C: " + category + " State: " + controlValueString + " TStamp: " + new String(time, 0, 16), 2));
+						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Control R: " + remoteNum + " P: " + pointNum + " C: " + category + " State: " + controlValueString + " TStamp: " + new String(time, 0, 16), 2));
 						System.out.println(getDebugTimeStamp() + "ACS RECV: Control " + controlValueString);
 						writeToFile("Control", remoteNum, pointNum, Character.toString(category), nf.format(rStatusValue));
 						quit = 1;
@@ -1251,7 +1251,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 					default :
 
 						// Received unknown message
-						SwingUtilities.invokeLater(new Logger(log, "Received unknown message type", 3));
+						SwingUtilities.invokeLater(new FdeLogger(log, "Received unknown message type", 3));
 						System.out.println(getDebugTimeStamp() + "Received unknown message type");
 						quit = 1;
 						break;
@@ -1261,10 +1261,10 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 			}
 		} catch (Exception e)
 		{
-			SwingUtilities.invokeLater(new Logger(log, "Error reading from input stream", 3));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Error reading from input stream", 3));
 			if (e.toString().equals("java.lang.NullPointerException"))
 			{
-				SwingUtilities.invokeLater(new Logger(log, "Input stream was null", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "Input stream was null", 3));
 			}
 			e.printStackTrace(System.out);
 		}
@@ -1362,7 +1362,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 					try
 					{
 
-						SwingUtilities.invokeLater(new Logger(log, "Unexpected point from Yukon: ", 4));
+						SwingUtilities.invokeLater(new FdeLogger(log, "Unexpected point from Yukon: ", 4));
 						newpoint = true;
 						out = 1;
 
@@ -1396,7 +1396,7 @@ public class ACSProtocol extends FDEProtocol implements Runnable
 				{
 
 					System.out.println(getDebugTimeStamp() + "EOF ERROR while writing to file");
-					SwingUtilities.invokeLater(new Logger(log, "EOF ERROR while writing to file", 3));
+					SwingUtilities.invokeLater(new FdeLogger(log, "EOF ERROR while writing to file", 3));
 
 				}
 				e.printStackTrace(System.out);

@@ -424,7 +424,7 @@ public class FDTestPanel extends JPanel implements Runnable, Observer, ActionLis
 				{
 					break;
 				}
-				SwingUtilities.invokeLater(new Logger(logPanel, "Retrying in 5 seconds", 0));
+				SwingUtilities.invokeLater(new FdeLogger(logPanel, "Retrying in 5 seconds", 0));
 				Thread.sleep(5000);
 			}
 

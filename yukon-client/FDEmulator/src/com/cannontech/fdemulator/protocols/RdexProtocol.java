@@ -213,7 +213,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		public void run()
 		{
 			retryHeartbeat++;
-			SwingUtilities.invokeLater(new Logger(log, "Heartbeat timeout: " + getTimeStamp(), 4));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Heartbeat timeout: " + getTimeStamp(), 4));
 			//write message to traffic log file
 			try
 			{
@@ -228,7 +228,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 
 			if (retryHeartbeat == 6)
 			{
-				SwingUtilities.invokeLater(new Logger(log, "Closing Connection: too many timeouts", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "Closing Connection: too many timeouts", 3));
 				closeConnection();
 
 				//write message to traffic log file
@@ -478,39 +478,39 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		try
 		{
 			fdeSocket = new Socket(server, yukon_port);
-			SwingUtilities.invokeLater(new Logger(log, "Connected to server socket", 0));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Connected to server socket", 0));
 		} catch (Exception e)
 		{
 			if ("java.net.UnknownHostException".equalsIgnoreCase(e.toString()))
 			{
 				System.out.println(getDebugTimeStamp() + yukon_host + " not visible on the network: ");
-				SwingUtilities.invokeLater(new Logger(log, yukon_host + " is not visible on the network", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, yukon_host + " is not visible on the network", 3));
 				return false;
 			} else if ("java.io.IOException".equalsIgnoreCase(e.toString()))
 			{
 				System.out.println(getDebugTimeStamp() + "IOException when creating socket");
-				SwingUtilities.invokeLater(new Logger(log, "IOException when creating socket", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "IOException when creating socket", 3));
 				return false;
 			} else if ("java.net.ConnectException: Connection refused: connect".equalsIgnoreCase(e.toString()))
 			{
 				System.out.println(getDebugTimeStamp() + "ConnectException: connection refused");
-				SwingUtilities.invokeLater(new Logger(log, "ConnectException when creating socket: connection refused", 3));
-				SwingUtilities.invokeLater(new Logger(log, "No process is listening on the remote address/port.", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "ConnectException when creating socket: connection refused", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "No process is listening on the remote address/port.", 3));
 				return false;
 			} else if ("java.net.ConnectException: Connection timed out: connect".equalsIgnoreCase(e.toString()))
 			{
 				System.out.println(getDebugTimeStamp() + "ConnectException: connection timed out when making socket");
-				SwingUtilities.invokeLater(new Logger(log, "ConnectException when creating socket: connection timed out", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "ConnectException when creating socket: connection timed out", 3));
 				return false;
 			} else
 			{
-				SwingUtilities.invokeLater(new Logger(log, e.toString(), 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, e.toString(), 3));
 				e.printStackTrace(System.out);
 				return false;
 			}
 		}
 
-		SwingUtilities.invokeLater(new Logger(log, "Connected on server " + retryStart, 0));
+		SwingUtilities.invokeLater(new FdeLogger(log, "Connected on server " + retryStart, 0));
 		if (retryStart == 1)
 		{
 			serverDataLabel.setBackground(Color.BLUE);
@@ -541,23 +541,23 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		try
 		{
 			out = new DataOutputStream(fdeSocket.getOutputStream());
-			SwingUtilities.invokeLater(new Logger(log, "Output stream created successfully", 0));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Output stream created successfully", 0));
 		} catch (IOException e)
 		{
 			System.out.println(getDebugTimeStamp() + "Could not extablish output stream to " + yukon_host + ": " + e);
-			SwingUtilities.invokeLater(new Logger(log, "Could not establish output stream to " + yukon_host, 3));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Could not establish output stream to " + yukon_host, 3));
 		}
 
 		// Create buffered input stream
 		try
 		{
 			in = new DataInputStream(fdeSocket.getInputStream());
-			SwingUtilities.invokeLater(new Logger(log, "Input stream created successfully", 0));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Input stream created successfully", 0));
 		} catch (Exception e)
 		{
 			System.out.println(getDebugTimeStamp() + "Error creating input stream");
 			e.printStackTrace(System.out);
-			SwingUtilities.invokeLater(new Logger(log, "Error creating input stream", 3));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Error creating input stream", 3));
 		}
 
 		// Create recieve log random access file
@@ -568,7 +568,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 		} catch (Exception e)
 		{
 			System.out.println(getDebugTimeStamp() + "Error creating recv log file");
-			SwingUtilities.invokeLater(new Logger(log, "Error creating recv log file", 3));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Error creating recv log file", 3));
 			e.printStackTrace(System.out);
 		}
 
@@ -588,11 +588,11 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 			out.writeInt(0);
 			out.writeInt(0);
 			out.flush();
-			SwingUtilities.invokeLater(new Logger(log, "Sent registration message: " + getFormalTimeStamp() + " --waiting for acknowledge--", 0));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Sent registration message: " + getFormalTimeStamp() + " --waiting for acknowledge--", 0));
 
 		} catch (Exception e)
 		{
-			SwingUtilities.invokeLater(new Logger(log, "Error writing to output stream", 3));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Error writing to output stream", 3));
 			e.printStackTrace(System.out);
 		}
 
@@ -746,7 +746,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							}
 						}
 						out.flush();
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
 						//Write message to traffic log file
 						try
 						{
@@ -777,7 +777,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -807,7 +807,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -895,7 +895,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							}
 						}
 						out.flush();
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
 						//Write message to traffic log file
 						try
 						{
@@ -926,7 +926,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -956,7 +956,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1048,7 +1048,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							}
 						}
 						out.flush();
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
 						//Write message to traffic log file
 						try
 						{
@@ -1079,7 +1079,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1109,7 +1109,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1196,7 +1196,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							}
 						}
 						out.flush();
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
 						//Write message to traffic log file
 						try
 						{
@@ -1227,7 +1227,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1257,7 +1257,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1344,7 +1344,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							}
 						}
 						out.flush();
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
 						//Write message to traffic log file
 						try
 						{
@@ -1375,7 +1375,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1405,7 +1405,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1497,7 +1497,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							}
 						}
 						out.flush();
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
 						//Write message to traffic log file
 						try
 						{
@@ -1528,7 +1528,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1558,7 +1558,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							valueString = "Open";
 						} else
 							valueString = "Close";
-						SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
+						SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 						try
 						{
 							FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1695,7 +1695,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						}
 					}
 					out.flush();
-					SwingUtilities.invokeLater(new Logger(log, "SENT ON STARTUP: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
+					SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON STARTUP: Value " + nextpoint.getPointName() + " Point: " + nf.format(value), 1));
 					//Write message to traffic log file
 					try
 					{
@@ -1726,7 +1726,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						valueString = "Open";
 					} else
 						valueString = "Close";
-					SwingUtilities.invokeLater(new Logger(log, "SENT ON STARTUP: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
+					SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON STARTUP: Status " + nextpoint.getPointName() + " Point: " + valueString, 1));
 					try
 					{
 						FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1756,7 +1756,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						valueString = "Open";
 					} else
 						valueString = "Close";
-					SwingUtilities.invokeLater(new Logger(log, "SENT ON STARTUP: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
+					SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON STARTUP: Control " + nextpoint.getPointName() + " Point: " + valueString, 1));
 					try
 					{
 						FileWriter traffic = new FileWriter(trafficFile, true);
@@ -1780,7 +1780,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 				exit = 1;
 			}
 		}
-		SwingUtilities.invokeLater(new Logger(log, "Finished sending points: " + getFormalTimeStamp(), 0));
+		SwingUtilities.invokeLater(new FdeLogger(log, "Finished sending points: " + getFormalTimeStamp(), 0));
 	}
 
 	public void sendManual(String mtype, String mname, String mvalue, String mquality, int mcount)
@@ -1804,7 +1804,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 				// four byte float value
 				float mfloat = Float.parseFloat(mvalue);
 				out.writeFloat(mfloat);
-				SwingUtilities.invokeLater(new Logger(log, "SENT ON MANUAL: Value Name: " + mname + " Point: " + mvalue, 1));
+				SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON MANUAL: Value Name: " + mname + " Point: " + mvalue, 1));
 				// Write message to traffic log file
 				try
 				{
@@ -1853,7 +1853,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					state = "Close";
 				} else
 					state = "Open";
-				SwingUtilities.invokeLater(new Logger(log, "SENT ON MANUAL: Status Name: " + mname + " Point: " + state, 1));
+				SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON MANUAL: Status Name: " + mname + " Point: " + state, 1));
 				// Write message to traffic log file
 				try
 				{
@@ -1904,7 +1904,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					state = "Close";
 				} else
 					state = "Open";
-				SwingUtilities.invokeLater(new Logger(log, "SENT ON MANUAL: Control Name: " + mname + " Point: " + state, 1));
+				SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON MANUAL: Control Name: " + mname + " Point: " + state, 1));
 				// Write message to traffic log file
 				try
 				{
@@ -1950,8 +1950,8 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					quit = 1;
 				} else
 				{
-					SwingUtilities.invokeLater(new Logger(log, "Read Failed from Yukon socket connection.", 3));
-					SwingUtilities.invokeLater(new Logger(log, "Stopping read thread and closing connection...", 3));
+					SwingUtilities.invokeLater(new FdeLogger(log, "Read Failed from Yukon socket connection.", 3));
+					SwingUtilities.invokeLater(new FdeLogger(log, "Stopping read thread and closing connection...", 3));
 					notifier.setActionCode(FDTestPanelNotifier.ACTION_CONNECTION_LOST);
 					closeConnection();
 					quit = 1;
@@ -1970,8 +1970,8 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						// Recieved a heartbeat message
 						if (hbeat == true)
 						{
-							SwingUtilities.invokeLater(new Logger(log, "RECV: Heartbeat", 2));
-							SwingUtilities.invokeLater(new Logger(log, "SENT: Heartbeat", 1));
+							SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Heartbeat", 2));
+							SwingUtilities.invokeLater(new FdeLogger(log, "SENT: Heartbeat", 1));
 						}
 						in.read(time, 0, 16);
 						in.read(pointName, 0, 88);
@@ -2002,7 +2002,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					case RDEX_ACK :
 
 						// Recieved ACK
-						SwingUtilities.invokeLater(new Logger(log, "RECV: Acknowledge", 2));
+						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Acknowledge", 2));
 						//System.out.println(getDebugTimeStamp() + "RDEX RECV: Acknowledge");
 						// Write message to traffic log file
 						in.read(time, 0, 16);
@@ -2049,7 +2049,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						quality = in.readInt();
 						rFloatValue = in.readFloat();
 						System.out.println(getDebugTimeStamp() + "RDEX RECV: Value " + rFloatValue);
-						SwingUtilities.invokeLater(new Logger(log, "RECV: Value " + "Name: " + pointString + " Value: " + nf.format(rFloatValue) + " Quality: " + quality + " TStamp: " + new String(time, 0, 16), 2));
+						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Value " + "Name: " + pointString + " Value: " + nf.format(rFloatValue) + " Quality: " + quality + " TStamp: " + new String(time, 0, 16), 2));
 						writeToFile("Value", pointString, (double) rFloatValue);
 						quit = 1;
 						break;
@@ -2080,7 +2080,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 							statusValueString = "Open";
 						}
 						System.out.println(getDebugTimeStamp() + "RDEX RECV: Status " + statusValueString);
-						SwingUtilities.invokeLater(new Logger(log, "RECV: Status " + "Name: " + pointString + " State: " + statusValueString + " Quality: " + quality + " TStamp: " + new String(time, 0, 16), 2));
+						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Status " + "Name: " + pointString + " State: " + statusValueString + " Quality: " + quality + " TStamp: " + new String(time, 0, 16), 2));
 						writeToFile("Status", pointString, (double) rStatusValue);
 						quit = 1;
 						break;
@@ -2110,7 +2110,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 						{
 							controlValueString = "Open";
 						}
-						SwingUtilities.invokeLater(new Logger(log, "RECV: Control " + "Name: " + pointString + " State: " + controlValueString + " TStamp: " + new String(time, 0, 16), 2));
+						SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Control " + "Name: " + pointString + " State: " + controlValueString + " TStamp: " + new String(time, 0, 16), 2));
 						System.out.println(getDebugTimeStamp() + "RDEX RECV: Control " + controlValueString);
 						writeToFile("Control", pointString, (double) rStatusValue);
 						quit = 1;
@@ -2119,7 +2119,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					default :
 
 						// Received unknown message
-						SwingUtilities.invokeLater(new Logger(log, "Received unknown message type", 3));
+						SwingUtilities.invokeLater(new FdeLogger(log, "Received unknown message type", 3));
 						System.out.println(getDebugTimeStamp() + "Received unknown message type");
 						quit = 1;
 						break;
@@ -2129,10 +2129,10 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 			}
 		} catch (IOException e)
 		{
-			SwingUtilities.invokeLater(new Logger(log, "Error reading from input stream", 3));
+			SwingUtilities.invokeLater(new FdeLogger(log, "Error reading from input stream", 3));
 			if ("java.lang.NullPointerException".equalsIgnoreCase(e.toString()))
 			{
-				SwingUtilities.invokeLater(new Logger(log, "Input stream was null", 3));
+				SwingUtilities.invokeLater(new FdeLogger(log, "Input stream was null", 3));
 			}
 			e.printStackTrace(System.out);
 		}
@@ -2227,7 +2227,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 					try
 					{
 
-						SwingUtilities.invokeLater(new Logger(log, "Unexpected point from Yukon: ", 4));
+						SwingUtilities.invokeLater(new FdeLogger(log, "Unexpected point from Yukon: ", 4));
 						newpoint = true;
 						out = 1;
 
@@ -2253,7 +2253,7 @@ public class RdexProtocol extends FDEProtocol implements Runnable
 				{
 
 					System.out.println(getDebugTimeStamp() + "EOF ERROR while writing to file");
-					SwingUtilities.invokeLater(new Logger(log, "EOF ERROR while writing to file", 3));
+					SwingUtilities.invokeLater(new FdeLogger(log, "EOF ERROR while writing to file", 3));
 
 				}
 				e.printStackTrace(System.out);

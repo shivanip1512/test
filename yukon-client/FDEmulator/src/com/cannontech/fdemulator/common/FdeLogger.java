@@ -12,7 +12,7 @@ package com.cannontech.fdemulator.common;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class Logger implements Runnable
+public class FdeLogger implements Runnable
 {
 
 	/* (non-Javadoc)
@@ -23,7 +23,7 @@ public class Logger implements Runnable
 	private int color;
 	TraceLogPanel log;
 
-	public Logger(TraceLogPanel logger, String messageString, int colorcode)
+	public FdeLogger(TraceLogPanel logger, String messageString, int colorcode)
 	{
 		log = logger;
 		message = messageString;

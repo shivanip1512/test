@@ -11,11 +11,10 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.NumberFormat;
@@ -29,16 +28,22 @@ import java.util.SimpleTimeZone;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.fdemulator.common.FDEProtocol;
 import com.cannontech.fdemulator.common.FDTestPanel;
 import com.cannontech.fdemulator.common.FDTestPanelNotifier;
-import com.cannontech.fdemulator.common.Logger;
+import com.cannontech.fdemulator.common.FdeLogger;
 import com.cannontech.fdemulator.common.TraceLogPanel;
 import com.cannontech.fdemulator.fileio.ValmetFileIO;
 
@@ -46,7 +51,14 @@ import com.cannontech.fdemulator.fileio.ValmetFileIO;
  * @author ASolberg
  */
 public class ValmetProtocol extends FDEProtocol implements Runnable {
-    // settings gui
+    
+    private static final Logger logger = YukonLogManager.getLogger(ValmetProtocol.class);
+    
+    private ScheduledExecutorService scheduledExecutor = Executors.newScheduledThreadPool(1); 
+    
+    private boolean connectedToYukon = false;
+    
+    //settings gui
     private ValmetSettings settings = null;
     private static final String forceScanPointName = "CP_SEND_ALL";
     // loop escape
@@ -61,16 +73,9 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
     private volatile Thread readThread = null;
 
     // connection variables
-    private String DEFAULT_YUKON_HOST = "127.0.0.1";
     private String yukon_host = null;
-    private String YUKON_BACKUP1;
-    private String YUKON_BACKUP2;
-    private String YUKON_BACKUP3;
-    private int DEFAULT_YUKON_PORT = 1666;
-    private int yukon_port = 0;
-    private int yukon_in_port = 0;
+    private int yukon_port = 1666;
 
-    private String server;
     private int retryStart = 0;
 
     // message types
@@ -116,30 +121,18 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
     private Socket fdeSocket = null;
     private DataOutputStream out = null;
     private DataInputStream in = null;
-    private final String DEFAULT_POINTFILE = "resource/valmet_points.cfg";
-    private final String DEFAULT_TRAFFICFILE = "resource/valmet_traffic_log.txt";
-    private RandomAccessFile pointList;
-    private String pointFile = null;
-    private String trafficFile = null;
+    private String trafficFile = "resource/valmet_traffic_log.txt";
     private ValmetFileIO valmetFileIO = null;
 
     // stat panel variables
     private JPanel statPanel = new JPanel();
     private JLabel serverLabel = new JLabel("Server:");
-    private JLabel back1Label = new JLabel("Backup 1:");
-    private JLabel back2Label = new JLabel("Backup 2:");
-    private JLabel back3Label = new JLabel("Backup 3:");
     private JLabel portLabel = new JLabel("Port:");
-    private JLabel inPortLabel = new JLabel("Listen Port:");
     private JLabel pathLabel = new JLabel("Point File:");
     private JLabel trafficLabel = new JLabel("Traffic Log File:");
     private JLabel extendedNameLabel = new JLabel("Use Extended Name:");
     private JLabel serverDataLabel = new JLabel();
-    private JLabel back1DataLabel = new JLabel();
-    private JLabel back2DataLabel = new JLabel();
-    private JLabel back3DataLabel = new JLabel();
     private JLabel portDataLabel = new JLabel();
-    private JLabel inPortDataLabel = new JLabel();
     private JLabel pathDataLabel = new JLabel();
     private JLabel trafficDataLabel = new JLabel();
     private JLabel extendedNameDataLabel = new JLabel();
@@ -185,50 +178,30 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         settings.setVisible(true);
         statPanel.setLayout(null);
         serverLabel.setBounds(new Rectangle(5, 5, 48, 30));
-        back1Label.setBounds(new Rectangle(5, 30, 48, 30));
-        back2Label.setBounds(new Rectangle(5, 55, 48, 30));
-        back3Label.setBounds(new Rectangle(5, 80, 48, 30));
         portLabel.setBounds(new Rectangle(5, 105, 48, 30));
-        inPortLabel.setBounds(new Rectangle(5, 130, 48, 30));
         pathLabel.setBounds(new Rectangle(5, 155, 48, 30));
         trafficLabel.setBounds(new Rectangle(5, 215, 80, 20));
         extendedNameLabel.setBounds(new Rectangle(5, 270, 80, 20));
 
         serverDataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
-        back1DataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
-        back2DataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
-        back3DataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
         portDataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
-        inPortDataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
         pathDataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
         trafficDataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
         extendedNameDataLabel.setBorder(new EtchedBorder(EtchedBorder.RAISED));
 
         serverDataLabel.setBounds(new Rectangle(55, 5, 90, 30));
-        back1DataLabel.setBounds(new Rectangle(55, 30, 90, 30));
-        back2DataLabel.setBounds(new Rectangle(55, 55, 90, 30));
-        back3DataLabel.setBounds(new Rectangle(55, 80, 90, 30));
         portDataLabel.setBounds(new Rectangle(55, 105, 90, 30));
-        inPortDataLabel.setBounds(new Rectangle(55, 130, 90, 30));
         pathDataLabel.setBounds(new Rectangle(5, 185, 145, 30));
         trafficDataLabel.setBounds(new Rectangle(5, 235, 145, 30));
         extendedNameDataLabel.setBounds(new Rectangle(5, 290, 90, 30));
 
         statPanel.add(serverLabel);
-        statPanel.add(back1Label);
-        statPanel.add(back2Label);
-        statPanel.add(back3Label);
         statPanel.add(portLabel);
-        statPanel.add(inPortLabel);
         statPanel.add(pathLabel);
         statPanel.add(trafficLabel);
         statPanel.add(extendedNameLabel);
         statPanel.add(serverDataLabel);
-        statPanel.add(back1DataLabel);
-        statPanel.add(back2DataLabel);
-        statPanel.add(back3DataLabel);
         statPanel.add(portDataLabel);
-        statPanel.add(inPortDataLabel);
         statPanel.add(pathDataLabel);
         statPanel.add(trafficDataLabel);
         statPanel.add(extendedNameDataLabel);
@@ -264,41 +237,17 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
          */
         public void run() {
             retryHeartbeat++;
-            SwingUtilities.invokeLater(new Logger(log, "Heartbeat timeout: " + getTimeStamp(), 4));
-            // write message to traffic log file
-            try {
-                FileWriter traffic = new FileWriter("resource/valmet_traffic_log.txt", true);
-                traffic
-                    .write(getDebugTimeStamp()
-                           + "-------------------10 SECOND HEARTBEAT TIMED OUT-------------------"
-                           + "\n");
-                traffic.close();
-            } catch (Exception e) {
-                System.out.println(getDebugTimeStamp() + "Error with traffic stream");
-                e.printStackTrace(System.out);
-            }
+            SwingUtilities.invokeLater(new FdeLogger(log, "Heartbeat timeout: " + getTimeStamp(), 4));
+
+            writeToTrafficFile("-------------------10 SECOND HEARTBEAT TIMED OUT-------------------\n");
 
             if (retryHeartbeat == 6) {
-                SwingUtilities
-                    .invokeLater(new Logger(log,
-                                            "Closing Connection: too many heartbeat timeouts",
-                                            3));
+                SwingUtilities.invokeLater(new FdeLogger(log,"Closing Connection: too many heartbeat timeouts",3));
                 closeConnection();
-
-                // write message to traffic log file
-                try {
-                    FileWriter traffic = new FileWriter("resource/valmet_traffic_log.txt", true);
-                    traffic
-                        .write(getDebugTimeStamp()
-                               + "---------DISCONNECTING DUE TO 60 SECOND TIME OUT FROM YUKON--------"
-                               + "\n");
-                    traffic.close();
-                } catch (Exception e) {
-                    System.out.println(getDebugTimeStamp() + "Error with traffic stream");
-                    e.printStackTrace(System.out);
-                }
+                writeToTrafficFile("---------DISCONNECTING DUE TO 60 SECOND TIME OUT FROM YUKON--------\n");
                 notifier.setActionCode(FDTestPanelNotifier.ACTION_CONNECTION_LOST);
             }
+            
             // send heartbeat
             try {
                 out.writeShort(VALMET_NULL);
@@ -307,18 +256,10 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 for (int i = 0; i < nameLength + 8; i++) {
                     out.writeByte(0);
                 }
-                FileWriter traffic = new FileWriter(trafficFile, true);
-                traffic
-                    .write(getDebugTimeStamp()
-                           + "SENT              "
-                           + "Heartbeat messsage due to heartbeat timer timeout------------------------"
-                           + "\n");
-                traffic.close();
+                writeToTrafficFile("SENT HEARTBEAT --------------------\n");
             } catch (Exception e) {
-                SwingUtilities.invokeLater(new Logger(log,
-                                                      "Error sending heartbeat from hb timeout",
-                                                      3));
-                e.printStackTrace(System.out);
+                SwingUtilities.invokeLater(new FdeLogger(log,"Error sending heartbeat from hb timeout",3));
+                logger.error("Error sending heartbeat from hb timeout",e);
             }
         }
     }
@@ -409,22 +350,12 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                     out.writeByte(0);
                 }
             } catch (Exception e) {
-                System.out.println(getDebugTimeStamp() + "Error sending timesync");
-                e.printStackTrace(System.out);
+                logger.error("Error sending timesync", e);
             }
-            SwingUtilities
-                .invokeLater(new Logger(log, "SENT TimeSync Message " + getTimeStamp(), 1));
+            
+            SwingUtilities.invokeLater(new FdeLogger(log, "SENT TimeSync Message " + getTimeStamp(), 1));
 
-            // Write message to traffic log file
-            try {
-                FileWriter traffic = new FileWriter(trafficFile, true);
-                traffic.write(getDebugTimeStamp()
-                              + "SENT ON INTERVAL: TIME SYNC MESSAGE---------------------\n");
-                traffic.close();
-            } catch (IOException e) {
-                System.out.println(getDebugTimeStamp() + "IO Error with traffic stream ");
-                e.printStackTrace(System.out);
-            }
+            writeToTrafficFile("SENT ON INTERVAL: TIME SYNC MESSAGE---------------------\n");
         }
     }
 
@@ -439,7 +370,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 }
             }
         } catch (Exception e) {
-            System.out.println(getDebugTimeStamp() + "Error in read thread run method");
+            logger.error("Error in run method", e);
         }
     }
 
@@ -468,11 +399,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
 
     public void updateStats() {
         serverDataLabel.setText(settings.getServer());
-        back1DataLabel.setText(settings.getBack1());
-        back2DataLabel.setText(settings.getBack2());
-        back3DataLabel.setText(settings.getBack3());
         portDataLabel.setText(settings.getPort());
-        inPortDataLabel.setText(settings.getInPort());
         pathDataLabel.setText(settings.getPath());
         trafficDataLabel.setText(settings.getTrafficPath());
         extendedNameDataLabel.setText(settings.isExtendedName() ? "true" : "false");
@@ -482,143 +409,59 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         retryStart++;
         if (retryStart == 5)
             retryStart = 1;
+        
         // get settings
-        if (settings.getServer().equals("")) {
-            yukon_host = DEFAULT_YUKON_HOST;
-        } else {
+        if (!settings.getServer().equals("")) {
             yukon_host = settings.getServer();
         }
-        YUKON_BACKUP1 = settings.getBack1();
-        YUKON_BACKUP2 = settings.getBack2();
-        YUKON_BACKUP3 = settings.getBack3();
-        if (settings.getPath().equals("")) {
-            pointFile = DEFAULT_POINTFILE;
-        } else {
-            pointFile = settings.getPath();
-        }
-        if (settings.getTrafficPath().equals("")) {
-            trafficFile = DEFAULT_TRAFFICFILE;
-        } else {
+        
+        if (!settings.getTrafficPath().equals("")) {
             trafficFile = settings.getTrafficPath();
         }
-        if (settings.getPort().equals("")) {
-            yukon_port = DEFAULT_YUKON_PORT;
-        } else {
+        
+        if (!settings.getPort().equals("")) {
             yukon_port = Integer.parseInt(settings.getPort());
         }
-        if (settings.getInPort().equals("")) {
-            yukon_in_port = DEFAULT_YUKON_PORT;
-        } else {
-            yukon_in_port = Integer.parseInt(settings.getInPort());
-        }
 
-        if (retryStart == 1) {
-            server = yukon_host;
-        } else if (retryStart == 2) {
-            server = YUKON_BACKUP1;
-        } else if (retryStart == 3) {
-            server = YUKON_BACKUP2;
-        } else {
-            server = YUKON_BACKUP3;
-        }
         // Create Socket
         try {
-            if (yukon_port == yukon_in_port) {
-                fdeSocket = new Socket(server, yukon_port);
-            } else {
-                InetAddress fdr = InetAddress.getByName(server);
-                InetAddress emulator = InetAddress.getLocalHost();
-
-                System.out.println(getDebugTimeStamp() + "FDR:" + fdr.getHostAddress() + "("
-                                   + fdr.getHostName() + ")");
-                System.out.println(getDebugTimeStamp() + "EMULATOR:" + emulator.getHostAddress()
-                                   + "(" + emulator.getHostName() + ")");
-                SwingUtilities.invokeLater(new Logger(log, "FDR:" + fdr.getHostAddress() + "("
-                                                           + fdr.getHostName() + ")", 3));
-                SwingUtilities
-                    .invokeLater(new Logger(log, "EMULATOR:" + emulator.getHostAddress() + "("
-                                                 + emulator.getHostName() + ")", 3));
-                fdeSocket =
-                    new Socket(server.equalsIgnoreCase("127.0.0.1") ? InetAddress.getLocalHost()
-                            : fdr, yukon_port, InetAddress.getLocalHost(), yukon_in_port);
-            }
-
-            SwingUtilities.invokeLater(new Logger(log, "Connected to server socket", 0));
+            fdeSocket = new Socket(yukon_host, yukon_port);
+            
+            logger.info("Connected to server on port:" + yukon_port);
+            SwingUtilities.invokeLater(new FdeLogger(log, "Connected to server.", 0));
+        } catch (IOException e) {
+            logger.error("IOException when creating socket");
+            SwingUtilities.invokeLater(new FdeLogger(log, "IOException when creating socket", 3));
+            return false;
         } catch (Exception e) {
-            if ("java.net.UnknownHostException".equalsIgnoreCase(e.toString())) {
-                System.out.println(getDebugTimeStamp() + yukon_host
-                                   + " not visible on the network: ");
-                SwingUtilities.invokeLater(new Logger(log, yukon_host
-                                                           + " is not visible on the network", 3));
-                return false;
-            } else if ("java.io.IOException".equalsIgnoreCase(e.toString())) {
-                System.out.println(getDebugTimeStamp() + "IOException when creating socket");
-                SwingUtilities.invokeLater(new Logger(log, "IOException when creating socket", 3));
-                return false;
-            } else if ("java.net.ConnectException: Connection refused: connect".equalsIgnoreCase(e
-                .toString())) {
-                System.out.println(getDebugTimeStamp() + "ConnectException: connection refused");
-                SwingUtilities
-                    .invokeLater(new Logger(log,
-                                            "ConnectException when creating socket: connection refused",
-                                            3));
-                return false;
-            } else {
-                e.printStackTrace(System.out);
-                return false;
-            }
+            logger.error(e);
+            return false;
         }
 
-        SwingUtilities.invokeLater(new Logger(log, "Connected on server " + retryStart, 0));
-        if (retryStart == 1) {
-            serverDataLabel.setBackground(Color.BLUE);
-            back1DataLabel.setBackground(Color.BLACK);
-            back2DataLabel.setBackground(Color.BLACK);
-            back3DataLabel.setBackground(Color.BLACK);
-        } else if (retryStart == 2) {
-            back1DataLabel.setBackground(Color.BLUE);
-            serverDataLabel.setBackground(Color.BLACK);
-            back2DataLabel.setBackground(Color.BLACK);
-            back3DataLabel.setBackground(Color.BLACK);
-        } else if (retryStart == 3) {
-            back2DataLabel.setBackground(Color.BLUE);
-            serverDataLabel.setBackground(Color.BLACK);
-            back1DataLabel.setBackground(Color.BLACK);
-            back3DataLabel.setBackground(Color.BLACK);
-        } else if (retryStart == 4) {
-            back3DataLabel.setBackground(Color.BLUE);
-            serverDataLabel.setBackground(Color.BLACK);
-            back1DataLabel.setBackground(Color.BLACK);
-            back2DataLabel.setBackground(Color.BLACK);
-        }
+        SwingUtilities.invokeLater(new FdeLogger(log, "Connected to server: " + yukon_host + ":" + yukon_port, 0));
+        serverDataLabel.setBackground(Color.BLUE);
 
+        //This will get set to false if we are not.
+        connectedToYukon = true;
+        
         // Create data output stream
         try {
             out = new DataOutputStream(fdeSocket.getOutputStream());
-            SwingUtilities.invokeLater(new Logger(log, "Output stream created successfully", 0));
+            SwingUtilities.invokeLater(new FdeLogger(log, "Output stream created successfully", 0));
         } catch (IOException e) {
-            System.out.println(getDebugTimeStamp() + "Could not extablish output stream to "
-                               + yukon_host + ": " + e);
-            SwingUtilities.invokeLater(new Logger(log, "Could not establish output stream to "
-                                                       + yukon_host, 3));
+            logger.error("Could not extablish output stream to Yukon: " + yukon_host + ":" + yukon_port);
+            SwingUtilities.invokeLater(new FdeLogger(log, "Could not connect to " + yukon_host, 3));
+            connectedToYukon = false;
         }
 
         // Create buffered input stream
         try {
             in = new DataInputStream(fdeSocket.getInputStream());
-            SwingUtilities.invokeLater(new Logger(log, "Input stream created successfully", 0));
-        } catch (Exception e) {
-            System.out.println(getDebugTimeStamp() + "Error creating input stream");
-            e.printStackTrace(System.out);
-            SwingUtilities.invokeLater(new Logger(log, "Error creating input stream", 3));
-        }
-
-        // Create recieve log random access file
-        try {
-            pointList = new RandomAccessFile("resource/valmet_yukon_points.txt", "rw");
-        } catch (Exception e) {
-            System.out.println(getDebugTimeStamp() + "Error creating recv log file");
-            SwingUtilities.invokeLater(new Logger(log, "Error creating recv log file", 3));
+            SwingUtilities.invokeLater(new FdeLogger(log, "Input stream created successfully", 0));
+        } catch (IOException e) {
+            logger.error("Error creating input stream.");
+            SwingUtilities.invokeLater(new FdeLogger(log, "Error creating input stream", 3));
+            connectedToYukon = false;
         }
 
         // Start thread for reading
@@ -633,6 +476,15 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         timesync = new Timer();
         timesync.schedule(new timesyncTask(), T3_TIME, T3_TIME);
 
+        scheduledExecutor.scheduleWithFixedDelay(new Runnable() {
+            @Override
+            public void run() {
+                if (connectedToYukon) {
+                    createForceScan(out);
+                }
+            }
+        }, 5,5, TimeUnit.SECONDS);
+        
         // Write message to traffic log file
         try {
             FileWriter traffic = new FileWriter(trafficFile, true);
@@ -640,12 +492,11 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                           + "----------FDE VALMET EMULATOR STARTED SUCESSFULLY---------\n");
             traffic.close();
         } catch (IOException e) {
-            System.out.println(getDebugTimeStamp() + "IO Error with traffic stream ");
-            e.printStackTrace(System.out);
+            logger.error("IO Error with traffic stream ", e);
         }
 
         // fill point array with points from point file
-        pointarray = getValmetFileIO().getValmetPointsFromFileForPort(yukon_in_port);
+        pointarray = getValmetFileIO().getValmetPointsFromFileForPort(yukon_port);
 
         return true;
     }
@@ -673,24 +524,25 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
             try {
                 nextpoint = (ValmetPoint) pointarray[i];
                 lastpoint = (ValmetPoint) pointarray[i + 1];
-                try {
-                    if (lastpoint.getPointName().equalsIgnoreCase("")) {
-                        exit = 1;
-                    }
-                } catch (Exception e) {
-                    if ("java.lang.NullPointerException".equalsIgnoreCase(e.toString())) {
-                        exit = 1;
-                    } else {
-                        e.printStackTrace(System.out);
-                        exit = 1;
-                    }
-                }
 
-                boolean forceScan = nextpoint.getPointName().equalsIgnoreCase(forceScanPointName);
+                if( nextpoint == null || lastpoint == null) {
+                    exit = 1; 
+                    continue;
+                }
+                
+                if (lastpoint.getPointName().equalsIgnoreCase("")) {
+                    exit = 1;
+                }
+                
+                boolean forceScan = false;
+                if (nextpoint != null) {
+                    forceScan = forceScanPointName.equalsIgnoreCase(nextpoint.getPointName());
+                }
                 
                 if (nextpoint.getPointInterval() == 10) {
                     if (forceScan) {
                         createForceScan(out);
+                        i++;
                         continue;
                     }
                     
@@ -748,16 +600,15 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                         createControlPoint(out, nextpoint, value, flipflop3600);
                     }
                 }
-                // }
 
                 i++;
             } catch (Exception e) {
-                e.printStackTrace(System.out);
+                logger.error(e);
             }
         }
     }
 
-    // Send all points from file reguardless of interval
+    // Send all points from file
     public void sendAllPoints() {
         int exit = 0;
         int i = 0;
@@ -798,16 +649,12 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                     createControlPoint(out, nextpoint, value, flipflop10);
                 }
                 i++;
-            } catch (Exception e) {
-                if (e.toString().equals("java.lang.NullPointerException")) {
-                    System.out.println(getDebugTimeStamp()
-                                       + "Error writing from file while sending all points ");
-                }
-                e.printStackTrace(System.out);
+            } catch (NullPointerException e) {
+                logger.error("Error writing from file while sending all points",e);;
                 exit = 1;
             }
         }
-        SwingUtilities.invokeLater(new Logger(log, "Finished sending points: "
+        SwingUtilities.invokeLater(new FdeLogger(log, "Finished sending points: "
                                                    + getFormalTimeStamp(), 0));
     }
 
@@ -835,23 +682,15 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 out.writeFloat(mfloat);
                 out.writeShort(mquality);
                 out.writeShort(0);
-                SwingUtilities.invokeLater(new Logger(log, "SENT ON MANUAL: Value Name: " + mname
+                SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON MANUAL: Value Name: " + mname
                                                            + " Point: " + mpoint + " Quality: "
                                                            + mquality, 1));
 
-                // Write message to traffic log file
-                try {
-                    FileWriter traffic = new FileWriter(trafficFile, true);
-                    traffic.write(getDebugTimeStamp() + "SENT ON MANUAL: Value " + " Name: "
-                                  + mname + " Point: " + mpoint + " Quality: " + mquality + "\n");
-                    traffic.close();
-                } catch (Exception e) {
-                    System.out.println(getDebugTimeStamp() + "Error with traffic stream");
-                    e.printStackTrace(System.out);
-                }
-            } catch (Exception E) {
-                System.out.println(getDebugTimeStamp() + "Error writing value manually");
-                E.printStackTrace(System.out);
+                writeToTrafficFile("SENT ON MANUAL: Value " + " Name: " + mname + " Point: " + mpoint + " Quality: " + mquality + "\n");
+            } catch (IOException e) {
+                logger.error("Error writing value manually",e);
+            } catch (InterruptedException e) {
+                logger.error("Thread interrupted.",e);
             }
 
         } else if ("Status".equalsIgnoreCase(mtype)) {
@@ -878,23 +717,14 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                     state = "Close";
                 } else
                     state = "Open";
-                SwingUtilities.invokeLater(new Logger(log, "SENT ON MANUAL: Status Name: " + mname
-                                                           + " Point: " + state + " Quality: "
-                                                           + mquality, 1));
-
-                // Write message to traffic log file
-                try {
-                    FileWriter traffic = new FileWriter(trafficFile, true);
-                    traffic.write(getDebugTimeStamp() + "SENT ON MANUAL: Status " + " Name: "
-                                  + mname + " Point: " + state + " Quality: " + mquality + "\n");
-                    traffic.close();
-                } catch (Exception e) {
-                    System.out.println(getDebugTimeStamp() + "Error with traffic stream");
-                    e.printStackTrace(System.out);
-                }
-            } catch (Exception E) {
-                System.out.println(getDebugTimeStamp() + "Error writing status manually");
-                E.printStackTrace(System.out);
+                
+                final String message = "SENT ON MANUAL: Status Name: " + mname + " Point: " + state + " Quality: " + mquality + "\n";
+                SwingUtilities.invokeLater(new FdeLogger(log, message, 1));
+                writeToTrafficFile(message);
+            } catch (IOException e) {
+                logger.error("Error writting status manually",e);
+            } catch (InterruptedException e) {
+                logger.error(e);
             }
 
         } else if ("Control".equalsIgnoreCase(mtype)) {
@@ -920,24 +750,18 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 String state = "";
                 if ("1".equals(mpoint)) {
                     state = "Close";
-                } else
+                } else {
                     state = "Open";
-                SwingUtilities.invokeLater(new Logger(log, "SENT ON MANUAL: Control Name: " + mname
-                                                           + " Point: " + state, 1));
-
-                // Write message to traffic log file
-                try {
-                    FileWriter traffic = new FileWriter(trafficFile, true);
-                    traffic.write(getDebugTimeStamp() + "SENT ON MANUAL: Control " + " Name: "
-                                  + mname + " Point: " + state + "\n");
-                    traffic.close();
-                } catch (Exception e) {
-                    System.out.println(getDebugTimeStamp() + "Error with traffic stream");
-                    e.printStackTrace(System.out);
                 }
-            } catch (Exception E) {
-                System.out.println(getDebugTimeStamp() + "Error writing control manually");
-                E.printStackTrace(System.out);
+                
+                final String message = "SENT ON MANUAL: Control Name: " + mname + " Point: " + state;
+                SwingUtilities.invokeLater(new FdeLogger(log, message, 1));
+                writeToTrafficFile(message);
+                
+            } catch (IOException e) {
+                logger.error("Error writting control manually",e);
+            } catch (InterruptedException e) {
+                logger.error(e);
             }
 
         }
@@ -962,14 +786,14 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 lbyte = in.readUnsignedByte();
                 function = hbyte * 256 + lbyte;
             } catch (Exception e) {
-                System.out.println(e.toString());
+                logger.error(e);
                 if (readThread == null) {
                     quit = 1;
                 } else {
                     SwingUtilities
-                        .invokeLater(new Logger(log, "Read Failed from Yukon socket connection.", 3));
+                        .invokeLater(new FdeLogger(log, "Read Failed from Yukon socket connection.", 3));
                     SwingUtilities
-                        .invokeLater(new Logger(log,
+                        .invokeLater(new FdeLogger(log,
                                                 "Stopping read thread and closing connection...",
                                                 3));
                     notifier.setActionCode(FDTestPanelNotifier.ACTION_CONNECTION_LOST);
@@ -988,15 +812,13 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
 
                     // Receive a heartbeat message
                     if (hbeat == true) {
-                        SwingUtilities.invokeLater(new Logger(log, "RECV: heartbeat", 2));
-                        SwingUtilities.invokeLater(new Logger(log, "SENT: heartbeat", 1));
+                        SwingUtilities.invokeLater(new FdeLogger(log, "RECV: heartbeat", 2));
+                        SwingUtilities.invokeLater(new FdeLogger(log, "SENT: heartbeat", 1));
                     }
                     in.read(time, 0, 18);
                     in.read(pointName, 0, nameLength + 8);
-                    FileWriter traffic = new FileWriter(trafficFile, true);
-                    traffic.write(getDebugTimeStamp() + "RECV              " + "Heartbeat messsage"
-                                  + "\n");
-                    traffic.close();
+                    
+                    writeToTrafficFile("RECV              Heartbeat messsage\n");
                     // send heartbeat reply
                     out.writeShort(VALMET_NULL);
                     out.writeBytes(getTimeStamp());
@@ -1004,10 +826,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                     for (int i = 0; i < nameLength + 8; i++) {
                         out.writeByte(0);
                     }
-                    FileWriter traffic2 = new FileWriter(trafficFile, true);
-                    traffic2.write(getDebugTimeStamp() + "SENT              "
-                                   + "Heartbeat messsage" + "\n");
-                    traffic2.close();
+                    writeToTrafficFile("SENT              Heartbeat messsage\n");
                     quit = 1;
                     break;
 
@@ -1028,13 +847,13 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                     rFloatValue = in.readFloat();
                     quality = in.readShort();
                     in.readShort();
-                    SwingUtilities.invokeLater(new Logger(log, "RECV: Value " + "Name: "
+                    SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Value " + "Name: "
                                                                + pointString + " Value: "
                                                                + nf.format(rFloatValue)
                                                                + " Quality: " + quality
                                                                + " TStamp: "
                                                                + new String(time, 0, 18), 2));
-                    System.out.println(getDebugTimeStamp() + "VALMET RECV: Value " + rFloatValue);
+                    logger.info("VALMET RECV: Value " + rFloatValue);
                     writeToFile("Value", pointString, rFloatValue);
                     // sendAllPoints();
                     quit = 1;
@@ -1064,13 +883,13 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                     in.readShort();
                     quality = in.readShort();
                     in.readShort();
-                    SwingUtilities.invokeLater(new Logger(log, "RECV: Status " + "Name: "
+                    SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Status " + "Name: "
                                                                + pointString + " State: "
                                                                + statusValueString + " Quality: "
                                                                + quality + " TStamp: "
                                                                + new String(time, 0, 18), 2));
-                    System.out.println(getDebugTimeStamp() + "VALMET RECV: Status "
-                                       + statusValueString);
+                    
+                    logger.info("VALMET RECV: Status " + statusValueString);
                     writeToFile("Status", pointString, (double) rStatusValue);
                     quit = 1;
                     break;
@@ -1097,12 +916,11 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                         controlValueString = "Open";
                     }
                     in.read(pointName, 0, 6);
-                    SwingUtilities.invokeLater(new Logger(log, "RECV: Control " + "Name: "
+                    SwingUtilities.invokeLater(new FdeLogger(log, "RECV: Control " + "Name: "
                                                                + pointString + " State: "
                                                                + controlValueString + " TStamp: "
                                                                + new String(time, 0, 18), 2));
-                    System.out.println(getDebugTimeStamp() + "VALMET RECV: Control "
-                                       + controlValueString);
+                    logger.info( "VALMET RECV: Control " + controlValueString);
                     writeToFile("Control", pointString, (double) rStatusValue);
                     quit = 1;
                     break;
@@ -1110,11 +928,10 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 default:
 
                     // Received unknown message
-                    SwingUtilities.invokeLater(new Logger(log, "Received unknown function type: "
+                    SwingUtilities.invokeLater(new FdeLogger(log, "Received unknown function type: "
                                                                + function + " bytes: " + hbyte
                                                                + " " + lbyte, 3));
-                    System.out.println(getDebugTimeStamp() + "Received unknown function type:"
-                                       + function);
+                    logger.info("Received unknown function type: " + function);
                     quit = 1;
                     break;
                 }
@@ -1122,9 +939,9 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 heartbeat.schedule(new heartbeatTask(), T1_TIME, T1_TIME);
             }
         } catch (Exception e) {
-            SwingUtilities.invokeLater(new Logger(log, "Error reading from input stream", 3));
+            SwingUtilities.invokeLater(new FdeLogger(log, "Error reading from input stream", 3));
             if (e.toString().equals("java.lang.NullPointerException")) {
-                SwingUtilities.invokeLater(new Logger(log, "Input stream was null", 3));
+                SwingUtilities.invokeLater(new FdeLogger(log, "Input stream was null", 3));
             }
             e.printStackTrace(System.out);
         }
@@ -1141,25 +958,21 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         BufferedReader fileBuffer = null;
         try {
             fileBuffer = new BufferedReader(new FileReader("resource/valmet_yukon_points.txt"));
-        } catch (Exception e) {
-            if (e.toString().equalsIgnoreCase("java.io.FileNotFoundException")) {
-                System.out.println("File not found when trying to load points from file");
-            } else
-                e.printStackTrace(System.out);
+        } catch (FileNotFoundException e) {
+            logger.error("File not found when trying to load points from file",e);
         }
 
         String[] pointAsStrings = new String[500];
 
         // fill points array with point from yukon file
 
-        int i = 0, k = 0, l = 0;
+        int i = 0, l = 0;
 
         while (l != 1) {
             try {
                 String pointline = fileBuffer.readLine();
 
-                k++;
-                if ("EOF".equalsIgnoreCase(pointline)) {
+                if ("EOF".equalsIgnoreCase(pointline) || pointline == null) {
                     l = 1;
                 } else {
                     StringTokenizer st = new StringTokenizer(pointline, ";");
@@ -1174,8 +987,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 }
 
             } catch (Exception e) {
-                System.out.println("Error getting points from file");
-                e.printStackTrace(System.out);
+                logger.error("Error getting points from file",e);
                 break;
             }
         }
@@ -1184,11 +996,8 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
 
         try {
             fileBuffer = new BufferedReader(new FileReader("resource/valmet_yukon_points.txt"));
-        } catch (Exception e) {
-            if (e.toString().equalsIgnoreCase("java.io.FileNotFoundException")) {
-                System.out.println("File not found when trying to load points from file");
-            } else
-                e.printStackTrace(System.out);
+        } catch (FileNotFoundException e) {
+            logger.error("File not found when trying to load points from file",e);
         }
 
         String currentLine = "";
@@ -1196,48 +1005,37 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         while (out != 1) {
             try {
                 currentLine = fileBuffer.readLine();
+                if( currentLine == null) {
+                    out = 1;
+                    continue;
+                }
+                                
+                if ("EOF".equals(currentLine)) { // Point does not exist, set newpoint to true
+                    SwingUtilities.invokeLater(new FdeLogger(log,
+                                                          "Unexpected point from Yukon: ",
+                                                          4));
+                    newpoint = true;
+                    out = 1;
+                } 
                 StringTokenizer ft = new StringTokenizer(currentLine, ";");
 
-                if ("EOF".equals(currentLine)) { // Point does not exist, set newpoint to true
-                    try {
-
-                        SwingUtilities.invokeLater(new Logger(log,
-                                                              "Unexpected point from Yukon: ",
-                                                              4));
-                        newpoint = true;
-                        out = 1;
-
-                    } catch (Exception e) {
-
-                        System.out.println(getDebugTimeStamp()
-                                           + "Error writing new point to end of point file");
-                        e.printStackTrace(System.out);
-                        out = 1;
-                    }
-                } else if (ft.nextToken().equalsIgnoreCase(ftype)) {
+                if (ft.nextToken().equalsIgnoreCase(ftype)) {
                     if (ft.nextToken().equalsIgnoreCase(fname)) {
 
                         newpoint = false;
                         out = 1;
                     }
                 }
-            } catch (Exception e) {
-                if ("java.lang.NullPointerException".equals(e.toString())) {
-
-                    System.out.println(getDebugTimeStamp() + "EOF ERROR while writing to file");
-                    SwingUtilities
-                        .invokeLater(new Logger(log, "EOF ERROR while writing to file", 3));
-
-                }
-                e.printStackTrace(System.out);
+            } catch (IOException e) {
+                logger.error("EOF ERROR while writing to file", e);
+                SwingUtilities .invokeLater(new FdeLogger(log, "EOF ERROR while writing to file", 3));
                 out = 1;
             }
         }
 
         if (newpoint) {
             try {
-                FileWriter yukonFileWriter =
-                    new FileWriter(new File("resource/valmet_yukon_points.txt"));
+                FileWriter yukonFileWriter = new FileWriter(new File("resource/valmet_yukon_points.txt"));
 
                 for (int j = 0; j < pointAsStrings.length; j++) {
                     try {
@@ -1352,8 +1150,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                           + " Point: " + pointword + "\n");
             traffic.close();
         } catch (Exception e) {
-            System.out.println(getDebugTimeStamp() + "Error with traffic stream");
-            e.printStackTrace(System.out);
+            logger.error("Error with traffic stream",e);
         }
     }
 
@@ -1387,6 +1184,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
 
     public void closeConnection() {
         try {
+            connectedToYukon = false;
             heartbeat.cancel();
             interval.cancel();
             timesync.cancel();
@@ -1397,12 +1195,12 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
             fdeSocket.shutdownInput();
             fdeSocket.shutdownOutput();
             fdeSocket.close();
-        } catch (Exception e) {
-            System.out.println(getDebugTimeStamp() + "Error closing connection");
-            if (e.toString().equalsIgnoreCase("java.lang.NullPointerException")) {
-                System.out.println("canceled heartbeat timer that didn't exist yet");
-            } else
-                e.printStackTrace(System.out);
+        } catch (IOException e) {
+            logger.error("Error closing connection: " + yukon_host + ":" + yukon_port);
+        } catch (InterruptedException e) {
+            logger.error(e);
+        } catch (NullPointerException e) {
+            logger.error(e);
         }
     }
 
@@ -1450,50 +1248,47 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 out.writeInt(0);
             }
             out.writeShort(0);
-            SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: Control Name: "
+            SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: Control Name: "
                                                        + nextpoint.getPointName() + " Point: "
                                                        + valueString, 1));
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-            System.out.println(getDebugTimeStamp() + "Error writing in 10 second interval");
+        } catch (IOException e) {
+            logger.error("Error writing in 10 second interval.",e);
         }
-        // Write message to traffic log file
-        try {
-            FileWriter traffic = new FileWriter(trafficFile, true);
-            traffic.write(getDebugTimeStamp() + "SENT ON INTERVAL: " + nextpoint.getPointInterval()
-                          + " ");
-            traffic.write(" Name: " + nextpoint.getPointName() + " Point: " + value + "\n");
-            traffic.close();
-        } catch (Exception e) {
-            System.out.println(getDebugTimeStamp() + "Error with traffic stream ");
-            e.printStackTrace(System.out);
-        }
+        
+        writeToTrafficFile("SENT ON INTERVAL: " + nextpoint.getPointInterval() + " Name: " 
+                                + nextpoint.getPointName() + " Point: " + value + "\n");
     }
 
-    private void createForceScan(DataOutputStream out) {
-
-            try {
-                out.writeShort(VALMET_FORCE_SCAN);
-
-                out.writeBytes(getTimeStamp());
-                writeName(out, forceScanPointName);
-                out.writeShort(0);
-                out.writeShort(0);
-                out.writeShort(0);
-                out.writeShort(0);
-            } catch (IOException e1) {
-                System.out.println(getDebugTimeStamp() + "Error with writting to the output stream ");
-            }
-            
-        // Write message to traffic log file
+    private boolean writeToTrafficFile(String message) {
         try {
             FileWriter traffic = new FileWriter(trafficFile, true);
-            traffic.write(getDebugTimeStamp() + "SENT ");
-            traffic.write(" Name: " + forceScanPointName + "\n");
+            traffic.write(message);
             traffic.close();
-        } catch (Exception e) {
-            System.out.println(getDebugTimeStamp() + "Error with traffic stream ");
+        } catch (IOException e) {
+            logger.error("Error Writting to traffic File.");
+            e.printStackTrace(System.out);
+            return false;
         }
+        
+        return true;
+    }
+    
+    private void createForceScan(DataOutputStream out) {
+
+        try {
+            out.writeShort(VALMET_FORCE_SCAN);
+
+            out.writeBytes(getTimeStamp());
+            writeName(out, forceScanPointName);
+            out.writeShort(0);
+            out.writeShort(0);
+            out.writeShort(0);
+            out.writeShort(0);
+        } catch (IOException e) {
+            logger.error("Error writting to the output stream.", e);
+        }
+       
+        writeToTrafficFile("SENT Name: " + forceScanPointName + "\n");
     }
     
     public void createValuePoint(DataOutputStream out, ValmetPoint nextpoint, Float value) {
@@ -1516,7 +1311,6 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
             } else if ("PYRAMID".equalsIgnoreCase(nextpoint.getPointFunction())) {
                 double currentvalue = nextpoint.getPointCurrentValue();
                 double incriment = nextpoint.getPointDelta();
-                System.out.println("cv: " + currentvalue + " inc: " + incriment);
                 if ((currentvalue + incriment) >= nextpoint.getPointMax()) {
 
                     Double cvdouble = new Double(currentvalue);
@@ -1584,24 +1378,14 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                         nextpoint.setPointCurrentValue(currentvalue);
                 }
             }
-            SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: " + "Value " + "Name: "
+            SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: " + "Value " + "Name: "
                                                        + nextpoint.getPointName() + " Point: "
                                                        + value, 1));
 
-            // Write message to traffic log file
-            try {
-                FileWriter traffic = new FileWriter(trafficFile, true);
-                traffic.write(getDebugTimeStamp() + "SENT ON INTERVAL: " + nextpoint.getPointType()
-                              + "   ");
-                traffic.write(" Name: " + nextpoint.getPointName() + " Point: " + value + "\n");
-                traffic.close();
-            } catch (Exception e) {
-                System.out.println(getDebugTimeStamp() + "Error with traffic stream");
-                e.printStackTrace(System.out);
-            }
+            writeToTrafficFile("SENT ON INTERVAL: " + nextpoint.getPointType() + " Name: " + nextpoint.getPointName() + " Point: " + value + "\n");
+            
         } catch (Exception e) {
-            System.out.println(getDebugTimeStamp() + "Error with traffic stream");
-            e.printStackTrace(System.out);
+            logger.error("Error with traffic stream",e);
         }
     }
 
@@ -1621,23 +1405,14 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
             out.writeShort(0);
             out.writeShort(0);
             out.writeShort(0);
-            SwingUtilities.invokeLater(new Logger(log, "SENT ON INTERVAL: " + "Status " + "Name: "
+            SwingUtilities.invokeLater(new FdeLogger(log, "SENT ON INTERVAL: " + "Status " + "Name: "
                                                        + nextpoint.getPointName() + " Point: "
                                                        + valueString, 1));
-        } catch (Exception e) {
-            e.printStackTrace(System.out);
-            System.out.println(getDebugTimeStamp() + "Error writing in 10 second interval" + e);
+        } catch (IOException e) {
+            logger.error("Error writting status point to output stream",e);
         }
-        // Write message to traffic log file
-        try {
-            FileWriter traffic = new FileWriter(trafficFile, true);
-            traffic.write(getDebugTimeStamp() + "SENT ON INTERVAL: " + nextpoint.getPointInterval()
-                          + "  ");
-            traffic.write(" Name: " + nextpoint.getPointName() + " Point: " + value + "\n");
-            traffic.close();
-        } catch (Exception e) {
-            System.out.println(getDebugTimeStamp() + "Error with traffic stream ");
-        }
+        
+        writeToTrafficFile("SENT ON INTERVAL: " + nextpoint.getPointInterval() + " Name: " + nextpoint.getPointName() + " Point: " + value + "\n");
     }
 
     private void writeName(DataOutputStream out, ValmetPoint nextpoint) {
@@ -1658,7 +1433,7 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
                 }
             }
         } catch (Exception e) {
-            System.out.println(getDebugTimeStamp() + "Error writing PointName to traffic stream ");
+            logger.error("Error writing PointName to traffic stream ", e);
         }
 
     }
