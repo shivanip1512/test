@@ -849,6 +849,7 @@ div.pagedBox .contextArea a {
 div.pagedBox .pagingArea {
     width: 240px;
     float: right;
+    margin-left: 20px;
 }
 div.pagedBox .pagingArea .logoImage {
 	position: relative;
