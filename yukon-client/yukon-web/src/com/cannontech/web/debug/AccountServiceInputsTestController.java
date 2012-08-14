@@ -70,7 +70,7 @@ public class AccountServiceInputsTestController extends MultiActionController{
         
         String username = ServletRequestUtils.getRequiredStringParameter(request, "add_username");
         String password = ServletRequestUtils.getRequiredStringParameter(request, "add_password");
-        String loginGroup = ServletRequestUtils.getRequiredStringParameter(request, "add_loginGroup");
+        String userGroup = ServletRequestUtils.getRequiredStringParameter(request, "add_loginGroup");
         
         UpdatableAccount updatableAccount = new UpdatableAccount();
         updatableAccount.setAccountDto(new AccountDto());
@@ -109,7 +109,7 @@ public class AccountServiceInputsTestController extends MultiActionController{
         updatableAccount.getAccountDto().setSiteInfo(siteInfo);
         updatableAccount.getAccountDto().setUserName(username);
         updatableAccount.getAccountDto().setPassword(password);
-        updatableAccount.getAccountDto().setLoginGroup(loginGroup);
+        updatableAccount.getAccountDto().setUserGroup(userGroup);
         
         try {
             LiteYukonUser yukonuser = yukonUserDao.findUserByUsername(user);
@@ -180,7 +180,7 @@ public class AccountServiceInputsTestController extends MultiActionController{
         
         String username = ServletRequestUtils.getRequiredStringParameter(request, "update_username");
         String password = ServletRequestUtils.getRequiredStringParameter(request, "update_password");
-        String loginGroup = ServletRequestUtils.getRequiredStringParameter(request, "update_loginGroup");
+        String userGroup = ServletRequestUtils.getRequiredStringParameter(request, "update_loginGroup");
         
         UpdatableAccount updatableAccount = new UpdatableAccount();
         updatableAccount.setAccountDto(new AccountDto());
@@ -219,7 +219,7 @@ public class AccountServiceInputsTestController extends MultiActionController{
         updatableAccount.getAccountDto().setSiteInfo(siteInfo);
         updatableAccount.getAccountDto().setUserName(username);
         updatableAccount.getAccountDto().setPassword(password);
-        updatableAccount.getAccountDto().setLoginGroup(loginGroup);
+        updatableAccount.getAccountDto().setUserGroup(userGroup);
         
         try {
             LiteYukonUser yukonuser = yukonUserDao.findUserByUsername(user);

@@ -42,7 +42,7 @@ public class YukonUserWizardPanel extends com.cannontech.common.wizard.WizardPan
 	 * @return java.lang.String
 	 */
 	protected String getHeaderText() {
-		return "Login Setup";
+		return "User Setup";
 	}
 	/**
 	 * getNextInputPanel method comment.

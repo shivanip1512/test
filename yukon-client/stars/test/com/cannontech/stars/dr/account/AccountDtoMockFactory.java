@@ -13,7 +13,7 @@ public class AccountDtoMockFactory {
         accountDto1.setHomePhone("763 867 5309");
         accountDto1.setWorkPhone("1 800 GHOSTBUSTERS");
         accountDto1.setIsCommercial(false);
-        accountDto1.setLoginGroup("Residential Customer");
+        accountDto1.setUserGroup("Residential Customer");
         accountDto1.setMapNumber("123456");
         accountDto1.setUserName("bob");
         accountDto1.setPassword("itsasecrettoeveryone");

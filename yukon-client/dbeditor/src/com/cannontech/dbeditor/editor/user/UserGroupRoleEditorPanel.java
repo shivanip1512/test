@@ -12,15 +12,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.naming.ConfigurationException;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.TableColumn;
 
+import org.apache.log4j.Logger;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.table.CheckBoxColorRenderer;
 import com.cannontech.common.gui.util.OkCancelDialog;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.UniqueSet;
 import com.cannontech.database.Transaction;
@@ -47,6 +52,8 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 	private JPopupMenu jPopupMenu = null;
 	private JMenuItem jMenuItemRoles = null;
 	private JMenuItem jMenuItemConflicts = null;
+
+    private Logger log = YukonLogManager.getLogger(UserGroupRoleEditorPanel.class);
 
 
 	/**
@@ -261,13 +268,18 @@ public class UserGroupRoleEditorPanel extends com.cannontech.common.gui.util.Dat
 	    } else if (o instanceof UserGroup) {
 	        UserGroup userGroup = (UserGroup)o;
 	        
-	        // Clear out the existing login groups
+	        // Clear out the existing role groups
 	        userGroup.clearRolesToGroupMap();
     
             for( int i = 0; i < getTableModel().getRowCount(); i++ ) {
                 if( getTableModel().getRowAt(i).isSelected().booleanValue() ) {
                     LiteYukonGroup group = getTableModel().getRowAt(i).getLiteYukonGroup(); 
-                    userGroup.addRoleGroups(group);
+                    try {
+                        userGroup.addRoleGroups(group);
+                    } catch (ConfigurationException e) {
+                        log.error("The role group "+group.getGroupName()+" cannot be added to the user group "+userGroup.getLiteUserGroup().getUserGroupName()+" since it causes a role conflict",e);
+                        return null;
+                    }
                 }
             }
 

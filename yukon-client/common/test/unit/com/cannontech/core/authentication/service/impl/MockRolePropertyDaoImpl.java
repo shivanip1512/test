@@ -25,7 +25,7 @@ public class MockRolePropertyDaoImpl extends RolePropertyDaoImpl {
     private LoadingCache<LiteYukonGroup, RolePropertyHolder> groupRolePropertyHolders = CacheBuilder.newBuilder().build(new CacheLoader<LiteYukonGroup, RolePropertyHolder>() {
         @Override
         public RolePropertyHolder load(LiteYukonGroup key) throws Exception {
-            throw new IllegalArgumentException(" The login group does not have any roles or role properties setup.");
+            throw new IllegalArgumentException(" The role group does not have any roles or role properties setup.");
         }
     });
 

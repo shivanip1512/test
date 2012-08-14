@@ -4,10 +4,14 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.ConfigurationException;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -33,7 +37,6 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     private FieldMapper<LiteUserGroup> userGroupFieldMapper = new FieldMapper<LiteUserGroup>() {
         @Override
         public void extractValues(MapSqlParameterSource p, LiteUserGroup liteUserGroup) {
-            p.addValue("UserGroupId", liteUserGroup.getUserGroupId());
             p.addValue("UserGroupName", liteUserGroup.getUserGroupName());
             p.addValue("UserGroupDescription", liteUserGroup.getUserGroupDescription());
         }
@@ -59,7 +62,7 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     }
 
     //Row Mappers
-    private static class LiteUserGroupRowMapper implements YukonRowMapper<LiteUserGroup> {
+    public static class LiteUserGroupRowMapper implements YukonRowMapper<LiteUserGroup> {
         @Override
         public LiteUserGroup mapRow(YukonResultSet rs) throws SQLException {
             LiteUserGroup liteUserGroup = new LiteUserGroup();
@@ -73,6 +76,8 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     }
     
     private static class UserGroupRowMapper implements YukonRowMapper<UserGroup> {
+        private Logger log = YukonLogManager.getLogger(UserGroupRowMapper.class);
+
         @Override
         public UserGroup mapRow(YukonResultSet rs) throws SQLException {
             UserGroup userGroup = new UserGroup();
@@ -82,8 +87,12 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
             RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
             Map<YukonRole, LiteYukonGroup> rolesToGroupsMap = 
                     roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getLiteUserGroup().getUserGroupId());
-            userGroup.putAllRolesToGroupMap(rolesToGroupsMap);
-
+            try {
+                userGroup.putAllRolesToGroupMap(rolesToGroupsMap);
+            } catch (ConfigurationException e) {
+                log.error("The user group "+userGroup.getLiteUserGroup().getUserGroupName()+" has conflicting role groups", e);
+            }
+            
             return userGroup;
         }
     }

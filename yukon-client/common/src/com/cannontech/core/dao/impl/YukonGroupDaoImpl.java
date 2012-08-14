@@ -185,7 +185,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         try {
             group = yukonJdbcTemplate.queryForObject(sql, liteYukonGroupRowMapper);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Login group name: " + groupName + " not found.", e);
+            throw new NotFoundException("Role group name: " + groupName + " not found.", e);
         }        
         return group;
     }
@@ -217,12 +217,6 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         sql.append("WHERE GroupId").eq(groupId);
         yukonJdbcTemplate.update(sql);
         
-        /* YukonUserGroup */
-        sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM YukonUserGroup");
-        sql.append("WHERE GroupId").eq(groupId);
-        yukonJdbcTemplate.update(sql);
-        
         /* PaoPermissions */
         groupPaoPermissionDao.removeAllPermissions(groupId);
         
@@ -247,6 +241,18 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         return roleGroupList;
     }
     
+    @Override
+    public List<LiteYukonGroup> getDistinctRoleGroupsForUserGroupIds(List<Integer> userGroupIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT YG.GroupId, YG.GroupName, YG.GroupDescription ");
+        sql.append("FROM UserGroupToYukonGroupMapping UGYGM");
+        sql.append("  JOIN YukonGroup YG ON YG.GroupId = UGYGM.GroupId");
+        sql.append("WHERE UGYGM.UserGroupId").in(userGroupIds);
+
+        List<LiteYukonGroup> roleGroupList = yukonJdbcTemplate.query(sql, liteYukonGroupRowMapper);
+        return roleGroupList;
+    }
+    
     private void sendGroupDbChangeMsg(Integer groupId, DbChangeType dbChangeType) {
         DBChangeMsg changeMsg = new DBChangeMsg(groupId,
                                                 DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -255,9 +261,10 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
                                                 dbChangeType);
         dbPersistantDao.processDBChange(changeMsg);
     }
-    
+
     /* Depenencies */
     public void setGroupPaoPermissionDao(PaoPermissionDao<LiteYukonGroup> groupPaoPermissionDao) {
         this.groupPaoPermissionDao = groupPaoPermissionDao;
     }
+
 }

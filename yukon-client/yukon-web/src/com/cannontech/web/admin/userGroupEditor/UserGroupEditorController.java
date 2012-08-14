@@ -137,7 +137,7 @@ public class UserGroupEditorController {
 //        return "userGroupAssInsert.jsp";
 //    }
     
-    /* Login Groups Page */
+    /* Role Groups Page */
     @RequestMapping
     public String roleGroups(ModelMap model, int userGroupId) {
         model.addAttribute("userGroupId", userGroupId);
@@ -218,13 +218,13 @@ public class UserGroupEditorController {
         return "userGroupEditor/users.jsp";
     }
     
-    /* Remove User From Group */
+    /* Remove User From User Group */
     @RequestMapping(value="removeUser", method=RequestMethod.POST, params="remove")
-    public String removeUser(ModelMap model, FlashScope flash, int roleGroupId, int remove) {
-        yukonUserDao.removeUserFromGroup(remove, roleGroupId);
+    public String removeUser(ModelMap model, FlashScope flash, int userGroupId, int remove) {
+        yukonUserDao.removeUserFromGroup(remove, userGroupId);
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.groupEditor.updateSuccessful"));
-        model.addAttribute("roleGroupId", roleGroupId);
+        model.addAttribute("userGroupId", userGroupId);
         return "redirect:users";
     }
     

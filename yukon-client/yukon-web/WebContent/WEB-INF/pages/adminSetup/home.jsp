@@ -14,7 +14,7 @@
             <a href="${multiSpeakSetup}"><i:inline key=".multiSpeakSetup"/></a>
         </div></cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="ADMIN_SUPER_USER"><div>
-            <cti:url var="lmUserAssign" value="/spring/adminSetup/userGroupEditor/home"/>
+            <cti:url var="lmUserAssign" value="/spring/adminSetup/userEditor/home"/>
             <a href="${lmUserAssign}"><i:inline key=".userGroupEditor"/></a>
         </div></cti:checkRolesAndProperties>
         <div>

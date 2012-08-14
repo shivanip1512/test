@@ -123,7 +123,7 @@ public class RoleGroupEditorController {
         yukonGroupDao.delete(roleGroupId);
         
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.groupEditor.deletedSuccessful"));
-        return "redirect:/spring/adminSetup/userGroupEditor/home";
+        return "redirect:/spring/adminSetup/userEditor/home";
     }
     
     /* Add Role */

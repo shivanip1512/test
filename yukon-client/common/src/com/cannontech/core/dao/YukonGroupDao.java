@@ -50,4 +50,8 @@ public interface YukonGroupDao {
      */
     public List<LiteYukonGroup> getRoleGroupsForUserGroupId(int userGroupId);
 
+    /**
+     * This method returns all of the role groups that are mapped to the user group ids supplied.
+     */
+    public List<LiteYukonGroup> getDistinctRoleGroupsForUserGroupIds(List<Integer> userGroupIds);
 }

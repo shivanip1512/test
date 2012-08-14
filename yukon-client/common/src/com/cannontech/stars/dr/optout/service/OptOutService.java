@@ -275,7 +275,7 @@ public interface OptOutService {
     
     /**
      * This method retrieves the opt out limit for the supplied intersecting date and login group.  This is important because opt out limits are
-     * based off of login groups not devices nor accounts.
+     * based off of role groups not devices nor accounts.
      * 
      * @param intersectingDate - The date that will be used to create the bounds of the opt out.
      * @param dateTimeZone - This is used to calculate the bounds correctly 

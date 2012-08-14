@@ -14,8 +14,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.OpenInterval;
+import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -55,6 +59,8 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
     private ProgramDao programDao =  YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
     private OptOutEventDao optOutEventDao = YukonSpringHook.getBean("optOutEventDao", OptOutEventDao.class);
     private OptOutService optOutService = YukonSpringHook.getBean("optOutService", OptOutService.class);
+    private RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
+    private YukonGroupDao yukonGroupDao = YukonSpringHook.getBean("yukonGroupDao", YukonGroupDao.class);
     
     private Function<LMHardwareControlGroup, Integer> lmHardwareControlGroupToAccountIdFunction =
             new Function<LMHardwareControlGroup, Integer>() {
@@ -187,24 +193,38 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
         YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         
         // Find the limits for the given opt out end date
-        List<LiteYukonGroup> residentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
-        for (LiteYukonGroup residentialGroup : residentialGroups) {
+        List<LiteUserGroup> residentialGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
+        List<Integer> userGroupIds = 
+            Lists.transform(residentialGroups, new Function<LiteUserGroup, Integer>() {
+                @Override
+                public Integer apply(LiteUserGroup liteUserGroup) {
+                    return liteUserGroup.getUserGroupId();
+                }
+            });
+
+        List<LiteYukonGroup> residentialRoleGroups = yukonGroupDao.getDistinctRoleGroupsForUserGroupIds(userGroupIds);
+        for (LiteYukonGroup residentialRoleGroup : residentialRoleGroups) {
+            // Only use the role groups that have the 
+            Set<YukonRole> rolesForGroup = roleDao.getRolesForGroup(residentialRoleGroup.getGroupID());
+            if (!rolesForGroup.contains(YukonRole.RESIDENTIAL_CUSTOMER)) {
+                continue;
+            }
             
             // Check to see if an opt out limit exists, and use that limit for any inventory in that residential login group.
-            OptOutLimit residentialGroupOptOutLimit = findReportOptOutLimit(optOutEndDate,  residentialGroup);
+            OptOutLimit residentialGroupOptOutLimit = findReportOptOutLimit(optOutEndDate,  residentialRoleGroup);
             if (residentialGroupOptOutLimit == null) continue;
             Integer optOutLimit = residentialGroupOptOutLimit.getLimit();
             
             // Setting up the time period for the report.
             OpenInterval optOutLimitInterval = 
-                    optOutService.findOptOutLimitInterval(optOutEndDate, energyCompany.getDefaultDateTimeZone(), residentialGroup);
+                    optOutService.findOptOutLimitInterval(optOutEndDate, energyCompany.getDefaultDateTimeZone(), residentialRoleGroup);
             OpenInterval reportInterval = OpenInterval.createClosed(optOutLimitInterval.getStart(), optOutEndDate);
             
             // Check to see if users where selected and use them to find the report data.
             if (userIds != null) {
                 for (Integer userId : userIds) {
                     List<OverrideHistory> overrideHistoryList = 
-                        optOutEventDao.getOptOutHistoryByLogUserId(userId, reportInterval.getStart(), optOutEndDate, residentialGroup);
+                        optOutEventDao.getOptOutHistoryByLogUserId(userId, reportInterval.getStart(), optOutEndDate, residentialRoleGroup);
                     
                     addOverrideHistoryToModel(overrideHistoryList, optOutLimit);
                 }
@@ -214,7 +234,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             if (inventoryIds != null) {
                 for (Integer inventoryId : inventoryIds){
                     List<OverrideHistory> overrideHistoryList =
-                        optOutEventDao.getOptOutHistoryForInventory(inventoryId, reportInterval.getStart(), optOutEndDate, residentialGroup);
+                        optOutEventDao.getOptOutHistoryForInventory(inventoryId, reportInterval.getStart(), optOutEndDate, residentialRoleGroup);
                     addOverrideHistoryToModel(overrideHistoryList, optOutLimit);
                 }
             }
@@ -223,7 +243,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
             if (accountIds != null) {
                 for (Integer accountId : accountIds) {
                     List<OverrideHistory> overrideHistoryList =
-                        optOutEventDao.getOptOutHistoryForAccount(accountId, reportInterval.getStart(), optOutEndDate, residentialGroup);
+                        optOutEventDao.getOptOutHistoryForAccount(accountId, reportInterval.getStart(), optOutEndDate, residentialRoleGroup);
                     addOverrideHistoryToModel(overrideHistoryList, optOutLimit);
                 }
             }
@@ -247,7 +267,7 @@ public class OptOutLimitModel extends BareDatedReportModelBase<OptOutLimitModel.
                     Set<Integer> enrolledInventoryIds = Sets.newHashSet(accountIdToInventoryIds.get(accountId));
                     for (int enrolledInventoryId : enrolledInventoryIds) {
                         List<OverrideHistory> overrideHistoryList =
-                                optOutEventDao.getOptOutHistoryForInventory(enrolledInventoryId, reportInterval.getStart(), optOutEndDate, residentialGroup);
+                                optOutEventDao.getOptOutHistoryForInventory(enrolledInventoryId, reportInterval.getStart(), optOutEndDate, residentialRoleGroup);
                         addOverrideHistoryToModel(overrideHistoryList, optOutLimit);
                     }
                 }

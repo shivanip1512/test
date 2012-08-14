@@ -9,8 +9,8 @@
 <cti:standardPage module="adminSetup" page="createEnergyCompany">
 
     <form:form commandName="energyCompanyDto" action="/spring/adminSetup/energyCompany/create">
-        <form:hidden path="operatorGroupIds" id="operatorGroupIds"/>
-        <form:hidden path="residentialGroupIds" id="residentialGroupIds"/>
+        <form:hidden path="operatorUserGroupIds" id="operatorUserGroupIds"/>
+        <form:hidden path="residentialUserGroupIds" id="residentialUserGroupIds"/>
         <c:if test="${not empty parentId}">
             <input type="hidden" name="parentId" value="${parentId}">
         </c:if>
@@ -33,19 +33,19 @@
                     
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".primaryOperatorGroup" rowClass="pickerRow">
-                            <tags:pickerDialog type="loginGroupPicker" id="primaryOperatorGroupPicker" selectionProperty="groupName"
-                                destinationFieldId="primaryOperatorGroupId" linkType="selection" immediateSelectMode="true"/>
-                            <tags:hidden path="primaryOperatorGroupId" id="primaryOperatorGroupId"/>
+                            <tags:pickerDialog type="userGroupPicker" id="primaryOperatorUserGroupPicker" selectionProperty="userGroupName"
+                                destinationFieldId="primaryOperatorUserGroupId" linkType="selection" immediateSelectMode="true"/>
+                            <tags:hidden path="primaryOperatorUserGroupId" id="primaryOperatorUserGroupId"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".additionalOperatorGroups" rowClass="pickerRow">
-                            <tags:pickerDialog type="loginGroupPicker" id="additionalOperatorGroupPicker" selectionProperty="groupName"
-                                destinationFieldId="operatorGroupIds" linkType="selection" multiSelectMode="true" allowEmptySelection="true"/><i:inline key=".optional"/>
+                            <tags:pickerDialog type="userGroupPicker" id="additionalOperatorUserGroupPicker" selectionProperty="userGroupName"
+                                destinationFieldId="operatorUserGroupIds" linkType="selection" multiSelectMode="true" allowEmptySelection="true"/><i:inline key=".optional"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".residentialGroups" rowClass="pickerRow">
-                            <tags:pickerDialog type="loginGroupPicker" id="residentialGroupPicker" selectionProperty="groupName"
-                                destinationFieldId="residentialGroupIds" linkType="selection" multiSelectMode="true" allowEmptySelection="true"/><i:inline key=".optional"/>
+                            <tags:pickerDialog type="userGroupPicker" id="residentialUserGroupPicker" selectionProperty="userGroupName"
+                                destinationFieldId="residentialUserGroupIds" linkType="selection" multiSelectMode="true" allowEmptySelection="true"/><i:inline key=".optional"/>
                         </tags:nameValue2>
                         
                     </tags:nameValueContainer2>

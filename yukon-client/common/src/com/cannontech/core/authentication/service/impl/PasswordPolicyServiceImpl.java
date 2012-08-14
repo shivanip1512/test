@@ -11,9 +11,11 @@ import com.cannontech.core.authentication.model.PasswordPolicyError;
 import com.cannontech.core.authentication.model.PolicyRule;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
+import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.Lists;
@@ -22,6 +24,7 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
 
     @Autowired private AuthenticationService authenticationService;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonGroupDao yukonGroupDao;
 
     @Override
     public List<PolicyRule> getPolicyRules(LiteYukonUser user) {
@@ -71,13 +74,20 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
 
         return results;
     }
+
+    @Override
+    public PasswordPolicy getPasswordPolicy(LiteYukonUser user) {
+        return getPasswordPolicy(user, null);
+    }
+
     
     @Override
-    public PasswordPolicy getPasswordPolicy(LiteYukonUser user, LiteYukonGroup... yukonGroups) {
+    public PasswordPolicy getPasswordPolicy(LiteYukonUser user, LiteUserGroup liteUserGroup) {
         
     	// Lets see if the passed if the new groups have a password policy.  If they do use it.
-        if (yukonGroups != null) {
-            for (LiteYukonGroup liteYukonGroup : yukonGroups) {
+        if (liteUserGroup != null) {
+            List<LiteYukonGroup> roleGroups = yukonGroupDao.getRoleGroupsForUserGroupId(liteUserGroup.getUserGroupId());
+            for (LiteYukonGroup liteYukonGroup : roleGroups) {
                 PasswordPolicy passwordPolicy = findPasswordPolicy(liteYukonGroup);
                 if (passwordPolicy != null) {
                     return passwordPolicy;
@@ -94,9 +104,14 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
     }
 
     @Override
-    public PasswordPolicyError checkPasswordPolicy(String password, LiteYukonUser user, LiteYukonGroup... liteYukonGroups) {
+    public PasswordPolicyError checkPasswordPolicy(String password, LiteYukonUser user) {
+        return checkPasswordPolicy(password, user, null);
+    }
+
+    @Override
+    public PasswordPolicyError checkPasswordPolicy(String password, LiteYukonUser user, LiteUserGroup liteUserGroup) {
         
-        PasswordPolicy passwordPolicy = getPasswordPolicy(user, liteYukonGroups);
+        PasswordPolicy passwordPolicy = getPasswordPolicy(user, liteUserGroup);
         if (password.length() < passwordPolicy.getMinPasswordLength()) {
             return PasswordPolicyError.MIN_PASSWORD_LENGTH_NOT_MET;
         }

@@ -9,17 +9,17 @@
 <cti:standardPage module="adminSetup" page="generalInfo.${mode}">
 
 <script type="text/javascript">
-function addOperatorGroups() {
-    $('operatorGroupsForm').submit();
+function addOperatorUserGroups() {
+    $('operatorUserGroupsForm').submit();
 }
 
-function addCustomerGroups() {
-    $('customerGroupsForm').submit();
+function addCustomerUserGroups() {
+    $('customerUserGroupsForm').submit();
 }
 
 Event.observe(window, "load", function() {
-    operatorGroupPicker.excludeIds = ${cti:jsonString(operatorGroupIds)};
-    customerGroupPicker.excludeIds = ${cti:jsonString(customerGroupIds)};
+    operatorUserGroupPicker.excludeIds = ${cti:jsonString(operatorUserGroupIds)};
+    customerUserGroupPicker.excludeIds = ${cti:jsonString(customerUserGroupIds)};
 });
 </script>
 
@@ -68,8 +68,8 @@ Event.observe(window, "load", function() {
                                 <cti:button nameKey="edit" type="submit" name="edit"/>
                             </c:if>
                             <c:if test="${canEditRoles}">
-                                <cti:url var="editRolesUrl" value="/spring/adminSetup/groupEditor/view">
-                                    <cti:param name="groupId" value="${groupId}"/>
+                                <cti:url var="editRolesUrl" value="/spring/adminSetup/roleGroup/view">
+                                    <cti:param name="roleGroupId" value="${roleGroupId}"/>
                                 </cti:url>
                                 <cti:button nameKey="editRoles" name="editRoles" type="button" href="${editRolesUrl}"/>
                             </c:if>
@@ -153,22 +153,22 @@ Event.observe(window, "load", function() {
                     <br>
                     
                     <tags:boxContainer2 nameKey="loginGroupsContainer">
-                        <form action="updateOperatorGroups" id="operatorGroupsForm" method="post">
+                        <form action="updateOperatorGroups" id="operatorUserGroupsForm" method="post">
                             <input name="ecId" type="hidden" value="${ecId}">
-                            <input type="hidden" name="operatorGroupIds" id="operatorGroupIds">
+                            <input type="hidden" name="operatorUserGroupIds" id="operatorUserGroupIds">
                             <div class="operatorGroupTable">
                                 <table class="compactResultsTable listTable">
                                     <tr>
                                         <th><i:inline key=".operatorGroups"/></th>
-                                        <c:if test="${fn:length(operatorGroups) > 1}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
+                                        <c:if test="${fn:length(operatorUserGroups) > 1}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
                                     </tr>
-                                    <c:forEach var="group" items="${operatorGroups}">
+                                    <c:forEach var="userGroup" items="${operatorUserGroups}">
                                         <tr>
-                                            <td><spring:escapeBody htmlEscape="true">${group.groupName}</spring:escapeBody></td>
-                                            <c:if test="${fn:length(operatorGroups) > 1}">
+                                            <td><spring:escapeBody htmlEscape="true">${userGroup.userGroupName}</spring:escapeBody></td>
+                                            <c:if test="${fn:length(operatorUserGroups) > 1}">
                                                 <td class="removeColumn">
                                                     <div class="dib">
-                                                        <cti:button nameKey="remove" type="submit" name="removeOperatorGroup" value="${group.groupID}" renderMode="image"/>
+                                                        <cti:button nameKey="remove" type="submit" name="removeOperatorUserGroup" value="${userGroup.userGroupId}" renderMode="image"/>
                                                     </div>
                                                 </td>
                                             </c:if>
@@ -177,30 +177,30 @@ Event.observe(window, "load", function() {
                                 </table>
                             </div>
                             <div class="actionArea">
-                                <tags:pickerDialog type="loginGroupPicker" id="operatorGroupPicker" linkType="button" nameKey="add"
-                                    destinationFieldId="operatorGroupIds" multiSelectMode="true" endAction="addOperatorGroups"/>
+                                <tags:pickerDialog type="userGroupPicker" id="operatorUserGroupPicker" linkType="button" nameKey="add"
+                                    destinationFieldId="operatorUserGroupIds" multiSelectMode="true" endAction="addOperatorUserGroups"/>
                             </div>
                         </form>
                         
                         <br>
                         
-                        <form action="updateCustomerGroups" id="customerGroupsForm" method="post">
+                        <form action="updateCustomerGroups" id="customerUserGroupsForm" method="post">
                             <input name="ecId" type="hidden" value="${ecId}">
-                            <input type="hidden" name="customerGroupIds" id="customerGroupIds">
+                            <input type="hidden" name="customerUserGroupIds" id="customerUserGroupIds">
                             <div class="customerGroupTable">
                                 <table class="compactResultsTable listTable">
                                     <tr>
                                         <th><i:inline key=".customerGroups"/></th>
-                                        <c:if test="${not empty customerGroups}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
+                                        <c:if test="${not empty customerUserGroups}"><th class="removeColumn"><i:inline key=".remove"/></th></c:if>
                                     </tr>
                                     <c:choose>
-                                        <c:when test="${not empty customerGroups}">
-                                            <c:forEach var="group" items="${customerGroups}">
+                                        <c:when test="${not empty customerUserGroups}">
+                                            <c:forEach var="userGroup" items="${customerUserGroups}">
                                                 <tr>
-                                                    <td><spring:escapeBody htmlEscape="true">${group.groupName}</spring:escapeBody></td>
+                                                    <td><spring:escapeBody htmlEscape="true">${userGroup.userGroupName}</spring:escapeBody></td>
                                                     <td class="removeColumn">
                                                         <div class="dib">
-                                                            <cti:button nameKey="remove" type="submit" name="removeCustomerGroup" value="${group.groupID}" renderMode="image"/>
+                                                            <cti:button nameKey="remove" type="submit" name="removeCustomerUserGroup" value="${userGroup.userGroupId}" renderMode="image"/>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -215,8 +215,8 @@ Event.observe(window, "load", function() {
                                 </table>
                             </div>
                             <div class="actionArea">
-                                <tags:pickerDialog type="loginGroupPicker" id="customerGroupPicker" linkType="button" nameKey="add"
-                                    destinationFieldId="customerGroupIds" multiSelectMode="true" endAction="addCustomerGroups"/>
+                                <tags:pickerDialog type="userGroupPicker" id="customerUserGroupPicker" linkType="button" nameKey="add"
+                                    destinationFieldId="customerUserGroupIds" multiSelectMode="true" endAction="addCustomerUserGroups"/>
                             </div>
                         </form>
                     </tags:boxContainer2>

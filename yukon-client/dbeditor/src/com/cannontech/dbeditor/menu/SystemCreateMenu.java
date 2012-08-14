@@ -10,8 +10,9 @@ public class SystemCreateMenu extends javax.swing.JMenu {
 	//System wizards
 	public CommandableMenuItem customerMenuItem;
 	public CommandableMenuItem contactMenuItem;
-	public CommandableMenuItem loginMenuItem;
-	public CommandableMenuItem loginGrpMenuItem;
+	public CommandableMenuItem userMenuItem;
+	public CommandableMenuItem userGroupMenuItem;
+	public CommandableMenuItem roleGroupMenuItem;
 	public CommandableMenuItem notificationGroupMenuItem;
 	public CommandableMenuItem holidayMenuItem;
 	public CommandableMenuItem baselineMenuItem;
@@ -50,13 +51,16 @@ private void initialize() {
 	contactMenuItem.setFont( font );
 	contactMenuItem.setMnemonic('t');
 
-	loginMenuItem = new CommandableMenuItem("Login...");
-	loginMenuItem.setFont( font );
-	loginMenuItem.setMnemonic('l');
+	userMenuItem = new CommandableMenuItem("User...");
+	userMenuItem.setFont( font );
+	userMenuItem.setMnemonic('l');
 
-	loginGrpMenuItem = new CommandableMenuItem("Login Group...");
-	loginGrpMenuItem.setFont( font );
-	loginGrpMenuItem.setMnemonic('g');
+	userGroupMenuItem = new CommandableMenuItem("User Group...");
+	userGroupMenuItem.setFont( font );
+	
+	roleGroupMenuItem = new CommandableMenuItem("Role Group...");
+	roleGroupMenuItem.setFont( font );
+	roleGroupMenuItem.setMnemonic('g');
 
 	baselineMenuItem = new CommandableMenuItem("Baseline...");
 	baselineMenuItem.setFont( font );
@@ -87,12 +91,13 @@ private void initialize() {
 	add( contactMenuItem );
 	add( customerMenuItem );
 	add( holidayMenuItem );
-	add( loginMenuItem );
-	add( loginGrpMenuItem );
 	add( notificationGroupMenuItem );
+	add( roleGroupMenuItem );
 	add( seasonMenuItem );
+	add( systemPointMenuItem );
 	add( tagMenuItem );
 	add( touMenuItem );
-    add( systemPointMenuItem );
+	add( userMenuItem );
+	add( userGroupMenuItem );
 }
 }

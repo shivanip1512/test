@@ -15,9 +15,6 @@ public class YukonGroup extends DBPersistent {
 
     public static final String TABLE_NAME = "YukonGroup";
 
-    //a mapping table that does not have a DBPersistent
-    public static final String TBL_YUKON_USER_GROUP = "YukonUserGroup";
-
     //what group IDs can be modified
     public static final int EDITABLE_MIN_GROUP_ID  = 0;
     

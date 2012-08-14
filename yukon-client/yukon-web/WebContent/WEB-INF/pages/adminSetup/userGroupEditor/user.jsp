@@ -86,7 +86,7 @@ YEvent.observeSelectorClick('#cancelChangePassword', function(event) {
                                     <cti:param name="userGroupId" value="${user.userGroupId}" />
                                 </cti:url>
                                 <tags:nameValue2 nameKey=".userGroup">
-                                    <a href="${userGroupUrl}">Generated User Group 18</a>
+                                    <a href="${userGroupUrl}"><spring:escapeBody htmlEscape="true">${userGroupName}</spring:escapeBody></a>
                                 </tags:nameValue2>
                             </cti:displayForPageEditModes>
                         </c:when>

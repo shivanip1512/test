@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.naming.ConfigurationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -154,6 +155,8 @@ public class EnergyCompanyController {
             bindingResult.rejectValue("name", "yukon.web.modules.adminSetup.createEnergyCompany.name.unavailable");
         } catch (UserNameUnavailableException e) {
             bindingResult.rejectValue(e.getMessage(), "yukon.web.modules.adminSetup.createEnergyCompany.adminUsername.unavailable");
+        } catch (ConfigurationException e){
+            bindingResult.reject("yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup.roleGroupConflict");
         }
         
         return createFailed(bindingResult, flashScope);

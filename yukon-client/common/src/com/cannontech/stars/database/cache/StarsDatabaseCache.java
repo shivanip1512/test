@@ -594,7 +594,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 			case UPDATE:
 				if (starsAcctInfo.getStarsUser().getUserID() == msg.getId()) {
 					LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( msg.getId() );
-					starsAcctInfo.setStarsUser( StarsLiteFactory.createStarsUser(liteUser, energyCompany) );
+					starsAcctInfo.setStarsUser(liteUser);
 				}
 				
 				break;

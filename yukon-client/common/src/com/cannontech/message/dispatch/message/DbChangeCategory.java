@@ -25,7 +25,6 @@ public enum DbChangeCategory {
 //    YUKON_USER("YukonUser"),
 //    CUSTOMER("Customer"),
 //    CI_CUSTOMER("CICustomer"),
-//    YUKON_USER_GROUP("YukonUserGroup"),
 //    BASELINE("BaseLine"),
 //    CONFIG("Config"),
 //    TAG("Tag"),

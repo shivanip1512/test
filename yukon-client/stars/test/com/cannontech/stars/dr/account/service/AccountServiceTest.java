@@ -17,6 +17,7 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.model.AuthType;
+import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CustomerDao;
@@ -27,6 +28,8 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -78,7 +81,9 @@ public class AccountServiceTest extends EasyMockSupport {
     private AccountServiceImpl accountService;
     
     // collobarators to be mocked...and ridiculed
+    private AuthenticationService authenticationServiceMock;
     private YukonUserDao yukonUserDaoMock;
+    private UserGroupDao userGroupDaoMock;
     private RolePropertyDao rolePropertyDaoMock;
     private AuthDao authDaoMock;
     private YukonGroupDao yukonGroupDaoMock;
@@ -107,7 +112,9 @@ public class AccountServiceTest extends EasyMockSupport {
     
     @Before
     public void setUp() throws SecurityException, NoSuchMethodException {
+        authenticationServiceMock = createNiceMock(AuthenticationService.class);
         yukonUserDaoMock = createNiceMock(YukonUserDao.class);
+        userGroupDaoMock = createNiceMock(UserGroupDao.class);
         rolePropertyDaoMock = createMock(RolePropertyDao.class);
         authDaoMock = createMock(AuthDao.class);
         yukonGroupDaoMock = createMock(YukonGroupDao.class);
@@ -274,12 +281,11 @@ public class AccountServiceTest extends EasyMockSupport {
         expect(customerAccountDaoMock.getByAccountNumber(updatableAccount.getAccountDto().getAccountNumber(), 1)).andReturn(null);
         expect(yukonUserDaoMock.findUserByUsername(updatableAccount.getAccountDto().getUserName())).andReturn(null);
         expect(rolePropertyDaoMock.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, null)).andReturn(AuthType.NONE);
-        expect(yukonGroupDaoMock.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID)).andReturn(new LiteYukonGroup());
-        expect(yukonGroupDaoMock.getLiteYukonGroupByName(updatableAccount.getAccountDto().getLoginGroup())).andReturn(new LiteYukonGroup());
-        List<LiteYukonGroup> list = new ArrayList<LiteYukonGroup>();
-        list.add(null);
-        list.add(null);
-        yukonUserDaoMock.addLiteYukonUserWithPassword(newuser, updatableAccount.getAccountDto().getPassword(), list );
+        expect(userGroupDaoMock.getLiteUserGroupByUserGroupName(updatableAccount.getAccountDto().getUserGroup())).andReturn(new LiteUserGroup());
+
+        yukonUserDaoMock.save(newuser);
+        authenticationServiceMock.setPassword(newuser, updatableAccount.getAccountDto().getPassword());
+        
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(user.getLiteID(),
             DBChangeMsg.CHANGE_YUKON_USER_DB,
             DBChangeMsg.CAT_YUKON_USER,

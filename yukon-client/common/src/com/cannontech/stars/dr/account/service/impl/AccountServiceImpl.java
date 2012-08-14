@@ -33,6 +33,8 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -116,6 +118,7 @@ public class AccountServiceImpl implements AccountService {
     private PhoneNumberFormattingService phoneNumberFormattingService;
     private YukonUserContextService yukonUserContextService;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    @Autowired private UserGroupDao userGroupDao;
     private YukonEnergyCompanyService yukonEnergyCompanyService;
     
     // ADD ACCOUNT
@@ -168,16 +171,12 @@ public class AccountServiceImpl implements AccountService {
             user = new LiteYukonUser(); 
             user.setUsername(accountDto.getUserName());
             user.setLoginStatus(LoginStatusEnum.ENABLED);
-            List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
-            LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
-            groups.add(defaultYukonGroup);
-            LiteYukonGroup operatorGroup = null;
             try {
-                operatorGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
-                groups.add(operatorGroup);
+                LiteUserGroup operatorUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(accountDto.getUserGroup());
+                user.setUserGroupId(operatorUserGroup.getUserGroupId());
             }catch (NotFoundException e) {
-                log.error("Account " + accountNumber + " could not be added: The provided login group '"+ accountDto.getLoginGroup() + "' doesn't exist.");
-                throw new InvalidLoginGroupException("The provided login group '"+ accountDto.getLoginGroup() + "' doesn't exist.");
+                log.error("Account " + accountNumber + " could not be added: The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
+                throw new InvalidLoginGroupException("The provided role group '"+ accountDto.getUserGroup() + "' doesn't exist.");
             }
             String password = accountDto.getPassword();
             if(password != null) {
@@ -186,12 +185,12 @@ public class AccountServiceImpl implements AccountService {
                 user.setAuthType(AuthType.NONE);
                 password = emptyPassword;
             }
-            yukonUserDao.addLiteYukonUserWithPassword(user, password, groups);
-            dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
-                DBChangeMsg.CHANGE_YUKON_USER_DB,
-                DBChangeMsg.CAT_YUKON_USER,
-                DBChangeMsg.CAT_YUKON_USER,
-                DbChangeType.ADD));
+
+            yukonUserDao.save(user);
+            authenticationService.setPassword(user, password);
+
+            dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(), DBChangeMsg.CHANGE_YUKON_USER_DB,
+                DBChangeMsg.CAT_YUKON_USER, DBChangeMsg.CAT_YUKON_USER, DbChangeType.ADD));
         }
             
         /*
@@ -642,17 +641,15 @@ public class AccountServiceImpl implements AccountService {
                 LiteYukonUser newUser = new LiteYukonUser(); 
                 newUser.setUsername(accountDto.getUserName());
                 newUser.setLoginStatus(LoginStatusEnum.ENABLED);
-                List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
-                LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
-                groups.add(defaultYukonGroup);
-                LiteYukonGroup loginGroup = null;
+                LiteUserGroup userGroup = null;
                 try {
-                    loginGroup = yukonGroupDao.getLiteYukonGroupByName(accountDto.getLoginGroup());
-                    groups.add(loginGroup);
+                    userGroup = userGroupDao.getLiteUserGroupByUserGroupName(accountDto.getUserGroup());
+                    newUser.setUserGroupId(userGroup.getUserGroupId());
                 }catch (NotFoundException e) {
-                    log.error("Account " + accountNumber + " could not be updated: The provided login group '"+ accountDto.getLoginGroup() + "' doesn't exist.");
-                    throw new InvalidLoginGroupException("The provided login group '"+ accountDto.getLoginGroup() + "' doesn't exist.");
+                    log.error("Account " + accountNumber + " could not be updated: The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
+                    throw new InvalidLoginGroupException("The provided user group '"+ accountDto.getUserGroup() + "' doesn't exist.");
                 }
+                
                 String password = accountDto.getPassword();
                 if(password != null) {
                     newUser.setAuthType(defaultAuthType);
@@ -660,7 +657,10 @@ public class AccountServiceImpl implements AccountService {
                     newUser.setAuthType(AuthType.NONE);
                     password = emptyPassword;
                 }
-                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, groups);
+
+                yukonUserDao.save(newUser);
+                authenticationService.setPassword(user, password);
+
                 newLoginId = newUser.getUserID();
                 dbPersistantDao.processDBChange(new DBChangeMsg(newUser.getLiteID(),
                     DBChangeMsg.CHANGE_YUKON_USER_DB,
@@ -1024,17 +1024,14 @@ public class AccountServiceImpl implements AccountService {
         
         int loginId = primaryContact.getLoginID();
         if(loginId > UserUtils.USER_DEFAULT_ID) {
-            LiteYukonUser login = yukonUserDao.getLiteYukonUser(loginId);
-            retrievedDto.setUserName(login.getUsername());
-            /*
-             * Currently these accounts only support users with one login group.
-             * This may need to change in the future.
-             */
-            List<LiteYukonGroup> groups = yukonGroupDao.getGroupsForUser(login);
-            retrievedDto.setLoginGroup(groups.get(0).getGroupName());
+            LiteYukonUser user = yukonUserDao.getLiteYukonUser(loginId);
+            retrievedDto.setUserName(user.getUsername());
+
+            LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
+            retrievedDto.setUserGroup(userGroup.getUserGroupName());
         }else {
             retrievedDto.setUserName("");
-            retrievedDto.setLoginGroup("");
+            retrievedDto.setUserGroup("");
         }
         
         /*

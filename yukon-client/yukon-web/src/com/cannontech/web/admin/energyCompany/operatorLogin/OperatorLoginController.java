@@ -24,15 +24,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.YukonGroupService;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -56,15 +54,15 @@ import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 public class OperatorLoginController {
     
     private final String baseUrl = "/spring/adminSetup/energyCompany/operatorLogin";
-    private AuthenticationService authenticationService;
-    private YukonUserDao yukonUserDao;
-    private YukonGroupDao yukonGroupDao;
-    private YukonGroupService yukonGroupService;
-    private ECMappingDao ecMappingDao;
-    private EnergyCompanyService energyCompanyService;
-    private StarsDatabaseCache starsDatabaseCache;
-    private RolePropertyDao rolePropertyDao;
-    private LoginValidatorFactory loginValidatorFactory;
+    
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private LoginValidatorFactory loginValidatorFactory;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private UserGroupDao userGroupDao;
+    @Autowired private YukonUserDao yukonUserDao;
     
     private void checkPermissionsAndSetupModel(EnergyCompanyInfoFragment energyCompanyInfoFragment,
                                                ModelMap modelMap,
@@ -81,9 +79,9 @@ public class OperatorLoginController {
     private LoginBackingBean loginBackingBeanFromYukonUser(LiteYukonUser user) {
         LoginBackingBean login = new LoginBackingBean();
         
-        LiteYukonGroup userResidentialGroupName = yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.CONSUMER_INFO, user.getUserID());
-        if (userResidentialGroupName != null) {
-            login.setLoginGroupName(userResidentialGroupName.getGroupName());
+        LiteUserGroup userResidentialUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
+        if (userResidentialUserGroup != null) {
+            login.setUserGroupName(userResidentialUserGroup.getUserGroupName());
         }
         
         login.setLoginEnabled(user.getLoginStatus());
@@ -164,10 +162,10 @@ public class OperatorLoginController {
         }
         
         //save login
-        LiteYukonGroup liteGroup = yukonGroupDao.getLiteYukonGroupByName(operatorLogin.getLoginGroupName());
+        LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(operatorLogin.getUserGroupName());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         StarsAdminUtil.createOperatorLogin(operatorLogin.getUsername(), operatorLogin.getPassword1(), 
-                                            operatorLogin.getLoginStatus(), new LiteYukonGroup[] {liteGroup}, energyCompany);
+                                            operatorLogin.getLoginStatus(), liteUserGroup, energyCompany);
 
         //add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginCreated"));
@@ -215,16 +213,11 @@ public class OperatorLoginController {
         }
         
         //save login
-        LiteYukonUser liteUser = this.yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
-        LiteYukonGroup loginGroup = yukonGroupDao.getLiteYukonGroupByName(operatorLogin.getLoginGroupName());
+        LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(liteUser.getUserGroupId());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
-        StarsAdminUtil.updateLogin( liteUser, 
-                                    operatorLogin.getUsername(),
-                                    operatorLogin.getPassword1(),
-                                    operatorLogin.getLoginStatus(),
-                                    loginGroup,
-                                    energyCompany,
-                                    false);
+        StarsAdminUtil.updateLogin( liteUser, operatorLogin.getUsername(), operatorLogin.getPassword1(), operatorLogin.getLoginStatus(),
+                                    userGroup, energyCompany, false);
         
         //add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginUpdated"));
@@ -314,8 +307,8 @@ public class OperatorLoginController {
     }
     
     @ModelAttribute("assignableGroups")
-    public List<LiteYukonGroup> getAssignableGroups(int ecId) {
-        return ecMappingDao.getOperatorGroups(ecId);
+    public List<LiteUserGroup> getAssignableGroups(int ecId) {
+        return ecMappingDao.getOperatorUserGroups(ecId);
     }
     
     @ModelAttribute("baseUrl")
@@ -326,52 +319,5 @@ public class OperatorLoginController {
     @ModelAttribute("loginStatusTypes")
     public LoginStatusEnum[] getLoginStatusTypes() {
         return LoginStatusEnum.values();
-    }
-    
-    //DI
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
-    }
-    
-    @Autowired
-    public void setECMappingDao (ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-
-    @Autowired
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setLoginValidatorFactory(LoginValidatorFactory loginValidatorFactory) {
-        this.loginValidatorFactory = loginValidatorFactory;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-    
-    @Autowired
-    public void setYukonGroupService(YukonGroupService yukonGroupService) {
-        this.yukonGroupService = yukonGroupService;
     }
 }

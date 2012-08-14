@@ -1,5 +1,6 @@
 package com.cannontech.stars.web.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -20,10 +21,12 @@ import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
@@ -38,10 +41,10 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -676,34 +679,39 @@ public class StarsAdminUtil {
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
 	
-	public static LiteYukonGroup createOperatorAdminGroup(final String grpName, final boolean topLevelEc)
-		throws TransactionException, ConfigurationException {
+	public static LiteUserGroup createOperatorAdminUserGroup(final String userGroupName, int primaryOperatorUserGroupId, final boolean topLevelEc)
+	throws TransactionException, ConfigurationException, SQLException {
+	    RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
+	    UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
 
+	    
+	    // Creating the admin role group for the new energy company
 		com.cannontech.database.data.user.YukonGroup adminGrp = new com.cannontech.database.data.user.YukonGroup();
 		com.cannontech.database.db.user.YukonGroup groupDB = adminGrp.getYukonGroup();
-		
-		groupDB.setGroupName( grpName );
+		groupDB.setGroupName( userGroupName );
 		groupDB.setGroupDescription( "Privilege group for the energy company's default operator login" );
 		
-		LiteYukonRoleProperty[] roleProps = DaoFactory.getRoleDao().getRoleProperties( EnergyCompanyRole.ROLEID );
+		// Including the Energy Company Role to the EC admin role group
+		LiteYukonRoleProperty[] roleProps = roleDao.getRoleProperties( EnergyCompanyRole.ROLEID );
 		for (int i = 0; i < roleProps.length; i++) {
 			com.cannontech.database.db.user.YukonGroupRole groupRole = new com.cannontech.database.db.user.YukonGroupRole();
 			
-			groupRole.setRoleID( new Integer(EnergyCompanyRole.ROLEID) );
-			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
+			groupRole.setRoleID(EnergyCompanyRole.ROLEID);
+			groupRole.setRolePropertyID(roleProps[i].getRolePropertyID());
 		    groupRole.setValue(" ");	// default value is a single space
 			
 			adminGrp.addYukonGroupRole(groupRole);
 		}
 		
-		roleProps = DaoFactory.getRoleDao().getRoleProperties( AdministratorRole.ROLEID );
+		// Including the Admin Role to the EC admin role group
+		roleProps = roleDao.getRoleProperties( AdministratorRole.ROLEID );
 		for (int i = 0; i < roleProps.length; i++) {
 			com.cannontech.database.db.user.YukonGroupRole groupRole = new com.cannontech.database.db.user.YukonGroupRole();
 			
-			groupRole.setRoleID( new Integer(AdministratorRole.ROLEID) );
-			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
+			groupRole.setRoleID(AdministratorRole.ROLEID);
+			groupRole.setRolePropertyID(roleProps[i].getRolePropertyID());
 			YukonRoleProperty roleProperty = YukonRoleProperty.getForId(roleProps[i].getRolePropertyID());
-            if (topLevelEc && roleProperty == YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY) {
+			if (topLevelEc && roleProperty == YukonRoleProperty.ADMIN_EDIT_ENERGY_COMPANY) {
                 groupRole.setValue(CtiUtilities.TRUE_STRING);
             } else {
 				groupRole.setValue(" ");	// default value is a single space
@@ -713,14 +721,24 @@ public class StarsAdminUtil {
 		}
 		
 		adminGrp = Transaction.createTransaction(Transaction.INSERT, adminGrp).execute();
+		LiteYukonGroup ecAdminGroup = new LiteYukonGroup(adminGrp.getGroupID(), adminGrp.getYukonGroup().getGroupName());
+
+		// Create the new admin user group including the links to the newly created role group.
+		UserGroup userGroup = new UserGroup();
+		userGroup.getLiteUserGroup().setUserGroupName(userGroupName);
+		userGroup.getLiteUserGroup().setUserGroupDescription("Privilege user group for the energy company's default operator login");
+		userGroup.addRoleGroups(ecAdminGroup);
 		
-		LiteYukonGroup liteGroup = new LiteYukonGroup( adminGrp.getGroupID().intValue() );
-		handleDBChange( liteGroup, DbChangeType.ADD );
+		// Adding the primary operator user groups role groups
+		UserGroup primaryOperatorUserGroup = userGroupDao.getUserGroup(primaryOperatorUserGroupId);
+		userGroup.putAllRolesToGroupMap(primaryOperatorUserGroup.getRolesToGroupMap());
+		userGroup.add();
 		
-		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
+		handleDBChange( ecAdminGroup, DbChangeType.ADD );
+		return userGroup.getLiteUserGroup();
 	}
 
-	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status, LiteYukonGroup[] operGroups,
+	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status, LiteUserGroup liteUserGroup,
 		LiteStarsEnergyCompany energyCompany) throws TransactionException, WebClientException, CommandExecutionException
 	{
 	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
@@ -742,13 +760,7 @@ public class StarsAdminUtil {
 		userDB.setLoginStatus(status);
 		userDB.setLastChangedDate(Instant.now().toDate());
 		userDB.setForceReset(false);
-		
-		for (int i = 0; i < operGroups.length; i++) {
-			com.cannontech.database.db.user.YukonGroup group =
-					new com.cannontech.database.db.user.YukonGroup();
-			group.setGroupID( new Integer(operGroups[i].getGroupID()) );
-			yukonUser.getYukonGroups().add( group );
-		}
+		userDB.setUserGroupId(liteUserGroup.getUserGroupId());
 		
 		yukonUser = Transaction.createTransaction(Transaction.INSERT, yukonUser).execute();
 		
@@ -777,7 +789,7 @@ public class StarsAdminUtil {
 	}
 	
 	public static void updateLogin(LiteYukonUser liteUser, String username, String password, LoginStatusEnum status,
-		LiteYukonGroup loginGroup, LiteStarsEnergyCompany energyCompany, boolean authTypeChange) 
+		LiteUserGroup userGroup, LiteStarsEnergyCompany energyCompany, boolean authTypeChange) 
 	throws WebClientException, TransactionException {
 	    AuthenticationService authenticationService = (AuthenticationService) YukonSpringHook.getBean("authenticationService");
 	    
@@ -806,39 +818,11 @@ public class StarsAdminUtil {
 		if (status != null) dbUser.setLoginStatus(status);
 		dbUser.setLastChangedDate(Instant.now().toDate());
 		
-		boolean groupChanged = false;
-		if (loginGroup != null) {
-		    YukonGroupDao yukonGroupDao = DaoFactory.getYukonGroupDao();
-		    List<LiteYukonGroup> userGroups = yukonGroupDao.getGroupsForUser(liteUser);
-		    for (int i = 0; i < userGroups.size(); i++) {
-		        LiteYukonGroup liteGroup = userGroups.get(i);
-		        if (liteGroup.getGroupID() == YukonGroupRoleDefs.GRP_YUKON)
-		            continue;
-		        if (liteUser.getUserID() == energyCompany.getUser().getUserID() && liteGroup.equals(energyCompany.getOperatorAdminGroup()))
-		            continue;
-		        if (liteGroup.getGroupID() != loginGroup.getGroupID()) {
-		            groupChanged = true;
-		            break;
-		        }
-		    }
+		if (userGroup != null) {
+		    dbUser.setUserGroupId(userGroup.getUserGroupId());
 		}
 		
-		if (groupChanged) {
-			com.cannontech.database.db.user.YukonGroup group =
-					new com.cannontech.database.db.user.YukonGroup( new Integer(loginGroup.getGroupID()) );
-			user.getYukonGroups().addElement( group );
-			
-			if (liteUser.getUserID() == energyCompany.getUser().getUserID()) {
-				group = new com.cannontech.database.db.user.YukonGroup( new Integer(energyCompany.getOperatorAdminGroup().getGroupID()) );
-				user.getYukonGroups().addElement( group );
-			}
-			
-			Transaction.createTransaction( Transaction.UPDATE, user ).execute();
-		}
-		else {
-			Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
-		}
-		
+		Transaction.createTransaction( Transaction.UPDATE, dbUser ).execute();
 		handleDBChange( liteUser, DbChangeType.UPDATE );
 	}
 	

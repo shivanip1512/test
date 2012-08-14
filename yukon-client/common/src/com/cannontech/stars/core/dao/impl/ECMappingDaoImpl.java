@@ -16,10 +16,10 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.InUseException;
 import com.cannontech.core.dao.impl.LiteYukonUserMapper;
-import com.cannontech.core.dao.impl.YukonGroupDaoImpl;
+import com.cannontech.core.users.dao.impl.UserGroupDaoImpl;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
@@ -347,52 +347,57 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
     
     @Override
-    public List<LiteYukonGroup> getResidentialGroups(int energyCompanyId) {
+    public List<LiteUserGroup> getResidentialUserGroups(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT yg.GroupId, yg.GroupName, yg.GroupDescription");
-        sql.append("FROM ECToResidentialGroupMapping ectgm");
-        sql.append(  "JOIN YukonGroup yg on yg.GroupId = ectgm.GroupId");
-        sql.append("WHERE ectgm.EnergyCompanyId").eq(energyCompanyId);
+        sql.append("SELECT UG.*");
+        sql.append("FROM ECToResidentialGroupMapping ECTGM");
+        sql.append(  "JOIN UserGroup UG ON UG.UserGroupId = ECTGM.UserGroupId");
+        sql.append("WHERE ECTGM.EnergyCompanyId").eq(energyCompanyId);
         
-        return yukonJdbcTemplate.query(sql, YukonGroupDaoImpl.liteYukonGroupRowMapper);
+        return yukonJdbcTemplate.query(sql, new UserGroupDaoImpl.LiteUserGroupRowMapper());
     }
     
     @Override
-    public List<LiteYukonGroup> getOperatorGroups(int energyCompanyId) {
+    public List<LiteUserGroup> getOperatorUserGroups(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT yg.GroupId, yg.GroupName, yg.GroupDescription");
-        sql.append("FROM ECToOperatorGroupMapping ectrm");
-        sql.append(  "JOIN YukonGroup yg on yg.GroupId = ectrm.GroupId");
-        sql.append("WHERE ectrm.EnergyCompanyId").eq(energyCompanyId);
+        sql.append("SELECT UG.*");
+        sql.append("FROM ECToOperatorGroupMapping ECTRM");
+        sql.append(  "JOIN UserGroup UG ON UG.UserGroupId = ECTRM.UserGroupId");
+        sql.append("WHERE ECTRM.EnergyCompanyId").eq(energyCompanyId);
         
-        return yukonJdbcTemplate.query(sql, YukonGroupDaoImpl.liteYukonGroupRowMapper);
+        return yukonJdbcTemplate.query(sql, new UserGroupDaoImpl.LiteUserGroupRowMapper());
     }
     
     @Override
-    public void addECToOperatorGroupMapping(int ecId, Iterable<Integer> groupIds) {
-        for (Integer groupId : groupIds) {
+    public void addECToOperatorUserGroupMapping(int ecId, Iterable<Integer> userGroupIds) {
+        for (int userGroupId : userGroupIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder("INSERT INTO ECToOperatorGroupMapping");
-            sql.values(ecId, groupId);
+            sql.values(ecId, userGroupId);
             yukonJdbcTemplate.update(sql);
         }
     }
     
     @Override
-    public void addECToResidentialGroupMapping(int ecId, List<Integer> groupIds) {
-        for (Integer groupId : groupIds) {
+    public void addECToResidentialUserGroupMapping(int ecId, List<Integer> userGroupIds) {
+        for (int userGroupId : userGroupIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder("INSERT INTO ECToResidentialGroupMapping");
-            sql.values(ecId, groupId);
+            sql.values(ecId, userGroupId);
             yukonJdbcTemplate.update(sql);
         }
     }
 
     @Override
-    public void deleteECToOperatorGroupMapping(int ecId, int groupId) throws InUseException {
+    public void deleteECToOperatorUserGroupMapping(int ecId, int userGroupId) throws InUseException {
+        SqlStatementBuilder opLoginIdsSql = new SqlStatementBuilder();
+        opLoginIdsSql.append("SELECT OperatorLoginId");
+        opLoginIdsSql.append("FROM EnergyCompanyOperatorLoginList");
+        opLoginIdsSql.append("WHERE EnergyCompanyId").eq(ecId);
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) FROM YukonUserGroup WHERE UserId IN (");
-        sql.append(  "SELECT OperatorLoginId FROM EnergyCompanyOperatorLoginList");
-        sql.append(  "WHERE EnergyCompanyId").eq(ecId);
-        sql.append(") AND GroupId").eq(groupId);
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM YukonUser YU");
+        sql.append("WHERE YU.UserId").in(opLoginIdsSql);
+        sql.append("  AND YU.UserGroupId").eq(userGroupId);
         int numUses = yukonJdbcTemplate.queryForInt(sql);
         if (numUses > 0) {
             throw new InUseException();
@@ -401,12 +406,12 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ECToOperatorGroupMapping");
         sql.append("WHERE EnergyCompanyId").eq(ecId);
-        sql.append(  "AND GroupId").eq(groupId);
+        sql.append(  "AND UserGroupId").eq(userGroupId);
         yukonJdbcTemplate.update(sql);
     }
     
     @Override
-    public void deleteECToResidentialGroupMapping(int ecId, int groupId) throws InUseException {
+    public void deleteECToResidentialUserGroupMapping(int ecId, int userGroupId) throws InUseException {
         SqlStatementBuilder customerIdQuery = new SqlStatementBuilder();
         customerIdQuery.append("SELECT CustomerId FROM CustomerAccount");
         customerIdQuery.append("WHERE AccountId IN (");
@@ -429,11 +434,16 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         sql.append(")");
         contactsClause.add(sql);
 
+        SqlStatementBuilder loginIdsByContactSql = new SqlStatementBuilder();
+        loginIdsByContactSql.append("SELECT LoginId");
+        loginIdsByContactSql.append("FROM Contact");
+        loginIdsByContactSql.append("WHERE").append(contactsClause);
+        
         sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) FROM YukonUserGroup WHERE UserId IN (");
-        sql.append(    "SELECT LogInId FROM Contact");
-        sql.append(    "WHERE").append(contactsClause);
-        sql.append(") AND GroupId").eq(groupId);
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM YukonUser YU"); 
+        sql.append("WHERE YU.UserId").in(loginIdsByContactSql);
+        sql.append("  AND YU.UserGroupId").eq(userGroupId);
         int numUses = yukonJdbcTemplate.queryForInt(sql);
         if (numUses > 0) {
             throw new InUseException();
@@ -442,7 +452,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         sql = new SqlStatementBuilder();
         sql.append("DELETE FROM ECToResidentialGroupMapping");
         sql.append("WHERE EnergyCompanyId").eq(ecId);
-        sql.append(  "AND GroupId").eq(groupId);
+        sql.append(  "AND UserGroupId").eq(userGroupId);
         yukonJdbcTemplate.update(sql);
     }
     

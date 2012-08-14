@@ -26,6 +26,8 @@
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.defaultRoute">Default Route</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.groups.title">Operator and Residential Groups</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup">Primary Operator Group</entry>
+    <entry key="yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup.roleGroupConflict">The primary operator user group supplied has the Energy Company and/or the Admin role in one of its role groups.  Please select a different user group or remove these Roles.</entry>
+    
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.additionalOperatorGroups">Additional Operator Group(s)</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.residentialGroups">Residential Group(s)</entry>
     <entry key="yukon.web.modules.adminSetup.createEnergyCompany.optional">(Optional)</entry>
@@ -49,7 +51,7 @@
     <entry key="yukon.web.modules.adminSetup.generalInfo.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.infoContainer.title">Energy Company Information</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.membersContainer.title">Member Energy Companies</entry>
-    <entry key="yukon.web.modules.adminSetup.generalInfo.loginGroupsContainer.title">Login Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.generalInfo.loginGroupsContainer.title">Role Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.operatorGroups">Operator Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.customerGroups">Residential Customer Groups</entry>
     <entry key="yukon.web.modules.adminSetup.generalInfo.noCustomerGroups">No Residential Customer Groups</entry>
@@ -102,7 +104,7 @@
             <li>&nbsp;&bull; Service Companies</li>
             <li>&nbsp;&bull; Appliance Categories</li>
             <li>&nbsp;&bull; Customer Selection Lists</li>
-            <li>&nbsp;&bull; Operator Login Groups</li>
+            <li>&nbsp;&bull; Operator Role Groups</li>
         </ul>
 
     ]]></entry>

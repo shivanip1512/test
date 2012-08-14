@@ -109,6 +109,8 @@ import com.cannontech.dbeditor.menu.ViewMenu;
 import com.cannontech.dbeditor.wizard.changetype.device.DeviceChangeTypeWizardPanel;
 import com.cannontech.dbeditor.wizard.copy.device.DeviceCopyWizardPanel;
 import com.cannontech.dbeditor.wizard.tou.TOUScheduleWizardPanel;
+import com.cannontech.dbeditor.wizard.user.LoginGroupWizardPanel;
+import com.cannontech.dbeditor.wizard.user.UserGroupWizardPanel;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -240,14 +242,14 @@ public class DatabaseEditor
 			TreeModelEnum.CICUSTOMER,
 			TreeModelEnum.CONTACT,
 			TreeModelEnum.HOLIDAY_SCHEDULE,
-			TreeModelEnum.LOGINS,
-			TreeModelEnum.LOGIN_GROUPS,
 			TreeModelEnum.NOTIFICATION_GROUP,
+			TreeModelEnum.ROLE_GROUPS,
 			TreeModelEnum.SEASON,
+			TreeModelEnum.SYSTEM_DEVICE,
 			TreeModelEnum.TAG,
 			TreeModelEnum.TOUSCHEDULE,
+			TreeModelEnum.USERS,
 			TreeModelEnum.USER_GROUPS,
-            TreeModelEnum.SYSTEM_DEVICE,
 		};
 	private static final TreeModelEnum[] NONLOGIN_SYSTEM_MODELS =
 		{
@@ -593,13 +595,17 @@ private void displayAWizardPanel(JMenuItem item)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.contact.ContactWizardPanel());
 	}
-	else if (item == systemCreateMenu.loginMenuItem)
+	else if (item == systemCreateMenu.userMenuItem)
 	{
 		showWizardPanel(new com.cannontech.dbeditor.wizard.user.YukonUserWizardPanel());
 	}
-	else if (item == systemCreateMenu.loginGrpMenuItem)
+    else if (item == systemCreateMenu.userGroupMenuItem)
+    {
+        showWizardPanel(new UserGroupWizardPanel());
+    }
+	else if (item == systemCreateMenu.roleGroupMenuItem)
 	{
-		showWizardPanel(new com.cannontech.dbeditor.wizard.user.LoginGroupWizardPanel());
+		showWizardPanel(new LoginGroupWizardPanel());
 	}
 	else if (item == systemCreateMenu.holidayMenuItem)
 	{
@@ -2195,8 +2201,9 @@ private void readConfigParameters()
 	//shouldn't be allowed to see login stuff
 	if( accessOfLoginNotAllowed && !isSuperuser)
 	{
-		systemCreateMenu.remove( systemCreateMenu.loginGrpMenuItem );
-		systemCreateMenu.remove( systemCreateMenu.loginMenuItem );
+		systemCreateMenu.remove( systemCreateMenu.roleGroupMenuItem );
+		systemCreateMenu.remove( systemCreateMenu.userMenuItem );
+        systemCreateMenu.remove( systemCreateMenu.userGroupMenuItem );
 	}
 	
 	if( !showLm )
@@ -2603,7 +2610,7 @@ public void setDatabase(DatabaseTypes whichDatabase)
 	if( models == LM_MODELS || models == LM_MODELS_WITH_SA )
 		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.LMGROUPS));
 	if( models == SYSTEM_MODELS )
-		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.LOGIN_GROUPS));
+		getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.ROLE_GROUPS));
     if( models == NONLOGIN_SYSTEM_MODELS )
         getTreeViewPanel().setSelectedSortByIndex(Arrays.asList(models).indexOf(TreeModelEnum.NOTIFICATION_GROUP));
 	

@@ -1,7 +1,5 @@
 package com.cannontech.web.admin.userGroupEditor;
 
-import static com.cannontech.common.util.StringUtils.parseIntStringForList;
-
 import java.util.List;
 import java.util.Map;
 
@@ -26,14 +24,13 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.RoleDao;
-import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.service.YukonGroupService;
 import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -44,7 +41,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/user/*")
@@ -54,8 +50,6 @@ public class UserEditorController {
     @Autowired private AuthenticationService authenticationService;
     @Autowired private RoleDao roleDao;
     @Autowired private UserGroupDao userGroupDao;
-    @Autowired private YukonGroupDao yukonGroupDao;
-    @Autowired private YukonGroupService yukonGroupService;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserValidator yukonUserValidator;
     
@@ -71,6 +65,9 @@ public class UserEditorController {
         model.addAttribute("user", user);
         model.addAttribute("passwordChange", new PasswordChange());
         model.addAttribute("mode", PageEditMode.VIEW);
+        
+        LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
+        model.addAttribute("userGroupName", liteUserGroup.getUserGroupName());
         setupModelMap(model, user);
         
         return "userGroupEditor/user.jsp";
@@ -129,56 +126,6 @@ public class UserEditorController {
         return "redirect:view";
     }
 
-    /* Login Groups Page */
-    @RequestMapping
-    public String groups(ModelMap model, int userId) {
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
-        model.addAttribute("user", user);
-        model.addAttribute("userId", user.getUserID());
-        model.addAttribute("editingUsername", user.getUsername());
-        model.addAttribute("groups", yukonGroupDao.getGroupsForUser(userId, true));
-        
-        return "userGroupEditor/groups.jsp";
-    }
-    
-    @RequestMapping(method=RequestMethod.POST)
-    public String addGroups(ModelMap model, FlashScope flash, int userId, String groupIds) {
-        List<Integer> groupIdsList = parseIntStringForList(groupIds);
-        List<String> conflictingGroups = checkGroupsForConflicts(groupIdsList, userId);
-        
-        model.addAttribute("userId", userId);
-        
-        if (!conflictingGroups.isEmpty()) {
-            String groupNames = conflictingGroups.toString();
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.groupConflict", groupNames));
-            return "redirect:groups";
-        } else {
-            for (int groupId : groupIdsList) {
-                yukonGroupService.addUserToGroup(groupId, userId);
-            }
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
-            return "redirect:groups";
-        }
-    }
-    
-    private List<String> checkGroupsForConflicts(List<Integer> groupIds, int userId) {
-        List<String> groupNames = Lists.newArrayList();
-        for (int groupId : groupIds) {
-            if (yukonGroupService.addToGroupWillHaveConflicts(userId, groupId)) {
-                groupNames.add(yukonGroupDao.getLiteYukonGroup(groupId).getGroupName());
-            }
-        }
-        return groupNames;
-    }
-    
-    @RequestMapping(method=RequestMethod.POST)
-    public String removeGroup(ModelMap model, FlashScope flash, int userId, int remove) {
-        yukonUserDao.removeUserFromGroup(userId, remove);
-        model.addAttribute("userId", userId);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
-        return "redirect:groups";
-    }
-    
     @RequestMapping(method=RequestMethod.POST)
     public String changePassword(ModelMap model, FlashScope flash, int userId, 
                                  @ModelAttribute PasswordChange passwordChange, BindingResult result) {

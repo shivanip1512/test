@@ -15,6 +15,8 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -48,6 +50,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     @Autowired private CustomerAccountDao customerAccountDao;
     @Autowired private HardwareUiService hardwareUiService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private UserGroupDao userGroupDao;
     
     @Override
     protected void createAll() {
@@ -66,43 +69,50 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     }
     
     private void createOperatorsGroup(DevStars devStars) {
-        LiteYukonGroup group = new LiteYukonGroup();
-        group.setGroupDescription(devStars.getNewEnergyCompanyName() + " Operators Grp");
-        group.setGroupName(devStars.getNewEnergyCompanyName() + " Operators Grp");
-        yukonGroupDao.save(group);
+        LiteYukonGroup roleGroup = new LiteYukonGroup();
+        roleGroup.setGroupDescription(devStars.getNewEnergyCompanyName() + " Operators Grp");
+        roleGroup.setGroupName(devStars.getNewEnergyCompanyName() + " Operators Grp");
+        yukonGroupDao.save(roleGroup);
         
-        setRoleProperty(group, YukonRoleProperty.POINT_ID_EDIT, " ");
-        setRoleProperty(group, YukonRoleProperty.DBEDITOR_LM, " ");
-        setRoleProperty(group, YukonRoleProperty.DBEDITOR_SYSTEM, " ");
-        setRoleProperty(group, YukonRoleProperty.UTILITY_ID_RANGE, " ");
-        setRoleProperty(group, YukonRoleProperty.PERMIT_LOGIN_EDIT, " ");
-        setRoleProperty(group, YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.POINT_ID_EDIT, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.DBEDITOR_LM, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.DBEDITOR_SYSTEM, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.UTILITY_ID_RANGE, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.PERMIT_LOGIN_EDIT, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, " ");
         
-        setRoleProperty(group, YukonRoleProperty.LOADCONTROL_EDIT, " ");
-        setRoleProperty(group, YukonRoleProperty.MACS_EDIT, " ");
-        setRoleProperty(group, YukonRoleProperty.TDC_EXPRESS, " ");
-        setRoleProperty(group, YukonRoleProperty.TDC_MAX_ROWS, " ");
-        setRoleProperty(group, YukonRoleProperty.TDC_RIGHTS, " ");
-        setRoleProperty(group, YukonRoleProperty.TDC_ALARM_COUNT, " ");
-        setRoleProperty(group, YukonRoleProperty.DECIMAL_PLACES, " ");
-        setRoleProperty(group, YukonRoleProperty.LC_REDUCTION_COL, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.LOADCONTROL_EDIT, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.MACS_EDIT, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.TDC_EXPRESS, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.TDC_MAX_ROWS, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.TDC_RIGHTS, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.TDC_ALARM_COUNT, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.DECIMAL_PLACES, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.LC_REDUCTION_COL, " ");
         
-        setRoleProperty(group, YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION, " ");
-        setRoleProperty(group, YukonRoleProperty.TRENDING_DISCLAIMER, " ");
-        setRoleProperty(group, YukonRoleProperty.SCAN_NOW_ENABLED, " ");
-        setRoleProperty(group, YukonRoleProperty.MINIMUM_SCAN_FREQUENCY, " ");
-        setRoleProperty(group, YukonRoleProperty.MAXIMUM_DAILY_SCANS, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.TRENDING_DISCLAIMER, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.SCAN_NOW_ENABLED, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.MINIMUM_SCAN_FREQUENCY, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.MAXIMUM_DAILY_SCANS, " ");
 
-        setRoleProperty(group, YukonRoleProperty.VERSACOM_SERIAL_MODEL,true);
-        setRoleProperty(group, YukonRoleProperty.EXPRESSCOM_SERIAL_MODEL,true);
-        setRoleProperty(group, YukonRoleProperty.DCU_SA205_SERIAL_MODEL,false);
-        setRoleProperty(group, YukonRoleProperty.DCU_SA305_SERIAL_MODEL,false);
-        setRoleProperty(group, YukonRoleProperty.LC_REDUCTION_COL, " ");
-        setRoleProperty(group, YukonRoleProperty.COMMANDS_GROUP, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.VERSACOM_SERIAL_MODEL,true);
+        setRoleProperty(roleGroup, YukonRoleProperty.EXPRESSCOM_SERIAL_MODEL,true);
+        setRoleProperty(roleGroup, YukonRoleProperty.DCU_SA205_SERIAL_MODEL,false);
+        setRoleProperty(roleGroup, YukonRoleProperty.DCU_SA305_SERIAL_MODEL,false);
+        setRoleProperty(roleGroup, YukonRoleProperty.LC_REDUCTION_COL, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.COMMANDS_GROUP, " ");
         
-        setRoleProperty(group, YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP, " ");
         
-        devStars.setLiteYukonGroupOperator(group);
+        // Creating the operator user group that the group above will be mapped to.
+        LiteUserGroup userGroup = new LiteUserGroup();
+        userGroup.setUserGroupDescription(devStars.getNewEnergyCompanyName() + " Operators Grp");
+        userGroup.setUserGroupName(devStars.getNewEnergyCompanyName() + " Operators Grp");
+        userGroupDao.create(userGroup);
+        userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), roleGroup.getGroupID());
+        
+        devStars.setLiteUserGroupOperator(userGroup);
     }
     
     private void createEnergyCompany(DevStars devStars) {
@@ -110,7 +120,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
         EnergyCompanyDto energyCompanyDto = new EnergyCompanyDto();
         energyCompanyDto.setName(devStars.getNewEnergyCompanyName());
         energyCompanyDto.setEmail("info@cannontech.com");
-        energyCompanyDto.setPrimaryOperatorGroupId(devStars.getLiteYukonGroupOperator().getGroupID());
+        energyCompanyDto.setPrimaryOperatorUserGroupId(devStars.getLiteUserGroupOperator().getUserGroupId());
         String username = StringUtils.deleteWhitespace(devStars.getNewEnergyCompanyName()).toLowerCase() + "_op";
         energyCompanyDto.setAdminUsername(username);
         energyCompanyDto.setAdminPassword1(username);
@@ -141,50 +151,57 @@ public class DevStarsCreationService extends DevObjectCreationBase {
     
     private void createResidentialGroup(DevStars devStars) {
         int energyCompanyId = devStars.getEnergyCompany().getEnergyCompanyId();
-        List<LiteYukonGroup> residentialGroups = ecMappingDao.getResidentialGroups(energyCompanyId);
-        if (residentialGroups.isEmpty()) {
-            LiteYukonGroup group = null;
+        List<LiteUserGroup> residentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompanyId);
+        if (residentialUserGroups.isEmpty()) {
+            LiteYukonGroup roleGroup = null;
 
             try {        
-                group = yukonGroupDao.getLiteYukonGroupByName(devStars.getNewEnergyCompanyName() + " Residential Grp");
+                roleGroup = yukonGroupDao.getLiteYukonGroupByName(devStars.getNewEnergyCompanyName() + " Residential Grp");
             } catch(Exception e) {
-                group = new LiteYukonGroup();
-                group.setGroupDescription(devStars.getNewEnergyCompanyName() + " Residential Grp");
-                group.setGroupName(devStars.getNewEnergyCompanyName() + " Residential Grp");
-                yukonGroupDao.save(group);
+                roleGroup = new LiteYukonGroup();
+                roleGroup.setGroupDescription(devStars.getNewEnergyCompanyName() + " Residential Grp");
+                roleGroup.setGroupName(devStars.getNewEnergyCompanyName() + " Residential Grp");
+                yukonGroupDao.save(roleGroup);
             }
 
-            setRoleProperty(group, YukonRoleProperty.HOME_URL, "/spring/stars/consumer/general");
-            setRoleProperty(group, YukonRoleProperty.STYLE_SHEET, " ");
-            setRoleProperty(group, YukonRoleProperty.NAV_BULLET_EXPAND, " ");
-            setRoleProperty(group, YukonRoleProperty.NAV_BULLET_SELECTED, " ");
-            setRoleProperty(group, YukonRoleProperty.HEADER_LOGO, "yukon/DemoHeaderCES.gif");
-            setRoleProperty(group, YukonRoleProperty.LOG_IN_URL, " ");
-            setRoleProperty(group, YukonRoleProperty.NAV_CONNECTOR_BOTTOM, " ");
-            setRoleProperty(group, YukonRoleProperty.NAV_CONNECTOR_MIDDLE, " ");
-            setRoleProperty(group, YukonRoleProperty.INBOUND_VOICE_HOME_URL, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.HOME_URL, "/spring/stars/consumer/general");
+            setRoleProperty(roleGroup, YukonRoleProperty.STYLE_SHEET, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.NAV_BULLET_EXPAND, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.NAV_BULLET_SELECTED, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.HEADER_LOGO, "yukon/DemoHeaderCES.gif");
+            setRoleProperty(roleGroup, YukonRoleProperty.LOG_IN_URL, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.NAV_CONNECTOR_BOTTOM, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.NAV_CONNECTOR_MIDDLE, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.INBOUND_VOICE_HOME_URL, " ");
             
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL,true);
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY,true);
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT,true);
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT,true);
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT,true);
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ,true);
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL,true);
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME,true);
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL,true);
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL,true);
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY,true);
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT,true);
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT,true);
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_HARDWARES_THERMOSTAT,true);
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ,true);
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL,true);
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME,true);
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL,true);
             
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_HIDE_OPT_OUT_BOX, false);
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD, " ");
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_WEB_LINK_FAQ, " ");
-            setRoleProperty(group, YukonRoleProperty.RESIDENTIAL_WEB_LINK_THERM_INSTRUCTIONS, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_HIDE_OPT_OUT_BOX, false);
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_WEB_LINK_FAQ, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_WEB_LINK_THERM_INSTRUCTIONS, " ");
 
-            setRoleProperty(group, YukonRoleProperty.CSRF_TOKEN_MODE, " ");
+            setRoleProperty(roleGroup, YukonRoleProperty.CSRF_TOKEN_MODE, " ");
             
-            ecMappingDao.addECToResidentialGroupMapping(energyCompanyId, Lists.newArrayList(group.getGroupID()));
-            devStars.setLiteYukonGroupResidential(group);
+            // Creating the residential user group that the group above will be mapped to.
+            LiteUserGroup userGroup = new LiteUserGroup();
+            userGroup.setUserGroupDescription(devStars.getNewEnergyCompanyName() + " Residential Grp");
+            userGroup.setUserGroupName(devStars.getNewEnergyCompanyName() + " Residential Grp");
+            userGroupDao.create(userGroup);
+            userGroupDao.createUserGroupToYukonGroupMappng(userGroup.getUserGroupId(), roleGroup.getGroupID());
+            
+            ecMappingDao.addECToResidentialUserGroupMapping(energyCompanyId, Lists.newArrayList(userGroup.getUserGroupId()));
+            devStars.setLiteUserGroupResidential(userGroup);
         } else {
-            devStars.setLiteYukonGroupResidential(residentialGroups.get(0));
+            devStars.setLiteUserGroupResidential(residentialUserGroups.get(0));
         }
     }
 
@@ -206,7 +223,7 @@ public class DevStarsCreationService extends DevObjectCreationBase {
             accountDto.setBillingAddress(new Address("1234 Fake Street", "5678 Really Fake Street", "Fakeland", "MN", "55555", "Fake County"));
             accountDto.setUserName(accountNumString);
             accountDto.setPassword(accountNumString);
-            accountDto.setLoginGroup(devStars.getLiteYukonGroupResidential().getGroupName());
+            accountDto.setUserGroup(devStars.getLiteUserGroupResidential().getUserGroupName());
             accountDto.setMapNumber(accountNumString);
             accountDto.setAltTrackingNumber(accountNumString);
             accountDto.setIsCommercial(false);

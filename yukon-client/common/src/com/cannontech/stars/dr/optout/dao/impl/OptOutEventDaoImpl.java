@@ -299,9 +299,10 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
         sql.append("  JOIN CustomerAccount CA ON CA.AccountId = OOE.CustomerAccountId");
         sql.append("  JOIN Customer Cust ON Cust.CustomerId = CA.CustomerId");
         sql.append("  JOIN Contact Cont ON Cont.ContactId = Cust.PrimaryContactId");
-        sql.append("  JOIN YukonUserGroup YUG ON YUG.UserId = Cont.LoginId");
+        sql.append("  JOIN YukonUser YU ON YU.UserId = Cont.LoginId");
+        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.UserGroupId =YU.UserGroupId");
         sql.append("WHERE OOE.CustomerAccountId").eq(accountId);
-        sql.append("  AND YUG.GroupId").eq(residentialGroup.getGroupID());
+        sql.append("  AND UGYGM.GroupId").eq(residentialGroup.getGroupID());
         sql.append("  AND OOE.StartDate").lte(stopDate);
         sql.append("  AND OOE.StopDate").gte(startDate);
         sql.append("  AND (OOE.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
@@ -348,9 +349,10 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
         sql.append("  JOIN CustomerAccount CA ON CA.AccountId = OOE.CustomerAccountId");
         sql.append("  JOIN Customer Cust ON Cust.CustomerId = CA.CustomerId");
         sql.append("  JOIN Contact Cont ON Cont.ContactId = Cust.PrimaryContactId");
-        sql.append("  JOIN YukonUserGroup YUG ON YUG.UserId = Cont.LoginId");
+        sql.append("  JOIN YukonUser YU ON YU.UserId = Cont.LoginId");
+        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.UserGroupId = YU.UserGroupId");
         sql.append("WHERE OOE.InventoryId").eq(inventoryId);
-        sql.append("  AND YUG.GroupId").eq(residentialGroup.getGroupID());
+        sql.append("  AND UGYGM.GroupId").eq(residentialGroup.getGroupID());
         sql.append("  AND OOE.StartDate").lte(stopDate);
         sql.append("  AND OOE.StopDate").gte(startDate);
         sql.append("  AND (OOE.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
@@ -372,9 +374,10 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
         sql.append("  JOIN CustomerAccount CA ON CA.AccountId = OOE.CustomerAccountId");
         sql.append("  JOIN Customer Cust ON Cust.CustomerId = CA.CustomerId");
         sql.append("  JOIN Contact Cont ON Cont.ContactId = Cust.PrimaryContactId");
-        sql.append("  JOIN YukonUserGroup YUG ON YUG.UserId = Cont.LoginId");
+        sql.append("  JOIN YukonUser YU ON YU.UserId = Cont.LoginId");
+        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.UserGroupId = YU.UserGroupId");
         sql.append("WHERE OOE.OptOutEventId").in(getEventsByUserId(logUserId));
-        sql.append("  AND YUG.GroupId").eq(residentialGroup.getGroupID());
+        sql.append("  AND UGYGM.GroupId").eq(residentialGroup.getGroupID());
         sql.append("  AND OOE.StartDate").lte(stopDate);
         sql.append("  AND OOE.StopDate").gte(startDate);
         sql.append("  AND (OOE.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);

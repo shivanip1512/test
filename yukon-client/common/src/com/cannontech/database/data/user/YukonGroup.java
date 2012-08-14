@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel {
 
 	private com.cannontech.database.db.user.YukonGroup yukonGroup;
-	private List<YukonGroupRole> yukonGroupRoles;  //type = com.cannontech.database.db.user.YukonGroupRole
+	private List<YukonGroupRole> yukonGroupRoles = Lists.newArrayList();
 	
 	
 	public YukonGroup() 
@@ -57,10 +57,6 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	}
 	
 	public ImmutableList<YukonGroupRole> getYukonGroupRoles() {
-        if( yukonGroupRoles == null ) {
-            yukonGroupRoles = Lists.newArrayList();
-        }
-
         return ImmutableList.copyOf(yukonGroupRoles);
     }
 
@@ -86,7 +82,6 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	 */
 	public void delete() throws SQLException {
 		delete( YukonGroupRole.TABLE_NAME, "GroupID", getYukonGroup().getGroupID() );
-		delete( com.cannontech.database.db.user.YukonGroup.TBL_YUKON_USER_GROUP, "GroupID", getYukonGroup().getGroupID() );
         PaoPermissionDao<LiteYukonGroup> paoPermissionDao = (PaoPermissionDao<LiteYukonGroup>) YukonSpringHook.getBean("groupPaoPermissionDao");
         paoPermissionDao.removeAllPermissions(getGroupID());
         
@@ -205,7 +200,7 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	 */
     public void addYukonGroupRole(YukonGroupRole yukonGroupRole) throws ConfigurationException {
         YukonRole newRole = YukonRole.getForId(yukonGroupRole.getRoleID());
-        if (isYukonGroupRoleAddable(yukonGroupRole.getGroupID(), newRole)) {
+        if (yukonGroupRole.getGroupID() == null || isYukonGroupRoleAddable(yukonGroupRole.getGroupID(), newRole)) {
             yukonGroupRoles.add(yukonGroupRole);
             return;
         }

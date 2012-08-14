@@ -25,6 +25,7 @@ public interface DBDeletionDao {
     public static final int ROUTE_TYPE = 18;
     public static final int DEVICE_CONFIGURATION = 19;
     public static final int DEVICE_CONFIGURATION_CATEGORY = 20;
+    public static final int USER_GROUP_TYPE = 21;
 
     //the return types of each possible delete
     public static final byte STATUS_ALLOW = 1;

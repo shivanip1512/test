@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.cannontech.core.dao.InUseException;
-import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -179,38 +179,38 @@ public interface ECMappingDao {
     public LinkedHashSet<Integer> getParentEnergyCompanyIds(int energyCompanyId);
 
     /**
-     * Returns a list of the operator groups for an energy company
+     * Returns a list of the operator user groups for an energy company
      */
-    public List<LiteYukonGroup> getOperatorGroups(int energyCompanyId);
+    public List<LiteUserGroup> getOperatorUserGroups(int energyCompanyId);
 
     /**
-     * Returns a list of the customer groups for an energy company
+     * Returns a list of the customer user groups for an energy company
      */
-    public List<LiteYukonGroup> getResidentialGroups(int energyCompanyId);
+    public List<LiteUserGroup> getResidentialUserGroups(int energyCompanyId);
 
     /**
-     * Adds a list of login groups to the energy companies operator login group list
+     * Adds a list of user groups to the energy companies operator user group list
      */
-    public void addECToOperatorGroupMapping(int ecId, Iterable<Integer> groupIds);
+    public void addECToOperatorUserGroupMapping(int ecId, Iterable<Integer> userGroupIds);
 
     /**
-     * Adds a list of login groups to the energy companies residential customer login group list
+     * Adds a list of user groups to the energy companies residential customer user group list
      */
-    public void addECToResidentialGroupMapping(int ecId, List<Integer> groupIds);
+    public void addECToResidentialUserGroupMapping(int ecId, List<Integer> userGroupIds);
 
     /**
-     * Removes a login group from the operator login group list for an energy company.
+     * Removes a user group from the operator user group list for an energy company.
      * @throws InUseException If the mapping cannot be deleted because the energy company has logins
      *             associated with the given group.
      */
-    public void deleteECToOperatorGroupMapping(int ecId, int groupId) throws InUseException;
+    public void deleteECToOperatorUserGroupMapping(int ecId, int userGroupId) throws InUseException;
 
     /**
-     * Removes a login group from the customer login group list for an energy company
+     * Removes a user group from the customer user group list for an energy company
      * @throws InUseException If the mapping cannot be deleted because the energy company has logins
      *             associated with the given group.
      */
-    public void deleteECToResidentialGroupMapping(int ecId, int groupId) throws InUseException;
+    public void deleteECToResidentialUserGroupMapping(int ecId, int userGroupId) throws InUseException;
 
     /**
      * Returns the operator login of an energy company it's parent energy company uses to login to it.

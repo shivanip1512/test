@@ -102,17 +102,6 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 		getYukonUser().setLastChangedDate(Instant.now().toDate());
 		getYukonUser().add();
 
-		
-		for (int i = 0; i < getYukonGroups().size(); i++) {
-			Object[] addValues = 
-			{
-				getYukonUser().getUserID(), 
-				getYukonGroups().get(i).getGroupID()
-			};
-
-			add( YukonGroup.TBL_YUKON_USER_GROUP, addValues );
-		}
-
 		//This is not null if this login has been linked to an energy company
 		if(company != null)
 		{
@@ -125,11 +114,9 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
 	@Override
-    public void delete() throws SQLException 
-	{
-		delete( YukonGroup.TBL_YUKON_USER_GROUP, "UserID", getYukonUser().getUserID() );
-        
-		YukonUserDao yukonUserDao =
+    public void delete() throws SQLException {
+
+	    YukonUserDao yukonUserDao =
 		    YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
 		yukonUserDao.removeUserFromEventBase(getYukonUser().getUserID());
 
@@ -167,18 +154,6 @@ public class YukonUser extends DBPersistent implements CTIDbChange, EditorPanel
 		setUserID( getYukonUser().getUserID() );
 
 		getYukonUser().update();
-		
-		//remove then add all the groups this user belongs to
-		delete( YukonGroup.TBL_YUKON_USER_GROUP, "UserID", getYukonUser().getUserID() );
-		for (int i = 0; i < getYukonGroups().size(); i++) 
-		{
-			Object[] addValues = 
-			{
-				getYukonUser().getUserID(), 
-				getYukonGroups().get(i).getGroupID()
-			};
-			add( YukonGroup.TBL_YUKON_USER_GROUP, addValues );
-		}
 				
 		//This is not null if this login has been linked to an energy company
 		if(company != null)

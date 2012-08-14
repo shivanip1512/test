@@ -25,6 +25,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.YukonGroupService;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -223,11 +224,11 @@ public class GeneralInfoController {
     }
     
     /* Add Operator Group */
-    @RequestMapping(value="updateOperatorGroups", params="!removeOperatorGroup", method=RequestMethod.POST)
-    public String addOperatorGroups(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, String operatorGroupIds,
+    @RequestMapping(value="updateOperatorGroups", params="!removeOperatorUserGroup", method=RequestMethod.POST)
+    public String addOperatorUserGroups(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, String operatorUserGroupIds,
                                EnergyCompanyInfoFragment fragment) {
         
-        ecMappingDao.addECToOperatorGroupMapping(ecId, StringUtils.parseIntStringForList(operatorGroupIds));
+        ecMappingDao.addECToOperatorUserGroupMapping(ecId, StringUtils.parseIntStringForList(operatorUserGroupIds));
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "operatorGroupsUpdatedSuccessful"));
 
         model.clear();
@@ -236,18 +237,18 @@ public class GeneralInfoController {
     }
 
     /* Remove Operator Group */
-    @RequestMapping(value="updateOperatorGroups", params="removeOperatorGroup", method=RequestMethod.POST)
-    public String removeOperatorGroup(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, int removeOperatorGroup,
+    @RequestMapping(value="updateOperatorGroups", params="removeOperatorUserGroup", method=RequestMethod.POST)
+    public String removeOperatorUserGroup(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, int removeOperatorUserGroup,
                                EnergyCompanyInfoFragment fragment) {
         /* Make sure they always have at least one operator group */
-        if (ecMappingDao.getOperatorGroups(ecId).size() < 2) {
+        if (ecMappingDao.getOperatorUserGroups(ecId).size() < 2) {
             EnergyCompanyInfoFragmentHelper.setupModelMapBasics(fragment, model);
             flash.setError(new YukonMessageSourceResolvable(baseKey + "requireAtLeastOneOpGroup"));
             return "redirect:view";
         }
 
         try {
-            ecMappingDao.deleteECToOperatorGroupMapping(ecId, removeOperatorGroup);
+            ecMappingDao.deleteECToOperatorUserGroupMapping(ecId, removeOperatorUserGroup);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "operatorGroupsUpdatedSuccessful"));
         } catch (InUseException e) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "operatorGroupsInUse"));
@@ -259,11 +260,11 @@ public class GeneralInfoController {
     }
     
     /* Add Customer Group */
-    @RequestMapping(value="updateCustomerGroups", params="!removeCustomerGroup", method=RequestMethod.POST)
-    public String addCustomerGroups(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, String customerGroupIds,
+    @RequestMapping(value="updateCustomerGroups", params="!removeCustomerUserGroup", method=RequestMethod.POST)
+    public String addCustomerUserGroups(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, String customerUserGroupIds,
                                EnergyCompanyInfoFragment fragment) {
         
-        ecMappingDao.addECToResidentialGroupMapping(ecId, StringUtils.parseIntStringForList(customerGroupIds));
+        ecMappingDao.addECToResidentialUserGroupMapping(ecId, StringUtils.parseIntStringForList(customerUserGroupIds));
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "customerGroupsUpdatedSuccessful"));
 
         model.clear();
@@ -272,11 +273,11 @@ public class GeneralInfoController {
     }
     
     /* Remove Customer Group */
-    @RequestMapping(value="updateCustomerGroups", params="removeCustomerGroup", method=RequestMethod.POST)
-    public String removeCustomerGroup(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, int removeCustomerGroup,
+    @RequestMapping(value="updateCustomerGroups", params="removeCustomerUserGroup", method=RequestMethod.POST)
+    public String removeCustomerUserGroup(ModelMap model, YukonUserContext context, FlashScope flash, int ecId, int removeCustomerUserGroup,
                                EnergyCompanyInfoFragment fragment) {
         try {
-            ecMappingDao.deleteECToResidentialGroupMapping(ecId, removeCustomerGroup);
+            ecMappingDao.deleteECToResidentialUserGroupMapping(ecId, removeCustomerUserGroup);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "customerGroupsUpdatedSuccessful"));
         } catch (InUseException e) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "customerGroupsInUse"));
@@ -299,21 +300,21 @@ public class GeneralInfoController {
             model.addAttribute("memberCandidates", energyCompanyService.getMemberCandidates(ecId));
         }
 
-        Function<LiteYukonGroup, Integer> idFromGroup = new Function<LiteYukonGroup, Integer>() {
+        Function<LiteUserGroup, Integer> idFromUserGroup = new Function<LiteUserGroup, Integer>() {
             @Override
-            public Integer apply(LiteYukonGroup from) {
-                return from.getGroupID();
+            public Integer apply(LiteUserGroup liteUserGroup) {
+                return liteUserGroup.getUserGroupId();
             }};
 
-        List<LiteYukonGroup> operatorGroups = ecMappingDao.getOperatorGroups(ecId);
-        model.addAttribute("operatorGroups", operatorGroups);
-        List<Integer> operatorGroupIds = Lists.newArrayList(Iterables.transform(operatorGroups, idFromGroup));
-        model.addAttribute("operatorGroupIds", operatorGroupIds);
+        List<LiteUserGroup> operatorUserGroups = ecMappingDao.getOperatorUserGroups(ecId);
+        model.addAttribute("operatorUserGroups", operatorUserGroups);
+        List<Integer> operatorUserGroupIds = Lists.newArrayList(Iterables.transform(operatorUserGroups, idFromUserGroup));
+        model.addAttribute("operatorUserGroupIds", operatorUserGroupIds);
 
-        List<LiteYukonGroup> customerGroups = ecMappingDao.getResidentialGroups(ecId);
-        model.addAttribute("customerGroups", customerGroups);
-        List<Integer> customerGroupIds = Lists.newArrayList(Iterables.transform(customerGroups, idFromGroup));
-        model.addAttribute("customerGroupIds", customerGroupIds);
+        List<LiteUserGroup> customerUserGroups = ecMappingDao.getResidentialUserGroups(ecId);
+        model.addAttribute("customerUserGroups", customerUserGroups);
+        List<Integer> customerUserGroupIds = Lists.newArrayList(Iterables.transform(customerUserGroups, idFromUserGroup));
+        model.addAttribute("customerUserGroupIds", customerUserGroupIds);
     }
 
     /* Model Attributes */
@@ -363,11 +364,11 @@ public class GeneralInfoController {
         boolean superUser = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_SUPER_USER, user);
         if (superUser) {
             LiteYukonUser ecAdminUser = starsDatabaseCache.getEnergyCompany(ecId).getUser();
-            LiteYukonGroup group = yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.ENERGY_COMPANY, ecAdminUser.getUserID());
-            if (group == null) {
+            LiteYukonGroup roleGroup = yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.ENERGY_COMPANY, ecAdminUser.getUserID());
+            if (roleGroup == null) {
                 return false;
             }
-            model.addAttribute("groupId", group.getGroupID());
+            model.addAttribute("roleGroupId", roleGroup.getGroupID());
             model.addAttribute("roleId", YukonRole.ENERGY_COMPANY.getRoleId());
         }
         return superUser;

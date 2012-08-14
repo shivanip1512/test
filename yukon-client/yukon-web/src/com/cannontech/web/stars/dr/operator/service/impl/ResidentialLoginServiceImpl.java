@@ -11,33 +11,28 @@ import org.springframework.transaction.support.TransactionOperations;
 import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.YukonGroupService;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.user.YukonGroup;
-import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 import com.cannontech.web.stars.dr.operator.service.ResidentialLoginService;
-import com.google.common.collect.Lists;
 
 public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     
-    private AuthenticationService authenticationService;
-    private ContactDao contactDao;
-    private RolePropertyDao rolePropertyDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private TransactionOperations transactionTemplate;
-    private YukonUserDao yukonUserDao;
-    private YukonGroupDao yukonGroupDao;
-    private YukonGroupService yukonGroupService;
+    @Autowired private AuthenticationService authenticationService;
+    @Autowired private ContactDao contactDao;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private TransactionOperations transactionTemplate;
+    @Autowired private UserGroupDao userGroupDao;
+    @Autowired private YukonUserDao yukonUserDao;
 
     @Override
     public Integer createResidentialLogin(final LoginBackingBean loginBackingBean, final LiteYukonUser user, final int accountId, final int energyCompanyId) {
@@ -45,18 +40,13 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
         Integer newUserId = transactionTemplate.execute(new TransactionCallback<Integer>() {
             
             public Integer doInTransaction(TransactionStatus status) {
-                // Build up the groups needed to create an account
-                List<LiteYukonGroup> groups = Lists.newArrayList();
-                LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
-                groups.add(defaultYukonGroup);
-                
-                checkSuppliedResidentialLoginGroup(energyCompanyId, loginBackingBean);
-                LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(loginBackingBean.getLoginGroupName());
-                groups.add(residentialLoginGroup);
+                checkSuppliedResidentialUserGroup(energyCompanyId, loginBackingBean);
+                LiteUserGroup residentialUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
                 
                 // Build up the user for creation
                 LiteYukonUser newUser = new LiteYukonUser();
                 newUser.setUsername(loginBackingBean.getUsername());
+                newUser.setUserGroupId(residentialUserGroup.getUserGroupId());
                 
                 if (loginBackingBean.isLoginEnabled()) {
                     newUser.setLoginStatus(LoginStatusEnum.ENABLED);
@@ -73,7 +63,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
                     authType = AuthType.NONE;
                 }
                 newUser.setAuthType(authType);
-                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, groups);
+                yukonUserDao.save(newUser);
 
                 // We need to use the AuthenticationService so the password gets encoded properly.
                 if (authenticationService.supportsPasswordSet(authType)) {
@@ -93,14 +83,18 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     }
     
     @Override
-    public void updateResidentialLogin(final LoginBackingBean loginBackingBean,
-                                        final YukonUserContext userContext, 
-                                        final LiteYukonUser residentialUser,
-                                        final int energyCompanyId) {
+    public void updateResidentialLogin(final LoginBackingBean loginBackingBean, final YukonUserContext userContext, 
+                                        final LiteYukonUser residentialUser, final int energyCompanyId) {
+
         transactionTemplate.execute(new TransactionCallback<Object>() {
             public Object doInTransaction(TransactionStatus status) {
-                checkSuppliedResidentialLoginGroup(energyCompanyId, loginBackingBean);
-                updateResidentialCustomerGroup(loginBackingBean.getLoginGroupName(), residentialUser);
+
+                // Update the user group for the user
+                checkSuppliedResidentialUserGroup(energyCompanyId, loginBackingBean);
+                LiteUserGroup newUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
+                residentialUser.setUserGroupId(newUserGroup.getUserGroupId());
+                yukonUserDao.updateUserGroupId(residentialUser.getUserID(), newUserGroup.getUserGroupId());
+
                 updateLoginStatus(loginBackingBean, residentialUser);
                 
                 if (!loginBackingBean.getUsername().equals(residentialUser.getUsername())) {
@@ -140,27 +134,17 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     // HELPERS
     
     /**
-     * Verifies that the login group of the backing bean is one of the residential login groups
-     * of the the energy company.  If not, IllegalArgumentException is thrown.
-     * @param energyCompanyId
-     * @param loginBackingBean
+     * Verifies that the user group of the backing bean is one of the residential user groups
+     * of the the energy company.
+     * 
+     * @throws IllegalArgumentException - the user group in the backing bean is not a apart of the energy company.
      */
-    private void checkSuppliedResidentialLoginGroup(final int energyCompanyId, final LoginBackingBean loginBackingBean) {
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
-        LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(loginBackingBean.getLoginGroupName());
-        if (!ecResidentialGroups.contains(residentialLoginGroup)) {
+    private void checkSuppliedResidentialUserGroup(final int energyCompanyId, final LoginBackingBean loginBackingBean) {
+        List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompanyId);
+        LiteUserGroup residentialLoginGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
+        if (!ecResidentialUserGroups.contains(residentialLoginGroup)) {
             throw new IllegalArgumentException();
         }
-    }
-    
-    /**
-     * This method removes the old residential group, adds a new residential group, 
-     * and sends a db change message.
-     */
-     private void updateResidentialCustomerGroup(String groupName, LiteYukonUser residentialUser) {
-         LiteYukonGroup newUserGroup = yukonGroupDao.getLiteYukonGroupByName(groupName);
-         yukonGroupService.addUserToGroup(newUserGroup.getGroupID(), residentialUser.getUserID());
     }
     
     private void updateLoginStatus(LoginBackingBean loginBackingBean, LiteYukonUser residentialUser) {
@@ -172,46 +156,5 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
             loginStatus = LoginStatusEnum.DISABLED;
         }
         yukonUserDao.setUserStatus(residentialUser, loginStatus);
-    }
-    
-    // DI Setters
-    @Autowired
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
-    
-    @Autowired
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
-    }
-    
-    @Autowired
-    public void setYukonGroupService(YukonGroupService yukonGroupService) {
-        this.yukonGroupService = yukonGroupService;
     }
 }

@@ -32,7 +32,7 @@ public class SupportBundleUserGroupRoleWriter extends AbstractSupportBundleWrite
         Writer pw = zipWriter.getBufferedWriter(databaseZipDir, "YukonGroupRoleProperty.csv");
 
         CSVWriter csvWriter = new CSVWriter(pw);
-        String[] header = { "Login Group", "Group Id", "Role Property Name", "Value" };
+        String[] header = { "Role Group", "Group Id", "Role Property Name", "Value" };
         csvWriter.writeNext(header);
         Predicate<YukonRoleProperty> predicate = Predicates.alwaysTrue();
         List<LiteYukonGroup> groups = yukonGroupDao.getAllGroups();

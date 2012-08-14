@@ -1,5 +1,7 @@
 package com.cannontech.stars.xml.serialize;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
+
 public class StarsCustAccountInformation {
     private java.util.Date _lastActiveTime;
     private StarsCustomerAccount _starsCustomerAccount;
@@ -10,7 +12,7 @@ public class StarsCustAccountInformation {
     private StarsInventories _starsInventories;
     private StarsCallReportHistory _starsCallReportHistory;
     private StarsServiceRequestHistory _starsServiceRequestHistory;
-    private StarsUser _starsUser;
+    private LiteYukonUser _starsUser;
 
     public StarsCustAccountInformation() {
         
@@ -75,7 +77,7 @@ public class StarsCustAccountInformation {
      * 
      * @return the value of field 'starsUser'.
     **/
-    public StarsUser getStarsUser()
+    public LiteYukonUser getStarsUser()
     {
         return this._starsUser;
     } //-- StarsUser getStarsUser() 
@@ -164,8 +166,7 @@ public class StarsCustAccountInformation {
      * @param starsServiceRequestHistory the value of field
      * 'starsServiceRequestHistory'.
     **/
-    public void setStarsServiceRequestHistory(StarsServiceRequestHistory starsServiceRequestHistory)
-    {
+    public void setStarsServiceRequestHistory(StarsServiceRequestHistory starsServiceRequestHistory) {
         this._starsServiceRequestHistory = starsServiceRequestHistory;
     } //-- void setStarsServiceRequestHistory(StarsServiceRequestHistory) 
 
@@ -174,8 +175,7 @@ public class StarsCustAccountInformation {
      * 
      * @param starsUser the value of field 'starsUser'.
     **/
-    public void setStarsUser(StarsUser starsUser)
-    {
+    public void setStarsUser(LiteYukonUser starsUser) {
         this._starsUser = starsUser;
     } //-- void setStarsUser(StarsUser) 
 

@@ -16,6 +16,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -59,6 +60,7 @@ import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.AlarmCategoryLoader;
 import com.cannontech.yukon.server.cache.BaselineLoader;
@@ -1421,9 +1423,9 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg,
         allYukonRoles = null;
         allYukonGroupRolePropertiesMap = null;
         userEnergyCompanyCache.clear();
-    }
-    else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB )
-    {
+    } else if (database == DBChangeMsg.CHANGE_USER_GROUP_DB) {
+        retLBase = handleUserGroupChange( dbChangeType, id);
+    } else if ( database == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB ) {
         if ( dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CUSTOMER_ACCOUNT) ) {
             //allContacts = null;
         }
@@ -2330,6 +2332,20 @@ private synchronized LiteBase handleYukonGroupChange( DbChangeType dbChangeType,
     releaseUserRolePropertyValueMap();
 
     return lBase;
+}
+
+private synchronized LiteBase handleUserGroupChange( DbChangeType dbChangeType, int userGroupId ) {
+    UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
+    
+    switch(dbChangeType) {
+        case ADD:
+        case UPDATE:
+            return userGroupDao.getLiteUserGroup(userGroupId);
+
+        case DELETE:
+        default:
+            return null;
+    }
 }
 
 

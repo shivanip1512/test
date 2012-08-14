@@ -30,7 +30,6 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
@@ -52,7 +51,6 @@ import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.StarsMsgUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.*;
@@ -1372,10 +1370,9 @@ public class StarsLiteFactory {
 		}
 		
 		if (liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_DEFAULT_ID &&
-			liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_ADMIN_ID)
-		{
+			liteContact.getLoginID() != com.cannontech.user.UserUtils.USER_ADMIN_ID) {
 			LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( liteContact.getLoginID() );
-			starsAcctInfo.setStarsUser( createStarsUser(liteUser, energyCompany) );
+			starsAcctInfo.setStarsUser(liteUser);
 		}
 		
 		if (isOperator) {
@@ -1972,26 +1969,6 @@ public class StarsLiteFactory {
 		}
 		
 		return starsAppCat;
-	}
-	
-	public static StarsUser createStarsUser(LiteYukonUser liteUser, LiteStarsEnergyCompany energyCompany) {
-		StarsUser starsUser = new StarsUser();
-		starsUser.setUsername( StarsUtils.forceNotNull(liteUser.getUsername()) );
-		//starsUser.setPassword( ServerUtils.forceNotNull(liteUser.getPassword()) );
-		starsUser.setPassword( "" );
-		starsUser.setStatus( StarsMsgUtils.getLoginStatus(liteUser.getLoginStatus()) );
-		
-		LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
-		
-		List<LiteYukonGroup> userGroups = DaoFactory.getYukonGroupDao().getGroupsForUser(liteUser);
-		for (int i = 0; i < custGroups.length; i++) {
-		    if (userGroups.contains( custGroups[i] )) {
-		        starsUser.setGroupID( custGroups[i].getGroupID() );
-		        break;
-		    }
-		}
-
-		return starsUser;
 	}
 	
 	public static StarsAppliance createStarsAppliance(LiteStarsAppliance liteApp, LiteStarsEnergyCompany energyCompany) {

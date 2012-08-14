@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -39,15 +42,16 @@ import com.google.common.collect.Maps;
  */
 public class OptOutStatusServiceImpl implements OptOutStatusService {
 
-    private CustomerAccountDao customerAccountDao;
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
-	private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
-	private EnergyCompanyDao energyCompanyDao;
-	private RoleDao roleDao;
-	private RolePropertyDao rolePropertyDao;
-	private EnergyCompanyService energyCompanyService;
-	private YukonEnergyCompanyService yukonEnergyCompanyService;
-	private ECMappingDao ecMappingDao;
+    @Autowired private CustomerAccountDao customerAccountDao;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EnergyCompanyDao energyCompanyDao;
+    @Autowired private EnergyCompanyService energyCompanyService;
+    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+    @Autowired private OptOutTemporaryOverrideDao optOutTemporaryOverrideDao;
+    @Autowired private RoleDao roleDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
+    @Autowired private YukonGroupDao yukonGroupDao;
 	
 	@Override
 	public OptOutCountsTemporaryOverride getDefaultOptOutCounts(LiteYukonUser user) {
@@ -213,16 +217,25 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
         // state if there are multiple residential customer groups, so just grab the
         // first one in the list and use that as the default current state
 	    YukonEnergyCompany energyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
-        List<LiteYukonGroup> residentialCustomerGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
+        List<LiteUserGroup> residentialCustomerUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
 
-        if (residentialCustomerGroups.size() > 0) {
-            LiteYukonGroup group = residentialCustomerGroups.get(0);
+        if (residentialCustomerUserGroups.size() > 0) {
+            LiteUserGroup residentialUserGroup = residentialCustomerUserGroups.get(0);
 
-            String enabled = 
-                roleDao.getRolePropValueGroup(group, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT,
-                                              new Boolean(false).toString());
-            if(!CtiUtilities.isFalse(enabled)){ //true
-                return OptOutEnabled.ENABLED;
+            List<LiteYukonGroup> residentialRoleGroups = yukonGroupDao.getRoleGroupsForUserGroupId(residentialUserGroup.getUserGroupId());
+            for (LiteYukonGroup residentialRoleGroup : residentialRoleGroups) {
+
+                // Only use the role groups that have the 
+                Set<YukonRole> rolesForGroup = roleDao.getRolesForGroup(residentialRoleGroup.getGroupID());
+                if (!rolesForGroup.contains(YukonRole.RESIDENTIAL_CUSTOMER)) {
+                    continue;
+                }
+
+                String enabled = 
+                    roleDao.getRolePropValueGroup(residentialRoleGroup, ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT, new Boolean(false).toString());
+                if(!CtiUtilities.isFalse(enabled)){ //true
+                    return OptOutEnabled.ENABLED;
+                }
             }
         }
         //pre addition of the communications toggle, this was the equivalent default value
@@ -245,51 +258,4 @@ public class OptOutStatusServiceImpl implements OptOutStatusService {
         
 	    return programIdOptOutTemporaryOverrideMap;
 	}
-	
-	// DI Setters
-	@Autowired
-	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-	
-	@Autowired
-	public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
-    }
-	
-	@Autowired
-	public void setOptOutTemporaryOverrideDao(OptOutTemporaryOverrideDao optOutTemporaryOverrideDao) {
-		this.optOutTemporaryOverrideDao = optOutTemporaryOverrideDao;
-	}
-	
-	@Autowired
-	public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-		this.energyCompanyDao = energyCompanyDao;
-	}
-	
-	@Autowired
-	public void setRoleDao(RoleDao roleDao) {
-		this.roleDao = roleDao;
-	}
-	
-	@Autowired
-	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-	
-	@Autowired
-	public void setEnergyCompanyService(EnergyCompanyService energyCompanyService) {
-        this.energyCompanyService = energyCompanyService;
-    }
-	
-	@Autowired
-	public void setYukonEnergyCompanyService(YukonEnergyCompanyService yukonEnergyCompanyService) {
-        this.yukonEnergyCompanyService = yukonEnergyCompanyService;
-    }
-	
-	@Autowired
-	public void setEcMappingDao(ECMappingDao ecMappingDao) {
-        this.ecMappingDao = ecMappingDao;
-    }
-	
 }

@@ -18,7 +18,7 @@ public class AccountDto {
     private Address billingAddress = new Address();
     private String userName;
     private String password;
-    private String loginGroup;
+    private String userGroup;
     private SiteInformation siteInfo = new SiteInformation(); 
     private String mapNumber; // This is the SiteNumber column in AccountSite table
     private String altTrackingNumber;
@@ -119,12 +119,11 @@ public class AccountDto {
         this.password = password;
     }
 
-    public String getLoginGroup() {
-        return loginGroup;
+    public String getUserGroup() {
+        return userGroup;
     }
-
-    public void setLoginGroup(String loginGroup) {
-        this.loginGroup = loginGroup;
+    public void setUserGroup(String userGroup) {
+        this.userGroup = userGroup;
     }
 
     public Boolean getIsCommercial() {

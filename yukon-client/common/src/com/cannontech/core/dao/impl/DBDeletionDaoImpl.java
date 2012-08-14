@@ -538,10 +538,17 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			delRes.setItemID( ((com.cannontech.database.data.user.YukonUser) toDelete).getUserID().intValue() );
 			delRes.setDelType( DBDeletionDaoImpl.LOGIN_TYPE );
 		}
+        else if (toDelete instanceof com.cannontech.database.data.user.UserGroup)
+        {
+            delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
+            delRes.getUnableDelMsg().append("You cannot delete the user group '" + nodeName + "'");
+            delRes.setItemID(((com.cannontech.database.data.user.UserGroup) toDelete).getLiteUserGroup().getUserGroupId());
+            delRes.setDelType( DBDeletionDaoImpl.USER_GROUP_TYPE );
+        }
 		else if (toDelete instanceof com.cannontech.database.data.user.YukonGroup)
 		{
 			delRes.getConfirmMessage().append("Are you sure you want to permanently delete '" + nodeName + "'?");
-			delRes.getUnableDelMsg().append("You cannot delete the login group '" + nodeName + "'");
+			delRes.getUnableDelMsg().append("You cannot delete the role group '" + nodeName + "'");
 			delRes.setItemID( ((com.cannontech.database.data.user.YukonGroup) toDelete).getGroupID().intValue() );
 			delRes.setDelType( DBDeletionDaoImpl.LOGIN_GRP_TYPE );
 		}
@@ -631,7 +638,7 @@ public class DBDeletionDaoImpl implements DBDeletionDao
         else if(dbRes.getDelType() == PAO_TYPE) {
             return createDeleteStringForPaoType(dbRes);
         }
-		else if( dbRes.getDelType() == CUSTOMER_TYPE || dbRes.getDelType() == LOGIN_GRP_TYPE ) {
+		else if( dbRes.getDelType() == CUSTOMER_TYPE || dbRes.getDelType() == LOGIN_GRP_TYPE || dbRes.getDelType() == USER_GROUP_TYPE) {
 			return STATUS_CONFIRM;
 		}
 		else {

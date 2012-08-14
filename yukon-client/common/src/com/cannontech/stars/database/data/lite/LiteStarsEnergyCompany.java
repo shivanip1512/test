@@ -57,11 +57,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.stars.database.db.ECToGenericMapping;
-import com.cannontech.stars.database.db.LMProgramWebPublishing;
-import com.cannontech.stars.database.db.appliance.ApplianceCategory;
-import com.cannontech.stars.database.db.customer.CustomerAccount;
-import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -74,6 +69,11 @@ import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
+import com.cannontech.stars.database.db.ECToGenericMapping;
+import com.cannontech.stars.database.db.LMProgramWebPublishing;
+import com.cannontech.stars.database.db.appliance.ApplianceCategory;
+import com.cannontech.stars.database.db.customer.CustomerAccount;
+import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanyDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.service.DefaultRouteService;
@@ -380,22 +380,6 @@ public class LiteStarsEnergyCompany extends LiteBase implements YukonEnergyCompa
         if (value != null && value.equalsIgnoreCase(CtiUtilities.STRING_NONE))
             value = "";
         return value;
-    }
-    
-    @Deprecated /* use ecMappingDao.getResidentialGroups(energyCompanyId) */
-    public LiteYukonGroup[] getResidentialCustomerGroups() {
-    	List<LiteYukonGroup> custGroupList = ecMappingDao.getResidentialGroups(getEnergyCompanyId());
-        LiteYukonGroup[] custGroups = new LiteYukonGroup[custGroupList.size()];
-        custGroupList.toArray(custGroups);
-        return custGroups;
-    }
-    
-    @Deprecated /* use ecMappingDao.getOperatorGroups(energyCompanyId) */
-    public LiteYukonGroup[] getWebClientOperatorGroups() {
-        List<LiteYukonGroup> operGroupList = ecMappingDao.getOperatorGroups(getEnergyCompanyId());
-        LiteYukonGroup[] operGroups = new LiteYukonGroup[operGroupList.size()];
-        operGroupList.toArray(operGroups);
-        return operGroups;
     }
     
     public LiteYukonGroup getOperatorAdminGroup() {

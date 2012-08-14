@@ -1,5 +1,6 @@
 package com.cannontech.stars.service.impl;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,8 @@ import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
@@ -96,18 +99,18 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
     @Autowired private SiteInformationDao siteInformationDao;
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private StarsEventLogService starsEventLogService;
-    @Autowired private YukonGroupDao yukonGroupDao;
     @Autowired private YukonListDao yukonListDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private WarehouseDao warehouseDao;
+    @Autowired private UserGroupDao userGroupDao;
     @Autowired private AccountService accountService;
 
     @Override
     @Transactional
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user, Integer parentId)
-    throws WebClientException, TransactionException, CommandExecutionException, ConfigurationException {
+    throws WebClientException, TransactionException, CommandExecutionException, ConfigurationException, SQLException {
         
         boolean topLevelEc = parentId == null;
         
@@ -123,14 +126,13 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         }
 
         /* Create a privilege group with EnergyCompany and Administrator role */
-        LiteYukonGroup primaryOperatorGroup = yukonGroupDao.getLiteYukonGroup(energyCompanyDto.getPrimaryOperatorGroupId());
         String adminGroupName = energyCompanyDto.getName() + ecAdminLoginGroupExtension;
-        LiteYukonGroup adminGrp = StarsAdminUtil.createOperatorAdminGroup( adminGroupName, topLevelEc );
+        LiteUserGroup ecAdminUserGrp = 
+                StarsAdminUtil.createOperatorAdminUserGroup(adminGroupName, energyCompanyDto.getPrimaryOperatorUserGroupId(), topLevelEc);
         
         /* Create the primary operator login */
-        LiteYukonGroup[] adminsGroups = new LiteYukonGroup[] { primaryOperatorGroup, adminGrp };
         LiteYukonUser adminUser = 
-                StarsAdminUtil.createOperatorLogin(energyCompanyDto.getAdminUsername(), energyCompanyDto.getAdminPassword1(), LoginStatusEnum.ENABLED, adminsGroups, null);
+                StarsAdminUtil.createOperatorLogin(energyCompanyDto.getAdminUsername(), energyCompanyDto.getAdminPassword1(), LoginStatusEnum.ENABLED, ecAdminUserGrp, null);
 
         /* Create Contact */
         LiteContact contact = new LiteContact(-1, CtiUtilities.STRING_NONE, CtiUtilities.STRING_NONE);
@@ -152,24 +154,21 @@ public class EnergyCompanyServiceImpl implements EnergyCompanyService {
         LiteStarsEnergyCompany liteEnergyCompany = energyCompanyFactory.createEnergyCompany(energyCompany);
         
         /* This does nothing to StarsDatabaseCache,  I don't know who else would care. */
-        dbPersistentDao.processDBChange(new DBChangeMsg(
-                            energyCompany.getEnergyCompanyId(),
-                            DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
-                            DBChangeMsg.CAT_ENERGY_COMPANY,
-                            DbChangeType.ADD));
+        dbPersistentDao.processDBChange(new DBChangeMsg(energyCompany.getEnergyCompanyId(), DBChangeMsg.CHANGE_ENERGY_COMPANY_DB,
+                            DBChangeMsg.CAT_ENERGY_COMPANY,DbChangeType.ADD));
 
         /* Set Default Route */
         defaultRouteService.updateDefaultRoute(liteEnergyCompany, energyCompanyDto.getDefaultRouteId(), user);
         
         /* Set Operator Group List */
-        List<Integer> operatorGroupIdsList = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getOperatorGroupIds());
-        Iterable<Integer> operatorGroupIds = Iterables.concat(Collections.singleton(energyCompanyDto.getPrimaryOperatorGroupId()), operatorGroupIdsList);
-        ecMappingDao.addECToOperatorGroupMapping(energyCompany.getEnergyCompanyId(), operatorGroupIds);
+        List<Integer> operatorUserGroupIdsList = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getOperatorUserGroupIds());
+        Iterable<Integer> operatorUserGroupIds = Iterables.concat(Collections.singleton(energyCompanyDto.getPrimaryOperatorUserGroupId()), operatorUserGroupIdsList);
+        ecMappingDao.addECToOperatorUserGroupMapping(energyCompany.getEnergyCompanyId(), operatorUserGroupIds);
         
         /* Set Residential Customer Group List */
-        if (StringUtils.isNotBlank(energyCompanyDto.getResidentialGroupIds())) {
-            List<Integer> customerGroupIds = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getResidentialGroupIds());
-            ecMappingDao.addECToResidentialGroupMapping(energyCompany.getEnergyCompanyId(), customerGroupIds);
+        if (StringUtils.isNotBlank(energyCompanyDto.getResidentialUserGroupIds())) {
+            List<Integer> customerUserGroupIds = com.cannontech.common.util.StringUtils.parseIntStringForList(energyCompanyDto.getResidentialUserGroupIds());
+            ecMappingDao.addECToResidentialUserGroupMapping(energyCompany.getEnergyCompanyId(), customerUserGroupIds);
         }
         
         /* Add as member to parent */

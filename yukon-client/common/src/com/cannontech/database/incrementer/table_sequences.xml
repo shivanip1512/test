@@ -42,6 +42,7 @@
         <table name="ValidationMonitor" identitycolumn="ValidationMonitorId" initsequence="true"/>
         <table name="LMGroupExpresscomAddress" identitycolumn="AddressId" initsequence="true"/>
         <table name="EnergyCompany" identitycolumn="EnergyCompanyId" initsequence="true"/>
+        <table name="UserGroup" identitycolumn="UserGroupId" initsequence="true" />
       </sequence>
       <sequence name="paobjectid">
       	<table name="YukonPaObject" identitycolumn="PaObjectId" initsequence="true"/>

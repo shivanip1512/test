@@ -29,7 +29,7 @@ public class EnergyCompanyDtoValidator extends SimpleValidator<EnergyCompanyDto>
         YukonValidationUtils.checkExceedsMaxLength(errors, "email", energyCompanyDto.getEmail(), 130);
 
         /* Primary Operator Group */
-        if (energyCompanyDto.getPrimaryOperatorGroupId() == null) {
+        if (energyCompanyDto.getPrimaryOperatorUserGroupId() == null) {
             errors.rejectValue("primaryOperatorGroupId", "yukon.web.modules.adminSetup.createEnergyCompany.primaryOperatorGroup.required");
         }
         

@@ -28,8 +28,8 @@ function addGroups() {
                             <th class="removeColumn"><i:inline key=".remove"/></th>
                         </tr>
                         <c:forEach items="${groups}" var="group">
-                            <cti:url value="/spring/adminSetup/groupEditor/view" var="editGroupUrl">
-                                <cti:param name="groupId" value="${group.groupID}"/>
+                            <cti:url value="/spring/adminSetup/roleGroup/view" var="editGroupUrl">
+                                <cti:param name="roleGroupId" value="${group.groupID}"/>
                             </cti:url>
                             <tr class="<tags:alternateRow odd="" even="altTableCell"/>">
                                 <td><a href="${editGroupUrl}">${group.groupName}</a></td>

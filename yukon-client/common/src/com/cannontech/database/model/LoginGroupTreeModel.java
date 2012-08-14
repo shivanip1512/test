@@ -17,7 +17,7 @@ public class LoginGroupTreeModel extends DBTreeModel
  * @param root javax.swing.tree.TreeNode
  */
 public LoginGroupTreeModel() {
-	super( new DBTreeNode("Login Groups") );
+	super( new DBTreeNode("Role Groups") );
 }
 /**
  * Insert the method's description here.

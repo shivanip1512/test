@@ -91,7 +91,7 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
             acctDto.setPassword(custFields[ImportFields.IDX_PASSWORD]);
         }
         if (!StringUtils.isEmpty(custFields[ImportFields.IDX_LOGIN_GROUP])) {
-            acctDto.setLoginGroup(custFields[ImportFields.IDX_LOGIN_GROUP]);
+            acctDto.setUserGroup(custFields[ImportFields.IDX_LOGIN_GROUP]);
         }		
 		
         if (!StringUtils.isEmpty(custFields[ImportFields.IDX_COMPANY_NAME])) {

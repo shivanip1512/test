@@ -95,7 +95,6 @@
     <entry key="yukon.web.modules.support.supportBundle.writerName.rawPointCountCsvSource">Raw Point History Count</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.eventLogAggregatedCsvSource">Event Log</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.jobTableCsvSource">Job Table </entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.yukonUserGroupTableCsvSource">YukonUserGroup Table</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.yukonGroupTableCsvSource">YukonGroup Table</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.macScriptsCsvSource">MACS Scripts</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.masterConfigFileSource">Master.cfg</entry>

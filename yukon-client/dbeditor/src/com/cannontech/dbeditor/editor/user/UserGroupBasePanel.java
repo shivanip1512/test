@@ -194,20 +194,35 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
 			constraintsJLabelUserGroupName.insets = new java.awt.Insets(21, 14, 6, 2);
 			getJPanelUserGroupPanel().add(getJLabelUserGroupName(), constraintsJLabelUserGroupName);
 
-			java.awt.GridBagConstraints constraintsJLabelNormalDesc = new java.awt.GridBagConstraints();
+            java.awt.GridBagConstraints constraintsJTextFieldUserGroupName = new java.awt.GridBagConstraints();
+            constraintsJTextFieldUserGroupName.gridx = 2; constraintsJTextFieldUserGroupName.gridy = 1;
+            constraintsJTextFieldUserGroupName.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsJTextFieldUserGroupName.weightx = 1.0;
+            constraintsJTextFieldUserGroupName.ipadx = -20;
+            constraintsJTextFieldUserGroupName.insets = new java.awt.Insets(21, 3, 3, 52);
+            getJPanelUserGroupPanel().add(getJTextFieldUserGroupName(), constraintsJTextFieldUserGroupName);
+
+            java.awt.GridBagConstraints constraintsUserGroupIdJLabel = new java.awt.GridBagConstraints();
+            constraintsUserGroupIdJLabel.gridx = 1; constraintsUserGroupIdJLabel.gridy = 2;
+            constraintsUserGroupIdJLabel.ipadx = 24;
+            constraintsUserGroupIdJLabel.ipady = -2;
+            constraintsUserGroupIdJLabel.insets = new java.awt.Insets(3, 14, 3, 46);
+            getJPanelUserGroupPanel().add(getUserGroupIdJLabel(), constraintsUserGroupIdJLabel);
+
+            java.awt.GridBagConstraints constraintsUserGroupIdValueField = new java.awt.GridBagConstraints();
+            constraintsUserGroupIdValueField.gridx = 2; constraintsUserGroupIdValueField.gridy = 2;
+            constraintsUserGroupIdValueField.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsUserGroupIdValueField.ipadx = 147;
+            constraintsUserGroupIdValueField.ipady = 1;
+            constraintsUserGroupIdValueField.insets = new java.awt.Insets(3, 3, 3, 53);
+            getJPanelUserGroupPanel().add(getUserGroupIdValueField(), constraintsUserGroupIdValueField);
+
+            java.awt.GridBagConstraints constraintsJLabelNormalDesc = new java.awt.GridBagConstraints();
 			constraintsJLabelNormalDesc.gridx = 1; constraintsJLabelNormalDesc.gridy = 3;
 			constraintsJLabelNormalDesc.ipadx = 62;
 			constraintsJLabelNormalDesc.ipady = -2;
 			constraintsJLabelNormalDesc.insets = new java.awt.Insets(3, 14, 1, 2);
 			getJPanelUserGroupPanel().add(getJLabelNormalDesc(), constraintsJLabelNormalDesc);
-
-			java.awt.GridBagConstraints constraintsJTextFieldUserGroupName = new java.awt.GridBagConstraints();
-			constraintsJTextFieldUserGroupName.gridx = 2; constraintsJTextFieldUserGroupName.gridy = 1;
-			constraintsJTextFieldUserGroupName.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsJTextFieldUserGroupName.weightx = 1.0;
-			constraintsJTextFieldUserGroupName.ipadx = -20;
-			constraintsJTextFieldUserGroupName.insets = new java.awt.Insets(21, 3, 3, 52);
-			getJPanelUserGroupPanel().add(getJTextFieldUserGroupName(), constraintsJTextFieldUserGroupName);
 
 			java.awt.GridBagConstraints constraintsJScrollPaneDesc = new java.awt.GridBagConstraints();
 			constraintsJScrollPaneDesc.gridx = 1; constraintsJScrollPaneDesc.gridy = 4;
@@ -220,20 +235,6 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
 			constraintsJScrollPaneDesc.insets = new java.awt.Insets(1, 14, 14, 29);
 			getJPanelUserGroupPanel().add(getJScrollPaneDesc(), constraintsJScrollPaneDesc);
 
-			java.awt.GridBagConstraints constraintsUserGroupIdJLabel = new java.awt.GridBagConstraints();
-			constraintsUserGroupIdJLabel.gridx = 1; constraintsUserGroupIdJLabel.gridy = 2;
-			constraintsUserGroupIdJLabel.ipadx = 24;
-			constraintsUserGroupIdJLabel.ipady = -2;
-			constraintsUserGroupIdJLabel.insets = new java.awt.Insets(3, 14, 3, 46);
-			getJPanelUserGroupPanel().add(getUserGroupIdJLabel(), constraintsUserGroupIdJLabel);
-
-			java.awt.GridBagConstraints constraintsUserGroupIdValueField = new java.awt.GridBagConstraints();
-			constraintsUserGroupIdValueField.gridx = 2; constraintsUserGroupIdValueField.gridy = 2;
-			constraintsUserGroupIdValueField.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsUserGroupIdValueField.ipadx = 147;
-			constraintsUserGroupIdValueField.ipady = 1;
-			constraintsUserGroupIdValueField.insets = new java.awt.Insets(3, 3, 3, 53);
-			getJPanelUserGroupPanel().add(getUserGroupIdValueField(), constraintsUserGroupIdValueField);
     	}
     	return ivjJPanelUserGroupPanel;
     }

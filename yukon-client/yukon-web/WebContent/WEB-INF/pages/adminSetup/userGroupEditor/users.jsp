@@ -34,7 +34,7 @@ function addUsers() {
                                 <th class="removeColumn"><i:inline key=".remove"/></th>
                             </tr>
                             <c:forEach items="${users}" var="user">
-                                <cti:url value="/spring/adminSetup/userEditor/view" var="editUserUrl">
+                                <cti:url value="/spring/adminSetup/user/view" var="editUserUrl">
                                     <cti:param name="userId" value="${user.userID}"/>
                                 </cti:url>
                                 <c:choose>

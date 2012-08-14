@@ -38,29 +38,6 @@ public interface YukonUserDao {
     public LiteContact getLiteContact(int userId);
 
     /**
-     * Adds a LiteYukonUser to YukonUser with the given password, energy company, to the specified user groups.
-     * @param user
-     * @param password
-     * @param energyCompanyId
-     * @param groups
-     * @throws DataAccessException
-     * @deprecated If you don't need to set login groups, use save(UpdatableYukonUser user)
-     */
-    @Deprecated
-    public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, int energyCompanyId, List<LiteYukonGroup> groups) throws DataAccessException;
-
-    /**
-     * Adds a LiteYukonUser to YukonUser with the given password, energy company, to the specified user groups.
-     * @param user
-     * @param password
-     * @param groups
-     * @throws DataAccessException
-     * @deprecated If you don't need to set login groups, use save(UpdatableYukonUser user)
-     */
-    @Deprecated
-    public void addLiteYukonUserWithPassword(LiteYukonUser user, String password, List<LiteYukonGroup> groups) throws DataAccessException;
-
-    /**
      * This method sets all of the EventBase userIds of a given user to the default user.  This
      * allows a user to be deleted.
      */
@@ -126,12 +103,7 @@ public interface YukonUserDao {
      * will have no password.
      * 
      */
-    public LiteYukonUser createLoginForAdditionalContact(String firstName, String lastName, LiteYukonGroup group);
-
-    /**
-     * Returns a SearchResult<LiteYukonUser> of the users that are members of the group provided
-     */
-    public SearchResult<LiteYukonUser> getUsersForGroup(int groupId, final int start, final int count);
+    public LiteYukonUser createLoginForAdditionalContact(String firstName, String lastName, LiteUserGroup userGroup);
 
     /**
      * Returns a SearchResult<LiteYukonUser> of the users that are members of the group provided

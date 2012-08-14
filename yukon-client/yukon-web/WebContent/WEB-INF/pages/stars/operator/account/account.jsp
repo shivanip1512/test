@@ -114,11 +114,11 @@
     	}
 
     	function generatePassword() {
-            var dataHash = {loginGroupName : $('loginBackingBean.loginGroupName').value}
+            var dataHash = {userGroupName : $('loginBackingBean.userGroupName').value}
             var userId = $('userId');
-            if (userId != null && userId.value != 0) {
-                dataHash[ 'userId'] = userId.value;
-            }
+            if (userId != null && userId.value != 0) {
+                dataHash[ 'userId'] = userId.value;
+            }
             
             new jQuery.ajax({
                 url: '${generatedPasswordUrl}',
@@ -333,8 +333,8 @@
                         
                         <tags:nameValueContainer2>
                             
-                            <tags:selectNameValue nameKey=".customerGroup" 
-                                path="loginBackingBean.loginGroupName" items="${ecResidentialGroups}" itemValue="groupName" itemLabel="groupName"/>
+                            <tags:selectNameValue nameKey=".customerGroup" path="loginBackingBean.userGroupName" items="${ecResidentialUserGroups}" 
+                                                                 itemValue="userGroupName" itemLabel="userGroupName"/>
                             <tags:nameValue2 nameKey=".loginEnabled"><tags:checkbox path="loginBackingBean.loginEnabled"/></tags:nameValue2>
                             
                             <!-- Username Field -->
@@ -446,7 +446,7 @@
                         <input type="hidden" name="loginMode" value="${loginMode}">
 
                         <form:hidden path="userId" />
-                        <form:hidden path="loginGroupName" />
+                        <form:hidden path="userGroupName" />
                         <form:hidden path="loginEnabled" />
                         <form:hidden path="username" />
 

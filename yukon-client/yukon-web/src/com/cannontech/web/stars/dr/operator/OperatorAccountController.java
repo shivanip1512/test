@@ -35,8 +35,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.cc.model.Group;
-import com.cannontech.cc.service.GroupService;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
@@ -49,15 +47,14 @@ import com.cannontech.core.authentication.model.AuthType;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
-import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.YukonGroupService;
 import com.cannontech.core.substation.dao.SubstationDao;
-import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -101,7 +98,6 @@ import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.util.JsonView;
 import com.cannontech.web.util.TextView;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping(value = "/operator/account/*")
@@ -120,9 +116,7 @@ public class OperatorAccountController {
     @Autowired private SubstationDao substationDao;
     @Autowired private AccountImportDataValidator accountImportDataValidator;
     @Autowired private AccountImportService accountImportService;
-    @Autowired private GroupService groupService;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private YukonGroupService yukonGroupService;
     @Autowired private AuthenticationService authenticationService;
     @Autowired private ResidentialLoginService residentialLoginService;
     @Autowired private TransactionOperations transactionTemplate;
@@ -132,7 +126,7 @@ public class OperatorAccountController {
     @Autowired private YukonEnergyCompanyService yukonEnergyCompanyService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PasswordPolicyService passwordPolicyService;
-    @Autowired private YukonGroupDao yukonGroupDao;
+    @Autowired private UserGroupDao userGroupDao;
     
     static private enum LoginModeEnum {
         CREATE,
@@ -490,12 +484,12 @@ public class OperatorAccountController {
 	private void setupAccountPage(ModelMap model, YukonUserContext context, AccountInfoFragment fragment, int accountId) {
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(context.getYukonUser());
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        List<LiteYukonGroup> ecResidentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
+        List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
         LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountId);
         
         buildAccountDto(model, context, accountId, residentialUser, energyCompany);
         
-        setupAccountModel(fragment, model, context, ecResidentialGroups, residentialUser);
+        setupAccountModel(fragment, model, context, ecResidentialUserGroups, residentialUser);
 	}
 	
 	private void buildAccountDto(ModelMap model, 
@@ -511,10 +505,9 @@ public class OperatorAccountController {
         
         /* LoginBackingBean */
         LoginBackingBean loginBackingBean = new LoginBackingBean();
-        LiteYukonGroup userResidentialGroupName = 
-            yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser.getUserID());
-        if (userResidentialGroupName != null) {
-            loginBackingBean.setLoginGroupName(userResidentialGroupName.getGroupName());
+        LiteUserGroup userResidentialUserGroup= userGroupDao.getLiteUserGroup(residentialUser.getUserGroupId());
+        if (userResidentialUserGroup != null) {
+            loginBackingBean.setUserGroupName(userResidentialUserGroup.getUserGroupName());
         }
         
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
@@ -540,14 +533,14 @@ public class OperatorAccountController {
 	
 	// GENERATE PASSWORD
     @RequestMapping(value="generatePassword")
-    public TextView generatePassword(HttpServletResponse response, Integer userId, String loginGroupName) throws IOException {
+    public TextView generatePassword(HttpServletResponse response, Integer userId, String userGroupName) throws IOException {
         LiteYukonUser user = null; 
         if (userId != null) {
             user = yukonUserDao.getLiteYukonUser(userId);
         }
-        LiteYukonGroup liteYukonGroup = yukonGroupDao.findLiteYukonGroupByName(loginGroupName);
         
-        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteYukonGroup);
+        LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(userGroupName);
+        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteUserGroup);
         String generatedPassword = "";
         try {
             generatedPassword = passwordPolicy.generatePassword();
@@ -620,14 +613,9 @@ public class OperatorAccountController {
     
 	// UPDATE ACCOUNT
     @RequestMapping(method=RequestMethod.POST, value="updateAccount")
-    public String updateAccount(final @ModelAttribute("accountGeneral") AccountGeneral accountGeneral, 
-								BindingResult bindingResult,
-								final int accountId,
-					    		ModelMap modelMap, 
-					    		final YukonUserContext userContext,
-					    		FlashScope flashScope,
-					    		final AccountInfoFragment accountInfoFragment,
-					    		HttpServletRequest request,
+    public String updateAccount(final @ModelAttribute("accountGeneral") AccountGeneral accountGeneral,  BindingResult bindingResult,
+								final int accountId, ModelMap modelMap,  final YukonUserContext userContext, FlashScope flashScope,
+					    		final AccountInfoFragment accountInfoFragment, HttpServletRequest request,
 					    		final HttpSession session) throws ServletRequestBindingException {
 	    
 	    /* Verify the user has permission to edit accounts */
@@ -635,7 +623,7 @@ public class OperatorAccountController {
 
         YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(userContext.getYukonUser());
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        List<LiteYukonGroup> ecResidentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
+        List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         String currentAccountNumber = customerAccount.getAccountNumber();
 	    
@@ -643,23 +631,8 @@ public class OperatorAccountController {
         modelMap.addAttribute("loginMode", loginMode);
         final LiteYukonUser residentialUser = customerAccountDao.getYukonUserByAccountId(accountInfoFragment.getAccountId());
 
-        LiteYukonGroup originalLoginGroup = 
-            yukonGroupService.getGroupByYukonRoleAndUser(YukonRole.RESIDENTIAL_CUSTOMER, residentialUser.getUserID());
+        LiteUserGroup originalUserGroup = userGroupDao.getLiteUserGroup(residentialUser.getUserGroupId());
         
-        List<Group> groups = groupService.getAllGroups(residentialUser);
-        for (Group group : groups) {
-            List<LiteYukonGroup> residentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
-
-            Map<Integer, LiteYukonGroup> residentialGroupMap  = Maps.newHashMapWithExpectedSize(residentialGroups.size());
-            for (LiteYukonGroup residentialGroup : residentialGroups) {
-                residentialGroupMap.put(residentialGroup.getGroupID(), residentialGroup);
-            }
-            
-            if (residentialGroupMap.keySet().contains(group.getId())) {
-                originalLoginGroup = residentialGroupMap.get(group.getId());
-            }
-        }
-
         /* 
          * Ignore the login fields if: 
          * 
@@ -669,8 +642,8 @@ public class OperatorAccountController {
          */
         final boolean ignoreLogin = !hasEditLoginPrivileges(userContext.getYukonUser()) 
             || (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID && StringUtils.isBlank(accountGeneral.getLoginBackingBean().getUsername()))
-            || (residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID && originalLoginGroup != null &&
-                !didLoginChange(residentialUser, accountGeneral.getLoginBackingBean(), originalLoginGroup.getGroupName()));
+            || (residentialUser.getUserID() != UserUtils.USER_DEFAULT_ID && originalUserGroup != null &&
+                !didLoginChange(residentialUser, accountGeneral.getLoginBackingBean(), originalUserGroup.getUserGroupName()));
 		
 		/* UpdatableAccount */
 		final UpdatableAccount updatableAccount = new UpdatableAccount();
@@ -734,7 +707,7 @@ public class OperatorAccountController {
 			bindingResult.rejectValue("accountDto.accountNumber", "yukon.web.modules.operator.accountGeneral.accountDto.accountNumber.accountNumberUnavailable");
 		
 		} finally {
-			setupAccountModel(accountInfoFragment, modelMap, userContext, ecResidentialGroups, residentialUser);
+			setupAccountModel(accountInfoFragment, modelMap, userContext, ecResidentialUserGroups, residentialUser);
 
 			if (bindingResult.hasErrors()) {
 				
@@ -852,27 +825,24 @@ public class OperatorAccountController {
 	private void setupAccountCreationModelMap(ModelMap modelMap, LiteYukonUser user) {
 	    YukonEnergyCompany yukonEnergyCompany = yukonEnergyCompanyService.getEnergyCompanyByOperator(user);
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(yukonEnergyCompany);
-        List<LiteYukonGroup> ecResidentialGroups = ecMappingDao.getResidentialGroups(energyCompany.getEnergyCompanyId());
+        List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompany.getEnergyCompanyId());
         boolean showLoginSection = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_CREATE_LOGIN_FOR_ACCOUNT, user);
         
         List<Substation> substations = substationDao.getAllSubstationsByEnergyCompanyId(energyCompany.getEnergyCompanyId());
         modelMap.addAttribute("substations", substations);
 
         modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
-        boolean supportsPasswordSet =
+        boolean supportsPasswordSet = 
                 authenticationService.supportsPasswordSet(authenticationService.getDefaultAuthType(user));
         modelMap.addAttribute("supportsPasswordSet", supportsPasswordSet);
         modelMap.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyId());
         modelMap.addAttribute("showLoginSection", showLoginSection);
-        modelMap.addAttribute("ecResidentialGroups", ecResidentialGroups);
+        modelMap.addAttribute("ecResidentialUserGroups", ecResidentialUserGroups);
         modelMap.addAttribute("mode", PageEditMode.CREATE);
     }
 	
-	private void setupAccountModel(AccountInfoFragment accountInfoFragment, 
-	                                      ModelMap modelMap, 
-	                                      YukonUserContext userContext,
-	                                      List<LiteYukonGroup> ecResidentialGroups,
-	                                      LiteYukonUser residentialUser) {
+	private void setupAccountModel(AccountInfoFragment accountInfoFragment, ModelMap modelMap, YukonUserContext userContext,
+	                                      List<LiteUserGroup> ecResidentialUserGroups, LiteYukonUser residentialUser) {
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
@@ -888,7 +858,7 @@ public class OperatorAccountController {
         modelMap.addAttribute("supportsPasswordSet",
                               authenticationService.supportsPasswordSet(currentAuthType));
 
-        modelMap.addAttribute("ecResidentialGroups", ecResidentialGroups);
+        modelMap.addAttribute("ecResidentialUserGroups", ecResidentialUserGroups);
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
             modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
         } else {
@@ -917,13 +887,13 @@ public class OperatorAccountController {
      * @param originalLoginGroup
      * @return true if any of the login fields were changed.
      */
-    private boolean didLoginChange(LiteYukonUser residentialUser, LoginBackingBean loginBackingBean, String originalLoginGroupName) {
+    private boolean didLoginChange(LiteYukonUser residentialUser, LoginBackingBean loginBackingBean, String originalLoginUserGroupName) {
         String previousUsername = residentialUser.getUsername();
         
         boolean didNotChange = previousUsername.equals(loginBackingBean.getUsername())
             && StringUtils.isBlank(loginBackingBean.getPassword1()) 
             && StringUtils.isBlank(loginBackingBean.getPassword2())
-            && StringUtils.equals(originalLoginGroupName, loginBackingBean.getLoginGroupName())
+            && StringUtils.equals(originalLoginUserGroupName, loginBackingBean.getUserGroupName())
             && residentialUser.getLoginStatus() == loginBackingBean.getLoginStatus();
         
         return !didNotChange;

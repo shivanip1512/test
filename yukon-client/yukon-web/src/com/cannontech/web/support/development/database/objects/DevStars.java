@@ -1,11 +1,11 @@
 package com.cannontech.web.support.development.database.objects;
 
-import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 
 public class DevStars extends DevObject {
-    private LiteYukonGroup liteYukonGroupResidential;
-    private LiteYukonGroup liteYukonGroupOperator;
+    private LiteUserGroup liteUserGroupResidential;
+    private LiteUserGroup liteUserGroupOperator;
     private LiteStarsEnergyCompany energyCompany;
     private DevStarsAccounts devStarsAccounts = new DevStarsAccounts();
     private DevStarsHardware devStarsHardware = new DevStarsHardware();
@@ -14,7 +14,6 @@ public class DevStars extends DevObject {
     public LiteStarsEnergyCompany getEnergyCompany() {
         return energyCompany;
     }
-
     public void setEnergyCompany(LiteStarsEnergyCompany energyCompany) {
         this.energyCompany = energyCompany;
     }
@@ -22,7 +21,6 @@ public class DevStars extends DevObject {
     public DevStarsAccounts getDevStarsAccounts() {
         return devStarsAccounts;
     }
-
     public void setDevStarsAccounts(DevStarsAccounts devStarsAccounts) {
         this.devStarsAccounts = devStarsAccounts;
     }
@@ -30,7 +28,6 @@ public class DevStars extends DevObject {
     public DevStarsHardware getDevStarsHardware() {
         return devStarsHardware;
     }
-
     public void setDevStarsHardware(DevStarsHardware devStarsHardware) {
         this.devStarsHardware = devStarsHardware;
     }
@@ -47,26 +44,23 @@ public class DevStars extends DevObject {
         return total;
     }
 
-    public LiteYukonGroup getLiteYukonGroupResidential() {
-        return liteYukonGroupResidential;
+    public LiteUserGroup getLiteUserGroupResidential() {
+        return liteUserGroupResidential;
+    }
+    public void setLiteUserGroupResidential(LiteUserGroup liteUserGroupResidential) {
+        this.liteUserGroupResidential = liteUserGroupResidential;
     }
 
-    public void setLiteYukonGroupResidential(LiteYukonGroup liteResidentialYukonGroup) {
-        this.liteYukonGroupResidential = liteResidentialYukonGroup;
+    public LiteUserGroup getLiteUserGroupOperator() {
+        return liteUserGroupOperator;
     }
-
-    public LiteYukonGroup getLiteYukonGroupOperator() {
-        return liteYukonGroupOperator;
-    }
-
-    public void setLiteYukonGroupOperator(LiteYukonGroup liteYukonGroupOperator) {
-        this.liteYukonGroupOperator = liteYukonGroupOperator;
+    public void setLiteUserGroupOperator(LiteUserGroup liteUserGroupOperator) {
+        this.liteUserGroupOperator = liteUserGroupOperator;
     }
 
     public String getNewEnergyCompanyName() {
         return newEnergyCompanyName;
     }
-
     public void setNewEnergyCompanyName(String newEnergyCompanyName) {
         this.newEnergyCompanyName = newEnergyCompanyName;
     }

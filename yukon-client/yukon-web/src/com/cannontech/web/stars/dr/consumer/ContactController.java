@@ -26,13 +26,14 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.EnergyCompanyRolePropertyDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.exception.InvalidNotificationException;
@@ -48,13 +49,14 @@ import com.cannontech.web.stars.dr.consumer.model.ContactNotificationOption;
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONTACTS_ACCESS)
 @Controller
 public class ContactController extends AbstractConsumerController {
-    private ContactDao contactDao;
-    private ContactNotificationDao contactNotificationDao;
-    private CustomerDao customerDao;
-    private YukonListDao yukonListDao;
-    private YukonUserDao yukonUserDao;
-    private StarsDatabaseCache starsDatabaseCache;
-    private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    @Autowired private ContactDao contactDao;
+    @Autowired private ContactNotificationDao contactNotificationDao;
+    @Autowired private CustomerDao customerDao;
+    @Autowired private ECMappingDao ecMappingDao;
+    @Autowired private EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao;
+    @Autowired private StarsDatabaseCache starsDatabaseCache;
+    @Autowired private YukonListDao yukonListDao;
+    @Autowired private YukonUserDao yukonUserDao;
 
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
@@ -150,10 +152,9 @@ public class ContactController extends AbstractConsumerController {
                         && contact.getLoginID() == UserUtils.USER_DEFAULT_ID) {
 
                     StarsYukonUser starsUser = (StarsYukonUser) request.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-                    LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( starsUser.getEnergyCompanyID() );
-                    LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
+                    List<LiteUserGroup> custUserGroups =  ecMappingDao.getResidentialUserGroups(starsUser.getEnergyCompanyID());
 
-                    LiteYukonUser login = yukonUserDao.createLoginForAdditionalContact(firstName, lastName, custGroups[0]);
+                    LiteYukonUser login = yukonUserDao.createLoginForAdditionalContact(firstName, lastName, custUserGroups.get(0));
                     contact.setLoginID(login.getUserID());
                 }
 
@@ -270,41 +271,4 @@ public class ContactController extends AbstractConsumerController {
             notificationList.add(notification);
         }
     }
-
-    @Autowired
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
-
-    @Autowired
-    public void setCustomerDao(CustomerDao customerDao) {
-        this.customerDao = customerDao;
-    }
-
-    @Autowired
-    public void setYukonListDao(YukonListDao yukonListDao) {
-        this.yukonListDao = yukonListDao;
-    }
-    
-    @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    @Autowired
-    public void setContactNotificationDao(
-            ContactNotificationDao contactNotificationDao) {
-        this.contactNotificationDao = contactNotificationDao;
-    }
-    
-    @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
-    }
-    
-    @Autowired
-    public void setEnergyCompanyRolePropertyDao(EnergyCompanyRolePropertyDao energyCompanyRolePropertyDao) {
-        this.energyCompanyRolePropertyDao = energyCompanyRolePropertyDao;
-    }
-    
 }

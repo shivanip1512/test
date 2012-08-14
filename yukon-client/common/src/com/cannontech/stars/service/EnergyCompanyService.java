@@ -1,5 +1,6 @@
 package com.cannontech.stars.service;
 
+import java.sql.SQLException;
 import java.util.Set;
 
 import javax.naming.ConfigurationException;
@@ -18,11 +19,12 @@ public interface EnergyCompanyService {
      * Creates an energy company, if parentId is not null, will add this energy company
      * as a member of the parent. 
      * 
-     * @throws ConfigurationException 
+     * @throws ConfigurationException - Throws a configuration error if the primary operator user group conflicts with the new EC Admin role group.
+     * @throws SQLException 
      * @throws Exception
      */
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompanyDto energyCompanyDto, LiteYukonUser user, Integer parentId) 
-    throws WebClientException, TransactionException, CommandExecutionException, ConfigurationException;
+    throws WebClientException, TransactionException, CommandExecutionException, ConfigurationException, SQLException;
     
     public void deleteEnergyCompany(LiteYukonUser user, int energyCompanyId);
 

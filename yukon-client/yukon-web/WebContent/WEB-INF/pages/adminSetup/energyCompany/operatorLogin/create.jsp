@@ -49,7 +49,7 @@
             
         <tags:nameValueContainer2>
             <tags:hidden path="userId"/>
-            <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="loginGroupName"/>
+            <tags:selectNameValue nameKey=".operatorGroup" items="${assignableGroups}" path="userGroupName"/>
             <tags:checkboxNameValue nameKey=".loginEnabled" path="loginEnabled"></tags:checkboxNameValue>
             <tags:inputNameValue nameKey=".username" path="username" size="50" maxlength="60"/>
             

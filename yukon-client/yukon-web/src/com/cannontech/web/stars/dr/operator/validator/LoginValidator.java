@@ -11,9 +11,9 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.model.PasswordPolicyError;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
-import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 import com.google.common.collect.Lists;
@@ -21,16 +21,16 @@ import com.google.common.collect.Lists;
 public class LoginValidator extends SimpleValidator<LoginBackingBean> {
 
     private PasswordPolicyService passwordPolicyService;
-    private YukonGroupDao yukonGroupDao;
+    private UserGroupDao userGroupDao;
     private YukonUserDao yukonUserDao;
 
     private LiteYukonUser user;
     
-    public LoginValidator(LiteYukonUser user, PasswordPolicyService passwordPolicyService, YukonGroupDao yukonGroupDao, YukonUserDao yukonUserDao){
+    public LoginValidator(LiteYukonUser user, PasswordPolicyService passwordPolicyService, UserGroupDao userGroupDao, YukonUserDao yukonUserDao){
     	super(LoginBackingBean.class);
     	this.user = user;
     	this.passwordPolicyService = passwordPolicyService;
-    	this.yukonGroupDao = yukonGroupDao;
+    	this.userGroupDao = userGroupDao;
     	this.yukonUserDao = yukonUserDao;
     }
 
@@ -59,13 +59,13 @@ public class LoginValidator extends SimpleValidator<LoginBackingBean> {
             }
             
             // Check the password against the password policy.
-            LiteYukonGroup liteYukonGroup = yukonGroupDao.getLiteYukonGroupByName(loginBackingBean.getLoginGroupName());
+            LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
             String password = loginBackingBean.getPassword1();
-            PasswordPolicyError passwordPolicyError = passwordPolicyService.checkPasswordPolicy(password, user, liteYukonGroup);
+            PasswordPolicyError passwordPolicyError = passwordPolicyService.checkPasswordPolicy(password, user, liteUserGroup);
 
             if (PasswordPolicyError.PASSWORD_DOES_NOT_MEET_POLICY_QUALITY == passwordPolicyError) {
                 List<Object> errorArgs = Lists.newArrayList();
-                PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteYukonGroup);
+                PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteUserGroup);
                 errorArgs.add(passwordPolicy.numberOfRulesMet(password));
                 errorArgs.add(passwordPolicy.getPasswordQualityCheck());
                 

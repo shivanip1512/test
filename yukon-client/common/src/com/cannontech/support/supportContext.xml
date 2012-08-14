@@ -30,10 +30,6 @@
         <property name="name" value="jobTableCsvSource"/>
     </bean>
     
-    <bean class="com.cannontech.support.service.impl.SupportBundleYukonUserGroupTableWriter"> 
-        <property name="name" value="yukonUserGroupTableCsvSource"/>
-    </bean>
-    
     <bean class="com.cannontech.support.service.impl.SupportBundleYukonGroupTableWriter"> 
         <property name="name" value="yukonGroupTableCsvSource"/>
     </bean>
