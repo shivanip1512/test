@@ -308,11 +308,19 @@ public class HardwareUiServiceImpl implements HardwareUiService {
         HardwareType hardwareType = hardware.getHardwareType();
         if (hardwareType.isMeter()) {
             if (hardwareType.getInventoryCategory() == InventoryCategory.MCT) {
+                if (StringUtils.isBlank(liteInventoryBase.getDeviceLabel())) {
+                    LiteYukonPAObject device =
+                        DaoFactory.getPaoDao().getLiteYukonPAO(liteInventoryBase.getDeviceID());
+                    liteInventoryBase.setDeviceLabel(device.getPaoName());
+                }
                 inventoryBaseDao.saveInventoryBase(liteInventoryBase, ec.getEnergyCompanyId());
             } else if (hardwareType.getInventoryCategory() == InventoryCategory.NON_YUKON_METER) {
                 /* Update MeterHardwareBase */
                 LiteMeterHardwareBase meterHardwareBase = (LiteMeterHardwareBase)liteInventoryBase;
                 meterHardwareBase.setMeterNumber(hardware.getMeterNumber());
+                if(StringUtils.isBlank(meterHardwareBase.getDeviceLabel())){
+                    meterHardwareBase.setDeviceLabel(meterHardwareBase.getMeterNumber());
+                }
                 inventoryBaseDao.saveMeterHardware(meterHardwareBase, ec.getEnergyCompanyId());
                 
                 /* Update LMHardwareToMeterMapping */
@@ -340,6 +348,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             /* Update Serial Number */
             lmHardware.setManufacturerSerialNumber(hardware.getSerialNumber());
             
+            if(StringUtils.isBlank(lmHardware.getDeviceLabel())){
+                lmHardware.setDeviceLabel(lmHardware.getManufacturerSerialNumber());
+            }
             /* Create two-way device if need be */
             if (hardware.isCreatingNewTwoWayDevice()) {
                 SimpleDevice device = createTwoWayDevice(user, hardware.getInventoryId(), hardware.getTwoWayDeviceName());
@@ -706,11 +717,8 @@ public class HardwareUiServiceImpl implements HardwareUiService {
      */
     private void setInventoryFieldsFromDto(LiteInventoryBase liteInventoryBase, Hardware hardware) {
         liteInventoryBase.setAccountID(hardware.getAccountId());
-        
-        if(!StringUtils.isBlank(hardware.getDisplayLabel())){
-            liteInventoryBase.setDeviceLabel(hardware.getDisplayLabel());
-        } 
-        
+
+        liteInventoryBase.setDeviceLabel(hardware.getDisplayLabel());
         if (hardware.getVoltageEntryId() != null) {
             liteInventoryBase.setVoltageID(hardware.getVoltageEntryId());
         }
