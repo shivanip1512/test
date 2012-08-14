@@ -312,9 +312,8 @@ public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataI
 			}
 			
 		}
-		
-		
 	}
+	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (3/12/2001 2:49:24 PM)
