@@ -30,7 +30,6 @@ public class MasterConfigMap implements ConfigurationSource {
     private Map<String, String> configMap = new HashMap<String, String>();
     private File masterCfgFile;
     private Logger log = YukonLogManager.getLogger(MasterConfigMap.class);
-
     public MasterConfigMap() {
         super();
     }
@@ -45,6 +44,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     public void initialize() throws IOException, CryptoException {
+        String endl = System.getProperty("line.separator");
         File tmp = File.createTempFile("master", "cfgtmp");
         log.debug("starting initialization");
         Pattern keyCharPattern = Pattern.compile("^\\s*([^:#\\s]+)\\s*:\\s*([^#]+)\\s*(#.*)*");
@@ -78,22 +78,22 @@ public class MasterConfigMap implements ConfigurationSource {
                     if (MasterConfigCryptoUtils.isEncrypted(value)) {
                         // Found a value already encrypted
                         String valueDecrypted = MasterConfigCryptoUtils.decryptValue(value);
-                        bufWriter.write(key + " : " + value + " " + comment + "\n");
+                        bufWriter.write(key + " : " + value + " " + comment + endl);
                         configMap.put(key, valueDecrypted);
                     } else {
                         // Found a value that needs to be encrypted
                         String valueEncrypted = MasterConfigCryptoUtils.encryptValue(value);
-                        bufWriter.write(key + " : " + valueEncrypted + " " + comment + "\n");
+                        bufWriter.write(key + " : " + valueEncrypted + " " + comment + endl);
                         configMap.put(key, value);
                     }
                 } else {
                     // Non-sensitive data.
                     configMap.put(key, value);
-                    bufWriter.write(line + "\n");
+                    bufWriter.write(line + endl);
                 }
             } else {
                 // Line with no "key : value" pair
-                bufWriter.write(line + "\n");
+                bufWriter.write(line + endl);
             }
         }
         bufWriter.close();
