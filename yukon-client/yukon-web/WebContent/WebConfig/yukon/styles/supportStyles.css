@@ -95,18 +95,27 @@ textarea.xml {
     width: 200px;
 }
 
-.messageFormat h3 {
+.i18nDemo h1 {
+    font-size: 12pt;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding-bottom: 3px;
+    border-bottom: solid thin;
+}
+
+.i18nDemo h2 {
+    font-size: 11pt;
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-.messageFormat p {
+.i18nDemo p {
     margin-top: 10px;
     margin-bottom: 10px;
 }
 
-.messageFormat p.exampleCode {
-    margin: 10px 20px;
+.i18nDemo p.exampleCode {
+    margin: 20px;
     outline: black dotted thin;
 }
 

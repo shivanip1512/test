@@ -82,7 +82,7 @@
 	                	<i:inline key=".section.readInternalFlags.noteLabel"/>
 	                </td>
 	                <td style="font-size:11px;">
-                        <cti:msg2 key=".section.readInternalFlags.noteBody" htmlEscape="false"/>
+                        <cti:msg2 key=".section.readInternalFlags.noteBody"/>
 	                	<br>
 	                	<cti:url var="viewPointsUrl" value="/spring/bulk/addPoints/home">
 	                		<cti:mapParam value="${tamperFlagGroupDeviceCollection.collectionParameters}"/>
@@ -172,7 +172,7 @@
 	                	<i:inline key=".section.resetInternalFlags.noteLabel"/>
 	                </td>
 	                <td style="font-size:11px;">
-	                	<cti:msg2 key=".section.resetInternalFlags.noteBody" htmlEscape="false"/>
+	                	<cti:msg2 key=".section.resetInternalFlags.noteBody"/>
 	                </td>
 	            </tr>
 	    	</table>

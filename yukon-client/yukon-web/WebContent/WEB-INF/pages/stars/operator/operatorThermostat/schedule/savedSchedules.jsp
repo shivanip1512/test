@@ -191,7 +191,7 @@ jQuery(function(){
 
 <i:simplePopup titleKey=".help.title" id="help" on=".help">
 <div class="help pad">
-        <cti:msg2 key="yukon.web.modules.consumer.savedSchedules.hint" htmlEscape="false"/>
+        <cti:msg2 key="yukon.web.modules.consumer.savedSchedules.hint"/>
     </div>
 </i:simplePopup>
 

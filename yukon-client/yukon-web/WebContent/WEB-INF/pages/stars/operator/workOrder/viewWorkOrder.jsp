@@ -108,7 +108,7 @@
                         </cti:displayForPageEditModes>
                         
                         <i:simplePopup titleKey=".currentStateChangedTitle" id="currentStateChangedDialog">
-                        	<cti:msg2 key=".currentStateChanged" htmlEscape="false"/>
+                        	<cti:msg2 key=".currentStateChanged"/>
                         	<div class="actionArea">
                         		<cti:button nameKey="ok" onclick="$('currentStateChangedDialog').hide()"/>
                        		</div>

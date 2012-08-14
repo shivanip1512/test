@@ -76,7 +76,7 @@
 											      linkGroupName="true"/>
 	                                                    
 	                <tags:helpInfoPopup title="${deviceGroupText}">
-	            		<cti:msg2 key="yukon.web.modules.amr.tamperFlagEditor.popupInfo.deviceGroup" htmlEscape="false"/>
+	            		<cti:msg2 key="yukon.web.modules.amr.tamperFlagEditor.popupInfo.deviceGroup"/>
 					</tags:helpInfoPopup>
 					
 				</tags:nameValue2>

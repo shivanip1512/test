@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.tags.HtmlEscapeTag;
 import org.springframework.web.util.HtmlUtils;
 import org.springframework.web.util.JavaScriptUtils;
 import org.springframework.web.util.TagUtils;
@@ -34,7 +33,8 @@ public class Msg2Tag extends YukonTagSupport {
     private String scope = TagUtils.SCOPE_PAGE;
     private Object key;
     private boolean javaScriptEscape = false;
-    private boolean htmlEscape = true;
+    private boolean htmlEscape = false;
+    private boolean htmlEscapeArguments = true;
     private boolean fallback = false;
     private boolean debug = false;
     private boolean blankIfMissing = false;
@@ -42,6 +42,13 @@ public class Msg2Tag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
         Object[] resolvedArguments = resolveArguments(arguments);
+        if (htmlEscapeArguments && arguments != null) {
+            for (int index = 0; index < resolvedArguments.length; index++) {
+                if (resolvedArguments[index] instanceof String) {
+                    resolvedArguments[index] = HtmlUtils.htmlEscape((String) resolvedArguments[index]);
+                }
+            }
+        }
 
         MessageSourceResolvable resolvable;
         if (key instanceof String) {
@@ -180,14 +187,29 @@ public class Msg2Tag extends YukonTagSupport {
     }
 
     /**
-     * Set HTML escaping for this tag, as boolean value.
-     * Overrides the default HTML escaping setting for the current page.
-     * @see HtmlEscapeTag#setDefaultHtmlEscape
+     * Set HTML escaping for this tag.  The default is false.  Escaping
+     * happens after arguments are added.  Setting this to true will force
+     * htmlEscapeArguments to false so arguments don't get double-encoded.
      */
     public void setHtmlEscape(boolean htmlEscape) throws JspException {
         this.htmlEscape = htmlEscape;
+        if (htmlEscape) {
+            htmlEscapeArguments = false;
+        }
     }
-    
+
+    /**
+     * Set HTML escaping for arguments of this tag.  The default is true.
+     * Setting this to true does nothing if htmlEscape is true since that
+     * will already cause escaping of arguments to happen.
+     * 
+     */
+    public void setHtmlEscapeArguments(boolean htmlEscapeArguments) {
+        if (!htmlEscape) {
+            this.htmlEscapeArguments = htmlEscapeArguments;
+        }
+    }
+
     public void setDebug(boolean debug) {
         this.debug = debug;
     }

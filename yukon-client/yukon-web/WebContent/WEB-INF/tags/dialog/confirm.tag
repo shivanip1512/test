@@ -14,8 +14,8 @@
 <cti:includeScript link="/JavaScript/yukon/ui/confirm_dialog_manager.js"/>
 
 <cti:msgScope paths=".${nameKey},components.ajaxConfirm.${nameKey}">
-    <cti:msg2 var="dialogTitleMsg" key=".title" argument="${pageScope.argument}" javaScriptEscape="true" htmlEscape="false" />
-    <cti:msg2 var="confirmationMsg" key=".message" argument="${pageScope.argument}" javaScriptEscape="true" htmlEscape="false" />
+    <cti:msg2 var="dialogTitleMsg" key=".title" argument="${pageScope.argument}" javaScriptEscape="true"/>
+    <cti:msg2 var="confirmationMsg" key=".message" argument="${pageScope.argument}" javaScriptEscape="true"/>
     <cti:msgScope paths=",components.dialog">
         <cti:msg2 var="okBtnMsg" key=".ok"/>
         <cti:msg2 var="cancelBtnMsg" key=".cancel"/>

@@ -3,6 +3,6 @@
 <cti:msgScope paths="modules.amr.billing.timestampHelper">
 
 <div style="font-size: 12px;">
-    <cti:msg2 key=".description" htmlEscape="false"/>
+    <cti:msg2 key=".description"/>
 </div>
 </cti:msgScope>

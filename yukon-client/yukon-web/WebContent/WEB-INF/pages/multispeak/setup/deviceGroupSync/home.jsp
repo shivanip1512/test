@@ -67,7 +67,7 @@
 				<%-- instructions --%>
 				<td class="instructions">
 					<tags:formElementContainer nameKey="instructionsContainer">
-						<cti:msg2 key=".instructions" htmlEscape="false"/>
+						<cti:msg2 key=".instructions"/>
 					</tags:formElementContainer>
 				</td>
 			

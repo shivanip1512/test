@@ -30,7 +30,7 @@
     <br>
     <c:if test="${not empty optOutDisabledKey}">
         <tags:boxContainer2 nameKey="optOutsDisabledWarning" hideEnabled="false">
-            <cti:msg2 key=".${optOutDisabledKey}" htmlEscape="false"/>
+            <cti:msg2 key=".${optOutDisabledKey}"/>
         </tags:boxContainer2>
         <br>
         <br>

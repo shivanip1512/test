@@ -99,7 +99,7 @@
                         <i:inline key=".readOutageLogs.noteLabel" />
 	                </td>
 	                <td style="font-size:11px;">
-                        <cti:msg2 key=".readOutageLogs.noteBody" htmlEscape="false"/>
+                        <cti:msg2 key=".readOutageLogs.noteBody"/>
 	                </td>
 	            </tr>
 	    	</table>

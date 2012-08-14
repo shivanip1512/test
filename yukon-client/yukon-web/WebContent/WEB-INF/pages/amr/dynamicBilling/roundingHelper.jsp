@@ -3,7 +3,7 @@
 <cti:msgScope paths="modules.amr.billing.roundingHelper">
 
 <div style="font-size: 12px;">
-<cti:msg2 key=".description" htmlEscape="false" />
+<cti:msg2 key=".description"/>
 <h3><cti:msg2 key=".title"/></h3>
 
 <table border="1" cellpadding="5px" cellspacing="0px">

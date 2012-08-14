@@ -72,7 +72,7 @@
 											      dataJson="${groupDataJson}"
 											      linkGroupName="true"/>
 	                <tags:helpInfoPopup title="${deviceGroupTitle}">
-	            		<cti:msg2 key=".popupInfo.deviceGroup" htmlEscape="false"/>
+	            		<cti:msg2 key=".popupInfo.deviceGroup"/>
 					</tags:helpInfoPopup>
 				</tags:nameValue2>
 			    

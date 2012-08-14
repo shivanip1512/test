@@ -237,6 +237,15 @@
     <entry key="yukon.web.modules.support.rfnTest.dataType.UOM">UOM</entry>
     <entry key="yukon.web.modules.support.rfnTest.dataType.UOM_MODIFIERS">UOM Modifiers</entry>
 
+    <entry key="yukon.web.modules.support.i18nDemo.defaultEscapingExampleCode"><![CDATA[<cti:msg2 key=".awesomeKey"/>]]></entry>
+    <entry key="yukon.web.modules.support.i18nDemo.defaultEscapingExampleMsg"><![CDATA[
+        <entry key="yukon.web.modules.module.page.awesomeKey"><![CDATA[Your thing: <span class="errorMessage">{0}</span>!]]]]><![CDATA[></entry>
+    ]]></entry>
+    <entry key="yukon.web.modules.support.i18nDemo.defaultEscapingExample"><![CDATA[Your thing: <span class="errorMessage">{0}</span>!]]></entry>
+    <entry key="yukon.web.modules.support.i18nDemo.fullHTMLEscapingExampleCode"><![CDATA[<cti:msg2 key=".awesomeKey" htmlEscape="true"/>]]></entry>
+    <entry key="yukon.web.modules.support.i18nDemo.noHTMLEscapingExampleCode"><![CDATA[<cti:msg2 key=".awesomeKey" htmlEscapeArguments="false"/>]]></entry>
+    <entry key="yukon.web.modules.support.i18nDemo.JavaScriptEscapingExampleCode"><![CDATA[<cti:msg2 key=".containsJSCode" javaScriptEscape="true"/>]]></entry>
+
     <entry key="yukon.web.modules.support.i18nDemo.scope.title">Scope {0}</entry>
     <entry key="yukon.web.modules.support.i18nDemo.testMessage">Test "i18nDemo"</entry>
     <entry key="yukon.web.modules.support.i18nDemo.nested.testMessage">Test "i18nDemo.nested"</entry>

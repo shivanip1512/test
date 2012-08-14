@@ -191,7 +191,7 @@ jQuery(function(){
 <!-- help/hints popup -->
 <i:simplePopup titleKey=".help.title" id="help" on=".help">
 <div class="help pad">
-        <cti:msg2 key=".hint" htmlEscape="false"/>
+        <cti:msg2 key=".hint"/>
     </div>
 </i:simplePopup>
 

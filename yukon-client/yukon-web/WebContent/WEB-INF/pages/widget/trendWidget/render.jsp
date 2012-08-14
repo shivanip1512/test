@@ -24,7 +24,7 @@
 			<div style="font-size: 10px; text-align: right; position: relative"  onmouseover="toggleWhatsThis()" onmouseout="toggleWhatsThis()">
 				<cti:msg2 key=".whatsThis"/>
 				<div id="whatsThisText" class="widgetPopup" style="display:none;text-align: left">
-					<cti:msg2 htmlEscape="false" key="${attributeGraphType.description}"/>
+					<cti:msg2 key="${attributeGraphType.description}"/>
 				</div>
 			</div>
 		</c:if>

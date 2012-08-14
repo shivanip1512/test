@@ -66,8 +66,8 @@
                     <input type="hidden"  name="temperature" value="${(event.runProgram)? '' : event.previousCoolTemperature.value}" />
                     <input type="hidden" name="temperatureUnit" value="F" /> <!-- currently always stored as Fahrenheit -->
                     <div class="box fl temperatureAdjust"> 
-                        <div data-temperatureMode="COOL" class="clickable up" ><cti:msg2 key="yukon.web.modules.operator.thermostatManual.incrementTemp" htmlEscape="false" /></div>
-                        <div data-temperatureMode="COOL" class="clickable down"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.decrementTemp" htmlEscape="false" /></div>
+                        <div data-temperatureMode="COOL" class="clickable up" ><cti:msg2 key="yukon.web.modules.operator.thermostatManual.incrementTemp"/></div>
+                        <div data-temperatureMode="COOL" class="clickable down"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.decrementTemp"/></div>
                     </div>
                 </div>
 
@@ -76,8 +76,8 @@
                     <input class="${event.modeString} temperature fl" data-temperatureMode="HEAT" type="text" name="temperature_display" maxlength="4" <c:if test="${event.modeString == 'OFF'}">disabled="disabled"</c:if>>
                     <input type="hidden"  name="temperature" value="${(event.runProgram)? '' : event.previousHeatTemperature.value}" />
                     <div class="box fl temperatureAdjust"> 
-                        <div data-temperatureMode="HEAT" class="clickable up" ><cti:msg2 key="yukon.web.modules.operator.thermostatManual.incrementTemp" htmlEscape="false" /></div>
-                        <div data-temperatureMode="HEAT" class="clickable down"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.decrementTemp" htmlEscape="false" /></div>
+                        <div data-temperatureMode="HEAT" class="clickable up" ><cti:msg2 key="yukon.web.modules.operator.thermostatManual.incrementTemp"/></div>
+                        <div data-temperatureMode="HEAT" class="clickable down"><cti:msg2 key="yukon.web.modules.operator.thermostatManual.decrementTemp"/></div>
                     </div>
                 </div>
 

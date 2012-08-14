@@ -18,6 +18,7 @@ jQuery(function() {
     <ul>
         <li><a href="#pickersTab">Pickers</a></li>
         <li><a href="#i18nTab">I18N</a></li>
+        <li><a href="#i18nScopesTab">I18N Scopes</a></li>
         <li><a href="#dialogsTab">Dialogs</a></li>
         <li><a href="#moreTab">More</a></li>
     </ul>
@@ -28,6 +29,10 @@ jQuery(function() {
 
     <div id="i18nTab">
         <%@ include file="i18n.jspf" %>
+    </div>
+
+    <div id="i18nScopesTab">
+        <%@ include file="i18n_scopes.jspf" %>
     </div>
 
     <div id="dialogsTab">

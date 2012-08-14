@@ -6,47 +6,74 @@
 
 <cti:msgScope paths="modules.support.i18nDemo">
 
+<div class="i18nDemo">
+
 <p class="pageDescription">
-This page shows some examples of how to do internationalization in Yukon.  This is the same
-information one would get using i:inline and setting I18N_DESIGN_MODE to true in master.cfg.
+This page shows some examples of how to do internationalization in Yukon.
 </p>
 
-<c:set var="msgScopeMsg" value="${scopePeeker.scope}"/>
+<h1>Escaping</h1>
 
-<div class="scopeDemo">
-<h1 class="i18nDemo"><cti:msg2 key=".scope.title" argument="${msgScopeMsg}"/></h1>
-<div class="messageSample">
-&lt;i:inline key=&quot;.testMessage&quot;/&gt; resolves to <span class="messageSample"><cti:msg2 key=".testMessage" debug="true" fallback="true"/></span>
-</div>
+<p>The cti:msg2 tag offers several options for escaping.  The i:inline uses the defaults of cti:msg2 so if
+you need greater control over escaping, use cti:msg2 instead of i:inline.</p>
 
-<ul class="keyList">
-<c:forEach items="${msg2TagDebugMap}" var="entry">
-    <li>${entry.key}=${entry.value}</li>
-</c:forEach>
-</ul>
-</div>
+<p>There are three kinds of escaping as explained here:</p>
+
+<h2>htmlEscape</h2>
+Escape HTML elements in the entire message, after arguments have been embedded.  This is false by default.
+
+<h2>htmlEscapeArguments</h2>
+Escape HTML elements in the arguments before they are added to the message.  This is true by default.  If
+htmlEscape is turned on, this will be ignored so arguments do not get escaped twice.
+
+<h2>javaScriptEscape</h2>
+Escape for use as a JavaScript string.  This is false by default.  (Like htmlEscape, this attribute escapes
+the entire message after arguments have been added.)
+
+<h2>HTML Escaping</h2>
+
+<p>By default, HTML in arguments is escaped but not in the message itself.  Consider the following code:</p>
+
+<p class="exampleCode"><cti:msg2 key=".defaultEscapingExampleCode" htmlEscape="true"/></p>
+
+<p>with the following key:</p>
+
+<p class="exampleCode"><cti:msg2 key=".defaultEscapingExampleMsg" htmlEscape="true"/></p>
+
+<p>and an argument of "${fn:escapeXml(thisNotThat)}", render as:</p>
+
+<p class="exampleCode"><cti:msg2 key=".defaultEscapingExample" argument="${thisNotThat}"/></p>
+
+<p>If we turn on HTML escaping for the whole message:</p>
+
+<p class="exampleCode"><cti:msg2 key=".fullHTMLEscapingExampleCode" htmlEscape="true"/></p>
+
+<p>we will see everything in the message escaped:</p>
+
+<p class="exampleCode"><cti:msg2 key=".defaultEscapingExample" argument="${thisNotThat}" htmlEscape="true"/></p>
+
+<p>If we turn off even HTML argument escaping:</p>
+
+<p class="exampleCode"><cti:msg2 key=".noHTMLEscapingExampleCode" htmlEscape="true"/></p>
+
+<p>nothing in the message will be escaped (and thus any HTML in it gets used on the page):</p>
+
+<p class="exampleCode"><cti:msg2 key=".defaultEscapingExample" argument="${thisNotThat}" htmlEscapeArguments="false"/></p>
+
+<h2>JavaScript (ECMA) Escaping</h2>
+
+<p>The "javaScriptEscape" attribute can be used to escape a string for use as a JavaScript string.  I can't imagine
+why we would ever want this.</p>
 
 
-<debug:scopeDemo newPaths=".nested"/>
-<debug:scopeDemo newPaths=".nested,"/>
-<debug:scopeDemo newPaths=",.nested"/>
-<debug:scopeDemo newPaths="startOver"/>
-<debug:scopeDemo newPaths=".nested,startOver"/>
-<debug:scopeDemo newPaths=".nested,startOver,"/>
-
-<cti:msgScope paths=",duck,.duck,goose">
-<debug:scopeDemo newPaths=".nested,StartOver,"/>
-</cti:msgScope>
-
-<div class="scopeDemo messageFormat">
-<h1 class="i18nDemo">Message Format Options</h1>
+<h1>Message Format Options</h1>
 
 <p>The key value pairs we put in .xml file for localization are parsed using standard Java classes.
 You can read all about this in the
 <a href="http://download.oracle.com/javase/6/docs/api/java/text/MessageFormat.html">official Java Documentation</a>
 but here you will find a summary of the most useful bits.</p> 
 
-<h3>Choice Format</h3>
+<h2>Choice Format</h2>
 
 <p>This is the most common format you'll need.  The most useful format is (replacing
 "argumentNumber", "noItemsMessage", etc. as appropriate):</p>
@@ -68,7 +95,7 @@ but here you will find a summary of the most useful bits.</p>
     <li><i:inline key=".choiceExample" arguments="${numberFive}"/></li>
 </ul>
 
-<h3>Number Format</h3>
+<h2>Number Format</h2>
 
 <p>The number format is useful when rounding is needed.  Using the following format:</p>
 
@@ -88,12 +115,12 @@ Using the following format:</p>
 <p>${largeDecimal} formats as <i:inline key=".decimalExample.withCommas" arguments="${largeDecimal}"/></p>
 <p>${largeInteger} formats as <i:inline key=".decimalExample.withCommas" arguments="${largeInteger}"/></p>
 
-<h3>Date and Time Formats</h3>
+<h2>Date and Time Formats</h2>
 
 <p>Don't use these.  Use our own date formatting services (cti:formatDate).  If the date is part of
 a larger message, format it as a string and pass it as an argument to the other format.</p>
 
-<h3>Sorted Enum Values</h3>
+<h2>Sorted Enum Values</h2>
 
 <p>This is an DisplayableEnum sorted with a specific value forced to the top and another foced to
 the bottom.</p>

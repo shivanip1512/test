@@ -13,8 +13,8 @@
     <cti:includeCss link="/WebConfig/yukon/styles/operator/thermostat.css"/>
     <cti:includeCss link="/WebConfig/yukon/styles/shared/thermostat.css"/>
     
-    <cti:msg2 var="degreesCelsius" key="yukon.web.modules.operator.thermostatManual.degreesCelsius" htmlEscape="false" />
-    <cti:msg2 var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit" htmlEscape="false" />
+    <cti:msg2 var="degreesCelsius" key="yukon.web.modules.operator.thermostatManual.degreesCelsius"/>
+    <cti:msg2 var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatManual.degreesFahrenheit"/>
     <cti:msg2 var="holdConfirmOn" key="yukon.web.modules.operator.thermostatManual.hold.on" javaScriptEscape="true"/>
     <cti:msg2 var="holdConfirmOff" key="yukon.web.modules.operator.thermostatManual.hold.off" javaScriptEscape="true"/>
 
@@ -98,13 +98,13 @@ jQuery(function(){
                                                 <c:if test="${historyItem.eventType == 'MANUAL'}">
                                                     <!-- Temperature and Degree Units -->
                                                     <c:if test="${historyItem.manualCoolTemp.value != 0}">
-                                                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>"  htmlEscape="false"/>
+                                                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>"/>
                                                         <span class="C_label unit_label">${degreesCelsius}</span>
                                                         <span class="F_label unit_label">${degreesFahrenheit}</span>,
                                                     </c:if>
 
                                                     <c:if test="${historyItem.manualHeatTemp.value != 0}">
-                                                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>"  htmlEscape="false"/>
+                                                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>"/>
                                                         <span class="C_label unit_label">${degreesCelsius}</span>
                                                         <span class="F_label unit_label">${degreesFahrenheit}</span>,
                                                     </c:if>

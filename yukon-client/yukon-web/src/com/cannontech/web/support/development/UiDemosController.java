@@ -87,5 +87,6 @@ public class UiDemosController {
             objectFormattingService.sortDisplayableValues(Colors.values(), Colors.NONE, Colors.OTHER,
                                                           userContext);
         model.addAttribute("colors", colors);
+        model.addAttribute("thisNotThat", "This<br>Not That");
     }
 }

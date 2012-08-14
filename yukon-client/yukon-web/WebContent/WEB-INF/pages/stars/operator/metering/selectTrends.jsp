@@ -13,7 +13,7 @@
 		<c:choose>
 		
 			<c:when test="${fn:length(availablTrendWrappers) == 0}">
-				<cti:msg2 key=".noTrends" htmlEscape="false"/>
+				<cti:msg2 key=".noTrends"/>
 			</c:when>
 			
 			<c:otherwise>

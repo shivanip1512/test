@@ -12,7 +12,7 @@
 
     <div class="listContainer">
         <div>
-            <cti:msg2 key=".disclaimer" htmlEscape="false" argument="${energyCompanyName}"/>
+            <cti:msg2 key=".disclaimer" argument="${energyCompanyName}"/>
         </div>
         <br>
 <%--    

@@ -1280,17 +1280,15 @@
             <name>arguments</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-            <description>Set optional message arguments for this tag, as a
-            (comma-)delimited String (each String argument can contain JSP EL),
-            an Object array (used as argument array), or a single Object (used
-            as single argument).</description>
+            <description>Set optional message arguments for this tag, as an Object array (used as
+            argument array), a java.util.Collection or a single Object (usedas single argument).</description>
         </attribute>
         <attribute>
             <name>argumentSeparator</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-            <description>The separator character to be used for splitting the
-            arguments string value. Defaults to null so string values will not be split unless an argumentSeparator is supplied.</description>
+            <description>DO NOT USE!  If you need multiple arguments, build them into a list or array.  In
+            a JSP file, you can use cti:list and cti:item to do this.</description>
         </attribute>
         <attribute>
             <name>var</name>
@@ -1312,8 +1310,13 @@
             <name>htmlEscape</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-            <description>Set HTML escaping for this tag, as boolean value.
-            Overrides the default HTML escaping setting for the current page.</description>
+            <description>Set HTML escaping for this tag.  The default is "false".</description>
+        </attribute>
+        <attribute>
+            <name>htmlEscapeArguments</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set HTML escaping for this arguments to this tag.  The default is true.</description>
         </attribute>
         <attribute>
             <name>javaScriptEscape</name>

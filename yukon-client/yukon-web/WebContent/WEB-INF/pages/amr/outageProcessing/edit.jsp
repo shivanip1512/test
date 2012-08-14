@@ -99,7 +99,7 @@
 												      linkGroupName="true"/>
 		                                                    
 		                <tags:helpInfoPopup title="${deviceGroupText}">
-		            		<cti:msg2 key=".popupInfo.deviceGroup" htmlEscape="false"/>
+		            		<cti:msg2 key=".popupInfo.deviceGroup"/>
 						</tags:helpInfoPopup>
 						
 					</tags:nameValue2>
@@ -116,7 +116,7 @@
 						<i:inline key=".label.numberOfOutagesOutages"/>
 						
 						<tags:helpInfoPopup title="${numberOfOutagesText}">
-		            		<cti:msg2 key=".popupInfo.numberOfOutages" htmlEscape="false"/>
+		            		<cti:msg2 key=".popupInfo.numberOfOutages"/>
 						</tags:helpInfoPopup>
 						
 					</tags:nameValue2>
@@ -128,7 +128,7 @@
                         <i:inline key=".label.timePeriodDays"/>
 						
 						<tags:helpInfoPopup title="${timePeriodText}">
-		            		<cti:msg2 key=".popupInfo.timePeriod" htmlEscape="false"/>
+		            		<cti:msg2 key=".popupInfo.timePeriod"/>
 						</tags:helpInfoPopup>
 						
 					</tags:nameValue2>
@@ -173,7 +173,7 @@
 					
 					<cti:msg2 var="scheduleReadText" key=".label.scheduleRead"/>
                     <tags:helpInfoPopup title="${scheduleReadText}">
-	            		<cti:msg2 key=".popupInfo.scheduleRead" htmlEscape="false"/>
+	            		<cti:msg2 key=".popupInfo.scheduleRead"/>
 					</tags:helpInfoPopup>
 						
 					<%-- schedule name --%>

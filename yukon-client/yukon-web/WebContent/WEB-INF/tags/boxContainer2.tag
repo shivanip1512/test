@@ -19,7 +19,7 @@
 			<cti:msg2 var="title" key=".title" arguments="${arguments}"/>
 		</c:otherwise>
 	</c:choose>
-	<cti:msg2 var="helpText" key=".helpText" blankIfMissing="true" htmlEscape="false"/>
+	<cti:msg2 var="helpText" key=".helpText" blankIfMissing="true"/>
 </cti:msgScope>
 
 <tags:boxContainer title="${pageScope.title}" 
