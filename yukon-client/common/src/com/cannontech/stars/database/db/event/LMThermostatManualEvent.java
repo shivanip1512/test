@@ -22,8 +22,8 @@ public class LMThermostatManualEvent extends DBPersistent {
 	private String holdTemperature = new String("N");
 	private Integer operationStateID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer fanOperationID = new Integer(CtiUtilities.NONE_ZERO_ID);
-	private Integer previousCoolTemperature = new Integer(0);
-    private Integer previousHeatTemperature = new Integer(0);
+	private Double previousCoolTemperature = new Double(0.0);
+    private Double previousHeatTemperature = new Double(0.0);
 	
 	public static final String[] SETTER_COLUMNS = {
 		"InventoryID", "HoldTemperature", "OperationStateID", "FanOperationID", "PreviousCoolTemperature", "PreviousHeatTemperature"
@@ -71,8 +71,8 @@ public class LMThermostatManualEvent extends DBPersistent {
 			setHoldTemperature( (String) results[1] );
 			setOperationStateID( (Integer) results[2] );
 			setFanOperationID( (Integer) results[3] );
-			setPreviousCoolTemperature( (Integer) results[4] );
-            setPreviousHeatTemperature( (Integer) results[5] );
+			setPreviousCoolTemperature( (Double) results[4] );
+            setPreviousHeatTemperature( (Double) results[5] );
 		}
 		else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -129,8 +129,8 @@ public class LMThermostatManualEvent extends DBPersistent {
                 event.setHoldTemperature( (String) row[2] );
                 event.setOperationStateID( new Integer(((java.math.BigDecimal)row[3]).intValue()) );
                 event.setFanOperationID( new Integer(((java.math.BigDecimal)row[4]).intValue()) );
-                event.setPreviousCoolTemperature( new Integer(((java.math.BigDecimal)row[5]).intValue()) );
-                event.setPreviousHeatTemperature( new Integer(((java.math.BigDecimal)row[6]).intValue()) );
+                event.setPreviousCoolTemperature( ((java.math.BigDecimal)row[5]).doubleValue() );
+                event.setPreviousHeatTemperature( ((java.math.BigDecimal)row[6]).doubleValue() );
                 
                 return event;
             }
@@ -182,17 +182,17 @@ public class LMThermostatManualEvent extends DBPersistent {
 		this.eventID = eventID;
 	}
 
-    public Integer getPreviousCoolTemperature() {
+    public Double getPreviousCoolTemperature() {
         return previousCoolTemperature;
     }
-    public void setPreviousCoolTemperature(Integer previousCoolTemperature) {
+    public void setPreviousCoolTemperature(Double previousCoolTemperature) {
         this.previousCoolTemperature = previousCoolTemperature;
     }
 
-    public Integer getPreviousHeatTemperature() {
+    public Double getPreviousHeatTemperature() {
         return previousHeatTemperature;
     }
-    public void setPreviousHeatTemperature(Integer previousHeatTemperature) {
+    public void setPreviousHeatTemperature(Double previousHeatTemperature) {
         this.previousHeatTemperature = previousHeatTemperature;
     }
 }

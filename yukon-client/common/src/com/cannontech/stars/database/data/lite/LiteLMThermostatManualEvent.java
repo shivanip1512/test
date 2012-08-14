@@ -17,8 +17,8 @@ public class LiteLMThermostatManualEvent extends LiteLMCustomerEvent {
 	private boolean holdTemperature = false;
 	private int operationStateID = CtiUtilities.NONE_ZERO_ID;
 	private int fanOperationID = CtiUtilities.NONE_ZERO_ID;
-	private int previousCoolTemperature = 0;
-    private int previousHeatTemperature = 0;
+	private double previousCoolTemperature = 0.0;
+    private double previousHeatTemperature = 0.0;
 	
 	public LiteLMThermostatManualEvent() {
 		super();
@@ -63,17 +63,17 @@ public class LiteLMThermostatManualEvent extends LiteLMCustomerEvent {
 		this.inventoryID = inventoryID;
 	}
 
-    public int getPreviousCoolTemperature() {
+    public double getPreviousCoolTemperature() {
         return previousCoolTemperature;
     }
-    public void setPreviousCoolTemperature(int previousCoolTemperature) {
+    public void setPreviousCoolTemperature(double previousCoolTemperature) {
         this.previousCoolTemperature = previousCoolTemperature;
     }
 
-    public int getPreviousHeatTemperature() {
+    public double getPreviousHeatTemperature() {
         return previousHeatTemperature;
     }
-    public void setPreviousHeatTemperature(int previousHeatTemperature) {
+    public void setPreviousHeatTemperature(double previousHeatTemperature) {
         this.previousHeatTemperature = previousHeatTemperature;
     }
 }

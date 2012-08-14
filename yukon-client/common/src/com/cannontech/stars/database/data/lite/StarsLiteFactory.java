@@ -397,8 +397,12 @@ public class StarsLiteFactory {
 		liteEvent.setHoldTemperature( event.getLmThermostatManualEvent().getHoldTemperature().equalsIgnoreCase("Y") );
 		liteEvent.setOperationStateID( event.getLmThermostatManualEvent().getOperationStateID().intValue() );
 		liteEvent.setFanOperationID( event.getLmThermostatManualEvent().getFanOperationID().intValue() );
-		liteEvent.setPreviousCoolTemperature( event.getLmThermostatManualEvent().getPreviousCoolTemperature().intValue() );
-        liteEvent.setPreviousHeatTemperature( event.getLmThermostatManualEvent().getPreviousHeatTemperature().intValue() );
+		if (event.getLmThermostatManualEvent().getPreviousCoolTemperature() != null) {
+		    liteEvent.setPreviousCoolTemperature( event.getLmThermostatManualEvent().getPreviousCoolTemperature() );
+		}
+		if (event.getLmThermostatManualEvent().getPreviousHeatTemperature() != null) {
+		    liteEvent.setPreviousHeatTemperature( event.getLmThermostatManualEvent().getPreviousHeatTemperature() );
+		}
 	}
 	
 	public static void setLiteStarsAppliance(LiteStarsAppliance liteApp, com.cannontech.stars.database.data.appliance.ApplianceBase app) {
@@ -895,8 +899,8 @@ public class StarsLiteFactory {
 		event.getLmThermostatManualEvent().setHoldTemperature( liteEvent.isHoldTemperature() ? "Y" : "N" );
 		event.getLmThermostatManualEvent().setOperationStateID( new Integer(liteEvent.getOperationStateID()) );
 		event.getLmThermostatManualEvent().setFanOperationID( new Integer(liteEvent.getFanOperationID()) );
-        event.getLmThermostatManualEvent().setPreviousCoolTemperature( new Integer(liteEvent.getPreviousCoolTemperature()) );
-        event.getLmThermostatManualEvent().setPreviousHeatTemperature( new Integer(liteEvent.getPreviousHeatTemperature()) );
+        event.getLmThermostatManualEvent().setPreviousCoolTemperature( liteEvent.getPreviousCoolTemperature() );
+        event.getLmThermostatManualEvent().setPreviousHeatTemperature( liteEvent.getPreviousHeatTemperature() );
 	}
 	
 	public static void setApplianceBase(com.cannontech.stars.database.data.appliance.ApplianceBase app, LiteStarsAppliance liteApp) {
