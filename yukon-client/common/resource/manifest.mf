@@ -66,4 +66,6 @@ Class-Path: ./
  exificient.jar 
  xml-apis.jar 
  jasypt-1.9.0.jar 
+ bcpkix-jdk15on-147.jar
+ bcprov-jdk15on-147.jar
  

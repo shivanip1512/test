@@ -1,4 +1,4 @@
-package com.cannontech.crypto;
+package com.cannontech.encryption;
 
 import java.security.Security;
 import java.security.spec.AlgorithmParameterSpec;
@@ -155,10 +155,10 @@ public class CtiCipher
 		{
 			String s = "try it";
 			System.out.println( "Start : " + s );
-			String encStr = com.cannontech.crypto.CtiCipher.encrypt( s );	
+			String encStr = com.cannontech.encryption.CtiCipher.encrypt( s );	
 			System.out.println( encStr );
 
-			String decStr = com.cannontech.crypto.CtiCipher.decrypt( encStr );	
+			String decStr = com.cannontech.encryption.CtiCipher.decrypt( encStr );	
 			System.out.println( decStr );
 
 		}

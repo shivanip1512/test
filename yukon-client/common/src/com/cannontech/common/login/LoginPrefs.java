@@ -4,7 +4,7 @@
 package com.cannontech.common.login;
 
 import com.cannontech.common.util.CtiPreferences;
-import com.cannontech.crypto.CtiCipher;
+import com.cannontech.encryption.CtiCipher;
 
 /**
  * LoginPref stores some stuff via the preferences api  

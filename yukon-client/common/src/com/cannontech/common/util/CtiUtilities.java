@@ -616,6 +616,10 @@ public final class CtiUtilities {
         return logDirectory;
     }
 
+    public final static String getKeysFolder() {
+        return CtiUtilities.getYukonBase() + "/Server/Config/Keys/";
+    }
+
     /**
      * Returns the base/home directory where yukon is installed.
      * From here we can assume the canonical yukon directory

@@ -89,6 +89,12 @@
         <dependent-module archiveName="jsch-0.1.44.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jsch-0.1.44.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="bcpkix-jdk15on-147.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/bcpkix-jdk15on-147.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="bcprov-jdk15on-147.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/bcprov-jdk15on-147.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <dependent-module archiveName="jfreereport.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jfreereport.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>

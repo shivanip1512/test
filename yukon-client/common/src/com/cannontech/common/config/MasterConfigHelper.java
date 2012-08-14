@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -19,7 +20,17 @@ public class MasterConfigHelper {
     private static String url = null;
     
     static {
-        masterCfgLocation = new File(CtiUtilities.getYukonBase(), "Server/Config/master.cfg");
+        URL url =  MasterConfigHelper.class.getClassLoader().getResource("master.cfg");
+        if (url != null) {
+            try {
+                masterCfgLocation = new File(url.toURI());
+            } catch(URISyntaxException e) {
+                masterCfgLocation = new File(url.getPath());
+            }
+            CTILogger.info("Local config found on classpath: " + url);
+        } else {
+            masterCfgLocation = new File(CtiUtilities.getYukonBase(), "Server/Config/master.cfg");
+        }
     }
     
     static public boolean isLocalConfigAvailable() {
@@ -53,7 +64,11 @@ public class MasterConfigHelper {
             CTILogger.info("Local config found on filesystem: " + masterCfgLocation);
         }
         
-        config.initialize();
+        try {
+            config.initialize();
+        } catch (IOException e) {
+            //log.warn("caught exception in getLocalConfiguration", e);
+        }
         return config;
     }
     
@@ -86,6 +101,10 @@ public class MasterConfigHelper {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("Unable to set host and port", e);
         }
+    }
+    
+    static public File getMasterCfgLocation() {
+        return masterCfgLocation;
     }
     
 }

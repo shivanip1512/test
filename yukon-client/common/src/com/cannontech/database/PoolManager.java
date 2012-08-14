@@ -140,7 +140,6 @@ public class PoolManager {
         log.info("DB URL=" + primaryUrl);
 
         primaryUser = configSource.getRequiredString("DB_USERNAME");
-        log.info("DB username=" + primaryUser);
         String password = configSource.getRequiredString("DB_PASSWORD");
         
         String maxActiveConns = configSource.getString("DB_JAVA_MAXCONS");
