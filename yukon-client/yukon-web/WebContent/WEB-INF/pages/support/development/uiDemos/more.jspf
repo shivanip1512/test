@@ -57,6 +57,9 @@ hr {
 
     <h3>Time Picker</h3>
     <div class="dateContainer"><label>Basic</label><dateTime:time value="${now}" /></div>
+    <div class="dateContainer"><label>Step Hour<br><small>Hour:3</small></label><dateTime:time value="${now}" stepHour="3"/></div>
+    <div class="dateContainer"><label>Step Minute<br><small>Min:10</small></label><dateTime:time value="${now}" stepMinute="10"/></div>
+    <div class="dateContainer"><label>Step Minute & Hour<br><small>Min:10 / Hour:3</small></label><dateTime:time value="${now}" stepMinute="10" stepHour="3"/></div>
 
     <hr>
 

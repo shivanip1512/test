@@ -25,6 +25,7 @@
          The {0} has a from date of {1,choice,0#0 hours|1#1 hour|1<{1} hours} ago. Data may not yet be expected for some devices during this time.
     ]]></entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.foundLeaks">There have been {0} water leaks identified (see below) using our {1} and based on the {2}.</entry>
+	<entry key="yukon.web.modules.amr.waterLeakReport.report.defaultFilter">default filter</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.currentFilter">current filter</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.clickHere">click here</entry>
 	<entry key="yukon.web.modules.amr.waterLeakReport.report.leakDetectionAlgorithm">leak detection algorithm</entry>
@@ -64,6 +65,16 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakRateLabel">{0,number,0.000} gal/hr</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.exportCSV">Export to CSV</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.results.deviceCollectionDescription">Water Leak Report Results</entry>
+
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filteredBy.devices.label">for devices in</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filteredBy.devices.value.individual">Individually Selected</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filteredBy.dates.label">between</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filteredBy.threshold.label">with a threshold of</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filteredBy.threshold.value">{0,number,0.0} gal/hr</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filteredBy.disabledDevices.label">including</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filteredBy.disabledDevices.value">disabled devices</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filteredBy.reset.label">or</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.filteredBy.reset.value">reset to defaults</entry>
 
     <!-- WATER LEAK REPORT ACCOUNT INFO DIALOG accountInfoAjax.jsp -->
     <entry key="yukon.web.modules.amr.waterLeakReport.accountInfo.title">Account Info</entry>

@@ -7,6 +7,9 @@
 <entry key="yukon.web.defaults.blank"></entry>
 <entry key="yukon.web.defaults.none">(none)</entry>
 
+<entry key="yukon.web.defaults.add">Add</entry>
+<entry key="yukon.web.defaults.remove">Remove</entry>
+
 <entry key="yukon.web.defaults.yes">Yes</entry>
 <entry key="yukon.web.defaults.no">No</entry>
 <entry key="yukon.web.defaults.na">N/A</entry>

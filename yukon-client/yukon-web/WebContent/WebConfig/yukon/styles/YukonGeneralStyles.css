@@ -636,6 +636,54 @@ div.boxContainerFooter .footer {
     padding: 4px 8px;
 }
 
+.filter_container {
+    width: 100%;
+    float: left;
+    padding-bottom: 3px;
+    margin-bottom: 4px;
+    border-bottom: 1px dashed #BBBBBB;
+    font-size: 11px;
+}
+.filter_container > a {
+    float: left;
+    margin: 0px 5px 5px;
+    padding: 2px;
+    background-color: #eee;
+    border: 1px solid #BBBBBB;
+    border-radius: 2px 2px 2px 2px;
+    white-space: nowrap;
+}
+.filter_container > a:hover,
+.filter_container > a:active,
+.filter_container > a:focus {
+    border: 1px solid #999;
+    background-color: #ddd;
+    cursor: pointer;
+    outline: 0;
+}
+.filter_container .label {
+    float: left;
+    margin-right: 3px;
+    color: #555;
+    font-weight: normal;
+    font-size: 9px;
+}
+.filter_container .value {
+    float: left;
+    font-weight: bold;
+    color: #444;
+    font-size: 10px;
+}
+.filter_container > .reset {
+    background-color: #fff;
+}
+.filter_container > .reset:hover {
+    background-color: #eee;
+}
+.filter_container > .reset .value {
+    color: #06C;
+}
+
 .boxContainer_titleBar{position:relative; overflow:hidden;}
 
 div.pagedBox .footer,
@@ -758,8 +806,9 @@ div.pagedBox table {
     vertical-align: bottom;
 }
 
-div.pagedBox table .titleArea {
-    width: 50%;
+div.pagedBox .title .titleArea {
+	float: left;
+    margin-top: 4px;
 }
 
 div.pagedBox table .filterArea {
@@ -798,23 +847,24 @@ div.pagedBox .contextArea a {
 	text-decoration: none;
 }
 div.pagedBox .pagingArea {
-    width: 300px;
+    width: 240px;
+    float: right;
+}
+div.pagedBox .pagingArea .logoImage {
+	position: relative;
+	bottom: 2px;
 }
 
-table .perPageArea {
-    text-align: right;
-    width: 70%;
+.perPageArea {
+	top: 2px;
 }
 
+.filterArea,
 .pagingArea,
 .perPageArea {
-	color: gray;
+	color: #06C;
     font-weight: normal;
     white-space: nowrap;
-}
-
-.perPageArea {
-	top: 2px; /* to align the pagingArea and the perPageArea until the pagingArea is turned into something other than a table */ 
 }
 
 .filterArea a,
@@ -823,7 +873,6 @@ table .perPageArea {
    color: #06C;
    text-decoration: none;
    font-weight: normal;
-   vertical-align: top;
 }
 
 div.pagedBox .selectedItem {
@@ -836,17 +885,13 @@ div.pagedBox table.boxTable {
 
 .pagedBox .contextArea {
     float: right;
-    margin: -4px 0;
-    height: 27px;
-    position: relative;
 }
-
-.pagedBox .contextArea .navLink a {
+.pagedBox .contextArea .navLink {
 	position: relative;
-	bottom: -5px;
+	top: 2px;
 }
 
-.pagedBox .contextArea button {
+.pagedBox .contextArea button.fancy {
     position: relative;
     font-size: 13px!important;
     border: solid 1px #777;
@@ -863,13 +908,13 @@ div.pagedBox table.boxTable {
     text-shadow: 0 1px 0 #EFEFEF;
 }
 
-.pagedBox .contextArea button:hover {
+.pagedBox .contextArea button.fancy:hover {
     background-color: #ddd;
     color: #333;
     border-color: #666 !important;
     cursor: pointer;
 }
-.pagedBox .contextArea button:active {
+.pagedBox .contextArea button.fancy:active {
     background-color: #ddd; /* Old browsers */
     background-image: -webkit-linear-gradient(top, #ddd, #efefef); /* Chrome10+, Safari5.1+ */
     background-image:    -moz-linear-gradient(top, #ddd, #efefef); /* FF3.6+ */
@@ -879,15 +924,15 @@ div.pagedBox table.boxTable {
     user-select:none !important;
     outline: none !important;
 }
-.pagedBox .contextArea button:disabled,
-.pagedBox .contextArea button:disabled:hover {
+.pagedBox .contextArea button.fancy:disabled,
+.pagedBox .contextArea button.fancy:disabled:hover {
     background: #efefef !important;
     color: #999 !important;
     border: solid 1px #ccc !important;
     cursor: default;
 }
 
-.pagedBox .contextArea button:focus {
+.pagedBox .contextArea button.fancy:focus {
     outline: none !important;
 }
 
@@ -1534,6 +1579,20 @@ a.icon {
     background: transparent url(../Icons/disable.gif) top left no-repeat;
 }
 
+.icon_small_clear {
+	position: relative;
+	top: 2px;
+	right: 1px;
+	height: 11px;
+	margin-left: 5px;
+	padding: 0 0 0 11px;
+    background: transparent url(../Icons/circle_clear_small.png) top left no-repeat;
+    background-position: 0 -11px;
+}
+.icon_small_clear:hover {
+    background-position: 0 0px;
+}
+
 .icon_remove {
     background: transparent url(../Icons/delete.png) top left no-repeat;
 }
@@ -1558,6 +1617,14 @@ a.icon {
 .icon_pencil_disabled {
     background: transparent url(../Icons/pencil_disabled_gray.gif) top left no-repeat;
     cursor: not-allowed;
+}
+
+.icon_filter {
+    background: transparent url(../Icons/filter.gif) top left no-repeat;
+}
+
+.icon_filter:hover {
+    background: transparent url(../Icons/filter_over.gif) top left no-repeat;
 }
 
 .icon_script {
@@ -1619,16 +1686,6 @@ a.icon {
 }
 .cog:hover {
 	background-image: url(../Icons/cog_over.png);
-}
-
-.disk {
-    background: transparent url(../Icons/disk.png) top left no-repeat;
-}
-.disk:hover {
-    background: transparent url(../Icons/disk_over.png) top left no-repeat;
-}
-.disk_disabled {
-    background: transparent url(../Icons/disk_disabled.png) top left no-repeat;
 }
 
 .ui-icon.excel{
@@ -1817,7 +1874,7 @@ div.scrollingContainer {
     right: 168px;
     top: 188px;
     width: 300px;
-    z-index: 1003;
+    z-index: 1007;
 }
 .pointingPopup_content {
     background: none repeat scroll 0 0 white;
@@ -2050,8 +2107,8 @@ table th.small_width {
     list-style: disc inside none;
 }
 .page_help {
-    border-color: #FF9900;
-    background: lightYellow url('/WebConfig/yukon/Icons/help.gif') 5px 4px no-repeat;
+    border-color: #06C;
+    background: #EAF1FD url('/WebConfig/yukon/Icons/information.gif') 5px 4px no-repeat;
 }
 .page_warning {
     border-color: #FBB117;

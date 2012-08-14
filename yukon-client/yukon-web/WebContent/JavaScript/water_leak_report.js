@@ -40,6 +40,16 @@ if(typeof(WaterLeakReport) === 'undefined'){
                 this._init_filter();
                 this._store_filter_values();
                 this._init_interval_data_form();
+                
+                /* report.jsp filter labels */
+                jQuery(".filter_container .device_group").bind("click", this._filter_group_clicked);
+                jQuery(".filter_container .individual").bind("click", this._filter_individual_clicked);
+                jQuery(".filter_container .range .date.to").bind("click", this._filter_to_date_clicked);
+                jQuery(".filter_container .range").bind("click", this._filter_date_range_clicked);
+                jQuery(".filter_container .threshold").bind("click", this._filter_threshold_clicked);
+                jQuery(".filter_container .disabled_devices .reset_disabled_devices").bind("click", this._filter_reset_disabled_devices_clicked);
+                jQuery(".filter_container .disabled_devices").bind("click", this._filter_disabled_devices_clicked);
+                jQuery(".filter_container .reset").bind("click", this.reset_filter_submit);
 
                 /* intervalData.jsp */
                 jQuery("#exportIntervalCsv").bind("click", this._export_interval_csv);
@@ -57,10 +67,12 @@ if(typeof(WaterLeakReport) === 'undefined'){
         },
         
         filter_submit: function(){
+            WaterLeakReport._disable_filter_buttons();
             jQuery(WaterLeakReport._filter_form_selector).submit();
         },
         
         reset_filter_submit: function(){
+            WaterLeakReport._disable_filter_buttons();
             jQuery(WaterLeakReport._reset_form_selector).submit();
         },
         
@@ -132,6 +144,37 @@ if(typeof(WaterLeakReport) === 'undefined'){
             the_filter.find("input.f_include_disabled_paos").attr("checked", WaterLeakReport._f_filter_values.include_disabled);
         },
         
+        _filter_group_clicked: function() {
+            open_leakFilterDialog();
+            jQuery("[class^='chooseGroupIcon_deviceGroupNameSelectorTag_']").trigger("click");
+        },
+        _filter_individual_clicked: function() {
+            open_leakFilterDialog();
+            selectDevicesPicker.show();
+        },
+        _filter_to_date_clicked: function() {
+            open_leakFilterDialog();
+            jQuery(".f_to_datetime").focus();
+            return false;
+        },
+        _filter_date_range_clicked: function() {
+            open_leakFilterDialog();
+            jQuery(".f_from_datetime").focus();
+        },
+        _filter_threshold_clicked: function(e) {
+            open_leakFilterDialog();
+            jQuery(".f_threshold").focus();
+        },
+        _filter_reset_disabled_devices_clicked: function() {
+            jQuery(".f_include_disabled_paos").val(false);
+            WaterLeakReport.filter_submit();
+            return false;
+        },
+        _filter_disabled_devices_clicked: function() {
+            jQuery("input").blur();
+            open_leakFilterDialog();
+        },
+        
         _set_filter_form_hidden_input: function(name, value) {
             jQuery(WaterLeakReport._filter_form_selector + ' input[name="'+name+'"]').remove();
             jQuery(WaterLeakReport._filter_form_selector).append('<input type="hidden" name="'+name+'" value="'+value+'"/>');
@@ -185,6 +228,10 @@ if(typeof(WaterLeakReport) === 'undefined'){
             var url = WaterLeakReport._get_row_account_info_url(this);
             jQuery('#accountInfoAjaxDialog').show();
             jQuery('#accountInfoAjaxDialog').load(url);
+        },
+        
+        _disable_filter_buttons: function() {
+            jQuery(".ui-button").attr("disabled", true);
         },
         
         _get_row_pao_id: function(elem){

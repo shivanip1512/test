@@ -101,6 +101,7 @@ public class WaterLeakReportController {
     private Map<String, Comparator<WaterMeterLeak>> sorters;
     private Cache<Integer, MspMeterAccountInfo> mspMeterAccountInfoMap = CacheBuilder.newBuilder()
         .concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).build();
+    private final static String default_device_group = SystemGroupEnum.DEVICETYPES.getFullPath() + PaoType.RFWMETER.getPaoTypeName();
 
     private class MspMeterAccountInfo {
         com.cannontech.multispeak.deploy.service.Customer mspCustomer;
@@ -156,7 +157,7 @@ public class WaterLeakReportController {
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         if (initReport) model.addAttribute("first_visit", true);
         if (initReport || resetReport) {
-            backingBean = new WaterLeakReportFilterBackingBean(backingBean, userContext);
+            backingBean = new WaterLeakReportFilterBackingBean(backingBean);
         }
         setupDeviceCollectionFromRequest(backingBean, request);
         filterValidator.validate(backingBean, bindingResult);
@@ -326,8 +327,7 @@ public class WaterLeakReportController {
             deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         } else {
             // Setup default device group (this is probably the first time the user is hitting this page)
-            DeviceGroup deviceGroup = deviceGroupService.findGroupName(SystemGroupEnum.DEVICETYPES.getFullPath()
-                                                                       + PaoType.RFWMETER.getPaoTypeName());
+            DeviceGroup deviceGroup = deviceGroupService.findGroupName(default_device_group);
             if (deviceGroup == null) {
                 // We're probably not going to find many water leaks if we get in here. Oh well!
                 deviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
@@ -407,6 +407,15 @@ public class WaterLeakReportController {
         filterResult.setResultList(waterLeaks);
         model.addAttribute("filterResult", filterResult);
         model.addAttribute("backingBean", backingBean);
+        
+        WaterLeakReportFilterBackingBean defaultsTest = new WaterLeakReportFilterBackingBean();
+        String groupName = backingBean.getDeviceCollection().getCollectionParameters().get("group.name");
+        boolean defaultFilterValues = (groupName != null && groupName.equals(default_device_group))
+                && backingBean.getFromInstant().isEqual(defaultsTest.getFromInstant().getMillis())
+                && backingBean.getToInstant().isEqual(defaultsTest.getToInstant().getMillis())
+                && backingBean.getThreshold() == defaultsTest.getThreshold()
+                && backingBean.isIncludeDisabledPaos() == defaultsTest.isIncludeDisabledPaos();
+        model.addAttribute("usingDefaultFilter", defaultFilterValues);
 
         Hours hoursBetweenToInstantAndNow = Hours.hoursBetween(backingBean.getToInstant(), new Instant());
         if (hoursBetweenToInstantAndNow.isLessThan(water_node_reporting_interval)) {

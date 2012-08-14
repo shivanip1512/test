@@ -356,7 +356,7 @@ $.extend(DatetimeEntry.prototype, {
 	   @param  event  (event) the keydown event
 	   @return  (boolean) true to continue, false to stop processing */
 	_doKeyDown: function(event) {
-		if (event.keyCode >= 48) { // >= '0'
+		if (event.keyCode >= 48 || event.keyCode == 27) { // >= '0' || == 'esc'
 			return true;
 		}
 		var inst = $.data(event.target, PROP_NAME);

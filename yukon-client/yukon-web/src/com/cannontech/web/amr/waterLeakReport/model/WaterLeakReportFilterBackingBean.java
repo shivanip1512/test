@@ -5,7 +5,6 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.util.ListBackingBean;
 
 public class WaterLeakReportFilterBackingBean extends ListBackingBean {
@@ -18,10 +17,7 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
     private Instant toInstant;
     private double threshold = 0.0;
     private boolean includeDisabledPaos;
-    
-    public WaterLeakReportFilterBackingBean() {/* Needed by Spring */}
-
-    public WaterLeakReportFilterBackingBean(WaterLeakReportFilterBackingBean backingBean, YukonUserContext userContext) {
+    {
         fromInstant = new Instant().minus(Duration.standardHours(DEFAULT_FROM_HOURS));
         toInstant = new Instant().minus(Duration.standardHours(DEFAULT_TO_HOURS));
 
@@ -32,7 +28,11 @@ public class WaterLeakReportFilterBackingBean extends ListBackingBean {
         toInstant = toInstant.minus(Duration.standardMinutes(toInstant.get(DateTimeFieldType.minuteOfHour())));
         toInstant = toInstant.minus(Duration.standardSeconds(toInstant.get(DateTimeFieldType.secondOfMinute())));
         toInstant = toInstant.minus(toInstant.get(DateTimeFieldType.millisOfSecond()));
-
+    }
+    
+    public WaterLeakReportFilterBackingBean() {/* Needed by Spring */}
+    
+    public WaterLeakReportFilterBackingBean(WaterLeakReportFilterBackingBean backingBean) {
         // Just using the backingbean for the paging & sorting values
         setSort(backingBean.getSort());
         setDescending(backingBean.getDescending());

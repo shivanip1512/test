@@ -143,8 +143,11 @@ div.resultBar > div {
 }
 
 /* WaterLeakReport START */
-.pagedBox.waterLeakReport .title .pagingArea {
-	display: none;
+.pagedBox.waterLeakReport .title {
+    padding: 6px 8px;
+}
+.pagedBox.waterLeakReport .filter_container .range .date:hover {
+	color: #666;
 }
 
 #leakFilterDialog .errorMessage {

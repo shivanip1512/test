@@ -75,8 +75,16 @@
 	<div id="accountInfoAjaxDialog" class="dn"></div>
 
     <!-- Help messages at the top of the page -->
+    <c:choose>
+	    <c:when test="${usingDefaultFilter}">
+	        <cti:msg2 var="current_filter_text" key=".defaultFilter"/>
+	    </c:when>
+	    <c:otherwise>
+	        <cti:msg2 var="current_filter_text" key=".currentFilter"/>
+	    </c:otherwise>
+    </c:choose>
 	<c:set var="current_filter">
-		<a href="javascript:void(0);" class="f_open_filter_dialog"><i:inline key=".currentFilter"/></a>
+		<a href="javascript:void(0);" class="f_open_filter_dialog">${current_filter_text}</a>
 	</c:set>
 	<c:set var="detection_algorithm">
 		<a href="javascript:void(0);" class="f_open_detection_algorithm"><i:inline key=".leakDetectionAlgorithm"/></a>
@@ -133,7 +141,6 @@
 			</div>
 		</c:when>
 	</c:choose>
-	
 
     <c:set var="actionsMenu">
         <tags:dropdownActions>
@@ -161,64 +168,104 @@
         <c:if test="${collectionFromReportResults != null && filterResult.hitCount > 0}">
             <form:form id="intervalDataForm" action="intervalData" method="get" commandName="backingBean" cssClass="">
                 <%@ include file="reportFilterFormValues.jspf"%>
-                <button type="submit" title="<cti:msg2 key=".viewIntervalDataTitle"/>"><cti:msg2 key=".viewIntervalData"/></button>
+                <button class="fancy" type="submit" title="<cti:msg2 key=".viewIntervalDataTitle"/>"><cti:msg2 key=".viewIntervalData"/></button>
             </form:form>
         </c:if>
     </c:set>
 
 	<tags:pagedBox2 nameKey="tableTitle" searchResult="${filterResult}" baseUrl="report" titleLinkHtml="${actionsMenu}" styleClass="waterLeakReport">
-		<table id="leaksTable" class="compactResultsTable">
-			<thead>
-				<tr>
-					<c:if test="${filterResult.hitCount > 0}">
-						<th class="small_width"><input id="f_check_all" type="checkbox"></th>
-					</c:if>
-					<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="DEVICE_NAME" isDefault="false"/></th>
-					<th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="report" fieldName="METER_NUMBER"/></th>
-					<th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="report" fieldName="PAO_TYPE"/></th>
-					<th><tags:sortLink nameKey="tableHeader.leakRate" baseUrl="report" fieldName="LEAK_RATE"/></th>
-                    <c:if test="${hasVendorId}"><th><i:inline key=".tableHeader.cisDetails"/></th></c:if>
-				</tr>
-			</thead>
-			<tbody>
-				<c:forEach var="row" items="${filterResult.resultList}">
-					<c:set var="trClass" value=""/>
-					<c:if test="${row.meter.disabled}">
-						<c:set var="trClass" value="subtleGray"/>
-					</c:if>
-					<tr class="<tags:alternateRow odd="" even="altRow"/> ${trClass}">
-						<cti:url var="accountInfoUrl" value="cisDetails">
-							<cti:param name="paoId" value="${row.meter.paoIdentifier.paoId}"/>
-						</cti:url>
-						<input type="hidden" value="${accountInfoUrl}" class="account_info_url"/>
-						<input type="hidden" value="${row.meter.paoIdentifier.paoId}" class="the_pao_id"/>
-						<td class="small_width"><input type="checkbox" class="f_check_single"></td>
-						<td>
-                            <cti:paoDetailUrl yukonPao="${row.meter}">
-                                ${fn:escapeXml(row.meter.name)}
-							</cti:paoDetailUrl>
-                        </td>
-						<td>${fn:escapeXml(row.meter.meterNumber)}</td>
-						<td><tags:paoType yukonPao="${row.meter}"/></td>
-						<td><i:inline key=".leakRateLabel" arguments="${row.leakRate}"/></td>
-                        <c:if test="${hasVendorId}">
-							<td>
-								<a href="javascript:void(0);" class="f_cis_details">
-                                    <i:inline key=".viewCISDetails"/>
-								</a>
-	                        </td>
-                        </c:if>
-					</tr>
-				</c:forEach>
-			</tbody>
+        <tags:filteredByContainer>
+            <!-- Devices -->
+            <c:set var="isDeviceGroup" value="${backingBean.deviceCollection.collectionParameters['collectionType'] == 'group'}" />
+            <cti:msg2 key=".filteredBy.devices.value.individual" var="individual_value"/>
+            <c:set var="devices_filter" value="${isDeviceGroup ? backingBean.deviceCollection.collectionParameters['group.name'] :
+             individual_value} (${backingBean.deviceCollection.deviceCount})"/>
+			<tags:filteredBy labelKey=".filteredBy.devices.label" value="${devices_filter}"
+				cssClass="${isDeviceGroup ? 'device_group' : 'individual' }" isClearable="false" />
 
-			<c:if test="${fn:length(filterResult.resultList) == 0}">
-				<tr>
-					<td class="noResults subtleGray" colspan="3">
-                        <i:inline key=".noLeaks"/>
-                    </td>
-				</tr>
+            <!-- Dates -->
+			<c:set var="dates_filter">
+				<span class="date from">
+				    <cti:formatDate type="DATEHM" value="${backingBean.fromInstant}" />
+			    </span>
+			    -
+			    <span class="date to">
+					<cti:formatDate type="DATEHM" value="${backingBean.toInstant}" />
+				</span>
+			</c:set>
+			<tags:filteredBy labelKey=".filteredBy.dates.label" value="${dates_filter}" cssClass="range" isClearable="false"/>
+
+            <!-- Threshold -->
+            <cti:msg2 key=".filteredBy.threshold.value" argument="${backingBean.threshold}" var="threshold_value" />
+			<tags:filteredBy labelKey=".filteredBy.threshold.label" value="${threshold_value}" cssClass="threshold" isClearable="false"/>
+
+            <!-- Disabled Devices -->
+            <c:if test="${backingBean.includeDisabledPaos}">
+				<cti:msg2 key=".filteredBy.disabledDevices.value" var="disabled_value"/>
+				<tags:filteredBy labelKey=".filteredBy.disabledDevices.label" value="${disabled_value}" cssClass="disabled_devices" clearClass="reset_disabled_devices"/>
 			</c:if>
+
+            <!-- Reset link if not using defaults -->
+			<c:if test="${!usingDefaultFilter}">
+                <cti:msg2 key=".filteredBy.reset.value" var="reset_value"/>
+                <tags:filteredBy labelKey=".filteredBy.reset.label" value="${reset_value}" isClearable="false" isReset="true"/>
+			</c:if>
+        </tags:filteredByContainer>
+		<table id="leaksTable" class="compactResultsTable">
+            <c:choose>
+                <c:when test="${fn:length(filterResult.resultList) > 0}">
+					<thead>
+						<tr>
+							<c:if test="${filterResult.hitCount > 0}">
+								<th class="small_width"><input id="f_check_all" type="checkbox"></th>
+							</c:if>
+							<th><tags:sortLink nameKey="tableHeader.deviceName" baseUrl="report" fieldName="DEVICE_NAME" isDefault="false"/></th>
+							<th><tags:sortLink nameKey="tableHeader.meterNumber" baseUrl="report" fieldName="METER_NUMBER"/></th>
+							<th><tags:sortLink nameKey="tableHeader.deviceType" baseUrl="report" fieldName="PAO_TYPE"/></th>
+							<th><tags:sortLink nameKey="tableHeader.leakRate" baseUrl="report" fieldName="LEAK_RATE"/></th>
+		                    <c:if test="${hasVendorId}"><th><i:inline key=".tableHeader.cisDetails"/></th></c:if>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="row" items="${filterResult.resultList}">
+							<c:set var="trClass" value=""/>
+							<c:if test="${row.meter.disabled}">
+								<c:set var="trClass" value="subtleGray"/>
+							</c:if>
+							<tr class="<tags:alternateRow odd="" even="altRow"/> ${trClass}">
+								<cti:url var="accountInfoUrl" value="cisDetails">
+									<cti:param name="paoId" value="${row.meter.paoIdentifier.paoId}"/>
+								</cti:url>
+								<input type="hidden" value="${accountInfoUrl}" class="account_info_url"/>
+								<input type="hidden" value="${row.meter.paoIdentifier.paoId}" class="the_pao_id"/>
+								<td class="small_width"><input type="checkbox" class="f_check_single"></td>
+								<td>
+		                            <cti:paoDetailUrl yukonPao="${row.meter}">
+		                                ${fn:escapeXml(row.meter.name)}
+									</cti:paoDetailUrl>
+		                        </td>
+								<td>${fn:escapeXml(row.meter.meterNumber)}</td>
+								<td><tags:paoType yukonPao="${row.meter}"/></td>
+								<td><i:inline key=".leakRateLabel" arguments="${row.leakRate}"/></td>
+		                        <c:if test="${hasVendorId}">
+									<td>
+										<a href="javascript:void(0);" class="f_cis_details">
+		                                    <i:inline key=".viewCISDetails"/>
+										</a>
+			                        </td>
+		                        </c:if>
+							</tr>
+						</c:forEach>
+					</tbody>
+                </c:when>
+                <c:otherwise>
+					<tr>
+						<td class="noResults subtleGray" colspan="3">
+	                        <i:inline key=".noLeaks"/>
+	                    </td>
+					</tr>
+                </c:otherwise>
+            </c:choose>
 		</table>
 	</tags:pagedBox2>
 </cti:standardPage>
