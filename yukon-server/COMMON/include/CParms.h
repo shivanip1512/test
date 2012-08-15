@@ -123,7 +123,7 @@ private:
    #endif
    map<string,CtiConfigValue*> mHash;
 
-   string checkAndDecryptValue(char *chValue);
+   std::pair< bool, std::string > preprocessValue( char * chValue ) const;
 
 public:
 

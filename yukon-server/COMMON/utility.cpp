@@ -719,18 +719,24 @@ bool isExpresscomGroup(INT Type)
 
 
 // Converts a hex string such as "0a1002" to a vector of bytes
-// Adds a trailing 0 if the characters are not a multiple of 2
-void convertHexStringToBytes( string & stringInput, vector< unsigned char > & result )
+// Adds a leading 0 if the characters are not a multiple of 2
+// returns true if the string was padded -- false if unchanged
+bool convertHexStringToBytes( std::string & stringInput, std::vector< unsigned char > & result )
 {
-    if ( (stringInput.size() % 2) != 0 )
+    bool wasPadded = false;
+
+    if ( stringInput.size() % 2 )   // odd char length
     {
-        stringInput.append( "0" );
+        stringInput.insert( stringInput.begin(), '0' );
+        wasPadded = true;
     }
 
-    for ( int i = 0; i < stringInput.size() / 2; i++ )
+    for ( int i = 0; i < stringInput.size(); i += 2 )
     {
-        result.push_back( strtoul( stringInput.substr( i * 2, 2 ).c_str(), NULL, 16 ) );
+        result.push_back( strtoul( stringInput.substr( i, 2 ).c_str(), NULL, 16 ) );
     }
+
+    return wasPadded;
 }
 
 

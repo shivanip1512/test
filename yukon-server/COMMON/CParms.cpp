@@ -101,23 +101,30 @@ int CtiConfigParameters::RefreshConfigParameters()
                             {
                                 HeadAndTail(pch, chValue, MAX_CONFIG_VALUE);
 
-                                string configValue = checkAndDecryptValue(chValue);
+                                std::pair< bool, std::string > processed = preprocessValue(chValue);
 
-                                CtiConfigValue *Val = new CtiConfigValue(configValue);
-                                mHash_pair2 p = mHash.insert( std::make_pair(string(chKey), Val) );
-                                if( !p.second )
+                                if ( processed.first )
                                 {
-                                    cout << "CPARM " << chKey << " has already been inserted.. \n\tPlease check for duplicate entries in the master.cfg file " << endl;
-                                    cout << "\t" << chKey << " : " << getValueAsString(string(chKey)) << endl;
-                                    //delete Key;
-                                    delete Val;
+                                    CtiConfigValue *Val = new CtiConfigValue( processed.second );
+                                    mHash_pair2 p = mHash.insert( std::make_pair(string(chKey), Val) );
+                                    if( !p.second )
+                                    {
+                                        cout << "CPARM " << chKey << " has already been inserted.. \n\tPlease check for duplicate entries in the master.cfg file " << endl;
+                                        cout << "\t" << chKey << " : " << getValueAsString(string(chKey)) << endl;
+                                        //delete Key;
+                                        delete Val;
+                                    }
+    #ifdef DEBUGLEVEL100
+                                    else
+                                    {
+                                        cout << "Key/Value = " << Key->getKey() << " : " << Val->getValue() << endl;
+                                    }
+    #endif
                                 }
-#ifdef DEBUGLEVEL100
                                 else
                                 {
-                                    cout << "Key/Value = " << Key->getKey() << " : " << Val->getValue() << endl;
+                                    cout << "Error decrypting Value for Key: " << chKey << " - ignoring." << endl;
                                 }
-#endif
                             }
                         }
                     }
@@ -177,29 +184,31 @@ CtiConfigParameters::Dump()
 
 
 // This checks if a master.cfg entry is encrypted and automatically decrypts it if found
-string CtiConfigParameters::checkAndDecryptValue( char * chValue )
+std::pair< bool, std::string > CtiConfigParameters::preprocessValue( char * chValue ) const
 {
+    bool success = true;
     CtiString retVal( chValue );
 
     if ( retVal.contains( "(AUTO_ENCRYPTED)" ) )
     {
-        Encryption::Buffer  encrypted,
-                            decrypted;
+        Cti::Encryption::Buffer encrypted,
+                                decrypted;
 
         convertHexStringToBytes( retVal.substr( 16 ), encrypted );
 
         try
         {
-            decrypted = Encryption::decrypt( Encryption::MasterCfg, encrypted );
+            decrypted = Cti::Encryption::decrypt( Cti::Encryption::MasterCfg, encrypted );
             retVal.assign( decrypted.begin(), decrypted.end() );
         }
-        catch ( Encryption::Error e )
+        catch ( Cti::Encryption::Error e )
         {
+            success = false;
             cout << "Decryption Exception thrown parsing master.cfg: " << e.what() << endl;
         }
     }
 
-    return retVal;
+    return std::make_pair( success, retVal );
 }
 
 

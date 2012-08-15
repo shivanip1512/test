@@ -93,7 +93,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
         {
             identifyProject(CompileInfo);
 
-            Encryption::initialize( getYukonBase() );
+            Cti::Encryption::initialize( getYukonBase() );
 
             gConfigParms.setYukonBase(getYukonBase());
             gConfigParms.RefreshConfigParameters();

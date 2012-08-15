@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+#include <boost/test/detail/unit_test_parameters.hpp>
 
 #include "encryption.h"
 
@@ -8,7 +9,7 @@ BOOST_AUTO_TEST_SUITE( test_encryption_common_core )
 
 BOOST_AUTO_TEST_CASE(test_encryption)
 {
-    Encryption::initialize( "C:\\Yukon" );
+    Cti::Encryption::initialize( "C:\\Yukon" );
 
     const unsigned char mockFileData[] =
     {
@@ -36,8 +37,8 @@ BOOST_AUTO_TEST_CASE(test_encryption)
         0x2d, 0xd2, 0x77, 0x4c, 0xfb, 0x27, 0x8d, 0x40
     };
 
-    Encryption::seedFileData( Encryption::MasterCfg,
-                              Encryption::Buffer( mockFileData, mockFileData + sizeof( mockFileData ) ) );
+    Cti::Encryption::seedFileData( Cti::Encryption::MasterCfg,
+                                   Cti::Encryption::Buffer( mockFileData, mockFileData + sizeof( mockFileData ) ) );
 
     // ciphertext is correct
     {
@@ -53,11 +54,25 @@ BOOST_AUTO_TEST_CASE(test_encryption)
             0xe6, 0x78, 0x44, 0x1f, 0xee, 0xa6, 0xd5, 0xc8
         };
 
-        Encryption::Buffer  encrypted( cipherText, cipherText + sizeof( cipherText ) );
+        Cti::Encryption::Buffer encrypted( cipherText, cipherText + sizeof( cipherText ) );
 
-        Encryption::Buffer plainText = Encryption::decrypt( Encryption::MasterCfg, encrypted );
+        try
+        {
+            Cti::Encryption::Buffer plainText = Cti::Encryption::decrypt( Cti::Encryption::MasterCfg, encrypted );
 
-        BOOST_REQUIRE_EQUAL( "127.0.0.1", std::string( plainText.begin(), plainText.end() ) );
+            BOOST_REQUIRE_EQUAL( "127.0.0.1", std::string( plainText.begin(), plainText.end() ) );
+        }
+        catch ( Cti::Encryption::Error e )
+        {
+            using namespace boost::unit_test;
+
+            log_level   saved = boost::unit_test::runtime_config::log_level();
+            unit_test_log.set_threshold_level( log_messages );
+
+            BOOST_TEST_MESSAGE( "Caught unexpected exception: " << e.what() << "\nLine: " << __LINE__ << " in " << __FILE__ );
+
+            unit_test_log.set_threshold_level( saved );
+        }
     }
 
     // ciphertext has an error
@@ -74,11 +89,11 @@ BOOST_AUTO_TEST_CASE(test_encryption)
             0xe6, 0x78, 0x44, 0x1f, 0xee, 0xa6, 0xd5, 0xc9      // <-- last bit is wrong
         };
 
-        Encryption::Buffer  encrypted( cipherText, cipherText + sizeof( cipherText ) );
+        Cti::Encryption::Buffer encrypted( cipherText, cipherText + sizeof( cipherText ) );
 
-        Encryption::Buffer plainText;
+        Cti::Encryption::Buffer plainText;
 
-        BOOST_REQUIRE_THROW( plainText = Encryption::decrypt( Encryption::MasterCfg, encrypted ), Encryption::Error );
+        BOOST_REQUIRE_THROW( plainText = Cti::Encryption::decrypt( Cti::Encryption::MasterCfg, encrypted ), Cti::Encryption::Error );
     }
 }
 

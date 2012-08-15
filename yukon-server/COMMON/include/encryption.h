@@ -8,6 +8,8 @@
 
 
 
+namespace Cti
+{
 namespace Encryption
 {
     IM_EX_CTIBASE enum EncryptionType
@@ -41,5 +43,6 @@ namespace Encryption
      *  the decryption key is stored.
      */
     IM_EX_CTIBASE void seedFileData( const EncryptionType type, const Buffer & fileData );
+}
 }
 

@@ -14,8 +14,14 @@
 
 
 
+namespace Cti
+{
 namespace Encryption
 {
+/*
+    The following namespace is unnamed.  This is intentional.  Everything contained within it
+        has its visibility reduced to this source file only.
+*/
 namespace
 {
     typedef std::map< EncryptionType, Buffer >    FileDataMap;
@@ -194,7 +200,7 @@ namespace
     }
 
 
-}   // end -- anonymous namespace
+}   // end -- unnamed namespace
 
 
 IM_EX_CTIBASE void initialize( const std::string & yukonBase )
@@ -226,5 +232,6 @@ IM_EX_CTIBASE void seedFileData( const EncryptionType type, const Buffer & fileD
 }
 
 
+}
 }
 
