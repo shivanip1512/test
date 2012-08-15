@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
@@ -60,7 +61,6 @@ import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.server.cache.AlarmCategoryLoader;
 import com.cannontech.yukon.server.cache.BaselineLoader;
@@ -113,6 +113,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 
 	private PointDao pointDao = null;
 	private PaoDao paoDao = null;
+	@Autowired private UserGroupDao userGroupDao;
 	private String databaseAlias = CtiUtilities.getDatabaseAlias();
 
 	private ArrayList<LiteYukonPAObject> allYukonPAObjects = null;
@@ -2334,9 +2335,7 @@ private synchronized LiteBase handleYukonGroupChange( DbChangeType dbChangeType,
     return lBase;
 }
 
-private synchronized LiteBase handleUserGroupChange( DbChangeType dbChangeType, int userGroupId ) {
-    UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
-    
+private LiteBase handleUserGroupChange( DbChangeType dbChangeType, int userGroupId ) {
     switch(dbChangeType) {
         case ADD:
         case UPDATE:

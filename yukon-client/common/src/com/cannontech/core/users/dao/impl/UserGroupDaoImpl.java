@@ -58,6 +58,7 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
         userGroupTemplate.setTableName("UserGroup");
         userGroupTemplate.setPrimaryKeyField("UserGroupId");
         userGroupTemplate.setFieldMapper(userGroupFieldMapper);
+        userGroupTemplate.setPrimaryKeyValidOver(LiteUserGroup.NULL_USER_GROUP_ID+1);
     }
 
     //Row Mappers
