@@ -4,7 +4,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -12,6 +11,7 @@ import org.easymock.EasyMockSupport;
 import org.easymock.IMockBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.model.ContactNotificationType;
@@ -23,7 +23,6 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.UserNameUnavailableException;
-import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -33,9 +32,7 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -44,8 +41,8 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
 import com.cannontech.stars.database.cache.StarsDatabaseCache;
-import com.cannontech.stars.database.data.lite.LiteSiteInformation;
 import com.cannontech.stars.database.data.lite.LiteAccountInfo;
+import com.cannontech.stars.database.data.lite.LiteSiteInformation;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.YukonEnergyCompanyMockFactory;
 import com.cannontech.stars.dr.account.AccountDtoMockFactory;
@@ -86,7 +83,6 @@ public class AccountServiceTest extends EasyMockSupport {
     private UserGroupDao userGroupDaoMock;
     private RolePropertyDao rolePropertyDaoMock;
     private AuthDao authDaoMock;
-    private YukonGroupDao yukonGroupDaoMock;
     private AddressDao addressDaoMock;
     private ContactNotificationService contactNotificationServiceMock;
     private CustomerDao customerDaoMock;
@@ -117,7 +113,6 @@ public class AccountServiceTest extends EasyMockSupport {
         userGroupDaoMock = createNiceMock(UserGroupDao.class);
         rolePropertyDaoMock = createMock(RolePropertyDao.class);
         authDaoMock = createMock(AuthDao.class);
-        yukonGroupDaoMock = createMock(YukonGroupDao.class);
         addressDaoMock = createMock(AddressDao.class);
         
         contactNotificationServiceMock = createNiceMock(ContactNotificationService.class);
@@ -181,10 +176,10 @@ public class AccountServiceTest extends EasyMockSupport {
         };
 
         accountService = new AccountServiceImpl();
+        accountService.setAuthenticationService(authenticationServiceMock);
         accountService.setYukonUserDao(yukonUserDaoMock);
         accountService.setRolePropertyDao(rolePropertyDaoMock);
         accountService.setAuthDao(authDaoMock);
-        accountService.setYukonGroupDao(yukonGroupDaoMock);
         accountService.setAddressDao(addressDaoMock);
         accountService.setContactService(contactServiceMock);
         accountService.setContactNotificationService(contactNotificationServiceMock);
@@ -206,6 +201,9 @@ public class AccountServiceTest extends EasyMockSupport {
         accountService.setYukonEnergyCompanyService(yukonEnergyCompanyServiceMock);
         accountService.setAccountEventLogService(accountEventLogServiceMock);
         accountService.setStarsDatabaseCache(starsDatabaseCacheMock);
+        
+        ReflectionTestUtils.setField(accountService, "userGroupDao", userGroupDaoMock);
+
     }
     
     private <T> IMockBuilder<T> createPartialMock(final Class<T> toMock, List<String> yukonEnergyCompanyServiceMockableMethods) {
