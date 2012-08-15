@@ -57,7 +57,7 @@ public class AccountServiceHelper {
             "billingAddress.county",
             "userName",
             "password",
-            "loginGroup",
+            "userGroup",
             "altTrackingNumber",
             "mapNumber",
             "homePhone",
