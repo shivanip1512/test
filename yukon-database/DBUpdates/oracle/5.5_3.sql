@@ -37,10 +37,6 @@ ALTER TABLE UserGroupToYukonGroupMapping
 ALTER TABLE YukonUser
     ADD UserGroupId NUMBER;
 
-UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -1;
-UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -2;
-UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -100;
-
 ALTER TABLE YukonUser
     ADD CONSTRAINT FK_YukonUser_UserGroup FOREIGN KEY (UserGroupId)
         REFERENCES UserGroup (UserGroupId);
@@ -53,7 +49,7 @@ DECLARE
     v_UserGroupIdStr      VARCHAR2(150);
     v_UserGroupName       VARCHAR2(1000);
     
-    CURSOR userId_curs IS SELECT DISTINCT YUG.UserId FROM YukonUserGroup YUG WHERE UserId NOT IN (-1, -2, -100);
+    CURSOR userId_curs IS SELECT DISTINCT YUG.UserId FROM YukonUserGroup YUG;
 BEGIN
     OPEN userId_curs;
     LOOP
@@ -61,7 +57,7 @@ BEGIN
         EXIT WHEN userId_curs%NOTFOUND;
         
             /* Getting the groups associated with the userId */
-            SELECT (SELECT SUBSTR (SYS_CONNECT_BY_PATH (YUG.GroupId , ','), 2)
+            SELECT (SELECT SUBSTR (SYS_CONNECT_BY_PATH (YUG.GroupId, ' AND '), 2)
                     FROM (SELECT GroupId, ROW_NUMBER () OVER (ORDER BY GroupId) rn, COUNT (*) OVER () cnt
                           FROM YukonUserGroup
                           WHERE UserId = v_UserId
@@ -73,7 +69,7 @@ BEGIN
             WHERE YU.UserId = v_UserId;
 
             /* Getting the groups associated with the userId */
-            SELECT (SELECT SUBSTR (SYS_CONNECT_BY_PATH (YUG_YG.GroupName , ','), 2)
+            SELECT (SELECT SUBSTR (SYS_CONNECT_BY_PATH (YUG_YG.GroupName, ' AND '), 2)
                     FROM (SELECT GroupName, ROW_NUMBER () OVER (ORDER BY GroupName) rn, COUNT (*) OVER () cnt
                           FROM YukonUserGroup YUG
                             JOIN YukonGroup YG ON YG.GroupId = YUG.GroupId

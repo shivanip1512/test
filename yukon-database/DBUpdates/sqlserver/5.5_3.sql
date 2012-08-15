@@ -37,9 +37,6 @@ ALTER TABLE UserGroupToYukonGroupMapping
 ALTER TABLE YukonUser
     ADD UserGroupId NUMERIC;
 GO
-UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -1;
-UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -2;
-UPDATE YukonUser SET UserGroupId = -1 WHERE UserId = -100;
 
 ALTER TABLE YukonUser
     ADD CONSTRAINT FK_YukonUser_UserGroup FOREIGN KEY (UserGroupId)
@@ -54,8 +51,7 @@ DECLARE @userGroupName VARCHAR(1000);
 
 DECLARE userId_curs CURSOR FOR 
     SELECT DISTINCT YUG.UserId 
-    FROM YukonUserGroup YUG 
-    WHERE YUG.UserId NOT IN (-1, -2, -100);
+    FROM YukonUserGroup YUG;
 
 OPEN userId_curs;
 FETCH userId_curs INTO @userId;
@@ -64,13 +60,13 @@ WHILE (@@fetch_status = 0)
     BEGIN
         /* Getting the groups associated with the userId */
         SET @userGroupIdStr = NULL;
-        SELECT @userGroupIdStr = ISNULL(@userGroupIdStr + ',','') + ISNULL(CAST(GroupID as VARCHAR),'')
+        SELECT @userGroupIdStr = ISNULL(@userGroupIdStr + ' AND ','') + ISNULL(CAST(GroupID as VARCHAR),'')
         FROM YukonUserGroup YUG
         WHERE YUG.UserId = @userId;
         
         /* Getting the groups associated with the userId */
         SET @userGroupName = NULL;
-        SELECT @userGroupName = ISNULL(@userGroupName + ',','') + ISNULL(CAST(GroupName as VARCHAR),'')
+        SELECT @userGroupName = ISNULL(@userGroupName + ' AND ','') + ISNULL(CAST(GroupName as VARCHAR),'')
         FROM YukonUserGroup YUG
             JOIN YukonGroup YG ON YUG.GroupId = YG.GroupId
         WHERE YUG.UserId = @userId;
