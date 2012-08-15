@@ -58,7 +58,6 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
         userGroupTemplate.setTableName("UserGroup");
         userGroupTemplate.setPrimaryKeyField("UserGroupId");
         userGroupTemplate.setFieldMapper(userGroupFieldMapper);
-        userGroupTemplate.setPrimaryKeyValidOver(0);
     }
 
     //Row Mappers
@@ -99,12 +98,12 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     
     @Override
     public void create(final LiteUserGroup liteUserGroup) {
-        userGroupTemplate.save(liteUserGroup);
+        userGroupTemplate.insert(liteUserGroup);
     }
 
     @Override
     public void update(LiteUserGroup liteUserGroup) {
-        userGroupTemplate.save(liteUserGroup);
+        userGroupTemplate.update(liteUserGroup);
     }
 
     @Override
