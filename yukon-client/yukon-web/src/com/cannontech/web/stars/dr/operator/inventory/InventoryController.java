@@ -364,6 +364,8 @@ public class InventoryController {
         if (type == HardwareType.LCR_3102) {
             model.addAttribute("showTwoWay", true);
         }
+        
+        model.addAttribute("showInstallNotes", false);
     }
     
     /* CREATE a hardware device */

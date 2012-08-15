@@ -59,8 +59,9 @@ public interface StarsInventoryBaseService {
     /**
      * Adds the Install hardware event
      * @param liteInv
+     * @param installNotes
      * @param energyCompany
      * @param user
      */
-    public void addInstallHardwareEvent(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, LiteYukonUser user);
+    public void addInstallHardwareEvent(LiteInventoryBase liteInv, String installNotes, LiteStarsEnergyCompany energyCompany, LiteYukonUser user);
 }

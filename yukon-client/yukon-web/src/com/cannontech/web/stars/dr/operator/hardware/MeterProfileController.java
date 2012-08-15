@@ -179,7 +179,7 @@ public class MeterProfileController {
         if (cancelButton != null) { /* Cancel Creation */
             model.clear();
             model.addAttribute("accountId", accountId);
-            return "redirect:list";
+            return "redirect:/spring/stars/operator/hardware/list";
         }
         
         LiteYukonUser user = context.getYukonUser();

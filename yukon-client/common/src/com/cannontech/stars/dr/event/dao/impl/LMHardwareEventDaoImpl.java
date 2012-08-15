@@ -18,6 +18,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.database.data.lite.LiteLMHardwareEvent;
@@ -112,7 +113,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
                                   lmHwEvent.getEventTypeID(),
                                   lmHwEvent.getActionID(),
                                   new Timestamp(lmHwEvent.getEventDateTime()),
-                                  lmHwEvent.getNotes(),
+                                  SqlUtils.convertStringToDbValue(lmHwEvent.getNotes()),
                                   lmHwEvent.getAuthorizedBy());
 
         simpleJdbcTemplate.update(insertEcToCustomerEventSql,

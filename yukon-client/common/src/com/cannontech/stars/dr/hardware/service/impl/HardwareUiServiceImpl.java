@@ -380,7 +380,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                     /* The list of events is retrieved newest to oldest 
                      * so the first install in the list will be the most recent */
                     Date installDate = hardware.getFieldInstallDate() == null ? new Date(event.getEventDateTime()) : hardware.getFieldInstallDate();
-                    lmCustomerEventBaseDao.updateNotesForEvent(event.getEventID(), installDate, SqlUtils.convertStringToDbValue(hardware.getInstallNotes()));
+                    lmCustomerEventBaseDao.updateNotesForEvent(event.getEventID(), installDate, hardware.getInstallNotes());
                 }
             }
         }
@@ -454,7 +454,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 inventoryId = inventoryBaseDao.saveInventoryBase(inventoryBase, energyCompany.getEnergyCompanyId()).getInventoryID();
                 
                 if (hardware.getAccountId() > 0) {
-                    starsInventoryBaseService.addInstallHardwareEvent(inventoryBase, energyCompany, user);
+                    starsInventoryBaseService.addInstallHardwareEvent(inventoryBase, "", energyCompany, user);
                 }
                                 
                 // label for Logging hardware creation
@@ -494,7 +494,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
             }
             
             if (hardware.getAccountId() > 0) {
-                starsInventoryBaseService.addInstallHardwareEvent(lmHardware, energyCompany, user);
+                starsInventoryBaseService.addInstallHardwareEvent(lmHardware, hardware.getInstallNotes(), energyCompany, user);
             }
             
             // label for Logging hardware creation

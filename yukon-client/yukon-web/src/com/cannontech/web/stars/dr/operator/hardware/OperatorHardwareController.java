@@ -736,6 +736,8 @@ public class OperatorHardwareController {
             model.addAttribute("showTwoWay", true);
         }
         
+        model.addAttribute("showInstallNotes", true);
+        
     }
     
     private void setupCreateModel(AccountInfoFragment fragment, 

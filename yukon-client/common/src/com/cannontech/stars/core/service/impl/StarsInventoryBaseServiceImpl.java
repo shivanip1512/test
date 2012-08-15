@@ -113,7 +113,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 }
             }
             // add install hardware event here
-            addInstallHardwareEvent(liteInv, energyCompany, user);
+            addInstallHardwareEvent(liteInv, "", energyCompany, user);
 
             // Add Device status event here
             if (liteInv.getCurrentStateID() > 0) {
@@ -160,7 +160,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     }
 
     @Override
-    public void addInstallHardwareEvent(LiteInventoryBase liteInv,
+    public void addInstallHardwareEvent(LiteInventoryBase liteInv, String installNotes,
             LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
 
         int hwEventTypeID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE)
@@ -173,7 +173,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         lmHwEvent.setEventTypeID(hwEventTypeID);
         lmHwEvent.setActionID(installActionID);
         lmHwEvent.setEventDateTime(liteInv.getInstallDate());
-        lmHwEvent.setNotes(liteInv.getNotes());
+        lmHwEvent.setNotes(installNotes);
         lmHwEvent.setAuthorizedBy(user.getUsername());
 
         hardwareEventDao.add(lmHwEvent, energyCompany.getEnergyCompanyId());

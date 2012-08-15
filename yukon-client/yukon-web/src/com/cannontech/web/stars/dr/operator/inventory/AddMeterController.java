@@ -47,6 +47,8 @@ public class AddMeterController {
             int inventoryId = hardwareUiService.addYukonMeter(mctId, null, user);
             model.addAttribute("inventoryId", inventoryId);
             
+            model.addAttribute("showInstallNotes", false);
+            
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.inventory.yukonMeterAdded", meterName));
         } else {
             /* Tracking meters through inventory tables alone, call these 'meter profiles' */

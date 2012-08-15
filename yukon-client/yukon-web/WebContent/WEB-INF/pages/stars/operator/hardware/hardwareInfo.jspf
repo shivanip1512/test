@@ -222,8 +222,10 @@ Event.observe(window, 'load', updateServiceCompanyInfo);
                 <cti:displayForPageEditModes modes="EDIT,VIEW">
                     <tags:selectNameValue nameKey=".warehouse" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="${noneSelectOption}"/>
                 </cti:displayForPageEditModes>
-                
-                <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="35"  rowClass="notesRow"/>
+                 
+                 <c:if test="${showInstallNotes}">
+                    <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="35"  rowClass="notesRow"/>
+                 </c:if>
                 
             </tags:nameValueContainer2>
             
