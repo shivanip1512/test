@@ -22,11 +22,10 @@ public class ImportDataTest {
     @BeforeClass
     public static void init() {
         //Create first file format, with one column of each type
-        ImportFileFormat format = new ImportFileFormat();
-        format.addRequiredColumn(requiredName, class1, false);
-        format.addOptionalColumn(optionalName, class1, false);
-        format.addOptionalGroupedColumn(groupedName, class2, false, groupName);
-        format.addValueDependentColumn(valDepName, class2, false, requiredName, "ASDF");
+        format.addRequiredColumn(requiredName, class1);
+        format.addOptionalColumn(optionalName, class1);
+        format.addGroupedColumn(groupedName, class2, groupName);
+        format.addValueDependentColumn(valDepName, class2, requiredName, "ASDF");
     }
     
     @Test

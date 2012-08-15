@@ -10,10 +10,13 @@ import com.google.common.collect.Maps;
  * Represents an individual row of data (typically a single import operation).
  */
 public class ImportRow {
+    private ImportFileFormat format;
     private List<String> stringValues;
     private Map<String, String> lookupMap = Maps.newHashMap();
     
-    public ImportRow(List<String> headers, String[] values) {
+    public ImportRow(ImportFileFormat format, List<String> headers, String[] values) {
+        this.format = format;
+        
         stringValues = Lists.newArrayList(values);
         for(int i = 0; i < headers.size(); i++) {
             if(values[i].equals("")) {
@@ -51,9 +54,16 @@ public class ImportRow {
     
     /**
      * @return The String value for the specified column in this row, or null if no value is present.
+     * If the column is specified as "uppercased" in the file import format, the value will be uppercased
+     * before being returned.
      */
     public String getValue(String columnName) {
-        return lookupMap.get(columnName);
+        boolean uppercase = format.getColumnByName(columnName).isUppercaseValue();
+        String value = lookupMap.get(columnName);
+        if(uppercase && value != null) {
+            value = value.toUpperCase();
+        }
+        return value;
     }
     
     /**

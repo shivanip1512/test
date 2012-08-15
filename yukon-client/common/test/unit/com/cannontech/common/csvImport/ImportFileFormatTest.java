@@ -19,8 +19,8 @@ public class ImportFileFormatTest {
         final String name2 = "REQUIRED2";
         
         ImportFileFormat format = new ImportFileFormat();
-        format.addRequiredColumn(name1, class1, false);
-        format.addRequiredColumn(name2, class2, false);
+        format.addRequiredColumn(name1, class1);
+        format.addRequiredColumn(name2, class2);
         
         testColumns(name1, name2, class1, class2, format, ImportRequiredColumnDefinition.class);
     }
@@ -31,8 +31,8 @@ public class ImportFileFormatTest {
         final String name2 = "OPTIONAL2";
         
         ImportFileFormat format = new ImportFileFormat();
-        format.addOptionalColumn(name1, class1, false);
-        format.addOptionalColumn(name2, class2, false);
+        format.addOptionalColumn(name1, class1);
+        format.addOptionalColumn(name2, class2);
         
         testColumns(name1, name2, class1, class2, format, ImportOptionalColumnDefinition.class);
     }
@@ -44,8 +44,8 @@ public class ImportFileFormatTest {
         final String groupName = "TEST_GROUP";
         
         ImportFileFormat format = new ImportFileFormat();
-        format.addOptionalGroupedColumn(name1, class1, false, groupName);
-        format.addOptionalGroupedColumn(name2, class2, false, groupName);
+        format.addGroupedColumn(name1, class1, groupName);
+        format.addGroupedColumn(name2, class2, groupName);
         
         testColumns(name1, name2, class1, class2, format, ImportGroupedColumnDefinition.class);
         
@@ -70,9 +70,9 @@ public class ImportFileFormatTest {
         final String depVal2 = "qwerty";
         
         ImportFileFormat format = new ImportFileFormat();
-        format.addRequiredColumn(depName, class1, false);
-        format.addValueDependentColumn(name1, class1, false, depName, depVal1);
-        format.addValueDependentColumn(name2, class2, false, depName, depVal2);
+        format.addRequiredColumn(depName, class1);
+        format.addValueDependentColumn(name1, class1, depName, depVal1);
+        format.addValueDependentColumn(name2, class2, depName, depVal2);
         
         testColumns(name1, name2, class1, class2, format, ImportValueDependentColumnDefinition.class);
         
@@ -81,9 +81,6 @@ public class ImportFileFormatTest {
         Collection<ImportValueDependentColumnDefinition> vDepCols = mmap.get(dependedUponColumn);
         Assert.assertEquals(2, vDepCols.size());
         
-        //Collection<ImportColumnDefinition> comparison = Sets.newHashSet();
-        //comparison.add(new ImportValueDependentColumnDefinition(name1, class1, false, depName, depVal1));
-        //comparison.add(new ImportValueDependentColumnDefinition(name2, class2, false, depName, depVal1));
     }
     
     @Test
@@ -100,10 +97,10 @@ public class ImportFileFormatTest {
         
         //Create first file format, with one column of each type
         ImportFileFormat format = new ImportFileFormat();
-        format.addRequiredColumn(requiredName, class1, false);
-        format.addOptionalColumn(optionalName, class1, false);
-        format.addOptionalGroupedColumn(groupedName, class2, false, groupName);
-        format.addValueDependentColumn(valDepName, class2, false, requiredName, "ASDF");
+        format.addRequiredColumn(requiredName, class1);
+        format.addOptionalColumn(optionalName, class1);
+        format.addGroupedColumn(groupedName, class2, groupName);
+        format.addValueDependentColumn(valDepName, class2, requiredName, "ASDF");
         
         //Create the clone and check that the original columns are retrievable with getColumnByName
         ImportFileFormat clonedFormat = format.clone();
@@ -147,10 +144,10 @@ public class ImportFileFormatTest {
         
         //Add new columns to the copy and ensure that they don't get added to the original
         //due to accidental data sharing
-        clonedFormat.addRequiredColumn(requiredName2, class1, false);
-        clonedFormat.addOptionalColumn(optionalName2, class1, false);
-        clonedFormat.addOptionalGroupedColumn(groupedName2, class2, false, groupName);
-        clonedFormat.addValueDependentColumn(valDepName2, class2, false, requiredName, "ASDF");
+        clonedFormat.addRequiredColumn(requiredName2, class1);
+        clonedFormat.addOptionalColumn(optionalName2, class1);
+        clonedFormat.addGroupedColumn(groupedName2, class2, groupName);
+        clonedFormat.addValueDependentColumn(valDepName2, class2, requiredName, "ASDF");
         
         Assert.assertNull(format.getColumnByName(requiredName2));
         Assert.assertNull(format.getColumnByName(optionalName2));

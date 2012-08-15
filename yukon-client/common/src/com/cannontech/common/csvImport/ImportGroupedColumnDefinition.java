@@ -7,8 +7,8 @@ package com.cannontech.common.csvImport;
 public class ImportGroupedColumnDefinition extends ImportColumnDefinition{
     private final String groupName;
     
-    public ImportGroupedColumnDefinition(String name, Class<?> typeClass, boolean nullable, String groupName) {
-        super(name, typeClass, nullable, false);
+    public ImportGroupedColumnDefinition(String name, Class<?> typeClass, String groupName, boolean nullable, boolean uppercaseValue) {
+        super(name, typeClass, false, nullable, uppercaseValue);
         this.groupName = groupName;
     }
     

@@ -78,17 +78,51 @@ public class ImportFileFormat implements Cloneable {
      * file, and every row must have a value in the required column for it to conform to this 
      * format.
      * 
+     * Added column will be non-nullable and non-uppercased value.
+     * 
+     * @param name The column name.
+     * @param typeClass The type of values permitted in this column. This class should have a static
+     *         valueOf(Object) or valueOf(String) method, for validation purposes.
+     * @see ImportRequiredColumnDefinition
+     */
+    public void addRequiredColumn(String name, Class<?> typeClass) {
+        addRequiredColumn(name, typeClass, false, false);
+    }
+    
+    /**
+     * Adds a required column definition to the format. Required columns must be present in a
+     * file, and every row must have a value in the required column for it to conform to this 
+     * format.
+     * 
      * @param name The column name.
      * @param typeClass The type of values permitted in this column. This class should have a static
      *         valueOf(Object) or valueOf(String) method, for validation purposes.
      * @param nullable Whether or not "NULL" values are permitted in this column.
+     * @param uppercaseValue If true, the values in this column should always be uppercased before
+     *         being used.
      * @see ImportRequiredColumnDefinition
      */
-    public void addRequiredColumn(String name, Class<?> typeClass, boolean nullable) {
-        ImportColumnDefinition column = new ImportRequiredColumnDefinition(name, typeClass, nullable);
+    public void addRequiredColumn(String name, Class<?> typeClass, boolean nullable, boolean uppercaseValue) {
+        ImportColumnDefinition column = new ImportRequiredColumnDefinition(name, typeClass, nullable, uppercaseValue);
         validate(column);
         columns.add(column);
         requiredColumns.add(column);
+    }
+    
+    /**
+     * Adds an optional column definition to the format. Optional columns need not be present in a 
+     * file conforming to this format, and individual rows are permitted to not have a value in
+     * the optional column if it is present.
+     * 
+     * Added column will be non-nullable and non-uppercased value.
+     * 
+     * @param name The column name.
+     * @param typeClass The type of values permitted in this column. This class should have a static
+     *         valueOf(Object) or valueOf(String) method, for validation purposes.
+     * @see ImportOptionalColumnDefinition
+     */
+    public void addOptionalColumn(String name, Class<?> typeClass) {
+        addOptionalColumn(name, typeClass, false, false);
     }
     
     /**
@@ -100,13 +134,33 @@ public class ImportFileFormat implements Cloneable {
      * @param typeClass The type of values permitted in this column. This class should have a static
      *         valueOf(Object) or valueOf(String) method, for validation purposes.
      * @param nullable Whether or not "NULL" values are permitted in this column.
+     * @param uppercaseValue If true, the values in this column should always be uppercased before
+     *         being used.
      * @see ImportOptionalColumnDefinition
      */
-    public void addOptionalColumn(String name, Class<?> typeClass, boolean nullable) {
-        ImportColumnDefinition column = new ImportOptionalColumnDefinition(name, typeClass, nullable);
+    public void addOptionalColumn(String name, Class<?> typeClass, boolean nullable, boolean uppercaseValue) {
+        ImportColumnDefinition column = new ImportOptionalColumnDefinition(name, typeClass, nullable, uppercaseValue);
         validate(column);
         columns.add(column);
         optionalColumns.add(column);
+    }
+    
+    /**
+     * Adds an optional, grouped column to the format. Grouped columns are optional. However, 
+     * grouped columns are "all-or-nothing": for a file to conform to the format, it must 
+     * contain all the columns in a given group, or none of them. Likewise, individual rows must
+     * contain values for all of the grouped columns or none.
+     * 
+     * Added column will be non-nullable and non-uppercased value.
+     * 
+     * @param name The column name.
+     * @param typeClass The type of values permitted in this column. This class should have a static
+     *         valueOf(Object) or valueOf(String) method, for validation purposes.
+     * @param groupName The name identifying all columns in this group.
+     * @see ImportGroupedColumnDefinition
+     */
+    public void addGroupedColumn(String name, Class<?> typeClass, String groupName) {
+        addGroupedColumn(name, typeClass, groupName, false, false);
     }
     
     /**
@@ -118,15 +172,21 @@ public class ImportFileFormat implements Cloneable {
      * @param name The column name.
      * @param typeClass The type of values permitted in this column. This class should have a static
      *         valueOf(Object) or valueOf(String) method, for validation purposes.
-     * @param nullable Whether or not "NULL" values are permitted in this column.
      * @param groupName The name identifying all columns in this group.
+     * @param nullable Whether or not "NULL" values are permitted in this column.
+     * @param uppercaseValue If true, the values in this column should always be uppercased before
+     *         being used.
      * @see ImportGroupedColumnDefinition
      */
-    public void addOptionalGroupedColumn(String name, Class<?> typeClass, boolean nullable, String groupName) {
-        ImportColumnDefinition column = new ImportGroupedColumnDefinition(name, typeClass, nullable, groupName);
+    public void addGroupedColumn(String name, Class<?> typeClass, String groupName, boolean nullable, boolean uppercaseValue) {
+        ImportColumnDefinition column = new ImportGroupedColumnDefinition(name, typeClass, groupName, nullable, uppercaseValue);
         validate(column);
         columns.add(column);
         groupedColumns.put(groupName, column);
+    }
+    
+    public void addValueDependentColumn(String name, Class<?> typeClass, String dependedColumnName, Object... dependentValues) {
+        addValueDependentColumn(name, typeClass, false, false, dependedColumnName, dependentValues);
     }
     
     /**
@@ -141,12 +201,20 @@ public class ImportFileFormat implements Cloneable {
      * @param The column name.
      * @param typeClass The type of values permitted in this column. This class should have a static
      *         valueOf(Object) or valueOf(String) method, for validation purposes.
-     * @param nullable Whether or not "NULL" values are permitted in this column.
      * @param dependedColumnName The name of the column this one depends on.
      * @param dependentValues The values in the depended upon column for which this column is required.
+     * @param nullable Whether or not "NULL" values are permitted in this column.
+     * @param uppercaseValue If true, the values in this column should always be uppercased before
+     *         being used.
      * @see ImportValueDependentColumnDefinition
      */
-    public void addValueDependentColumn(String name, Class<?> typeClass, boolean nullable, String dependedColumnName, Object... dependentValues) {
+    public void addValueDependentColumn(String name, 
+                                        Class<?> typeClass, 
+                                        boolean nullable, 
+                                        boolean uppercaseValue, 
+                                        String dependedColumnName, 
+                                        Object... dependentValues) {
+        
         List<String> dependentValueStrings = Lists.newArrayList();
         ImportColumnDefinition columnDependedUpon = getColumnByName(dependedColumnName);
         if(columnDependedUpon == null) {
@@ -161,7 +229,12 @@ public class ImportFileFormat implements Cloneable {
             }
         }
         
-        ImportValueDependentColumnDefinition column = new ImportValueDependentColumnDefinition(name, typeClass, nullable, columnDependedUpon, dependentValueStrings);
+        ImportValueDependentColumnDefinition column = new ImportValueDependentColumnDefinition(name, 
+                                                                                               typeClass, 
+                                                                                               columnDependedUpon, 
+                                                                                               dependentValueStrings, 
+                                                                                               nullable, 
+                                                                                               uppercaseValue);
         validate(column);
         
         columns.add(column);

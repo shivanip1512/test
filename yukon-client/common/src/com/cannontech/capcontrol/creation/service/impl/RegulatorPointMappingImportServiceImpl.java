@@ -41,13 +41,13 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
     static {
         importFormat = new ImportFileFormat();
         //REQUIRED
-        importFormat.addRequiredColumn("ACTION", ImportAction.class, false);
-        importFormat.addRequiredColumn("REGULATOR NAME", String.class, false);
-        importFormat.addRequiredColumn("MAPPING", RegulatorPointMapping.class, false);
+        importFormat.addRequiredColumn("ACTION", ImportAction.class, false, true);
+        importFormat.addRequiredColumn("REGULATOR NAME", String.class);
+        importFormat.addRequiredColumn("MAPPING", RegulatorPointMapping.class, false, true);
         //VALUE-DEPENDENT
-        importFormat.addValueDependentColumn("DEVICE TYPE", ImportPaoType.class, false, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
-        importFormat.addValueDependentColumn("DEVICE NAME", String.class, false, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
-        importFormat.addValueDependentColumn("POINT NAME", String.class, false, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
+        importFormat.addValueDependentColumn("DEVICE TYPE", ImportPaoType.class, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
+        importFormat.addValueDependentColumn("DEVICE NAME", String.class, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
+        importFormat.addValueDependentColumn("POINT NAME", String.class, "ACTION", ImportAction.ADD, ImportAction.UPDATE);
     }
     
     /**
@@ -72,7 +72,7 @@ public class RegulatorPointMappingImportServiceImpl implements RegulatorPointMap
             if(validationResult.isFailed()) {
                 result = regulatorImportHelper.processValidationResult(validationResult);
             } else {
-                ImportAction action = ImportAction.valueOf(row.getValue("ACTION").toUpperCase());
+                ImportAction action = ImportAction.valueOf(row.getValue("ACTION"));
                 String regulatorName = row.getValue("REGULATOR NAME");
                 YukonPao regulatorPao = regulatorImportHelper.findRegulatorPao(regulatorName);
                 if(regulatorPao == null) {

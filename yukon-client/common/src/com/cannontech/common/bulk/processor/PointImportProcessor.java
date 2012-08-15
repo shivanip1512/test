@@ -55,7 +55,7 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
         if(validationResult.isFailed()) {
             throwProcessingException(validationResult);
         } else {
-            ImportAction action = ImportAction.valueOf(row.getValue("ACTION").toUpperCase());
+            ImportAction action = ImportAction.valueOf(row.getValue("ACTION"));
             switch(action) {
                 case ADD:
                     createPoint(row);

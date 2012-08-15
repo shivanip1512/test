@@ -317,18 +317,15 @@ public class ImportFileValidator {
             if(row.hasValue(columnName) && !value.equals("")) {
                 //first, try valueOf(String)
                 try {
+                    if(column.isUppercaseValue()) {
+                        value = value.toUpperCase();
+                    }
                     column.getType().getMethod("valueOf", String.class).invoke(null, value);
                     continue;
                 } catch(InvocationTargetException ite) {
                     //method exists, but conversion fails
-                    //try uppercasing the value before giving up
-                    try {
-                        column.getType().getMethod("valueOf", String.class).invoke(null, value.toUpperCase());
-                    } catch(Exception e) {
-                        //still unable to convert
-                        invalidValues.add(columnName);
-                        continue;
-                    }
+                    invalidValues.add(columnName);
+                    continue;
                 } catch (Exception e) {
                     //method doesn't exist
                 }

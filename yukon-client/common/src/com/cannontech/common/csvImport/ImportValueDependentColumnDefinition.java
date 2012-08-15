@@ -15,8 +15,14 @@ public class ImportValueDependentColumnDefinition extends ImportColumnDefinition
     private final ImportColumnDefinition dependedUponColumn;
     private final Set<String> dependedUponValues;
     
-    public ImportValueDependentColumnDefinition(String name, Class<?> typeClass, boolean nullable, ImportColumnDefinition dependedUponColumn, Collection<String> dependedUponValues) {
-        super(name, typeClass, nullable, false);
+    public ImportValueDependentColumnDefinition(String name, 
+                                                Class<?> typeClass, 
+                                                ImportColumnDefinition dependedUponColumn, 
+                                                Collection<String> dependedUponValues, 
+                                                boolean nullable, 
+                                                boolean uppercaseValue) {
+        
+        super(name, typeClass, false, nullable, uppercaseValue);
         this.dependedUponColumn = dependedUponColumn;
         this.dependedUponValues = Sets.newHashSet(dependedUponValues);
     }

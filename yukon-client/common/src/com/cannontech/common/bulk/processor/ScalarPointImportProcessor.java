@@ -71,7 +71,8 @@ public abstract class ScalarPointImportProcessor extends PointImportProcessor {
             builder.setStaleDataUpdate(staleDataUpdate);
         }
         
-        int unitOfMeasure = UnitOfMeasure.valueOf(row.getValue("UNIT OF MEASURE")).getId();
+        String unitOfMeasureString = row.getValue("UNIT OF MEASURE");
+        int unitOfMeasure = UnitOfMeasure.valueOf(unitOfMeasureString).getId();
         builder.setUnitOfMeasure(unitOfMeasure);
     
         int decimalPlaces = Integer.valueOf(row.getValue("DECIMAL PLACES"));

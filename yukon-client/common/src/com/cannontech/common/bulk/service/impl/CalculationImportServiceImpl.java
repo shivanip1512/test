@@ -40,15 +40,15 @@ public class CalculationImportServiceImpl implements CalculationImportService {
     static {
         //Required columns
         CALCULATION_FORMAT = new ImportFileFormat();
-        CALCULATION_FORMAT.addRequiredColumn("CALCULATION NAME", String.class, false);
-        CALCULATION_FORMAT.addRequiredColumn("CALCULATION TYPE", ImportCalculationType.class, false);
+        CALCULATION_FORMAT.addRequiredColumn("CALCULATION NAME", String.class);
+        CALCULATION_FORMAT.addRequiredColumn("CALCULATION TYPE", ImportCalculationType.class);
         //Value-dependent columns
-        CALCULATION_FORMAT.addValueDependentColumn("DEVICE NAME", String.class, false, "CALCULATION TYPE", ImportCalculationType.FUNCTION, ImportCalculationType.OPERATION);
-        CALCULATION_FORMAT.addValueDependentColumn("DEVICE TYPE", ImportPaoType.class, false, "CALCULATION TYPE", ImportCalculationType.FUNCTION, ImportCalculationType.OPERATION);
-        CALCULATION_FORMAT.addValueDependentColumn("POINT NAME", String.class, false, "CALCULATION TYPE", ImportCalculationType.FUNCTION, ImportCalculationType.OPERATION);
-        CALCULATION_FORMAT.addValueDependentColumn("OPERATION", ImportCalculationOperation.class, false, "CALCULATION TYPE", ImportCalculationType.CONSTANT, ImportCalculationType.OPERATION);
-        CALCULATION_FORMAT.addValueDependentColumn("CONSTANT", Double.class, false, "CALCULATION TYPE", ImportCalculationType.CONSTANT);
-        CALCULATION_FORMAT.addValueDependentColumn("FUNCTION", ImportCalculationFunction.class, false, "CALCULATION TYPE", ImportCalculationType.FUNCTION);
+        CALCULATION_FORMAT.addValueDependentColumn("DEVICE NAME", String.class, "CALCULATION TYPE", ImportCalculationType.FUNCTION, ImportCalculationType.OPERATION);
+        CALCULATION_FORMAT.addValueDependentColumn("DEVICE TYPE", ImportPaoType.class, "CALCULATION TYPE", ImportCalculationType.FUNCTION, ImportCalculationType.OPERATION);
+        CALCULATION_FORMAT.addValueDependentColumn("POINT NAME", String.class, "CALCULATION TYPE", ImportCalculationType.FUNCTION, ImportCalculationType.OPERATION);
+        CALCULATION_FORMAT.addValueDependentColumn("OPERATION", ImportCalculationOperation.class, "CALCULATION TYPE", ImportCalculationType.CONSTANT, ImportCalculationType.OPERATION);
+        CALCULATION_FORMAT.addValueDependentColumn("CONSTANT", Double.class, "CALCULATION TYPE", ImportCalculationType.CONSTANT);
+        CALCULATION_FORMAT.addValueDependentColumn("FUNCTION", ImportCalculationFunction.class, "CALCULATION TYPE", ImportCalculationType.FUNCTION);
         //descriptions
         CALCULATION_FORMAT.setDescriptionKey("CALCULATION NAME", "yukon.web.modules.amr.pointImport.column.calculationName");
         CALCULATION_FORMAT.setDescriptionKey("CALCULATION TYPE", "yukon.web.modules.amr.pointImport.column.calculationType");

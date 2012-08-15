@@ -28,15 +28,15 @@ public class PointImportFormats {
     static {
         basePointImportFormat = new ImportFileFormat();
         //Required Columns
-        basePointImportFormat.addRequiredColumn("ACTION", ImportAction.class, false);
-        basePointImportFormat.addRequiredColumn("DEVICE NAME", String.class, false);
-        basePointImportFormat.addRequiredColumn("DEVICE TYPE", ImportPaoType.class, false);
-        basePointImportFormat.addRequiredColumn("POINT NAME", String.class, false);
+        basePointImportFormat.addRequiredColumn("ACTION", ImportAction.class, false, true);
+        basePointImportFormat.addRequiredColumn("DEVICE NAME", String.class);
+        basePointImportFormat.addRequiredColumn("DEVICE TYPE", ImportPaoType.class);
+        basePointImportFormat.addRequiredColumn("POINT NAME", String.class);
         //Optional Columns
-        basePointImportFormat.addOptionalColumn("DISABLED", StrictBoolean.class, false);
+        basePointImportFormat.addOptionalColumn("DISABLED", StrictBoolean.class);
         //Grouped Columns
-        basePointImportFormat.addOptionalGroupedColumn("STALE DATA TIME", PositiveInteger.class, false, "STALE DATA");
-        basePointImportFormat.addOptionalGroupedColumn("STALE DATA UPDATE", StaleDataUpdateStyle.class, false, "STALE DATA");
+        basePointImportFormat.addGroupedColumn("STALE DATA TIME", PositiveInteger.class, "STALE DATA");
+        basePointImportFormat.addGroupedColumn("STALE DATA UPDATE", StaleDataUpdateStyle.class, "STALE DATA", false, true);
         //Column Descriptions
         basePointImportFormat.setDescriptionKey("ACTION", "yukon.web.modules.amr.pointImport.column.action");
         basePointImportFormat.setValidValuesKey("ACTION", "yukon.web.modules.amr.pointImport.validValues.action");
@@ -50,21 +50,21 @@ public class PointImportFormats {
         
         analogAccumulatorSharedImportFormat = basePointImportFormat.clone();
         //Optional Columns
-        analogAccumulatorSharedImportFormat.addOptionalColumn("ARCHIVE TYPE", PointArchiveType.class, false);
-        analogAccumulatorSharedImportFormat.addOptionalColumn("HIGH REASONABILITY", Double.class, false);
-        analogAccumulatorSharedImportFormat.addOptionalColumn("LOW REASONABILITY", Double.class, false);
+        analogAccumulatorSharedImportFormat.addOptionalColumn("ARCHIVE TYPE", PointArchiveType.class, false, true);
+        analogAccumulatorSharedImportFormat.addOptionalColumn("HIGH REASONABILITY", Double.class);
+        analogAccumulatorSharedImportFormat.addOptionalColumn("LOW REASONABILITY", Double.class);
         //Grouped Columns
-        analogAccumulatorSharedImportFormat.addOptionalGroupedColumn("HIGH LIMIT 1", Double.class, false, "LIMIT1");
-        analogAccumulatorSharedImportFormat.addOptionalGroupedColumn("LOW LIMIT 1", Double.class, false, "LIMIT1");
-        analogAccumulatorSharedImportFormat.addOptionalGroupedColumn("LIMIT DURATION 1", PositiveInteger.class, false, "LIMIT1");
-        analogAccumulatorSharedImportFormat.addOptionalGroupedColumn("HIGH LIMIT 2", Double.class, false, "LIMIT2");
-        analogAccumulatorSharedImportFormat.addOptionalGroupedColumn("LOW LIMIT 2", Double.class, false, "LIMIT2");
-        analogAccumulatorSharedImportFormat.addOptionalGroupedColumn("LIMIT DURATION 2", PositiveInteger.class, false, "LIMIT2");
+        analogAccumulatorSharedImportFormat.addGroupedColumn("HIGH LIMIT 1", Double.class, "LIMIT1");
+        analogAccumulatorSharedImportFormat.addGroupedColumn("LOW LIMIT 1", Double.class, "LIMIT1");
+        analogAccumulatorSharedImportFormat.addGroupedColumn("LIMIT DURATION 1", PositiveInteger.class, "LIMIT1");
+        analogAccumulatorSharedImportFormat.addGroupedColumn("HIGH LIMIT 2", Double.class, "LIMIT2");
+        analogAccumulatorSharedImportFormat.addGroupedColumn("LOW LIMIT 2", Double.class, "LIMIT2");
+        analogAccumulatorSharedImportFormat.addGroupedColumn("LIMIT DURATION 2", PositiveInteger.class, "LIMIT2");
         //ARCHIVE TYPE dependent
-        analogAccumulatorSharedImportFormat.addValueDependentColumn("ARCHIVE INTERVAL", ImportPointArchiveInterval.class, false, "ARCHIVE TYPE", PointArchiveType.ON_TIMER, PointArchiveType.ON_TIMER_OR_UPDATE);
+        analogAccumulatorSharedImportFormat.addValueDependentColumn("ARCHIVE INTERVAL", ImportPointArchiveInterval.class, false, true, "ARCHIVE TYPE", PointArchiveType.ON_TIMER, PointArchiveType.ON_TIMER_OR_UPDATE);
         //ACTION dependent
-        analogAccumulatorSharedImportFormat.addValueDependentColumn("UNIT OF MEASURE", UnitOfMeasure.class, false, "ACTION", ImportAction.ADD);
-        analogAccumulatorSharedImportFormat.addValueDependentColumn("DECIMAL PLACES", PositiveInteger.class, false, "ACTION", ImportAction.ADD);
+        analogAccumulatorSharedImportFormat.addValueDependentColumn("UNIT OF MEASURE", UnitOfMeasure.class, false, true, "ACTION", ImportAction.ADD);
+        analogAccumulatorSharedImportFormat.addValueDependentColumn("DECIMAL PLACES", PositiveInteger.class, false, true, "ACTION", ImportAction.ADD);
         //Column Descriptions
         analogAccumulatorSharedImportFormat.setDescriptionKey("ARCHIVE TYPE", "yukon.web.modules.amr.pointImport.column.archiveType");
         analogAccumulatorSharedImportFormat.setDescriptionKey("HIGH REASONABILITY", "yukon.web.modules.amr.pointImport.column.highReasonability");
@@ -82,12 +82,12 @@ public class PointImportFormats {
         
         ANALOG_POINT_FORMAT = analogAccumulatorSharedImportFormat.clone();
         //Optional Columns
-        ANALOG_POINT_FORMAT.addOptionalColumn("POINT OFFSET", PositiveInteger.class, false);
-        ANALOG_POINT_FORMAT.addOptionalColumn("DEADBAND", PositiveDouble.class, false);
+        ANALOG_POINT_FORMAT.addOptionalColumn("POINT OFFSET", PositiveInteger.class);
+        ANALOG_POINT_FORMAT.addOptionalColumn("DEADBAND", PositiveDouble.class);
         //ACTION dependent
-        ANALOG_POINT_FORMAT.addValueDependentColumn("MULTIPLIER", PositiveDouble.class, false, "ACTION", ImportAction.ADD);
-        ANALOG_POINT_FORMAT.addValueDependentColumn("DATA OFFSET", Double.class, false, "ACTION", ImportAction.ADD);
-        ANALOG_POINT_FORMAT.addValueDependentColumn("METER DIALS", PositiveInteger.class, false, "ACTION", ImportAction.ADD);        
+        ANALOG_POINT_FORMAT.addValueDependentColumn("MULTIPLIER", PositiveDouble.class, "ACTION", ImportAction.ADD);
+        ANALOG_POINT_FORMAT.addValueDependentColumn("DATA OFFSET", Double.class, "ACTION", ImportAction.ADD);
+        ANALOG_POINT_FORMAT.addValueDependentColumn("METER DIALS", PositiveInteger.class, "ACTION", ImportAction.ADD);        
         //Column descriptions
         ANALOG_POINT_FORMAT.setDescriptionKey("POINT OFFSET", "yukon.web.modules.amr.pointImport.column.pointOffset");
         ANALOG_POINT_FORMAT.setDescriptionKey("DEADBAND", "yukon.web.modules.amr.pointImport.column.deadband");
@@ -97,21 +97,21 @@ public class PointImportFormats {
         
         STATUS_POINT_FORMAT = basePointImportFormat.clone();
         //Optional Columns
-        STATUS_POINT_FORMAT.addOptionalColumn("POINT OFFSET", PositiveInteger.class, false);
-        STATUS_POINT_FORMAT.addOptionalColumn("CONTROL TYPE", ControlType.class, false);
-        STATUS_POINT_FORMAT.addOptionalColumn("ARCHIVE DATA", StrictBoolean.class, false);
-        STATUS_POINT_FORMAT.addOptionalColumn("CONTROL INHIBIT", StrictBoolean.class, false);
+        STATUS_POINT_FORMAT.addOptionalColumn("POINT OFFSET", PositiveInteger.class);
+        STATUS_POINT_FORMAT.addOptionalColumn("CONTROL TYPE", ControlType.class, false, true);
+        STATUS_POINT_FORMAT.addOptionalColumn("ARCHIVE DATA", StrictBoolean.class);
+        STATUS_POINT_FORMAT.addOptionalColumn("CONTROL INHIBIT", StrictBoolean.class);
         //ACTION dependent
-        STATUS_POINT_FORMAT.addValueDependentColumn("STATE GROUP", String.class, false, "ACTION", ImportAction.ADD);
-        STATUS_POINT_FORMAT.addValueDependentColumn("INITIAL STATE", String.class, false, "ACTION", ImportAction.ADD);
+        STATUS_POINT_FORMAT.addValueDependentColumn("STATE GROUP", String.class, "ACTION", ImportAction.ADD);
+        STATUS_POINT_FORMAT.addValueDependentColumn("INITIAL STATE", String.class, "ACTION", ImportAction.ADD);
         //CONTROL TYPE dependent
         Object[] dependentTypes = {ControlType.NORMAL, ControlType.LATCH, ControlType.PSEUDO, ControlType.SBOLATCH, ControlType.SBOPULSE};
-        STATUS_POINT_FORMAT.addValueDependentColumn("CONTROL POINT OFFSET", Integer.class, false, "CONTROL TYPE", dependentTypes);
-        STATUS_POINT_FORMAT.addValueDependentColumn("CLOSE TIME 1", Integer.class, false, "CONTROL TYPE", dependentTypes);
-        STATUS_POINT_FORMAT.addValueDependentColumn("CLOSE TIME 2", Integer.class, false, "CONTROL TYPE", dependentTypes);
-        STATUS_POINT_FORMAT.addValueDependentColumn("STATE 1 COMMAND", StateControlType.class, false, "CONTROL TYPE", dependentTypes);
-        STATUS_POINT_FORMAT.addValueDependentColumn("STATE 2 COMMAND", StateControlType.class, false, "CONTROL TYPE", dependentTypes);
-        STATUS_POINT_FORMAT.addValueDependentColumn("COMMAND TIMEOUT", PositiveInteger.class, false, "CONTROL TYPE", dependentTypes);
+        STATUS_POINT_FORMAT.addValueDependentColumn("CONTROL POINT OFFSET", Integer.class, "CONTROL TYPE", dependentTypes);
+        STATUS_POINT_FORMAT.addValueDependentColumn("CLOSE TIME 1", Integer.class, "CONTROL TYPE", dependentTypes);
+        STATUS_POINT_FORMAT.addValueDependentColumn("CLOSE TIME 2", Integer.class, "CONTROL TYPE", dependentTypes);
+        STATUS_POINT_FORMAT.addValueDependentColumn("STATE 1 COMMAND", StateControlType.class, false, true, "CONTROL TYPE", dependentTypes);
+        STATUS_POINT_FORMAT.addValueDependentColumn("STATE 2 COMMAND", StateControlType.class, false, true, "CONTROL TYPE", dependentTypes);
+        STATUS_POINT_FORMAT.addValueDependentColumn("COMMAND TIMEOUT", PositiveInteger.class, "CONTROL TYPE", dependentTypes);
         //Column descriptions
         STATUS_POINT_FORMAT.setDescriptionKey("POINT OFFSET", "yukon.web.modules.amr.pointImport.column.pointOffset");
         STATUS_POINT_FORMAT.setDescriptionKey("CONTROL TYPE", "yukon.web.modules.amr.pointImport.column.controlType");
@@ -130,13 +130,13 @@ public class PointImportFormats {
         
         ACCUMULATOR_POINT_FORMAT = analogAccumulatorSharedImportFormat.clone();
         //Required Columns
-        ACCUMULATOR_POINT_FORMAT.addRequiredColumn("ACCUMULATOR TYPE", AccumulatorType.class, false);
+        ACCUMULATOR_POINT_FORMAT.addRequiredColumn("ACCUMULATOR TYPE", AccumulatorType.class, false, true);
         //Optional Columns
-        ACCUMULATOR_POINT_FORMAT.addOptionalColumn("POINT OFFSET", PositiveInteger.class, false);
+        ACCUMULATOR_POINT_FORMAT.addOptionalColumn("POINT OFFSET", PositiveInteger.class);
         //ACTION dependent
-        ACCUMULATOR_POINT_FORMAT.addValueDependentColumn("MULTIPLIER", Double.class, false, "ACTION", ImportAction.ADD);
-        ACCUMULATOR_POINT_FORMAT.addValueDependentColumn("DATA OFFSET", Double.class, false, "ACTION", ImportAction.ADD);
-        ACCUMULATOR_POINT_FORMAT.addValueDependentColumn("METER DIALS", PositiveInteger.class, false, "ACTION", ImportAction.ADD);
+        ACCUMULATOR_POINT_FORMAT.addValueDependentColumn("MULTIPLIER", Double.class, "ACTION", ImportAction.ADD);
+        ACCUMULATOR_POINT_FORMAT.addValueDependentColumn("DATA OFFSET", Double.class, "ACTION", ImportAction.ADD);
+        ACCUMULATOR_POINT_FORMAT.addValueDependentColumn("METER DIALS", PositiveInteger.class, "ACTION", ImportAction.ADD);
         //Column descriptions
         ACCUMULATOR_POINT_FORMAT.setDescriptionKey("ACCUMULATOR TYPE", "yukon.web.modules.amr.pointImport.column.accumulatorType");
         ACCUMULATOR_POINT_FORMAT.setDescriptionKey("POINT OFFSET", "yukon.web.modules.amr.pointImport.column.pointOffset");
@@ -146,11 +146,11 @@ public class PointImportFormats {
         
         CALC_ANALOG_POINT_FORMAT = analogAccumulatorSharedImportFormat.clone();
         //ACTION dependent
-        CALC_ANALOG_POINT_FORMAT.addValueDependentColumn("UPDATE TYPE", AnalogPointUpdateType.class, false, "ACTION", ImportAction.ADD);
-        CALC_ANALOG_POINT_FORMAT.addValueDependentColumn("CALCULATION", String.class, false, "ACTION", ImportAction.ADD);
-        CALC_ANALOG_POINT_FORMAT.addValueDependentColumn("FORCE QUALITY NORMAL", StrictBoolean.class, false, "ACTION", ImportAction.ADD);
+        CALC_ANALOG_POINT_FORMAT.addValueDependentColumn("UPDATE TYPE", AnalogPointUpdateType.class, false, true, "ACTION", ImportAction.ADD);
+        CALC_ANALOG_POINT_FORMAT.addValueDependentColumn("CALCULATION", String.class, "ACTION", ImportAction.ADD);
+        CALC_ANALOG_POINT_FORMAT.addValueDependentColumn("FORCE QUALITY NORMAL", StrictBoolean.class, "ACTION", ImportAction.ADD);
         //UPDATE TYPE dependent
-        CALC_ANALOG_POINT_FORMAT.addValueDependentColumn("UPDATE RATE", PointPeriodicRate.class, false, "UPDATE TYPE", AnalogPointUpdateType.ON_TIMER, AnalogPointUpdateType.ON_TIMER_AND_CHANGE);
+        CALC_ANALOG_POINT_FORMAT.addValueDependentColumn("UPDATE RATE", PointPeriodicRate.class, false, true, "UPDATE TYPE", AnalogPointUpdateType.ON_TIMER, AnalogPointUpdateType.ON_TIMER_AND_CHANGE);
         //Column descriptions
         CALC_ANALOG_POINT_FORMAT.setDescriptionKey("UPDATE TYPE", "yukon.web.modules.amr.pointImport.column.updateType");
         CALC_ANALOG_POINT_FORMAT.setDescriptionKey("CALCULATION", "yukon.web.modules.amr.pointImport.column.calculation");
@@ -159,14 +159,14 @@ public class PointImportFormats {
         
         CALC_STATUS_POINT_FORMAT = basePointImportFormat.clone();
         //Optional Columns
-        CALC_STATUS_POINT_FORMAT.addOptionalColumn("ARCHIVE DATA", StrictBoolean.class, false);
+        CALC_STATUS_POINT_FORMAT.addOptionalColumn("ARCHIVE DATA", StrictBoolean.class);
         //ACTION dependent
-        CALC_STATUS_POINT_FORMAT.addValueDependentColumn("UPDATE TYPE", StatusPointUpdateType.class, false, "ACTION", ImportAction.ADD);
-        CALC_STATUS_POINT_FORMAT.addValueDependentColumn("INITIAL STATE", String.class, false, "ACTION", ImportAction.ADD);
-        CALC_STATUS_POINT_FORMAT.addValueDependentColumn("STATE GROUP", String.class, false, "ACTION", ImportAction.ADD);
-        CALC_STATUS_POINT_FORMAT.addValueDependentColumn("CALCULATION", String.class, false, "ACTION", ImportAction.ADD);
+        CALC_STATUS_POINT_FORMAT.addValueDependentColumn("UPDATE TYPE", StatusPointUpdateType.class, false, true, "ACTION", ImportAction.ADD);
+        CALC_STATUS_POINT_FORMAT.addValueDependentColumn("INITIAL STATE", String.class, "ACTION", ImportAction.ADD);
+        CALC_STATUS_POINT_FORMAT.addValueDependentColumn("STATE GROUP", String.class, "ACTION", ImportAction.ADD);
+        CALC_STATUS_POINT_FORMAT.addValueDependentColumn("CALCULATION", String.class, "ACTION", ImportAction.ADD);
         //UPDATE TYPE dependent
-        CALC_STATUS_POINT_FORMAT.addValueDependentColumn("UPDATE RATE", PointPeriodicRate.class, false, "UPDATE TYPE", StatusPointUpdateType.ON_TIMER, StatusPointUpdateType.ON_TIMER_AND_CHANGE);
+        CALC_STATUS_POINT_FORMAT.addValueDependentColumn("UPDATE RATE", PointPeriodicRate.class, false, true, "UPDATE TYPE", StatusPointUpdateType.ON_TIMER, StatusPointUpdateType.ON_TIMER_AND_CHANGE);
         //Column descriptions
         CALC_STATUS_POINT_FORMAT.setDescriptionKey("ARCHIVE DATA", "yukon.web.modules.amr.pointImport.column.archiveData");
         CALC_STATUS_POINT_FORMAT.setDescriptionKey("UPDATE TYPE", "yukon.web.modules.amr.pointImport.column.updateType");

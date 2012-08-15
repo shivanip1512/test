@@ -32,7 +32,7 @@ public class ImportData {
         stringDataCopy.remove(0);
         
         for(String[] stringRow : stringDataCopy) {
-            ImportRow newImportRow = new ImportRow(columnNames, stringRow);
+            ImportRow newImportRow = new ImportRow(format, columnNames, stringRow);
             rows.add(newImportRow);
         }
     }

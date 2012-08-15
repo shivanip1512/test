@@ -16,6 +16,7 @@ import com.cannontech.common.csvImport.ImportValidationResult;
 import com.cannontech.common.csvImport.ImportAction;
 import com.cannontech.common.csvImport.ImportResult;
 import com.cannontech.common.csvImport.types.RegulatorType;
+import com.cannontech.common.csvImport.types.StrictBoolean;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.service.PaoPersistenceService;
@@ -32,15 +33,15 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
     static {
         importFormat = new ImportFileFormat();
         //REQUIRED
-        importFormat.addRequiredColumn("ACTION", ImportAction.class, false);
-        importFormat.addRequiredColumn("NAME", String.class, false);
+        importFormat.addRequiredColumn("ACTION", ImportAction.class, false, true);
+        importFormat.addRequiredColumn("NAME", String.class);
         //VALUE DEPENDENT
-        importFormat.addValueDependentColumn("TYPE", RegulatorType.class, false, "ACTION", ImportAction.ADD);
+        importFormat.addValueDependentColumn("TYPE", RegulatorType.class, false, true, "ACTION", ImportAction.ADD);
         //OPTIONAL
-        importFormat.addOptionalColumn("DESCRIPTION", String.class, false);
-        importFormat.addOptionalColumn("DISABLED", Boolean.class, false);
-        importFormat.addOptionalColumn("KEEP ALIVE TIMER", Integer.class, false);
-        importFormat.addOptionalColumn("KEEP ALIVE CONFIG", Integer.class, false);
+        importFormat.addOptionalColumn("DESCRIPTION", String.class);
+        importFormat.addOptionalColumn("DISABLED", StrictBoolean.class);
+        importFormat.addOptionalColumn("KEEP ALIVE TIMER", Integer.class);
+        importFormat.addOptionalColumn("KEEP ALIVE CONFIG", Integer.class);
     }
     
     /**
@@ -65,7 +66,7 @@ public class RegulatorImportServiceImpl implements RegulatorImportService {
             if(validationResult.isFailed()) {
                 result = regulatorImportHelper.processValidationResult(validationResult);
             } else {
-                ImportAction action = ImportAction.valueOf(row.getValue("ACTION").toUpperCase());
+                ImportAction action = ImportAction.valueOf(row.getValue("ACTION"));
                 switch(action) {
                     case ADD:
                         result = createRegulator(row);

@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
  * Nullable: Whether or not "NULL" values are permitted in this column. Values with the exact
  *           string "NULL" will be transformed to "" (empty string) when parsed into ImportData.
  * Required: Whether the column is required or optional.
+ * Uppercase Value: If true, the values in this column should always be uppercased before being used.
  * 
  * New column definition types should extend this class. New column definitions will also need to
  * have validation added to ImportFileValidator.
@@ -25,15 +26,17 @@ public abstract class ImportColumnDefinition {
     private final Class<?> typeClass;
     private boolean nullable;
     private boolean required;
+    private boolean uppercaseValue;
     
     private String descriptionKey = "";
     private String validValuesKey = null;
     
-    protected ImportColumnDefinition(String name, Class<?> typeClass, boolean nullable, boolean required) {
+    protected ImportColumnDefinition(String name, Class<?> typeClass, boolean required, boolean nullable, boolean uppercaseValue) {
         this.name = name.toUpperCase();
         this.typeClass = typeClass;
-        this.nullable = nullable;
         this.required = required;
+        this.nullable = nullable;
+        this.uppercaseValue = uppercaseValue;
     }
     
     public String getName() {
@@ -59,6 +62,13 @@ public abstract class ImportColumnDefinition {
      */
     public boolean isRequired() {
         return required;
+    }
+    
+    /**
+     * If true, the values in this column should always be uppercased before being used.
+     */
+    public boolean isUppercaseValue() {
+        return uppercaseValue;
     }
     
     /**
