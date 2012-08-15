@@ -107,7 +107,7 @@
       StarsLMProgramHistory programHistory = null;
       StarsCallReportHistory callHist = null;
       StarsServiceRequestHistory serviceHist = null;
-      StarsUser userLogin = null;
+      LiteYukonUser userLogin = null;
       
       Vector<GraphCustomerList> custGraphs = null;
       HashMap<Integer, List<Integer>> partialOptOutMap = null;

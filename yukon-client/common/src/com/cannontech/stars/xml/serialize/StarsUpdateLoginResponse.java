@@ -1,5 +1,7 @@
 package com.cannontech.stars.xml.serialize;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
+
 public class StarsUpdateLoginResponse {
 
 
@@ -7,7 +9,7 @@ public class StarsUpdateLoginResponse {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private StarsUser _starsUser;
+    private LiteYukonUser _starsUser;
 
 
       //----------------/
@@ -28,7 +30,7 @@ public class StarsUpdateLoginResponse {
      * 
      * @return the value of field 'starsUser'.
     **/
-    public StarsUser getStarsUser()
+    public LiteYukonUser getStarsUser()
     {
         return this._starsUser;
     } //-- StarsUser getStarsUser() 
@@ -38,7 +40,7 @@ public class StarsUpdateLoginResponse {
      * 
      * @param starsUser the value of field 'starsUser'.
     **/
-    public void setStarsUser(StarsUser starsUser)
+    public void setStarsUser(LiteYukonUser starsUser)
     {
         this._starsUser = starsUser;
     } //-- void setStarsUser(StarsUser) 

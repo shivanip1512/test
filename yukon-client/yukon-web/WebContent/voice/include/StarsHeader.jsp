@@ -106,7 +106,7 @@
 	StarsInventories thermostats = null;
 	StarsInventories optOutChoices = null;
 	StarsAppliances appliances = null;
-	StarsUser userLogin = null;
+	LiteYukonUser userLogin = null;
 	LiteAccountInfo liteAcctInfo = null;
 	
 	accountInfo = ServletUtils.removeAccountInformation(session);
