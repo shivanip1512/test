@@ -1281,7 +1281,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>Set optional message arguments for this tag, as an Object array (used as
-            argument array), a java.util.Collection or a single Object (usedas single argument).</description>
+            argument array), a java.util.Collection or a single Object (used as single argument).</description>
         </attribute>
         <attribute>
             <name>argumentSeparator</name>
@@ -1310,7 +1310,7 @@
             <name>htmlEscape</name>
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
-            <description>Set HTML escaping for this tag.  The default is "false".</description>
+            <description>Set HTML escaping for this tag.  The default is false.</description>
         </attribute>
         <attribute>
             <name>htmlEscapeArguments</name>
