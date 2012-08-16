@@ -71,8 +71,8 @@ public class AccumulatorPointBuilder extends ScalarPointBuilder {
         }
         point.setPointLimitsMap(limitMap);
         
-        if(lowReasonability != null) point.getPointUnit().setLowReasonabilityLimit(lowReasonability);
-        if(highReasonability != null) point.getPointUnit().setHighReasonabilityLimit(highReasonability);
+        point.getPointUnit().setLowReasonabilityLimit(lowReasonability);
+        point.getPointUnit().setHighReasonabilityLimit(highReasonability);
         
         if(isDisabled) {
             point.getPoint().setServiceFlag(CtiUtilities.getTrueCharacter());

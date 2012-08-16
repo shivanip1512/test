@@ -62,8 +62,8 @@ public class AnalogPointBuilder extends ScalarPointBuilder {
         }
         analogPoint.setPointLimitsMap(limitMap);
         
-        if(lowReasonability != null) analogPoint.getPointUnit().setLowReasonabilityLimit(lowReasonability);
-        if(highReasonability != null) analogPoint.getPointUnit().setHighReasonabilityLimit(highReasonability);
+        analogPoint.getPointUnit().setLowReasonabilityLimit(lowReasonability);
+        analogPoint.getPointUnit().setHighReasonabilityLimit(highReasonability);
         analogPoint.getPointUnit().setMeterDials(meterDials);
         
         if(isDisabled) {

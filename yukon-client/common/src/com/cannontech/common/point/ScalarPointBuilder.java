@@ -1,6 +1,7 @@
 package com.cannontech.common.point;
 
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointArchiveInterval;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.UnitOfMeasure;
@@ -14,8 +15,8 @@ public abstract class ScalarPointBuilder extends PointBuilder {
     protected PointArchiveInterval archiveInterval = PointArchiveInterval.ZERO;
     protected int unitOfMeasure = UnitOfMeasure.KW.getId();
     protected int decimalPlaces = 0;
-    protected Double highReasonability = null;
-    protected Double lowReasonability = null;
+    protected double highReasonability = CtiUtilities.INVALID_MAX_DOUBLE; //these values cause the reasonability
+    protected double lowReasonability = CtiUtilities.INVALID_MIN_DOUBLE;  //boxes to be unchecked
     protected Double highLimit1 = null;
     protected Double lowLimit1 = null;
     protected Integer limitDuration1 = null;

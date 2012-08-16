@@ -89,8 +89,8 @@ public class CalcAnalogPointBuilder extends ScalarPointBuilder {
         }
         point.setPointLimitsMap(limitMap);
         
-        if(lowReasonability != null) point.getPointUnit().setLowReasonabilityLimit(lowReasonability);
-        if(highReasonability != null) point.getPointUnit().setHighReasonabilityLimit(highReasonability);
+        point.getPointUnit().setLowReasonabilityLimit(lowReasonability);
+        point.getPointUnit().setHighReasonabilityLimit(highReasonability);
         point.getPointUnit().setMeterDials(meterDials);
         
         if(isDisabled) {
