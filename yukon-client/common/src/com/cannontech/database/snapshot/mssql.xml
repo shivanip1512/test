@@ -3293,7 +3293,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>GroupId</i__columnName>
+            <i__columnName>UserGroupId</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -3324,7 +3324,7 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>ECToResidentialGroupMapping</i__tableName>
                   <i__ordinalPosition>2</i__ordinalPosition>
-                  <i__columnName>GroupId</i__columnName>
+                  <i__columnName>UserGroupId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
@@ -20035,15 +20035,6 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_ECToResGroupMap_YukonGroup</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>GroupId</i__columnName>
-            <i__foreignColumnName>GroupID</i__foreignColumnName>
-            <i__foreignTableName>YukonGroup</i__foreignTableName>
-            <i__updateRule>0</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_UserGrpYukGrpMap_YukGrp</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>GroupId</i__columnName>
@@ -20059,15 +20050,6 @@
             <i__foreignColumnName>GroupID</i__foreignColumnName>
             <i__foreignTableName>YukonGroup</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_ECToOpGroupMap_YukonGroup</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>GroupId</i__columnName>
-            <i__foreignColumnName>GroupID</i__foreignColumnName>
-            <i__foreignTableName>YukonGroup</i__foreignTableName>
-            <i__updateRule>0</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -26548,7 +26530,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>GroupId</i__columnName>
+            <i__columnName>UserGroupId</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -26579,7 +26561,7 @@
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>ECToOperatorGroupMapping</i__tableName>
                   <i__ordinalPosition>2</i__ordinalPosition>
-                  <i__columnName>GroupId</i__columnName>
+                  <i__columnName>UserGroupId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
@@ -32550,7 +32532,25 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_ECToResGroupMap_UserGroup</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>UserGroupId</i__columnName>
+            <i__foreignColumnName>UserGroupId</i__foreignColumnName>
+            <i__foreignTableName>UserGroup</i__foreignTableName>
+            <i__updateRule>0</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_UserGrpYukGrpMap_UserGroup</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>UserGroupId</i__columnName>
+            <i__foreignColumnName>UserGroupId</i__foreignColumnName>
+            <i__foreignTableName>UserGroup</i__foreignTableName>
+            <i__updateRule>0</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_ECToOpGroupMap_UserGroup</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>UserGroupId</i__columnName>
             <i__foreignColumnName>UserGroupId</i__foreignColumnName>
