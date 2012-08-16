@@ -21,7 +21,7 @@ public class StatusPointBuilder extends PointBuilder {
     private int pointOffset = 0; //no physical point offset unless specified
     private String stateGroupName = "TwoStateStatus";
     private String initialStateName = "Open";
-    private ControlType controlType = ControlType.LATCH;
+    private ControlType controlType = ControlType.NONE;
     private boolean isArchive = false;
     private boolean isControlInhibit = false;
     
@@ -29,7 +29,7 @@ public class StatusPointBuilder extends PointBuilder {
     private Integer closeTime1 = null;
     private Integer closeTime2 = null;
     private Integer commandTimeout = null;
-    private int controlOffset = 1;
+    private int controlOffset = 0;
     private StateControlType state1Command = StateControlType.OPEN;
     private StateControlType state2Command = StateControlType.CLOSE;
     
