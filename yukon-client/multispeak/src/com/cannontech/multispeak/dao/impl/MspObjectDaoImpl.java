@@ -13,9 +13,11 @@ import javax.xml.soap.Name;
 import org.apache.axis.client.Stub;
 import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.LogHelper;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
@@ -41,6 +43,7 @@ import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 public class MspObjectDaoImpl implements MspObjectDao {
 
     private SystemLogHelper _systemLogHelper = null;
+    private static final Logger log = YukonLogManager.getLogger(MspObjectDaoImpl.class);
 
     private SystemLogHelper getSystemLogHelper() {
         if (_systemLogHelper == null)
@@ -61,13 +64,13 @@ public class MspObjectDaoImpl implements MspObjectDao {
             if (port != null) {
                 mspCustomer = port.getCustomerByMeterNo(meterNumber);
             } else {
-                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             }                
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
-            CTILogger.error("TargetService: " + endpointURL + " - getCustomerByMeterNo(" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-            CTILogger.info("A default(empty) is being used for Customer");
+            log.error("TargetService: " + endpointURL + " - getCustomerByMeterNo(" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
+            log.info("A default(empty) is being used for Customer");
         }
         return mspCustomer;
     }
@@ -81,15 +84,16 @@ public class MspObjectDaoImpl implements MspObjectDao {
         try {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
             if (port != null) {
+                LogHelper.debug(log, "Calling %s CB_Server.getServiceLocationByMeterNo for meterNumber: %s", mspVendor.getCompanyName(), meterNumber);
                 mspServiceLocation =  port.getServiceLocationByMeterNo(meterNumber);
             } else {
-                CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+                log.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             }
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
-            CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-            CTILogger.info("A default(empty) is being used for ServiceLocation");
+            log.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
+            log.info("A default(empty) is being used for ServiceLocation");
        }
        return mspServiceLocation;
     }
@@ -105,13 +109,13 @@ public class MspObjectDaoImpl implements MspObjectDao {
             if (port != null) {
                 mspMeter =  port.getMeterByMeterNo(meterNumber);
             } else {
-                CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+                log.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             }
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
-            CTILogger.error("TargetService: " + endpointURL + " - getMeterByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-            CTILogger.info("A default(empty) is being used for Meter");
+            log.error("TargetService: " + endpointURL + " - getMeterByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
+            log.info("A default(empty) is being used for Meter");
        }
        return mspMeter;
     }
@@ -125,7 +129,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
 		
 		while (firstGet || lastReceived != null) {
 			
-			CTILogger.info("Calling getMoreMspMeters, lastReceived = " + lastReceived);
+			log.info("Calling getMoreMspMeters, lastReceived = " + lastReceived);
 			lastReceived = getMoreMspMeters(mspVendor, lastReceived, callback);
 			firstGet = false;
 		}
@@ -153,29 +157,29 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 	try {
                 		objectsRemaining = Integer.valueOf(objectsRemainingStr);
                 	} catch (NumberFormatException e) {
-                		CTILogger.error("Non-integer value in header for objectsRemaining: " + objectsRemainingStr, e);
+                		log.error("Non-integer value in header for objectsRemaining: " + objectsRemainingStr, e);
                 	}
                 }
                 
                 if (objectsRemaining != 0) { 
         			lastSent = getAttributeValue(port, "lastSent");
-        			CTILogger.info("getMoreMspMeters responded, received " + meters.length + " meters using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);
+        			log.info("getMoreMspMeters responded, received " + meters.length + " meters using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);
         		} else {
-        			CTILogger.info("getMoreMspMeters responded, received " + meters.length + " meters using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining);
+        			log.info("getMoreMspMeters responded, received " + meters.length + " meters using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining);
         		}
                 
                 // pass to callback
                 callback.handle(mspMeters);
                 
             } else {
-                CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
+                log.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
             }
             
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
-            CTILogger.error("TargetService: " + endpointURL + " - getAllMeters (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-            CTILogger.info("A default(empty) is being used for Meter");
+            log.error("TargetService: " + endpointURL + " - getAllMeters (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
+            log.info("A default(empty) is being used for Meter");
        }
        
        return lastSent;
@@ -192,11 +196,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
 			
 			// kill before gathering more substations if callback is canceled
 			if (callback.isCanceled()) {
-				CTILogger.info("MultispeakGetAllServiceLocationsCallback in canceled state, aborting next call to getMoreServiceLocations");
+				log.info("MultispeakGetAllServiceLocationsCallback in canceled state, aborting next call to getMoreServiceLocations");
 				return;
 			}
 			
-			CTILogger.info("Calling getMoreServiceLocations, lastReceived = " + lastReceived);
+			log.info("Calling getMoreServiceLocations, lastReceived = " + lastReceived);
 			lastReceived = getMoreServiceLocations(mspVendor, lastReceived, callback);
 			firstGet = false;
 		}
@@ -228,15 +232,15 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 	try {
                 		objectsRemaining = Integer.valueOf(objectsRemainingStr);
                 	} catch (NumberFormatException e) {
-                		CTILogger.error("Non-integer value in header for objectsRemaining: " + objectsRemainingStr, e);
+                		log.error("Non-integer value in header for objectsRemaining: " + objectsRemainingStr, e);
                 	}
                 }
                 
                 if (objectsRemaining != 0) { 
         			lastSent = getAttributeValue(port, "lastSent");
-        			CTILogger.info("getMoreServiceLocations responded, received " + serviceLocationCount + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);
+        			log.info("getMoreServiceLocations responded, received " + serviceLocationCount + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);
         		} else {
-        			CTILogger.info("getMoreServiceLocations responded, received " + serviceLocationCount + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining);
+        			log.info("getMoreServiceLocations responded, received " + serviceLocationCount + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining);
         		}
                 
                 
@@ -247,15 +251,15 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 } 
                 
             } else {
-                CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
+                log.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
             }
             
         } catch (RemoteException e) {
         	
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
-            CTILogger.error("TargetService: " + endpointURL + " - getAllServiceLocations (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-            CTILogger.info("A default(empty) is being used for ServiceLocation");
+            log.error("TargetService: " + endpointURL + " - getAllServiceLocations (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
+            log.info("A default(empty) is being used for ServiceLocation");
             
             throw e;
        }
@@ -298,18 +302,18 @@ public class MspObjectDaoImpl implements MspObjectDao {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
             if (port != null) {
             	long start = System.currentTimeMillis();
-                CTILogger.debug("Begin call to getMeterByServLoc for ServLoc:" + serviceLocation);
+                LogHelper.debug(log, "Begin call to getMeterByServLoc for ServLoc: %s", serviceLocation);
                 com.cannontech.multispeak.deploy.service.Meter[] mspMeters = port.getMeterByServLoc(serviceLocation);
-                CTILogger.debug("End call to getMeterByServLoc for ServLoc:" + serviceLocation + "  (took " + (System.currentTimeMillis() - start) + " millis)");
+                LogHelper.debug(log, "End call to getMeterByServLoc for ServLoc:" + serviceLocation + "  (took " + (System.currentTimeMillis() - start) + " millis)");
                 if( mspMeters!= null) {
                 	meters = Arrays.asList(mspMeters);
                 }
             } else {
-            	CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for ServLoc: " + serviceLocation);
+            	log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for ServLoc: " + serviceLocation);
             }
         } catch (RemoteException e) {
-        	CTILogger.error("TargetService: " + endpointURL + " - getMeterByServLoc (" + mspVendor.getCompanyName() + ") for ServLoc: " + serviceLocation);
-        	CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+        	log.error("TargetService: " + endpointURL + " - getMeterByServLoc (" + mspVendor.getCompanyName() + ") for ServLoc: " + serviceLocation);
+        	log.error("RemoteExceptionDetail: "+e.getMessage());
         }
         return meters;
     }
@@ -350,7 +354,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Override
     public void logMSPActivity(String method, String description, String userName) {
         getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName, SystemLog.TYPE_MULTISPEAK);
-        CTILogger.debug("MSP Activity (Method: " + method +  " - " + description + ")");
+        LogHelper.debug(log, "MSP Activity (Method: %s - %s)", method, description);
     }
     
     @Override
@@ -368,11 +372,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     }
                 }
             } else {
-                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for DomainMember 'substationCode'");
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for DomainMember 'substationCode'");
             }
         } catch (RemoteException e) {
-            CTILogger.error("TargetService: " + endpointURL + " - getDomainMembers(" + mspVendor.getCompanyName() + ") for DomainMember 'substationCode'");
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+            log.error("TargetService: " + endpointURL + " - getDomainMembers(" + mspVendor.getCompanyName() + ") for DomainMember 'substationCode'");
+            log.error("RemoteExceptionDetail: "+e.getMessage());
         }
         return substationNames;
     }
@@ -419,8 +423,8 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 objects = port.getMethods();
             }
         } catch (RemoteException e) {
-            CTILogger.error("Exception processing getMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+            log.error("Exception processing getMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
         }
         
         if (objects == null) {
@@ -444,11 +448,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     meters = Arrays.asList(mspMeters);
                 }
             } else {
-                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for EALocation: " + eaLocation);
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for EALocation: " + eaLocation);
             }
         } catch (RemoteException e) {
-            CTILogger.error("TargetService: " + endpointURL + " - getMetersByEALocation (" + mspVendor.getCompanyName() + ") for EALocation: " + eaLocation);
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+            log.error("TargetService: " + endpointURL + " - getMetersByEALocation (" + mspVendor.getCompanyName() + ") for EALocation: " + eaLocation);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
         }
         return meters;
     }
@@ -467,11 +471,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     meters = Arrays.asList(mspMeters);
                 }
             } else {
-                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for FacilityId: " + facilityId);
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for FacilityId: " + facilityId);
             }
         } catch (RemoteException e) {
-            CTILogger.error("TargetService: " + endpointURL + " - getMetersByFacilityID (" + mspVendor.getCompanyName() + ") for FacilityId: " + facilityId);
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+            log.error("TargetService: " + endpointURL + " - getMetersByFacilityID (" + mspVendor.getCompanyName() + ") for FacilityId: " + facilityId);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
         }
         return meters;
     }
@@ -490,11 +494,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     meters = Arrays.asList(mspMeters);
                 }
             } else {
-                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for Account Number: " + accountNumber);
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for Account Number: " + accountNumber);
             }
         } catch (RemoteException e) {
-            CTILogger.error("TargetService: " + endpointURL + " - getMeterByAccountNumber (" + mspVendor.getCompanyName() + ") for Account Number: " + accountNumber);
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+            log.error("TargetService: " + endpointURL + " - getMeterByAccountNumber (" + mspVendor.getCompanyName() + ") for Account Number: " + accountNumber);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
         }
         return meters;
     }
@@ -513,11 +517,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     meters = Arrays.asList(mspMeters);
                 }
             } else {
-                CTILogger.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for CustId: " + custId);
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for CustId: " + custId);
             }
         } catch (RemoteException e) {
-            CTILogger.error("TargetService: " + endpointURL + " - getMeterByCustID (" + mspVendor.getCompanyName() + ") for CustId: " + custId);
-            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+            log.error("TargetService: " + endpointURL + " - getMeterByCustID (" + mspVendor.getCompanyName() + ") for CustId: " + custId);
+            log.error("RemoteExceptionDetail: "+e.getMessage());
         }
         return meters;
     }

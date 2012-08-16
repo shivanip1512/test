@@ -201,6 +201,16 @@ public interface MultispeakMeterService {
     public boolean updateBillingCyle(String newBilling, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor);
     
     /**
+     * Removes the Meter from all ALternate group memberships (all children under Alternate).
+     * Adds the Meter to Alternate child group based on extensionsList. 
+     * Requires cparm MSP_ENABLE_ALTGROUP_EXTENSION : TRUE to attempt to load alternative value.
+     * Attempts to load cparm MSP_ALTGROUP_EXTENSION : XXX for extension value
+     * If the alt group does not already exist, then a new Alternate sub group is created. 
+     * @return true if added to a new alternate cycle group.  
+     */
+    public boolean updateAltGroup(ServiceLocation mspServiceLocation, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor);
+        
+    /**
      * Removes the Meter from all Substation group memberships (all children under Substation).
      * Adds the Meter to 'substationName' Substation child group.  If the substation group does not already
      * exist, then a new Substation sub group is created.
