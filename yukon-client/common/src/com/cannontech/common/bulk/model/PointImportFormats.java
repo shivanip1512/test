@@ -5,7 +5,6 @@ import com.cannontech.common.csvImport.ImportFileFormat;
 import com.cannontech.common.csvImport.types.StrictBoolean;
 import com.cannontech.common.pao.ImportPaoType;
 import com.cannontech.common.point.AccumulatorType;
-import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.common.util.PositiveDouble;
 import com.cannontech.common.util.PositiveInteger;
 import com.cannontech.database.data.point.ControlType;
@@ -63,7 +62,7 @@ public class PointImportFormats {
         //ARCHIVE TYPE dependent
         analogAccumulatorSharedImportFormat.addValueDependentColumn("ARCHIVE INTERVAL", ImportPointArchiveInterval.class, false, true, "ARCHIVE TYPE", PointArchiveType.ON_TIMER, PointArchiveType.ON_TIMER_OR_UPDATE);
         //ACTION dependent
-        analogAccumulatorSharedImportFormat.addValueDependentColumn("UNIT OF MEASURE", UnitOfMeasure.class, false, true, "ACTION", ImportAction.ADD);
+        analogAccumulatorSharedImportFormat.addValueDependentColumn("UNIT OF MEASURE", ImportUnitOfMeasure.class, false, true, "ACTION", ImportAction.ADD);
         analogAccumulatorSharedImportFormat.addValueDependentColumn("DECIMAL PLACES", PositiveInteger.class, false, true, "ACTION", ImportAction.ADD);
         //Column Descriptions
         analogAccumulatorSharedImportFormat.setDescriptionKey("ARCHIVE TYPE", "yukon.web.modules.amr.pointImport.column.archiveType");
@@ -78,6 +77,7 @@ public class PointImportFormats {
         analogAccumulatorSharedImportFormat.setDescriptionKey("ARCHIVE INTERVAL", "yukon.web.modules.amr.pointImport.column.archiveInterval");
         analogAccumulatorSharedImportFormat.setValidValuesKey("ARCHIVE INTERVAL", "yukon.web.modules.amr.pointImport.validValues.archiveInterval");
         analogAccumulatorSharedImportFormat.setDescriptionKey("UNIT OF MEASURE", "yukon.web.modules.amr.pointImport.column.unitOfMeasure");
+        analogAccumulatorSharedImportFormat.setValidValuesKey("UNIT OF MEASURE", "yukon.web.modules.amr.pointImport.validValues.unitOfMeasure");
         analogAccumulatorSharedImportFormat.setDescriptionKey("DECIMAL PLACES", "yukon.web.modules.amr.pointImport.column.decimalPlaces");
         
         ANALOG_POINT_FORMAT = analogAccumulatorSharedImportFormat.clone();
