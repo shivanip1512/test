@@ -992,9 +992,9 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
                    DNP::Counter *counterin;
 
 
-                    dob1 = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ShortQty);
-                    dob2 = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ShortQty);
-                    dob3 = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ShortQty);
+                dob1 = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
+                dob2 = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
+                dob3 = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
 
                     for ( int i = 0; i < _input_point_list.size(); i++ )
                     {
