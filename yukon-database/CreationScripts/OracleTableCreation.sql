@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/9/2012 6:02:57 PM                          */
+/* Created on:     8/16/2012 2:29:45 PM                         */
 /*==============================================================*/
 
 
@@ -4413,8 +4413,8 @@ create index INDX_ECToCustEventMap_EventId on ECToLMCustomerEventMapping (
 /*==============================================================*/
 create table ECToOperatorGroupMapping  (
    EnergyCompanyId      NUMBER                          not null,
-   GroupId              NUMBER                          not null,
-   constraint PK_ECToOpGroupMap primary key (EnergyCompanyId, GroupId)
+   UserGroupId          NUMBER                          not null,
+   constraint PK_ECToOpGroupMap primary key (EnergyCompanyId, UserGroupId)
 );
 
 /*==============================================================*/
@@ -4422,8 +4422,8 @@ create table ECToOperatorGroupMapping  (
 /*==============================================================*/
 create table ECToResidentialGroupMapping  (
    EnergyCompanyId      NUMBER                          not null,
-   GroupId              NUMBER                          not null,
-   constraint PK_ECToResGroupMap primary key (EnergyCompanyId, GroupId)
+   UserGroupId          NUMBER                          not null,
+   constraint PK_ECToResGroupMap primary key (EnergyCompanyId, UserGroupId)
 );
 
 /*==============================================================*/
@@ -10859,8 +10859,8 @@ alter table ECToOperatorGroupMapping
       on delete cascade;
 
 alter table ECToOperatorGroupMapping
-   add constraint FK_ECToOpGroupMap_YukonGroup foreign key (GroupId)
-      references YukonGroup (GroupID)
+   add constraint FK_ECToOpGroupMap_UserGroup foreign key (UserGroupId)
+      references UserGroup (UserGroupId)
       on delete cascade;
 
 alter table ECToResidentialGroupMapping
@@ -10869,8 +10869,8 @@ alter table ECToResidentialGroupMapping
       on delete cascade;
 
 alter table ECToResidentialGroupMapping
-   add constraint FK_ECToResGroupMap_YukonGroup foreign key (GroupId)
-      references YukonGroup (GroupID)
+   add constraint FK_ECToResGroupMap_UserGroup foreign key (UserGroupId)
+      references UserGroup (UserGroupId)
       on delete cascade;
 
 alter table ECToRouteMapping

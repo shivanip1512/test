@@ -110,6 +110,78 @@ ALTER TABLE YukonUserGroup_Old
     DROP CONSTRAINT FK_YUKONUSE_REF_YKUSG_YUKONUSE;
 /* End YUK-11015 */
 
+/* Start YUK-11298 */
+/* Converting ECToOperatorGroupMapping to use user groups instead of role groups. */
+ALTER TABLE ECToOperatorGroupMapping
+   DROP CONSTRAINT FK_ECToOpGroupMap_EC;
+ALTER TABLE ECToOperatorGroupMapping
+   DROP CONSTRAINT FK_ECToOpGroupMap_YukonGroup;
+GO
+
+SP_RENAME 'ECToOperatorGroupMapping', 'ECToOperatorGroupMap_Delete';
+ALTER TABLE ECToOperatorGroupMap_Delete
+   DROP CONSTRAINT PK_ECToOpGroupMap;
+
+/* Create new ECToOperatorGroupMapping table with data. */
+CREATE TABLE ECToOperatorGroupMapping ( 
+   EnergyCompanyId NUMERIC NOT NULL, 
+   UserGroupId NUMERIC NOT NULL, 
+   CONSTRAINT PK_ECToOpGroupMap PRIMARY KEY (EnergyCompanyId, UserGroupId) 
+); 
+
+ALTER TABLE ECToOperatorGroupMapping 
+    ADD CONSTRAINT FK_ECToOpGroupMap_UserGroup FOREIGN KEY (UserGroupId) 
+        REFERENCES UserGroup (UserGroupId) 
+            ON DELETE CASCADE; 
+
+ALTER TABLE ECToOperatorGroupMapping 
+    ADD CONSTRAINT FK_ECToOpGroupMap_EC FOREIGN KEY (EnergyCompanyId) 
+        REFERENCES EnergyCompany (EnergyCompanyId) 
+            ON DELETE CASCADE; 
+
+INSERT INTO ECToOperatorGroupMapping
+SELECT DISTINCT ECOGM.EnergyCompanyId, UGYGM.UserGroupId
+FROM ECToOperatorGroupMap_Delete ECOGM
+  JOIN UserGroupToYukonGroupMapping UGYGM ON ECOGM.GroupId = UGYGM.GroupId;
+
+DROP TABLE ECToOperatorGroupMap_Delete;
+
+/* Converting ECToResidentialGroupMapping to use user groups instead of role groups. */
+ALTER TABLE ECToResidentialGroupMapping
+   DROP CONSTRAINT FK_ECToResGroupMap_EC;
+ALTER TABLE ECToResidentialGroupMapping
+   DROP CONSTRAINT FK_ECToResGroupMap_YukonGroup;
+GO
+
+SP_RENAME 'ECToResidentialGroupMapping', 'ECToResidentialGroupMap_delete';
+ALTER TABLE ECToResidentialGroupMap_delete
+   DROP CONSTRAINT PK_ECToResGroupMap;
+
+/* Create new ECToResidentialGroupMapping table with data. */
+CREATE TABLE ECToResidentialGroupMapping ( 
+   EnergyCompanyId NUMERIC NOT NULL, 
+   UserGroupId NUMERIC NOT NULL, 
+   CONSTRAINT PK_ECToResGroupMap PRIMARY KEY (EnergyCompanyId, UserGroupId) 
+); 
+
+ALTER TABLE ECToResidentialGroupMapping 
+    ADD CONSTRAINT FK_ECToResGroupMap_UserGroup FOREIGN KEY (UserGroupId) 
+        REFERENCES UserGroup (UserGroupId) 
+            ON DELETE CASCADE; 
+
+ALTER TABLE ECToResidentialGroupMapping 
+    ADD CONSTRAINT FK_ECToResGroupMap_EC FOREIGN KEY (EnergyCompanyId) 
+        REFERENCES EnergyCompany (EnergyCompanyId) 
+            ON DELETE CASCADE; 
+
+INSERT INTO ECToResidentialGroupMapping
+SELECT DISTINCT ECRGM.EnergyCompanyId, UGYGM.UserGroupId
+FROM ECToResidentialGroupMap_delete ECRGM
+  JOIN UserGroupToYukonGroupMapping UGYGM ON ECRGM.GroupId = UGYGM.GroupId;
+
+DROP TABLE ECToResidentialGroupMap_delete;
+/* End YUK-11298 */
+    
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

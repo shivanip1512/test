@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/9/2012 6:12:21 PM                          */
+/* Created on:     8/16/2012 2:28:42 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -4633,8 +4633,8 @@ go
 /*==============================================================*/
 create table ECToOperatorGroupMapping (
    EnergyCompanyId      numeric              not null,
-   GroupId              numeric              not null,
-   constraint PK_ECToOpGroupMap primary key nonclustered (EnergyCompanyId, GroupId)
+   UserGroupId          numeric              not null,
+   constraint PK_ECToOpGroupMap primary key nonclustered (EnergyCompanyId, UserGroupId)
 )
 go
 
@@ -4643,8 +4643,8 @@ go
 /*==============================================================*/
 create table ECToResidentialGroupMapping (
    EnergyCompanyId      numeric              not null,
-   GroupId              numeric              not null,
-   constraint PK_ECToResGroupMap primary key nonclustered (EnergyCompanyId, GroupId)
+   UserGroupId          numeric              not null,
+   constraint PK_ECToResGroupMap primary key nonclustered (EnergyCompanyId, UserGroupId)
 )
 go
 
@@ -11660,8 +11660,8 @@ alter table ECToOperatorGroupMapping
 go
 
 alter table ECToOperatorGroupMapping
-   add constraint FK_ECToOpGroupMap_YukonGroup foreign key (GroupId)
-      references YukonGroup (GroupID)
+   add constraint FK_ECToOpGroupMap_UserGroup foreign key (UserGroupId)
+      references UserGroup (UserGroupId)
          on delete cascade
 go
 
@@ -11672,8 +11672,8 @@ alter table ECToResidentialGroupMapping
 go
 
 alter table ECToResidentialGroupMapping
-   add constraint FK_ECToResGroupMap_YukonGroup foreign key (GroupId)
-      references YukonGroup (GroupID)
+   add constraint FK_ECToResGroupMap_UserGroup foreign key (UserGroupId)
+      references UserGroup (UserGroupId)
          on delete cascade
 go
 
