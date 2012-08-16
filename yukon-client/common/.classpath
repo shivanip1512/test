@@ -335,8 +335,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/jsch-0.1.44.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/bcpkix-jdk15on-147.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/bcprov-jdk15on-147.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/guava-11.0.1.jar" sourcepath="/third-party/linked-sources/guava-11.0.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -398,6 +396,16 @@
         </attributes>
     </classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/jasypt-1.9.0.jar" sourcepath="/third-party/linked-sources/jasypt-1.9.0-sources.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="/third-party/bcprov-jdk15on-147.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>	
+	<classpathentry exported="true" kind="lib" path="/third-party/bcpkix-jdk15on-147.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
