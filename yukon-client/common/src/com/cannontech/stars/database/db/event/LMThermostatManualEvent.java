@@ -22,8 +22,8 @@ public class LMThermostatManualEvent extends DBPersistent {
 	private String holdTemperature = new String("N");
 	private Integer operationStateID = new Integer(CtiUtilities.NONE_ZERO_ID);
 	private Integer fanOperationID = new Integer(CtiUtilities.NONE_ZERO_ID);
-	private Double previousCoolTemperature = new Double(0.0);
-    private Double previousHeatTemperature = new Double(0.0);
+	private Double previousCoolTemperature = 0.0;
+    private Double previousHeatTemperature = 0.0;
 	
 	public static final String[] SETTER_COLUMNS = {
 		"InventoryID", "HoldTemperature", "OperationStateID", "FanOperationID", "PreviousCoolTemperature", "PreviousHeatTemperature"
