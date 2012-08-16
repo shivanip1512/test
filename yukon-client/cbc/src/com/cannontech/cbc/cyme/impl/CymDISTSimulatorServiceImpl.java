@@ -1,8 +1,6 @@
 package com.cannontech.cbc.cyme.impl;
 
-import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -11,12 +9,8 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.log4j.Logger;
-import org.jdom.Document;
 import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
@@ -29,6 +23,7 @@ import com.cannontech.cbc.cyme.CymeResultCap;
 import com.cannontech.cbc.cyme.impl.PointStateHelper.BankState;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -43,9 +38,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.enums.Phase;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -91,7 +84,7 @@ public class CymDISTSimulatorServiceImpl implements CymDISTSimulatorService, Poi
     @PostConstruct
     public void initialize() {
 
-        boolean cymeEnabled = configurationSource.getBoolean("CYME_ENABLED", false);
+        boolean cymeEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.CYME_ENABLED);
 
         if (cymeEnabled) {
             String subBusName = configurationSource.getRequiredString("CYME_INTEGRATION_SUBBUS");

@@ -16,6 +16,7 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.amr.rfn.service.WaitableRfnMeterDisconnectCallback;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -124,7 +125,7 @@ public class RfnMeterDisconnectWidget extends AdvancedWidgetControllerBase {
     }
 
     private boolean isArming() {
-        return configurationSource.getBoolean("RFN_METER_DISCONNECT_ARMING", false);
+        return configurationSource.getBoolean(MasterConfigBooleanKeysEnum.RFN_METER_DISCONNECT_ARMING);
     }
     
 }

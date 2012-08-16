@@ -1,9 +1,12 @@
 package com.cannontech.web.stars.dr.operator.inventory;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListEnum;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
@@ -117,7 +121,7 @@ public class InventoryController {
         MeteringType type = ecRolePropertyDao.getPropertyEnumValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, EnergyCompanyRole.MeteringType.class, energyCompany);
         model.addAttribute("showAddMeter", type == MeteringType.yukon);
         
-        boolean showLinks = configurationSource.getBoolean("DIGI_ENABLED", false);
+        boolean showLinks = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
         model.addAttribute("showLinks", showLinks);
         
         boolean showSearch = rolePropertyDao.checkProperty(YukonRoleProperty.INVENTORY_SEARCH, user);

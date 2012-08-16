@@ -99,8 +99,8 @@ public class RoleAndPropertyDescriptionService {
             // see if it is a supported boolean key in master.cfg
             try {
             	
-            	MasterConfigBooleanKeysEnum.valueOf(someEnumName);
-            	boolean bool = configurationSource.getBoolean(someEnumName, false);
+            	MasterConfigBooleanKeysEnum key = MasterConfigBooleanKeysEnum.valueOf(someEnumName);
+            	boolean bool = configurationSource.getBoolean(key);
             	
                 UserChecker propertyChecker;
                 if (inverted) {

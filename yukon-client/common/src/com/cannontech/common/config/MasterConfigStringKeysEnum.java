@@ -7,5 +7,7 @@ public enum MasterConfigStringKeysEnum {
     RECAPTCHA_PUBLIC_KEY,
     RECAPTCHA_PRIVATE_KEY, 
     YUKON_EXTERNAL_URL,
+    MSP_ALTGROUP_EXTENSION,             //YUK-10787
+    MSP_SUBSTATIONNAME_EXTENSION,       //YUK-10787
     ;
 }

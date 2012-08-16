@@ -21,6 +21,7 @@ import org.joda.time.Period;
 import org.joda.time.ReadableDuration;
 import org.joda.time.ReadablePeriod;
 
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SimplePeriodFormat;
 import com.cannontech.encryption.CryptoException;
@@ -35,7 +36,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     public void reset() {
-        log.debug("reseting");
+        LogHelper.debug(log, "resetting");
         configMap.clear();
     }
 
@@ -46,7 +47,7 @@ public class MasterConfigMap implements ConfigurationSource {
     public void initialize() throws IOException, CryptoException {
         String endl = System.getProperty("line.separator");
         File tmp = File.createTempFile("master", "cfgtmp");
-        log.debug("starting initialization");
+        LogHelper.debug(log, "starting initialization");
         Pattern keyCharPattern = Pattern.compile("^\\s*([^:#\\s]+)\\s*:\\s*([^#]+)\\s*(#.*)*");
         Pattern extCharPattern = Pattern.compile("[^\\p{Print}\n\t\r]");
         Pattern spacePattern = Pattern.compile("\\p{Zs}");
@@ -62,17 +63,17 @@ public class MasterConfigMap implements ConfigurationSource {
             Matcher extCharMatcher = extCharPattern.matcher(line);
 
             if (extCharMatcher.find()) {
-                log.warn(" Line " + lineNum + ": Extended characters found: " + line);
+                LogHelper.warn(log, " Line %d: Extended characters found: %s", lineNum, line);
             }
             line = spacePattern.matcher(line).replaceAll(" ");
             Matcher keyMatcher = keyCharPattern.matcher(line);
             if (keyMatcher.find()) {
-                log.debug("Found line match: " + line);
+                LogHelper.debug(log, "Found line match: %s", line);
                 String key = keyMatcher.group(1);
                 String value = keyMatcher.group(2).trim();
                 String comment = (keyMatcher.group(3) != null) ? keyMatcher.group(3) : ""; // avoid null
                 if (configMap.containsKey(key)) {
-                    log.warn(" Line " + lineNum + ": Duplicate key found while reading Master Config file: " + key);
+                    LogHelper.warn(log, "Line %d: Duplicate key found while reading Master Config file: %s", lineNum, key);
                 }
                 if (MasterConfigCryptoUtils.isSensitiveData(key)) {
                     if (MasterConfigCryptoUtils.isEncrypted(value)) {
@@ -103,25 +104,28 @@ public class MasterConfigMap implements ConfigurationSource {
         }
     }
 
+    @Override
     public String getRequiredString(String key) throws UnknownKeyException {
         if (!configMap.containsKey(key)) {
             throw new UnknownKeyException(key);
         }
         String string = configMap.get(key);
-        log.debug("Returning '" + string + "' for '" + key + "'");
+        LogHelper.debug(log, "Returning '%s' for '%s'", string, key);
         return string;
     }
 
+    @Override
     public String getString(String key) {
         return getString(key, null);
     }
 
+    @Override
     public String getString(String key, String defaultValue) {
         if (!configMap.containsKey(key)) {
             return defaultValue;
         }
         String string = configMap.get(key);
-        log.debug("Returning '" + string + "' for '" + key + "'");
+        LogHelper.debug(log, "Returning '%s' for '%s'", string, key);
         return string;
     }
 
@@ -132,10 +136,7 @@ public class MasterConfigMap implements ConfigurationSource {
 
     @Override
     public int getRequiredInteger(String key) throws UnknownKeyException {
-        if (!configMap.containsKey(key)) {
-            throw new UnknownKeyException(key);
-        }
-        String string = getString(key);
+        String string = getRequiredString(key);
         return Integer.parseInt(string);
     }
 
@@ -175,10 +176,19 @@ public class MasterConfigMap implements ConfigurationSource {
 
         return Boolean.parseBoolean(configMap.get(key));
     }
+    
+    @Override
+    public boolean getBoolean(MasterConfigBooleanKeysEnum key, boolean defaultValue) {
+    	String string = getString(key.name());
+    	if (string == null) {
+    	    return defaultValue;
+    	}
+    	return Boolean.parseBoolean(string);
+    }
 
     @Override
     public boolean getBoolean(MasterConfigBooleanKeysEnum key) {
-        return getBoolean(key.name(), false);
+        return getBoolean(key, false);
     }
 
     @Override

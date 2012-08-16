@@ -19,6 +19,7 @@ import org.springframework.web.client.RestOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.util.WaitableExecutor;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.thirdparty.digi.exception.DigiNotConfiguredException;
@@ -106,7 +107,7 @@ public class DigiPollingServiceImpl {
     
     @PostConstruct
     public void initialize() {
-        boolean runDigi = configurationSource.getBoolean("DIGI_ENABLED", false);
+        boolean runDigi = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
         
         if (runDigi) {
             globalScheduledExecutor = Executors.newScheduledThreadPool(1);

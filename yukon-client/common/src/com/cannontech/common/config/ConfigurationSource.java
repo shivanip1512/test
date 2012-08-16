@@ -21,7 +21,7 @@ public interface ConfigurationSource {
     public String getRequiredString(String key) throws UnknownKeyException;
 
     /**
-     * Returns value of key from the configuration file. Returns a blank string if
+     * Returns value of key from the configuration file. Returns null if
      * the key did not exist in the file.
      * @param key
      * @return the value of the key, or null if the key didn't exist
@@ -29,19 +29,57 @@ public interface ConfigurationSource {
     public String getString(String key);
 
     /**
-     * Returns value of key from the configuration file. Returns a blank string if
+     * Returns value of key from the configuration file. Returns defaultVlaue if
      * the key did not exist in the file.
+     * Preferred method is {@link #getString(MasterConfigStringKeysEnum, String)}
      * @param key
+     * @param defaultValue string value to return if the key does not exist 
      * @return the value of the key, or defaultValue if the key didn't exist
      */
     public String getString(String key, String defaultValue);
 
+    /**
+     * Returns value of key from the configuration file. Returns defaultVlaue if
+     * the key did not exist in the file.
+     * @param key
+     * @param defaultValue String value to return if the key does not exist 
+     * @return the value of the key, or defaultValue if the key didn't exist
+     */
     public String getString(MasterConfigStringKeysEnum key, String defaultValue);
     
+    /**
+     * Returns value of key from the configuration file. Throws an exception if the key did not
+     * exist in the file.
+     * @param key
+     * @throws UnknownKeyException if key didn't exist
+     * @return the value of the key, never null
+     */
     public int getRequiredInteger(String key) throws UnknownKeyException;
-    
+
+    /**
+     * Returns value of key from the configuration file. Returns defaultVlaue if
+     * the key did not exist in the file.
+     * @param key
+     * @param defaultValue int value to return if the key does not exist
+     * @return the value of the key, or defaultValue if the key didn't exist
+     */
     public int getInteger(String key, int defaultValue);
+    
+    /**
+     * Returns value of key from the configuration file. Returns defaultVlaue if
+     * the key did not exist in the file.
+     * @param key
+     * @param defaultValue long value to return if the key does not exist 
+     * @return the value of the key, or defaultValue if the key didn't exist
+     */
     public long getLong(String key, long defaultValue);
+    
+    /**
+     * Returns value of key from the configuration file. Returns null if
+     * the key did not exist in the file.
+     * @param key
+     * @return the value of the key, or null if the key didn't exist
+     */
     public Double getDouble(MasterConfigDoubleKeysEnum key);
     
     /**
@@ -52,14 +90,22 @@ public interface ConfigurationSource {
      * @return the boolean value of the key, or defaultValue if the key didn't exist
      */
     public boolean getBoolean(String key, boolean defaultValue);
+    /**
+     * Returns boolean value of key from the configuration file. Returns a defaultValue if
+     * the key did not exist in the file.
+     * @param key
+     * @param defaultValue boolean value to return if the key does not exist
+     * @return the boolean value of the key, or defaultValue if the key didn't exist
+     */
+    public boolean getBoolean(MasterConfigBooleanKeysEnum key, boolean defaultValue);
 
     /**
      * Returns boolean value of key from the configuration file. Returns false if
      * the key did not exist in the file.
      * @param key
-     * @return the boolean value of the key, or defaultValue if the key didn't exist
+     * @return the boolean value of the key, or false if the key didn't exist
      */
-    public boolean getBoolean(MasterConfigBooleanKeysEnum developmentMode);
+    public boolean getBoolean(MasterConfigBooleanKeysEnum key);
 
     /**
      * <p>Uses the {@link SimplePeriodFormat#getConfigPeriodFormatterWithFallback(DurationFieldType)} style 

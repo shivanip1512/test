@@ -12,6 +12,7 @@ import org.springframework.web.client.RestOperations;
 import com.cannontech.cbc.cyme.CymDISTWebService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 
 public class CymDISTWebServiceImpl implements CymDISTWebService {
@@ -39,7 +40,7 @@ public class CymDISTWebServiceImpl implements CymDISTWebService {
 
     @PostConstruct
     public void initialize() {
-        boolean cymeEnabled = configurationSource.getBoolean("CYME_ENABLED", false);
+        boolean cymeEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.CYME_ENABLED);
 
         if (cymeEnabled) {
             baseCymeURL = configurationSource.getRequiredString("CYME_DIST_BASE_URL");

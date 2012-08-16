@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
@@ -166,11 +167,11 @@ public class DigiSmartUpdateServiceImpl implements ZigbeeUpdateService {
     
     @PostConstruct
     public void initialize() {
-        boolean runDigi = configurationSource.getBoolean("DIGI_ENABLED",false);
+        boolean runDigi = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
         smartPolling = false;
         
         if (runDigi) {
-            smartPolling = configurationSource.getBoolean("DIGI_SMARTPOLL_ENABLED", false);
+            smartPolling = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_SMARTPOLL_ENABLED);
             
             if (smartPolling) {
                 smartPollingThread = new SmartRunnable();
