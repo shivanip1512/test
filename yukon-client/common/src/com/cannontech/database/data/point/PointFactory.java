@@ -14,7 +14,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.Point;
@@ -456,16 +455,20 @@ public final class PointFactory {
             Vector<CalcComponent> calcComponents = new Vector<CalcComponent>();
             Integer pointId = point.getPoint().getPointID();
             for (CalcPointComponent calcPointComponent : calcPoint.getComponents()) {
-                if (calcPointComponent.getPointId() == null) {
+                Integer componentPointId = calcPointComponent.getPointId();
+                if (componentPointId == null) {
                     // If this CalcPointComponent's pointId isn't set by now... we assume it's
                     // pointIdentifier refers to this same paoIdentifier
                     LitePoint litePoint =
                         pointDao.getLitePoint(new PaoPointIdentifier(paoIdentifier,
                                                                      calcPointComponent
                                                                          .getPointIdentifier()));
-                    calcPointComponent.setPointId(litePoint.getPointID());
+                    componentPointId = litePoint.getPointID();
+                } else {
+                    // We are done with this value. Clear it out.
+                    // TODO: make this thing not be stateful like this
+                    calcPointComponent.setPointId(null);
                 }
-                Integer componentPointId = calcPointComponent.getPointId();
                 String componentType = calcPointComponent.getCalcComponentType();
                 String operation = calcPointComponent.getOperation();
 

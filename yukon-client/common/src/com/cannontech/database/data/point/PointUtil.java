@@ -314,13 +314,17 @@ public class PointUtil {
         int order = 1;
         List<CalcComponent> calcComponents = Lists.newArrayListWithExpectedSize(pointTemplate.getCalcPointInfo().getComponents().size());
         for (CalcPointComponent calcPointComponent: pointTemplate.getCalcPointInfo().getComponents()) {
-            if (calcPointComponent.getPointId() == null) {
+            Integer componentPointId = calcPointComponent.getPointId();
+            if (componentPointId == null) {
                 // If this CalcPointComponent's pointId isn't set by now... we assume it's pointIdentifier refers to this same paoIdentifier
                 YukonPao yukonPao = paoDao.getYukonPao(calcPoint.getPoint().getPaoID());
                 LitePoint litePoint = pointDao.getLitePoint(new PaoPointIdentifier(yukonPao.getPaoIdentifier(), calcPointComponent.getPointIdentifier()));
-                calcPointComponent.setPointId(litePoint.getPointID());
+                componentPointId = litePoint.getPointID();
+            } else {
+                // We are done with this value. Clear it out.
+                // TODO: make this thing not be stateful like this
+                calcPointComponent.setPointId(null);
             }
-            Integer componentPointId = calcPointComponent.getPointId();
             String componentType = calcPointComponent.getCalcComponentType();
             String operation = calcPointComponent.getOperation();
             
