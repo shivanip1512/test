@@ -67,6 +67,7 @@ public class PoolManager {
         
         String rwDllName = configSource.getString("DB_RWDBDLL");
         String dbTypeName = configSource.getString("DB_TYPE");
+        boolean dbSsl = configSource.getBoolean("DB_SSL_ENABLED", false);
         DatabaseVendor dbType = null;
         
         //This establishes the precedence of DB_TYPE over DB_RWDBDLL
@@ -103,6 +104,10 @@ public class PoolManager {
             }
             url.append(host);
             url.append(":1433;APPNAME=yukon-client;TDS=8.0");
+            //setup the connection for SSL
+            if(dbSsl){
+            	url.append(";ssl=require;socketKeepAlive=true");
+            }
             log.debug("Found MSSQL, url=" + url);
             return new ConnectionDescription(url.toString(), dbType);
         }
