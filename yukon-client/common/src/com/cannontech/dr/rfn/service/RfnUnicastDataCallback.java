@@ -1,10 +1,10 @@
 package com.cannontech.dr.rfn.service;
 
-import com.cannontech.amr.rfn.service.RfnCallback;
+import com.cannontech.common.rfn.service.Callback;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReplyType;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
 
-public interface RfnUnicastDataCallback extends RfnCallback {
+public interface RfnUnicastDataCallback extends Callback {
 
     /**
      * Method to track data returned from a successful request.  Could be anything,

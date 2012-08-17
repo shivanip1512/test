@@ -1,8 +1,9 @@
 package com.cannontech.amr.rfn.service;
 
+import com.cannontech.common.rfn.service.Callback;
 import com.cannontech.core.dynamic.PointValueHolder;
 
-public interface RfnDeviceReadCompletionCallback<T1, T2> extends RfnCallback {
+public interface RfnDeviceReadCompletionCallback<T1, T2> extends Callback {
 	
 	/**
 	 * Method to keep track of received point values.

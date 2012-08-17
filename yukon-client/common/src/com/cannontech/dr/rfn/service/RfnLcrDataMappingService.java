@@ -6,7 +6,7 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.message.dispatch.message.PointData;
 
-public interface RfnLcrPointDataMappingService {
+public interface RfnLcrDataMappingService {
     
     /**
      * This method extracts point data from an incoming RFN LCR message

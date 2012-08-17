@@ -230,15 +230,15 @@ public class MeterController extends MultiActionController {
         boolean configSupported = deviceConfigService.isDeviceConfigAvailable(device.getDeviceType());
         mav.addObject("configSupported", configSupported);
         
-        if(isRFMesh) {
-            mav.addObject("isRFMesh", true);
+        if (isRFMesh) {
+            mav.addObject("showRfMetadata", true);
         }
         
-        if(paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.RFN_EVENTS)) {
+        if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.RFN_EVENTS)) {
             mav.addObject("rfnEventsSupported", true);
         }
         
-        if(paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
+        if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
             mav.addObject("porterCommandRequestsSupported", true);
         }
 

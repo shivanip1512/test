@@ -3,6 +3,7 @@ package com.cannontech.amr.rfn.service;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -49,7 +50,7 @@ public class WaitableRfnDeviceReadCompletionCallback<T1,T2> implements RfnDevice
     }
     
     @Override
-    public void processingExceptionOccured(String message) {
+    public void processingExceptionOccured(MessageSourceResolvable message) {
         log.error(message);
     }
     

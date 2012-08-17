@@ -1,9 +1,9 @@
 package com.cannontech.dr.rfn.service;
 
-import com.cannontech.amr.rfn.service.RfnCallback;
+import com.cannontech.common.rfn.service.Callback;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
 
-public interface RfnUnicastCallback extends RfnCallback {
+public interface RfnUnicastCallback extends Callback {
     
     /**
      * Method to signal that the initial response to the read request

@@ -26,7 +26,7 @@
     <c:choose>
         <c:when test="${not empty currentGroups}">
 
-            <div class="scrollingContainer">
+            <div class="scrollingContainer scrollingContainer_small">
 	            <div style="zoom: 1;">
 		            <table width="100%">
 		                <c:forEach var="group" items="${currentGroups}">

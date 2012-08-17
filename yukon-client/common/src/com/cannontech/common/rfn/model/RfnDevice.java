@@ -47,4 +47,9 @@ public class RfnDevice implements YukonRfn, YukonDevice, DisplayablePao {
         return rfnIdentifier.getSensorSerialNumber();
     }
 
+    @Override
+    public String toString() {
+        return String.format("RfnDevice [rfnIdentifier=%s, paoIdentifier=%s]", rfnIdentifier, paoIdentifier);
+    }
+    
 }

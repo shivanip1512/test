@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
@@ -84,7 +85,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
         } else {
             rfnExpressComMessageService.sendUnicastRequest(request, new RfnUnicastCallback() {
                 @Override
-                public void processingExceptionOccured(String message) {
+                public void processingExceptionOccured(MessageSourceResolvable message) {
                     log.error("Unable to send " + parameters.getType() + ": " + message);
                 }
                 

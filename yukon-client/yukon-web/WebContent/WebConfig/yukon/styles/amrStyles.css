@@ -127,11 +127,6 @@ div.resultBar > div {
     color:#CC0000;
 }
 
-.meterEventsReportLink {
-	margin-left: 10px;
-	float: left;
-}
-
 #eventsFilterForm table.twoColumnLayout {
 	width: 100%;
 }

@@ -8,6 +8,7 @@ import net.sf.jsonOLD.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -46,10 +47,10 @@ public class RfHardwareController {
         WaitableRfnUnicastCallback waitableCallback = new WaitableRfnUnicastCallback(new RfnUnicastCallback() {
 
             @Override
-            public void processingExceptionOccured(String message) {
+            public void processingExceptionOccured(MessageSourceResolvable message) {
                 log.error(message);
                 json.put("success", false);
-                json.put("message", accessor.getMessage(keyBase + "error.readNowProcessingException", message));
+                json.put("message", accessor.getMessage(message));
             }
             
             @Override

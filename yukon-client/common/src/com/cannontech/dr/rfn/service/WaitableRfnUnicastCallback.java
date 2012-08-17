@@ -3,6 +3,7 @@ package com.cannontech.dr.rfn.service;
 import java.util.concurrent.CountDownLatch;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReplyType;
@@ -36,7 +37,7 @@ public class WaitableRfnUnicastCallback implements RfnUnicastCallback {
     }
     
     @Override
-    public void processingExceptionOccured(String message) {
+    public void processingExceptionOccured(MessageSourceResolvable message) {
         log.error(message);
     }
     

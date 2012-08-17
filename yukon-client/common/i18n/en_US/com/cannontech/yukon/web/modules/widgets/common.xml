@@ -18,6 +18,7 @@
 <entry key="yukon.web.widgets.disconnectMeterWidget">Disconnect</entry>
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget">Disconnect</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget">Outages</entry>
+<entry key="yukon.web.widgets.rfnDeviceMetadataWidget">RF Metadata</entry>
 <entry key="yukon.web.widgets.meterOutagesWidget">Outages</entry>
 <entry key="yukon.web.widgets.meterEventsWidget">Meter Events</entry>
 <entry key="yukon.web.widgets.meterInformationWidget">Meter Information</entry>
@@ -26,7 +27,6 @@
 <entry key="yukon.web.widgets.meterReadingsWidget">Meter Readings</entry>
 <entry key="yukon.web.widgets.polyphaseMeterReadingsWidget">Meter Readings</entry>
 <entry key="yukon.web.widgets.waterMeterReadingsWidget">Water Meter Readings</entry>
-<entry key="yukon.web.widgets.rfnMeterInfoWidget">RFN Meter Info</entry>
 <entry key="yukon.web.widgets.miniTdcWidget">Mini TDC</entry>
 <entry key="yukon.web.widgets.profileWidget">Profile Collection</entry>
 <entry key="yukon.web.widgets.pendingProfilesWidget">Pending Profile Collections</entry>
@@ -58,6 +58,7 @@
 <entry key="yukon.web.widgets.disconnectMeterWidget.widgetIdentity">Disconnect {0}</entry>
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget.widgetIdentity">Disconnect {0}</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget.widgetIdentity">Outages {0}</entry>
+<entry key="yukon.web.widgets.rfnDeviceMetadataWidget.widgetIdentity">RF Metadata {0}</entry>
 <entry key="yukon.web.widgets.meterOutagesWidget.widgetIdentity">Outages {0}</entry>
 <entry key="yukon.web.widgets.meterEventsWidget.widgetIdentity">Meter Events {0}</entry>
 <entry key="yukon.web.widgets.meterInformationWidget.widgetIdentity">Meter Information {0}</entry>
@@ -66,7 +67,6 @@
 <entry key="yukon.web.widgets.meterReadingsWidget.widgetIdentity">Meter Readings {0}</entry>
 <entry key="yukon.web.widgets.polyphaseMeterReadingsWidget.widgetIdentity">Meter Readings {0}</entry>
 <entry key="yukon.web.widgets.waterMeterReadingsWidget.widgetIdentity">Water Meter Readings {0}</entry>
-<entry key="yukon.web.widgets.rfnMeterInfoWidget.widgetIdentity">RFN Meter Info {0}</entry>
 <entry key="yukon.web.widgets.miniTdcWidget.widgetIdentity">Mini TDC {0}</entry>
 <entry key="yukon.web.widgets.profileWidget.widgetIdentity">Profile Collection {0}</entry>
 <entry key="yukon.web.widgets.pendingProfilesWidget.widgetIdentity">Pending Profile Collections {0}</entry>

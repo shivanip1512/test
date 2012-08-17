@@ -63,11 +63,13 @@ public class WaterMeterController {
         String cisInfoWidgetName = multispeakFuncs.getCisDetailWidget(user);
         mav.addObject("cisInfoWidgetName", cisInfoWidgetName);
         
-        if(device.getDeviceType().getPaoClass() == PaoClass.RFMESH) {
+        boolean isRfMesh = device.getDeviceType().getPaoClass() == PaoClass.RFMESH;
+        if (isRfMesh) {
             mav.addObject("isRFMesh", true);
+            mav.addObject("showRfMetadata", true);
         }
         
-        if(paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
+        if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
             mav.addObject("porterCommandRequestsSupported", true);
         }
         

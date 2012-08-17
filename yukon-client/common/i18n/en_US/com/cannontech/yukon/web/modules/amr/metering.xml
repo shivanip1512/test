@@ -34,10 +34,6 @@
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.recentReadings">Recent Readings (since {0})</entry>
     <entry key="yukon.web.widgetClasses.MeterReadingsWidget.dailyReadings">Daily readings (before {0})</entry>
 
-    <!-- common/rfnMeterReadingsResult.jsp -->
-    <entry key="yukon.web.widgets.rfnMeterInfoWidget.errorSending">There was an error sending the read request:</entry>
-    <entry key="yukon.web.widgets.rfnMeterInfoWidget.successSending">Read request sent successfully.</entry>
-    
     <!-- accountInformationWidget/accountInfo.jsp -->
     <entry key="yukon.web.widgets.accountInformationWidget.noVendor">No primary CIS vendor set.</entry>
     <entry key="yukon.web.widgets.accountInformationWidget.viewDetails">View CIS Details</entry>

@@ -106,14 +106,6 @@ a.tierIconLink {
     vertical-align: top;
 }
 
-.warningColor {
-	color: #F09100;
-}
-
-.warning {
-	color: #F09100;
-}
-
 #capBankTable tr.hover {
     background-color:yellow;
 }

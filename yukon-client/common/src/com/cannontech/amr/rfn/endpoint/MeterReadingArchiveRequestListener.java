@@ -38,7 +38,7 @@ public class MeterReadingArchiveRequestListener extends RfnArchiveRequestListene
         }
         
         @Override
-        public void processPointDatas(RfnDevice rfnDevice, RfnMeterReadingArchiveRequest archiveRequest) {
+        public void processData(RfnDevice rfnDevice, RfnMeterReadingArchiveRequest archiveRequest) {
             RfnMeterPlusReadingData meterPlusReadingData = new RfnMeterPlusReadingData(new RfnMeter(rfnDevice.getPaoIdentifier(), rfnDevice.getRfnIdentifier()), archiveRequest.getData());
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
             rfnMeterReadService.processMeterReadingDataMessage(meterPlusReadingData, messagesToSend);

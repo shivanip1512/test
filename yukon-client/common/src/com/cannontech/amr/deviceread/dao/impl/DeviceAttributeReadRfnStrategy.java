@@ -138,9 +138,8 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             }
             
             @Override
-            public void processingExceptionOccured(String message) {
-                MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.exception", message);
-                DeviceAttributeReadError exception = new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, summary);
+            public void processingExceptionOccured(MessageSourceResolvable message) {
+                DeviceAttributeReadError exception = new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, message);
                 delegateCallback.receivedException(exception);
             }
 

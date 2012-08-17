@@ -1058,6 +1058,14 @@ ul.errorMessage {
 	margin-bottom:  15px;
 }
 
+.warningColor {
+    color: #F09100;
+}
+
+.warning {
+    color: #F09100;
+}
+
 .warningMessage {
     color:#CC0000;
     font-style: italic;
@@ -1865,7 +1873,14 @@ div.scrollingContainer {
     border-top:1px solid #CCC;
     border-bottom:1px solid #CCC;
 	overflow: auto;
-	max-height: 160px;
+}
+
+div.scrollingContainer_small {
+    max-height: 160px;
+}
+
+div.scrollingContainer_medium {
+    max-height: 300px;
 }
 
 /* FIELD HELPER (fieldHelper.js) */
@@ -2190,4 +2205,10 @@ input.timePicker {
 
 input.dateTimePicker {
 /* 	width:  */
+}
+
+a.showAll {
+    margin-left: 10px;
+    float: left;
+    text-decoration: underline;
 }

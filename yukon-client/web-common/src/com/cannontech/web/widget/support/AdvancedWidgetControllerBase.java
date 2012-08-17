@@ -14,7 +14,7 @@ public abstract class AdvancedWidgetControllerBase implements WidgetDefinitionBe
     
     private String shortName;
     private String title;
-    private static final String keyPrefix = "yukon.web.widgets.";
+    private final String keyPrefix = "yukon.web.widgets.";
     private String identityPath;
     private boolean lazyLoad = false;
     private Set<WidgetInput> inputs;

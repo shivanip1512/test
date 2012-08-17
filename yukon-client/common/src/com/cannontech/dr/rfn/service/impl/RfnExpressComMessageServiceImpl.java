@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
@@ -29,6 +30,7 @@ import com.cannontech.dr.rfn.service.RawExpressComCommandBuilder;
 import com.cannontech.dr.rfn.service.RfnExpressComMessageService;
 import com.cannontech.dr.rfn.service.RfnUnicastCallback;
 import com.cannontech.dr.rfn.service.RfnUnicastDataCallback;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
@@ -60,7 +62,9 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
             @Override
             public void handleException(Exception e) {
-                callback.processingExceptionOccured(e.getMessage());
+                MessageSourceResolvable message = 
+                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.common.rfnExpressComMessage.error", e.toString());
+                callback.processingExceptionOccured(message);
             }
 
             @Override
@@ -103,7 +107,9 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
             @Override
             public void handleException(Exception e) {
-                callback.processingExceptionOccured(e.getMessage());
+                MessageSourceResolvable message = 
+                        YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.common.rfnExpressComMessage.error", e.toString());
+                callback.processingExceptionOccured(message);
             }
 
             @Override
@@ -216,7 +222,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
         request.setRfnMessageClass(RfnMessageClass.DR);
         
         sendUnicastDataRequest(request, new RfnUnicastDataCallback() {
-            @Override public void processingExceptionOccured(String message) {
+            @Override public void processingExceptionOccured(MessageSourceResolvable message) {
                 delegateCallback.processingExceptionOccured(message);
             }
             @Override public void complete() {

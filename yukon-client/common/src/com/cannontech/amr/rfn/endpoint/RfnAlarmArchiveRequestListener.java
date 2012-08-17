@@ -39,7 +39,7 @@ public class RfnAlarmArchiveRequestListener extends RfnArchiveRequestListenerBas
         }
 
         @Override
-        protected void processPointDatas(RfnDevice device, RfnAlarmArchiveRequest archiveRequest) {
+        protected void processData(RfnDevice device, RfnAlarmArchiveRequest archiveRequest) {
             /** Only process events for meters at this time */
             if (device.getPaoIdentifier().getPaoType().isMeter()) {
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);

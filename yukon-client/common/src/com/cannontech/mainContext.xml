@@ -159,6 +159,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/dr/optOut</value>
                <value>classpath:com/cannontech/yukon/web/modules/dr/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/disconnectMeterWidget</value>
+               <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnDeviceMetadataWidget</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnMeterDisconnectWidget</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnOutagesWidget</value>
                <value>classpath:com/cannontech/yukon/web/modules/widgets/meterEventsWidget</value>
@@ -319,8 +320,9 @@
     <bean id="rfnDeviceLookupService" class="com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl"/>
     <bean id="rfnDeviceCreationService" class="com.cannontech.common.rfn.service.impl.RfnDeviceCreationServiceImpl"/>
     <bean id="rfnExpressComMessageService" class="com.cannontech.dr.rfn.service.impl.RfnExpressComMessageServiceImpl"/>
-    <bean id="rfnLcrPointDataMappingService" class="com.cannontech.dr.rfn.service.impl.RfnLcrPointDataMappingServiceImpl"/>
+    <bean id="rfnLcrDataMappingService" class="com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RawExpressComCommandBuilderImpl"/>
+    <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceMetadataServiceImpl"/>
 
     <bean id="bulkPointDataInjectionService" class="com.cannontech.development.impl.BulkPointDataInjectionServiceImpl"/>
 </beans>

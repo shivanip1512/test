@@ -73,5 +73,7 @@
 <entry key="yukon.common.attributeGroups.RFN_OTHER_EVENT">Other Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_SOFTWARE_EVENT">Software Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_VOLTAGE_EVENT">Voltage Events</entry>
+
+<entry key="yukon.web.common.rfnExpressComMessage.error">RF ExpressCom message error: {0}</entry>
         
 </properties>

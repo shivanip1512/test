@@ -1,8 +1,5 @@
 package com.cannontech.dr.rfn.endpoint;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -13,9 +10,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -38,7 +32,7 @@ import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveResponse;
 import com.cannontech.dr.rfn.service.ExiParsingService;
-import com.cannontech.dr.rfn.service.RfnLcrPointDataMappingService;
+import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.core.service.YukonEnergyCompanyService;
@@ -58,7 +52,7 @@ import com.google.common.collect.Lists;
 public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerBase<RfnLcrArchiveRequest> {
     
     @Autowired ResourceLoader loader;
-    @Autowired RfnLcrPointDataMappingService rfnLcrPointDataMappingService;
+    @Autowired RfnLcrDataMappingService rfnLcrDataMappingService;
     @Autowired ExiParsingService exiParsingService;
     @Autowired PaoDao paoDao;
     @Autowired PointDao pointDao;
@@ -82,7 +76,7 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
         }
         
         @Override
-        public void processPointDatas(RfnDevice rfnDevice, RfnLcrArchiveRequest archiveRequest) {
+        public void processData(RfnDevice rfnDevice, RfnLcrArchiveRequest archiveRequest) {
             if (archiveRequest instanceof RfnLcrReadingArchiveRequest) {
                 RfnLcrReadingArchiveRequest readingArchiveRequest = ((RfnLcrReadingArchiveRequest) archiveRequest);
                 InputStream informingSchema = null;
@@ -102,7 +96,7 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
                     throw new RuntimeException();
                 }
                 
-                messagesToSend = rfnLcrPointDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
+                messagesToSend = rfnLcrDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
                 
                 dynamicDataSource.putValues(messagesToSend);
                 archivedReadings.addAndGet(messagesToSend.size());

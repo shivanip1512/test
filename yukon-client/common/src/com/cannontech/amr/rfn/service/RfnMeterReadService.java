@@ -8,6 +8,7 @@ import javax.jms.ConnectionFactory;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.rfn.message.read.ChannelData;
 import com.cannontech.amr.rfn.message.read.ChannelDataStatus;
@@ -30,6 +31,7 @@ import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Lists;
 
@@ -85,7 +87,8 @@ public class RfnMeterReadService {
 
             @Override
             public void handleException(Exception e) {
-                callback.processingExceptionOccured(e.getMessage());
+                MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.exception", e.getMessage());
+                callback.processingExceptionOccured(summary);
             }
 
             @Override

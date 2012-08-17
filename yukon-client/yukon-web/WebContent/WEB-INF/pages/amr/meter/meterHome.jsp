@@ -26,10 +26,10 @@
                         </c:otherwise>
                     </c:choose>
 
-                    <c:if test="${isRFMesh_JUST_HIDE_FOR_NOW}">
-                        <ct:widget bean="rfnMeterInfoWidget" />
+                    <c:if test="${showRfMetadata}">
+                        <ct:widget bean="rfnDeviceMetadataWidget"/>
                     </c:if>
-                    
+
 					<c:if test="${cisInfoWidgetName != null}">
 						<ct:widget bean="${cisInfoWidgetName}" />
 					</c:if>

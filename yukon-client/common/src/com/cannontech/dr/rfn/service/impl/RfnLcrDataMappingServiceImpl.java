@@ -25,25 +25,25 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.model.RfnLcrPointDataMap;
 import com.cannontech.dr.rfn.model.RfnLcrRelayDataMap;
-import com.cannontech.dr.rfn.service.RfnLcrPointDataMappingService;
+import com.cannontech.dr.rfn.service.RfnLcrDataMappingService;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMappingService {
+public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
+    
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
 
-    private static final Logger log = YukonLogManager.getLogger(RfnLcrPointDataMappingServiceImpl.class);    
+    private static final Logger log = YukonLogManager.getLogger(RfnLcrDataMappingServiceImpl.class);    
 
-    public List<PointData> mapPointData(RfnLcrReadingArchiveRequest archiveRequest, 
-            SimpleXPathTemplate decodedMessage) {
+    public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate message) {
         
         List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrPointDataMap> rfnLcrPointDataMap = Sets.newHashSet();
 
-        RfnDevice device = rfnDeviceLookupService.getDevice(archiveRequest.getRfnIdentifier());
+        RfnDevice device = rfnDeviceLookupService.getDevice(request.getRfnIdentifier());
 
         rfnLcrPointDataMap = RfnLcrPointDataMap.getRelayMapByPaoType(device.getPaoIdentifier().getPaoType());
         
@@ -64,7 +64,7 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
                         ") does not exist for device: " + device.getName());
                 continue;
             }
-            Double value = evaluateArchiveReadValue(decodedMessage, entry);
+            Double value = evaluateArchiveReadValue(message, entry);
             if (value != null) {
                 if (entry.getAttribute() == BuiltInAttribute.SERVICE_STATUS) {
                     /** Adjust value for state group 'LCR Service Status'
@@ -80,14 +80,14 @@ public class RfnLcrPointDataMappingServiceImpl implements RfnLcrPointDataMapping
                     }
                 }
                 Integer pointTypeId = paoPointIdentifier.getPointIdentifier().getPointType().getPointTypeId();
-                Long timeInSec = decodedMessage.evaluateAsLong("/DRReport/@utc");
+                Long timeInSec = message.evaluateAsLong("/DRReport/@utc");
                 Date timeOfReading = new Instant(timeInSec * 1000).toDate();
                 PointData pointData = createPointData(pointId, pointTypeId, timeOfReading, value);
                 messagesToSend.add(pointData);
             }
         }
         
-        List<PointData> intervalData = mapIntervalData(archiveRequest, decodedMessage, device);
+        List<PointData> intervalData = mapIntervalData(request, message, device);
         messagesToSend.addAll(intervalData);
         
         return messagesToSend;

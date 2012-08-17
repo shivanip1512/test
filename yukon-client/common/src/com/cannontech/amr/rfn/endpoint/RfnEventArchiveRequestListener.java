@@ -39,7 +39,7 @@ public class RfnEventArchiveRequestListener extends RfnArchiveRequestListenerBas
         }
 
         @Override
-        protected void processPointDatas(RfnDevice device, RfnEventArchiveRequest eventRequest) {
+        protected void processData(RfnDevice device, RfnEventArchiveRequest eventRequest) {
             /** Only process events for meters at this time */
             if (device.getPaoIdentifier().getPaoType().isMeter()) {
                 List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(3);
