@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="yukon.web.jqGrid.defaults.recordText">View {0} - {1} of {2}</entry>
+    <entry key="yukon.web.jqGrid.defaults.emptyRecords">No records to view</entry>
+    <entry key="yukon.web.jqGrid.defaults.loadText">Loading...</entry>
+    <entry key="yukon.web.jqGrid.defaults.pgText">Page {0} of {1}</entry>
+
+    <entry key="yukon.web.jqGrid.search.caption">Search...</entry>
+    <entry key="yukon.web.jqGrid.search.find">Find</entry>
+    <entry key="yukon.web.jqGrid.search.reset">Reset</entry>
+    <entry key="yukon.web.jqGrid.search.odata">['equal', 'not equal', 'less', 'less or equal','greater','greater or equal', 'begins with','does not begin with','is in','is not in','ends with','does not end with','contains','does not contain']</entry>
+    <entry key="yukon.web.jqGrid.search.groupOps">[	{ op: "AND", text: "all" },	{ op: "OR",  text: "any" }	]</entry>
+    <entry key="yukon.web.jqGrid.search.matchText">match</entry>
+    <entry key="yukon.web.jqGrid.search.rulesText">rules</entry>
+
+    <entry key="yukon.web.jqGrid.edit.addCaption">Add Record</entry>
+    <entry key="yukon.web.jqGrid.edit.editCaption">Edit Record</entry>
+    <entry key="yukon.web.jqGrid.edit.bSubmit">Submit</entry>
+    <entry key="yukon.web.jqGrid.edit.bCancel">Cancel</entry>
+    <entry key="yukon.web.jqGrid.edit.bClose">Close</entry>
+    <entry key="yukon.web.jqGrid.edit.saveData">Data has been changed! Save changes?</entry>
+    <entry key="yukon.web.jqGrid.edit.bYes">Yes</entry>
+    <entry key="yukon.web.jqGrid.edit.bNo">No</entry>
+    <entry key="yukon.web.jqGrid.edit.bExit">Cancel</entry>
+    
+    <entry key="yukon.web.jqGrid.edit.msg.required">Field is required</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.number">Please, enter valid number</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.minValue">value must be greater than or equal to</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.maxValue">value must be less than or equal to</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.email">is not a valid e-mail</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.integer">Please, enter valid integer value</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.date">Please, enter valid date value</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.url">is not a valid URL. Prefix required ('http://' or 'https://')</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.nodefined"> is not defined!</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.novalue"> return value is required!</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.customarray">Custom function should return array!</entry>
+    <entry key="yukon.web.jqGrid.edit.msg.customcheck">Custom function should be present in case of custom checking!</entry>
+
+    <entry key="yukon.web.jqGrid.view.caption">View Record</entry>
+    <entry key="yukon.web.jqGrid.view.bClose">Close</entry>
+
+    <entry key="yukon.web.jqGrid.del.caption">Delete</entry>
+    <entry key="yukon.web.jqGrid.del.msg">Delete selected record(s)?</entry>
+    <entry key="yukon.web.jqGrid.del.bSubmit">Delete</entry>
+    <entry key="yukon.web.jqGrid.del.bCancel">Cancel</entry>
+
+    <entry key="yukon.web.jqGrid.nav.editText"></entry>
+    <entry key="yukon.web.jqGrid.nav.editTitle">Edit selected row</entry>
+    <entry key="yukon.web.jqGrid.nav.addText"></entry>
+    <entry key="yukon.web.jqGrid.nav.addTitle">Add new row</entry>
+    <entry key="yukon.web.jqGrid.nav.deleteText"></entry>
+    <entry key="yukon.web.jqGrid.nav.deleteTitle">Delete selected row</entry>
+    <entry key="yukon.web.jqGrid.nav.searchText"></entry>
+    <entry key="yukon.web.jqGrid.nav.searchTitle">Find records</entry>
+    <entry key="yukon.web.jqGrid.nav.refreshText"></entry>
+    <entry key="yukon.web.jqGrid.nav.refreshTitle">Reload Grid</entry>
+    <entry key="yukon.web.jqGrid.nav.alertCaption">Warning</entry>
+    <entry key="yukon.web.jqGrid.nav.alertText">Please, select row</entry>
+    <entry key="yukon.web.jqGrid.nav.viewText"></entry>
+    <entry key="yukon.web.jqGrid.nav.viewTitle">View selected row</entry>
+
+    <entry key="yukon.web.jqGrid.col.caption">Select columns</entry>
+    <entry key="yukon.web.jqGrid.col.bSubmit">OK</entry>
+    <entry key="yukon.web.jqGrid.col.bCancel">Cancel</entry>
+
+    <entry key="yukon.web.jqGrid.errors.errorCaption">Error</entry>
+    <entry key="yukon.web.jqGrid.errors.noUrl">No URL is set</entry>
+    <entry key="yukon.web.jqGrid.errors.noRecords">No records to process</entry>
+    <entry key="yukon.web.jqGrid.errors.model"><![CDATA[Length of colNames <> colModel!]]></entry>
+
+    <entry key="yukon.web.jqGrid.formatter.integer.thousandsSeparator">,</entry>
+    <entry key="yukon.web.jqGrid.formatter.integer.defaultValue">0</entry>
+
+    <entry key="yukon.web.jqGrid.formatter.number.decimalSeparator">.</entry>
+    <entry key="yukon.web.jqGrid.formatter.number.thousandsSeparator">,</entry>
+    <entry key="yukon.web.jqGrid.formatter.number.decimalPlaces">2</entry>
+    <entry key="yukon.web.jqGrid.formatter.number.defaultValue">0.00</entry>
+
+    <entry key="yukon.web.jqGrid.formatter.currency.decimalSeparator">.</entry>
+    <entry key="yukon.web.jqGrid.formatter.currency.thousandsSeparator">,</entry>
+    <entry key="yukon.web.jqGrid.formatter.currency.decimalPlaces">2</entry>
+    <entry key="yukon.web.jqGrid.formatter.currency.prefix"></entry>
+    <entry key="yukon.web.jqGrid.formatter.currency.suffix"></entry>
+    <entry key="yukon.web.jqGrid.formatter.currency.defaultValue">0.00</entry>
+
+    <entry key="yukon.web.jqGrid.formatter.date.dayNames">["Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat","Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.monthNames">["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec","January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.amPm">["am","pm","AM","PM"]</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.sourceFormat">Y-m-d</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.newFormat">d/m/Y</entry>
+
+    <entry key="yukon.web.jqGrid.formatter.date.masks.ISO8601Long">Y-m-d H:i:s</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.masks.ISO8601Short">Y-m-d</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.masks.shortDate">n/j/Y</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.masks.longDate">l, F d, Y</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.masks.fullDateTime">l, F d, Y g:i:s A</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.masks.monthDay">F d</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.masks.shortTime">g:i A</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.masks.longTime">g:i:s A</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.masks.sortableDateTime">Y-m-d\\TH:i:s</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.masks.universalSortableDateTime">Y-m-d H:i:sO</entry>
+    <entry key="yukon.web.jqGrid.formatter.date.masks.yearMonth">F, Y</entry>
+</properties>

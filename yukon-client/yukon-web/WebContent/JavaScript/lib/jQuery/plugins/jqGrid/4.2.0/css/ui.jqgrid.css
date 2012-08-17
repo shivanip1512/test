@@ -1,5 +1,5 @@
 /*Grid*/
-.ui-jqgrid {position: relative; font-size:11px; border: none !important;} /*  */
+.ui-jqgrid {position: relative; font-size:11px; border: none !important;}
 .ui-jqgrid .ui-jqgrid-view {position: relative;left:0px; top: 0px; padding: 0;}
 /* caption*/
 .ui-jqgrid .ui-jqgrid-titlebar {padding: .3em .2em .2em .3em; margin: 0 -10px 8px; position: relative; border-bottom: solid 1px #ccc;}

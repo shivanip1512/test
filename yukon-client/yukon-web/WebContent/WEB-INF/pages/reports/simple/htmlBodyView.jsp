@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="jqGrid" tagdir="/WEB-INF/tags/jqGrid" %>
+<%@ taglib prefix="grid" tagdir="/WEB-INF/tags/jqGrid" %>
 
 <%-- INPUTS --%>
 <c:if test="${not empty metaInfo}">
@@ -59,7 +59,7 @@
 		</c:if>
 		
 		
-		<jqGrid:reportGrid title="${reportTitle}" 
+		<grid:report title="${reportTitle}" 
             height="${height}" 
             width="${gridWidth}" 
             columnInfo="${columnInfo}" 

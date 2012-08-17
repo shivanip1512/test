@@ -17,7 +17,7 @@
 
 <%--jqGrid --%>
 <cti:includeScript link="JQUERY"/>
-<cti:includeScript link="/JavaScript/lib/jQuery/plugins/jqGrid/4.2.0/js/i18n/grid.locale-en.js"/>
+<cti:includeScript link="/JavaScript/lib/jQuery/plugins/jqGrid/jqgrid.locale.js.jsp"/>
 <cti:includeScript link="JQUERY_GRID"/>
 <cti:includeScript link="JQUERY_GRID_HELPER"/>
 <link rel="stylesheet" type="text/css" media="screen" href="/JavaScript/lib/jQuery/plugins/jqGrid/4.2.0/css/ui.jqgrid.css" />
@@ -36,7 +36,6 @@
         
         jqGridHelper.createGrid({
         	pager: '#${gridId}_pager',
-        	
             id: "${gridId}",
             colModel:  ${cti:jsonString(columnInfo)},
             height: ${pageScope.height},

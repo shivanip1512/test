@@ -172,6 +172,7 @@
                <value>classpath:com/cannontech/yukon/common/device/groupMeterRead</value>
                <value>classpath:com/cannontech/yukon/common/device/scheduledGroupRequestExecution</value>
                <value>classpath:com/cannontech/yukon/common/porterErrors</value>
+               <value>classpath:com/cannontech/yukon/web/js/jqgrid</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateHome</value>
                <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateResults</value>
