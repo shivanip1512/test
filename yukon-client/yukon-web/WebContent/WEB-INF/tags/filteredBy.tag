@@ -16,7 +16,13 @@
 <script>
 jQuery(function() {
     jQuery(".filter_container .icon_small_clear").bind("click", function(e) {
-        jQuery(e.target).parent("div").fadeOut();
+        var clear_icon = jQuery(e.target);
+        var clear_href = clear_icon.attr("href");
+        if (typeof(clear_href) !== 'undefined' && clear_href !== "") {
+            window.location.href = clear_href;
+        } else {
+            clear_icon.parent("a").fadeOut();
+        }
     });
 });
 </script>
@@ -27,7 +33,7 @@ jQuery(function() {
 			<span class="label"><i:inline key="${pageScope.labelKey}"/></span>
 			<span class="value">${pageScope.value}</span>
 			<c:if test="${empty pageScope.isClearable || pageScope.isClearable == 'true'}">
-		        <a href="${pageScope.clearHref}" class="icon_small_clear ${pageScope.clearClass}" title="<cti:msg2 key="yukon.web.defaults.remove"/>"></a>
+		        <i href="${pageScope.clearHref}" class="icon_small_clear ${pageScope.clearClass}" title="<cti:msg2 key="yukon.web.defaults.remove"/>"></i>
 			</c:if>
 		</a>
 	</c:when>
