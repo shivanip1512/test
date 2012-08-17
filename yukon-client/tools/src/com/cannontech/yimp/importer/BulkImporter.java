@@ -182,13 +182,13 @@ public void start() {
 				now = new java.util.Date();
 				
 				if( getNextImportTime().getTime().compareTo(now) <= 0 || isForcedImport()) {
-					log.info("Starting import process.");
+					log.debug("Starting import process.");
 					
 					List<ImportData> importEntries = ImportFuncs.summonImps();
 					
 					//if no importEntries, report this and go back to waiting
 					if(importEntries.size() < 1) {
-						log.info("ImportData table is empty.  No new 410s to import.");
+						log.debug("ImportData table is empty.  No new 410s to import.");
 					}
 					else {
 						//go go go, import away!
