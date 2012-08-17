@@ -177,12 +177,12 @@ Yukon.ThermostatScheduleEditor = {
         	//the following relies on the jquery form plugin
         	form.ajaxSubmit({
         		error: function(xhr, status, err) {
-        			var data = jQuery.parseJSON(xhr.responseText).errors;
+        			var data = jQuery.parseJSON(xhr.responseText);
         			//client errors
-        			if(status >= 400 && status < 500){
+        			if(xhr.status >= 400 && xhr.status < 500){
         				Yukon.ui.unblockPage();
         				Yukon.ThermostatScheduleEditor.clearErrors(form);
-        				var errors = data.errors
+        				var errors = data.errors;
         				for(error in errors){
         					var input = jQuery("input[name="+ error +"]", form);
         					if(input[0]){
