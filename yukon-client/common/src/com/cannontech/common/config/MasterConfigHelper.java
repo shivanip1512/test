@@ -79,7 +79,7 @@ public class MasterConfigHelper {
         interceptor.setServiceUrl(url);
         interceptor.afterPropertiesSet();
         CTILogger.debug("remote configuration interceptor=" + interceptor);
-        ConfigurationSource config = (ConfigurationSource) ProxyFactory.getProxy(ConfigurationSource.class, interceptor);
+        ConfigurationSource config = ProxyFactory.getProxy(ConfigurationSource.class, interceptor);
         return config;
     }
 

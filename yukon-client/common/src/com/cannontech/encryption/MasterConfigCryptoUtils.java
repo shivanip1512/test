@@ -49,7 +49,25 @@ public class MasterConfigCryptoUtils {
      */
     private static char[] getMasterCfgPasskey() throws IOException, CryptoException, JDOMException {
         return CryptoUtils.getPasskeyFromFile(masterCfgCryptoFile);
-    } 
+    }
+    private static AESPasswordBasedCrypto encrypter;
+    static {
+        try {
+            encrypter = new AESPasswordBasedCrypto(getMasterCfgPasskey());
+        } catch (CryptoException e) {
+            // Logging probably hasn't been set up...log to standard error.
+            System.err.println("error creating encryptor");
+            e.printStackTrace(System.err);
+        } catch (IOException e) {
+            // Logging probably hasn't been set up...log to standard error.
+            System.err.println("error creating encryptor");
+            e.printStackTrace(System.err);
+        } catch (JDOMException e) {
+            // Logging probably hasn't been set up...log to standard error.
+            System.err.println("error creating encryptor");
+            e.printStackTrace(System.err);
+        }
+    }
 
     /**
      * Decrypts the input string and returns the plain text value
@@ -60,16 +78,11 @@ public class MasterConfigCryptoUtils {
      * @return valuePlainText : String
      * @throws CryptoException 
      */
-    public static String decryptValue(String valueEncrypted) throws CryptoException {
+    public static synchronized String decryptValue(String valueEncrypted) throws CryptoException {
         String valuePlainText = null;
         try {
             valueEncrypted = StringUtils.deleteWhitespace(valueEncrypted);
-            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(getMasterCfgPasskey());
             valuePlainText = new String(encrypter.decrypt(Hex.decodeHex(valueEncrypted.substring(encryptionIndicator.length()).toCharArray())));
-        }  catch (IOException ioe) {
-            throw new CryptoException(ioe);
-        } catch (JDOMException jde) {
-            throw new CryptoException(jde);
         } catch (DecoderException de) {
             throw new CryptoException(de);
         }
@@ -87,17 +100,10 @@ public class MasterConfigCryptoUtils {
      * @return encryptedValue : String
      * @throws CryptoException 
      */
-    public static String encryptValue(String valuePlaintext) throws CryptoException {
-        String encryptedValue = null;
-        try {
-            valuePlaintext = StringUtils.deleteWhitespace(valuePlaintext);
-            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(getMasterCfgPasskey());
-            encryptedValue = encryptionIndicator + new String(Hex.encodeHex(encrypter.encrypt(valuePlaintext.getBytes())));
-        }  catch (IOException ioe) {
-            throw new CryptoException(ioe);
-        } catch (JDOMException jde) {
-            throw new CryptoException(jde);
-        }
+    public static synchronized String encryptValue(String valuePlaintext) throws CryptoException {
+        valuePlaintext = StringUtils.deleteWhitespace(valuePlaintext);
+        String encryptedValue =
+                encryptionIndicator + new String(Hex.encodeHex(encrypter.encrypt(valuePlaintext.getBytes())));
         return encryptedValue;
     }
 
