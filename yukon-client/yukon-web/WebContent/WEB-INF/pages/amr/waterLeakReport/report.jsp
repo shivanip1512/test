@@ -99,7 +99,7 @@
 			        <cti:item value="${detection_algorithm}"/>
 			        <cti:item value="${click_here}"/>
 			    </cti:list>
-				<cti:msg2 key=".firstVisit" arguments="${arguments}" htmlEscape="false"/>
+				<cti:msg2 key=".firstVisit" arguments="${arguments}" htmlEscapeArguments="false"/>
 			</div>
 		</c:when>
 		<c:when test="${not empty from_toInstant_breach}">
@@ -109,7 +109,7 @@
 					<cti:item value="${from_toInstant_breach}"/>
 					<cti:item value="${reporting_interval}"/>
 				</cti:list>
-				<cti:msg2 key=".filterBetweenFromAndToBreach" arguments="${arguments}" htmlEscape="false"/>
+				<cti:msg2 key=".filterBetweenFromAndToBreach" arguments="${arguments}" htmlEscapeArguments="false"/>
 		    </div>
 		</c:when>
 		<c:when test="${not empty toInstant_now_breach}">
@@ -118,7 +118,7 @@
                     <cti:item value="${current_filter}"/>
 					<cti:item value="${toInstant_now_breach}"/>
 				</cti:list>
-				<cti:msg2 key=".filterBetweenToAndNowBreach" arguments="${arguments}" htmlEscape="false"/>
+				<cti:msg2 key=".filterBetweenToAndNowBreach" arguments="${arguments}" htmlEscapeArguments="false"/>
 		    </div>
 		</c:when>
 		<c:when test="${filterResult.hitCount == 0}">
@@ -127,7 +127,7 @@
                     <cti:item value="${detection_algorithm}"/>
                     <cti:item value="${current_filter}"/>
                 </cti:list>
-				<cti:msg2 key=".noResults" arguments="${arguments}" htmlEscape="false"/>
+				<cti:msg2 key=".noResults" arguments="${arguments}" htmlEscapeArguments="false"/>
 			</div>
 		</c:when>
 		<c:when test="${filterResult.hitCount > 0}">
@@ -137,7 +137,7 @@
                     <cti:item value="${detection_algorithm}"/>
                     <cti:item value="${current_filter}"/>
                 </cti:list>
-				<cti:msg2 key=".foundLeaks" arguments="${arguments}" htmlEscape="false"/>
+				<cti:msg2 key=".foundLeaks" arguments="${arguments}" htmlEscapeArguments="false"/>
 			</div>
 		</c:when>
 	</c:choose>
