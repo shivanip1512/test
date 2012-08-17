@@ -16,6 +16,7 @@ import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -68,7 +69,7 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifyingMess
                 try {
                     T request = inQueue.take();
                     processInitial(request);
-                    log.debug("Proccessed Archive Request on " + this.getName()
+                    log.debug("Proccessed Archive Request for " + request.getRfnIdentifier() + " on " + this.getName()
                               + ", queue size is: " + inQueue.size());
                 } catch (InterruptedException e) {
                     log.warn("received shutdown signal, queue size: " + inQueue.size());
@@ -88,9 +89,18 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifyingMess
                 rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
             } catch (NotFoundException e1) {
                 // looks like we need to create the device
-                rfnDevice = processCreation(archiveRequest, rfnIdentifier);
+                try {
+                    rfnDevice = processCreation(archiveRequest, rfnIdentifier);
+                } catch (RuntimeException e) {
+                    if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)) {
+                        sendAcknowledgement(archiveRequest);
+                        return;
+                    } else {
+                        throw e;
+                    }
+                }
             }
-            processPointDatas(rfnDevice, archiveRequest);
+            processData(rfnDevice, archiveRequest);
         }
 
         protected RfnDevice processCreation(T archiveRequest, RfnIdentifier rfnIdentifier) {
@@ -107,7 +117,7 @@ public abstract class RfnArchiveRequestListenerBase<T extends RfnIdentifyingMess
             }
         }
 
-        protected abstract void processPointDatas(RfnDevice rfnDevice, T archiveRequest);
+        protected abstract void processData(RfnDevice rfnDevice, T archiveRequest);
 
         public void shutdown() {
             // shutdown mechanism assumes that
