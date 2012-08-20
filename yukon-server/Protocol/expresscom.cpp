@@ -1095,6 +1095,20 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
         status = priority((BYTE)parse.getiValue("xcpriority"));
     }
 
+    /*  
+        This applies to beat the peak meters, which need to have this sent as a request message
+        The goal is to treat "command (shed/restore) [$time] btp [$tier]"
+        as "putconfig xcom extended tier $tier [timeout $time]"
+    */
+    if( parse.isKeyValid("btp") )
+    {
+        parse.setCommand(PutConfigRequest);
+        parse.setValue( "xcextier",  true );
+        parse.setValue( "xcextierlevel", parse.getiValue("btp_alert_level") );
+        parse.setValue( "xctiertimeout", parse.getiValue("shed")/60 ); //shed is in seconds, timeout is in minutes
+        
+    }
+
     switch(parse.getCommand())
     {
         case GetValueRequest:

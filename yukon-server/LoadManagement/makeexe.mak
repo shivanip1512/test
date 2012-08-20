@@ -89,6 +89,7 @@ lmutility.obj \
 main.obj \
 sepcyclegear.obj \
 septempoffsetgear.obj \
+lmprogrambeatthepeakgear.obj \
 
 TARGS = loadmanagement.exe
 

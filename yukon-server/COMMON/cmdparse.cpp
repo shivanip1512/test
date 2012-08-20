@@ -4596,6 +4596,19 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
         _cmd["xcmode"] = CtiParseValue( iValue );
     }
 
+    if(CmdStr.contains(" btp"))
+    {
+        _cmd["btp"] = CtiParseValue(true);
+ 
+        if(!(temp = CmdStr.match(" btp [0-9]+")).empty())
+        {
+            if(!(valStr = temp.match(re_num)).empty())
+            {
+                iValue = atoi(valStr.c_str());
+                _cmd["btp_alert_level"] = CtiParseValue( iValue );
+            }
+        }
+    }
 
     if(CmdStr.contains(" rand"))
     {

@@ -6,8 +6,9 @@
 
 #include "lmgroupbase.h"
 #include "observe.h"
+#include "BtpControlInterface.h"
                 
-class CtiLMGroupExpresscom : public CtiLMGroupBase
+class CtiLMGroupExpresscom : public CtiLMGroupBase, public Cti::LoadManagement::BtpControlInterface
 {
 
 public:
@@ -36,6 +37,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupExpresscom )
                                                     LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
                                                     LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
                                                     int priority) const;
+    virtual bool sendBtpControl(int tier, int timeout);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );

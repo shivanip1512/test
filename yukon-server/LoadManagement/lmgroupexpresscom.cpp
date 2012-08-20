@@ -21,7 +21,9 @@
 #include "ctistring.h"
 #include "ctitokenizer.h"
 #include "numstr.h"
+#include "BtpControlInterface.h"
 
+using namespace Cti::LoadManagement;
 using std::string;
 using std::endl;
 
@@ -668,3 +670,41 @@ void CtiLMGroupExpresscom::restore(Cti::RowReader &rdr)
     CtiLMGroupBase::restore(rdr);
 }
 
+bool CtiLMGroupExpresscom::sendBtpControl(int tier, int timeout)
+{
+    std::string command;
+    if(tier == 0)
+    {
+        command = std::string("control restore btp");
+    }
+    else
+    {
+        command = std::string("control shed ");
+        if(timeout != 0)
+        {
+            command += CtiNumStr(timeout).toString() + std::string(" m ");
+        }
+        command +=  "btp "  + CtiNumStr(tier);
+    }
+
+    CtiRequestMsg* msg = CTIDBG_new CtiRequestMsg( getPAOId(), command );
+
+    CtiLoadManager::getInstance()->sendMessageToPIL(msg);
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending BTP command: " << command << endl;
+    }
+
+    setLastControlSent(CtiTime());
+
+    if( getGroupControlState() != CtiLMGroupBase::ActiveState )
+    {
+        setControlStartTime(CtiTime());
+        incrementDailyOps();
+    }
+
+    setGroupControlState(CtiLMGroupBase::ActiveState);
+    return true;
+}

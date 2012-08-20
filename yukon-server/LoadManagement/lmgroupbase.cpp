@@ -418,6 +418,13 @@ const string& CtiLMGroupBase::getLastControlString() const
     return _lastcontrolstring;
 }
 
+/*---------------------------------------------------------------------------
+    Returns whether the group is set to resend a control at currentTime
+---------------------------------------------------------------------------*/
+bool CtiLMGroupBase::readyToControlAt(CtiTime &currentTime) const
+{
+    return ( (_next_control_time > gInvalidCtiTime) &&  (currentTime >= _next_control_time) );
+}
 
 /*---------------------------------------------------------------------------
     setPAOId

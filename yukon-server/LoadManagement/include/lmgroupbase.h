@@ -64,6 +64,7 @@ public:
     virtual LONG getHoursAnnuallyPointId() const;
     virtual LONG getControlStatusPointId() const;
     virtual const std::string& getLastControlString() const;
+    virtual bool readyToControlAt(CtiTime &currentTime) const;
 
     virtual CtiLMGroupBase& setPAOId(LONG id);
     virtual CtiLMGroupBase& setPAOCategory(const std::string& category);

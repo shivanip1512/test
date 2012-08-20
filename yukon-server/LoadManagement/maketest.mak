@@ -88,7 +88,8 @@ lmservice.obj \
 lmutility.obj \
 sepcyclegear.obj \
 septempoffsetgear.obj \
-loadmanager.obj
+loadmanager.obj \
+lmprogrambeatthepeakgear.obj
 
 LOADMANAGEMENT_TEST_FULLBUILD = $[Filename,$(OBJ),LoadManagementTestFullBuild,target]
 

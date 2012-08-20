@@ -63,7 +63,6 @@ private:
     void    doParsePutConfigCBC(const std::string &CmdStr);
 
     void    setFlags(UINT flags);
-    void    setCommand(UINT command);
 
     typedef std::map< std::string, CtiParseValue > map_type;
     typedef std::map< std::string, CtiParseValue >::const_iterator  map_itr_type;
@@ -106,6 +105,8 @@ public:
    CtiCommandParser& setValue(const std::string &key, double val);
    // Should only be called externally, sets externally changed flag
    CtiCommandParser& setValue(const std::string &key, std::string val);
+
+   void setCommand(UINT command);
 
    const std::list< std::string >& getActionItems() const;
 

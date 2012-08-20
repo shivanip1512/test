@@ -56,6 +56,7 @@
 #include "database_writer.h"
 #include "debug_timer.h"
 #include "clistener.h"
+#include "lmprogrambeatthepeakgear.h"
 
 using namespace std;
 using Cti::Database::DatabaseConnection;
@@ -972,9 +973,12 @@ void CtiLMControlAreaStore::reset()
                                                "PDG.backrampoption, PDG.backramptime, TSG.settings, TSG.minvalue, "
                                                "TSG.maxvalue, TSG.valueb, TSG.valued, TSG.valuef, TSG.random, TSG.valueta, "
                                                "TSG.valuetb, TSG.valuetc, TSG.valuetd, TSG.valuete, TSG.valuetf, "
-                                               "TSG.ramprate "
-                                           "FROM lmprogramdirectgear PDG LEFT OUTER JOIN lmthermostatgear TSG ON "
-                                             "PDG.gearid = TSG.gearid "
+                                               "TSG.ramprate, TG.tier "
+                                           "FROM lmprogramdirectgear PDG "
+                                           "LEFT OUTER JOIN lmthermostatgear TSG "
+                                               "ON PDG.gearid = TSG.gearid "
+                                           "LEFT OUTER JOIN lmtiergear TG "
+                                               "ON PDG.gearid = TG.gearid "
                                            "ORDER BY PDG.deviceid ASC, PDG.gearnumber ASC";
 
                 DatabaseReader rdr(connection);
@@ -1013,6 +1017,10 @@ void CtiLMControlAreaStore::reset()
                         {
                             newDirectGear = CTIDBG_new SEPTemperatureOffsetGear(rdr);
                         }
+                    }
+                    else if( ciStringEqual(controlmethod,CtiLMProgramDirectGear::BeatThePeakMethod) )
+                    {
+                        newDirectGear = CTIDBG_new CtiLMProgramBeatThePeakGear(rdr);
                     }
                     else if( rdr["settings"].isNull() )
                     {

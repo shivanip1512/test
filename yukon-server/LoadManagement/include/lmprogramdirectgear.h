@@ -98,6 +98,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const std::string SimpleThermostatRampingMethod;
     static const std::string SEPCycleMethod;
     static const std::string SEPTempOffsetMethod;
+    static const std::string BeatThePeakMethod;
     static const std::string NoControlMethod;
 
     //Possible method stop types

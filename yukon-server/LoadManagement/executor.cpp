@@ -38,6 +38,7 @@
 #include "ctidate.h"
 #include "utility.h"
 #include "GroupControlInterface.h"
+#include "BtpControlInterface.h"
 
 using namespace Cti::LoadManagement;
 using std::vector;
@@ -656,6 +657,14 @@ void CtiLMCommandExecutor::ShedGroup()
                         }
                         else
                         {
+                            /* If the group could have Beat the Peak gears,
+                               then we should send their control message in addition to the regular message
+                             */
+                            if( BtpControlInterfacePtr btpGroup = boost::dynamic_pointer_cast<BtpControlInterface>(currentLMGroup) )
+                            {
+                                btpGroup->sendBtpControl( 4 , shedTime / 60 );
+                            }
+
                             CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(0,shedTime,CtiLMProgramDirect::defaultLMStartPriority);
 
                             if( routeId > 0 )
@@ -837,6 +846,14 @@ void CtiLMCommandExecutor::RestoreGroup()
                         currentLMGroup->setLastControlSent(CtiTime());
                         currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
                         ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
+
+                        /* If the group could have Beat the Peak gears,
+                           then we should send their control message in addition to the regular message
+                         */
+                        if( BtpControlInterfacePtr btpGroup = boost::dynamic_pointer_cast<BtpControlInterface>(currentLMGroup) )
+                        {
+                            btpGroup->sendBtpControl( 0 , 0 );
+                        }
 
                         if( _LM_DEBUG & LM_DEBUG_STANDARD )
                         {

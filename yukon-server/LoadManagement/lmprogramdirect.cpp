@@ -2409,7 +2409,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                 CtiLMControlAreaTrigger* trigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[currentGearObject->getChangeTriggerNumber()-1];
 
                 if( isTriggerCheckNeeded )
-
+                {
                     if( (trigger->getPointValue() >= (trigger->getThreshold() + currentGearObject->getChangeTriggerOffset()) ||
                          trigger->getProjectedPointValue() >= (trigger->getThreshold() + currentGearObject->getChangeTriggerOffset()) ) &&
                         _currentgearnumber+1 < _lmprogramdirectgears.size() )
@@ -2468,6 +2468,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                         hasGearChanged(currentPriority, controlAreaTriggers, currentTime, multiDispatchMsg, isTriggerCheckNeeded);
                         returnBoolean = TRUE;
                     }
+                }
             }
             else if( !getManualControlReceivedFlag() )
             {
@@ -3645,8 +3646,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
         {
             for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
             {
-                if( currentLMGroup->getNextControlTime().seconds() > gInvalidCtiTime &&
-                    currentLMGroup->getNextControlTime().seconds() <= currentTime )
+                if( currentLMGroup->readyToControlAt(currentTime) )
                 {
                     LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
 
@@ -3701,8 +3701,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
                 //Check to see if any groups are ready to be refreshed to ramped in
                 else
                 */
-                if( lm_group->getNextControlTime() > gInvalidCtiTime &&
-                    lm_group->getNextControlTime() <= currentTime &&
+                if( lm_group->readyToControlAt(currentTime) &&
                     (!getIsRampingOut() || (getIsRampingOut() && lm_group->getIsRampingOut())) ) //if the program is ramping out, then only refresh if this group is stillr amping out
                 {
                     // Reset shed time - it could have been modified by constraint process
@@ -4211,8 +4210,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
                 }
                 else
                 {
-                    if( lm_group->getNextControlTime() > gInvalidCtiTime &&
-                        lm_group->getNextControlTime() < currentTime &&
+                    if( lm_group->readyToControlAt(currentTime) &&
                         (!getIsRampingOut() || (getIsRampingOut() && lm_group->getIsRampingOut())) ) //ready to control
                     {
 
@@ -6203,8 +6201,7 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
         CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, currentTime);
         long controlTime = endTime.seconds() - now.seconds(); //Control time left from right now!
 
-        if( currentLMGroup->getNextControlTime() < now &&
-           (currentLMGroup->getNextControlTime() != gInvalidCtiTime || !isRefresh) &&
+        if( (currentLMGroup->readyToControlAt(now) || !isRefresh) &&
             !currentLMGroup->getDisableFlag() &&
             !currentLMGroup->getControlInhibit() &&
             (getConstraintOverride() || con_checker.checkControl(controlTime, true))  )
