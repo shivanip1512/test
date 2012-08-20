@@ -52,22 +52,6 @@ public class CtiCipher
 
 		try
 		{
-			//fix for untrusted sign jar error: rename sunjce_provider.jar extension,
-			//run app, rename jar back to original name
-
-//			System.out.println("   ");
-//			Provider[] p = Security.getProviders();
-//			for( int i = 0; i < p.length; i++ )
-//			{
-//				System.out.println( p[i].getName() );
-//				System.out.println( "prop=" + p[i].getProperty("SecretKeyFactory.PBEWithMD5AndDES") );
-//				
-//				Iterator it = p[i].entrySet().iterator();
-//				while( it.hasNext() )
-//					System.out.println( "   " + it.next().toString() );
-//			}
-//			System.out.println("   ");
-
 
 			SecretKey key = SecretKeyFactory.getInstance(
 					"PBEWithMD5AndDES",
@@ -104,7 +88,10 @@ public class CtiCipher
 		return localCipher;
 	}
 
-
+	@Deprecated
+	/**
+	 * Deprectead. Refer to AESPasswordBasedCrypo.java instead
+	 */
 	public static String encrypt( String str )
 	{
 		try
@@ -125,6 +112,10 @@ public class CtiCipher
 		return null;
 	}
 
+    @Deprecated
+    /**
+     * Deprectead. Refer to AESPasswordBasedCrypo.java instead
+     */
 	public static String decrypt( String str )
 	{
 		try
@@ -144,10 +135,6 @@ public class CtiCipher
 
 		return null;
 	}
-
-
-
-
 
 	public static void main(String[] a)
 	{

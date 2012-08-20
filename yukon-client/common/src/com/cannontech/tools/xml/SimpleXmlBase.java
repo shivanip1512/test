@@ -22,7 +22,7 @@ public class SimpleXmlBase {
         for (String name : names) {
             destElement = setWorkingElement(getWorkingElement().getChild(name));
             if (destElement == null) {
-                // We can go no further :( must stop
+                // We can go no further
                 // Reset the working element back to sourceElement started with
                 // Return null. Note: it is the callers responsibility to check for null
                 setWorkingElement(sourceElement);

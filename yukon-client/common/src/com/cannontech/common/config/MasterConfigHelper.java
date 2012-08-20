@@ -7,18 +7,20 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.encryption.CryptoException;
 
 public class MasterConfigHelper {
-    static private File masterCfgLocation;
+    private static File masterCfgLocation;
     private static String url = null;
+    private static final Logger log = YukonLogManager.getLogger(MasterConfigHelper.class);
+    private static MasterConfigMap localConfig = null;
 
     static {
         URL url =  MasterConfigHelper.class.getClassLoader().getResource("master.cfg");
@@ -28,7 +30,7 @@ public class MasterConfigHelper {
             } catch(URISyntaxException e) {
                 masterCfgLocation = new File(url.getPath());
             }
-            CTILogger.info("Local config found on classpath: " + url);
+            log.info("Local config found on classpath: " + url);
         } else {
             masterCfgLocation = new File(CtiUtilities.getYukonBase(), "Server/Config/master.cfg");
         }
@@ -43,60 +45,62 @@ public class MasterConfigHelper {
         return masterCfgLocation;
     }
 
-    static public ConfigurationSource getLocalConfiguration(){
-        MasterConfigMap config = new MasterConfigMap();
-        // check if on classpath
-        URL url = MasterConfigHelper.class.getClassLoader().getResource("master.cfg");
-        if (url != null) {
-            try {
-                config.setConfigSource(new File(url.toURI()));
-                CTILogger.info("Local config found on classpath: " + url);
-            }  catch (URISyntaxException e) {
-                CTILogger.error("master.cfg appears on the classpath but is unreadable, configuring with full path ", e);
-                config.setConfigSource(getMasterConfig());
-                CTILogger.info("Local config found on filesystem: " + masterCfgLocation);
-            } 
-        } else {
-            config.setConfigSource(getMasterConfig());
-            CTILogger.info("Local config found on filesystem: " + masterCfgLocation);
-        }
+    static public synchronized ConfigurationSource getLocalConfiguration(){
+        if (localConfig == null) {
+            localConfig = new MasterConfigMap();
+            // check if on classpath
+            URL url = MasterConfigHelper.class.getClassLoader().getResource("master.cfg");
+            if (url != null) {
+                try {
+                    localConfig.setConfigSource(new File(url.toURI()));
+                    log.info("Local config found on classpath: " + url);
+                }  catch (URISyntaxException e) {
+                    log.error("master.cfg appears on the classpath but is unreadable, configuring with full path ", e);
+                    localConfig.setConfigSource(getMasterConfig());
+                    log.info("Local config found on filesystem: " + masterCfgLocation);
+                } 
+            } else {
+                localConfig.setConfigSource(getMasterConfig());
+                log.info("Local config found on filesystem: " + masterCfgLocation);
+            }
 
-        try {
-            config.initialize();
-        } catch (CryptoException cae) {
-            Log.error("Severe Error while initializing configuration.",cae);
-        } catch (IOException e) {
-            Log.error("Severe Error while initializing configuration.",e);
+            try {
+                localConfig.initialize();
+            } catch (CryptoException cae) {
+                log.error("Severe Error while initializing configuration. The MasterConfigPasskey.dat file might be invalid. May need to reset encrypted values in master.cfg to plaintext",cae);
+            } catch (IOException e) {
+                log.error("Severe Error while initializing configuration.",e);
+            }
         }
-        return config;
+        return localConfig;
     }
 
-    static public ConfigurationSource getRemoteConfiguration() {
+    public static ConfigurationSource getRemoteConfiguration() {
         if (url == null) {
             throw new BadConfigurationException("can't get remote configuration when url isn't set");
         }
         HttpInvokerClientInterceptor interceptor = new HttpInvokerClientInterceptor();
         interceptor.setServiceUrl(url);
         interceptor.afterPropertiesSet();
-        CTILogger.debug("remote configuration interceptor=" + interceptor);
+        log.debug("remote configuration interceptor=" + interceptor);
         ConfigurationSource config = ProxyFactory.getProxy(ConfigurationSource.class, interceptor);
         return config;
     }
 
-    static public ConfigurationSource getConfiguration() {
+    public static ConfigurationSource getConfiguration() {
         if (url != null) {
-            CTILogger.debug("Returning remote config");
+            log.debug("Returning remote config");
             return getRemoteConfiguration();
         } else {
-            CTILogger.debug("Returning local config");
+            log.debug("Returning local config");
             return getLocalConfiguration();
         }
     }
 
-    static public void setRemoteHostAndPort(String host, String userName, String password) {
+    public static void setRemoteHostAndPort(String host, String userName, String password) {
         try {
             url = host + "/remote/MasterConfig?" + "USERNAME=" + URLEncoder.encode(userName, "UTF-8") + "&PASSWORD=" + URLEncoder.encode(password, "UTF-8") + "&noLoginRedirect=true";
-            CTILogger.debug("setting url to: " + url);
+            log.debug("setting url to: " + url);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("Unable to set host and port", e);
         }

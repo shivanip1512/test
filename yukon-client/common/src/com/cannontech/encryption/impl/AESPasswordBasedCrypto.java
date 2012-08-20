@@ -41,7 +41,12 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
     private static final int defaultHmacKeyIters = 7003;
     private static final int defaultAesKeyIters = 10098;
     private static final int numRandomBytes = 15;
-
+    
+    private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";
+    private static final String ENCRYPTION_ALGORITHM = "AES";
+    private static final String AUTHENTICATION_ALGORITHM = "HmacSHA256";
+    private static final String SECURITY_PROVIDER = "BC";
+    
     /**
      * Calls AESPasswordBasedSymmetricCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters)
      * with values saltIters=2005, ivIters=4019, hmacKeyIters=7003, aesKeyIters=10098.
@@ -78,7 +83,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * 
      * @throws PasswordBasedCryptoException
      */
-    public AESPasswordBasedCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters) throws CryptoException {
+    private AESPasswordBasedCrypto(char[] password, int saltIters, int ivIters, int hmacKeyIters, int aesKeyIters) throws CryptoException {
         try {
             Security.addProvider(new BouncyCastleProvider());
 
@@ -87,15 +92,15 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
             byte[] hmacKey = CryptoUtils.pbkdf2(password, keyByteLength, salt, hmacKeyIters);
             byte[] aesKey = CryptoUtils.pbkdf2(password, keyByteLength, salt, aesKeyIters);
 
-            hMac = Mac.getInstance("HmacSHA256", "BC");
-            Key hMacKey = new SecretKeySpec(hmacKey, "HmacSHA256");
+            hMac = Mac.getInstance(AUTHENTICATION_ALGORITHM, SECURITY_PROVIDER);
+            Key hMacKey = new SecretKeySpec(hmacKey, AUTHENTICATION_ALGORITHM);
             hMac.init(hMacKey);
 
-            Key aesSpec = new SecretKeySpec(aesKey,"AES");
-            encryptingCipher = Cipher.getInstance("AES/CBC/PKCS5Padding", new BouncyCastleProvider());
+            Key aesSpec = new SecretKeySpec(aesKey,ENCRYPTION_ALGORITHM);
+            encryptingCipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleProvider());
             encryptingCipher.init(Cipher.ENCRYPT_MODE, aesSpec, new IvParameterSpec(initVector));
 
-            decryptingCipher = Cipher.getInstance("AES/CBC/PKCS5Padding", new BouncyCastleProvider());
+            decryptingCipher = Cipher.getInstance(TRANSFORMATION, new BouncyCastleProvider());
             decryptingCipher.init(Cipher.DECRYPT_MODE, aesSpec, new IvParameterSpec(initVector));
         } catch (Exception e) {
             throw new CryptoException(e);
@@ -112,7 +117,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * @throws CryptoException 
      */
     @Override
-    public byte[] encrypt(byte[] plainText) throws CryptoException  {
+    public synchronized byte[] encrypt(byte[] plainText) throws CryptoException  {
         try {
             byte[] plainTextWithSalt = CryptoUtils.appendSalt(plainText, numRandomBytes);
             // update hMac hash
@@ -139,7 +144,7 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * @throws PasswordBasedCryptoException 
      */
     @Override
-    public byte[] decrypt(byte[] cipherText) throws CryptoException {
+    public synchronized byte[] decrypt(byte[] cipherText) throws CryptoException {
         try {
             byte[] blob = decryptingCipher.doFinal(cipherText, 0, cipherText.length);
             int numBytes = blob.length - hMac.getMacLength();
@@ -162,8 +167,8 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
      * Checks the cipher text against the current cipher for validity
      * 
      */
-    public boolean isAuthentic(byte[] cipherText) {
-        boolean isValid = false;
+    public synchronized boolean isAuthentic(byte[] cipherText) {
+        boolean isAuthentic = false;
         try {
             byte[] blob = decryptingCipher.doFinal(cipherText, 0, cipherText.length);
             int numBytes = blob.length - hMac.getMacLength();
@@ -172,13 +177,13 @@ public class AESPasswordBasedCrypto implements PasswordBasedCrypto {
             // Extract hMac hash and verify
             byte[] hMacHash = ArrayUtils.subarray(blob, numBytes, blob.length);
             if (MessageDigest.isEqual(hMac.doFinal(), hMacHash)) {
-                isValid = true;
+                isAuthentic = true;
             }
         } catch (IllegalBlockSizeException e) {
-            isValid = false;
+            isAuthentic = false;
         } catch (BadPaddingException e) {
-            isValid = false;
+            isAuthentic = false;
         }
-        return isValid;
+        return isAuthentic;
     }
 }

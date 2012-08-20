@@ -127,6 +127,9 @@ public final class CtiUtilities {
     public final static String tif = "tif";
     public final static String png = "png";
 
+    private final static String KEYS_DIRECTORY = "/Server/Config/Keys/";
+    private final static String LOGS_DIRECTORY = "/Server/Log/";
+
     static {
         /** Init our beginning of time here */
         gc1990 = new GregorianCalendar();
@@ -595,7 +598,7 @@ public final class CtiUtilities {
      * @return the String representation of the path to the server log directory
      */
     public final static String getServerLogDir() {
-        String logDirectory = CtiUtilities.getYukonBase() + "/Server/Log/";
+        String logDirectory = CtiUtilities.getYukonBase() + LOGS_DIRECTORY;
 
         // Gets the value from the cparm if it exists
         ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
@@ -617,7 +620,7 @@ public final class CtiUtilities {
     }
 
     public final static String getKeysFolder() {
-        return CtiUtilities.getYukonBase() + "/Server/Config/Keys/";
+        return CtiUtilities.getYukonBase() + KEYS_DIRECTORY;
     }
 
     /**

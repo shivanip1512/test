@@ -31,6 +31,7 @@ public class MasterConfigMap implements ConfigurationSource {
     private Map<String, String> configMap = new HashMap<String, String>();
     private File masterCfgFile;
     private Logger log = YukonLogManager.getLogger(MasterConfigMap.class);
+
     public MasterConfigMap() {
         super();
     }
@@ -45,6 +46,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     public void initialize() throws IOException, CryptoException {
+        boolean updateFile = false;
         String endl = System.getProperty("line.separator");
         File tmp = File.createTempFile("master", "cfgtmp");
         LogHelper.debug(log, "starting initialization");
@@ -79,9 +81,10 @@ public class MasterConfigMap implements ConfigurationSource {
                     if (MasterConfigCryptoUtils.isEncrypted(value)) {
                         // Found a value already encrypted
                         String valueDecrypted = MasterConfigCryptoUtils.decryptValue(value);
-                        bufWriter.write(key + " : " + value + " " + comment + endl);
+                        bufWriter.write(line + endl);
                         configMap.put(key, valueDecrypted);
                     } else {
+                        updateFile = true;
                         // Found a value that needs to be encrypted
                         String valueEncrypted = MasterConfigCryptoUtils.encryptValue(value);
                         bufWriter.write(key + " : " + valueEncrypted + " " + comment + endl);
@@ -99,7 +102,7 @@ public class MasterConfigMap implements ConfigurationSource {
         }
         bufWriter.close();
         bufReader.close();
-        if (!FileUtils.contentEquals(tmp, masterCfgFile)){
+        if (updateFile && !FileUtils.contentEquals(tmp, masterCfgFile)){
             FileUtils.copyFile(tmp, masterCfgFile);
         }
     }

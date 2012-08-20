@@ -17,7 +17,26 @@ public class MasterConfigCryptoUtils {
 
     private static final File masterCfgCryptoFile = new File(CtiUtilities.getKeysFolder(),"masterConfigKeyfile.dat");
     private static final String encryptionIndicator = "(AUTO_ENCRYPTED)";
-    private final static Set<String> sensitiveData;
+    private static final Set<String> sensitiveData;
+    private static AESPasswordBasedCrypto encrypter;
+    
+    static {
+        try {
+            encrypter = new AESPasswordBasedCrypto(getMasterCfgPasskey());
+        } catch (CryptoException e) {
+            // Logging probably hasn't been set up...log to standard error.
+            System.err.println("error creating encryptor");
+            e.printStackTrace(System.err);
+        } catch (IOException e) {
+            // Logging probably hasn't been set up...log to standard error.
+            System.err.println("error creating encryptor");
+            e.printStackTrace(System.err);
+        } catch (JDOMException e) {
+            // Logging probably hasn't been set up...log to standard error.
+            System.err.println("error creating encryptor");
+            e.printStackTrace(System.err);
+        }
+    }
     
     static {
         sensitiveData = new HashSet<String>();
@@ -48,25 +67,17 @@ public class MasterConfigCryptoUtils {
      * @throws IOException 
      */
     private static char[] getMasterCfgPasskey() throws IOException, CryptoException, JDOMException {
-        return CryptoUtils.getPasskeyFromFile(masterCfgCryptoFile);
-    }
-    private static AESPasswordBasedCrypto encrypter;
-    static {
-        try {
-            encrypter = new AESPasswordBasedCrypto(getMasterCfgPasskey());
-        } catch (CryptoException e) {
-            // Logging probably hasn't been set up...log to standard error.
-            System.err.println("error creating encryptor");
-            e.printStackTrace(System.err);
-        } catch (IOException e) {
-            // Logging probably hasn't been set up...log to standard error.
-            System.err.println("error creating encryptor");
-            e.printStackTrace(System.err);
-        } catch (JDOMException e) {
-            // Logging probably hasn't been set up...log to standard error.
-            System.err.println("error creating encryptor");
-            e.printStackTrace(System.err);
+        char[] passkey = null;
+
+        if (CryptoUtils.isValidCryptoFile(masterCfgCryptoFile)) {
+            passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
+        } else {
+            masterCfgCryptoFile.delete();
+            CryptoUtils.createNewCryptoFile(masterCfgCryptoFile);
+            passkey = CryptoUtils.getPasskeyFromCryptoFile(masterCfgCryptoFile);
         }
+
+        return passkey;
     }
 
     /**
@@ -78,7 +89,7 @@ public class MasterConfigCryptoUtils {
      * @return valuePlainText : String
      * @throws CryptoException 
      */
-    public static synchronized String decryptValue(String valueEncrypted) throws CryptoException {
+    public static String decryptValue(String valueEncrypted) throws CryptoException {
         String valuePlainText = null;
         try {
             valueEncrypted = StringUtils.deleteWhitespace(valueEncrypted);
@@ -100,7 +111,7 @@ public class MasterConfigCryptoUtils {
      * @return encryptedValue : String
      * @throws CryptoException 
      */
-    public static synchronized String encryptValue(String valuePlaintext) throws CryptoException {
+    public static String encryptValue(String valuePlaintext) throws CryptoException {
         valuePlaintext = StringUtils.deleteWhitespace(valuePlaintext);
         String encryptedValue =
                 encryptionIndicator + new String(Hex.encodeHex(encrypter.encrypt(valuePlaintext.getBytes())));

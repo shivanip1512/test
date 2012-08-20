@@ -4,7 +4,6 @@ import static org.junit.Assert.fail;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Random;
 
 import junit.framework.Assert;
 
@@ -15,15 +14,15 @@ import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 
 public class AESPasswordBasedCryptoTest  {
     // Cipher text 1, 2, and 3 should all decrypt to this
-    byte[] preComputedPlainText = {-85, 68, -55, 107, -106, -119, 42, -106, -73, 84, 126, 19, 52, 60};
+    private byte[] preComputedPlainText = {-85, 68, -55, 107, -106, -119, 42, -106, -73, 84, 126, 19, 52, 60};
     
-    byte[] preComputedCipherText1 = {33, 103, 100, -30, -122, 119, 34, 32, 126, -77, -128, 79, 109, 125, -105, -124, 28, 20, 86, 72, 0, 72, 46, -128, 57, 82, -78, -48, 82, 91, 98, 20, -20, 29, -3, -90, 58, -111, -40, -55, 36, 70, -35, -99, 81, 32, -4, 62, 98, -64, -25, 108, -39, 30, 0, -44, 35, 97, 11, 110, -89, -44, 12, -22};
-    byte[] preComputedCipherText2 = {-117, 58, -89, 47, 6, -63, -85, -115, 119, -48, -50, -103, 109, -45, 60, -70, 104, 59, -95, -71, -78, -59, 86, 40, -91, 45, -92, 5, -72, -70, 11, 106, 104, -18, 35, 62, -108, 18, -16, 70, -19, -117, -113, -96, -43, 61, -1, -30, -106, -4, -27, -38, 123, 121, 75, 24, -11, 7, 70, -88, 16, -122, -90, -32};
-    byte[] preComputedCipherText3 = {23, 26, 114, -22, -25, 7, 60, 39, 110, -54, 23, -5, -89, -74, 61, -26, -48, -117, -82, -23, 105, 8, -65, -96, 58, 32, -7, -59, 119, -62, -33, -53, 93, -118, 26, 125, -105, 116, 103, -119, -120, 66, -7, -82, -1, -128, 19, -19, -111, -23, 102, -39, 40, 84, -87, 102, -47, 93, -86, -66, -3, 54, -56, -14};
+    private byte[] preComputedCipherText1 = {33, 103, 100, -30, -122, 119, 34, 32, 126, -77, -128, 79, 109, 125, -105, -124, 28, 20, 86, 72, 0, 72, 46, -128, 57, 82, -78, -48, 82, 91, 98, 20, -20, 29, -3, -90, 58, -111, -40, -55, 36, 70, -35, -99, 81, 32, -4, 62, 98, -64, -25, 108, -39, 30, 0, -44, 35, 97, 11, 110, -89, -44, 12, -22};
+    private byte[] preComputedCipherText2 = {-117, 58, -89, 47, 6, -63, -85, -115, 119, -48, -50, -103, 109, -45, 60, -70, 104, 59, -95, -71, -78, -59, 86, 40, -91, 45, -92, 5, -72, -70, 11, 106, 104, -18, 35, 62, -108, 18, -16, 70, -19, -117, -113, -96, -43, 61, -1, -30, -106, -4, -27, -38, 123, 121, 75, 24, -11, 7, 70, -88, 16, -122, -90, -32};
+    private byte[] preComputedCipherText3 = {23, 26, 114, -22, -25, 7, 60, 39, 110, -54, 23, -5, -89, -74, 61, -26, -48, -117, -82, -23, 105, 8, -65, -96, 58, 32, -7, -59, 119, -62, -33, -53, 93, -118, 26, 125, -105, 116, 103, -119, -120, 66, -7, -82, -1, -128, 19, -19, -111, -23, 102, -39, 40, 84, -87, 102, -47, 93, -86, -66, -3, 54, -56, -14};
     
-    byte[] badCipherText4 = {24, 26, 114, -22, -25, 7, 60, 39, 110, -54, 23, -5, -89, -74, 61, -26, -48, -117, -82, -23, 105, 8, -65, -96, 58, 32, -7, -59, 119, -62, -33, -53, 93, -118, 26, 125, -105, 116, 103, -119, -120, 66, -7, -82, -1, -128, 19, -19, -111, -23, 102, -39, 40, 84, -87, 102, -47, 93, -86, -66, -3, 54, -56, -14};
+    private byte[] badCipherText4 = {24, 26, 114, -22, -25, 7, 60, 39, 110, -54, 23, -5, -89, -74, 61, -26, -48, -117, -82, -23, 105, 8, -65, -96, 58, 32, -7, -59, 119, -62, -33, -53, 93, -118, 26, 125, -105, 116, 103, -119, -120, 66, -7, -82, -1, -128, 19, -19, -111, -23, 102, -39, 40, 84, -87, 102, -47, 93, -86, -66, -3, 54, -56, -14};
     
-    char[] preComputedPassword = {'?','W',')','s','8','!','D','h','I','o','f','1','=','G','F','2'};
+    private char[] preComputedPassword = {'?','W',')','s','8','!','D','h','I','o','f','1','=','G','F','2'};
 
     @Test
     public void test_validityToPass1() throws CryptoException {
@@ -89,17 +88,6 @@ public class AESPasswordBasedCryptoTest  {
         testCipher(aesWithPassword);
     }
     
-    @Test
-    public void test_encryptionAndDecryptionWithFullConstructor() throws CryptoException {
-        char[] password = CryptoUtils.generateRandomPasskey(16);
-        Random rand = new Random();
-        int salt = rand.nextInt(2000) + 1;
-        int iv = rand.nextInt(2000) + 1;
-        int hmac = rand.nextInt(2000) + 1;
-        int aes = rand.nextInt(2000) + 1;
-        AESPasswordBasedCrypto aesWithPassword = new AESPasswordBasedCrypto(password,salt, iv, hmac, aes);
-        testCipher(aesWithPassword);
-    }
 
     private void testCipher(AESPasswordBasedCrypto aes) throws CryptoException {
         int numBytes = 128;

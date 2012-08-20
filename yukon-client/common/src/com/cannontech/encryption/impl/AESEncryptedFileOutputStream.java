@@ -29,7 +29,7 @@ public class AESEncryptedFileOutputStream extends ByteArrayOutputStream  {
     public AESEncryptedFileOutputStream(File file, char[] password) throws IOException, CryptoException {
         super();
         this.aes = new AESPasswordBasedCrypto(password);
-        fileOutputStream = new FileOutputStream(file);
+        this.fileOutputStream = new FileOutputStream(file);
     }
 
     public void close() throws IOException {
