@@ -15,11 +15,9 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.encryption.impl.AESEncryptedFileInputStream;
 import com.cannontech.encryption.impl.AESEncryptedFileOutputStream;
@@ -27,27 +25,25 @@ import com.cannontech.tools.xml.SimpleXmlReader;
 import com.cannontech.tools.xml.SimpleXmlWriter;
 
 public class CryptoUtils {
-    private static Logger log = YukonLogManager.getLogger(CryptoUtils.class);
+    
     private static final int passKeyLength = 32; //chars
     private static final int rsaKeySize = 512; //4096 bits
-    private static final File keysFolder = new File(CtiUtilities.getKeysFolder());
-    private static final File sharedCryptoFile = new File(keysFolder,"sharedKeyfile.dat");
-    private static final String passkeyAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"  
-                                                + "0123456789_-+={}[];:,.?!@#$%^*()";
+    private static final String passkeyAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+={}[];:,.?!@#$%^*()";
+    private static SecureRandom secureRandom = new SecureRandom();
 
     // System wide passkey to do encryption when no other passkey is available. Currently only using this to encrypt a file
     // which contains the actual passkey. In other words, this passkey unlocks the real passkey which is used for encryption.
     private static final String yukonPasskey = "Bdk=5ohaIc51ifstd-zl2dCV)5iUE(DG";
     private static final byte[] yukonSalt = {(byte)0x9B, (byte)0x02, (byte)0xF9, (byte)0x92,(byte)0x64, (byte)0xE5, (byte)0xE3, (byte)0x03,
         (byte)0xF2, (byte)0x9B, (byte)0x19, (byte)0x12,(byte)0x56, (byte)0x35, (byte)0x56, (byte)0x93};
-
-    private static SecureRandom secureRandom = new SecureRandom();
     private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
     private static final String CRYPTO_FILE_XML_ROOT = "root";
     private static final String CRYPTO_FILE_XML_VERSION = "version";
     private static final String CRYPTO_FILE_VERSION = "1";
     private static final String CRYPTO_FILE_XML_PASSKEY = "pk";
 
+    private static final File keysFolder = new File(CtiUtilities.getKeysFolder());
+    private static final File sharedCryptoFile = new File(keysFolder,"sharedKeyfile.dat");
     private CryptoUtils() {/*Not instantiable. Utility class only */ }
     
     /**
@@ -197,10 +193,10 @@ public class CryptoUtils {
             xmlFile.createNewElementWithContent(CRYPTO_FILE_XML_PASSKEY, passkey);
             xmlFile.writeAndClose();
         } catch (IOException e) {
-            log.warn("Unable to save new passkey to file. Returning null", e);
+            System.out.println("Unable to save new passkey to file. Returning null");
             passkey = null;
         } catch (CryptoException e) {
-            log.warn("caught exception in createNewCryptoFile", e);
+            System.out.println("caught exception in createNewCryptoFile");
             passkey = null;
         }
         return passkey;
