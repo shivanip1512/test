@@ -822,6 +822,23 @@
             </ul>
         </troubleshooting>
     </error>
+    <error code="226">
+        <category>Yukon System</category>
+        <porter>Control is currently inhibited for the point.</porter>
+        <description>Control is currently inhibited for the point.</description>
+        <troubleshooting>
+            Control commands cannot be sent for points which are control inhibited. 
+            <ul>
+                <li>Resend the command after enabling control for the point in database editor.</li>
+                <ol>
+                    <li>In database editor edit the point in question.</li>
+                    <li>Uncheck the "Control Inhibit" checkbox in the Physical Setup tab.</li>
+                    <li>Submit the change and attempt the command again.</li>
+                </ol>
+                <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+            </ul>
+        </troubleshooting>
+    </error>
     <error code="261">
         <category>Data Validation</category>
         <porter>The freeze check bit in the frozen reading does not match the last recorded freeze
