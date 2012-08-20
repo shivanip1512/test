@@ -102,6 +102,9 @@ protected:
                              std::list< CtiMessage * > &retList,
                              std::list< OUTMESS * > &outList);
 
+    // Places error onto the retlist, DELETES OUT MESSAGE
+    void returnErrorMessage( int retval, OUTMESS *&om, std::list< CtiMessage* > &retList, const std::string &error ) const;
+
 private:
 
     typedef std::map< int, bool > ScanFlagsPending_t;

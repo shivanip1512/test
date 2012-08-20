@@ -241,20 +241,6 @@ INT DlcBaseDevice::ExecuteRequest( CtiRequestMsg        *pReq,
 }
 
 
-void DlcBaseDevice::returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const
-{
-    retList.push_back(
-        new CtiReturnMsg(
-                getID(),
-                om->Request,
-                getName() + " / " + error,
-                retval));
-
-    delete om;
-    om = NULL;
-}
-
-
 INT DlcBaseDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList)
 try
 {

@@ -496,13 +496,33 @@ INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
                         {
                             CtiPointAnalogSPtr pAnalog = boost::static_pointer_cast<CtiPointAnalog>(point);
 
-                            if( const CtiTablePointControl *control = pAnalog->getControl() )
+                            if( pAnalog &&
+                                pAnalog->getControl() &&
+                                pAnalog->getControl()->isControlInhibited() )
                             {
-                                control_offset = control->getControlOffset();
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() << 
+                                            "\" point \"" << pAnalog->getName() << "\" in DNP::ExecuteRequest() **** " << 
+                                            __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+
+                                std::string temp = "Control is inhibited for the specified analog point on device " + getName();
+
+                                returnErrorMessage(ControlInhibitedOnPoint, OutMessage, retList, temp);
+
+                                return ControlInhibitedOnPoint;
                             }
-                            else if( pAnalog->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
+                            else 
                             {
-                                control_offset = point->getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
+                                if( const CtiTablePointControl *control = pAnalog->getControl() )
+                                {
+                                    control_offset = control->getControlOffset();
+                                }
+                                else if( pAnalog->getPointOffset() > AnalogOutputStatus::AnalogOutputOffset )
+                                {
+                                    control_offset = point->getPointOffset() % AnalogOutputStatus::AnalogOutputOffset;
+                                }
                             }
                         }
                     }

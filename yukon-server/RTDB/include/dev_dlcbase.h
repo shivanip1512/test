@@ -77,9 +77,6 @@ protected:
     virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
     virtual INT executePutStatus( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList ) {  return NoMethod;  };
 
-    // Places error onto the retlist, DELETES OUT MESSAGE
-    void returnErrorMessage( int retval, OUTMESS *&om, std::list< CtiMessage* > &retList, const std::string &error ) const;
-
     bool tryExecuteCommand(OUTMESS &OutMessage, DlcCommandSPtr command);
 
     int decodeCommand(const INMESS &InMessage, CtiTime TimeNow, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);

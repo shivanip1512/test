@@ -2275,3 +2275,15 @@ string CtiDeviceSingle::valueReport(const string &pointname, const point_info &p
     return report;
 }
 
+void CtiDeviceSingle::returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const
+{
+    retList.push_back(
+        new CtiReturnMsg(
+                getID(),
+                om->Request,
+                getName() + " / " + error,
+                retval));
+
+    delete om;
+    om = NULL;
+}
