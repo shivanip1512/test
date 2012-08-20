@@ -998,9 +998,21 @@ DNPSlaveInterface::DNPSlaveInterface()
    setOptions(DNPSlaveInterface::Options_SlaveResponse);
 }
 
+
+int DNPSlaveInterface::slaveDecode( CtiXfer &xfer )
+{
+    if( xfer.getOutBuffer()[10] & 0x80 )
+    {
+        slaveTransactionComplete();
+        return NoError;
+    }
+
+    return getApplicationLayer().decode(xfer, 0);
+}
+
 int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
 {
-    if( getApplicationLayer().isTransactionComplete() )
+    if( getApplicationLayer().isTransactionNotStarted() )
     {
         switch( getCommand() )
         {

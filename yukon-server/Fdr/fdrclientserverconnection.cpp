@@ -617,6 +617,6 @@ void CtiFDRClientServerConnection::sendLinkState(bool linkUp)
     pData = new CtiPointDataMsg(_linkId,
                                 linkUp ? FDR_CONNECTED : FDR_NOT_CONNECTED,
                                 NormalQuality,
-                                StatusPointType);
+                                SystemPointType);
     _parentInterface->sendMessageToDispatch (pData);
 }

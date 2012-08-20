@@ -477,36 +477,40 @@ int CtiFDRDnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connect
     _dnpData.setSlaveCommand(DNPSlaveInterface::Command_Class1230Read);
     _dnpData.setOptions(DNPSlaveInterface::Options_SlaveResponse, seqnumber);
 
-    if (_dnpData.slaveGenerate(xfer) == 0)
-    {
-        bool status = true;
+     while( !_dnpData.isTransactionComplete() )
+     {
+         if( _dnpData.slaveGenerate(xfer) == 0 )
+         {
+             if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
+             {
+                 int bufferSize = xfer.getOutCount();
+                 char* buffer = new CHAR[bufferSize];
+                 std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
+                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                 {
+                     CtiLockGuard<CtiLogger> dout_guard(dout);
+                     logNow() << " "<< getInterfaceName() <<" sending DNP scan response message."<< endl;
+                     dumpDNPMessage(CtiFdrDNPOutMessageString, buffer, bufferSize);
+                 }
+                 connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
+             }
 
-        if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
-        {
-            char* buffer = NULL;
-            unsigned int bufferSize = xfer.getOutCount();
-            buffer = new CHAR[bufferSize];
-            std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
-            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                logNow() << " "<< getInterfaceName() <<" sending DNP scan response message."<< endl;
-                dumpDNPMessage(CtiFdrDNPOutMessageString, buffer, bufferSize);
-            }
-            connection.queueMessage(buffer, xfer.getOutCount(), MAXPRIORITY - 1);
-        }
-    }
-    else
-    {
-        if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            logNow() << " "<< getInterfaceName() <<" was not able to generate scan response. "<< endl;
-        }
+             _dnpData.slaveDecode(xfer);
+         }
+         else
+         {
+             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+             {
+                 CtiLockGuard<CtiLogger> dout_guard(dout);
+                 logNow() << " "<< getInterfaceName() <<" was not able to generate scan response. "<< endl;
+             }
+             _dnpData.slaveTransactionComplete();
+         
+         }
+     }
+ 
 
-    }
-
-    _dnpData.slaveTransactionComplete();
+    
 
     return retVal;
 

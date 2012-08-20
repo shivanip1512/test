@@ -206,7 +206,7 @@ void ApplicationLayer::setSequenceNumber(int seqNbr)
 
 void ApplicationLayer::initForSlaveOutput( void )
 {
-    _appState    = SendResponse;
+    _appState    = SendFirstResponse;
     _comm_errors = 0;
 
     unsigned pos = 0;
@@ -318,6 +318,11 @@ void ApplicationLayer::resetLink( void )
     _transport.resetLink();
 }
 
+bool ApplicationLayer::isTransactionNotStarted( void ) const
+{
+    return _appState == Complete || _appState == Uninitialized;
+}
+
 
 bool ApplicationLayer::isTransactionComplete( void ) const
 {
@@ -367,10 +372,12 @@ int ApplicationLayer::generate( CtiXfer &xfer )
     {
         switch( _appState )
         {
-            case SendResponse:
+            case SendFirstResponse:
             {
                 _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize, _dstAddr, _srcAddr);
-
+            }
+            case SendResponse:
+            {
                 break;
             }
             case SendRequest:
@@ -428,6 +435,7 @@ int ApplicationLayer::decode( CtiXfer &xfer, int status )
 {
     int retVal = NoError;
 
+
     if( retVal = _transport.decode(xfer, status) )
     {
         if (!_config)
@@ -458,6 +466,10 @@ int ApplicationLayer::decode( CtiXfer &xfer, int status )
     {
         switch( _appState )
         {
+            case SendFirstResponse:
+            {
+                _appState = SendResponse;
+            }
             case SendResponse:
             {
                 _appState = Complete;

@@ -207,6 +207,7 @@ public:
     bool setSlaveCommand( Command command );
     void setOptions( int options, int seqNumber=0 );
 
+    int slaveDecode( CtiXfer &xfer );
     int slaveGenerate( CtiXfer &xfer );
     void slaveTransactionComplete();
 

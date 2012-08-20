@@ -106,8 +106,9 @@ private:
         SendUnexpectedConfirm,
 
         //  DNP slave state
+        SendFirstResponse,
         SendResponse,
-
+        
         Complete,
         Failed
 
@@ -167,6 +168,7 @@ public:
 
     //  checking completion
     bool isTransactionComplete( void ) const;
+    bool isTransactionNotStarted( void ) const;
     bool errorCondition( void )        const;
     bool isOneWay( void )              const;
 
