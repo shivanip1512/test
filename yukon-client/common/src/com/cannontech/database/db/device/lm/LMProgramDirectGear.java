@@ -7,10 +7,11 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
-import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
 import com.cannontech.database.db.NestedDBPersistent;
+import com.cannontech.loadcontrol.gear.model.TierGearContainer;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -49,6 +50,24 @@ public abstract class LMProgramDirectGear
     private String backRampOption = CtiUtilities.STRING_NONE;
     private Integer backRampTime = new Integer(0);
     private Double kWReduction = new Double(0.0);
+    
+    //Intentionally separate from the rest. Only used for Beat The Peak Gear
+    private TierGearContainer tierGearContainer = new TierGearContainer();
+    
+    public TierGearContainer getTierGearContainer() {
+        return tierGearContainer;
+    }
+    public void setTierGearContainer(TierGearContainer tierGearContainer) {
+        this.tierGearContainer = tierGearContainer;
+    }
+    
+    private  boolean usesTierGearContainer(){
+        String controlMethod = getControlMethod().getDisplayName();
+        if( controlMethod.equals("Beat The Peak") ){            
+            return true;
+        }
+        return false;
+    }
     
 	public static final String SETTER_COLUMNS[] =
    {
@@ -114,6 +133,13 @@ public abstract class LMProgramDirectGear
 		};
 
 		add(TABLE_NAME, addValues);
+	
+		if( usesTierGearContainer() ){
+		    tierGearContainer.setGearId(getGearID());
+		    LMGearDao gearDao = YukonSpringHook.getBean("lmGearDao", LMGearDao.class);
+		    gearDao.insertContainer(tierGearContainer);
+		}
+
 	}
 
 	/**
@@ -122,6 +148,10 @@ public abstract class LMProgramDirectGear
 	public void delete() throws SQLException
 	{
 		delete(TABLE_NAME, "GearID", getGearID());
+		if( usesTierGearContainer() ){
+            LMGearDao gearDao = YukonSpringHook.getBean("lmGearDao", LMGearDao.class);
+            gearDao.delete(getGearID());
+        }
 	}
 	/**
 	 * This method was created in VisualAge.
@@ -232,6 +262,11 @@ public abstract class LMProgramDirectGear
                      */
                     gear.setKWReduction(new Double(rset.getDouble(25)));
 				}
+				
+				if( gear.usesTierGearContainer() ){
+		            LMGearDao gearDao = YukonSpringHook.getBean("lmGearDao", LMGearDao.class);
+		            gear.setTierGearContainer( gearDao.getContainer(gID) );
+		        }
 				
 				gearList.add(gear);
 			}
@@ -432,7 +467,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	 * Creation date: (3/16/2001 5:20:28 PM)
 	 * @return java.lang.Integer
 	 */
-	protected java.lang.Integer getMethodPeriod()
+	public java.lang.Integer getMethodPeriod()
 	{
 		return methodPeriod;
 	}
@@ -555,9 +590,16 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
              */
             setKWReduction((Double) results[26]);
 		}
-		else
+		else {
 			throw new Error(
 				getClass() + " - Incorrect Number of results retrieved");
+		}
+		
+		if( usesTierGearContainer() ) {       
+            LMGearDao gearDao = YukonSpringHook.getBean("lmGearDao", LMGearDao.class);
+        
+            setTierGearContainer( gearDao.getContainer( getGearID() ) );
+        }
 
 	}
 	/**
@@ -682,7 +724,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	 * Creation date: (3/16/2001 5:20:28 PM)
 	 * @param newMethodPeriod java.lang.Integer
 	 */
-	protected void setMethodPeriod(java.lang.Integer newMethodPeriod)
+	public void setMethodPeriod(java.lang.Integer newMethodPeriod)
 	{
 		methodPeriod = newMethodPeriod;
 	}
@@ -787,6 +829,12 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 			setValues,
 			CONSTRAINT_COLUMNS,
 			constraintValues);
+		
+		if( usesTierGearContainer() ){
+		    tierGearContainer.setGearId(getGearID());
+	        LMGearDao gearDao = YukonSpringHook.getBean("lmGearDao", LMGearDao.class);
+	        gearDao.updateContainer(tierGearContainer);
+        }
 	}
 	/**
 	 * Returns the gearID.

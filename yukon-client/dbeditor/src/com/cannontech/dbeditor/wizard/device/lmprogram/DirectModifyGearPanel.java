@@ -3,18 +3,11 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  * This type was created in VisualAge.
  */
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-import com.cannontech.database.db.device.lm.LMThermostatGear;
 
 public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataInputPanel implements com.klg.jclass.util.value.JCValueListener, java.awt.event.ActionListener, javax.swing.event.CaretListener, com.cannontech.common.gui.util.DataInputPanelListener {
     private GearControlMethod gearControlMethod = null;
@@ -33,6 +26,7 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
     private RotationGearPanel ivjRotationGearPanel1= null;
     private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1 = null;
     private SimpleThermostatSetbackGearPanel ivjSimpleThermoSetbackGearPanel1;
+    private BeatThePeakGearPanel ivjBeatThePeakGearPanel1 = null;
     private NoControlGearPanel ivjNoControlGearPanel1 = null;
     
     private PaoType programType;
@@ -410,6 +404,10 @@ public Object getValue(Object o)
 	    	obj = getIvjSimpleThermoSetbackGearPanel1().getValue(gear);
 	    	break;
 	    }
+	    case BeatThePeak: {
+	        obj = getIvjBeatThePeakGearPanel1().getValue(gear);
+	        break;
+	    }
 	    case NoControl: {
 	    	obj = getNoControlGearPanel().getValue(gear);
 	    	break;
@@ -454,6 +452,7 @@ private void initConnections() throws java.lang.Exception {
     getSepTemperatureOffsetGearPanel().addDataInputPanelListener(this);
     getIvjThermoSetbackGearPanel1().addDataInputPanelListener(this);
     getIvjSimpleThermoSetbackGearPanel1().addDataInputPanelListener(this);
+    getIvjBeatThePeakGearPanel1().addDataInputPanelListener(this);
     getNoControlGearPanel().addDataInputPanelListener(this);
     
 
@@ -598,6 +597,9 @@ private void setGearType(GearControlMethod method)
     case SimpleThermostatRamping:
     	getJScrollPane1().setViewportView(getIvjSimpleThermoSetbackGearPanel1());
     	break;
+    case BeatThePeak:
+        getJScrollPane1().setViewportView(getIvjBeatThePeakGearPanel1());
+        break;
     case NoControl:
     	getJScrollPane1().setViewportView(getNoControlGearPanel());
     	break;
@@ -673,6 +675,10 @@ public void setValue(Object o)
     else if (gear instanceof com.cannontech.database.data.device.lm.SimpleThermostatRampingGear)
     {
         getIvjSimpleThermoSetbackGearPanel1().setValue(gear);
+    }
+    else if( gear instanceof com.cannontech.database.data.device.lm.BeatThePeakGear )
+    {
+        getIvjBeatThePeakGearPanel1().setValue(gear);
     }
     else if( gear instanceof com.cannontech.database.data.device.lm.NoControlGear )
     {
@@ -770,6 +776,12 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
         return ivjSimpleThermoSetbackGearPanel1;
     }
 
+    public BeatThePeakGearPanel getIvjBeatThePeakGearPanel1() {
+        if(ivjBeatThePeakGearPanel1 == null)
+            ivjBeatThePeakGearPanel1 = new BeatThePeakGearPanel();
+        return ivjBeatThePeakGearPanel1;
+    }
+    
     public NoControlGearPanel getNoControlGearPanel() {
         if(ivjNoControlGearPanel1 == null)
             ivjNoControlGearPanel1 = new NoControlGearPanel();
@@ -800,7 +812,11 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
     public void setIvjMasterGearPanel1(MasterCycleGearPanel ivjMasterGearPanel1) {
         this.ivjMasterGearPanel1 = ivjMasterGearPanel1;
     }
-
+    
+    public void setIvjBeatThePeakGearPanel1(BeatThePeakGearPanel ivjBeatThePeakGearPanel1) {
+        this.ivjBeatThePeakGearPanel1 = ivjBeatThePeakGearPanel1;
+    }
+    
     public void setIvjNoControlGearPanel1(NoControlGearPanel ivjNoControlGearPanel1) {
         this.ivjNoControlGearPanel1 = ivjNoControlGearPanel1;
     }

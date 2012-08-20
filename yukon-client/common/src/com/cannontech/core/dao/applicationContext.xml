@@ -201,4 +201,6 @@
   
   <bean id="inventoryIdentifierMapper" class="com.cannontech.common.inventory.InventoryIdentifierMapper"/>
   
+  <bean id="lmGearDao" class="com.cannontech.core.dao.impl.LMGearDaoImpl"/>
+  
 </beans>

@@ -1,6 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.data.device.lm.LatchingGear;
 import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
 import com.cannontech.database.data.device.lm.MasterCycleGear;
@@ -28,6 +29,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource {
 	TargetCycle(TargetCycleGear.class, "Target Cycle"),
 	ThermostatRamping(ThermostatSetbackGear.class, "Thermostat Ramping"),
 	SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping"),
+    BeatThePeak(BeatThePeakGear.class, "Beat The Peak"),
 	NoControl(NoControlGear.class, "No Control");
 
 	private Class<?> gearClass;
