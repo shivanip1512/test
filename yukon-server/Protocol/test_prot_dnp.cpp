@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(3, point_list.size());
+        BOOST_CHECK_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -215,6 +215,16 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 1);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[3];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
         Cti::Protocol::Interface::stringlist_t string_list;
@@ -333,7 +343,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(3, point_list.size());
+        BOOST_CHECK_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -363,6 +373,16 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
             BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 1);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[3];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
         Cti::Protocol::Interface::stringlist_t string_list;
@@ -509,7 +529,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(3, point_list.size());
+        BOOST_CHECK_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -539,6 +559,16 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
             BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 1);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[3];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
         Cti::Protocol::Interface::stringlist_t string_list;
@@ -765,7 +795,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(6, point_list.size());
+        BOOST_CHECK_EQUAL(7, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -825,6 +855,16 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 1);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[6];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
         Cti::Protocol::Interface::stringlist_t string_list;
@@ -942,7 +982,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(3, point_list.size());
+        BOOST_CHECK_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -972,6 +1012,16 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
             BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 1);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[3];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
         Cti::Protocol::Interface::stringlist_t string_list;
@@ -1089,7 +1139,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(3, point_list.size());
+        BOOST_CHECK_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -1119,6 +1169,16 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
             BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 1);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[3];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
         Cti::Protocol::Interface::stringlist_t string_list;
@@ -1264,7 +1324,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(3, point_list.size());
+        BOOST_CHECK_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -1294,6 +1354,16 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
             BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 1);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[3];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
         Cti::Protocol::Interface::stringlist_t string_list;
@@ -1519,7 +1589,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(6, point_list.size());
+        BOOST_CHECK_EQUAL(7, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -1579,6 +1649,16 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 1);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[6];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
         Cti::Protocol::Interface::stringlist_t string_list;
@@ -1698,7 +1778,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
 
         dnp.getInboundPoints(point_list);
 
-        BOOST_CHECK_EQUAL(3, point_list.size());
+        BOOST_CHECK_EQUAL(4, point_list.size());
 
         {
             CtiPointDataMsg *pd = point_list[0];
@@ -1728,6 +1808,16 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
             BOOST_CHECK_EQUAL(pd->getType(), PulseAccumulatorPointType);
 
             BOOST_CHECK_EQUAL(pd->getId(), 17);
+        }
+
+        {
+            CtiPointDataMsg *pd = point_list[3];
+
+            BOOST_CHECK_EQUAL(pd->getValue(), 0);
+
+            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
+
+            BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
         Cti::Protocol::Interface::stringlist_t string_list;

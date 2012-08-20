@@ -62,6 +62,11 @@ private:
         ComplaintInterval = 3600,
     };
 
+    enum IINStatusPointOffset
+    {
+        IINStatusPointOffset_RestartBit = 2001
+    };
+
     const char *getControlResultString( int result_status ) const;
 
 protected:

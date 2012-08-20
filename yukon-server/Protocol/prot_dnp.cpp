@@ -5,6 +5,7 @@
 #include "logger.h"
 #include "utility.h"
 #include "numstr.h"
+#include "ctidate.h"
 #include "prot_dnp.h"
 #include "dnp_object_class.h"
 #include "dnp_object_binaryinput.h"
@@ -651,8 +652,13 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 }
             }
 
+            // Point value for the message regarding device restart.
+            double pointValue = 0.0;
+
             if( _app_layer.hasDeviceRestarted() ) 
             {
+                pointValue = 1.0; // Device restarted, set the value to 1!
+
                 if (_command != Command_ResetDeviceRestartBit )
                 {
                     _string_results.push_back(new string("Attempting to clear Device Restart bit"));
@@ -684,6 +690,28 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                     setCommand(Command_Complete);
                 }
             }
+
+            // We need to set up a millisecond time for the point message.
+            SYSTEMTIME st;
+            GetLocalTime(&st);
+            const CtiTime systemTime( CtiDate(st.wDay, st.wMonth, st.wYear), st.wHour, st.wMinute, st.wSecond );
+
+            // Add the point message for the restart bit.
+            CtiPointDataMsg* pt_msg = 
+                new CtiPointDataMsg(IINStatusPointOffset_RestartBit,
+                                    pointValue,
+                                    NormalQuality,
+                                    StatusPointType,
+                                    std::string(),
+                                    0,
+                                    0,
+                                    0,
+                                    7,
+                                    st.wMilliseconds);
+
+            pt_msg->setTime(systemTime);
+
+            _point_results.insert(_point_results.end(), pt_msg);
         }
     }
 
