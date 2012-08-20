@@ -6809,9 +6809,23 @@
     </pao>
     <pao id="RTU_DART" inherits="RTU_BASE, SUPPORTS_DNP_CONFIGURATION" creatable="false">
         <displayName>RTU-DART</displayName>
+        <points>
+            <point type="Status" offset="2001">
+                <init>false</init>
+                <name>Device Reset Indicator</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+        </points>
     </pao>
     <pao id="RTU_DNP" inherits="RTU_BASE, SUPPORTS_DNP_CONFIGURATION">
         <displayName>RTU-DNP</displayName>
+        <points>
+            <point type="Status" offset="2001">
+                <init>false</init>
+                <name>Device Reset Indicator</name>
+                <stategroup value="TrueFalse"/>
+            </point>
+        </points>
     </pao>
     <pao id="RTUILEX" inherits="RTU_BASE" creatable="false">
         <displayName>RTU-ILEX</displayName>
@@ -7302,7 +7316,12 @@
                 <decimalplaces value="1"/>
             </point>
             <!-- ANALOG POINTS -->
-            
+            <!-- STATUS POINTS -->
+            <point type="Status" offset="2001">
+                <init>true</init>
+                <name>Device Reset Indicator</name>
+                <stategroup value="TrueFalse"/>
+            </point>
         </points>
         <attributes>
             <attribute name="VOLTAGE">
