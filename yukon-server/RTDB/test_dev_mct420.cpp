@@ -9,11 +9,12 @@
 
 #include "boost_test_helpers.h"
 
+#include <boost/assign/list_of.hpp>
+
 using Cti::Protocols::EmetconProtocol;
 
 using std::string;
-
-BOOST_AUTO_TEST_SUITE( test_dev_mct420 )
+using std::vector;
 
 struct test_Mct420Device : Cti::Devices::Mct420Device
 {
@@ -26,6 +27,9 @@ struct test_Mct420Device : Cti::Devices::Mct420Device
     using CtiTblPAOLite::_type;
 
     using MctDevice::getOperation;
+    using MctDevice::ReadDescriptor;
+    using MctDevice::value_locator;
+    using MctDevice::getDescriptorForRead;
 
     using Mct4xxDevice::getUsageReportDelay;
 
@@ -133,6 +137,21 @@ struct test_Mct420FD : test_Mct420Device
     test_Mct420FD() : test_Mct420Device(TYPEMCT420FD, "Test MCT-420FD")  {}
 };
 
+namespace std {
+    //  defined in rtdb/test_main.cpp
+    std::ostream& operator<<(std::ostream& out, const test_Mct420Device::ReadDescriptor &rd);
+    std::ostream& operator<<(std::ostream& out, const std::vector<boost::tuples::tuple<unsigned, unsigned, int>> &rd);
+    bool operator==(const test_Mct420Device::value_locator &lhs, const boost::tuples::tuple<unsigned, unsigned, int> &rhs);
+}
+
+namespace boost {
+namespace test_tools {
+    //  defined in rtdb/test_main.cpp
+    bool operator!=(const test_Mct420Device::ReadDescriptor &lhs, const std::vector<boost::tuples::tuple<unsigned, unsigned, int>> &rhs);
+}
+}
+
+BOOST_AUTO_TEST_SUITE( test_dev_mct420 )
 
 BOOST_AUTO_TEST_CASE(test_isSupported_DisconnectCollar)
 {
@@ -1953,5 +1972,640 @@ BOOST_FIXTURE_TEST_SUITE(test_getOperation, getOperation_helper)
     }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_1Dword)
+{
+    using namespace boost::assign;
+    using namespace boost::tuples;
+
+    vector<test_Mct420Device::ReadDescriptor> results;
+
+    const vector<tuple<unsigned, unsigned, int>> empty;
+
+    const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
+        //  memory read 0
+        (tuple_list_of(0,1,101)(1,2,100)(2,1,131))
+        (tuple_list_of(0,2,100)(1,1,131)(2,1,127))
+        (tuple_list_of(0,1,131)(1,1,127))
+        (tuple_list_of(0,1,127))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(2,1,128))
+        (tuple_list_of(1,1,128)(2,1,129))
+        // memory read 10
+        (tuple_list_of(0,1,128)(1,1,129)(2,2,130))
+        (tuple_list_of(0,1,129)(1,2,130))
+        (tuple_list_of(0,2,130))
+        (tuple_list_of(2,1,141))
+        (tuple_list_of(1,1,141))
+        (tuple_list_of(0,1,141))
+        (empty)
+        (tuple_list_of(2,1,123))
+        (tuple_list_of(1,1,123)(2,2,126))
+        (tuple_list_of(0,1,123)(1,2,126))
+        // memory read 20
+        (tuple_list_of(0,2,126)(2,2,124))
+        (tuple_list_of(1,2,124))
+        (tuple_list_of(0,2,124)(2,1,125))
+        (tuple_list_of(1,1,125)(2,1,142))
+        (tuple_list_of(0,1,125)(1,1,142)(2,1,112))
+        (tuple_list_of(0,1,142)(1,1,112)(2,1,103))
+        (tuple_list_of(0,1,112)(1,1,103)(2,1,114))
+        (tuple_list_of(0,1,103)(1,1,114)(2,1,113))
+        (tuple_list_of(0,1,114)(1,1,113)(2,2,111))
+        (tuple_list_of(0,1,113)(1,2,111))
+        // memory read 30
+        (tuple_list_of(0,2,111)(2,2,110))
+        (tuple_list_of(1,2,110))
+        (tuple_list_of(0,2,110)(2,1,132))
+        (tuple_list_of(1,1,132))
+        (tuple_list_of(0,1,132))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        // memory read 40
+        .repeat(10, empty)
+        // memory read 50
+        (empty)
+        (tuple_list_of(2,1,202))
+        (tuple_list_of(1,1,202)(2,1,106))
+        (tuple_list_of(0,1,202)(1,1,106)(2,4,107))
+        (tuple_list_of(0,1,106)(1,4,107))
+        (tuple_list_of(0,4,107))
+        (empty)
+        (tuple_list_of(2,4,108))
+        (tuple_list_of(1,4,108))
+        (tuple_list_of(0,4,108))
+        // memory read 60
+        (empty)
+        (tuple_list_of(2,1,109))
+        (tuple_list_of(1,1,109))
+        (tuple_list_of(0,1,109))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        // memory read 70
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(2,1,115))
+        (tuple_list_of(1,1,115)(2,2,117))
+        (tuple_list_of(0,1,115)(1,2,117))
+        // memory read 80
+        (tuple_list_of(0,2,117))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        // memory read 90
+        .repeat(110, empty)
+        // memory read 200
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(2,4,143))
+        (tuple_list_of(1,4,143))
+        (tuple_list_of(0,4,143))
+        (empty)
+        // memory read 210
+        (tuple_list_of(2,4,144))
+        (tuple_list_of(1,4,144))
+        (tuple_list_of(0,4,144))
+        (empty)
+        (tuple_list_of(2,4,145))
+        (tuple_list_of(1,4,145))
+        (tuple_list_of(0,4,145))
+        (empty)
+        (empty)
+        (empty)
+        // memory read 220
+        .repeat(36, empty);
+
+    const test_Mct420CL dev;
+
+    for( unsigned function = 0; function < 256; ++function )
+    {
+        results.push_back(dev.getDescriptorForRead(Cti::Protocols::EmetconProtocol::IO_Read, function, 3));
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       results.begin(),  results.end(),
+       expected.begin(), expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_2Dwords)
+{
+    using namespace boost::assign;
+    using namespace boost::tuples;
+
+    vector<test_Mct420Device::ReadDescriptor> results;
+
+    const vector<tuple<unsigned, unsigned, int>> empty;
+
+    const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
+        //  memory read 0
+        (tuple_list_of(0,1,101)(1,2,100)(2,1,131)(3,1,127))
+        (tuple_list_of(0,2,100)(1,1,131)(2,1,127))
+        (tuple_list_of(0,1,131)(1,1,127))
+        (tuple_list_of(0,1,127)(7,1,128))
+        (tuple_list_of(6,1,128)(7,1,129))
+        (tuple_list_of(5,1,128)(6,1,129)(7,2,130))
+        (tuple_list_of(4,1,128)(5,1,129)(6,2,130))
+        (tuple_list_of(3,1,128)(4,1,129)(5,2,130))
+        (tuple_list_of(2,1,128)(3,1,129)(4,2,130)(7,1,141))
+        (tuple_list_of(1,1,128)(2,1,129)(3,2,130)(6,1,141))
+        // memory read
+        (tuple_list_of(0,1,128)(1,1,129)(2,2,130)(5,1,141))
+        (tuple_list_of(0,1,129)(1,2,130)(4,1,141))
+        (tuple_list_of(0,2,130)(3,1,141)(7,1,123))
+        (tuple_list_of(2,1,141)(6,1,123)(7,2,126))
+        (tuple_list_of(1,1,141)(5,1,123)(6,2,126))
+        (tuple_list_of(0,1,141)(4,1,123)(5,2,126)(7,2,124))
+        (tuple_list_of(3,1,123)(4,2,126)(6,2,124))
+        (tuple_list_of(2,1,123)(3,2,126)(5,2,124)(7,1,125))
+        (tuple_list_of(1,1,123)(2,2,126)(4,2,124)(6,1,125)(7,1,142))
+        (tuple_list_of(0,1,123)(1,2,126)(3,2,124)(5,1,125)(6,1,142)(7,1,112))
+        // memory read
+        (tuple_list_of(0,2,126)(2,2,124)(4,1,125)(5,1,142)(6,1,112)(7,1,103))
+        (tuple_list_of(1,2,124)(3,1,125)(4,1,142)(5,1,112)(6,1,103)(7,1,114))
+        (tuple_list_of(0,2,124)(2,1,125)(3,1,142)(4,1,112)(5,1,103)(6,1,114)(7,1,113))
+        (tuple_list_of(1,1,125)(2,1,142)(3,1,112)(4,1,103)(5,1,114)(6,1,113)(7,2,111))
+        (tuple_list_of(0,1,125)(1,1,142)(2,1,112)(3,1,103)(4,1,114)(5,1,113)(6,2,111))
+        (tuple_list_of(0,1,142)(1,1,112)(2,1,103)(3,1,114)(4,1,113)(5,2,111)(7,2,110))
+        (tuple_list_of(0,1,112)(1,1,103)(2,1,114)(3,1,113)(4,2,111)(6,2,110))
+        (tuple_list_of(0,1,103)(1,1,114)(2,1,113)(3,2,111)(5,2,110)(7,1,132))
+        (tuple_list_of(0,1,114)(1,1,113)(2,2,111)(4,2,110)(6,1,132))
+        (tuple_list_of(0,1,113)(1,2,111)(3,2,110)(5,1,132))
+        // memory read
+        (tuple_list_of(0,2,111)(2,2,110)(4,1,132))
+        (tuple_list_of(1,2,110)(3,1,132))
+        (tuple_list_of(0,2,110)(2,1,132))
+        (tuple_list_of(1,1,132))
+        (tuple_list_of(0,1,132))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        // memory read
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(7,1,202))
+        (tuple_list_of(6,1,202)(7,1,106))
+        (tuple_list_of(5,1,202)(6,1,106)(7,4,107))
+        (tuple_list_of(4,1,202)(5,1,106)(6,4,107))
+        // memory read
+        (tuple_list_of(3,1,202)(4,1,106)(5,4,107))
+        (tuple_list_of(2,1,202)(3,1,106)(4,4,107))
+        (tuple_list_of(1,1,202)(2,1,106)(3,4,107)(7,4,108))
+        (tuple_list_of(0,1,202)(1,1,106)(2,4,107)(6,4,108))
+        (tuple_list_of(0,1,106)(1,4,107)(5,4,108))
+        (tuple_list_of(0,4,107)(4,4,108))
+        (tuple_list_of(3,4,108)(7,1,109))
+        (tuple_list_of(2,4,108)(6,1,109))
+        (tuple_list_of(1,4,108)(5,1,109))
+        (tuple_list_of(0,4,108)(4,1,109))
+        // memory read
+        (tuple_list_of(3,1,109))
+        (tuple_list_of(2,1,109))
+        (tuple_list_of(1,1,109))
+        (tuple_list_of(0,1,109))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        // memory read
+        (empty)
+        (empty)
+        (tuple_list_of(7,1,115))
+        (tuple_list_of(6,1,115)(7,2,117))
+        (tuple_list_of(5,1,115)(6,2,117))
+        (tuple_list_of(4,1,115)(5,2,117))
+        (tuple_list_of(3,1,115)(4,2,117))
+        (tuple_list_of(2,1,115)(3,2,117))
+        (tuple_list_of(1,1,115)(2,2,117))
+        (tuple_list_of(0,1,115)(1,2,117))
+        // memory read
+        (tuple_list_of(0,2,117))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        // memory read
+        .repeat(110,empty)
+        // memory read
+        (empty)
+        (tuple_list_of(7,4,143))
+        (tuple_list_of(6,4,143))
+        (tuple_list_of(5,4,143))
+        (tuple_list_of(4,4,143))
+        (tuple_list_of(3,4,143)(7,4,144))
+        (tuple_list_of(2,4,143)(6,4,144))
+        (tuple_list_of(1,4,143)(5,4,144))
+        (tuple_list_of(0,4,143)(4,4,144))
+        (tuple_list_of(3,4,144)(7,4,145))
+        // memory read
+        (tuple_list_of(2,4,144)(6,4,145))
+        (tuple_list_of(1,4,144)(5,4,145))
+        (tuple_list_of(0,4,144)(4,4,145))
+        (tuple_list_of(3,4,145))
+        (tuple_list_of(2,4,145))
+        (tuple_list_of(1,4,145))
+        (tuple_list_of(0,4,145))
+        (empty)
+        (empty)
+        (empty)
+        // memory read
+        .repeat(36, empty);
+
+    const test_Mct420CL dev;
+
+    for( unsigned function = 0; function < 256; ++function )
+    {
+        results.push_back(dev.getDescriptorForRead(Cti::Protocols::EmetconProtocol::IO_Read, function, 8));
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       results.begin(),  results.end(),
+       expected.begin(), expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Read_3Dwords)
+{
+    using namespace boost::assign;
+    using namespace boost::tuples;
+
+    vector<test_Mct420Device::ReadDescriptor> results;
+
+    const vector<tuple<unsigned, unsigned, int>> empty;
+
+    const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
+        //  memory read 0
+        (tuple_list_of(0,1,101)(1,2,100)(2,1,131)(3,1,127)(10,1,128)(11,1,129)(12,2,130))
+        (tuple_list_of(0,2,100)(1,1,131)(2,1,127)(9,1,128)(10,1,129)(11,2,130))
+        (tuple_list_of(0,1,131)(1,1,127)(8,1,128)(9,1,129)(10,2,130))
+        (tuple_list_of(0,1,127)(7,1,128)(8,1,129)(9,2,130)(12,1,141))
+        (tuple_list_of(6,1,128)(7,1,129)(8,2,130)(11,1,141))
+        (tuple_list_of(5,1,128)(6,1,129)(7,2,130)(10,1,141))
+        (tuple_list_of(4,1,128)(5,1,129)(6,2,130)(9,1,141))
+        (tuple_list_of(3,1,128)(4,1,129)(5,2,130)(8,1,141)(12,1,123))
+        (tuple_list_of(2,1,128)(3,1,129)(4,2,130)(7,1,141)(11,1,123)(12,2,126))
+        (tuple_list_of(1,1,128)(2,1,129)(3,2,130)(6,1,141)(10,1,123)(11,2,126))
+        // memory read
+        (tuple_list_of(0,1,128)(1,1,129)(2,2,130)(5,1,141)(9,1,123)(10,2,126)(12,2,124))
+        (tuple_list_of(0,1,129)(1,2,130)(4,1,141)(8,1,123)(9,2,126)(11,2,124))
+        (tuple_list_of(0,2,130)(3,1,141)(7,1,123)(8,2,126)(10,2,124)(12,1,125))
+        (tuple_list_of(2,1,141)(6,1,123)(7,2,126)(9,2,124)(11,1,125)(12,1,142))
+        (tuple_list_of(1,1,141)(5,1,123)(6,2,126)(8,2,124)(10,1,125)(11,1,142)(12,1,112))
+        (tuple_list_of(0,1,141)(4,1,123)(5,2,126)(7,2,124)(9,1,125)(10,1,142)(11,1,112)(12,1,103))
+        (tuple_list_of(3,1,123)(4,2,126)(6,2,124)(8,1,125)(9,1,142)(10,1,112)(11,1,103)(12,1,114))
+        (tuple_list_of(2,1,123)(3,2,126)(5,2,124)(7,1,125)(8,1,142)(9,1,112)(10,1,103)(11,1,114)(12,1,113))
+        (tuple_list_of(1,1,123)(2,2,126)(4,2,124)(6,1,125)(7,1,142)(8,1,112)(9,1,103)(10,1,114)(11,1,113)(12,2,111))
+        (tuple_list_of(0,1,123)(1,2,126)(3,2,124)(5,1,125)(6,1,142)(7,1,112)(8,1,103)(9,1,114)(10,1,113)(11,2,111))
+        // memory read
+        (tuple_list_of(0,2,126)(2,2,124)(4,1,125)(5,1,142)(6,1,112)(7,1,103)(8,1,114)(9,1,113)(10,2,111)(12,2,110))
+        (tuple_list_of(1,2,124)(3,1,125)(4,1,142)(5,1,112)(6,1,103)(7,1,114)(8,1,113)(9,2,111)(11,2,110))
+        (tuple_list_of(0,2,124)(2,1,125)(3,1,142)(4,1,112)(5,1,103)(6,1,114)(7,1,113)(8,2,111)(10,2,110)(12,1,132))
+        (tuple_list_of(1,1,125)(2,1,142)(3,1,112)(4,1,103)(5,1,114)(6,1,113)(7,2,111)(9,2,110)(11,1,132))
+        (tuple_list_of(0,1,125)(1,1,142)(2,1,112)(3,1,103)(4,1,114)(5,1,113)(6,2,111)(8,2,110)(10,1,132))
+        (tuple_list_of(0,1,142)(1,1,112)(2,1,103)(3,1,114)(4,1,113)(5,2,111)(7,2,110)(9,1,132))
+        (tuple_list_of(0,1,112)(1,1,103)(2,1,114)(3,1,113)(4,2,111)(6,2,110)(8,1,132))
+        (tuple_list_of(0,1,103)(1,1,114)(2,1,113)(3,2,111)(5,2,110)(7,1,132))
+        (tuple_list_of(0,1,114)(1,1,113)(2,2,111)(4,2,110)(6,1,132))
+        (tuple_list_of(0,1,113)(1,2,111)(3,2,110)(5,1,132))
+        // memory read
+        (tuple_list_of(0,2,111)(2,2,110)(4,1,132))
+        (tuple_list_of(1,2,110)(3,1,132))
+        (tuple_list_of(0,2,110)(2,1,132))
+        (tuple_list_of(1,1,132))
+        (tuple_list_of(0,1,132))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        // memory read
+        (empty)
+        (tuple_list_of(12,1,202))
+        (tuple_list_of(11,1,202)(12,1,106))
+        (tuple_list_of(10,1,202)(11,1,106)(12,4,107))
+        (tuple_list_of(9,1,202)(10,1,106)(11,4,107))
+        (tuple_list_of(8,1,202)(9,1,106)(10,4,107))
+        (tuple_list_of(7,1,202)(8,1,106)(9,4,107))
+        (tuple_list_of(6,1,202)(7,1,106)(8,4,107)(12,4,108))
+        (tuple_list_of(5,1,202)(6,1,106)(7,4,107)(11,4,108))
+        (tuple_list_of(4,1,202)(5,1,106)(6,4,107)(10,4,108))
+        // memory read
+        (tuple_list_of(3,1,202)(4,1,106)(5,4,107)(9,4,108))
+        (tuple_list_of(2,1,202)(3,1,106)(4,4,107)(8,4,108)(12,1,109))
+        (tuple_list_of(1,1,202)(2,1,106)(3,4,107)(7,4,108)(11,1,109))
+        (tuple_list_of(0,1,202)(1,1,106)(2,4,107)(6,4,108)(10,1,109))
+        (tuple_list_of(0,1,106)(1,4,107)(5,4,108)(9,1,109))
+        (tuple_list_of(0,4,107)(4,4,108)(8,1,109))
+        (tuple_list_of(3,4,108)(7,1,109))
+        (tuple_list_of(2,4,108)(6,1,109))
+        (tuple_list_of(1,4,108)(5,1,109))
+        (tuple_list_of(0,4,108)(4,1,109))
+        // memory read
+        (tuple_list_of(3,1,109))
+        (tuple_list_of(2,1,109))
+        (tuple_list_of(1,1,109))
+        (tuple_list_of(0,1,109))
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(12,1,115))
+        (tuple_list_of(11,1,115)(12,2,117))
+        (tuple_list_of(10,1,115)(11,2,117))
+        // memory read
+        (tuple_list_of(9,1,115)(10,2,117))
+        (tuple_list_of(8,1,115)(9,2,117))
+        (tuple_list_of(7,1,115)(8,2,117))
+        (tuple_list_of(6,1,115)(7,2,117))
+        (tuple_list_of(5,1,115)(6,2,117))
+        (tuple_list_of(4,1,115)(5,2,117))
+        (tuple_list_of(3,1,115)(4,2,117))
+        (tuple_list_of(2,1,115)(3,2,117))
+        (tuple_list_of(1,1,115)(2,2,117))
+        (tuple_list_of(0,1,115)(1,2,117))
+        // memory read
+        (tuple_list_of(0,2,117))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        // memory read
+        .repeat(100, empty)
+        // memory read
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(12,4,143))
+        (tuple_list_of(11,4,143))
+        (tuple_list_of(10,4,143))
+        (tuple_list_of(9,4,143))
+        // memory read
+        (tuple_list_of(8,4,143)(12,4,144))
+        (tuple_list_of(7,4,143)(11,4,144))
+        (tuple_list_of(6,4,143)(10,4,144))
+        (tuple_list_of(5,4,143)(9,4,144))
+        (tuple_list_of(4,4,143)(8,4,144)(12,4,145))
+        (tuple_list_of(3,4,143)(7,4,144)(11,4,145))
+        (tuple_list_of(2,4,143)(6,4,144)(10,4,145))
+        (tuple_list_of(1,4,143)(5,4,144)(9,4,145))
+        (tuple_list_of(0,4,143)(4,4,144)(8,4,145))
+        (tuple_list_of(3,4,144)(7,4,145))
+        // memory read
+        (tuple_list_of(2,4,144)(6,4,145))
+        (tuple_list_of(1,4,144)(5,4,145))
+        (tuple_list_of(0,4,144)(4,4,145))
+        (tuple_list_of(3,4,145))
+        (tuple_list_of(2,4,145))
+        (tuple_list_of(1,4,145))
+        (tuple_list_of(0,4,145))
+        (empty)
+        (empty)
+        (empty)
+        // memory read
+        .repeat(36, empty);
+
+    const test_Mct420CL dev;
+
+    for( unsigned function = 0; function < 256; ++function )
+    {
+        results.push_back(dev.getDescriptorForRead(Cti::Protocols::EmetconProtocol::IO_Read, function, 13));
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       results.begin(),  results.end(),
+       expected.begin(), expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_1Dword)
+{
+    using namespace boost::assign;
+    using namespace boost::tuples;
+
+    vector<test_Mct420Device::ReadDescriptor> results;
+
+    const vector<tuple<unsigned, unsigned, int>> empty;
+
+    const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
+        //  function read 0
+        (empty).repeat(170-1, empty)
+        //  function read 170
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(0,2,117)(2,1,122))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        //  function read 180
+        .repeat(60, empty)
+        //  function read 240
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(0,1,176)(1,1,177)(2,1,178))
+        (tuple_list_of(0,1,189)(1,1,190)(2,1,191))
+        (empty)
+        (empty)
+        //  function read 240
+        .repeat(6, empty);
+
+    const test_Mct420CL dev;
+
+    for( unsigned function = 0; function < 256; ++function )
+    {
+        results.push_back(dev.getDescriptorForRead(Cti::Protocols::EmetconProtocol::IO_Function_Read, function, 3));
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       results.begin(),  results.end(),
+       expected.begin(), expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_2Dwords)
+{
+    using namespace boost::assign;
+    using namespace boost::tuples;
+
+    vector<test_Mct420Device::ReadDescriptor> results;
+
+    const vector<tuple<unsigned, unsigned, int>> empty;
+
+    const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
+        //  function read 0
+        (empty).repeat(150-1, empty)
+        //  function read 150
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(4,1,137)(5,1,138)(6,1,139)(7,1,140))
+        (empty)
+        (empty)
+        //  function read 160
+        .repeat(10, empty)
+        //  function read 170
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(0,2,117)(2,1,122))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        //  function read 180
+        .repeat(60, empty)
+        //  function read 240
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(0,1,176)(1,1,177)(2,1,178)(3,1,179)(4,1,180)(5,1,181)(6,1,182)(7,1,183))
+        (tuple_list_of(0,1,189)(1,1,190)(2,1,191)(3,1,192)(4,1,193)(5,1,194)(6,1,195)(7,1,196))
+        (empty)
+        (empty)
+        //  function read 250
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(5,2,133)(7,1,134))
+        (empty);
+
+    const test_Mct420CL dev;
+
+    for( unsigned function = 0; function < 256; ++function )
+    {
+        results.push_back(dev.getDescriptorForRead(Cti::Protocols::EmetconProtocol::IO_Function_Read, function, 8));
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       results.begin(),  results.end(),
+       expected.begin(), expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(test_getValueMappingForRead_IO_Function_Read_3Dwords)
+{
+    using namespace boost::assign;
+    using namespace boost::tuples;
+
+    vector<test_Mct420Device::ReadDescriptor> results;
+
+    const vector<tuple<unsigned, unsigned, int>> empty;
+
+    const vector<vector<tuple<unsigned, unsigned, int>>> expected = list_of<vector<tuple<unsigned, unsigned, int>>>
+        //  function read 0
+        (empty).repeat(150-1, empty)
+        //  function read 150
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(4,1,137)(5,1,138)(6,1,139)(7,1,140))
+        (empty)
+        (empty)
+        //  function read 160
+        .repeat(10, empty)
+        //  function read 170
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(0,2,117)(2,1,122)(10,1,109))
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        //  function read 180
+        .repeat(60, empty)
+        //  function read 240
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(0,1,176)(1,1,177)(2,1,178)(3,1,179)(4,1,180)(5,1,181)(6,1,182)(7,1,183)(8,1,184)(9,1,185)(10,1,186)(11,1,187)(12,1,188))
+        (tuple_list_of(0,1,189)(1,1,190)(2,1,191)(3,1,192)(4,1,193)(5,1,194)(6,1,195)(7,1,196)(8,1,197)(9,1,198)(10,1,199)(11,1,200)(12,1,201))
+        (empty)
+        (empty)
+        //  function read 250
+        (empty)
+        (empty)
+        (empty)
+        (empty)
+        (tuple_list_of(5,2,133)(7,1,134)(9,1,135)(10,1,136)(11,1,127))
+        (empty);
+
+    const test_Mct420CL dev;
+
+    for( unsigned function = 0; function < 256; ++function )
+    {
+        results.push_back(dev.getDescriptorForRead(Cti::Protocols::EmetconProtocol::IO_Function_Read, function, 13));
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+       results.begin(),  results.end(),
+       expected.begin(), expected.end());
+}
 
 BOOST_AUTO_TEST_SUITE_END()

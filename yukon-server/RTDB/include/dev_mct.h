@@ -7,7 +7,7 @@
 namespace Cti {
 namespace Devices {
 
-class IM_EX_DEVDB MctDevice : public CarrierDevice
+class IM_EX_DEVDB MctDevice : public CarrierDevice, boost::noncopyable
 {
 private:
 
@@ -74,7 +74,14 @@ protected:
     struct value_descriptor
     {
         unsigned length;
-        CtiTableDynamicPaoInfo::PaoInfoKeys name;
+        CtiTableDynamicPaoInfo::PaoInfoKeys key;
+    };
+
+    struct value_locator
+    {
+        unsigned offset;
+        unsigned length;
+        CtiTableDynamicPaoInfo::PaoInfoKeys key;
     };
 
     //  multimap because data for multiple keys could start at the same location
@@ -84,9 +91,12 @@ protected:
     virtual const ValueMapping *getMemoryMap(void) const;
     virtual const FunctionReadValueMappings *getFunctionReadValueMaps(void) const;
 
-    const ValueMapping *getValueMapForFunctionRead(const unsigned function) const;
+    typedef std::vector<value_locator> ReadDescriptor;
 
-    void decodeReadDataForKey(const unsigned char *begin, const unsigned char *end, const CtiTableDynamicPaoInfo::PaoInfoKeys key);
+    const ReadDescriptor getDescriptorFromMapping(const ValueMapping &vm, const unsigned function, const unsigned readLength) const;
+    virtual const ReadDescriptor getDescriptorForRead(const unsigned char io, const unsigned function, const unsigned readLength) const;
+
+    void decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKeys key, const unsigned char *begin, const unsigned char *end);
 
     virtual INT executeLoopback ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     virtual INT executeScan     ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
@@ -206,11 +216,8 @@ public:
     };
 
     MctDevice( );
-    MctDevice( const MctDevice &aRef );
 
-    virtual ~MctDevice( );
-
-    MctDevice& operator=( const MctDevice &aRef );
+    virtual ~MctDevice( ) {};
 
     virtual CtiTime adjustNextScanTime( const INT scanType=ScanRateGeneral );
 

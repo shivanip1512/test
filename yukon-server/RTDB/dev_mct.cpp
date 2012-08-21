@@ -59,23 +59,6 @@ MctDevice::MctDevice() :
     resetMCTScansPending();
 }
 
-MctDevice::MctDevice(const MctDevice& aRef)
-{
-    *this = aRef;
-}
-
-MctDevice::~MctDevice()  {  }
-
-MctDevice &MctDevice::operator=(const MctDevice &aRef)
-{
-    if(this != &aRef)
-    {
-        Inherited::operator=(aRef);
-        CtiLockGuard<CtiMutex> guard(_classMutex);            // Protect this device!
-    }
-    return *this;
-}
-
 bool MctDevice::getMCTDebugLevel(int mask)
 {
     static time_t lastaccess;  //  initialized to 0 the first time through, as per static rules
@@ -211,72 +194,76 @@ const MctDevice::FunctionReadValueMappings *MctDevice::getFunctionReadValueMaps(
     return 0;
 }
 
-const MctDevice::ValueMapping *MctDevice::getValueMapForFunctionRead(unsigned function) const
-{
-    if( const FunctionReadValueMappings *fr = getFunctionReadValueMaps() )
-    {
-        FunctionReadValueMappings::const_iterator itr = fr->find(function);
 
-        if( itr != fr->end() )
+const MctDevice::ReadDescriptor MctDevice::getDescriptorForRead(const unsigned char io, const unsigned function, const unsigned readLength) const
+{
+    if( io == EmetconProtocol::IO_Read )
+    {
+        if( const ValueMapping *memoryMap = getMemoryMap() )
         {
-            return &(itr->second);
+            return getDescriptorFromMapping(*memoryMap, function, readLength);
         }
     }
-
-    return 0;
-}
-
-
-//  this will need to become virtual and reimplemented by the MCT-420, since all of its reads are "function" reads now - no more memory map reads
-void MctDevice::extractDynamicPaoInfo(const INMESS &InMessage)
-{
-    const ValueMapping *value_map = 0;
-    unsigned read_offset;
-
-    switch( InMessage.Return.ProtocolInfo.Emetcon.IO )
+    else if( io == EmetconProtocol::IO_Function_Read )
     {
-        case EmetconProtocol::IO_Function_Read:
+        if( const FunctionReadValueMappings *fr = getFunctionReadValueMaps() )
         {
-            value_map = getValueMapForFunctionRead(InMessage.Return.ProtocolInfo.Emetcon.Function);
-            read_offset = 0;
+            FunctionReadValueMappings::const_iterator itr = fr->find(function);
 
-            break;
-        }
-        case EmetconProtocol::IO_Read:
-        {
-            value_map = getMemoryMap();
-            read_offset = InMessage.Return.ProtocolInfo.Emetcon.Function;
-
-            break;
-        }
-    }
-
-    if( value_map )
-    {
-        unsigned read_length = InMessage.Buffer.DSt.Length;
-
-        ValueMapping::const_iterator itr    = value_map->lower_bound(read_offset);
-        ValueMapping::const_iterator itr_hi = value_map->upper_bound(read_offset + read_length);
-
-        while( itr != itr_hi )
-        {
-            const unsigned item_offset = itr->first - read_offset;
-            const value_descriptor item = itr->second;
-            ++itr;
-
-            if( (item_offset + item.length) <= read_length )
+            if( itr != fr->end() )
             {
-                decodeReadDataForKey(
-                    InMessage.Buffer.DSt.Message + item_offset,
-                    InMessage.Buffer.DSt.Message + item_offset + item.length,
-                    item.name);
+                return getDescriptorFromMapping(itr->second, 0, readLength);
             }
         }
     }
+
+    return ReadDescriptor();
 }
 
 
-void MctDevice::decodeReadDataForKey(const unsigned char *begin, const unsigned char *end, const CtiTableDynamicPaoInfo::PaoInfoKeys key)
+const MctDevice::ReadDescriptor MctDevice::getDescriptorFromMapping(const ValueMapping &vm, const unsigned function, const unsigned readLength) const
+{
+    ReadDescriptor rd;
+
+    ValueMapping::const_iterator
+        itr = vm.lower_bound(function),
+        end = vm.lower_bound(function + readLength);
+
+    while( itr != end )
+    {
+        value_locator kvl = { itr->first - function, itr->second.length, itr->second.key };
+
+        rd.push_back(kvl);
+
+        ++itr;
+    }
+
+    return rd;
+}
+
+void MctDevice::extractDynamicPaoInfo(const INMESS &InMessage)
+{
+    const unsigned char io    = InMessage.Return.ProtocolInfo.Emetcon.IO;
+    const unsigned function   = InMessage.Return.ProtocolInfo.Emetcon.Function;
+    const unsigned readLength = InMessage.Buffer.DSt.Length;
+    const unsigned char *message = InMessage.Buffer.DSt.Message;
+
+    const ReadDescriptor descriptor = getDescriptorForRead(io, function, readLength);
+
+    for each( const value_locator kvl in descriptor )
+    {
+        if( (kvl.offset + kvl.length) <= readLength )
+        {
+            decodeReadDataForKey(
+                kvl.key,
+                message + kvl.offset,
+                message + kvl.offset + kvl.length);
+        }
+    }
+}
+
+
+void MctDevice::decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKeys key, const unsigned char *begin, const unsigned char *end)
 {
     //  Special processing for Key_MCT_SSpec - should probably factor this out into a "processing" function so we can manipulate other values
     if( key == CtiTableDynamicPaoInfo::Key_MCT_SSpec && (end - begin) == 5 )

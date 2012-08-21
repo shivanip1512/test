@@ -45,7 +45,7 @@ Mct420Device::ValueMapping Mct420Device::initMemoryMap()
     //  Clear out the SSPEC and SSPEC revision - they've changed in the MCT-420
     for( ValueMapping::iterator itr = memoryMap.begin(); itr != memoryMap.end(); )
     {
-        switch( itr->second.name )
+        switch( itr->second.key )
         {
             case CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision:
             case CtiTableDynamicPaoInfo::Key_MCT_SSpec:
