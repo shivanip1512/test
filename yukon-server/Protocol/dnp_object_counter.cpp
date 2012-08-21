@@ -472,8 +472,7 @@ CtiPointDataMsg *CounterEvent::getPoint( const TimeCTO *cto ) const
         case CE_Delta32BitWithTime:
         {
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
-            tmpMsg->setTime(_toc.getSeconds());
-            tmpMsg->setMillis(_toc.getMilliseconds());
+            tmpMsg->setTimeWithMillis(_toc.getSeconds(), _toc.getMilliseconds());
 
             break;
         }

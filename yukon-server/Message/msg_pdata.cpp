@@ -37,8 +37,7 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
                                  unsigned  tags,
                                  unsigned  attrib,
                                  unsigned  limit,
-                                 int       pri,
-                                 unsigned  millis) :
+                                 int       pri) :
    _id(id),
    _value(value),
    _quality(quality),
@@ -48,11 +47,10 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
    _tags(tags),
    _attrib(attrib),
    _limit(limit),
-   //_millis(millis)  //  set below so the time can be rounded
+   _millis(0),
    CtiMessage(pri)
 {
     _instanceCount++;
-    setMillis(millis);
 
     if(_type == StatusPointType)
     {
@@ -137,8 +135,7 @@ void CtiPointDataMsg::restoreGuts(RWvistream& aStream)
     setExemptionStatus(force);
 
     setString(str);
-    setTime(intime);
-    setMillis(millis);
+    setTimeWithMillis(intime, millis);
 
     //dump();
 }
@@ -295,6 +292,13 @@ CtiPointDataMsg& CtiPointDataMsg::setMillis(unsigned millis)
     return *this;
 }
 
+CtiPointDataMsg& CtiPointDataMsg::setTimeWithMillis(const CtiTime& aTime, const unsigned millis)
+{
+    setTime(aTime);
+    setMillis(millis);
+
+    return *this;
+}
 
 
 void CtiPointDataMsg::dump() const

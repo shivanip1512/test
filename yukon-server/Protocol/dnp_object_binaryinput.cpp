@@ -393,8 +393,7 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
         case BIC_WithTime:
         {
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
-            tmpMsg->setTime(_time.getSeconds());
-            tmpMsg->setMillis(_time.getMilliseconds());
+            tmpMsg->setTimeWithMillis(_time.getSeconds(), _time.getMilliseconds());
 
             break;
         }
@@ -411,8 +410,7 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
             milliseconds %= 1000;
 
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
-            tmpMsg->setTime(seconds);
-            tmpMsg->setMillis(milliseconds);
+            tmpMsg->setTimeWithMillis(seconds, milliseconds);
 
             break;
         }

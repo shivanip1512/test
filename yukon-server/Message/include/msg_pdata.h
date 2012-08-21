@@ -50,8 +50,7 @@ public:
                    unsigned  tags        = 0,
                    unsigned  attrib      = 0,
                    unsigned  limit       = 0,
-                   int       pri         = 7,
-                   unsigned  millis      = 0
+                   int       pri         = 7
                    );
 
    CtiPointDataMsg(const CtiPointDataMsg &aRef);
@@ -99,6 +98,8 @@ public:
 
    unsigned  getMillis() const;
    CtiPointDataMsg& setMillis(unsigned millis);
+
+   CtiPointDataMsg& setTimeWithMillis(const CtiTime& aTime, const unsigned millis);
 
    virtual void dump() const;
 

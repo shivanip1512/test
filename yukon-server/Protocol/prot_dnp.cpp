@@ -653,11 +653,11 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
             }
 
             // Point value for the message regarding device restart.
-            double pointValue = 0.0;
+            bool deviceRestarted = false;
 
             if( _app_layer.hasDeviceRestarted() ) 
             {
-                pointValue = 1.0; // Device restarted, set the value to 1!
+                deviceRestarted = true;
 
                 if (_command != Command_ResetDeviceRestartBit )
                 {
@@ -691,25 +691,20 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
                 }
             }
 
-            // We need to set up a millisecond time for the point message.
-            SYSTEMTIME st;
-            GetLocalTime(&st);
-            const CtiTime systemTime( CtiDate(st.wDay, st.wMonth, st.wYear), st.wHour, st.wMinute, st.wSecond );
-
             // Add the point message for the restart bit.
             CtiPointDataMsg* pt_msg = 
                 new CtiPointDataMsg(IINStatusPointOffset_RestartBit,
-                                    pointValue,
+                                    deviceRestarted,
                                     NormalQuality,
-                                    StatusPointType,
-                                    std::string(),
-                                    0,
-                                    0,
-                                    0,
-                                    7,
-                                    st.wMilliseconds);
+                                    StatusPointType);
 
-            pt_msg->setTime(systemTime);
+            // We need to set up a millisecond time for the point message.
+            SYSTEMTIME st;
+            GetLocalTime(&st);
+
+            pt_msg->setTimeWithMillis( 
+               CtiTime( CtiDate(st.wDay, st.wMonth, st.wYear), st.wHour, st.wMinute, st.wSecond ),
+               st.wMilliseconds );
 
             _point_results.insert(_point_results.end(), pt_msg);
         }
