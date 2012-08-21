@@ -14,14 +14,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.collection.CollectionCreationException;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -29,17 +32,26 @@ import com.google.common.collect.Lists;
 public class InventoryActionsController {
     
     @Autowired private InventoryCollectionFactoryImpl inventoryCollectionFactory;
+    @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private ConfigurationSource configurationSource;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
+    
     private static final int MAX_SELECTED_INVENTORY_DISPLAYED = 1000;
 
     /* Inventory Actions */
-    @RequestMapping(value = "/operator/inventory/inventoryActions", method=RequestMethod.GET)
+    @RequestMapping(value = "/operator/inventory/inventoryActions")
     public String inventoryActions(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         
         InventoryCollection yukonCollection = inventoryCollectionFactory.createCollection(request);
-        modelMap.addAttribute("inventoryCollection", yukonCollection);
-        modelMap.addAllAttributes(yukonCollection.getCollectionParameters());
+        
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
+        String displayHint = accessor.getMessage("yukon.common.device.bulk.bulkAction.collection.idList");
+        
+        InventoryCollection memoryCollection = memoryCollectionProducer.createCollection(yukonCollection.iterator(), displayHint);
+        
+        modelMap.addAttribute("inventoryCollection", memoryCollection);
+        modelMap.addAllAttributes(memoryCollection.getCollectionParameters());
         
         boolean digiEnabled = configurationSource.getBoolean(MasterConfigBooleanKeysEnum.DIGI_ENABLED);
         modelMap.addAttribute("digiEnabled", digiEnabled);

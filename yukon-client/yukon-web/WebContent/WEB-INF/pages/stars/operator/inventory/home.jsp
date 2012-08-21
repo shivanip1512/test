@@ -46,7 +46,7 @@
                         <%-- INVENTORY PICKER--%>
                         <tr>
                             <td class="button top">
-                                <form id="selectByInventoryPickerForm" action="/spring/stars/operator/inventory/inventoryActions" method="get">
+                                <form id="selectByInventoryPickerForm" action="/spring/stars/operator/inventory/inventoryActions" method="post">
                                     <input type="hidden" name="collectionType" value="idList"/>
                                     <input type="hidden" name="idList.ids" id="inventoryIds"/>
                                     <tags:pickerDialog type="lmHardwareBasePicker" extraArgs="${energyCompanyId}" id="inventoryPicker" multiSelectMode="true" 
