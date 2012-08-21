@@ -248,8 +248,12 @@ begin
 		//start services
 		//this may take a moment, so give the user some feedback
 		SdShowMsg("Starting Yukon Services. This may take a moment.", TRUE);
+    	SaveServiceSettings(); //needed to determine the "start" parameter below
     	for i = 0 to (SizeOf(sServiceNameArray)-1)
-			LaunchApplication(sCMD, "start \"" + sServiceNameArray(i) +"\"", "", SW_HIDE, 0, LAAW_OPTION_WAIT);
+			//only start a service if its startup is set to "automatic" - i.e. "2" in the registry
+			if(sServiceSettings(i) = "2") then
+				LaunchApplication(sCMD, "start \"" + sServiceNameArray(i) +"\"", "", SW_HIDE, 0, LAAW_OPTION_WAIT);
+			endif;
 		endfor;
 		//get out of "hidden" app-launch mode
 		LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);

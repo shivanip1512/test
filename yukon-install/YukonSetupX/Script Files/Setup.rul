@@ -24,7 +24,8 @@
 #define DISPATCH_NAME	"Yukon Dispatch Service"
 #define CC_NAME			"Yukon Cap Control Service"
 #define CALC_NAME		"Yukon Calc-Logic Service"
-#define SYS32			"C:\\WINDOWS\\System32\\"   
+#define SYS32			"C:\\WINDOWS\\System32\\"
+#define SERVICE_WARNING	"Setup detected a Yukon service still running.\nPlease make sure that all Yukon services are stopped before continuing."   
 
 //---------------------------------------------------------------------------
 // FirstUIBefore event is sent when installation is run for the first
@@ -324,8 +325,7 @@ begin
 	
 	Dialog_Services:
 	if (AreYukonServicesRunning()) then
-		MessageBox("Setup detected a Yukon service still running."
-				+ "\nPlease stop all Yukon services before continuing.", WARNING);	
+		MessageBox(SERVICE_WARNING, WARNING);	
 	endif;
 	
 	Dialog_Backup:
@@ -560,8 +560,7 @@ begin
     
     Dialog_Services:
 	if (AreYukonServicesRunning()) then
-		MessageBox("Setup detected a Yukon service still running."
-				+ "\nPlease stop all Yukon services before continuing.", WARNING);	
+		MessageBox(SERVICE_WARNING, WARNING);	
 	endif;
     
     Dialog_Backup:
@@ -684,8 +683,7 @@ Dlg_ObjDialogs:
 			Dialog_UninstServices:
 			if (AreYukonServicesRunning()) then
 				StopYukonServices();
-				MessageBox("Setup detected a Yukon service running."
-						+ " Please stop all Yukon services before continuing.", WARNING);	
+				MessageBox(SERVICE_WARNING, WARNING);	
 			endif;
 			Dialog_UninstBackup:
 			bOptYes = TRUE;
@@ -716,8 +714,7 @@ Dlg_ObjDialogs:
         case REPAIR:	
 			if (AreYukonServicesRunning()) then
 				StopYukonServices();
-				MessageBox("Setup detected a Yukon service still running."
-				+ "\nPlease stop all Yukon services before continuing.", WARNING);	
+				MessageBox(SERVICE_WARNING, WARNING);	
 			endif;
 			// Changed for DevStudio 9, Disk1 files are now always updated when installed
 			// so when running from ADDREMOVE we need to prevent these files from being
@@ -737,8 +734,7 @@ Dlg_ObjDialogs:
         case MODIFY:
             if (AreYukonServicesRunning()) then
 				StopYukonServices();
-				MessageBox("Setup detected a Yukon service still running."
-				+ "\nPlease stop all Yukon services before continuing.", WARNING);	
+				MessageBox(SERVICE_WARNING, WARNING);	
 			endif;
             // Added in 11.0 - Set appropriate StatusEx static text.
             SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_MODIFY ) );
