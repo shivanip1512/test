@@ -2,6 +2,7 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
 
 import javax.swing.border.EtchedBorder;
 
+import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.TierGearContainer;
 
@@ -183,7 +184,7 @@ private void initConnections() throws java.lang.Exception {
 
 public Object getValue(Object o) 
 {
-    LMProgramDirectGear gear = (LMProgramDirectGear)o;
+    BeatThePeakGear gear = (BeatThePeakGear) o;
       
     gear.setChangeCondition( getChangeCondition(getJComboBoxWhenChange().getSelectedItem().toString()) );
     
@@ -196,23 +197,20 @@ public Object getValue(Object o)
     else
         gear.setChangeTriggerOffset( Double.valueOf(getJTextFieldChangeTriggerOffset().getText()) );
     
-    gear.setMethodRate( new Integer( 60 * ((Number)getJCSpinFieldResend().getValue()).intValue() ) );
-    gear.setMethodPeriod( new Integer( ((Number)getJCSpinFieldTimeout().getValue()).intValue() ) );
+    gear.setTimeout( new Integer( ((Number)getJCSpinFieldTimeout().getValue()).intValue() ) );
+    gear.setResend( new Integer( 60 * ((Number)getJCSpinFieldResend().getValue()).intValue() ) );
     
     TierGearContainer tgc = new TierGearContainer();
-    
     String tierName = getJComboBoxIndicator().getSelectedItem().toString();
     tgc.setTier( TierIndicator.tierOf(tierName) );    
     gear.setTierGearContainer(tgc);
-
-    com.cannontech.database.data.device.lm.BeatThePeakGear s = (com.cannontech.database.data.device.lm.BeatThePeakGear)gear;
     
-    return s;
+    return gear;
 }
 
 public void setValue(Object o) 
 {
-    LMProgramDirectGear gear = (LMProgramDirectGear) o;
+    BeatThePeakGear gear = (BeatThePeakGear) o;
     if( gear == null ) return;
 
     setChangeCondition( gear.getChangeCondition() );
@@ -222,9 +220,8 @@ public void setValue(Object o)
     getJCSpinFieldChangeTriggerNumber().setValue( gear.getChangeTriggerNumber() );  
     getJTextFieldChangeTriggerOffset().setText( gear.getChangeTriggerOffset().toString() );
     
-    getJCSpinFieldTimeout().setValue( new Integer( gear.getMethodPeriod().intValue()) );
-    
-    getJCSpinFieldResend().setValue( new Integer( gear.getMethodRate().intValue()) / 60 );
+    getJCSpinFieldTimeout().setValue( new Integer( gear.getTimeout().intValue()) );
+    getJCSpinFieldResend().setValue( new Integer( gear.getResend().intValue()) / 60 );
     
     TierGearContainer tgc = gear.getTierGearContainer();
     String tierName = TierIndicator.nameOf(tgc.getTier());

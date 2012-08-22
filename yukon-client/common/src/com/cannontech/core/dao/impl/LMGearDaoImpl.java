@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.LMGearDao;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -31,29 +32,29 @@ public class LMGearDaoImpl implements LMGearDao {
         
     public void insertContainer(TierGearContainer tgc){
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("INSERT INTO " + tableName + " (GearId, Tier)");
-        sql.append(" VALUES (");
-        sql.append(tgc.getGearId() + ",");
-        sql.append(tgc.getTier() + ")");
+
+        SqlParameterSink params = sql.insertInto(tableName);
+        params.addValue( "GearId", tgc.getGearId() );
+        params.addValue( "Tier", tgc.getTier() );
+
         yukonJdbcTemplate.update(sql);
     }
     
     public void updateContainer(TierGearContainer tgc){
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE " + tableName);
-        sql.append(" SET Tier =");
-        sql.append(tgc.getTier());
-        sql.append(" WHERE GearId =");
-        sql.append(tgc.getGearId());
+
+        SqlParameterSink params = sql.update(tableName);
+        params.addValue("Tier", tgc.getTier());
+        sql.append("WHERE GearId").eq(tgc.getGearId());
+
         yukonJdbcTemplate.update(sql);
     }
     
     public TierGearContainer getContainer(int gearId) {    
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT GearId, Tier");
-        sql.append(" FROM " + tableName);
-        sql.append(" WHERE GearId =");
-        sql.append(gearId);
+        sql.append("FROM " + tableName);
+        sql.append("WHERE GearId").eq(gearId);
         
         TierGearContainer tgc = yukonJdbcTemplate.queryForObject(sql, tierGearRowMapper);
         
@@ -63,19 +64,13 @@ public class LMGearDaoImpl implements LMGearDao {
     public void delete(int gearId){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM " + tableName);
-        sql.append(" WHERE GearId =");
-        sql.append(gearId);
+        sql.append("WHERE GearId").eq(gearId);
         yukonJdbcTemplate.update(sql);
     }
     
        
     public Integer getTierByGearId(int gearId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Tier");
-        sql.append(" FROM " + tableName);
-        sql.append(" WHERE GearId =");
-        sql.append(gearId);
-        Integer tier =  yukonJdbcTemplate.queryForInt(sql);
-        return tier;
+        TierGearContainer tgc = getContainer(gearId);
+        return tgc.getTier();
     }
 }

@@ -17,20 +17,20 @@ import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.data.device.lm.TrueCycleGear;
 
 public enum GearControlMethod implements DatabaseRepresentationSource {
-	TimeRefresh(TimeRefreshGear.class, "Time Refresh"),
-	SmartCycle(SmartCycleGear.class, "Smart Cycle"),
-	SepCycle(SepCycleGear.class, "SEP Cycle"),
-	SepTemperatureOffset(SepTemperatureOffsetGear.class, "SEP Temperature Offset"),
-	MasterCycle(MasterCycleGear.class, "Master Cycle"),
-	Rotation(RotationGear.class, "Rotation"),
-	Latching(LatchingGear.class, "Latching"),
-	TrueCycle(TrueCycleGear.class, "True Cycle"),
-	MagnitudeCycle(MagnitudeCycleGear.class, "Magnitude Cycle"),
-	TargetCycle(TargetCycleGear.class, "Target Cycle"),
-	ThermostatRamping(ThermostatSetbackGear.class, "Thermostat Ramping"),
-	SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping"),
+    TimeRefresh(TimeRefreshGear.class, "Time Refresh"),
+    SmartCycle(SmartCycleGear.class, "Smart Cycle"),
+    SepCycle(SepCycleGear.class, "SEP Cycle"),
+    SepTemperatureOffset(SepTemperatureOffsetGear.class, "SEP Temperature Offset"),
+    MasterCycle(MasterCycleGear.class, "Master Cycle"),
+    Rotation(RotationGear.class, "Rotation"),
+    Latching(LatchingGear.class, "Latching"),
+    TrueCycle(TrueCycleGear.class, "True Cycle"),
+    MagnitudeCycle(MagnitudeCycleGear.class, "Magnitude Cycle"),    
+    TargetCycle(TargetCycleGear.class, "Target Cycle"),
+    ThermostatRamping(ThermostatSetbackGear.class, "Thermostat Ramping"),
+    SimpleThermostatRamping(SimpleThermostatRampingGear.class, "Simple Thermostat Ramping"),
     BeatThePeak(BeatThePeakGear.class, "Beat The Peak"),
-	NoControl(NoControlGear.class, "No Control");
+    NoControl(NoControlGear.class, "No Control");
 
 	private Class<?> gearClass;
 	private String displayName;
