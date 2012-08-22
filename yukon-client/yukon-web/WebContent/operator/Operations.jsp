@@ -333,11 +333,13 @@
                     </tags:sectionLink>
                 </cti:checkProperty>
 
-                <cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS">
-                    <tags:sectionLink>
-                        <a href="/spring/stars/operator/optOut/admin/viewScheduled"> <cti:msg key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents" /> </a>
-                    </tags:sectionLink>
-                </cti:checkProperty>
+				<cti:checkRole role="ConsumerInfoRole.ROLEID">
+	                <cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS">
+	                    <tags:sectionLink>
+	                        <a href="/spring/stars/operator/optOut/admin/viewScheduled"> <cti:msg key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents" /> </a>
+	                    </tags:sectionLink>
+	                </cti:checkProperty>
+				</cti:checkRole>
 
                 <cti:checkRolesAndProperties value="OPERATOR_ADMINISTRATOR">
                     <tags:sectionLink>
