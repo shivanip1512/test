@@ -5,8 +5,6 @@
 
 #include "boost_test_helpers.h"
 
-#include <boost/assign/list_of.hpp>
-
 using Cti::byte_buffer;
 
 BOOST_AUTO_TEST_SUITE( test_prot_dnp )
