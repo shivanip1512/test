@@ -829,9 +829,9 @@
         <troubleshooting>
             Control commands cannot be sent for points which are control inhibited. 
             <ul>
-                <li>Resend the command after enabling control for the point in database editor.</li>
+                <li>Resend the command after enabling control for the point.</li>
                 <ol>
-                    <li>In database editor edit the point in question.</li>
+                    <li>Edit the point in question.</li>
                     <li>Uncheck the "Control Inhibit" checkbox in the Physical Setup tab.</li>
                     <li>Submit the change and attempt the command again.</li>
                 </ol>
