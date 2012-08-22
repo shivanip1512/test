@@ -1565,13 +1565,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     		if (litePoint != null) {
     			int paoID = litePoint.getPaobjectID();
     			if (paoID != CtiUtilities.NONE_ZERO_ID) {
-    				return DeviceTypesFuncs.isCapBankController(paoDao.getLiteYukonPAO(paoID).getPaoType().getDeviceTypeId());
+    				return paoDao.getLiteYukonPAO(paoID).getPaoType().isCbc();
                 }
     		}
     	} else if (getDbPersistent() instanceof YukonPAObject){
             // support for the TwoWay devices
             int paoID = ((YukonPAObject)getDbPersistent()).getPAObjectID().intValue();
-            return DeviceTypesFuncs.isCapBankController(paoDao.getLiteYukonPAO(paoID));
+            return paoDao.getLiteYukonPAO(paoID).getPaoType().isCbc();
        }
        return false;
 	}

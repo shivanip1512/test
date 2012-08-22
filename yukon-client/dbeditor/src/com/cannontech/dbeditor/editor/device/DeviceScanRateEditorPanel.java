@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.capcontrol.CapBankController6510;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
@@ -1940,13 +1941,14 @@ public void setDeviceType(int type)
 		getPeriodicHealthIntervalComboBox().setSelectedItem("1 hour");
 	}
 
+	PaoType paoType = PaoType.getForId(type);
 
-	if( DeviceTypesFuncs.isRTU(type) 
-				|| DeviceTypesFuncs.isMCT(type)
-				|| DeviceTypesFuncs.isLCU(type)
-            || DeviceTypesFuncs.isCapBankController(type)
-            || (type == PAOGroups.SERIES_5_LMI)
-            || DeviceTypesFuncs.isTwoWayLcr(type))
+	if( DeviceTypesFuncs.isRTU(type) || 
+	    DeviceTypesFuncs.isMCT(type) || 
+	    DeviceTypesFuncs.isLCU(type) || 
+	    paoType.isCbc() || 
+	    (type == PAOGroups.SERIES_5_LMI) || 
+	    DeviceTypesFuncs.isTwoWayLcr(type))
 	{		
 		
 		if (DeviceTypesFuncs.isTwoWayLcr(type)) {

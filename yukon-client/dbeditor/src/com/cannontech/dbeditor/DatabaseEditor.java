@@ -771,20 +771,6 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 			//always do this
 			generateDBChangeMsg( selectedObject, DbChangeType.UPDATE );
 			
-			//for some reason, the new 410 points never show up after a ChangeType
-			if(com.cannontech.database.data.device.DeviceTypesFuncs.isMCT4XX(newType))
-			{
-				DBChangeMsg ptChange = new com.cannontech.message.dispatch.message.DBChangeMsg(
-					liteObject.getLiteID(),
-					DBChangeMsg.CHANGE_POINT_DB,
-					DBChangeMsg.CAT_POINT, 
-					PointTypes.getType(PointTypes.DEMAND_ACCUMULATOR_POINT),
-					DbChangeType.ADD );
-				getConnToDispatch().queue(ptChange);
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
-				getTreeViewPanel().refresh();
-			}
-
 			getTreeViewPanel().selectObject(selectedObject);
 
 			//make sure there isnt already an editor frame showing for this node
@@ -813,7 +799,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 		
 
 	}	
-
+	
 	return success;
 }
 /**
@@ -2090,12 +2076,13 @@ public void popupMenuWillBecomeVisible(PopupMenuEvent event)
 	         if (selectedNode.getUserObject() instanceof LiteYukonPAObject)
 	         {
 	            LiteYukonPAObject litYuk = (LiteYukonPAObject)selectedNode.getUserObject();
+	         
+	            PaoType paoType = litYuk.getPaoType();
 	            
-	            if( (litYuk.getPaoType().getPaoClass() == PaoClass.CAPCONTROL 
-	            		&& !DeviceTypesFuncs.isCapBankController(litYuk.getPaoType().getDeviceTypeId())) 
-	                || litYuk.getPaoType() == PaoType.LM_GROUP_RIPPLE
-	                || litYuk.getPaoType() == PaoType.MACRO_GROUP
-	                || litYuk.getPaoType().getPaoClass() == PaoClass.LOADMANAGEMENT )
+	            if( (paoType.getPaoClass() == PaoClass.CAPCONTROL && !paoType.isCbc()) || 
+	                paoType == PaoType.LM_GROUP_RIPPLE || 
+	                paoType == PaoType.MACRO_GROUP || 
+	                paoType.getPaoClass() == PaoClass.LOADMANAGEMENT )
 	            {
 	               getTreeNodePopupMenu().getJMenuItemChangeType().setEnabled(false);
 	               editMenu.changeTypeMenuItem.setEnabled(false);
@@ -2539,7 +2526,6 @@ public void selectionPerformed(WizardPanelEvent event)
 	        showEditor(newItem);
 	    }
 	}
-
 }
 /**
  * This method was created in VisualAge.

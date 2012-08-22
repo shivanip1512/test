@@ -244,6 +244,7 @@ public enum PaoType implements DatabaseRepresentationSource {
         cbcTypesBuilder.add(CBC_DNP);
         cbcTypesBuilder.add(CBC_EXPRESSCOM);
         cbcTypesBuilder.add(CBC_FP_2800);
+        cbcTypesBuilder.add(DNP_CBC_6510);
         cbcTypesBuilder.add(CAPBANKCONTROLLER);
         
         cbcTypes = cbcTypesBuilder.build();

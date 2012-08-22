@@ -85,6 +85,7 @@ public class PointBase extends DBPersistent implements CTIDbChange, EditorPanel 
         delete("DynamicTags", "PointID", pointID);
         delete("Display2WayData", "PointID", pointID);
         delete("CCEventLog", "PointID", pointID);
+        delete("PointUnit", "PointID", pointID);
     }
     
     public void delete() throws SQLException {

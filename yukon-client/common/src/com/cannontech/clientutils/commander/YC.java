@@ -1612,7 +1612,7 @@ public class YC extends Observable implements MessageListener
                         liteYukonPAObject.getPaoName() + 
                         " (ID:" + liteYukonPAObject.getLiteID() + ")";
                         
-            if( DeviceTypesFuncs.isCapBankController(liteYukonPAObject.getPaoType().getDeviceTypeId()) )
+            if( liteYukonPAObject.getPaoType().isCbc() )
                 pointID = getLogPointID(PointTypes.STATUS_POINT, 1); //the Bank Status Point
 
             else if (DeviceTypesFuncs.isLmGroup(liteYukonPAObject.getPaoType().getDeviceTypeId()) )

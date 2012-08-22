@@ -374,7 +374,7 @@ public class CommandCategory
 		{
 			CAT_CBC_BASE_DEVTYPES = new ArrayList<PaoType>();
 			for (PaoType paoType : PaoType.values()) {
-				if( DeviceTypesFuncs.isCapBankController(paoType.getDeviceTypeId()) )
+				if( paoType.isCbc() )
 					CAT_CBC_BASE_DEVTYPES.add(paoType);
 			}
 			CAT_CBC_BASE_DEVTYPES.add(PaoType.CAPBANK);

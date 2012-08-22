@@ -329,7 +329,7 @@ private void initComboBoxes()
 
 			//only do RTUs, MCTs and CAPBANKCONTROLLERS for now!
 			if(DeviceTypesFuncs.isRTU(liteDevice.getPaoType().getDeviceTypeId())
-				 || DeviceTypesFuncs.isCapBankController(liteDevice)
+			     || liteDevice.getPaoType().isCbc()
 				 || DeviceTypesFuncs.isMCT(liteDevice.getPaoType().getDeviceTypeId()) )
 			{
                 List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(liteDevice.getYukonID());

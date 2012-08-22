@@ -1,8 +1,9 @@
 package com.cannontech.common.pao;
 
+import static org.junit.Assert.fail;
+
 import java.util.Set;
 
-import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.springframework.util.StringUtils;
 
@@ -134,7 +135,6 @@ public class PaoTypeTest {
                             PaoType.LM_CONTROL_AREA,
                             PaoType.LM_SCENARIO,
                             PaoType.CAPBANK,
-                            PaoType.DNP_CBC_6510,
                             PaoType.CAP_CONTROL_SUBBUS,
                             PaoType.CAP_CONTROL_FEEDER,
                             PaoType.CAP_CONTROL_AREA,
@@ -291,12 +291,14 @@ public class PaoTypeTest {
     public void testIsMeter() {
         Set<PaoType> illegalTypes = Sets.newHashSet();
         for (PaoType type : PaoType.values()) {
-            if (!type.isMeter() && !nonMeterTypes.contains(type)) {
+            if ((!type.isMeter() && !nonMeterTypes.contains(type)) ||
+                ( type.isMeter() &&  nonMeterTypes.contains(type))) {
                 illegalTypes.add(type);
             }
         }
         if (!illegalTypes.isEmpty()) {
-            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) + " should exist in either the Set PaoType.meterTypes or PaoTypeTest.nonMeterTypes");
+            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) + 
+                 " should exist in either the Set PaoType.meterTypes or PaoTypeTest.nonMeterTypes and not both.");
         }
     }
     
@@ -304,13 +306,14 @@ public class PaoTypeTest {
     public void testIsCbc() {
         Set<PaoType> illegalTypes = Sets.newHashSet();
         for (PaoType type : PaoType.values()) {
-            if (!type.isCbc() && !nonCbcTypes.contains(type)) {
+            if ((!type.isCbc() && !nonCbcTypes.contains(type)) ||
+                ( type.isCbc() &&  nonCbcTypes.contains(type))) {
                 illegalTypes.add(type);
             }
         }
         if (!illegalTypes.isEmpty()) {
-            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) + " should exist in either the Set PaoType.cbcTypes or PaoTypeTest.nonCbcTypes");
+            fail("PaoTypes: " + StringUtils.arrayToCommaDelimitedString(illegalTypes.toArray()) + 
+                 " should exist in either the Set PaoType.cbcTypes or PaoTypeTest.nonCbcTypes and not both.");
         }
     }
-    
 }

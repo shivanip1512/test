@@ -169,28 +169,6 @@ public final static boolean isLoopable(int intType)
 	else
 		return false;
 }
-/**
- * This method was created in VisualAge.
- * @return int
- * @param typeString java.lang.String
- */
-public final static boolean isCapBankController( int deviceType )
-{
-	return ( deviceType == CAPBANKCONTROLLER
-			    || deviceType == CBC_FP_2800
-             || deviceType == DNP_CBC_6510
-             || deviceType == CBC_EXPRESSCOM
-             || deviceType == CBC_7010
-             || deviceType == CBC_7011
-             || deviceType == CBC_7012
-             || deviceType == CBC_7020 
-             || deviceType == CBC_7022
-             || deviceType == CBC_7023
-             || deviceType == CBC_7024
-             || deviceType == CBC_8020
-             || deviceType == CBC_8024
-             || deviceType == CBC_DNP);
-}
 
 public final static boolean isCapBankController702X( int deviceType )
 {
@@ -200,27 +178,11 @@ public final static boolean isCapBankController702X( int deviceType )
              || deviceType == CBC_7024);
 }
 
-public final static boolean isCapBankControllerDNP( int deviceType )
-{
-    return ( deviceType == CBC_DNP);
-}
-
-/**
- * This method was created in VisualAge.
- * @return int
- * @param typeString java.lang.String
- */
-public final static boolean isCapBankController( com.cannontech.database.data.lite.LiteYukonPAObject lite )
-{
-	return (  com.cannontech.database.data.pao.PAOGroups.isCapControl(lite)
-				 && isCapBankController(lite.getPaoType().getDeviceTypeId()) );
-}
 /**
  * Returns all the CBC that require a port for communications.
  * @return
  */
 public final static boolean cbcHasPort( int cbcType ) {
-
 	return
 		cbcType == DNP_CBC_6510
 		|| cbcType == CBC_7020

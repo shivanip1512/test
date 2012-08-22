@@ -3,6 +3,7 @@ package com.cannontech.dbeditor.wizard.changetype.device;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.database.data.device.DeviceBase;
 
@@ -146,5 +147,10 @@ public void setChangeObject(com.cannontech.database.db.DBPersistent newObject)
 	 	}
  	}
  } 
+
+@Override
+public Object getValue(Object o) throws CancelInsertException {
+    return deviceTypesPanel.getValue(o);
+}
 
 }
