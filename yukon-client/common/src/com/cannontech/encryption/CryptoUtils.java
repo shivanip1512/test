@@ -18,7 +18,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.encryption.impl.AESEncryptedFileInputStream;
 import com.cannontech.encryption.impl.AESEncryptedFileOutputStream;
 import com.cannontech.tools.xml.SimpleXmlReader;
@@ -29,11 +29,13 @@ public class CryptoUtils {
     private static final int passKeyLength = 32; //chars
     private static final int rsaKeySize = 512; //4096 bits
     private static final String passkeyAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+={}[];:,.?!@#$%^*()";
-    private static SecureRandom secureRandom = new SecureRandom();
 
+    private static final File keysFolder = new File(BootstrapUtils.getKeysFolder());
+    private static final File sharedCryptoFile = new File(keysFolder,"sharedKeyfile.dat");
     // System wide passkey to do encryption when no other passkey is available. Currently only using this to encrypt a file
     // which contains the actual passkey. In other words, this passkey unlocks the real passkey which is used for encryption.
     private static final String yukonPasskey = "Bdk=5ohaIc51ifstd-zl2dCV)5iUE(DG";
+
     private static final byte[] yukonSalt = {(byte)0x9B, (byte)0x02, (byte)0xF9, (byte)0x92,(byte)0x64, (byte)0xE5, (byte)0xE3, (byte)0x03,
         (byte)0xF2, (byte)0x9B, (byte)0x19, (byte)0x12,(byte)0x56, (byte)0x35, (byte)0x56, (byte)0x93};
     private static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA1";
@@ -41,9 +43,8 @@ public class CryptoUtils {
     private static final String CRYPTO_FILE_XML_VERSION = "version";
     private static final String CRYPTO_FILE_VERSION = "1";
     private static final String CRYPTO_FILE_XML_PASSKEY = "pk";
+    private static SecureRandom secureRandom = new SecureRandom();
 
-    private static final File keysFolder = new File(CtiUtilities.getKeysFolder());
-    private static final File sharedCryptoFile = new File(keysFolder,"sharedKeyfile.dat");
     private CryptoUtils() {/*Not instantiable. Utility class only */ }
     
     /**
@@ -163,7 +164,7 @@ public class CryptoUtils {
 
     /**
      * Creates a new 'cryptofile'
-     * Formated in xml and encypted using AES with yukonPasskey sent in.
+     * Formated in xml and encypted using AES.
      * Formating:
      *      <?xml version="1.0" encoding="UTF-8"?>
      *      <root>
@@ -171,7 +172,7 @@ public class CryptoUtils {
      *          <pk>...</pk>
      *      </root>
      *
-     * The passkey sent in is placed in <pk></pk> tag.
+     * The passkey generated in is placed in <pk></pk> tag.
      * 
      */
     public static char[] createNewCryptoFile(File file) {
@@ -181,7 +182,7 @@ public class CryptoUtils {
             if (!keysFolder.exists()) {
                 keysFolder.mkdir();
             }
-            // File not found, Create a new one!
+            // File not found, Create a new one
             file.setReadOnly();
             Runtime.getRuntime().exec("attrib +H " + file.getPath()); // Set file hidden
             AESEncryptedFileOutputStream outputStream = new AESEncryptedFileOutputStream(file, yukonPasskey.toCharArray());

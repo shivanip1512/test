@@ -3,7 +3,9 @@ package com.cannontech.encryption;
 import static org.junit.Assert.fail;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -11,66 +13,65 @@ import org.junit.Test;
 
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 
-
 public class AESPasswordBasedCryptoTest  {
     // Cipher text 1, 2, and 3 should all decrypt to this
-    private byte[] preComputedPlainText = {-85, 68, -55, 107, -106, -119, 42, -106, -73, 84, 126, 19, 52, 60};
+    private byte[] plainText = {-85, 68, -55, 107, -106, -119, 42, -106, -73, 84, 126, 19, 52, 60};
     
-    private byte[] preComputedCipherText1 = {33, 103, 100, -30, -122, 119, 34, 32, 126, -77, -128, 79, 109, 125, -105, -124, 28, 20, 86, 72, 0, 72, 46, -128, 57, 82, -78, -48, 82, 91, 98, 20, -20, 29, -3, -90, 58, -111, -40, -55, 36, 70, -35, -99, 81, 32, -4, 62, 98, -64, -25, 108, -39, 30, 0, -44, 35, 97, 11, 110, -89, -44, 12, -22};
-    private byte[] preComputedCipherText2 = {-117, 58, -89, 47, 6, -63, -85, -115, 119, -48, -50, -103, 109, -45, 60, -70, 104, 59, -95, -71, -78, -59, 86, 40, -91, 45, -92, 5, -72, -70, 11, 106, 104, -18, 35, 62, -108, 18, -16, 70, -19, -117, -113, -96, -43, 61, -1, -30, -106, -4, -27, -38, 123, 121, 75, 24, -11, 7, 70, -88, 16, -122, -90, -32};
-    private byte[] preComputedCipherText3 = {23, 26, 114, -22, -25, 7, 60, 39, 110, -54, 23, -5, -89, -74, 61, -26, -48, -117, -82, -23, 105, 8, -65, -96, 58, 32, -7, -59, 119, -62, -33, -53, 93, -118, 26, 125, -105, 116, 103, -119, -120, 66, -7, -82, -1, -128, 19, -19, -111, -23, 102, -39, 40, 84, -87, 102, -47, 93, -86, -66, -3, 54, -56, -14};
+    private byte[] cipherText1 = {33, 103, 100, -30, -122, 119, 34, 32, 126, -77, -128, 79, 109, 125, -105, -124, 28, 20, 86, 72, 0, 72, 46, -128, 57, 82, -78, -48, 82, 91, 98, 20, -20, 29, -3, -90, 58, -111, -40, -55, 36, 70, -35, -99, 81, 32, -4, 62, 98, -64, -25, 108, -39, 30, 0, -44, 35, 97, 11, 110, -89, -44, 12, -22};
+    private byte[] cipherText2 = {-117, 58, -89, 47, 6, -63, -85, -115, 119, -48, -50, -103, 109, -45, 60, -70, 104, 59, -95, -71, -78, -59, 86, 40, -91, 45, -92, 5, -72, -70, 11, 106, 104, -18, 35, 62, -108, 18, -16, 70, -19, -117, -113, -96, -43, 61, -1, -30, -106, -4, -27, -38, 123, 121, 75, 24, -11, 7, 70, -88, 16, -122, -90, -32};
+    private byte[] cipherText3 = {23, 26, 114, -22, -25, 7, 60, 39, 110, -54, 23, -5, -89, -74, 61, -26, -48, -117, -82, -23, 105, 8, -65, -96, 58, 32, -7, -59, 119, -62, -33, -53, 93, -118, 26, 125, -105, 116, 103, -119, -120, 66, -7, -82, -1, -128, 19, -19, -111, -23, 102, -39, 40, 84, -87, 102, -47, 93, -86, -66, -3, 54, -56, -14};
     
     private byte[] badCipherText4 = {24, 26, 114, -22, -25, 7, 60, 39, 110, -54, 23, -5, -89, -74, 61, -26, -48, -117, -82, -23, 105, 8, -65, -96, 58, 32, -7, -59, 119, -62, -33, -53, 93, -118, 26, 125, -105, 116, 103, -119, -120, 66, -7, -82, -1, -128, 19, -19, -111, -23, 102, -39, 40, 84, -87, 102, -47, 93, -86, -66, -3, 54, -56, -14};
     
-    private char[] preComputedPassword = {'?','W',')','s','8','!','D','h','I','o','f','1','=','G','F','2'};
+    private char[] password = {'?','W',')','s','8','!','D','h','I','o','f','1','=','G','F','2'};
 
     @Test
     public void test_validityToPass1() throws CryptoException {
-        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
-        Assert.assertEquals(true, aes.isAuthentic(preComputedCipherText1));
+        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
+        Assert.assertEquals(true, aes.isAuthentic(cipherText1));
     }
-    
+
     @Test
     public void test_validityToPass2() throws CryptoException {
-        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
-        Assert.assertEquals(true, aes.isAuthentic(preComputedCipherText2));
+        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
+        Assert.assertEquals(true, aes.isAuthentic(cipherText2));
     }
-    
+
     @Test
     public void test_validityToPass3() throws CryptoException {
-        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
-        Assert.assertEquals(true, aes.isAuthentic(preComputedCipherText3));
+        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
+        Assert.assertEquals(true, aes.isAuthentic(cipherText3));
     }
-    
+
     @Test
     public void test_validityToFail() throws CryptoException {
-        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
+        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
         Assert.assertEquals(false, aes.isAuthentic(badCipherText4));
     }
-    
+
     @Test
     public void test_deryptionWithPassword1() throws CryptoException {
-        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
-        byte[] plainText1 = aes.decrypt(preComputedCipherText1);
-        Assert.assertEquals(true, Arrays.equals(plainText1,preComputedPlainText));
+        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
+        byte[] plainText1 = aes.decrypt(cipherText1);
+        Assert.assertEquals(true, Arrays.equals(plainText1,plainText));
     }
-    
+
     @Test
     public void test_deryptionWithPassword2() throws CryptoException {
-        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
-        Assert.assertEquals(true, aes.isAuthentic(preComputedCipherText2));
-        byte[] plainText2 = aes.decrypt(preComputedCipherText2);
-        Assert.assertEquals(true, Arrays.equals(plainText2,preComputedPlainText));
+        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
+        Assert.assertEquals(true, aes.isAuthentic(cipherText2));
+        byte[] plainText2 = aes.decrypt(cipherText2);
+        Assert.assertEquals(true, Arrays.equals(plainText2,plainText));
     }
 
     @Test
     public void test_deryptionWithPassword3() throws CryptoException {
-        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(preComputedPassword);
-        Assert.assertEquals(true, aes.isAuthentic(preComputedCipherText3));
-        byte[] plainText3 = aes.decrypt(preComputedCipherText3);
-        Assert.assertEquals(true, Arrays.equals(plainText3,preComputedPlainText));
+        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
+        Assert.assertEquals(true, aes.isAuthentic(cipherText3));
+        byte[] plainText3 = aes.decrypt(cipherText3);
+        Assert.assertEquals(true, Arrays.equals(plainText3,plainText));
     }
-    
+
     @Test
     public void test_encryptionAndDecryptionDefault() {
         try {
@@ -80,14 +81,31 @@ public class AESPasswordBasedCryptoTest  {
             fail();
         }
     }
-    
+
     @Test
     public void test_encryptionAndDecryptionWithPassword() throws CryptoException {
         char[] password = CryptoUtils.generateRandomPasskey(16);
         AESPasswordBasedCrypto aesWithPassword = new AESPasswordBasedCrypto(password);
         testCipher(aesWithPassword);
     }
-    
+
+    @Test
+    public void test_multipleEncryptionOnSamePlaintext() throws CryptoException {
+        int testIterations = 10;
+        String plainTextStr = "This test should show this string encrypting to values that are different each time";
+        char[] password = CryptoUtils.generateRandomPasskey(16);
+        byte[] cipherText = null;
+        List<byte[]> cipherTexts = new ArrayList<byte[]>();
+        AESPasswordBasedCrypto aesWithPassword = new AESPasswordBasedCrypto(password);
+
+        for(int i=0;i<testIterations;i++) {
+            cipherText = aesWithPassword.encrypt(plainTextStr.getBytes());
+            for(byte[] testBlob : cipherTexts) {
+                Assert.assertEquals(false, Arrays.equals(testBlob, cipherText));
+            }
+            cipherTexts.add(cipherText);
+        }
+    }
 
     private void testCipher(AESPasswordBasedCrypto aes) throws CryptoException {
         int numBytes = 128;
@@ -119,6 +137,5 @@ public class AESPasswordBasedCryptoTest  {
 
         // Make sure we got plain text back.
         Assert.assertEquals(true, Arrays.equals(knownData,computedData));
-
     }
 }

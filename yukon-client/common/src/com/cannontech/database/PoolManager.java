@@ -87,7 +87,6 @@ public class PoolManager {
         
         jdbcUrl = configSource.getString("DB_JAVA_URL");
         if (StringUtils.isNotBlank(jdbcUrl)) {
-            log.debug("Using DB_JAVA_URL=" + jdbcUrl);
             return new ConnectionDescription(jdbcUrl, dbType);
         }
         
@@ -108,7 +107,7 @@ public class PoolManager {
             if(dbSsl){
             	url.append(";ssl=require;socketKeepAlive=true");
             }
-            log.debug("Found MSSQL, url=" + url);
+            log.debug("Found MSSQL");
             return new ConnectionDescription(url.toString(), dbType);
         }
         
@@ -124,7 +123,7 @@ public class PoolManager {
                 String tnsName = configSource.getRequiredString("DB_SQLSERVER");
                 url.append(tnsName);
                 
-                log.debug("Found oracle, url=" + url);
+                log.debug("Found oracle");
                 return new ConnectionDescription(url.toString(), dbType);
             } catch (UnknownKeyException e) {
                 throw new BadConfigurationException("Cannot connect to Oracle without DB_SQLSERVER_HOST and DB_SQLSERVER being specified.", e);
@@ -142,7 +141,6 @@ public class PoolManager {
         
         ConnectionDescription connectionDescription = getConnectionUrl();
         primaryUrl = connectionDescription.connectionUrl;
-        log.info("DB URL=" + primaryUrl);
 
         primaryUser = configSource.getRequiredString("DB_USERNAME");
         String password = configSource.getRequiredString("DB_PASSWORD");

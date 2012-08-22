@@ -76,7 +76,7 @@ public class JarController extends AbstractController {
             // For some reason, this exception occurs often when JWS downloads the JARs.
             // Everytime this happens, the application is still able to start just fine,
             // so I'd like to ignore it for the time being.
-            log.warn("Got Exception while downloading Web Start JAR (this can be ignored): " + e);
+            log.debug("Got Exception while downloading Web Start JAR (this can be ignored): " + e);
             alreadyBad = true;
         } finally {
             try {

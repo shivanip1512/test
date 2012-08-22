@@ -10,12 +10,12 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
 import org.jdom.JDOMException;
 
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 
 public class MasterConfigCryptoUtils {
 
-    private static final File masterCfgCryptoFile = new File(CtiUtilities.getKeysFolder(),"masterConfigKeyfile.dat");
+    private static final File masterCfgCryptoFile = new File(BootstrapUtils.getKeysFolder(),"masterConfigKeyfile.dat");
     private static final String encryptionIndicator = "(AUTO_ENCRYPTED)";
     private static final Set<String> sensitiveData;
     private static AESPasswordBasedCrypto encrypter;
@@ -93,7 +93,8 @@ public class MasterConfigCryptoUtils {
         String valuePlainText = null;
         try {
             valueEncrypted = StringUtils.deleteWhitespace(valueEncrypted);
-            valuePlainText = new String(encrypter.decrypt(Hex.decodeHex(valueEncrypted.substring(encryptionIndicator.length()).toCharArray())));
+            char[] value = valueEncrypted.substring(encryptionIndicator.length()).toCharArray();
+            valuePlainText = new String(encrypter.decrypt(Hex.decodeHex(value)));
         } catch (DecoderException de) {
             throw new CryptoException(de);
         }
