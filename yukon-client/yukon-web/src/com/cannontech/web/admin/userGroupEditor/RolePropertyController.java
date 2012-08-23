@@ -144,7 +144,7 @@ public class RolePropertyController {
     public String delete(ModelMap map, FlashScope flash, int roleGroupId, int roleId) {
         rolePropertyEditorDao.removeRoleFromGroup(roleGroupId, roleId);
         map.addAttribute("roleGroupId", roleGroupId);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.groupEditor.updateSuccessful"));
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.roleGroupEditor.updateSuccessful"));
         return "redirect:/spring/adminSetup/roleGroup/view";
     }
     

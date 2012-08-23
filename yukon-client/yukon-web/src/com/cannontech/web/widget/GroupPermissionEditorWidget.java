@@ -6,31 +6,31 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.core.dao.YukonGroupDao;
-import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
-public class GroupPermissionEditorWidget extends UserGroupPermissionEditorWidget<LiteYukonGroup> {
-    private YukonGroupDao yukonGroupDao;
+public class GroupPermissionEditorWidget extends UserGroupPermissionEditorWidget<LiteUserGroup> {
+    private UserGroupDao userGroupDao;
 
     @Override
-    protected LiteYukonGroup getAffected(HttpServletRequest request) throws Exception {
-        int groupId = WidgetParameterHelper.getRequiredIntParameter(request, "groupId");
+    protected LiteUserGroup getAffected(HttpServletRequest request) throws Exception {
+        int userGroupId = WidgetParameterHelper.getRequiredIntParameter(request, "userGroupId");
 
-        LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(groupId);
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
 
-        return group;
+        return userGroup;
     }
 
-    @Required
-    public void setYukonGroupDao(YukonGroupDao yukonGroupDao) {
-        this.yukonGroupDao = yukonGroupDao;
-    }
-    
     @Override
     public ModelAndView identity(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = super.identity(request, response);
-        mav.addObject("groupName", getAffected(request).getGroupName());
+        mav.addObject("userGroupName", getAffected(request).getUserGroupName());
         return mav;
+    }
+
+    @Required
+    public void setUserGroupDao(UserGroupDao userGroupDao) {
+        this.userGroupDao = userGroupDao;
     }
 }

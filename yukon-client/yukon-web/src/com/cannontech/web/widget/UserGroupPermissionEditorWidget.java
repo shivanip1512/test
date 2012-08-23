@@ -30,7 +30,6 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
     public PaoDao getPaoDao() {
         return paoDao;
     }
-
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
@@ -38,22 +37,18 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
     public PaoPermissionEditorService<T> getEditorService() {
         return editorService;
     }
-
     public void setEditorService(PaoPermissionEditorService<T> editorService) {
         this.editorService = editorService;
     }
     
     @Override
-    public ModelAndView identity(HttpServletRequest request,
-    		HttpServletResponse response) throws Exception {
-    	
+    public ModelAndView identity(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	ModelAndView mav = super.identity(request, response);
     	
     	Permission permission = getPermission(request);
     	
     	mav.addObject("permission", permission);
     	mav.addObject("permissionDescription", permission);
-
     	return mav;
     }
 
@@ -71,7 +66,6 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
     protected abstract T getAffected(HttpServletRequest request) throws Exception;
 
     public ModelAndView removePao(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
         String paoIdList = WidgetParameterHelper.getRequiredStringParameter(request, "paoIdsList");
         Integer paoId = Integer.valueOf(WidgetParameterHelper.getRequiredIntParameter(request, "paoId"));
 
@@ -205,7 +199,5 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
         }
 
         return liteList;
-
     }
-
 }

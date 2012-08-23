@@ -6,7 +6,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="adminSetup" page="groupEditor.${mode}">
+<cti:standardPage module="adminSetup" page="roleGroupEditor.${mode}">
     
     <tags:setFormEditMode mode="${mode}"/>
 
@@ -14,7 +14,7 @@
 
         <cti:dataGridCell>
 
-            <form:form commandName="group" action="/spring/adminSetup/groupEditor/edit" method="post">
+            <form:form commandName="group" action="/spring/adminSetup/roleGroup/edit" method="post">
                 <form:hidden path="groupID"/>
                 <input type="hidden" value="${group.groupID}" name="roleGroupId">
                 

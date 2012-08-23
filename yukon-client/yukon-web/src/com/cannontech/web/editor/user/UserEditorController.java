@@ -1,11 +1,9 @@
 package com.cannontech.web.editor.user;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.core.authentication.model.AuthenticationThrottleDto;
@@ -15,50 +13,34 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
+@Controller
+@RequestMapping("/user/*")
 @CheckRoleProperty({YukonRoleProperty.ADMIN_LM_USER_ASSIGN})
 public class UserEditorController extends MultiActionController {
 
-    private YukonUserDao yukonUserDao;
-    private AuthenticationService authenticationService;
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private AuthenticationService authenticationService;
 
-    public UserEditorController() {
-        super();
-    }
-
-    public ModelAndView editUser(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
-
-        ModelAndView mav = new ModelAndView("user/editUser.jsp");
-
-        int userId = ServletRequestUtils.getRequiredIntParameter(request, "userId");
+    @RequestMapping
+    public String editUser(ModelMap model, int userId) {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
-        mav.addObject("user", user);
-        mav.addObject("userId", user.getUserID());
-        mav.addObject("editingUsername", user.getUsername());  // Used by layout controller.
-
+        
         AuthenticationThrottleDto authThrottleDto = authenticationService.getAuthenticationThrottleData(user.getUsername());
-        mav.addObject("authThrottleDto", authThrottleDto);
-        return mav;
+
+        model.addAttribute("user", user);
+        model.addAttribute("userId", user.getUserID());
+        model.addAttribute("editingUsername", user.getUsername());  // Used by layout controller.
+        model.addAttribute("authThrottleDto", authThrottleDto);
+        return "user/editUser.jsp";
     }
     
-    public ModelAndView removeLoginWait(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException {
-
-        ModelAndView mav = new ModelAndView("user/editUser.jsp");
-
-        int userId = ServletRequestUtils.getRequiredIntParameter(request, "userId");
+    @RequestMapping
+    public String removeLoginWait(ModelMap model, int userId) {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
-        mav.addObject("user", user);
-
+        
         authenticationService.removeAuthenticationThrottle(user.getUsername());
-        return mav;
+
+        model.addAttribute("user", user);
+        return "user/editUser.jsp";
     }    
-    
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
-    public void setAuthenticationService(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
-    }
 }

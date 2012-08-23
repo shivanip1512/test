@@ -34,8 +34,7 @@
     
     <!-- Pao Permission Service -->
     <bean id="paoPermissionService" class="com.cannontech.core.authorization.service.impl.PaoPermissionServiceImpl">
-	    <property name="groupDao" ref="yukonGroupDao" />
-	    <property name="groupPaoPermissionDao" ref="groupPaoPermissionDao" />
+	    <property name="userGroupPaoPermissionDao" ref="userGroupPaoPermissionDao" />
 	    <property name="userPaoPermissionDao" ref="userPaoPermissionDao" />
     </bean>
     
@@ -46,8 +45,7 @@
         <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
 	
-    <bean id="groupPaoPermissionDao" class="com.cannontech.core.authorization.dao.GroupPaoPermissionDaoImpl" >
-    	<property name="jdbcOps" ref="jdbcTemplate" />
+    <bean id="userGroupPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserGroupPaoPermissionDaoImpl" >
     	<property name="nextValueHelper" ref="nextValueHelper" />
         <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
@@ -57,9 +55,9 @@
 		<property name="permissionDao" ref="userPaoPermissionDao" />
 	</bean>
     
-	<bean id="groupEditorService" class="com.cannontech.core.authorization.service.impl.PaoPermissionEditorServiceImpl">
+	<bean id="userGroupEditorService" class="com.cannontech.core.authorization.service.impl.PaoPermissionEditorServiceImpl">
 		<property name="paoDao" ref="paoDao" />
-		<property name="permissionDao" ref="groupPaoPermissionDao" />
+		<property name="permissionDao" ref="userGroupPaoPermissionDao" />
 	</bean>
  
 	

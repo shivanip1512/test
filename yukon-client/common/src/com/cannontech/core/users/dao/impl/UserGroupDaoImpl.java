@@ -9,6 +9,7 @@ import javax.naming.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -178,6 +179,27 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
         return userGroup;
     }
 
+    @Override
+    public List<LiteUserGroup> getLiteUserGroupsByRoleGroupId(int roleGroupId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM UserGroup UG");
+        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.UserGroupId = UG.UserGroupId");
+        sql.append("WHERE UGYGM.GroupId").eq(roleGroupId);
+        
+        List<LiteUserGroup> liteUserGroups = yukonJdbcTemplate.query(sql, new LiteUserGroupRowMapper());
+        return liteUserGroups;
+    }
+    
+    @Override
+    public LiteUserGroup findLiteUserGroupByUserGroupName(String userGroupName) {
+        try {
+            return getLiteUserGroupByUserGroupName(userGroupName);
+        } catch (EmptyResultDataAccessException e) {}
+        
+        return null;
+    }
+    
     @Override
     public List<LiteUserGroup> getAllLiteUserGroups() {
         SqlStatementBuilder sql = new SqlStatementBuilder();

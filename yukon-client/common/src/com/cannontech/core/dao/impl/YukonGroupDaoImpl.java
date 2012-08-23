@@ -15,7 +15,6 @@ import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
@@ -40,7 +39,6 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
-    private PaoPermissionDao<LiteYukonGroup> groupPaoPermissionDao;
     private SimpleTableAccessTemplate<LiteYukonGroup> simpleTableTemplate;
     
     private final static FieldMapper<LiteYukonGroup> fieldMapper = new FieldMapper<LiteYukonGroup>() {
@@ -217,9 +215,6 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         sql.append("WHERE GroupId").eq(groupId);
         yukonJdbcTemplate.update(sql);
         
-        /* PaoPermissions */
-        groupPaoPermissionDao.removeAllPermissions(groupId);
-        
         /* YukonGroup */
         sql = new SqlStatementBuilder();
         sql.append("DELETE FROM YukonGroup");
@@ -261,10 +256,4 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
                                                 dbChangeType);
         dbPersistantDao.processDBChange(changeMsg);
     }
-
-    /* Depenencies */
-    public void setGroupPaoPermissionDao(PaoPermissionDao<LiteYukonGroup> groupPaoPermissionDao) {
-        this.groupPaoPermissionDao = groupPaoPermissionDao;
-    }
-
 }

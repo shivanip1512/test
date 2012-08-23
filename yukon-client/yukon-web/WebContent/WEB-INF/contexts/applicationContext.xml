@@ -557,8 +557,7 @@
         <property name="editorService" ref="userEditorService"/>
     </bean>
     
-    <bean id="groupPermissionEditorWidget"
-    	class="com.cannontech.web.widget.GroupPermissionEditorWidget">
+    <bean id="groupPermissionEditorWidget" class="com.cannontech.web.widget.GroupPermissionEditorWidget">
         <property name="identityPath" value="common/groupPermissionIdentity.jsp" />
         <property name="inputs">
            <set>
@@ -573,9 +572,9 @@
                 <constructor-arg value="ADMIN_LM_USER_ASSIGN"/>
             </bean>
 	   	</property>
-        <property name="yukonGroupDao" ref="yukonGroupDao"/>
+        <property name="userGroupDao" ref="userGroupDao"/>
         <property name="paoDao" ref="paoDao"/>
-        <property name="editorService" ref="groupEditorService"/>
+        <property name="editorService" ref="userGroupEditorService"/>
     </bean>
 
     <bean id="peakReportWidget"

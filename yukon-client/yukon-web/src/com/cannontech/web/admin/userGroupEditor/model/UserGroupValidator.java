@@ -23,7 +23,7 @@ public class UserGroupValidator extends SimpleValidator<UserGroup> {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "liteUserGroup.userGroupName", "required.userGroupName");
         YukonValidationUtils.checkExceedsMaxLength(errors, "liteUserGroup.userGroupName", userGroup.getLiteUserGroup().getUserGroupName(), 1000);
         
-        LiteUserGroup possibleDuplicate = userGroupDao.getLiteUserGroupByUserGroupName(userGroup.getLiteUserGroup().getUserGroupName());
+        LiteUserGroup possibleDuplicate = userGroupDao.findLiteUserGroupByUserGroupName(userGroup.getLiteUserGroup().getUserGroupName());
         if (possibleDuplicate != null && userGroup.getLiteUserGroup().getUserGroupId() != possibleDuplicate.getUserGroupId()) {
             errors.rejectValue("liteUserGroup.userGroupName", "unavailable.userGroupName");
         }

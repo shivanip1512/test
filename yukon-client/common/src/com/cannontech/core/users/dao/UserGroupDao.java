@@ -28,6 +28,17 @@ public interface UserGroupDao {
     public LiteUserGroup getLiteUserGroupByUserGroupName(String userGroupName);
 
     /**
+     * This method returns all of the lite user groups that have the supplied role group id.
+     */
+    public List<LiteUserGroup> getLiteUserGroupsByRoleGroupId(int roleGroupId);
+
+    /**
+     * This method returns the lite user group associated with the supplied user group name.
+     * It will return null if there is not a user group associated with that user group id.
+     */
+    public LiteUserGroup findLiteUserGroupByUserGroupName(String userGroupName);
+
+    /**
      * This method returns all the lite user groups in the system.
      */
     public List<LiteUserGroup> getAllLiteUserGroups();
@@ -51,4 +62,5 @@ public interface UserGroupDao {
      * This method removes the mapping entry between a user group and a yukon group
      */
     public void deleteUserGroupToYukonGroupMappng(int userGroupId, int roleGroupId);
+    
 }

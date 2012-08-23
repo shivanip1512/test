@@ -1400,79 +1400,79 @@
                         <menu>userEditor|user</menu>
                         <link>/spring/adminSetup/userEditor/home</link>
                         <pages>
-                            <page name="groupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-                                <menu>userGroupEditor|home</menu>
+                            <page name="roleGroupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
+                                <menu>userEditor|home</menu>
                                 <link>/spring/adminSetup/roleGroup/view?roleGroupId=${roleGroupId}</link>
-                                <labelArgument>${groupName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/groupInfoFragment.jsp</infoInclude>
+                                <labelArgument>${roleGroupName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/roleGroupInfoFragment.jsp</infoInclude>
                                 <pages>
-                                    <page name="groupEditor.EDIT" type="DETAIL_CHILD">
-                                        <menu>userGroupEditor|home</menu>
+                                    <page name="roleGroupEditor.EDIT" type="DETAIL_CHILD">
+                                        <menu>userEditor|home</menu>
                                         <link>/spring/adminSetup/roleGroup/edit?roleGroupId=${roleGroupId}</link>
-                                        <labelArgument>${groupName}</labelArgument>
+                                        <labelArgument>${roleGroupName}</labelArgument>
                                     </page>
-                                    <page name="userGroups" type="DETAIL_CHILD">
-                                        <menu>userGroupEditor|home</menu>
+                                    <page name="userGroups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <menu>userEditor|home</menu>
                                         <link>/spring/adminSetup/roleGroup/userGroups?roleGroupId=${roleGroupId}</link>
-                                        <labelArgument>${groupName}</labelArgument>
+                                        <labelArgument>${roleGroupName}</labelArgument>
                                     </page>
                                     <page name="roles" type="DETAIL">
-                                        <menu>userGroupEditor|home</menu>
+                                        <menu>userEditor|home</menu>
                                         <link>/spring/adminSetup/roleEditor/view?roleGroupId=${roleGroupId}&amp;roleId=${roleId}</link>
                                         <labelArgument>${roleName}</labelArgument>
-                                    </page>
-                                    <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                    	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
-                                        <menu>userGroupEditor|home</menu>
-                                        <link>/spring/editor/group/editGroup?roleGroupId=${roleGroupId}</link>
-                                        <labelArgument>${groupName}</labelArgument>
                                     </page>
                                 </pages>
                             </page>
                             <page name="userEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-                                <menu>userGroupEditor|home</menu>
+                                <menu>userEditor|home</menu>
                                 <link>/spring/adminSetup/user/view?userId=${userId}</link>
                                 <labelArgument>${editingUsername}</labelArgument>
                                 <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userInfoFragment.jsp</infoInclude>
                                 <pages>
                                     <page name="userEditor.EDIT" type="DETAIL_CHILD">
-                                        <menu>userGroupEditor|home</menu>
+                                        <menu>userEditor|home</menu>
                                         <link>/spring/adminSetup/user/edit?userId=${userId}</link>
                                         <labelArgument>${editingUsername}</labelArgument>
                                     </page>
                                     <page name="userPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                                     	<requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
-                                        <menu>userGroupEditor|home</menu>
+                                        <menu>userEditor|home</menu>
                                         <link>/spring/editor/user/editUser?userId=${userId}</link>
                                         <labelArgument>${editingUsername}</labelArgument>
                                     </page>
                                 </pages>
                             </page>
                             <page name="userGroupEditor.VIEW" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
-                                <menu>userGroupEditor|home</menu>
+                                <menu>userEditor|home</menu>
                                 <link>/spring/adminSetup/userGroup/view?userGroupId=${userGroupId}</link>
-                                <labelArgument>${editingUserGroupName}</labelArgument>
-                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userInfoFragment.jsp</infoInclude>
+                                <labelArgument>${userGroupName}</labelArgument>
+                                <infoInclude>/WEB-INF/pages/adminSetup/userGroupEditor/userGroupInfoFragment.jsp</infoInclude>
                                 <pages>
                                     <page name="userGroupEditor.EDIT" type="DETAIL_CHILD">
-                                        <menu>userGroupEditor|home</menu>
+                                        <menu>userEditor|home</menu>
                                         <link>/spring/adminSetup/userGroup/edit?userId=${userId}</link>
-                                        <labelArgument>${editingUserGroupName}</labelArgument>
+                                        <labelArgument>${userGroupName}</labelArgument>
                                     </page>
                                     <page name="userGroupAssociation" type="DETAIL_CHILD">
-                                        <menu>userGroupEditor|home</menu>
+                                        <menu>userEditor|home</menu>
                                         <link>/spring/adminSetup/userGroup/association</link>
-                                        <labelArgument>${editingUserGroupName}</labelArgument>
+                                        <labelArgument>${userGroupName}</labelArgument>
                                     </page>
                                     <page name="users" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <menu>userGroupEditor|home</menu>
+                                        <menu>userEditor|home</menu>
                                         <link>/spring/adminSetup/userGroup/users?userGroupId=${userGroupId}</link>
-                                        <labelArgument>${groupName}</labelArgument>
+                                        <labelArgument>${userGroupName}</labelArgument>
                                     </page>
                                     <page name="roleGroups" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-                                        <menu>userGroupEditor|home</menu>
+                                        <menu>userEditor|home</menu>
                                         <link>/spring/adminSetup/userGroup/roleGroups?userGroupId=${userGroupId}</link>
-                                        <labelArgument>${editingUsername}</labelArgument>
+                                        <labelArgument>${userGroupName}</labelArgument>
+                                    </page>
+                                    <page name="groupPermissions" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                                        <requireRoleProperty value="ADMIN_LM_USER_ASSIGN"/>
+                                        <menu>userEditor|home</menu>
+                                        <link>/spring/editor/group/editGroup?userGroupId=${userGroupId}</link>
+                                        <labelArgument>${userGroupName}</labelArgument>
                                     </page>
                                 </pages>
                             </page>

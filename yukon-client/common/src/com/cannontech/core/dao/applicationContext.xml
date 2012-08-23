@@ -134,9 +134,7 @@
   <bean id="userGroupDao" class="com.cannontech.core.users.dao.impl.UserGroupDaoImpl" />
   <bean id="userGroupService" class="com.cannontech.core.users.service.impl.UserGroupServiceImpl" />
 
-  <bean id="yukonGroupDao" class="com.cannontech.core.dao.impl.YukonGroupDaoImpl">
-      <property name="groupPaoPermissionDao" ref="groupPaoPermissionDao" />
-  </bean>
+  <bean id="yukonGroupDao" class="com.cannontech.core.dao.impl.YukonGroupDaoImpl" />
 
   <bean id="yukonGroupService" class="com.cannontech.core.service.impl.YukonGroupServiceImpl" />
 

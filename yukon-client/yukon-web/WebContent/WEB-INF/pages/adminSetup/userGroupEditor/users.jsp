@@ -9,22 +9,19 @@
 <cti:standardPage module="adminSetup" page="users">
 
 <script type="text/javascript">
-var alreadyAssignedUserIds = ${cti:jsonString(alreadyAssignedUserIds)};
-
 function addUsers() {
     $('addUsersForm').submit();
 }
-
 </script>
     
-    <cti:url value="/spring/adminSetup/groupEditor/users" var="usersUrl"/>
+    <cti:url value="/spring/adminSetup/userGroup/users" var="usersUrl"/>
     <cti:msg2 var="usersContainerTitle" key=".usersContainer"/>
     
     <tags:pagedBox title="${usersContainerTitle}" searchResult="${searchResult}" isFiltered="false" baseUrl="${usersUrl}" styleClass="usersContainer">
         <c:choose>
             <c:when test="${!empty users}">
-                <form action="/spring/adminSetup/groupEditor/removeUser" method="post">
-                    <input type="hidden" name="groupId" value="${groupId}">
+                <form action="/spring/adminSetup/userGroup/removeUser" method="post">
+                    <input type="hidden" name="userGroupId" value="${userGroupId}">
                     <div class="usersContainer">
                         <table class="compactResultsTable rowHighlighting">
                             <tr>
@@ -65,14 +62,12 @@ function addUsers() {
             </c:otherwise>
         </c:choose>
         <div class="actionArea">
-            <form id="addUsersForm" action="/spring/adminSetup/groupEditor/addUsers" method="post">
+            <form id="addUsersForm" action="/spring/adminSetup/userGroup/addUsers" method="post">
                 <input type="hidden" name="userIds" id="userIds">
-                <input type="hidden" name="groupId" value="${groupId}">
-                <tags:pickerDialog type="userPicker" id="userPicker" destinationFieldId="userIds" linkType="button" 
+                <input type="hidden" name="userGroupId" value="${userGroupId}">
+                <tags:pickerDialog type="userPicker" id="userPicker" destinationFieldId="userIds" alreadyAssignedIds="${alreadyAssignedUserIds}" linkType="button" 
                         nameKey="addUsers" multiSelectMode="true" endAction="addUsers"/>
-                <script type="text/javascript">
-                    userPicker.excludeIds = alreadyAssignedUserIds;
-                </script>
+
             </form>
         </div>
     </tags:pagedBox>
