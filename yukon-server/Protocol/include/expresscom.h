@@ -268,6 +268,7 @@ private:
 
     bool validateAddress(const unsigned int address, const AddressRanges minimum, const AddressRanges maximum);
     bool validateParseAddressing(const CtiCommandParser &parse);
+    static int tierOf(std::string btp_alert_level);
 
     unsigned short addCRC(unsigned short crc, unsigned char data);
     void calcCRC(std::vector< BYTE >::iterator data, unsigned char len);

@@ -423,7 +423,7 @@ const string& CtiLMGroupBase::getLastControlString() const
 ---------------------------------------------------------------------------*/
 bool CtiLMGroupBase::readyToControlAt(CtiTime &currentTime) const
 {
-    return ( (_next_control_time > gInvalidCtiTime) &&  (currentTime >= _next_control_time) );
+    return ( (_next_control_time != gInvalidCtiTime) &&  (currentTime >= _next_control_time) );
 }
 
 /*---------------------------------------------------------------------------

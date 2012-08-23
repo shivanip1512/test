@@ -38,7 +38,7 @@
 #include "ctidate.h"
 #include "utility.h"
 #include "GroupControlInterface.h"
-#include "BtpControlInterface.h"
+#include "BeatThePeakControlInterface.h"
 
 using namespace Cti::LoadManagement;
 using std::vector;
@@ -629,7 +629,9 @@ void CtiLMCommandExecutor::ShedGroup()
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                CtiLMGroupVec program_groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
+                CtiLMProgramDirectSPtr programDirect = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase));
+                CtiLMGroupVec program_groups  = programDirect->getLMProgramDirectGroups();
+                bool hasBeatThePeakGear = programDirect->getHasBeatThePeakGear();
                 for( CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++ )
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
@@ -660,9 +662,12 @@ void CtiLMCommandExecutor::ShedGroup()
                             /* If the group could have Beat the Peak gears,
                                then we should send their control message in addition to the regular message
                              */
-                            if( BtpControlInterfacePtr btpGroup = boost::dynamic_pointer_cast<BtpControlInterface>(currentLMGroup) )
+                            if(hasBeatThePeakGear)
                             {
-                                btpGroup->sendBtpControl( 4 , shedTime / 60 );
+                                if( BeatThePeakControlInterfacePtr btpGroup = boost::dynamic_pointer_cast<BeatThePeakControlInterface>(currentLMGroup) )
+                                {
+                                    btpGroup->sendBeatThePeakControl( BeatThePeakControlInterface::Red , shedTime / 60 );
+                                }
                             }
 
                             CtiRequestMsg* requestMsg = currentLMGroup->createTimeRefreshRequestMsg(0,shedTime,CtiLMProgramDirect::defaultLMStartPriority);
@@ -802,7 +807,10 @@ void CtiLMCommandExecutor::RestoreGroup()
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
-                CtiLMGroupVec program_groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
+                CtiLMProgramDirectSPtr programDirect = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase));
+                CtiLMGroupVec program_groups  = programDirect->getLMProgramDirectGroups();
+                bool hasBeatThePeakGear = programDirect->getHasBeatThePeakGear();
+
                 for( CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++ )
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
@@ -850,9 +858,12 @@ void CtiLMCommandExecutor::RestoreGroup()
                         /* If the group could have Beat the Peak gears,
                            then we should send their control message in addition to the regular message
                          */
-                        if( BtpControlInterfacePtr btpGroup = boost::dynamic_pointer_cast<BtpControlInterface>(currentLMGroup) )
+                        if(hasBeatThePeakGear)
                         {
-                            btpGroup->sendBtpControl( 0 , 0 );
+                            if( BeatThePeakControlInterfacePtr btpGroup = boost::dynamic_pointer_cast<BeatThePeakControlInterface>(currentLMGroup) )
+                            {
+                                btpGroup->sendBeatThePeakRestore();
+                            }
                         }
 
                         if( _LM_DEBUG & LM_DEBUG_STANDARD )

@@ -4600,12 +4600,50 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
     {
         _cmd["btp"] = CtiParseValue(true);
  
-        if(!(temp = CmdStr.match(" btp [0-9]+")).empty())
+        if(!(temp = CmdStr.match("btp +\\w*")).empty())
         {
-            if(!(valStr = temp.match(re_num)).empty())
+            if(! (temp.replace("btp +", "", CtiString::all).empty()) )
             {
-                iValue = atoi(valStr.c_str());
-                _cmd["btp_alert_level"] = CtiParseValue( iValue );
+                _cmd["btp_alert_level"] = temp;
+            }
+
+            if(!(token = CmdStr.match( (const boost::regex) (CtiString("btp .*") + str_floatnum + CtiString(" *[hms]?( |$)")))).empty())      // Sourcing from CmdStr, which is the entire command string.
+            {
+                CtiString temp2;
+
+                // dValue is how much time
+                if(!(temp2 = token.match(re_floatnum)).empty())
+                {
+                    dValue = atof(temp2.c_str());
+                }
+                else
+                {
+                    //No time found, default to one hour
+                    dValue = 60.0;
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "Command Parameter Assumed.  Control for 1 hour. " << endl;
+                    }
+                }
+
+                /*
+                    Default is in minutes. If the time is in hours or seconds,
+                    we must set the multiplier so that dValue * mult is in seconds
+                */
+                double mult = 60.0;
+                if(!(temp2 = token.match((const boost::regex) CtiString(str_floatnum + CtiString(" *[hs]")))).empty())
+                {
+                    if(temp2.contains("h"))
+                    {
+                        mult = 3600.0;
+                    }
+                    else if(temp2.contains("s"))
+                    {
+                        mult = 1.0;
+                    }
+                }
+
+                _cmd["xctiertimeout"] = CtiParseValue( (mult * dValue) );
             }
         }
     }

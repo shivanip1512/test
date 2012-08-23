@@ -21,7 +21,7 @@
 #include "ctistring.h"
 #include "ctitokenizer.h"
 #include "numstr.h"
-#include "BtpControlInterface.h"
+#include "BeatThePeakControlInterface.h"
 
 using namespace Cti::LoadManagement;
 using std::string;
@@ -670,21 +670,21 @@ void CtiLMGroupExpresscom::restore(Cti::RowReader &rdr)
     CtiLMGroupBase::restore(rdr);
 }
 
-bool CtiLMGroupExpresscom::sendBtpControl(int tier, int timeout)
+bool CtiLMGroupExpresscom::sendBeatThePeakControl(Tier tier, int timeout)
 {
     std::string command;
-    if(tier == 0)
+    if(tier == BeatThePeakControlInterface::Green)
     {
-        command = std::string("control restore btp");
+        command = std::string("control btp restore");
     }
     else
     {
-        command = std::string("control shed ");
+        command = std::string("control btp ") + tierAsString(tier);
+
         if(timeout != 0)
         {
-            command += CtiNumStr(timeout).toString() + std::string(" m ");
+            command += std::string(" ") + CtiNumStr(timeout).toString() + std::string("m");
         }
-        command +=  "btp "  + CtiNumStr(tier);
     }
 
     CtiRequestMsg* msg = CTIDBG_new CtiRequestMsg( getPAOId(), command );
@@ -707,4 +707,9 @@ bool CtiLMGroupExpresscom::sendBtpControl(int tier, int timeout)
 
     setGroupControlState(CtiLMGroupBase::ActiveState);
     return true;
+}
+
+bool CtiLMGroupExpresscom::sendBeatThePeakRestore()
+{
+    return sendBeatThePeakControl(BeatThePeakControlInterface::Green,0);
 }

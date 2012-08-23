@@ -75,7 +75,8 @@ _controlActivatedByStatusTrigger(false),
 _curLogID(0),
 _insertDynamicDataFlag(false),
 _adjustment_notification_enabled(false),
-_adjustment_notification_pending(false)
+_adjustment_notification_pending(false),
+_hasBeatThePeakGear(false)
 {
 }
 
@@ -5302,6 +5303,15 @@ void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
     >> _lmprogramdirectgears
     >> rw_groups;
 
+    setHasBeatThePeakGear(false);
+    for( long i=0; i < _lmprogramdirectgears.size(); i++ )
+    {
+        if( ciStringEqual(_lmprogramdirectgears[i]->getControlMethod(), CtiLMProgramDirectGear::BeatThePeakMethod) )
+        {
+            setHasBeatThePeakGear(true);
+            break;
+        }
+   }
 
     _directstarttime = CtiTime(tempTime1);
     _directstoptime = CtiTime(tempTime2);
@@ -5413,6 +5423,10 @@ CtiLMProgramDirect& CtiLMProgramDirect::operator=(const CtiLMProgramDirect& righ
         for( LONG i=0;i<right._lmprogramdirectgears.size();i++ )
         {
             _lmprogramdirectgears.push_back(((CtiLMProgramDirectGear*)right._lmprogramdirectgears[i])->replicate());
+            if( ciStringEqual(right._lmprogramdirectgears[i]->getControlMethod(), CtiLMProgramDirectGear::BeatThePeakMethod) )
+            {
+                setHasBeatThePeakGear(true);
+            }
         }
 
         _lmprogramdirectgroups = right._lmprogramdirectgroups;
@@ -6394,6 +6408,16 @@ string CtiLMProgramDirect::getAndClearChangeReason()
 string CtiLMProgramDirect::getLastUser()
 {
     return _last_user;
+}
+
+bool CtiLMProgramDirect::getHasBeatThePeakGear() const
+{
+    return _hasBeatThePeakGear;
+}
+
+void CtiLMProgramDirect::setHasBeatThePeakGear(bool hasBeatThePeakGear)
+{
+    _hasBeatThePeakGear = hasBeatThePeakGear;
 }
 
 // Static Members

@@ -1095,21 +1095,21 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
         status = priority((BYTE)parse.getiValue("xcpriority"));
     }
 
-    /*  
-        This applies to beat the peak meters, which need to have this sent as a request message
-        The goal is to treat "command (shed/restore) [$time] btp [$tier]"
-        as "putconfig xcom extended tier $tier [timeout $time]"
-    */
+    unsigned command = parse.getCommand();
+
+    //This applies to the Beat the Peak gear, which needs to have its Control command transformed into a PutConfig command.
     if( parse.isKeyValid("btp") )
     {
-        parse.setCommand(PutConfigRequest);
+        CtiString alert_level = parse.getsValue("btp_alert_level");
+
+        command = PutConfigRequest;
+
         parse.setValue( "xcextier",  true );
-        parse.setValue( "xcextierlevel", parse.getiValue("btp_alert_level") );
-        parse.setValue( "xctiertimeout", parse.getiValue("shed")/60 ); //shed is in seconds, timeout is in minutes
+        parse.setValue( "xcextierlevel", tierOf(alert_level) );
         
     }
 
-    switch(parse.getCommand())
+    switch( command )
     {
         case GetValueRequest:
         {
@@ -1135,7 +1135,7 @@ INT CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unsupported command on expresscom route Command = " << parse.getCommand() << endl;
+                dout << CtiTime() << " Unsupported command on expresscom route Command = " << command << endl;
             }
 
             status = ErrorInvalidRequest;
@@ -1218,7 +1218,7 @@ INT CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Unsupported expresscom command.  Command = " << parse.getCommand() << endl;
+        dout << CtiTime() << " Unsupported expresscom command.  Command = " << parse.getCommandStr() << endl;
     }
 
     return status;
@@ -1374,7 +1374,7 @@ INT CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Unsupported expresscom command.  Command = " << parse.getCommand() << endl;
+        dout << CtiTime() << " Unsupported expresscom command.  Command = " << parse.getCommandStr() << endl;
     }
 
     return status;
@@ -2950,3 +2950,26 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
     return valid;
 }
 
+//Used to convert string containing beat the peak tier into its integer value
+int CtiProtocolExpresscom::tierOf(std::string btp_alert_level)
+{
+    if( ciStringEqual(btp_alert_level, std::string("red") ) )
+    {
+        return 4;
+    }
+    else if( ciStringEqual(btp_alert_level, std::string("yellow") ) )
+    {
+        return 2;
+    }
+    else if( ciStringEqual(btp_alert_level, std::string("green")) ||
+             ciStringEqual(btp_alert_level, std::string("restore")) )
+    {
+        return 0;
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << " **** EXCEPTION Checkpoint **** Invalid tier: " << btp_alert_level << ". Setting to 0." << endl;
+        return 0;
+    }
+}

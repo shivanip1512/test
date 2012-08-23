@@ -1020,7 +1020,10 @@ void CtiLMControlAreaStore::reset()
                     }
                     else if( ciStringEqual(controlmethod,CtiLMProgramDirectGear::BeatThePeakMethod) )
                     {
-                        newDirectGear = CTIDBG_new CtiLMProgramBeatThePeakGear(rdr);
+                        if( !rdr["tier"].isNull() )
+                        {
+                            newDirectGear = CTIDBG_new CtiLMProgramBeatThePeakGear(rdr);
+                        }
                     }
                     else if( rdr["settings"].isNull() )
                     {

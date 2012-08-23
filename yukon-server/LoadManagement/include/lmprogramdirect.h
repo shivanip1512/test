@@ -143,6 +143,8 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     virtual void setLastUser(const std::string& user);
     virtual void setChangeReason(const std::string& reason);
 
+    virtual bool getHasBeatThePeakGear() const;
+
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
@@ -190,6 +192,8 @@ private:
 
     BOOL _controlActivatedByStatusTrigger;
 
+    bool _hasBeatThePeakGear;
+
     //When the dynamic data was last saved
     CtiTime  _dynamictimestamp;
 
@@ -222,6 +226,7 @@ private:
     void setAdjustNotificationPending(bool adjustNeedsToBeSent);
     std::string getAndClearChangeReason();
     std::string getLastUser();
+    virtual void setHasBeatThePeakGear(bool hasBeatThePeakGear);
 
     void restore(Cti::RowReader &rdr);
 };

@@ -6,9 +6,9 @@
 
 #include "lmgroupbase.h"
 #include "observe.h"
-#include "BtpControlInterface.h"
+#include "BeatThePeakControlInterface.h"
                 
-class CtiLMGroupExpresscom : public CtiLMGroupBase, public Cti::LoadManagement::BtpControlInterface
+class CtiLMGroupExpresscom : public CtiLMGroupBase, public Cti::LoadManagement::BeatThePeakControlInterface
 {
 
 public:
@@ -37,7 +37,8 @@ RWDECLARE_COLLECTABLE( CtiLMGroupExpresscom )
                                                     LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
                                                     LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
                                                     int priority) const;
-    virtual bool sendBtpControl(int tier, int timeout);
+    virtual bool sendBeatThePeakControl(Tier tier, int timeout);
+    virtual bool sendBeatThePeakRestore();
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );

@@ -1,35 +1,20 @@
 #include "precompiled.h"
 #include "lmprogrambeatthepeakgear.h"
-#include "BtpControlInterface.h"
+#include "BeatThePeakControlInterface.h"
 #include "logger.h"
 
 using std::endl;
 using namespace Cti::LoadManagement;
+using Cti::LoadManagement::BeatThePeakControlInterface;
 
 CtiLMProgramBeatThePeakGear::CtiLMProgramBeatThePeakGear(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
 
-CtiLMProgramBeatThePeakGear::CtiLMProgramBeatThePeakGear(const CtiLMProgramBeatThePeakGear& gear)
-{
-    operator=(gear);
-}
-
 CtiLMProgramDirectGear * CtiLMProgramBeatThePeakGear::replicate() const
 {
     return(CTIDBG_new CtiLMProgramBeatThePeakGear(*this));
-}
-
-CtiLMProgramBeatThePeakGear& CtiLMProgramBeatThePeakGear::operator=(const CtiLMProgramBeatThePeakGear& right)
-{
-    if( this != &right )
-    {
-        Inherited::operator=(right);
-        _tier =right._tier;
-    }
-
-    return *this;
 }
 
 int CtiLMProgramBeatThePeakGear::operator==(const CtiLMProgramBeatThePeakGear& right) const
@@ -49,7 +34,7 @@ void CtiLMProgramBeatThePeakGear::restore(Cti::RowReader &rdr)
 
 bool CtiLMProgramBeatThePeakGear::attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeconds, DOUBLE &expectedLoadReduced)
 {
-    if( BtpControlInterfacePtr controllableGroup = boost::dynamic_pointer_cast<BtpControlInterface>(currentLMGroup) )
+    if( BeatThePeakControlInterfacePtr controllableGroup = boost::dynamic_pointer_cast<BeatThePeakControlInterface>(currentLMGroup) )
     {
         long controlMinutes = controlSeconds / 60;
         long controlTimeout = getMethodPeriod();
@@ -58,7 +43,7 @@ bool CtiLMProgramBeatThePeakGear::attemptControl(CtiLMGroupPtr currentLMGroup, l
             controlTimeout = controlMinutes;
         }
 
-        bool controlSent = controllableGroup->sendBtpControl( getTier(), controlTimeout );
+        bool controlSent = controllableGroup->sendBeatThePeakControl( getTier(), controlTimeout );
         if( getMethodRate() == 0 )
         {
             currentLMGroup->setNextControlTime( CtiTime(CtiTime::pos_infin) );
@@ -71,22 +56,22 @@ bool CtiLMProgramBeatThePeakGear::attemptControl(CtiLMGroupPtr currentLMGroup, l
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Group does not implement BTP control interface: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Group does not implement Beat the Peak control interface: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
         return false;
     }
 }
 
 bool CtiLMProgramBeatThePeakGear::stopControl(CtiLMGroupPtr currentLMGroup)
 {
-    if( BtpControlInterfacePtr controllableGroup = boost::dynamic_pointer_cast<BtpControlInterface>(currentLMGroup) )
+    if( BeatThePeakControlInterfacePtr controllableGroup = boost::dynamic_pointer_cast<BeatThePeakControlInterface>(currentLMGroup) )
     {
-        controllableGroup->sendBtpControl( 0, 0 );
+        controllableGroup->sendBeatThePeakRestore();
 
     }
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Group does not implement basic control interface: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        dout << CtiTime() << " - Group does not implement Beat the Peak control interface: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
         return false;
     }
 
@@ -96,10 +81,28 @@ bool CtiLMProgramBeatThePeakGear::stopControl(CtiLMGroupPtr currentLMGroup)
 
 unsigned long CtiLMProgramBeatThePeakGear::estimateOffTime(long controlSeconds)
 {
-    return (getMethodRate()/100.0)*controlSeconds;
+    if( getTier() == BeatThePeakControlInterface::Red)
+    {
+        return controlSeconds;
+    }
+    return 0;
 }
 
-int CtiLMProgramBeatThePeakGear::getTier() const
+BeatThePeakControlInterface::Tier CtiLMProgramBeatThePeakGear::getTier() const
 {
-    return _tier;
+    switch(_tier)
+    {
+    case 0:
+        return BeatThePeakControlInterface::Green;
+    case 2:
+        return BeatThePeakControlInterface::Yellow;
+    case 4:
+        return BeatThePeakControlInterface::Red;
+    default:
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << " **** EXCEPTION Checkpoint **** Invalid tier: " << _tier << ". Setting to Green." << std::endl;
+        }
+        return BeatThePeakControlInterface::Green;
+    }
 }

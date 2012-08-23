@@ -2,17 +2,16 @@
 
 #include "lmprogramdirect.h"
 #include "smartgearbase.h"
+#include "BeatThePeakcontrolinterface.h"
 
 class CtiLMProgramBeatThePeakGear : public SmartGearBase, public CtiLMProgramDirectGear
 {
 public:
     typedef CtiLMProgramDirectGear Inherited;
     CtiLMProgramBeatThePeakGear(Cti::RowReader &rdr);
-    CtiLMProgramBeatThePeakGear(const CtiLMProgramBeatThePeakGear& gear);
 
     virtual CtiLMProgramDirectGear * replicate() const;
 
-    CtiLMProgramBeatThePeakGear& CtiLMProgramBeatThePeakGear::operator=(const CtiLMProgramBeatThePeakGear& right);
     int CtiLMProgramBeatThePeakGear::operator==(const CtiLMProgramBeatThePeakGear& right) const;
     int CtiLMProgramBeatThePeakGear::operator!=(const CtiLMProgramBeatThePeakGear& right) const;
 
@@ -22,7 +21,7 @@ public:
     virtual bool stopControl(CtiLMGroupPtr currentLMGroup);
     virtual unsigned long estimateOffTime(long controlSeconds);
 
-    int getTier() const;
+    Cti::LoadManagement::BeatThePeakControlInterface::Tier getTier() const;
 
 private:
     int _tier;
