@@ -25,7 +25,7 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	private int lastSearchedCtrlHistID = 0;
 	
 	// Start and stop time stamp of the last database search to get control history
-	private long lastSearchedStartTime = 0;
+	private long lastSearchedStartTime = Long.MAX_VALUE;
 	private long lastSearchedStopTime = 0;
 	
 	public LiteStarsLMControlHistory() {

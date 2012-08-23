@@ -571,7 +571,7 @@ public class LMControlHistoryUtil {
         } else if(oneYearAgoDate.isBefore(startInstant)) {
             liteCtrlHist = StarsDatabaseCache.getInstance().getLMControlHistory( groupID, oneYearAgoDate );
         } else {
-            liteCtrlHist = StarsDatabaseCache.getInstance().getLMControlHistory( groupID, new DateTime());
+            liteCtrlHist = StarsDatabaseCache.getInstance().getLMControlHistory( groupID, startInstant);
         }
         
         return lmControlHistoryUtilService.buildStarsControlHistoryForPeriod(liteCtrlHist, startInstant, null, liteEC.getDefaultDateTimeZone());

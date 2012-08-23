@@ -14,14 +14,15 @@ import org.joda.time.Instant;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.OpenInterval;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
-import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
+import com.cannontech.stars.dr.controlHistory.service.LmControlHistoryUtilService;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
@@ -29,8 +30,7 @@ import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.util.model.CustomerControlTotals;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDetailModel.ModelRow> implements EnergyCompanyModelAttributes, UserContextModelAttributes {
     private int energyCompanyId;
@@ -41,9 +41,11 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     private CustomerAccountDao customerAccountDao = (CustomerAccountDao) YukonSpringHook.getBean("customerAccountDao");
     private LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
     private ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
-    private static DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
+    private static DecimalFormat decFormat = new java.text.DecimalFormat("0.##");
     private ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("starsProgramDao");
     private List<ModelRow> data = Collections.emptyList();
+    private double oneHour = Duration.standardHours(1).getMillis();
+    private LmControlHistoryUtilService lmControlHistoryUtilService = (LmControlHistoryUtilService) YukonSpringHook.getBean("lmControlHistoryUtilService", LmControlHistoryUtilService.class); 
     
     public LMControlDetailModel() {
     }
@@ -84,6 +86,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
 
         Instant startDateTime = new Instant(getStartDate());
         Instant stopDateTime = new Instant(getStopDate());
+        OpenInterval reportInterval = OpenInterval.createClosed(startDateTime, stopDateTime);
         
         /*Normal LMControlHistory data is useless to me without the active restore being considered and actual control
          *ranges being assembled out of individual events.  May have to do something unpleasant.
@@ -96,12 +99,8 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
             String[] accountNumbersArr = accountNumbers.split(";");
             for (String accountNumber : accountNumbersArr) {
                 try {
-                    CustomerAccount custAccount = 
-                        customerAccountDao.getByAccountNumber(accountNumber, 
-                                                              userContext.getYukonUser());
                     CustomerAccountWithNames customerAccountWithNames = 
-                        customerAccountDao.getAccountWithNamesByCustomerId(custAccount.getCustomerId(), 
-                                                                           energyCompanyId);
+                        customerAccountDao.getAcountWithNamesByAccountNumber(accountNumber,  energyCompanyId);
                     accounts.add(customerAccountWithNames);
                 } catch(NotFoundException ex) {
                     // No results from the given accountNumber.  
@@ -114,99 +113,123 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                                                                             getStartDate(),
                                                                             getStopDate());
         }
-        List<LiteYukonPAObject> restrictedPrograms = 
-            ReportFuncs.getRestrictedPrograms(userContext.getYukonUser());
+        List<LiteYukonPAObject> restrictedPrograms =  ReportFuncs.getRestrictedPrograms(userContext.getYukonUser());
         data = new ArrayList<ModelRow>(accounts.size());
         for (CustomerAccountWithNames account : accounts) {
             try {
-                List<Integer> groupIds = lmHardwareControlGroupDao.getDistinctGroupIdsByAccountId(account.getAccountId());
+                List<Integer> groupIds =
+                    lmHardwareControlGroupDao.getDistinctGroupIdsByAccountId(account.getAccountId());
                 for (Integer groupId : groupIds) {
-                    
                     List<ProgramLoadGroup> groupPrograms = groupIdToProgram.get(groupId);
-                    if(groupPrograms == null) {
+                    if (groupPrograms == null) {
                         groupPrograms = applianceAndProgramDao.getProgramsByLMGroupId(groupId);
                         groupIdToProgram.put(groupId, groupPrograms);
                     }
-                    
-                    groupPrograms = ReportFuncs.filterProgramsByPermission(groupPrograms, restrictedPrograms);
-                    
-                    /*lots of for loops, but this one will not normally be more than one iteration*/
-                    for(final ProgramLoadGroup currentGroupProgram : groupPrograms) {
-                        //Check filter: program
-                        if(programIds != null && programIds.size() > 0 && ! programIds.contains(currentGroupProgram.getPaobjectId())) {
-                            continue;
-                        }else {
-                            StarsLMControlHistory allControlEventsForAGroup = groupIdToSTARSControlHistory.get(groupId);
-                            if(allControlEventsForAGroup == null) {
-                                allControlEventsForAGroup = 
-                                    LMControlHistoryUtil.getSTARSFormattedLMControlHistory(groupId, 
-                                                                                           startDateTime,
-                                                                                           energyCompanyId);
-                                groupIdToSTARSControlHistory.put(groupId, allControlEventsForAGroup);
-                            }
-                            
-                            List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.ENROLLMENT_ENTRY);
-                            List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.OPT_OUT_ENTRY);
-                            
-                            // Check to see if the currentGroupProgram is enrolled.  If not skip it.
-                            boolean isCurrentProgramEnrolled = 
-                                Iterables.any(enrollments, new Predicate<LMHardwareControlGroup>() {
-                                    @Override
-                                    public boolean apply(LMHardwareControlGroup lmHardwareControlGroup) {
-                                        return lmHardwareControlGroup.getProgramId() == currentGroupProgram.getProgramId();
-                                    }
-                                    
-                                });
-                            if (!isCurrentProgramEnrolled) {
-                                continue;
-                            }
-                            
-                            CustomerControlTotals controlTotals = 
-                                LMControlHistoryUtil
-                                    .calculateCumulativeCustomerControlValues(allControlEventsForAGroup,
-                                                                              startDateTime,
-                                                                              stopDateTime,
-                                                                              enrollments,
-                                                                              optOuts);
 
+                    StarsLMControlHistory controlEventsForLoadGroup = groupIdToSTARSControlHistory.get(groupId);
+                    if (controlEventsForLoadGroup == null) {
+                        controlEventsForLoadGroup =
+                            LMControlHistoryUtil.getStarsFormattedLMControlHistory(groupId,
+                                                                                   startDateTime,
+                                                                                   stopDateTime,
+                                                                                   energyCompanyId);
+                        groupIdToSTARSControlHistory.put(groupId, controlEventsForLoadGroup);
+                    }
+                    groupPrograms = ReportFuncs.filterProgramsByPermission(groupPrograms, restrictedPrograms);
+
+                    /* lots of for loops, but this one will not normally be more than one iteration */
+                    for (final ProgramLoadGroup currentGroupProgram : groupPrograms) {
+
+                        // Check filter: program
+                        if (programIds != null && programIds.size() > 0
+                            && !programIds.contains(currentGroupProgram.getPaobjectId())) {
+                            continue;
+                        }
+
+                        List<LMHardwareControlGroup> allEnrollments =
+                            lmHardwareControlGroupDao
+                                .getByLMGroupIdAndAccountIdAndType(groupId,
+                                                                   account.getAccountId(),
+                                                                   LMHardwareControlGroup.ENROLLMENT_ENTRY);
+                        List<LMHardwareControlGroup> enrollments = Lists.newArrayList();
+                        Date enrollmentStart = null;
+                        Date enrollmentStop = null;
+                        
+                        if (!allEnrollments.isEmpty()) {
+                            
+                            boolean isEnrolled = false;
+                            double totalControlHours = 0.0;
+                            double totalOptOutHours = 0.0;
+                            double totalOptOutHoursDuringControl = 0.0;
+                            int optOutEvents = 0;
+                        
+                            
                             ModelRow row = new ModelRow();
-                            row.accountNumberAndName = "#" + account.getAccountNumber() + " ---- " + account.getLastName() + ", " + account.getFirstName();
+                            row.accountNumberAndName =
+                                "#" + account.getAccountNumber() + " ---- " + account.getLastName() + ", "
+                                        + account.getFirstName();
                             row.program = currentGroupProgram.getProgramName();
 
-                            double oneHour = Duration.standardHours(1).getMillis();
-                            double totalControlHours =
-                                controlTotals.getTotalControlTime().getMillis()/oneHour;
-                            row.controlHours = 
-                                new Double(decFormat.format(1.0 * totalControlHours));
+                            for (int i = 0; i < allEnrollments.size(); i++) {
 
-                            double totalOptOutHours = 
-                                controlTotals.getTotalOptOutTime().getMillis()/oneHour;
-                            row.totalOptOutHours = 
-                                new Double(decFormat.format(1.0 * totalOptOutHours));
+                                int inventoryId = allEnrollments.get(i).getInventoryId();
+                                enrollments =
+                                    lmHardwareControlGroupDao.getIntersectingEnrollments(account.getAccountId(),
+                                                                                         inventoryId,
+                                                                                         groupId,
+                                                                                         reportInterval);
+                                if (!enrollments.isEmpty()) {
+                                    List<LMHardwareControlGroup> optOuts =
+                                            lmHardwareControlGroupDao.getIntersectingOptOuts(account.getAccountId(),
+                                                                                             inventoryId,
+                                                                                             groupId,
+                                                                                             reportInterval);
 
-                            double totalOptOutHoursDuringControl = 
-                                controlTotals.getTotalControlDuringOptOutTime().getMillis()/oneHour;
-                            row.totalOptOutHoursDuringControl = 
-                                new Double(decFormat.format(1.0 * totalOptOutHoursDuringControl));
+                                    CustomerControlTotals controlTotals =
+                                        LMControlHistoryUtil
+                                            .calculateCumulativeCustomerControlValues(controlEventsForLoadGroup,
+                                                                                      startDateTime,
+                                                                                      stopDateTime,
+                                                                                      enrollments,
+                                                                                      optOuts);
 
-                            row.optOutEvents = controlTotals.getTotalOptOutEvents();
-                            
-                            /*These are sorted by date.  For reporting purposes, we'll take the first enrollment start date we can find for
-                             * this group, and the last enrollment stop we can find for this group.
-                             */
-                            if (enrollments.size() > 0) {
-                                if (enrollments.get(0).getGroupEnrollStart() != null) {
-                                    row.enrollmentStart = enrollments.get(0).getGroupEnrollStart()
-                                                                            .toDate();
-                                }
-                                if (enrollments.get(enrollments.size() - 1).getGroupEnrollStop() != null) {
-                                    row.enrollmentStop = enrollments.get(enrollments.size() - 1)
-                                                                    .getGroupEnrollStop()
-                                                                    .toDate();
+                                    /*
+                                     * This method doesn't calculate the values correctly
+                                     * CustomerControlTotals controlTotals =
+                                     * lmControlHistoryUtilService.
+                                     * calculateCumulativeCustomerControlValues
+                                     */
+                                    totalControlHours += controlTotals.getTotalControlTime().getMillis();
+                                    totalOptOutHours += controlTotals.getTotalOptOutTime().getMillis() ;
+                                    totalOptOutHoursDuringControl += controlTotals.getTotalControlDuringOptOutTime().getMillis();
+                                    optOutEvents += controlTotals.getTotalOptOutEvents();
+                                    /*
+                                     * These are sorted by date. For reporting purposes, we'll take
+                                     * the
+                                     * first enrollment start date we can find for
+                                     * this group, and the last enrollment stop we can find for this
+                                     * group.
+                                     */
+                                    if (enrollments.get(0).getGroupEnrollStart() != null) {
+                                        enrollmentStart = enrollments.get(0).getGroupEnrollStart().toDate();
+                                    }
+                                    if (enrollments.get(enrollments.size() - 1).getGroupEnrollStop() != null) {
+                                        enrollmentStop = enrollments.get(0).getGroupEnrollStop().toDate();
+                                    }
+                                    isEnrolled = true;
                                 }
                             }
-                            
-                            data.add(row);
+
+                            if (isEnrolled) {
+                                row.controlHours = new Double(decFormat.format(totalControlHours / oneHour));
+                                row.totalOptOutHours = new Double(decFormat.format(totalOptOutHours / oneHour));
+                                row.totalOptOutHoursDuringControl = new Double(decFormat.format(totalOptOutHoursDuringControl/ oneHour));
+                                row.optOutEvents = optOutEvents;
+                                row.enrollmentStart = enrollmentStart;
+                                row.enrollmentStop = enrollmentStop;
+                                data.add(row);
+                 
+                            }
                         }
                     }
                 }
@@ -216,7 +239,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
             }
         }
     }
-    
+
     @Override
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
@@ -226,7 +249,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
     }
-    
+
     @Override
     public YukonUserContext getUserContext() {
         return userContext;
@@ -235,6 +258,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     public Set<Integer> getProgramIds() {
         return programIds;
     }
+
     public void setProgramIds(Set<Integer> programIds) {
         this.programIds = programIds;
     }
@@ -242,6 +266,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     public String getAccountNumbers() {
         return accountNumbers;
     }
+
     public void setAccountNumbers(String accountNumbers) {
         this.accountNumbers = accountNumbers;
     }

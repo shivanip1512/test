@@ -7,9 +7,6 @@ import java.util.List;
 import org.jfree.report.JFreeReportBoot;
 
 import com.cannontech.analysis.ReportFuncs;
-import com.cannontech.analysis.function.AggregateFooterFieldFactory;
-import com.cannontech.analysis.function.LabelFooterFieldFactory;
-import com.cannontech.analysis.function.SumFooterFieldFactory;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.LMControlDetailModel;
 import com.cannontech.spring.YukonSpringHook;
@@ -25,22 +22,13 @@ public class LMControlDetailReport extends SingleGroupYukonReportBase {
         new ColumnLayoutData("Opt Out Events", "optOutEvents", 90)
     };
     
-    private static final AggregateFooterFieldFactory footerColumns[] = new AggregateFooterFieldFactory[] {
-        new LabelFooterFieldFactory(bodyColumns[0], "Total"),
-        new SumFooterFieldFactory(bodyColumns[3]),
-        new SumFooterFieldFactory(bodyColumns[4]),
-        new SumFooterFieldFactory(bodyColumns[5]),
-        new SumFooterFieldFactory(bodyColumns[6]),
-    };
+
     
     public LMControlDetailReport(BareReportModel bareModel) {
         super(bareModel);
     }
     
-    @Override
-    protected List<? extends AggregateFooterFieldFactory> getFooterColumns() {
-        return Arrays.asList(footerColumns);
-    }
+
 
     @Override
     protected ColumnLayoutData getGroupFieldData() {

@@ -19,9 +19,8 @@ public class LMControlSummaryReport extends SingleGroupYukonReportBase {
         new ColumnLayoutData("", "total", 50),
         new ColumnLayoutData("Number of Enrolled Participants", "enrolledCustomers", 120),
         new ColumnLayoutData("Number of Enrolled Inventory", "enrolledInventory", 120),
-        new ColumnLayoutData("Total Customer Control Hours", "controlHours", 120, "0.#"),
-        new ColumnLayoutData("Total Customer Opt Out Control Hours", "totalOptOutHoursDuringControl", 120, "0.#"),
-        new ColumnLayoutData("Total Customer Opt Out Hours", "totalOptOutHours", 120, "0.#"),
+        new ColumnLayoutData("Total Customer Control Hours", "controlHours", 120),
+        new ColumnLayoutData("Total Customer Opt Out Control Hours", "totalOptOutHoursDuringControl", 120),
         new ColumnLayoutData("Total Inventory Opt Out Events", "optOutEvents", 120)
     };
     
@@ -33,7 +32,6 @@ public class LMControlSummaryReport extends SingleGroupYukonReportBase {
         new SumFooterFieldFactory(bodyColumns[3]),
         new SumFooterFieldFactory(bodyColumns[4]),
         new SumFooterFieldFactory(bodyColumns[5]),
-        new SumFooterFieldFactory(bodyColumns[6])
     };
     
     public LMControlSummaryReport(BareReportModel bareModel) {
