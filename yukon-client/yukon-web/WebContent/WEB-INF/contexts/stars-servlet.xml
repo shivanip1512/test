@@ -17,8 +17,7 @@
         <property name="order" value="1"/>
     </bean>
 
-	<bean id="simpleUrlMapping"
-		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+	<bean id="simpleUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="mappings">
 			<props>
 				<prop key="/servlet/StarsAdmin">starsAdmin</prop>
@@ -36,10 +35,8 @@
 
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-		<property name="viewClass"
-			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix"
-			value="/WEB-INF/pages/stars/" />
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/pages/stars/" />
 	</bean>
 	
 	<bean id="starsAdmin" class="com.cannontech.web.stars.StarsActionController">
