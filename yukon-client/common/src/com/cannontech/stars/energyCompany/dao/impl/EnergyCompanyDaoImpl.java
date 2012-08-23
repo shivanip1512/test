@@ -70,7 +70,7 @@ public final class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         simpleTableTemplate.setTableName("EnergyCompany");
         simpleTableTemplate.setFieldMapper(fieldMapper);
         simpleTableTemplate.setPrimaryKeyField("EnergyCompanyId");
-        simpleTableTemplate.setPrimaryKeyValidOver(DEFAULT_ENERGY_COMPANY_ID -1); /*TODO should default ec be editable? */
+        simpleTableTemplate.setPrimaryKeyValidOver(DEFAULT_ENERGY_COMPANY_ID - 1); /*TODO should default ec be editable? */
     }
 
     private EnergyCompanyDaoImpl() {

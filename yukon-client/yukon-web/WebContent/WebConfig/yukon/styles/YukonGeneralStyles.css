@@ -1602,6 +1602,32 @@ a.icon {
     background-position: 0 0px;
 }
 
+.icon_enable {
+    background: transparent url(../Icons/enable.gif) top left no-repeat;
+}
+
+.icon_enable:hover {
+    background: transparent url(../Icons/enable_over.gif) top left no-repeat;
+}
+
+.icon_enable_disabled {
+    background: transparent url(../Icons/enable_disabled.gif) top left no-repeat;
+    cursor: not-allowed;
+}
+
+.icon_disable {
+    background: transparent url(../Icons/disable.gif) top left no-repeat;
+}
+
+.icon_disable:hover {
+    background: transparent url(../Icons/disable_over.gif) top left no-repeat;
+}
+
+.icon_disable_disabled {
+    background: transparent url(../Icons/disable_disabled.gif) top left no-repeat;
+    cursor: not-allowed;
+}
+
 .icon_remove {
     background: transparent url(../Icons/delete.png) top left no-repeat;
 }
@@ -1720,6 +1746,42 @@ a.icon {
 
 .loading { background: transparent url(../Icons/indicator_arrows.gif) top left no-repeat; }
 
+span.buttonBusy {
+    color: #555;
+}
+
+.pointStat {
+    white-space: nowrap;
+    font-size: 11px;
+}
+.nonStatusPointStat {
+    color: #555;
+}
+
+table.sectionContainerNameValue tr,
+table.sectionContainerCompactResults tr {
+    border-color: #ccc;
+    border-width: 1px;
+}
+
+table.sectionContainerCompactResults tr.first,
+table.sectionContainerNameValue tr.first,
+table.sectionContainerCompactResults tr.middle,
+table.sectionContainerNameValue tr.middle {
+    border-style: none none dotted none;
+}
+table.sectionContainerCompactResults tr.last {
+    border-style: none none solid none;
+}
+
+table.sectionContainerNameValue td, 
+table.sectionContainerCompactResults td {
+    padding: 4px 0;
+}
+table.sectionContainerNameValue td.name {
+    font-size: .8em;
+}
+
 .bn {
     border:none;
 }
@@ -1732,6 +1794,17 @@ a.icon {
 
 ul.buttonStack li {
     padding-bottom: 2px;
+}
+
+ul.labeledImageStack li {
+    padding-bottom: 23px;
+}
+ul.labeledImageStack a {
+    text-decoration: none;
+    color: #06C;
+}
+ul.labeledImageStack a:hover {
+    text-decoration: underline;
 }
 
 button.naked,

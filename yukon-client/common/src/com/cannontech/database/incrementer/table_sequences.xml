@@ -285,5 +285,8 @@
       <sequence name="YukonMessageId">
         <table name="ExternalToYukonMessageIdMapping" identitycolumn="YukonMessageId"/>
       </sequence>
+      <sequence name="LmReportedAddress">
+        <table name="LmReportedAddress" identitycolumn="ChangeId"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

@@ -77,11 +77,11 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
         
         @Override
         public void processData(RfnDevice rfnDevice, RfnLcrArchiveRequest archiveRequest) {
+            
             if (archiveRequest instanceof RfnLcrReadingArchiveRequest) {
                 RfnLcrReadingArchiveRequest readingArchiveRequest = ((RfnLcrReadingArchiveRequest) archiveRequest);
                 InputStream informingSchema = null;
                 SimpleXPathTemplate decodedPayload = null;
-                List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
 
                 byte[] payload = readingArchiveRequest.getData().getPayload();
                 Resource informingSchemaResource = loader.getResource(informingSchemaLocation);
@@ -96,14 +96,20 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
                     throw new RuntimeException();
                 }
                 
+                /** Handle point data */
+                List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
                 messagesToSend = rfnLcrDataMappingService.mapPointData(readingArchiveRequest, decodedPayload);
-                
                 dynamicDataSource.putValues(messagesToSend);
                 archivedReadings.addAndGet(messagesToSend.size());
+                LogHelper.debug(log, "%d PointDatas generated for RfnLcrReadingArchiveRequest", messagesToSend.size());
+                
+                /** Handle addressing data */
+                rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
     
                 incrementProcessedArchiveRequest();
-                LogHelper.debug(log, "%d PointDatas generated for RfnLcrReadingArchiveRequest", messagesToSend.size());
+                
             } else {
+                
                 /** Just an lcr archive request, these happen when devices join the network */
                 InventoryIdentifier inventory = inventoryDao.getYukonInventoryForDeviceId(rfnDevice.getPaoIdentifier().getPaoId());
                 int inventoryId = inventory.getInventoryId();
@@ -124,6 +130,7 @@ public class LcrReadingArchiveRequestListener extends RfnArchiveRequestListenerB
                     }
                 }
             }
+            
             sendAcknowledgement(archiveRequest);
         }
     }

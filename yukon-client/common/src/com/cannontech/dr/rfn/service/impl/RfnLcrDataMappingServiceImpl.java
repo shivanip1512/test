@@ -9,7 +9,11 @@ import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -22,6 +26,9 @@ import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.dr.dao.LmDeviceReportedDataDao;
+import com.cannontech.dr.dao.LmReportedAddress;
+import com.cannontech.dr.dao.LmReportedAddressRelay;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.dr.rfn.model.RfnLcrPointDataMap;
 import com.cannontech.dr.rfn.model.RfnLcrRelayDataMap;
@@ -35,10 +42,12 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
+    @Autowired private LmDeviceReportedDataDao lmDeviceReportedDataDao;
 
-    private static final Logger log = YukonLogManager.getLogger(RfnLcrDataMappingServiceImpl.class);    
+    private static final Logger log = YukonLogManager.getLogger(RfnLcrDataMappingServiceImpl.class);
+    private static final LogHelper logHelper = YukonLogManager.getLogHelper(RfnLcrDataMappingServiceImpl.class);
 
-    public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate message) {
+    public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data) {
         
         List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrPointDataMap> rfnLcrPointDataMap = Sets.newHashSet();
@@ -51,20 +60,19 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             PaoPointIdentifier paoPointIdentifier = null;
             Integer pointId = null;
             try {
-                paoPointIdentifier = attributeService
-                        .getPaoPointIdentifierForAttribute(device, entry.getAttribute());
+                paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(device, entry.getAttribute());
                 pointId = pointDao.getPointId(paoPointIdentifier);
             }
             catch (IllegalUseOfAttribute e) {
-                log.warn("The attribute: " + entry.getAttribute().toString() + " is not defined for the device: " +
-                        device.getName() + " of type: " + device.getPaoIdentifier().getPaoType());
+                log.warn("The attribute: " + entry.getAttribute().toString() 
+                         + " is not defined for the device: " + device.getName() 
+                         + " of type: " + device.getPaoIdentifier().getPaoType());
                 continue;
             } catch (NotFoundException e) {
-                log.debug("Point for attribute (" + entry.getAttribute().toString() +
-                        ") does not exist for device: " + device.getName());
+                log.debug("Point for attribute (" + entry.getAttribute().toString() + ") does not exist for device: " + device.getName());
                 continue;
             }
-            Double value = evaluateArchiveReadValue(message, entry);
+            Double value = evaluateArchiveReadValue(data, entry);
             if (value != null) {
                 if (entry.getAttribute() == BuiltInAttribute.SERVICE_STATUS) {
                     /** Adjust value for state group 'LCR Service Status'
@@ -80,22 +88,20 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                     }
                 }
                 Integer pointTypeId = paoPointIdentifier.getPointIdentifier().getPointType().getPointTypeId();
-                Long timeInSec = message.evaluateAsLong("/DRReport/@utc");
+                Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
                 Date timeOfReading = new Instant(timeInSec * 1000).toDate();
                 PointData pointData = createPointData(pointId, pointTypeId, timeOfReading, value);
                 messagesToSend.add(pointData);
             }
         }
         
-        List<PointData> intervalData = mapIntervalData(request, message, device);
+        List<PointData> intervalData = mapIntervalData(request, data, device);
         messagesToSend.addAll(intervalData);
         
         return messagesToSend;
     }
 
-    private List<PointData> mapIntervalData(RfnLcrReadingArchiveRequest archiveRequest, 
-            SimpleXPathTemplate decodedXml, 
-            RfnDevice device) {
+    private List<PointData> mapIntervalData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data, RfnDevice device) {
         
         List<PointData> intervalPointData = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();
@@ -108,13 +114,13 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         }
         
         for (RfnLcrRelayDataMap relay : rfnLcrRelayDataMap) {
-            List<Integer> intervalData = decodedXml.evaluateAsIntegerList("/DRReport/Relays/Relay" + 
+            List<Integer> intervalData = data.evaluateAsIntegerList("/DRReport/Relays/Relay" + 
                     relay.getRelayIdXPathString() + "/IntervalData/Interval");
 
             LitePoint runTimePoint = attributeService.getPointForAttribute(device, relay.getRunTimeAttribute());
             LitePoint shedTimePoint = attributeService.getPointForAttribute(device, relay.getShedTimeAttribute());
 
-            Long firstIntervalTimestamp = decodedXml.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
+            Long firstIntervalTimestamp = data.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
             Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp * 1000);
             for (Integer interval : intervalData) {
                 Integer runTime = (interval & 0xFF00) >>> 8;
@@ -149,10 +155,10 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         return pointData;
     }
 
-    private Double evaluateArchiveReadValue(SimpleXPathTemplate xPathTemplate, RfnLcrPointDataMap entry) {
+    private Double evaluateArchiveReadValue(SimpleXPathTemplate data, RfnLcrPointDataMap entry) {
         
         Integer value = null;
-        value = xPathTemplate.evaluateAsInt(entry.getxPathQuery());
+        value = data.evaluateAsInt(entry.getxPathQuery());
         if (value == null) {
             log.error("No value was found when evaluating XPath query: " + entry.getxPathQuery());
             return null;
@@ -168,4 +174,48 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
         return new Double(value);
     }
 
+    @Override
+    public void storeAddressingData(JmsTemplate jmsTemplate, SimpleXPathTemplate data, RfnDevice device) {
+        LmReportedAddress address = new LmReportedAddress();
+        address.setDeviceId(device.getPaoIdentifier().getPaoId());
+        
+        address.setTimestamp(new Instant(data.evaluateAsLong("/DRReport/@utc") * 1000));
+        address.setSpid(data.evaluateAsInt("/DRReport/ExtendedAddresssing/SPID"));
+        address.setGeo(data.evaluateAsInt("/DRReport/ExtendedAddresssing/Geo"));
+        
+        /** hack until Karl gets us some new firmware */
+        Integer sub = data.evaluateAsInt("/DRReport/ExtendedAddresssing/Substation");
+        sub = sub == null ? 0 : sub;
+        address.setSubstation(sub);
+            
+        address.setFeeder(data.evaluateAsInt("/DRReport/ExtendedAddresssing/Feeder"));
+        address.setZip(data.evaluateAsInt("/DRReport/ExtendedAddresssing/Zip"));
+        address.setUda(data.evaluateAsInt("/DRReport/ExtendedAddresssing/UDA"));
+        address.setRequired(data.evaluateAsInt("/DRReport/ExtendedAddresssing/Required"));
+        
+        /** In the spec but not used yet
+         * data.evaluateAsInt("/DRReport/ExtendedAddresssing/SEPDeviceClass");
+         * data.evaluateAsInt("/DRReport/ExtendedAddresssing/SEPUtilityEnrollmentGroup"); 
+         */
+        
+        List<Node> relaysNodes = data.evaluateAsNodeList("/DRReport/Relays/Relay");
+        Set<LmReportedAddressRelay> relays = Sets.newHashSet();
+        for (Node relayNode : relaysNodes) {
+            Element elem = (Element) relayNode;
+            LmReportedAddressRelay relay = new LmReportedAddressRelay();
+            
+            relay.setRelayNumber(Integer.parseInt(elem.getAttribute("id")));
+            relay.setProgram(Integer.parseInt(elem.getElementsByTagName("Program").item(0).getTextContent()));
+            relay.setSplinter(Integer.parseInt(elem.getElementsByTagName("Splinter").item(0).getTextContent()));
+            
+            relays.add(relay);
+        }
+        address.setRelays(relays);
+        
+        logHelper.debug("Received LM Address for %s - " + address, device.getName());
+        lmDeviceReportedDataDao.save(address);
+        
+        jmsTemplate.convertAndSend("yukon.notif.obj.dr.rfn.LmAddressNotification", address);
+    }
+    
 }

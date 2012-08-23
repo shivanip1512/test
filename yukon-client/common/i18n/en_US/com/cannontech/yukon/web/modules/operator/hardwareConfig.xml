@@ -17,7 +17,7 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.relay">Relay</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.noRelay">None</entry>
 
-    <entry key="yukon.web.modules.operator.hardwareConfig.otherDeviceActions.title">Other Device Actions</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.serviceStatus.title">Service Status</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.inService">This device is in service.</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.outOfService">This device is out of service.</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.otherDeviceActions.helpText">
@@ -83,6 +83,12 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.splinter">Splinter</entry>
 
     <entry key="yukon.web.modules.operator.hardwareConfig.typeMismatch.java.lang.Integer">Must be an integer.</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareConfig.deviceReportedConfig.title">Device Reported Configuration</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.relayProgram">Relay {0} Program</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.relaySplinter">Relay {0} Splinter</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.noDeviceReportedConfig">No configuration has yet been reported by this device.</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.configReportedAt">Reported at </entry>
 
     <!-- meterConfig -->
     <entry key="yukon.web.modules.operator.meterConfig.pageName">Meter Configuration</entry>

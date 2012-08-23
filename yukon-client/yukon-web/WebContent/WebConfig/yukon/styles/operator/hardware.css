@@ -67,6 +67,39 @@ table.theremostatActionTable td.buttonCell {
     width: 500px;
 }
 
+/* No smaller than 1024 wide including left side menu */
+div.configContent {
+    min-width: 811px;
+    position: relative;
+}
+div.configContent div.columnContent {
+    margin: 0 10px 10px;
+    position: relative;
+}
+div.configContent div.columnContent table.compactResultsTable {
+    width: 100%;
+}
+div.configContent div.primary,
+div.configContent div.secondary {
+    float: left;
+    position: relative;
+}
+div.configContent div.primary {
+    width: 75%;
+}
+div.configContent div.secondary {
+    width: 25%;
+}
+div.reportedConfig {
+    float: left;
+}
+div.relay {
+    margin-left: 90px;
+}
+div.reportedConfig_timestamp {
+    margin-bottom: 20px;
+}
+
 div.hardwarePopup {
     padding: 10px;
 }

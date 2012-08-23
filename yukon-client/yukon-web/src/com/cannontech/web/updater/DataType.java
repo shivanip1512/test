@@ -37,5 +37,6 @@ public enum DataType {
     FDR_TRANSLATION_IMPORT,
     POINT_IMPORT,
     INVENTORY_TASK,
+    LM_REPORTED_ADDRESS,
     ;
 }

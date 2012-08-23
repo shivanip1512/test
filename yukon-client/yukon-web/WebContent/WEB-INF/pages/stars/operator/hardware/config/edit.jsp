@@ -15,118 +15,243 @@
     <c:set var="configurable" value="false"/>
 </cti:checkRolesAndProperties>
 
+<cti:msg2 key="yukon.web.components.button.readNow.labelBusy" var="reading"/>
+<cti:msg2 key="yukon.web.components.button.readNow.label" var="readNow"/>
+
+<script type="text/javascript">
+jQuery(function() {
+    jQuery(document).delegate('#rfReadNow', 'click', function(event) {
+        var url = '<cti:url value="/spring/stars/operator/hardware/rf/readNow"/>';
+        
+        jQuery("<a class=\"fl loading labeled_icon\"/>").insertBefore(jQuery("#rfReadNow span"));
+        jQuery("#rfReadNow span").html('${reading}');
+        jQuery("#rfReadNow span").addClass("buttonBusy");
+        
+        jQuery.ajax({
+            url: url,
+            method: 'get',
+            data: {'deviceId': '${deviceId}'},
+            success: function(data) {
+                jQuery('#rfCommandStatus').html(data.message);
+                jQuery('#rfCommandStatus').show();
+                if (data.success ==  true) {
+                    jQuery('#rfCommandStatus').addClass('successMessage').removeClass('errorMessage');
+                    setTimeout(function() {
+                        jQuery('#rfCommandStatus').fadeOut('slow', function() {
+                            jQuery('#rfCommandStatus').hide();
+                        });
+                    }, 5000);
+                } else {
+                     jQuery('#rfCommandStatus').removeClass('successMessage').addClass('errorMessage');
+                }
+                jQuery("#rfReadNow span").html('${readNow}');
+                jQuery("#rfReadNow span").removeClass("buttonBusy");
+                jQuery("#rfReadNow a").detach();
+            },
+            error: function(data) {
+                jQuery("#rfReadNow span").html('${readNow}');
+                jQuery("#rfReadNow span").removeClass("buttonBusy");
+                jQuery("#rfReadNow a").detach();
+            }
+        });
+    });
+});
+</script>
+
 <cti:url var="submitUrl" value="/spring/stars/operator/hardware/config/commit"/>
-<form:form id="editForm" name="editForm" action="${submitUrl}" commandName="configuration">
-    <input id="actionInput" type="hidden" name="action" value=""/>
-    <tags:hidden path="accountId"/>
-    <tags:hidden path="inventoryId"/>
 
-    <tags:formElementContainer nameKey="enrolledPrograms">
-        <c:if test="${fn:length(enrollments) == 0}">
-            <i:inline key=".noEnrolledPrograms"/>
-        </c:if>
-        <c:if test="${fn:length(enrollments) > 0}">
-        <table class="compactResultsTable rowHighlighting">
-            <tr>
-                <th><i:inline key=".name"/></th>
-                <th><i:inline key=".applianceCategory"/></th>
-                <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
-                    <th><i:inline key=".group"/></th>
-                </cti:checkRolesAndProperties>
-                <th><i:inline key=".relay"/></th>
-            </tr>
-
-            <c:forEach var="enrollment" varStatus="status" items="${enrollments}">
-                <tags:hidden path="programEnrollments[${status.index}].assignedProgramId"/>
-                <c:set var="programId" value="${enrollment.assignedProgramId}"/>
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                    <td>
-                        <c:set var="assignedProgram" value="${assignedPrograms[enrollment.assignedProgramId]}"/>
-                        <dr:assignedProgramName assignedProgram="${assignedPrograms[enrollment.assignedProgramId]}"/>
-                    </td>
-                    <td>
-                        <spring:escapeBody htmlEscape="true">
-                            ${applianceCategories[assignedPrograms[enrollment.assignedProgramId].applianceCategoryId].name}
-                        </spring:escapeBody>
-                    </td>
-                    <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
-                        <td>
-                            <c:set var="loadGroups" value="${loadGroupsByProgramId[programId]}"/>
-                            <c:if test="${fn:length(loadGroups) == 0}">
-                                <i:inline key=".groupNotApplicable"/>
-                            </c:if>
-                            <c:if test="${fn:length(loadGroups) > 0}">
-                                <tags:selectWithItems path="programEnrollments[${status.index}].loadGroupId"
-                                    items="${loadGroups}" itemLabel="name"
-                                    itemValue="loadGroupId"/>
-                            </c:if>
-                        </td>
-                    </cti:checkRolesAndProperties>
-                    <td>
-                        <form:select path="programEnrollments[${status.index}].relay">
-                            <form:option value="0"><i:inline key=".noRelay"/></form:option>
-                            <c:forEach var="relayNumber" begin="1" end="${hardware.numRelays}">
-                                <form:option value="${relayNumber}">${relayNumber}</form:option>
+<div class="configContent">
+    <div class="primary">
+        <div class="columnContent">
+            <form:form id="editForm" name="editForm" action="${submitUrl}" commandName="configuration">
+                <input id="actionInput" type="hidden" name="action" value=""/>
+                <tags:hidden path="accountId"/>
+                <tags:hidden path="inventoryId"/>
+            
+                <tags:formElementContainer nameKey="enrolledPrograms">
+                    <c:if test="${fn:length(enrollments) == 0}">
+                        <i:inline key=".noEnrolledPrograms"/>
+                    </c:if>
+                    <c:if test="${fn:length(enrollments) > 0}">
+                        <table class="compactResultsTable sectionContainerCompactResults">
+                            <tr>
+                                <th><i:inline key=".name"/></th>
+                                <th><i:inline key=".applianceCategory"/></th>
+                                <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
+                                    <th><i:inline key=".group"/></th>
+                                </cti:checkRolesAndProperties>
+                                <th><i:inline key=".relay"/></th>
+                            </tr>
+                
+                            <c:forEach var="enrollment" varStatus="status" items="${enrollments}">
+                                <tags:hidden path="programEnrollments[${status.index}].assignedProgramId"/>
+                                <c:set var="programId" value="${enrollment.assignedProgramId}"/>
+                                <c:choose>
+                                    <c:when test="${status.last}"><c:set var="trClass" value="last"/></c:when>
+                                    <c:otherwise><c:set var="trClass" value="middle"/></c:otherwise>
+                                </c:choose>
+                                <tr class="${trClass}">
+                                    <td>
+                                        <c:set var="assignedProgram" value="${assignedPrograms[enrollment.assignedProgramId]}"/>
+                                        <dr:assignedProgramName assignedProgram="${assignedPrograms[enrollment.assignedProgramId]}"/>
+                                    </td>
+                                    <td>
+                                        <spring:escapeBody htmlEscape="true">
+                                            ${applianceCategories[assignedPrograms[enrollment.assignedProgramId].applianceCategoryId].name}
+                                        </spring:escapeBody>
+                                    </td>
+                                    <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
+                                        <td>
+                                            <c:set var="loadGroups" value="${loadGroupsByProgramId[programId]}"/>
+                                            <c:if test="${fn:length(loadGroups) == 0}">
+                                                <i:inline key=".groupNotApplicable"/>
+                                            </c:if>
+                                            <c:if test="${fn:length(loadGroups) > 0}">
+                                                <tags:selectWithItems path="programEnrollments[${status.index}].loadGroupId"
+                                                    items="${loadGroups}" 
+                                                    itemLabel="name"
+                                                    itemValue="loadGroupId"/>
+                                            </c:if>
+                                        </td>
+                                    </cti:checkRolesAndProperties>
+                                    <td>
+                                        <form:select path="programEnrollments[${status.index}].relay">
+                                            <form:option value="0"><i:inline key=".noRelay"/></form:option>
+                                            <c:forEach var="relayNumber" begin="1" end="${hardware.numRelays}">
+                                                <form:option value="${relayNumber}">${relayNumber}</form:option>
+                                            </c:forEach>
+                                        </form:select>
+                                    </td>
                             </c:forEach>
-                        </form:select>
-                    </td>
-            </c:forEach>
-        </table>
-        </c:if>
-    </tags:formElementContainer>
-
-    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-        <cti:checkRolesAndProperties value="TRACK_HARDWARE_ADDRESSING">
-            <br>
-            <dr:hardwareAddressingInfo/>
-        </cti:checkRolesAndProperties>
-    </cti:checkRolesAndProperties>
-
-    <div class="pageActionArea">
-        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-            <c:if test="${fn:length(enrollments) > 0}">
-                <c:if test="${configurable}">
-                    <input type="submit" value="<cti:msg2 key=".config"/>"
-                           title="<cti:msg2 key=".config.description"/>"
-                           onclick="$('actionInput').value = 'config';" class="formSubmit">
-                    <input type="submit" value="<cti:msg2 key=".saveToBatch"/>"
-                           title="<cti:msg2 key=".saveToBatch.description"/>"
-                           onclick="$('actionInput').value = 'saveToBatch';" class="formSubmit">
-                </c:if>
-                <input type="submit" value="<cti:msg2 key=".saveConfigOnly"/>"
-                       title="<cti:msg2 key=".saveConfigOnly.description"/>"
-                       onclick="$('actionInput').value = 'saveConfigOnly';" class="formSubmit">
+                        </table>
+                    </c:if>
+                </tags:formElementContainer>
+            
+                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                    <cti:checkRolesAndProperties value="TRACK_HARDWARE_ADDRESSING">
+                        <br>
+                        <dr:hardwareAddressingInfo/>
+                    </cti:checkRolesAndProperties>
+                </cti:checkRolesAndProperties>
+            
+                <div class="pageActionArea marginBottom">
+                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                        <c:if test="${fn:length(enrollments) > 0}">
+                            <c:if test="${configurable}">
+                                <input type="submit" value="<cti:msg2 key=".config"/>"
+                                       title="<cti:msg2 key=".config.description"/>"
+                                       onclick="$('actionInput').value = 'config';" class="formSubmit">
+                                <input type="submit" value="<cti:msg2 key=".saveToBatch"/>"
+                                       title="<cti:msg2 key=".saveToBatch.description"/>"
+                                       onclick="$('actionInput').value = 'saveToBatch';" class="formSubmit">
+                            </c:if>
+                            <input type="submit" value="<cti:msg2 key=".saveConfigOnly"/>"
+                                   title="<cti:msg2 key=".saveConfigOnly.description"/>"
+                                   onclick="$('actionInput').value = 'saveConfigOnly';" class="formSubmit">
+                        </c:if>
+                    </cti:checkRolesAndProperties>
+                    <cti:url var="cancelUrl" value="/spring/stars/operator/hardware/list">
+                        <cti:param name="accountId" value="${accountId}"/>
+                    </cti:url>
+                </div>
+            </form:form>
+            
+            <c:if test="${showDeviceReportedConfig}">
+                <!-- Reported Addressing -->
+                <tags:formElementContainer nameKey="deviceReportedConfig">
+                    <div class="marginBottom">
+                        <c:choose>
+                            <c:when test="${not empty reportedConfig}">
+                                <div class="pointStat nonStatusPointStat reportedConfig_timestamp">
+                                    <i:inline key=".configReportedAt"/><cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/TIMESTAMP"/>
+                                </div>
+                                <div class="reportedConfig">
+                                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue">
+                                        <tags:nameValue2 nameKey=".serviceProvider" rowClass="first">
+                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/SPID"/>
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".geo" rowClass="middle">
+                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/GEO"/>
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".substation" rowClass="middle">
+                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/SUB"/>
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".feeder" rowClass="middle">
+                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/FEEDER"/>
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".zip" rowClass="middle">
+                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/ZIP"/>
+                                        </tags:nameValue2>
+                                        <tags:nameValue2 nameKey=".userAddress" rowClass="last">
+                                            <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/UDA"/>
+                                        </tags:nameValue2>
+                                    </tags:nameValueContainer2>
+                                </div>
+                                <div class="reportedConfig relay">
+                                    <c:forEach begin="1" end="${fn:length(reportedConfig.relays)}"  varStatus="status">
+                                        <tags:nameValueContainer2 tableClass="sectionContainerNameValue">
+                                            <tags:nameValue2 nameKey=".relayProgram" argument="${status.index}" rowClass="first">
+                                                <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/RELAY_${status.index}_PROGRAM"/>
+                                            </tags:nameValue2>
+                                            <tags:nameValue2 nameKey=".relaySplinter" argument="${status.index}"  rowClass="last">
+                                                <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/RELAY_${status.index}_SPLINTER"/>
+                                            </tags:nameValue2>
+                                        </tags:nameValueContainer2>
+                                    </c:forEach>
+                                </div>
+                            </c:when>
+                            <c:otherwise><i:inline key=".noDeviceReportedConfig"/></c:otherwise>
+                        </c:choose>
+                    </div>
+                    <div class="cl">
+                        <div class="rfCommandMsg fl">
+                            <cti:button id="rfReadNow" nameKey="readNow"/>
+                            <span id="rfCommandStatus" class="dn errorMessage rfCommandMsg"></span>
+                        </div>
+                    </div>
+                </tags:formElementContainer>
             </c:if>
-        </cti:checkRolesAndProperties>
-        <cti:url var="cancelUrl" value="/spring/stars/operator/hardware/list">
-            <cti:param name="accountId" value="${accountId}"/>
-        </cti:url>
-        <input type="button" value="<cti:msg2 key=".cancel"/>"
-               onclick="window.location='${cancelUrl}'" class="formSubmit">
+        </div>
     </div>
-</form:form>
+    
+    <div class="secondary">
+        <div class="columnContent">
+            <c:if test="${configurable}">
+                <tags:formElementContainer nameKey="serviceStatus">
+                    <c:if test="${showStaticServiceStatus}">
+                        <c:if test="${inService}">
+                            <i:inline key=".inService"/>
+                        </c:if>
+                        <c:if test="${!inService}">
+                            <i:inline key=".outOfService"/>
+                        </c:if>
+                    </c:if>
+                    <div class="wsnp marginBottom">
+                        <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat" format="VALUE" colorForStatus="true"/>
+                        <cti:pointValue pointId="${serviceStatusPointId}" cssClass="pointStat nonStatusPointStat" format="DATE"/>
+                    </div>
+                    <ul class="labeledImageStack">
+                        <li>
+                            <cti:url var="enableUrl" value="/spring/stars/operator/hardware/config/enable">
+                               <cti:param name="accountId" value="${accountId}"/>
+                               <cti:param name="inventoryId" value="${param.inventoryId}"/>
+                            </cti:url>
+                            <a class="labeled_icon icon_enable" href="${enableUrl}"><i:inline key="yukon.web.components.button.enable.label"/></a>
+                        </li>
+                        
+                        <li>
+                            <cti:url var="disableUrl" value="/spring/stars/operator/hardware/config/disable">
+                               <cti:param name="accountId" value="${accountId}"/>
+                               <cti:param name="inventoryId" value="${param.inventoryId}"/>
+                            </cti:url>
+                            <a class="labeled_icon icon_disable cl" href="${disableUrl}"><i:inline key="yukon.web.components.button.disable.label"/></a>
+                        </li>
+                    </ul>
+                </tags:formElementContainer>
+            </c:if>
+        </div>
+    </div>
 
-<c:if test="${configurable}">
-    <br>
-    <br>
-    <tags:boxContainer2 nameKey="otherDeviceActions">
-        <cti:url var="disableUrl" value="/spring/stars/operator/hardware/config/disable">
-           <cti:param name="accountId" value="${accountId}"/>
-           <cti:param name="inventoryId" value="${param.inventoryId}"/>
-        </cti:url>
-        <input type="button" value="<cti:msg2 key=".disable"/>" onclick="window.location='${disableUrl}'" class="formSubmit">
-        <cti:url var="enableUrl" value="/spring/stars/operator/hardware/config/enable">
-           <cti:param name="accountId" value="${accountId}"/>
-           <cti:param name="inventoryId" value="${param.inventoryId}"/>
-        </cti:url>
-        <input type="button" value="<cti:msg2 key=".enable"/>" onclick="window.location='${enableUrl}'" class="formSubmit">
-        <c:if test="${inService}">
-            <i:inline key=".inService"/>
-        </c:if>
-        <c:if test="${!inService}">
-            <i:inline key=".outOfService"/>
-        </c:if>
-    </tags:boxContainer2>
-</c:if>
+</div>
 
 </cti:standardPage>

@@ -29,6 +29,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
 public class RfnDeviceDaoImpl implements RfnDeviceDao {
+    
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
 
@@ -152,7 +153,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
 
     @Override
     public void updateDevice(RfnDevice device) {
-        if(device.getRfnIdentifier().isBlank()) {
+        if (device.getRfnIdentifier().isBlank()) {
             /* When someone has blanked out the three fields of the rfn device address, delete that row from RfnAddress. */
             deleteRfnAddress(device);
             return;
@@ -162,7 +163,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append("INSERT INTO RfnAddress");
         sql.values(device.getPaoIdentifier().getPaoId(), device.getRfnIdentifier().getSensorSerialNumber(), device.getRfnIdentifier().getSensorManufacturer(), device.getRfnIdentifier().getSensorModel());
 
-        try{
+        try {
             jdbcTemplate.update(sql);
             return;
         } catch (DataIntegrityViolationException e) {

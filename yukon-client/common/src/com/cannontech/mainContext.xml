@@ -318,12 +318,13 @@
     <bean class="com.cannontech.common.requests.runnable.capcontrol.CapControlJobFactory"/>
     
     <bean class="com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl"/>
-    <bean id="rfnDeviceLookupService" class="com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl"/>
-    <bean id="rfnDeviceCreationService" class="com.cannontech.common.rfn.service.impl.RfnDeviceCreationServiceImpl"/>
-    <bean id="rfnExpressComMessageService" class="com.cannontech.dr.rfn.service.impl.RfnExpressComMessageServiceImpl"/>
-    <bean id="rfnLcrDataMappingService" class="com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl"/>
+    <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceLookupServiceImpl"/>
+    <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceCreationServiceImpl"/>
+    <bean class="com.cannontech.dr.rfn.service.impl.RfnExpressComMessageServiceImpl"/>
+    <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RawExpressComCommandBuilderImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceMetadataServiceImpl"/>
+    <bean class="com.cannontech.dr.dao.impl.LmDeviceReportedDataDaoImpl"/>
 
     <bean id="bulkPointDataInjectionService" class="com.cannontech.development.impl.BulkPointDataInjectionServiceImpl"/>
 </beans>

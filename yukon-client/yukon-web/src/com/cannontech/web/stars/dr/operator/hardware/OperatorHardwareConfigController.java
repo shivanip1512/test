@@ -28,14 +28,21 @@ import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.inventory.HardwareConfigType;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.RouteTypes;
+import com.cannontech.dr.dao.LmDeviceReportedDataDao;
+import com.cannontech.dr.dao.LmReportedAddress;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
@@ -86,22 +93,25 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 @RequestMapping("/operator/hardware/config/*")
 public class OperatorHardwareConfigController {
-    private HardwareEventLogService hardwareEventLogService;
     
-    private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
-    private InventoryDao inventoryDao;
-    private LoadGroupDao loadGroupDao;
-    private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
-    private AssignedProgramDao assignedProgramDao;
-    private RolePropertyDao rolePropertyDao;
-    private EnrollmentDao enrollmentDao;
-    private InventoryBaseDao inventoryBaseDao;
-    private HardwareConfigService hardwareConfigService;
-    private ApplianceCategoryDao applianceCategoryDao;
-    private MeterDao meterDao;
-    private MeterConfigValidator meterConfigValidator;
-    private LmHardwareBaseDao lmHardwareBaseDao;
-    private PaoDao paoDao;
+    @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private LoadGroupDao loadGroupDao;
+    @Autowired private StaticLoadGroupMappingDao staticLoadGroupMappingDao;
+    @Autowired private AssignedProgramDao assignedProgramDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private EnrollmentDao enrollmentDao;
+    @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private HardwareConfigService hardwareConfigService;
+    @Autowired private ApplianceCategoryDao applianceCategoryDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private MeterConfigValidator meterConfigValidator;
+    @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
+    @Autowired private PaoDao paoDao;
+    @Autowired private LmDeviceReportedDataDao lmDeviceReportedDataDao;
+    @Autowired private AttributeService attributeService;
+    
     private ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
     private TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
 
@@ -211,6 +221,23 @@ public class OperatorHardwareConfigController {
         Map<Integer, ApplianceCategory> applianceCategories =
             applianceCategoryDao.getByApplianceCategoryIds(applianceCategoryIds);
         model.addAttribute("applianceCategories", applianceCategories);
+        
+        InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
+        if (!inventory.getHardwareType().isRf()) {
+            model.addAttribute("showStaticServiceStatus", true);
+        } else {
+            model.addAttribute("showDeviceReportedConfig", true);
+            int deviceId = inventoryDao.getDeviceId(inventoryId);
+            model.addAttribute("deviceId", deviceId);
+            
+            LitePoint serviceStatusPoint = attributeService.getPointForAttribute(paoDao.getYukonPao(deviceId), BuiltInAttribute.SERVICE_STATUS);
+            model.addAttribute("serviceStatusPointId", serviceStatusPoint.getPointID());
+            
+            try {
+                LmReportedAddress reportedConfig = lmDeviceReportedDataDao.getCurrentAddress(deviceId);
+                model.addAttribute("reportedConfig", reportedConfig);
+            } catch (NotFoundException e) {/* Ignore */}
+        }
 
         return "operator/hardware/config/edit.jsp";
     }
@@ -454,80 +481,4 @@ public class OperatorHardwareConfigController {
         }
     }
 
-    @Autowired
-    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
-        this.hardwareEventLogService = hardwareEventLogService;
-    }
-    
-    @Autowired
-    public void setDisplayableInventoryEnrollmentDao(
-            DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao) {
-        this.displayableInventoryEnrollmentDao = displayableInventoryEnrollmentDao;
-    }
-
-    @Autowired
-    public void setInventoryDao(InventoryDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
-    }
-
-    @Autowired
-    public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
-        this.loadGroupDao = loadGroupDao;
-    }
-
-    @Autowired
-    public void setStaticLoadGroupMappingDao(
-            StaticLoadGroupMappingDao staticLoadGroupMappingDao) {
-        this.staticLoadGroupMappingDao = staticLoadGroupMappingDao;
-    }
-
-    @Autowired
-    public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
-        this.assignedProgramDao = assignedProgramDao;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-        this.enrollmentDao = enrollmentDao;
-    }
-
-    @Autowired
-    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
-        this.inventoryBaseDao = inventoryBaseDao;
-    }
-
-    @Autowired
-    public void setHardwareConfigService(HardwareConfigService hardwareConfigService) {
-        this.hardwareConfigService = hardwareConfigService;
-    }
-
-    @Autowired
-    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
-        this.applianceCategoryDao = applianceCategoryDao;
-    }
-
-    @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
-    @Autowired
-    public void setMeterConfigValidator(MeterConfigValidator meterConfigValidator) {
-        this.meterConfigValidator = meterConfigValidator;
-    }
-    
-    @Autowired
-    public void setLmHardwareBaseDao(LmHardwareBaseDao lmHardwareBaseDao) {
-        this.lmHardwareBaseDao = lmHardwareBaseDao;
-    }
 }

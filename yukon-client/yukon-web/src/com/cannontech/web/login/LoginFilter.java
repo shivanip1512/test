@@ -118,7 +118,7 @@ public class LoginFilter implements Filter {
                 }
             }
             
-            if(!success) {
+            if (!success) {
                 /* If we got here, they couldn't be authenticated, send an error response. */
                 log.debug("All login attempts failed, returning error");
                 
@@ -133,13 +133,13 @@ public class LoginFilter implements Filter {
         }
         
         /* At this point the user has been authenticated, check for timeout and authorization. */
-        attachYukonUserContext(request, true);
+        LiteYukonUser user = attachYukonUserContext(request, true).getYukonUser();
         
         /* Check session timeout, update last activity time if successful, redirect to login page if expired. */
-        try{
+        try {
             checkSessionTimeout(request, ajaxRequest);
         } catch (SessionTimeoutException e) {
-            log.info("User logged out due to inactivity");
+            log.info("User " + user.getUsername() + " logged out due to inactivity");
             loginService.invalidateSession(request, "TIMEOUT");
             sendLoginRedirect(request, response);
             return;
@@ -226,10 +226,11 @@ public class LoginFilter implements Filter {
         }
     }
     
-    private void attachYukonUserContext(HttpServletRequest request, boolean isFailureAnError) {
+    private YukonUserContext attachYukonUserContext(HttpServletRequest request, boolean isFailureAnError) {
         try {
-            YukonUserContext resolveContext = userContextResolver.resolveContext(request);
-            request.setAttribute(YukonUserContextUtils.userContextAttrName, resolveContext);
+            YukonUserContext context = userContextResolver.resolveContext(request);
+            request.setAttribute(YukonUserContextUtils.userContextAttrName, context);
+            return context;
         } catch(RuntimeException e) {
             request.setAttribute(YukonUserContextUtils.userContextAttrName, e);
             if (isFailureAnError) {
@@ -237,6 +238,7 @@ public class LoginFilter implements Filter {
             } else {
                 log.debug("Unable to attach YukonUserContext to request");
             }
+            return null;
         }
     }
 

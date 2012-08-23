@@ -1,0 +1,71 @@
+package com.cannontech.dr.dao;
+
+import java.io.Serializable;
+
+public class LmReportedAddressRelay implements Serializable {
+
+    private int relayNumber;
+    private int program;
+    private int splinter;
+    
+    public int getRelayNumber() {
+        return relayNumber;
+    }
+    
+    public void setRelayNumber(int relayNumber) {
+        this.relayNumber = relayNumber;
+    }
+    
+    public int getProgram() {
+        return program;
+    }
+    
+    public void setProgram(int program) {
+        this.program = program;
+    }
+    
+    public int getSplinter() {
+        return splinter;
+    }
+    
+    public void setSplinter(int splinter) {
+        this.splinter = splinter;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("LmReportedAddressRelay [relayNumber=%s, program=%s, splinter=%s]",
+                    relayNumber,
+                    program,
+                    splinter);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + program;
+        result = prime * result + relayNumber;
+        result = prime * result + splinter;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LmReportedAddressRelay other = (LmReportedAddressRelay) obj;
+        if (program != other.program)
+            return false;
+        if (relayNumber != other.relayNumber)
+            return false;
+        if (splinter != other.splinter)
+            return false;
+        return true;
+    }
+    
+}
