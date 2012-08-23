@@ -35,6 +35,8 @@ RWDECLARE_COLLECTABLE( LMGroupDigiSEP )
     virtual bool sendStopControl(bool stopImmediately);
     virtual bool sendShedControl(long controlMinutes);
 
+    virtual bool isRestoreNeededAt(CtiTime currentTime);
+
     //Unused
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;
     virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const;
@@ -44,3 +46,5 @@ RWDECLARE_COLLECTABLE( LMGroupDigiSEP )
 protected:
     void restore(Cti::RowReader &rdr);
 };
+
+typedef boost::shared_ptr<LMGroupDigiSEP> LMGroupDigiSEPPtr;

@@ -226,6 +226,19 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
     return true;
 }
 
+/*
+  SEP Devices know to stop themselves at Control Complete time.
+  If we are at or after that time, there is no need to send a restore command.
+*/
+bool LMGroupDigiSEP::isRestoreNeededAt(CtiTime currentTime)
+{
+    if( currentTime != gInvalidCtiTime && currentTime >= getControlCompleteTime())
+    {
+        return false;
+    }
+    return true;
+}
+
 CtiRequestMsg* LMGroupDigiSEP::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
     {

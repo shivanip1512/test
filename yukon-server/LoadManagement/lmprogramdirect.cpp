@@ -43,6 +43,7 @@
 #include "utility.h"
 #include "database_writer.h"
 #include "smartgearbase.h"
+#include "lmgroupdigisep.h"
 
 #include <rw/ordcltn.h>
 
@@ -4468,9 +4469,26 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                     }
                     else
                     {
-                        if( smartGearObject->stopControl(currentLMGroup) )
+                        //We don't want to send a restore message to an SEP device after it has already stopped itself
+                        bool shouldSendMsg = true;
+                        if( LMGroupDigiSEPPtr sepGroup = boost::dynamic_pointer_cast<LMGroupDigiSEP>(currentLMGroup) )
                         {
-                            setLastControlSent(CtiTime());
+                            if( ! sepGroup->isRestoreNeededAt( CtiTime::now() ) )
+                            {
+                                shouldSendMsg = false;
+                                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Not sending SEP Stop command. SEP Device should have already stopped on its own. LM Group: " << sepGroup->getPAOName() << endl;
+                                }
+                            }
+                        }
+                        if(shouldSendMsg)
+                        {
+                            if( smartGearObject->stopControl(currentLMGroup) )
+                            {
+                                setLastControlSent(CtiTime());
+                            }
                         }
                     }
                 }
