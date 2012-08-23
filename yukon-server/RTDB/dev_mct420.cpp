@@ -5,132 +5,143 @@
 
 #include "dev_mct420_commands.h"
 
+#include <boost/assign/list_of.hpp>
+
 using namespace Cti::Devices::Commands;
 using Cti::Protocols::EmetconProtocol;
 using std::string;
 using std::endl;
 using std::list;
 using std::vector;
+using std::make_pair;
 
 namespace Cti {
 namespace Devices {
 
-const Mct420Device::CommandSet       Mct420Device::_commandStore = Mct420Device::initCommandStore();
-const Mct420Device::ConfigPartsList  Mct420Device::_config_parts = Mct420Device::initConfigParts();
 
-const Mct420Device::ValueMapping              Mct420Device::_memoryMap             = Mct420Device::initMemoryMap();
-const Mct420Device::FunctionReadValueMappings Mct420Device::_functionReadValueMaps = Mct420Device::initFunctionReadValueMaps();
+const Mct420Device::CommandSet       Mct420Device::_commandStore = boost::assign::list_of
+    (CommandStore(EmetconProtocol::GetConfig_Multiplier,       EmetconProtocol::IO_Function_Read, 0xf3, 2))
+    (CommandStore(EmetconProtocol::GetConfig_MeterParameters,  EmetconProtocol::IO_Function_Read, 0xf3, 2));
 
 
-Mct420Device::CommandSet Mct420Device::initCommandStore()
+const Mct420Device::ConfigPartsList  Mct420Device::_config_parts = boost::assign::list_of
+    (PutConfigPart_display);
+
+
+const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = boost::assign::map_list_of
+    (0x000, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision))
+        ( 1, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_SSpec        )))
+    (0x04f, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay)))
+    (0x005, boost::assign::map_list_of
+        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask1))
+        ( 6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_EventFlagsMask2))
+        ( 7, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_MeterAlarmMask )))
+    (0x00f, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters)))
+    (0x013, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_AddressBronze           ))
+        ( 1, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_AddressLead             ))
+        ( 3, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_AddressCollection       ))
+        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID)))
+    (0x019, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio)))
+    (0x01a, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DemandInterval       ))
+        ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval  ))
+        ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_VoltageDemandInterval))
+        ( 3, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_VoltageLPInterval    )))
+    (0x01e, boost::assign::map_list_of
+        ( 0, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_OverVoltageThreshold ))
+        ( 2, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_UnderVoltageThreshold))
+        ( 4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_OutageCycles         )))
+    (0x022, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_OutageCycles)))
+    (0x036, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeAdjustTolerance)))
+    (0x03f, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset)))
+    (0x0d0, boost::assign::map_list_of
+        ( 0, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday1))
+        ( 4, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday2))
+        ( 8, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)))
+    (0x0d4, boost::assign::map_list_of
+        ( 0, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday2))
+        ( 4, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)))
+    (0x0d8, boost::assign::map_list_of
+        ( 0, make_value_descriptor(4, CtiTableDynamicPaoInfo::Key_MCT_Holiday3)))
+    (0x19d, boost::assign::map_list_of
+        ( 4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel1Len))
+        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel2Len))
+        ( 6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel3Len))
+        ( 7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LLPChannel4Len)))
+    (0x1ad, boost::assign::map_list_of
+        ( 0, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_DayTable))
+        ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate))
+        (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset)))
+    (0x1f6, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric01))
+        ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric02))
+        ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric03))
+        ( 3, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric04))
+        ( 4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric05))
+        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric06))
+        ( 6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric07))
+        ( 7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric08))
+        ( 8, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric09))
+        ( 9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric10))
+        (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric11))
+        (11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric12))
+        (12, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric13)))
+    (0x1f7, boost::assign::map_list_of
+        ( 0, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric14))
+        ( 1, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric15))
+        ( 2, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric16))
+        ( 3, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric17))
+        ( 4, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric18))
+        ( 5, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric19))
+        ( 6, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric20))
+        ( 7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric21))
+        ( 8, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric22))
+        ( 9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric23))
+        (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric24))
+        (11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric25))
+        (12, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric26)))
+    (0x1fe, boost::assign::map_list_of
+        ( 5, make_value_descriptor(2, CtiTableDynamicPaoInfo::Key_MCT_DemandThreshold  ))
+        ( 7, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ConnectDelay     ))
+        ( 9, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_DisconnectMinutes))
+        (10, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_ConnectMinutes   ))
+        (11, make_value_descriptor(1, CtiTableDynamicPaoInfo::Key_MCT_Configuration    )));
+
+
+const Mct420Device::ReadDescriptor Mct420Device::getDescriptorForRead(const unsigned char io, const unsigned function, const unsigned readLength) const
 {
-    CommandSet cs;
+    unsigned read = function;
 
-    cs.insert(CommandStore(EmetconProtocol::GetConfig_Multiplier,       EmetconProtocol::IO_Function_Read, 0xf3, 2));
-    cs.insert(CommandStore(EmetconProtocol::GetConfig_MeterParameters,  EmetconProtocol::IO_Function_Read, 0xf3, 2));
-
-    return cs;
-}
-
-Mct420Device::ConfigPartsList Mct420Device::initConfigParts()
-{
-    return ConfigPartsList(1, PutConfigPart_display);
-}
-
-Mct420Device::ValueMapping Mct420Device::initMemoryMap()
-{
-    //  inherit the MCT-410's key store...  this is a little awkward, but perhaps the best way to do it
-    ValueMapping memoryMap = Mct410Device::initMemoryMap();
-
-    //  Clear out the SSPEC and SSPEC revision - they've changed in the MCT-420
-    for( ValueMapping::iterator itr = memoryMap.begin(); itr != memoryMap.end(); )
+    switch( io )
     {
-        switch( itr->second.key )
+        case EmetconProtocol::IO_Function_Read:
         {
-            case CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision:
-            case CtiTableDynamicPaoInfo::Key_MCT_SSpec:
+            read += 0x100;
+            //  fall through
+        }
+        case EmetconProtocol::IO_Read:
+        {
+            if( const FunctionReadValueMappings *rm = getReadValueMaps() )
             {
-                memoryMap.erase(itr++);
-                break;
-            }
-            default:
-            {
-                ++itr;
+                FunctionReadValueMappings::const_iterator itr = rm->find(read);
+
+                if( itr != rm->end() )
+                {
+                    return getDescriptorFromMapping(itr->second, 0, readLength);
+                }
             }
         }
     }
 
-    struct memory_read_value
-    {
-        unsigned offset;
-        value_descriptor value;
-    }
-    const values[] =
-    {
-        { 0, { 1, CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision } },
-        { 1, { 2, CtiTableDynamicPaoInfo::Key_MCT_SSpec         } },
-    };
-
-    for each( memory_read_value mrv in values )
-    {
-        memoryMap.insert(std::make_pair(mrv.offset, mrv.value));
-    }
-
-    return memoryMap;
-}
-
-
-Mct420Device::FunctionReadValueMappings Mct420Device::initFunctionReadValueMaps()
-{
-    //  Masking off the 0x100 bit
-    const int read1 = Mct420LcdConfigurationCommand::Read_LcdConfiguration1 & 0xff;
-    const int read2 = Mct420LcdConfigurationCommand::Read_LcdConfiguration2 & 0xff;
-
-    struct function_read_value
-    {
-        unsigned function;
-        unsigned offset;
-        value_descriptor value;
-    }
-    const values[] =
-    {
-        { read1,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric01 } },
-        { read1,  1, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric02 } },
-        { read1,  2, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric03 } },
-        { read1,  3, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric04 } },
-        { read1,  4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric05 } },
-        { read1,  5, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric06 } },
-        { read1,  6, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric07 } },
-        { read1,  7, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric08 } },
-        { read1,  8, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric09 } },
-        { read1,  9, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric10 } },
-        { read1, 10, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric11 } },
-        { read1, 11, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric12 } },
-        { read1, 12, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric13 } },
-
-        { read2,  0, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric14 } },
-        { read2,  1, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric15 } },
-        { read2,  2, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric16 } },
-        { read2,  3, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric17 } },
-        { read2,  4, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric18 } },
-        { read2,  5, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric19 } },
-        { read2,  6, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric20 } },
-        { read2,  7, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric21 } },
-        { read2,  8, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric22 } },
-        { read2,  9, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric23 } },
-        { read2, 10, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric24 } },
-        { read2, 11, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric25 } },
-        { read2, 12, { 1, CtiTableDynamicPaoInfo::Key_MCT_LcdMetric26 } },
-    };
-
-    FunctionReadValueMappings fr = Mct410Device::initFunctionReadValueMaps();
-
-    for each( function_read_value frv in values )
-    {
-        fr[frv.function].insert(std::make_pair(frv.offset, frv.value));
-    }
-
-    return fr;
+    return ReadDescriptor();
 }
 
 
@@ -145,15 +156,9 @@ bool Mct420Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
-const Mct420Device::ValueMapping *Mct420Device::getMemoryMap(void) const
+const Mct420Device::FunctionReadValueMappings *Mct420Device::getReadValueMaps(void) const
 {
-    return &_memoryMap;
-}
-
-
-const Mct420Device::FunctionReadValueMappings *Mct420Device::getFunctionReadValueMaps(void) const
-{
-    return &_functionReadValueMaps;
+    return &_readValueMaps;
 }
 
 

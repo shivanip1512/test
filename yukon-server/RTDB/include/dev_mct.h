@@ -77,6 +77,9 @@ protected:
         CtiTableDynamicPaoInfo::PaoInfoKeys key;
     };
 
+    //  utility function for boost::assign until we get initialization lists
+    static value_descriptor make_value_descriptor(unsigned offset, CtiTableDynamicPaoInfo::PaoInfoKeys key);
+
     struct value_locator
     {
         unsigned offset;

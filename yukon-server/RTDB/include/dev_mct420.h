@@ -8,16 +8,9 @@ namespace Devices {
 class IM_EX_DEVDB Mct420Device : public Mct410Device
 {
     static const CommandSet       _commandStore;
-    static       CommandSet       initCommandStore();
-
     static const ConfigPartsList  _config_parts;
-    static       ConfigPartsList  initConfigParts();
 
-    static const  ValueMapping _memoryMap;
-    static        ValueMapping initMemoryMap();
-
-    static const  FunctionReadValueMappings _functionReadValueMaps;
-    static        FunctionReadValueMappings initFunctionReadValueMaps();
+    static const FunctionReadValueMappings _readValueMaps;
 
     virtual bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
@@ -29,8 +22,8 @@ class IM_EX_DEVDB Mct420Device : public Mct410Device
 
 protected:
 
-    virtual const ValueMapping *getMemoryMap() const;
-    virtual const FunctionReadValueMappings *getFunctionReadValueMaps() const;
+    virtual const FunctionReadValueMappings *getReadValueMaps() const;
+    virtual const ReadDescriptor getDescriptorForRead(const unsigned char io, const unsigned function, const unsigned readLength) const;
 
     virtual bool isProfileTablePointerCurrent(const unsigned char table_pointer, const CtiTime TimeNow, const unsigned interval_len) const;
 

@@ -184,6 +184,14 @@ string MctDevice::getDescription(const CtiCommandParser &parse) const
     return getName();
 }
 
+//  utility function for boost::assign until we get initialization lists
+MctDevice::value_descriptor MctDevice::make_value_descriptor(unsigned offset, CtiTableDynamicPaoInfo::PaoInfoKeys key)
+{
+    value_descriptor v = {offset, key};
+
+    return v;
+}
+
 const MctDevice::ValueMapping *MctDevice::getMemoryMap(void) const
 {
     return 0;
