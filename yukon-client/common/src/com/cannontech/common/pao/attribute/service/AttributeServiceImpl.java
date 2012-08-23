@@ -18,10 +18,12 @@ import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -43,9 +45,12 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
@@ -59,6 +64,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private PointCreationService pointCreationService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private ObjectFormattingService objectFormattingService;
 
     private Logger log = YukonLogManager.getLogger(AttributeServiceImpl.class);
     
@@ -300,5 +306,29 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public Set<Attribute> getReadableAttributes() {
     	return readableAttributes;
+    }
+    
+    @Override
+    public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributeMapFromCollection(
+            Collection<? extends Attribute> attributes, YukonUserContext userContext) {
+        
+        ImmutableMap<AttributeGroup, ImmutableSet<BuiltInAttribute>> allGroupedAttributes = 
+                BuiltInAttribute.getAllGroupedAttributes();
+
+        Map<AttributeGroup, Set<BuiltInAttribute>> groupedAttributesMap = Maps.newHashMap();
+        
+        for (AttributeGroup attributeGroup : allGroupedAttributes.keySet()) {
+            Set<BuiltInAttribute> attributesInGroup = Sets.newHashSet();
+            for (BuiltInAttribute builtInAttribute : allGroupedAttributes.get(attributeGroup)) {
+                if (attributes.contains(builtInAttribute)) {
+                    attributesInGroup.add(builtInAttribute);
+                }
+            }
+            if (!attributesInGroup.isEmpty()) {
+                groupedAttributesMap.put(attributeGroup, attributesInGroup);
+            }
+        }
+        return objectFormattingService.sortDisplayableValues(
+                groupedAttributesMap, userContext);
     }
 }

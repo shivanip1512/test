@@ -52,5 +52,5 @@ public interface ObjectFormattingService {
      * @param toSort The list to sort. This list will not be modified.
      * @return The sorted list.
      */
-    public <S,T> Map<S, List<T>> sortDisplayableValues(Map<S, ImmutableList<T>> toSort, YukonUserContext context); 
+    public <S,T> Map<S, List<T>> sortDisplayableValues(Map<S, ? extends Iterable<T>> toSort, YukonUserContext context); 
 }

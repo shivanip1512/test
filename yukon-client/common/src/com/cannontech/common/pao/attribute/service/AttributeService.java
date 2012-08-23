@@ -1,5 +1,6 @@
 package com.cannontech.common.pao.attribute.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,12 +10,14 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.user.YukonUserContext;
 
 public interface AttributeService {
 
@@ -166,4 +169,15 @@ public interface AttributeService {
      */
     public BuiltInAttribute findAttributeForPaoPointIdentifier(PaoPointIdentifier paoPointIdentifier);
 
+    /**
+     * Creates a map of AttributeGroup to list of BuiltInAttribute.  The resulting map contains only
+     * those attributes that are in the 'attributes' collection that is passed in.
+     * 
+     * @param attributes
+     * @param userContext
+     * @return
+     */
+    public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributeMapFromCollection(
+            Collection<? extends Attribute> attributes, YukonUserContext userContext);
+    
 }

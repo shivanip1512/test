@@ -37,9 +37,8 @@
 	   		<cti:deviceCollection deviceCollection="${deviceCollection}" />
 	   		
 	        <div class="largeBoldLabel">${selectAttributeLabel}:</div>
-	        <amr:attributeSelector attributes="${allAttributes}" fieldName="attribute" selectedAttributes="${selectedAttributes}" multipleSize="5"/>
-			<br>
-			<br>
+	        <amr:attributeSelector attributes="${allGroupedReadableAttributes}" fieldName="attribute" 
+                selectedAttributes="${selectedAttributes}" multipleSize="8" groupItems="true"/>
 	   		<%-- READ BUTTON --%>
 			<tags:slowInput myFormId="groupMeterReadForm" labelBusy="${readButtonText}" label="${readButtonText}"/>
    	

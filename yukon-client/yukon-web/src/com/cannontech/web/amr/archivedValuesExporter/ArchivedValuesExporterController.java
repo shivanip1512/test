@@ -93,9 +93,8 @@ public class ArchivedValuesExporterController {
 
     @ModelAttribute("groupedAttributes")
     public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributes(YukonUserContext userContext) {
-        Map<AttributeGroup, ArrayList<Integer>> l1 = Maps.newHashMap();
         return objectFormattingService.sortDisplayableValues(
-                BuiltInAttribute.getStandardGroupedAttributes(), userContext);
+                BuiltInAttribute.getAllGroupedAttributes(), userContext);
     }
 
     @ModelAttribute("dataSelection")

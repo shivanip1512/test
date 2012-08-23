@@ -29,9 +29,10 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.ArchiveDataAnalysisBackingBean;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
-import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -51,15 +52,17 @@ public class ArchiveDataAnalysisController {
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private ArchiveDataAnalysisService archiveDataAnalysisService;
     @Autowired private ArchiveDataAnalysisDao archiveDataAnalysisDao;
-    @Autowired private ObjectFormattingService objectFormattingService;
+    @Autowired private AttributeService attributeService;
     @Resource(name="recentResultsCache") private RecentResultsCache<ArchiveDataAnalysisCallbackResult> recentResultsCache;
     private Set<Period> intervalPeriods;
     private Map<String, List<BuiltInAttribute>> attributes;
 
     @ModelAttribute("groupedAttributes")
     public Map<AttributeGroup, List<BuiltInAttribute>> getGroupedAttributes(YukonUserContext userContext) {
-        return objectFormattingService.sortDisplayableValues(
-                BuiltInAttribute.getAllGroupedAttributes(), userContext);
+        Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
+        Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
+                getGroupedAttributeMapFromCollection(allReadableAttributes, userContext);
+        return allGroupedReadableAttributes;
     }
     
     {

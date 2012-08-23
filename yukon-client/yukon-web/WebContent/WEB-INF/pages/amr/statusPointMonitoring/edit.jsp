@@ -79,8 +79,14 @@
                 <%-- attribute --%>
                 <tags:nameValue2 nameKey="yukon.common.device.commander.attributeSelector.selectAttribute">
                     <form:select path="attribute">
-                        <c:forEach items="${allAttributes}" var="attributeVar">
-                            <form:option value="${attributeVar}">${attributeVar.description}</form:option>
+                        <c:forEach items="${allGroupedReadableAttributes}" var="group">
+                            <optgroup label="<cti:msg2 key="${group.key}"/>">
+                                <c:forEach items="${group.value}" var="item">
+                                    <option value="${item.key}">
+                                        <cti:formatObject value="${item.description}"/>
+                                    </option>
+                                </c:forEach>
+                            </optgroup>
                         </c:forEach>
                     </form:select>
                 </tags:nameValue2>

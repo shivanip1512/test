@@ -92,7 +92,7 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
     }
 
     @Override
-    public <S, T> Map<S, List<T>> sortDisplayableValues(Map<S, ImmutableList<T>> toSort, YukonUserContext context) {
+    public <S, T> Map<S, List<T>> sortDisplayableValues(Map<S, ? extends Iterable<T>> toSort, YukonUserContext context) {
         Map<S, List<T>> sortedResult = Maps.newLinkedHashMap();
         List<S> sortedKeys = sortDisplayableValues(
                 Lists.newArrayList(toSort.keySet()), null, null, context); 

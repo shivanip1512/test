@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -31,6 +32,8 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeGroup;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -54,6 +57,7 @@ public class GroupMeterReadController extends MultiActionController {
 	// HOME (GROUP)
 	public ModelAndView homeGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
+	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadHomeGroup.jsp");
 		
 		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
@@ -64,8 +68,10 @@ public class GroupMeterReadController extends MultiActionController {
 		mav.addObject("groupName", groupName);
 		mav.addObject("selectedAttributes", selectedAttributes);
 		
-		Set<Attribute> allAttributes = attributeService.getReadableAttributes();
-		mav.addObject("allAttributes", allAttributes);
+		Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
+	    Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
+	            getGroupedAttributeMapFromCollection(allReadableAttributes, userContext);
+		mav.addObject("allGroupedReadableAttributes", allGroupedReadableAttributes);
 		
 		return mav;
 	}
@@ -73,6 +79,7 @@ public class GroupMeterReadController extends MultiActionController {
 	// HOME (COLLECTION)
 	public ModelAndView homeCollection(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
+	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		ModelAndView mav = new ModelAndView("groupMeterRead/groupMeterReadHomeCollection.jsp");
 		
 		DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -85,8 +92,10 @@ public class GroupMeterReadController extends MultiActionController {
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("selectedAttributes", selectedAttributes);
 		
-		Set<Attribute> allAttributes = attributeService.getReadableAttributes();
-		mav.addObject("allAttributes", allAttributes);
+		Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
+		Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
+                getGroupedAttributeMapFromCollection(allReadableAttributes, userContext);
+		mav.addObject("allGroupedReadableAttributes", allGroupedReadableAttributes);
 		
 		return mav;
 	}

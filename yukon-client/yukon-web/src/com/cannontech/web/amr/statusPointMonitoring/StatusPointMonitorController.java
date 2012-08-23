@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,8 @@ import com.cannontech.amr.statusPointMonitoring.service.StatusPointMonitorServic
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeGroup;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -301,9 +304,12 @@ public class StatusPointMonitorController {
         
         modelMap.addAttribute("statusPointMonitor", statusPointMonitor);
         
-        // attributes
-        Set<Attribute> allAttributes = attributeService.getReadableAttributes();
-        modelMap.addAttribute("allAttributes", allAttributes);
+        Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
+        
+        Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
+                getGroupedAttributeMapFromCollection(allReadableAttributes, userContext); 
+        
+        modelMap.addAttribute("allGroupedReadableAttributes", allGroupedReadableAttributes);
         
         modelMap.addAttribute("dontCare", StatusPointMonitorStateType.DONT_CARE);
         modelMap.addAttribute("difference", StatusPointMonitorStateType.DIFFERENCE);

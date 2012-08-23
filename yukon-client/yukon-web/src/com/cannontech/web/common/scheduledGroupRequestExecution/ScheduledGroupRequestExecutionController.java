@@ -2,6 +2,7 @@ package com.cannontech.web.common.scheduledGroupRequestExecution;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -25,6 +26,8 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.attribute.model.Attribute;
+import com.cannontech.common.pao.attribute.model.AttributeGroup;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -174,8 +177,10 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		mav.addObject("deviceGroupName", deviceGroupName);
 		
 		// attributes
-		Set<Attribute> allAttributes = attributeService.getReadableAttributes();
-		mav.addObject("allAttributes", allAttributes);
+		Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
+		Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
+                getGroupedAttributeMapFromCollection(allReadableAttributes, userContext);
+		mav.addObject("allGroupedReadableAttributes", allGroupedReadableAttributes);
 		
 		// commands
 		List<LiteCommand> commands = commandDao.getAuthorizedCommands(meterCommands, userContext.getYukonUser());
