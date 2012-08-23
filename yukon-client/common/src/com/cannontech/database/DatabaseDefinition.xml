@@ -117,7 +117,7 @@
 
     <table name="GroupPAOPermission">
         <primaryKey name="GroupPaoPermissionId" />
-        <identifier name="GroupId" tableRef="YukonGroup" refType="MANY_TO_ONE"/>
+        <identifier name="UserGroupId" tableRef="UserGroup" refType="MANY_TO_ONE"/>
         <identifier name="PaoId" tableRef="YukonPAObject" refType="MANY_TO_ONE"/>
         <identifier name="Permission"/>
         <data name="Allow"/>
@@ -366,6 +366,12 @@
         <data name="Formula" />
     </table>
 
+    <table name="UserGroup">
+        <primaryKey name="UserGroupId" />
+        <identifier name="UserGroupName" />
+        <data name="UserGroupDescription" />
+    </table>
+
     <table name="YukonGroup">
         <primaryKey name="GroupId"/>
         <identifier name="GroupName"/>
@@ -430,6 +436,9 @@
         <data name="Password"/>
         <data name="Status"/>
         <data name="AuthType"/>
+        <data name="LastChangedDate"/>
+        <data name="ForceReset"/>
+        <data name="UserGroupId" tableRef="UserGroup" refType="MANY_TO_ONE" />
     </table>
     
     <table name="YukonWebConfiguration">

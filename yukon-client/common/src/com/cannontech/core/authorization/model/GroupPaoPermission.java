@@ -12,7 +12,6 @@ public class GroupPaoPermission implements PaoPermission {
     public int getId() {
         return groupId;
     }
-
     public void setId(int id) {
         this.groupId = id;
     }
@@ -20,7 +19,6 @@ public class GroupPaoPermission implements PaoPermission {
     public int getPaoId() {
         return paoId;
     }
-
     public void setPaoId(int paoId) {
         this.paoId = paoId;
     }
@@ -28,7 +26,6 @@ public class GroupPaoPermission implements PaoPermission {
     public Permission getPermission() {
         return permission;
     }
-
     public void setPermission(Permission permission) {
         this.permission = permission;
     }
@@ -36,7 +33,6 @@ public class GroupPaoPermission implements PaoPermission {
     public int getGroupId() {
         return groupId;
     }
-
     public void setGroupId(int groupId) {
         this.groupId = groupId;
     }

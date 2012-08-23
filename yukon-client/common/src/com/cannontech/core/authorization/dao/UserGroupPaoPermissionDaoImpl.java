@@ -110,7 +110,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
     public void removeAllPermissions(int userGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM GroupPaoPermission");
-        sql.append("WHERE GroupId").eq(userGroupId);
+        sql.append("WHERE UserGroupId").eq(userGroupId);
         
         yukonJdbcTemplate.update(sql);
     }
@@ -119,7 +119,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
     public void removeAllPermissions(LiteUserGroup userGroup, Permission permission) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM GroupPaoPermission");
-        sql.append("WHERE GroupId").eq(userGroup.getUserGroupId());
+        sql.append("WHERE UserGroupId").eq(userGroup.getUserGroupId());
         sql.append("  AND Permission").eq(permission);
 
         yukonJdbcTemplate.update(sql);
@@ -147,7 +147,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PaoId");
         sql.append("FROM GroupPaoPermission");
-        sql.append("WHERE GroupId").in(userGroupIds);
+        sql.append("WHERE UserGroupId").in(userGroupIds);
         sql.append("  AND Permission").eq(permission);
         
         List<Integer> paoIdList = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
@@ -157,9 +157,9 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
     private List<PaoPermission> getPermissionsByUserGroupIds(List<Integer> userGroupIds) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT GroupPaoPermissionId, GroupId, PaoId, Permission, Allow");
+        sql.append("SELECT GroupPaoPermissionId, UserGroupId, PaoId, Permission, Allow");
         sql.append("FROM GroupPaoPermission");
-        sql.append("WHERE GroupId").in(userGroupIds);
+        sql.append("WHERE UserGroupId").in(userGroupIds);
 
         List<? extends PaoPermission> gppList = yukonJdbcTemplate.query(sql, new GroupPaoPermissionMapper());
         List<PaoPermission> result = Lists.newArrayList(gppList);
@@ -168,9 +168,9 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
 
     private List<PaoPermission> getPermissionsForPao(int userGroupId, int paoId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT GroupPaoPermissionId, GroupId, PaoId, Permission, Allow");
+        sql.append("SELECT GroupPaoPermissionId, UserGroupId, PaoId, Permission, Allow");
         sql.append("FROM GroupPaoPermission");
-        sql.append("WHERE GroupId").eq(userGroupId);
+        sql.append("WHERE UserGroupId").eq(userGroupId);
         sql.append("  AND PaoId").eq(paoId);
         
         List<? extends PaoPermission> gppList = yukonJdbcTemplate.query(sql, new GroupPaoPermissionMapper());
@@ -183,7 +183,7 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Allow");
         sql.append("FROM GroupPaoPermission");
-        sql.append("WHERE GroupId").in(userGroupIds);
+        sql.append("WHERE UserGroupId").in(userGroupIds);
         sql.append("  AND PaoId").eq(paoId);
         sql.append("  AND Permission").eq(permission);
 
@@ -243,9 +243,9 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT allow, paoId ");
                 sql.append("FROM GroupPaoPermission ");
-                sql.append("WHERE groupId").in(userGroupIds);
-                sql.append("    AND paoid").in(subList);
-                sql.append("    AND permission").eq(permission);
+                sql.append("WHERE UserGroupId").in(userGroupIds);
+                sql.append("    AND PaoId").in(subList);
+                sql.append("    AND Permission").eq_k(permission);
                 
                 return sql;
             }
@@ -276,9 +276,9 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
     private void removePermission(int userGroupId, int paoId, Permission permission) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM GroupPaoPermission");
-        sql.append("WHERE GroupId").eq(userGroupId);
+        sql.append("WHERE UserGroupId").eq(userGroupId);
         sql.append("  AND PaoId").eq(paoId);
-        sql.append("  AND Permission").eq(permission);
+        sql.append("  AND Permission").eq_k(permission);
 
         yukonJdbcTemplate.update(sql);
     }
@@ -291,12 +291,12 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
         public GroupPaoPermission mapRow(ResultSet rs, int rowNum) throws SQLException {
 
             GroupPaoPermission gpp = new GroupPaoPermission();
-            gpp.setId(rs.getInt("groupPaoPermissionId"));
-            gpp.setGroupId(rs.getInt("groupId"));
-            gpp.setPaoId(rs.getInt("paoId"));
-            String permissionStr = rs.getString("permission");
+            gpp.setId(rs.getInt("GroupPaoPermissionId"));
+            gpp.setGroupId(rs.getInt("UserGroupId"));
+            gpp.setPaoId(rs.getInt("PaoId"));
+            String permissionStr = rs.getString("Permission");
             gpp.setPermission(Permission.valueOf(permissionStr));
-            String allowStr = rs.getString("allow");
+            String allowStr = rs.getString("Allow");
             AllowDeny allowDeny = AllowDeny.valueOf(allowStr);
             gpp.setAllow(allowDeny.getAllowValue());
             return gpp;
