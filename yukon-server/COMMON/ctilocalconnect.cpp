@@ -171,6 +171,19 @@ INT CtiLocalConnect<Outbound, Inbound>::CtiLocalConnectRead(void *buf, ULONG len
     {
         while( _outQueue.empty() )
         {
+            //  Note added August 23, 2012 by Matt Fisher regarding YUK-10530:
+            //
+            //  This seems like an infinite loop when called from PIL's ConnectionThread:
+            //
+            //    ConnectionThread(): portentry.cpp, line 182
+            //      else if((i = MyNexus->CTINexusRead (OutMessage, sizeof(OUTMESS), &BytesRead, CTINEXUS_INFINITE_TIMEOUT))  || BytesRead != sizeof(OUTMESS))  /* read whatever comes in */
+            //
+            //    cticonnect.h, line 26
+            //      #define CTINEXUS_INFINITE_TIMEOUT LONG_MIN
+            //
+            //    TimeOut will be negative in that case, and unless something is written to the PilToPorter queue near shutdown, that thread is probably not shutting down.
+            //    Perhaps this while loop condition should also be watching PorterQuit?
+            //
             Sleep(50);
         };
     }
