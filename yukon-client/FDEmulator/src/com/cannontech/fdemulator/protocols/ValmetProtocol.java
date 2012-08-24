@@ -30,6 +30,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JLabel;
@@ -38,6 +39,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.util.ThreadInterruptedException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.fdemulator.common.FDEProtocol;
@@ -476,11 +478,19 @@ public class ValmetProtocol extends FDEProtocol implements Runnable {
         timesync = new Timer();
         timesync.schedule(new timesyncTask(), T3_TIME, T3_TIME);
 
-        scheduledExecutor.scheduleWithFixedDelay(new Runnable() {
+        ScheduledFuture<?> scheduleWithFixedDelay = scheduledExecutor.scheduleWithFixedDelay(new Runnable() {
+            private boolean running = false;
+            
             @Override
             public void run() {
                 if (connectedToYukon) {
+                    running = true;
                     createForceScan(out);
+                } else {
+                    if (running) {
+                        //Causes the thread to stop its scheduled executes
+                        throw new ThreadInterruptedException(null);
+                    }
                 }
             }
         }, 5,5, TimeUnit.SECONDS);
