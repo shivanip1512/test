@@ -373,10 +373,6 @@
                 <constructor-arg value="METERING"/>
             </bean>
 	   	</property>
-        <property name="attributeService" ref="attributeService" />
-        <property name="plcDeviceAttributeReadService" ref="plcDeviceAttributeReadService" />
-        <property name="meterDao" ref="meterDao"/>
-        <property name="deviceDao" ref="deviceDao"/>
     </bean>
     
     <bean id="touScheduleWidget"

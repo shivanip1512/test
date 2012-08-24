@@ -223,7 +223,7 @@ public class MeterController extends MultiActionController {
         mav.addObject("threePhaseVoltageOrCurrentSupported", threePhaseVoltageOrCurrentSupported);
 
         boolean singlePhaseVoltageSupported = availableAttributes.contains(BuiltInAttribute.VOLTAGE);
-        boolean showVoltageAndTou = DeviceTypesFuncs.isMCT4XX(device.getType())
+        boolean showVoltageAndTou = (DeviceTypesFuncs.isMCT4XX(device.getType()) || device.getDeviceType().isRfn()) 
                 && (singlePhaseVoltageSupported || threePhaseVoltageOrCurrentSupported);
         mav.addObject("showVoltageAndTou", showVoltageAndTou);
 

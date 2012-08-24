@@ -1,6 +1,7 @@
 package com.cannontech.web.widget;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,14 +11,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.deviceread.dao.PlcDeviceAttributeReadService;
+import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -30,10 +30,11 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 public class SimpleAttributesWidget extends WidgetControllerBase {
     
-    private AttributeService attributeService = null;
-    private PlcDeviceAttributeReadService plcDeviceAttributeReadService = null;
-    private DeviceDao deviceDao;
-    private MeterDao meterDao;
+    @Autowired private AttributeReadingWidgetHelper widgetHelper;
+    @Autowired private AttributeService attributeService;
+    @Autowired private DeviceAttributeReadService deviceAttributeReadService;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private MeterDao meterDao;
     
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
@@ -53,7 +54,6 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         }
         
         // build infos
-        int attrIndx = 0;
         List<AttributeInfo> attributeInfos = new ArrayList<AttributeInfo>();
         for (Attribute attr : attributes) {
             
@@ -72,13 +72,12 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
             attrInfo.setDescription(attr.getDescription());
             
             attributeInfos.add(attrInfo);
-            attrIndx++;
         }
         mav.addObject("attributeInfos", attributeInfos);
         
         // readable?
         Meter meter = meterDao.getForId(deviceId);
-        boolean isReadable = plcDeviceAttributeReadService.isReadable(meter, attributes, user);
+        boolean isReadable = deviceAttributeReadService.isReadable(Collections.singleton(meter), attributes, user);
         mav.addObject("isReadable", isReadable);
 
         return mav;
@@ -88,10 +87,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
     
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
-        ModelAndView mav = new ModelAndView("common/meterReadingsResult.jsp");
-        
         // get attributes
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         String attributesStr = WidgetParameterHelper.getRequiredStringParameter(request, "attributes");
         Set<Attribute> attributes = getAttributesFromString(attributesStr);
@@ -102,10 +98,11 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
         allExistingAttributes.retainAll(attributes);
         
-        CommandResultHolder result = plcDeviceAttributeReadService.readMeter(meter, allExistingAttributes, DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ, user);
-        
-        //result
-        mav.addObject("result", result);
+        ModelAndView mav = widgetHelper.initiateRead(request, 
+                                                     meter, 
+                                                     allExistingAttributes, 
+                                                     "common/deviceAttributeReadResult.jsp", 
+                                                     DeviceRequestType.SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ);
         
         return mav;
     }
@@ -152,25 +149,4 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
             this.exists = exists;
         }
     }
-
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-    
-    @Required
-    public void setPlcDeviceAttributeReadService(PlcDeviceAttributeReadService plcDeviceAttributeReadService) {
-        this.plcDeviceAttributeReadService = plcDeviceAttributeReadService;
-    }
-    
-    @Required
-    public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-    
-    @Required
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    
 }
