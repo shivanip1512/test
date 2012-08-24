@@ -43,15 +43,12 @@
     <entry key="yukon.web.modules.adminSetup.roleGroupEditor.expiredAllPasswords">All the passwords for the role group have been expired.</entry>
 
     <!-- Group Editor group.jsp-->
-    <entry key="yukon.web.modules.adminSetup.title">Test</entry>
-    
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.rolesContainer.title">Roles Derived From Role Groups</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.userGroupName">User Group Name</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.userGroupDescription">User Group Description</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.updateSuccessful">User Group Updated Successfully</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageName.title">Test A</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageName">User Group Info</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageName.title">Test B</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageName">Edit</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageDescription">{0}</entry>
     
@@ -107,7 +104,7 @@
     <entry key="yukon.web.modules.adminSetup.userEditor.changePassword.imageUrl">/WebConfig/yukon/Icons/key.png</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.unlockUser.label">Unlock User</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.loginUnlocked">The login is unlocked</entry>
-    <entry key="yukon.web.modules.adminSetup.userEditor.rolesContainer.title">Roles Derived From Role Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.userEditor.rolesContainer.title">Roles Derived From User Group</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.noRoles">No roles assigned for this user.</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.required.username">Username is required</entry>
     <entry key="yukon.web.modules.adminSetup.userEditor.unavailable.username">Username is unavailable</entry>
@@ -127,7 +124,7 @@
     <entry key="yukon.web.modules.adminSetup.roleGroups.addGroups.label">Add</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroups.addGroups.imageUrl">/WebConfig/yukon/Icons/add.png</entry>
     <entry key="yukon.web.modules.adminSetup.roleGroups.addGroups.hoverUrl">/WebConfig/yukon/Icons/add_over.png</entry>
-    <entry key="yukon.web.modules.adminSetup.roleGroups.noGroups">This user group is not a member of any role groups.</entry>
+    <entry key="yukon.web.modules.adminSetup.roleGroups.noGroups">This user group does not have any role groups associated with it.</entry>
 
     <!-- User Groups Editor groups.jsp -->
     <entry key="yukon.web.modules.adminSetup.userGroups.pageName">User Groups</entry>
