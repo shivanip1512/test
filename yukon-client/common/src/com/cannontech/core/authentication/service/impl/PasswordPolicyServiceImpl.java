@@ -1,6 +1,8 @@
 package com.cannontech.core.authentication.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 import org.joda.time.Duration;
@@ -116,6 +118,11 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
             return PasswordPolicyError.MIN_PASSWORD_LENGTH_NOT_MET;
         }
         
+      //DB Column limit
+        if (password.length() > 64) {
+        	return PasswordPolicyError.MAX_PASSWORD_LENGTH_EXCEEDED;
+        }
+        
         if (!passwordPolicy.isPasswordAgeRequirementMet(user)) {
             return PasswordPolicyError.MIN_PASSWORD_AGE_NOT_MET;
         }
@@ -129,6 +136,49 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         }
         
         return null;
+    }
+    
+    @Override
+    public Set<PasswordPolicyError> getPasswordPolicyErrors(String password, LiteYukonUser user) {
+        return getPasswordPolicyErrors(password, user, null);
+    }
+
+    @Override
+    public Set<PasswordPolicyError> getPasswordPolicyErrors(String password, LiteYukonUser user, LiteUserGroup liteUserGroup) {
+    	Set<PasswordPolicyError> errors = new HashSet<PasswordPolicyError>();
+    	
+    	PasswordPolicy passwordPolicy = getPasswordPolicy(user, liteUserGroup);
+        if (password.length() < passwordPolicy.getMinPasswordLength()) {
+            errors.add(PasswordPolicyError.MIN_PASSWORD_LENGTH_NOT_MET);
+        }
+
+        //DB Column limit
+        if (password.length() > 64) {
+        	errors.add(PasswordPolicyError.MAX_PASSWORD_LENGTH_EXCEEDED);
+        }
+        
+        if (!passwordPolicy.isPasswordAgeRequirementMet(user)) {
+            errors.add(PasswordPolicyError.MIN_PASSWORD_AGE_NOT_MET);
+        }
+        
+        if (authenticationService.isPasswordBeingReused(user, password, passwordPolicy.getPasswordHistory())) {
+            errors.add(PasswordPolicyError.PASSWORD_USED_TOO_RECENTLY);
+        }
+        
+        if (!passwordPolicy.isPasswordQualityCheckMet(password)) {
+            errors.add(PasswordPolicyError.PASSWORD_DOES_NOT_MEET_POLICY_QUALITY);
+        }
+        
+        return errors;
+    }
+    
+    public Set<PolicyRule> getValidPolicyRules(String password, LiteYukonUser user) {
+    	return getValidPolicyRules(password, user, null);
+    }
+
+    public Set<PolicyRule> getValidPolicyRules(String password, LiteYukonUser user, LiteUserGroup liteUserGroup) {
+    	PasswordPolicy passwordPolicy = getPasswordPolicy(user, liteUserGroup);
+    	return passwordPolicy.getValidPolicyRules(password);
     }
     
     /**

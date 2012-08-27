@@ -369,6 +369,7 @@ table.compactResultsTable td {
     padding: 3px 8px 2px 4px;
     font-size: 11px !important;
     vertical-align: top;
+    color: #555;
 }
 
 table.compactResultsTable td.label {
@@ -1569,6 +1570,9 @@ a.icon {
 	background-position: top right;
 	padding: 0 20px 0 0;
 }
+
+.pass {background: transparent url(../Icons/tick.png) top left no-repeat}
+.fail {background: transparent url(../Icons/cross.png) top left no-repeat}
 
 .search_button {
     background: transparent url(../Buttons/GoButtonGray.gif) top left no-repeat;

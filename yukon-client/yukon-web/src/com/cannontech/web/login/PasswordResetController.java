@@ -1,8 +1,14 @@
 package com.cannontech.web.login;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -12,14 +18,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.authentication.model.PasswordPolicyError;
+import com.cannontech.core.authentication.model.PolicyRule;
 import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.login.model.PasswordResetInfo;
@@ -46,6 +58,8 @@ public class PasswordResetController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private YukonUserContextResolver yukonUserContextResolver;
+    @Autowired private PasswordPolicyService passwordPolicyService;
+    @Autowired private UserGroupDao userGroupDao;
 
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.GET)
     public String newForgottenPassword(ModelMap model, HttpServletRequest request) throws Exception {
@@ -119,9 +133,12 @@ public class PasswordResetController {
         LoginBackingBean loginBackingBean = new LoginBackingBean();
         loginBackingBean.setUserId(passwordResetUser.getUserID());
         loginBackingBean.setUsername(passwordResetUser.getUsername());
+        loginBackingBean.setUserGroupName(userGroupDao.getLiteUserGroup(passwordResetUser.getUserGroupId()).getUserGroupName());
         
         model.addAttribute("k", k);
         model.addAttribute("loginBackingBean", loginBackingBean);
+        model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(passwordResetUser));
+        
         return "changePassword.jsp";
     }
 
@@ -143,6 +160,7 @@ public class PasswordResetController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             model.addAttribute("k", k);
+            model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(passwordResetUser));
             return "changePassword.jsp";
         }
 
@@ -151,6 +169,53 @@ public class PasswordResetController {
         passwordResetService.invalidatePasswordKey(k);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.login.passwordChange.successful"));
         return "redirect:/login.jsp";
+    }
+    
+    @RequestMapping(value="/checkPassword", method=RequestMethod.POST)
+    public @ResponseBody JSONObject checkPassword(@ModelAttribute LoginBackingBean loginBackingBean,
+    																	BindingResult bindingResult, 
+    																	FlashScope flashScope, 
+    																	String k, 
+    																	ModelMap model,
+    																	HttpServletResponse response,
+    																	HttpServletRequest request) {
+    	rolePropertyDao.verifyProperty(YukonRoleProperty.ENABLE_PASSWORD_RECOVERY, null);
+        
+    	// Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
+    	LiteYukonUser suppliedPasswordResetUser = yukonUserDao.getLiteYukonUser(loginBackingBean.getUserId());
+    	LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
+    	LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
+
+    	//login validator is not appropriate for checking the password.  I wish it was
+        //but we need information on specific rules not met
+        //check password policies
+        Set<PasswordPolicyError> errantPasswordPolicies = passwordPolicyService.getPasswordPolicyErrors(loginBackingBean.getPassword1(), passwordResetUser, liteUserGroup);
+        Set<PasswordPolicyError> validPasswordPolicies = new HashSet<PasswordPolicyError>(Arrays.asList(PasswordPolicyError.values()));
+        validPasswordPolicies.removeAll(errantPasswordPolicies); //separate out the validations
+        
+        //check policy rules
+        Set<PolicyRule> validPolicyRules = passwordPolicyService.getValidPolicyRules(loginBackingBean.getPassword1(), passwordResetUser, liteUserGroup);
+        Set<PolicyRule> errantPolicyRules = new HashSet<PolicyRule>(Arrays.asList(PolicyRule.values()));
+        errantPolicyRules.removeAll(validPolicyRules);
+
+        JSONObject result = new JSONObject();
+        result.put("policy_errors", errantPasswordPolicies);
+        result.put("rule_errors", errantPolicyRules);
+        result.put("policy_validations", validPasswordPolicies);
+        result.put("rule_validations", validPolicyRules);
+        
+        //All Password Policies MUST be met to be a valid password
+        if (errantPasswordPolicies.size() == 0) {
+            /* tell the browser this password is good*/
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else if (passwordResetUser == null || !passwordResetUser.equals(suppliedPasswordResetUser)) {
+        	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        } else {
+            /* tell the browser there was a problem */
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        
+        return result;
     }
 
     /**

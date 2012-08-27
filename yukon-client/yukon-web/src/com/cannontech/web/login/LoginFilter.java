@@ -59,6 +59,7 @@ public class LoginFilter implements Filter {
                          "/spring/login/forgotPassword",
                          "/spring/login/forgottenPassword",
                          "/spring/login/changePassword",
+                         "/spring/login/checkPassword",
                          "/servlet/LoginController",
                          "/servlet/LoggingServlet",
                          "/voice/login.jsp",

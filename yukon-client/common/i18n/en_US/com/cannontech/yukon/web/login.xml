@@ -102,4 +102,17 @@ When you go to this location you will be allowed to set a new password for your 
     <entry key="yukon.web.modules.passwordPolicy.policyRule.NONALPHANUMERIC_CHARACTERS">Punctuation Symbols</entry>
     <entry key="yukon.web.modules.passwordPolicy.policyRule.UNICODE_CHARACTERS">Unicode Characters</entry>
 
+    <entry key="yukon.web.modules.passwordPolicy.requirements">The new password must meet the following criteria:</entry>
+    
+    <entry key="yukon.web.modules.passwordPolicy.noMatch.description">Passwords do not match</entry>
+    <entry key="yukon.web.modules.passwordPolicy.length.description"><![CDATA[Be between <em>{0}</em> and <em>64</em> characters long]]></entry>
+    <entry key="yukon.web.modules.passwordPolicy.history.description"><![CDATA[Not match {0,choice,0#|1#|1<any of} your last <em>{0,choice,0#|1#|1<{0}}</em> {0,choice,0#|1#password|1<passwords}]]></entry>
+    <entry key="yukon.web.modules.passwordPolicy.quality.description"><![CDATA[Contain at least <em>{0}</em> of the following:]]></entry>
+
+    <entry key="yukon.web.modules.passwordPolicy.policyRule.UPPERCASE_CHARACTERS.description"><![CDATA[at least <em>1</em> upper case character <small>(A-Z)</small>]]></entry>
+    <entry key="yukon.web.modules.passwordPolicy.policyRule.LOWERCASE_CHARACTERS.description"><![CDATA[at least <em>1</em> lower case character <small>(a-z)</small>]]></entry>
+    <entry key="yukon.web.modules.passwordPolicy.policyRule.BASE_10_DIGITS.description"><![CDATA[at least <em>1</em> digit <small>(0-9)</small>]]></entry>
+    <entry key="yukon.web.modules.passwordPolicy.policyRule.NONALPHANUMERIC_CHARACTERS.description"><![CDATA[at least <em>1</em> punctuation character <small>(!$?& etc...)</small>]]></entry>
+    <entry key="yukon.web.modules.passwordPolicy.policyRule.UNICODE_CHARACTERS.description"><![CDATA[at least <em>1</em> unicode character(&#624;&#622;&#656;&#685; etc...)]]></entry>
+
 </properties>

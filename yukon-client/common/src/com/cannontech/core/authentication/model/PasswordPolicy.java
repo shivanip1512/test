@@ -2,7 +2,9 @@ package com.cannontech.core.authentication.model;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -114,6 +116,23 @@ public class PasswordPolicy {
         }
         
         return false;
+    }
+    
+    /**
+     * Return a list of the PolicyRules met
+     */
+    public Set<PolicyRule> getValidPolicyRules(String password) {
+    	Set<PolicyRule> validRules = new HashSet<PolicyRule>();
+    	
+    	for (PolicyRule policyRule :  this.policyRules) {
+    		Pattern policyRolePattern = policyRule.getRegexPattern();
+    		Matcher matcher = policyRolePattern.matcher(password);
+    		if (matcher.find()) {
+    			validRules.add(policyRule);
+    		}
+    	}
+    	
+    	return validRules;
     }
     
     /**

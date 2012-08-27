@@ -14,12 +14,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
         <title><cti:msg2 key=".pageTitle"/></title>
 
+        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/functional-overrides.css">
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css">
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css">
         <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/shared/loginStyles.css">
 
         <script type="text/javascript" src="/JavaScript/lib/jQuery/1.6.4/jquery.min.js"></script>
         <script type="text/javascript" src="/JavaScript/lib/prototype/1.7.0.0/prototype.js"></script>
+        <script type="text/javascript" src="/JavaScript/lib/jQuery/plugins/form/jquery.form.js"></script>
+        <script type="text/javascript" src="/JavaScript/lib/jQuery/plugins/placeholder/jquery.placeholder.js"></script>
         <script type="text/javascript" src="/JavaScript/yukon/ui/general.js"></script>
 
         <cti:css key="yukon.web.login.loginStyles"/>
@@ -54,7 +57,7 @@
             </div>
         </div>
 
-        <div class="loginMain">
+        <div class="password_manager">
 
             <div class="loginTopSection">
                 <div class="formTopLogo">
@@ -69,29 +72,45 @@
                 <cti:msg2 var="passwordResetTitle"  key=".passwordReset" />
                 <tags:abstractContainer title="${passwordResetTitle}" type="rounded">
                     <cti:flashScopeMessages/>
-
+        
+        			<div style="float:left">
                     <form:form commandName="loginBackingBean" action="changePassword">
                         <input type="hidden" name="k" value="${k}" >
                         <form:hidden path="userId" />
                         <form:hidden path="username" />
+                        <form:hidden path="userGroupName" />
 
                         <tags:nameValueContainer2 id="passwordFields">
                             <tags:nameValue2 nameKey=".username">
                                 ${fn:escapeXml(loginBackingBean.username)}
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".newPassword">
-                                <tags:password path="password1" cssClass="password_editor_field" autocomplete="false" maxlength="64" />
+                                <tags:password path="password1" cssClass="password_editor_field new f_check_password" autocomplete="false" maxlength="64" />
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".confirmPassword">
-                                <tags:password path="password2" cssClass="password_editor_field" autocomplete="false" maxlength="64" />
+                                <tags:password path="password2" cssClass="password_editor_field confirm" autocomplete="false" maxlength="64" />
                             </tags:nameValue2>
+                            <tr>
+	                            <td>
+	                            </td>
+	                            <td>
+	                            <span class="no_match errorMessage"><i:inline key="yukon.web.modules.passwordPolicy.noMatch.description"/></span>
+	                            </td>
+                            </tr>
                             <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
                                 <br>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                         
-                        <cti:button nameKey="changePassword" type="submit" name="changePassword"/>
+                        <div style="float:right">
+	                        <cti:button nameKey="changePassword" type="submit" name="changePassword" styleClass="unlock" />
+	                        <small><a href="/"><i:inline key="yukon.web.components.dialog.cancel" /></a></small>
+                        </div>
+                        
                     </form:form>
+                    </div>
+                    
+                    <tags:passwordHelper passwordPolicy="${passwordPolicy}" />
                 </tags:abstractContainer>
             </div>
             <div class="loginTopSection">

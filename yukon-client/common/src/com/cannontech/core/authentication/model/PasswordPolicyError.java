@@ -7,6 +7,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
  */
 public enum PasswordPolicyError implements DisplayableEnum {
     MIN_PASSWORD_LENGTH_NOT_MET, 
+    MAX_PASSWORD_LENGTH_EXCEEDED, 
     MIN_PASSWORD_AGE_NOT_MET, 
     PASSWORD_USED_TOO_RECENTLY, 
     PASSWORD_DOES_NOT_MEET_POLICY_QUALITY;
