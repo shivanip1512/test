@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/16/2012 2:28:42 PM                         */
+/* Created on:     8/27/2012 2:36:39 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -5060,16 +5060,22 @@ go
 /*==============================================================*/
 create table GroupPaoPermission (
    GroupPaoPermissionID numeric              not null,
-   GroupID              numeric              not null,
-   PaoID                numeric              not null,
+   UserGroupId          numeric              not null,
+   PaoId                numeric              not null,
    Permission           varchar(50)          not null,
    Allow                varchar(5)           not null,
-   constraint PK_GROUPPAOPERMISSION primary key (GroupPaoPermissionID)
+   constraint PK_GroupPaoPermission primary key (GroupPaoPermissionID)
 )
 go
 
-alter table GroupPaoPermission
-   add constraint AK_GRPPAOPERM unique (GroupID, PaoID, Permission)
+/*==============================================================*/
+/* Index: Indx_UserGrpId_PaoId_Perm_UNQ                         */
+/*==============================================================*/
+create unique index Indx_UserGrpId_PaoId_Perm_UNQ on GroupPaoPermission (
+UserGroupId ASC,
+PaoId ASC,
+Permission ASC
+)
 go
 
 /*==============================================================*/
@@ -11835,13 +11841,13 @@ alter table GraphCustomerList
 go
 
 alter table GroupPaoPermission
-   add constraint FK_GROUPPAO_REF_YKGRP_YUKONGRO foreign key (GroupID)
-      references YukonGroup (GroupID)
+   add constraint FK_GroupPaoPerm_PAO foreign key (PaoId)
+      references YukonPAObject (PAObjectID)
 go
 
 alter table GroupPaoPermission
-   add constraint FK_GROUPPAO_REF_YUKPA_YUKONPAO foreign key (PaoID)
-      references YukonPAObject (PAObjectID)
+   add constraint FK_GroupPaoPerm_UserGroup foreign key (UserGroupId)
+      references UserGroup (UserGroupId)
 go
 
 alter table ImportPendingComm

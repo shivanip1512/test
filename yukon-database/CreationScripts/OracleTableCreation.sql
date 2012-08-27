@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/16/2012 2:29:45 PM                         */
+/* Created on:     8/27/2012 2:45:55 PM                         */
 /*==============================================================*/
 
 
@@ -4810,15 +4810,21 @@ create table GraphCustomerList  (
 /*==============================================================*/
 create table GroupPaoPermission  (
    GroupPaoPermissionID NUMBER                          not null,
-   GroupID              NUMBER                          not null,
-   PaoID                NUMBER                          not null,
+   UserGroupId          NUMBER                          not null,
+   PaoId                NUMBER                          not null,
    Permission           VARCHAR2(50)                    not null,
    Allow                VARCHAR2(5)                     not null,
-   constraint PK_GROUPPAOPERMISSION primary key (GroupPaoPermissionID)
+   constraint PK_GroupPaoPermission primary key (GroupPaoPermissionID)
 );
 
-alter table GroupPaoPermission
-   add constraint AK_GRPPAOPERM unique (GroupID, PaoID, Permission);
+/*==============================================================*/
+/* Index: Indx_UserGrpId_PaoId_Perm_UNQ                         */
+/*==============================================================*/
+create unique index Indx_UserGrpId_PaoId_Perm_UNQ on GroupPaoPermission (
+   UserGroupId ASC,
+   PaoId ASC,
+   Permission ASC
+);
 
 /*==============================================================*/
 /* Table: HolidaySchedule                                       */
@@ -11001,12 +11007,12 @@ alter table GraphCustomerList
       references Customer (CustomerID);
 
 alter table GroupPaoPermission
-   add constraint FK_GROUPPAO_REF_YKGRP_YUKONGRO foreign key (GroupID)
-      references YukonGroup (GroupID);
+   add constraint FK_GroupPaoPerm_PAO foreign key (PaoId)
+      references YukonPAObject (PAObjectID);
 
 alter table GroupPaoPermission
-   add constraint FK_GROUPPAO_REF_YUKPA_YUKONPAO foreign key (PaoID)
-      references YukonPAObject (PAObjectID);
+   add constraint FK_GroupPaoPerm_UserGroup foreign key (UserGroupId)
+      references UserGroup (UserGroupId);
 
 alter table ImportPendingComm
    add constraint FK_ImpPC_PAO foreign key (DeviceID)

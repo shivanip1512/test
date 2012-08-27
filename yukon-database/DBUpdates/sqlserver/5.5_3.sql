@@ -102,20 +102,23 @@ ALTER TABLE UserGroup
     DROP COLUMN GroupIdStr;
 
 sp_rename 'YukonUserGroup', 'YukonUserGroup_Old';
-
+/* @error ignore-begin */
 ALTER TABLE YukonUserGroup_Old
     DROP CONSTRAINT FK_YkUsGr_YkGr;
 
 ALTER TABLE YukonUserGroup_Old
     DROP CONSTRAINT FK_YUKONUSE_REF_YKUSG_YUKONUSE;
+/* @error ignore-end */
 /* End YUK-11015 */
 
 /* Start YUK-11298 */
 /* Converting ECToOperatorGroupMapping to use user groups instead of role groups. */
+/* @error ignore-begin */
 ALTER TABLE ECToOperatorGroupMapping
    DROP CONSTRAINT FK_ECToOpGroupMap_EC;
 ALTER TABLE ECToOperatorGroupMapping
    DROP CONSTRAINT FK_ECToOpGroupMap_YukonGroup;
+/* @error ignore-end */
 GO
 
 SP_RENAME 'ECToOperatorGroupMapping', 'ECToOperatorGroupMap_Delete';
@@ -147,6 +150,7 @@ FROM ECToOperatorGroupMap_Delete ECOGM
 DROP TABLE ECToOperatorGroupMap_Delete;
 
 /* Converting ECToResidentialGroupMapping to use user groups instead of role groups. */
+/* @error ignore-begin */
 ALTER TABLE ECToResidentialGroupMapping
    DROP CONSTRAINT FK_ECToResGroupMap_EC;
 ALTER TABLE ECToResidentialGroupMapping
@@ -156,6 +160,7 @@ GO
 SP_RENAME 'ECToResidentialGroupMapping', 'ECToResidentialGroupMap_delete';
 ALTER TABLE ECToResidentialGroupMap_delete
    DROP CONSTRAINT PK_ECToResGroupMap;
+/* @error ignore-end */
 
 /* Create new ECToResidentialGroupMapping table with data. */
 CREATE TABLE ECToResidentialGroupMapping ( 
@@ -182,6 +187,77 @@ FROM ECToResidentialGroupMap_delete ECRGM
 DROP TABLE ECToResidentialGroupMap_delete;
 /* End YUK-11298 */
     
+/* Start YUK-11317 */
+/* Converting GroupPAOPermission to use user groups instead of role groups. */
+/* @error ignore-begin */
+ALTER TABLE GroupPaoPermission
+    DROP CONSTRAINT FK_GROUPPAO_REF_YKGRP_YUKONGRO;
+ALTER TABLE GroupPaoPermission
+    DROP CONSTRAINT FK_GROUPPAO_REF_YUKPA_YUKONPAO;
+ALTER TABLE GroupPaoPermission
+    DROP CONSTRAINT AK_GRPPAOPERM;
+GO
+
+SP_RENAME 'GroupPaoPermission', 'GroupPaoPermission_Delete';
+ALTER TABLE GroupPaoPermission_Delete
+   DROP CONSTRAINT PK_GROUPPAOPERMISSION;
+/* @error ignore-end */
+
+/* Create new GroupPaoPermission table with data. */
+CREATE TABLE GroupPaoPermission  (
+   GroupPaoPermissionId NUMERIC                          NOT NULL,
+   UserGroupId          NUMERIC                          NOT NULL,
+   PaoId                NUMERIC                          NOT NULL,
+   Permission           VARCHAR(50)                     NOT NULL,
+   Allow                VARCHAR(5)                      NOT NULL,
+   CONSTRAINT PK_GroupPAOPermission PRIMARY KEY (GroupPaoPermissionId)
+);
+
+CREATE UNIQUE INDEX Indx_UserGrpId_PaoId_Perm_UNQ ON GroupPaoPermission (
+    UserGroupId ASC,
+    PaoId ASC,
+    Permission ASC
+);
+
+ALTER TABLE GroupPaoPermission
+    ADD CONSTRAINT FK_GroupPaoPerm_UserGroup FOREIGN KEY (UserGroupId)
+        REFERENCES UserGroup (UserGroupId);
+
+ALTER TABLE GroupPaoPermission
+    ADD CONSTRAINT FK_GroupPaoPerm_PAO FOREIGN KEY (PaoId)
+        REFERENCES YukonPAObject (PAObjectId);
+
+/* Migrate the data from the old table */
+/* @start-block */
+DECLARE @NewGroupPaoPermissionId    NUMERIC;
+DECLARE @UserGroupId                NUMERIC;
+DECLARE @PaoId                      NUMERIC;
+DECLARE @Permission                 VARCHAR(50);
+DECLARE @Allow                      VARCHAR(5);
+    
+DECLARE groupPaoPerm_curs CURSOR FOR (SELECT DISTINCT UGYGM.UserGroupId, GPP_D.PaoId, GPP_D.Permission, GPP_D.Allow
+                                      FROM GroupPaoPermission_Delete GPP_D
+                                        JOIN UserGroupToYukonGroupMapping UGYGM ON GPP_D.GroupId = UGYGM.GroupId);
+
+OPEN groupPaoPerm_curs;
+FETCH groupPaoPerm_curs INTO @UserGroupId, @PaoId, @Permission, @Allow;
+WHILE (@@fetch_status = 0)
+    BEGIN
+        SELECT @NewGroupPaoPermissionId = ISNULL(MAX(GroupPaoPermissionId)+1, 1)
+        FROM GroupPaoPermission;
+
+        INSERT INTO GroupPaoPermission
+        VALUES (@NewGroupPaoPermissionId, @UserGroupId, @PaoId, @Permission, @Allow);
+
+        FETCH NEXT FROM groupPaoPerm_curs INTO @UserGroupId, @PaoId, @Permission, @Allow;
+    END;
+CLOSE groupPaoPerm_curs;
+DEALLOCATE groupPaoPerm_curs;
+/* @end-block */
+
+DROP TABLE GroupPaoPermission_Delete;
+/* End YUK-11317 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
