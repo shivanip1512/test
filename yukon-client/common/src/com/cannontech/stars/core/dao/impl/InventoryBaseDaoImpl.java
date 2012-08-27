@@ -110,7 +110,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao, InitializingBean 
             + "FROM InventoryBase ib "
             + "LEFT OUTER JOIN LMHardwareBase lhb ON lhb.InventoryId = ib.InventoryId "
             + "LEFT OUTER JOIN MeterHardwareBase mhb ON mhb.InventoryId = ib.InventoryId "
-            + "JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId "
+            + "LEFT OUTER JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId "
             + "JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId ";
 
         insertECToInventorySql = "INSERT INTO ECToInventoryMapping (EnergyCompanyID,InventoryID) VALUES (?,?)";
