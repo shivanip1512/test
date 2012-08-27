@@ -354,7 +354,7 @@
 
     <target name="runUnitTests">
         <exec failonerror="true" dir="${basedir}/yukon-client/build" executable="cmd.exe">
-            <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' -v runUnitTests" />
+            <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' runUnitTests"/>
         </exec>
     </target>
 
