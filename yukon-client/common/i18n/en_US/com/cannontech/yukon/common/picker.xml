@@ -83,7 +83,7 @@
 
 <!-- Assigned Program Picker -->
 
-<entry key="yukon.web.picker.assignedProgram.paoName">PAO Name</entry>
+<entry key="yukon.web.picker.assignedProgram.programName">Program Name</entry>
 <entry key="yukon.web.picker.assignedProgram.displayName">Display Name</entry>
 <entry key="yukon.web.picker.assignedProgram.applianceCategory">Appliance Category</entry>
 

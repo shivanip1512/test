@@ -27,7 +27,7 @@ public class AssignedProgramPicker
         List<OutputColumn> columns = Lists.newArrayList();
         String titleKeyPrefix = "yukon.web.picker.assignedProgram.";
 
-        columns.add(new OutputColumn("programName", titleKeyPrefix + "paoName"));
+        columns.add(new OutputColumn("programName", titleKeyPrefix + "programName"));
         columns.add(new OutputColumn("displayName", titleKeyPrefix + "displayName"));
         columns.add(new OutputColumn("applianceCategoryName", titleKeyPrefix + "applianceCategory"));
 
