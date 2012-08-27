@@ -666,15 +666,6 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_GROUPPAO_REF_YKGRP_YUKONGRO</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>GROUPID</i__columnName>
-            <i__foreignColumnName>GROUPID</i__foreignColumnName>
-            <i__foreignTableName>YUKONGROUP</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_YKGRRL_YKGRP</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>GROUPID</i__columnName>
@@ -9510,18 +9501,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_VOLTPTID</i__foreignKeyName>
+            <i__foreignKeyName>FK_CAPCONTR_VARPTID</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>CURRENTVOLTLOADPOINTID</i__columnName>
+            <i__columnName>CURRENTVARLOADPOINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_VARPTID</i__foreignKeyName>
+            <i__foreignKeyName>FK_CAPCONTR_VOLTPTID</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>CURRENTVARLOADPOINTID</i__columnName>
+            <i__columnName>CURRENTVOLTLOADPOINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -12747,7 +12738,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>GROUPID</i__columnName>
+            <i__columnName>USERGROUPID</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>NUMBER</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -12828,13 +12819,13 @@
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
-            <string>AK_GRPPAOPERM</string>
+            <string>INDX_USERGRPID_PAOID_PERM_UNQ</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>GROUPPAOPERMISSION</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>GROUPID</i__columnName>
+                  <i__columnName>USERGROUPID</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -12850,7 +12841,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>AK_GRPPAOPERM</indexName>
+              <indexName>INDX_USERGRPID_PAOID_PERM_UNQ</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -32756,6 +32747,15 @@
             <i__foreignColumnName>USERGROUPID</i__foreignColumnName>
             <i__foreignTableName>USERGROUP</i__foreignTableName>
             <i__updateRule>0</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_GROUPPAOPERM_USERGROUP</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>USERGROUPID</i__columnName>
+            <i__foreignColumnName>USERGROUPID</i__foreignColumnName>
+            <i__foreignTableName>USERGROUP</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -58918,7 +58918,7 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_GROUPPAO_REF_YUKPA_YUKONPAO</i__foreignKeyName>
+            <i__foreignKeyName>FK_GROUPPAOPERM_PAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PAOID</i__columnName>
             <i__foreignColumnName>PAOBJECTID</i__foreignColumnName>
