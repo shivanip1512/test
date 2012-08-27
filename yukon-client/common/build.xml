@@ -122,7 +122,7 @@
         <mkdir dir="${test.results.dir}" />
 
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-        <junit printsummary="yes" haltonerror="${halt}" haltonfailure="${halt}">
+        <junit printsummary="withOutAndErr" haltonerror="${halt}" haltonfailure="${halt}">
             <classpath id="junit.class.path">
                 <dirset dir="test" />
                 <fileset dir="${yukon.lib}">
