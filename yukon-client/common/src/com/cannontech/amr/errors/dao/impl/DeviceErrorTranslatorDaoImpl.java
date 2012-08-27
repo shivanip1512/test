@@ -44,6 +44,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
     /**
      * Returns the US translation for the error code.
      */
+    @Override
     public DeviceErrorDescription translateErrorCode(int error) {
 		DeviceErrorDescription dded = translateErrorCode(error,
 				new SimpleYukonUserContext(null, Locale.US, TimeZone.getDefault(), ThemeUtils.getDefaultThemeName()));
@@ -112,7 +113,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
             String description = errorEl.getChildTextTrim("description");
             Validate.notEmpty(description, "Description for error " + errorCodeStr + " must not be blank");
             Element troubleEl = errorEl.getChild("troubleshooting");
-            List troubleNodes = Collections.emptyList();
+            List<?> troubleNodes = Collections.emptyList();
             if (troubleEl != null) {
                 troubleNodes = troubleEl.getContent();
             }
