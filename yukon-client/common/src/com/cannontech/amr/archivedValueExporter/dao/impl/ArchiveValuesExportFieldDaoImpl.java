@@ -99,6 +99,7 @@ public class ArchiveValuesExportFieldDaoImpl implements ArchiveValuesExportField
             sql.append(TABLE_NAME);
             sql.append("F LEFT JOIN ArchiveValuesExportAttribute A ON F.FormatID=A.FormatID AND F.AttributeID=A.AttributeID WHERE F.FormatID")
                 .eq(formatId);
+            sql.append("ORDER BY F.FieldID");
             return yukonJdbcTemplate.query(sql, rowMapper);
         } catch (EmptyResultDataAccessException ex) {
             throw new NotFoundException("The format id supplied does not exist.");
