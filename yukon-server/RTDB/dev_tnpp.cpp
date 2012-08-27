@@ -444,6 +444,16 @@ int CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
     if( OutMessage )
     {
         _outMessage = *OutMessage;
+        if ( OutMessage->MessageFlags & MessageFlag_EncryptionRequired )    // One-Way Encryption
+        {
+            _outMessage.MessageFlags &= ~MessageFlag_EncryptionRequired;
+            _outMessage.Buffer.TAPSt.Length = encryptMessage( CtiTime::now(),
+                                                              OutMessage->Buffer.TAPSt.Message,
+                                                              OutMessage->Buffer.TAPSt.Length,
+                                                              _outMessage.Buffer.TAPSt.Message,
+                                                              OneWayMsgEncryption::Ascii );
+            _outMessage.OutLength = _outMessage.Buffer.TAPSt.Length;
+        }
         resetStates();
         _command = Normal;
         _transmissionCount = 1;

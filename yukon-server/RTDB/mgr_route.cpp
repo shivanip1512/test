@@ -279,6 +279,10 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BO
                     }
                 }
                 refreshStaticPaoInfo( paoids );
+
+                // Load encryption keys for any routes that may have one
+
+                refreshRouteEncryptionKeys( paoids );
             }
 
         }   // Temporary results are destroyed to free the connection
@@ -752,3 +756,89 @@ string CtiRouteManager::createIdSqlClause(const Cti::Database::id_set &paoids, c
 }
 
 
+void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & paoids )
+{
+    if ( paoids.empty() )   // no routes to load
+    {
+        return;
+    }
+
+    if ( DebugLevel & 0x00020000 )
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << CtiTime() << "Loading Route Encryption Keys." << std::endl;
+    }
+
+    std::string sql =   "SELECT Y.PAObjectID, E.Name, E.Value "
+                        "FROM   EncryptionKey E JOIN YukonPAObjectEncryptionKey Y ON E.EncryptionKeyId = Y.EncryptionKeyId "
+                        "WHERE " + createIdSqlClause( paoids, "Y", "PAObjectID" );
+
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseReader       rdr( connection, sql );
+
+    rdr.execute();
+
+    if ( DebugLevel & 0x00020000 || !rdr.isValid() )
+    {
+        std::string loggedSQLstring = rdr.asString();
+        {
+            CtiLockGuard< CtiLogger > doubt_guard( dout );
+            dout << loggedSQLstring << std::endl;
+        }
+    }
+
+    if ( rdr.isValid() )
+    {
+        while ( rdr() )
+        {
+            long        paoId;
+            std::string name,
+                        encryptedKey;
+
+            rdr[ "PAObjectID" ] >> paoId;
+            rdr[ "Name" ]       >> name;
+            rdr[ "Value" ]      >> encryptedKey;
+
+            CtiRouteManager::ptr_type route = getEqual( paoId );
+
+            if ( route )
+            {
+                Cti::Encryption::Buffer encrypted,
+                                        decrypted;
+
+                convertHexStringToBytes( encryptedKey, encrypted );
+
+                try
+                {
+                    decrypted = Cti::Encryption::decrypt( Cti::Encryption::OneWayMsgEncryptionKey, encrypted );
+                    route->setEncryptionKey( decrypted );
+                }
+                catch ( Cti::Encryption::Error e )
+                {
+                    CtiLockGuard< CtiLogger > doubt_guard( dout );
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")\n"
+                         << "Error decrypting Encryption Key named: " << name
+                         << "\nException caught: " << e.what() << std::endl;
+                }
+            }
+            else
+            {
+                CtiLockGuard< CtiLogger > doubt_guard( dout );
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")\n"
+                     << "No Route found for Encryption Key named: " << name <<  std::endl;
+            }
+        }
+    }
+    else
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")\n"
+             << "Error reading Route Encryption Keys from database." << std::endl;
+    }
+
+    if ( DebugLevel & 0x00020000 )
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << CtiTime() << "Done loading Route Encryption Keys." << std::endl;
+    }
+}

@@ -6,8 +6,9 @@
 #include "dev_ied.h"
 #include "dlldefs.h"
 #include "xfer.h"
+#include "encryption_oneway_message.h"
 
-class IM_EX_DEVDB CtiDeviceTnppPagingTerminal  : public CtiDeviceRemote
+class IM_EX_DEVDB CtiDeviceTnppPagingTerminal  : public CtiDeviceRemote, protected OneWayMsgEncryption
 {
 private:
 

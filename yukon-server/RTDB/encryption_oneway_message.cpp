@@ -46,74 +46,96 @@ std::size_t OneWayMsgEncryption::encryptMessage( const CtiTime      & timeNow,
 
     GetNextSequenceValues( timeNow, &lastXmitTime, &utcCounter );
 
+    unsigned char   * uc_outMessage = reinterpret_cast<unsigned char *>( outMessage );
+    unsigned char   * uc_inMessage  = reinterpret_cast<unsigned char *>( inMessage  );
+
+/*
+    +-----------+---------+-------------+---------+-------+---------+--------------+ 
+    | serial    | start   | message     | stop    | start |  msg    |  key         |
+    | patch     | wrapper |             | wrapper | index |  length |  (16 bytes)  |
+    +-----------+---------+-------------+---------+-------+---------+--------------+ 
+ 
+    serial patch    : optional prefix string                   -- variable length
+    start wrapper   : expresscom message wrapper byte          -- 1 byte (only present in non-RDS messages)
+    message         : the message to encrypt                   -- variable length
+    stop wrapper    : expresscom message wrapper byte          -- 1 byte (only present in non-RDS messages)
+    start index     : index of the first byte of the message   -- 1 byte
+    msg length      : length of the message to encrypt         -- 1 byte
+    key             : the encryption key                       -- 16 bytes
+ 
+*/ 
     // parse incoming message
-    std::size_t keyStart        = msgLength - 20;
-    std::size_t cmacStart       = msgLength - 4;
-    std::size_t passwordLength  = inMessage[ keyStart - 1 ];
-    std::size_t passwordStart   = keyStart - 1 - passwordLength;
 
-    CbcRbtEncryption::Key   parentKey;
+    std::size_t keyStart        = msgLength - 16;
+    std::size_t startIndex      = inMessage[keyStart - 2];
+    std::size_t xcomMsgLength   = inMessage[keyStart - 1];
 
-    const unsigned char * cuc_inMessage = reinterpret_cast<const unsigned char *>( inMessage );
-    unsigned char       * uc_outMessage = reinterpret_cast<unsigned char *>( outMessage );
+    CbcRbtEncryption::Key   encryptionKey;
+    std::copy( inMessage + keyStart, inMessage + msgLength, encryptionKey );
 
-    {
-        // get the IV from the supplied password
-        CbcRbtEncryption::Key   iv;
+    // Wrapper bytes
+    //  ( startIndex + xcomMsgLength ) is the index of the byte after the end of the message
+    //  ( keyStart - 2 ) is the index of the storage of the startIndex byte
+    // 
+    // if they are not equal then there is an extra byte between them (the stop wrapper)
+    //    and we have a paging message.
+    // if they are equal then there is no extra byte and we have a RDS message
 
-        MD5( cuc_inMessage + passwordStart, passwordLength, iv );
+    const bool noWrapper = ( ( startIndex + xcomMsgLength ) == ( keyStart - 2 ) );   // RDS message
 
-        // check the CMAC supplied with the key
+    // copy the serial patch (and start wrapper if it exists) to outmessage
 
-        CmacAuthentication::Key     cmac;
-        CmacAuthentication          cmacCalculator( OneWayEncryption::_yukonEncryptionKey );
+    std::copy( inMessage, inMessage + startIndex, uc_outMessage );
 
-        cmacCalculator.calculate( cuc_inMessage + keyStart, 16, cmac );
-
-        if ( ! std::equal( cuc_inMessage + cmacStart, cuc_inMessage + cmacStart + 4, cmac ) )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            dout << CtiTime() << " - *** One-Way Encryption Key - Authentication Failed ***" << std::endl;
-        }
-
-        // decrypt the supplied key with the IV and the Yukon Encryption key
-
-        CbcRbtEncryption    decryptor( OneWayEncryption::_yukonEncryptionKey , iv );
-
-        decryptor.decrypt( cuc_inMessage + keyStart, 16, parentKey );
-    }
+    std::size_t     outLength   = startIndex;
+    unsigned char * encryptMe   = uc_inMessage + startIndex;
 
     // Encrypt the message
+    unsigned long       counter = gConfigParms.getValueAsULong( "ONE_WAY_ENCRYPT_KEY_ROLL" );   // defaults to zero
 
-    unsigned long counter = gConfigParms.getValueAsULong("ONE_WAY_ENCRYPT_KEY_ROLL");   // defaults to zero
-
-    OneWayEncryption    oneWay( counter, parentKey );                
+    OneWayEncryption    oneWay( counter, encryptionKey );
     unsigned char       messageBuffer[300];
-    std::size_t         encryptedLength = passwordStart + 10;
-    
-    oneWay.encrypt( lastXmitTime, utcCounter, cuc_inMessage, passwordStart, messageBuffer );
+
+    oneWay.encrypt( lastXmitTime, utcCounter, encryptMe, xcomMsgLength, messageBuffer );
+
+    std::size_t encryptedLength = xcomMsgLength + 10;
 
     if ( format == Ascii )
     {
-        static const char convert[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-
-        for ( std::size_t i = 0; i < encryptedLength; ++i )
-        {
-            unsigned char high4bits = ( messageBuffer[i] >> 4 ) & 0x0f;
-            unsigned char low4bits  =   messageBuffer[i]        & 0x0f;
-
-            *uc_outMessage++ = convert[ high4bits ];
-            *uc_outMessage++ = convert[ low4bits  ];
-        }
-        *uc_outMessage++ = 0; // NULL Terminate
-        encryptedLength *= 2;
+        encryptedLength = convertToAscii( messageBuffer, encryptedLength, uc_outMessage + outLength );
     }
     else    // format == Binary
     {
-        std::copy( messageBuffer, messageBuffer + encryptedLength, uc_outMessage );
+        std::copy( messageBuffer, messageBuffer + encryptedLength, uc_outMessage + outLength );
+    }
+    outLength += encryptedLength;
+
+    if ( !noWrapper )
+    {
+        uc_outMessage[ outLength ] = inMessage[ startIndex + xcomMsgLength ];
+        outLength++;
     }
 
-    return encryptedLength;
+    return outLength;
+}
+
+
+std::size_t OneWayMsgEncryption::convertToAscii( const unsigned char  * fromBuffer,
+                                                 const std::size_t      byteCount,
+                                                 unsigned char        * toBuffer )
+{
+    static const char convert[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+    for ( std::size_t i = 0; i < byteCount; ++i )
+    {
+        unsigned char high4bits = ( fromBuffer[i] >> 4 ) & 0x0f;
+        unsigned char low4bits  =   fromBuffer[i]        & 0x0f;
+
+        *toBuffer++ = convert[ high4bits ];
+        *toBuffer++ = convert[ low4bits  ];
+    }
+    *toBuffer++ = 0;    // NULL Terminate
+
+    return byteCount * 2;
 }
 

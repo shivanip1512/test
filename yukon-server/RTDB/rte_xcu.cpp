@@ -588,7 +588,13 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         xcom.setUseCRC(false);
     }
 
-    const bool usingEncryption = hasStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key );
+    const bool usingEncryption = ( _encryptionKey.size() != 16 );   // reject malformed keys
+
+    if ( usingEncryption )
+    {
+        xcom.setUseASCII(false);
+        isAscii = false;
+    }
 
     if(!status  && xcom.entries() > 0)
     {
@@ -628,21 +634,8 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
         case TYPE_SNPP:
         case TYPE_WCTP:
         case TYPE_TAPTERM:
+        case TYPE_TNPP:
             {
-                if ( usingEncryption )
-                {
-                    isAscii = false;
-                    xcom.setUseASCII(false);
-
-                    OutMessage->OutLength            = xcom.messageSize();
-                    OutMessage->Buffer.TAPSt.Length  = xcom.messageSize();
-                }
-                else
-                {
-                    OutMessage->OutLength            = xcom.messageSize() +  2;
-                    OutMessage->Buffer.TAPSt.Length  = xcom.messageSize() +  2;
-                }
-
                 // BEGIN serialpatch here
                 j = 0;
                 string serialpatch;
@@ -658,21 +651,20 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                     {
                         OutMessage->Buffer.TAPSt.Message[j] = serialpatch[j];
                     }
-
-                    OutMessage->OutLength            += serialpatch.length();
-                    OutMessage->Buffer.TAPSt.Length  += serialpatch.length();
-
                     j = serialpatch.length();
                 }
                 // END serialpatch
 
-                /* Build the message */
-                if ( ! usingEncryption )
+                // add the start byte if we are not RDS
+                if ( _transmitterDevice->getType() != TYPE_RDS )
                 {
-                    OutMessage->Buffer.TAPSt.Message[j] = xcom.getStartByte();
-                    ++j;
+                    OutMessage->Buffer.TAPSt.Message[j++] = ( usingEncryption ? 'w' : xcom.getStartByte() );
                 }
 
+                int messageStartIndex = j;
+                int messageLength     = xcom.messageSize();
+
+                // copy the message
                 int curByte;
                 for(i = 0; i < xcom.messageSize(); i++)
                 {
@@ -681,153 +673,54 @@ INT CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiCommandParser
                 }
                 j += i;
 
-                if ( ! usingEncryption )
+                // add the stop byte if we are not RDS
+                if ( _transmitterDevice->getType() != TYPE_RDS )
                 {
-                    OutMessage->Buffer.TAPSt.Message[j] = xcom.getStopByte();
-                    ++j;
+                    OutMessage->Buffer.TAPSt.Message[j++] = ( usingEncryption ? 'x' : xcom.getStopByte() );
                 }
+
+                OutMessage->Buffer.TAPSt.Length = OutMessage->OutLength = j;
+
                 OutMessage->Buffer.TAPSt.Message[j] = '\0';
 
+                // create the string for the resultString
                 for(i = 0; i < OutMessage->OutLength; i++)
                 {
-                    if(isAscii)
+                    if ( isAscii || i < messageStartIndex || i >= ( messageStartIndex + messageLength ) )
                     {
                         byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
                     }
                     else
                     {
-                        if( ! usingEncryption && ( i == 0 || i == (OutMessage->OutLength - 1) ) )
-                        {
-                            byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
-                        }
-                        else
-                        {
-                            byteString += CtiNumStr((unsigned char)OutMessage->Buffer.TAPSt.Message[i]).hex(2);
-                        }
+                        byteString += CtiNumStr((unsigned char)OutMessage->Buffer.TAPSt.Message[i]).hex(2);
                     }
                 }
 
                 if ( usingEncryption )
                 {
-                    // add password and key and adjust lengths
-
-                    std::string password = gConfigParms.getValueAsString("ONE_WAY_ENCRYPT_PASSWORD");
-                    if ( password.length() == 0 )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " - Missing One-Way Encryption Password" << endl;
-                    }
-
-                    char * endOfMsg = OutMessage->Buffer.TAPSt.Message + OutMessage->OutLength;
-
-                    // truncate password to a max of 32 bytes
-
-                    int truncatedPasswordLen = std::min( password.length(), 32u );
-
-                    for ( int i = 0; i < truncatedPasswordLen; ++i )
-                    {
-                        *endOfMsg++ = password[i];
-                    }
-                    *endOfMsg++ = truncatedPasswordLen;
-
-                    std::string key;
-                    getStaticInfo( CtiTableStaticPaoInfo::Key_CPS_One_Way_Encryption_Key, key );
-
-                    if ( key.length() == 40 )   // btw - this is enforced in the client
-                    {
-                        // ok - parse it
-                        for ( int key_i = 0; key_i < 40; key_i += 2 )
-                        {
-                            char ascii_pair[3] = { key[ key_i ], key[ key_i + 1 ], 0 };
-
-                            *endOfMsg++ = std::strtoul( ascii_pair, 0, 16 );
-                        }
-                    }
-                    else
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " - One-Way Encryption Key - invalid length" << endl;
-                    }
-
-                    OutMessage->OutLength            += password.length() + 1 + 20;
-                    OutMessage->Buffer.TAPSt.Length  =  OutMessage->OutLength;
-
                     // set this flag so the transmitter knows to encrypt...
 
                     OutMessage->MessageFlags |= MessageFlag_EncryptionRequired;
+
+                    // copy in our start/stop byte indexes
+
+                    OutMessage->Buffer.TAPSt.Message[j++] = messageStartIndex;
+                    OutMessage->Buffer.TAPSt.Message[j++] = messageLength;
+
+                    // copy in the key
+
+                    for (i = 0; i < 16; i++)
+                    {
+                        OutMessage->Buffer.TAPSt.Message[j + i] = _encryptionKey[i];
+                    }
+                    j += 16;
+
+                    OutMessage->Buffer.TAPSt.Length = OutMessage->OutLength = j;
                 }
 
                 /* Now add it to the collection of outbound messages */
                 outList.push_back( OutMessage );
                 OutMessage = 0; // It has been used, don't let it be deleted!
-
-
-                break;
-            }
-        case TYPE_TNPP:
-            {
-                OutMessage->OutLength            = xcom.messageSize() +  2;
-                OutMessage->Buffer.TAPSt.Length  = xcom.messageSize() +  2;
-
-                // BEGIN serialpatch here
-                j = 0;
-                string serialpatch;
-
-                if(parse.getiValue("xcprefix", FALSE))
-                {
-                    serialpatch = parse.getsValue("xcprefixstr");
-                }
-
-                if(!serialpatch.empty() && (xcom.getByte(0) == 0))
-                {
-                    for(j = 0; j <= serialpatch.length(); j++)
-                    {
-                        OutMessage->Buffer.TAPSt.Message[j] = serialpatch[j];
-                    }
-
-                    OutMessage->OutLength            += serialpatch.length();
-                    OutMessage->Buffer.TAPSt.Length  += serialpatch.length();
-
-                    j = serialpatch.length();
-                }
-                // END serialpatch
-
-                /* Build the message */
-                OutMessage->Buffer.TAPSt.Message[j] = xcom.getStartByte();
-
-                int curByte;
-                for(i = 0; i < xcom.messageSize(); i++)
-                {
-                    curByte = xcom.getByte(i);
-                    OutMessage->Buffer.TAPSt.Message[i + 1 + j] = curByte;
-                }
-                OutMessage->Buffer.TAPSt.Message[i + 1 + j] = xcom.getStopByte();
-                OutMessage->Buffer.TAPSt.Message[i + 2 + j] = '\0';
-
-                for(i = 0; i < OutMessage->OutLength; i++)
-                {
-                    if(isAscii)
-                    {
-                        byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
-                    }
-                    else
-                    {
-                        if(i == 0 || i == (OutMessage->OutLength - 1))
-                        {
-                            byteString += (char)OutMessage->Buffer.TAPSt.Message[i];
-                        }
-                        else
-                        {
-                            byteString += CtiNumStr((unsigned char)OutMessage->Buffer.TAPSt.Message[i]).hex(2);
-                        }
-                    }
-                }
-
-
-                /* Now add it to the collection of outbound messages */
-                outList.push_back( OutMessage );
-                OutMessage = 0; // It has been used, don't let it be deleted!
-
 
                 break;
             }

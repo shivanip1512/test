@@ -14,6 +14,7 @@
 #include "yukon.h"
 #include "string_utility.h"
 #include "tbl_static_paoinfo.h"
+#include "encryption.h"
 #include <list>
 #include <set>
 #include <string>
@@ -174,6 +175,17 @@ public:
         }
 
         return value;
+    }
+
+protected:
+
+    Cti::Encryption::Buffer _encryptionKey;
+
+public:
+
+    void setEncryptionKey( const Cti::Encryption::Buffer & key )
+    {
+        _encryptionKey = key;
     }
 };
 

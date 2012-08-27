@@ -14,7 +14,8 @@ namespace Encryption
 {
     IM_EX_CTIBASE enum EncryptionType
     {
-        MasterCfg
+        MasterCfg,
+        OneWayMsgEncryptionKey
     };
 
     IM_EX_CTIBASE typedef std::vector< unsigned char > Buffer;

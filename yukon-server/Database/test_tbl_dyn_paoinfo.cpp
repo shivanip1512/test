@@ -1,6 +1,7 @@
 #include <boost/test/auto_unit_test.hpp>
 
 #include "tbl_dyn_paoinfo.h"
+#include "boostutil.h"
 
 BOOST_AUTO_TEST_SUITE( test_tbl_dyn_paoinfo )
 

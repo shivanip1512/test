@@ -167,12 +167,11 @@ namespace
     }
 
 
-    void loadKeysFromFile( Buffer & aesKey, Buffer & initVector, Buffer & hmacKey )
+    void loadKeysFromFileData( const std::string & initPassword, const Buffer & fileData,
+                               Buffer & aesKey, Buffer & initVector, Buffer & hmacKey )
     {
-        Buffer  wholeFile = getFileData( MasterCfg, "server\\config\\keys\\masterConfigKeyfile.dat" );
-
-        generateThreeAES128Keys( "Bdk=5ohaIc51ifstd-zl2dCV)5iUE(DG", aesKey, initVector, hmacKey );
-        Buffer  decryptedData = aesCbc128HmacDecryptAndHashCheck( wholeFile, aesKey, initVector, hmacKey );
+        generateThreeAES128Keys( initPassword, aesKey, initVector, hmacKey );
+        Buffer  decryptedData = aesCbc128HmacDecryptAndHashCheck( fileData, aesKey, initVector, hmacKey );
         generateThreeAES128Keys( getPasswordFromXml( decryptedData ), aesKey, initVector, hmacKey );
     }
 
@@ -191,7 +190,9 @@ namespace
             CtiLockGuard< CtiMutex > guard( _mutex );
             if ( ! _keysLoaded )
             {
-                loadKeysFromFile( aesKey, initVector, hmacKey );
+                loadKeysFromFileData( "Bdk=5ohaIc51ifstd-zl2dCV)5iUE(DG",
+                                      getFileData( MasterCfg, "server\\config\\keys\\masterConfigKeyfile.dat" ),
+                                      aesKey, initVector, hmacKey );
                 _keysLoaded = true;
             }
         }
@@ -199,6 +200,30 @@ namespace
         return aesCbc128HmacDecryptAndHashCheck( input, aesKey, initVector, hmacKey );
     }
 
+
+    Buffer doOneWayEncryptionKey( const Buffer & input )
+    {
+        static Buffer   aesKey;
+        static Buffer   initVector;
+        static Buffer   hmacKey;
+
+        static CtiMutex _mutex;
+        static bool     _keysLoaded = false;
+
+        if ( ! _keysLoaded )
+        {
+            CtiLockGuard< CtiMutex > guard( _mutex );
+            if ( ! _keysLoaded )
+            {
+                loadKeysFromFileData( "Bdk=5ohaIc51ifstd-zl2dCV)5iUE(DG",
+                                      getFileData( OneWayMsgEncryptionKey, "server\\config\\keys\\sharedKeyfile.dat" ),
+                                      aesKey, initVector, hmacKey );
+                _keysLoaded = true;
+            }
+        }
+
+        return aesCbc128HmacDecryptAndHashCheck( input, aesKey, initVector, hmacKey );
+    }
 
 }   // end -- unnamed namespace
 
@@ -214,6 +239,10 @@ IM_EX_CTIBASE Buffer decrypt( const EncryptionType type, const Buffer & input )
     if ( type == MasterCfg )
     {
         return doMasterCfgDecrypt( input );
+    }
+    else if ( type == OneWayMsgEncryptionKey )
+    {
+        return doOneWayEncryptionKey( input );
     }
 
     return Buffer();
