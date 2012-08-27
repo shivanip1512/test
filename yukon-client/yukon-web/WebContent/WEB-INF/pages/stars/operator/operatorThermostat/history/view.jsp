@@ -98,13 +98,13 @@ jQuery(function(){
                                                 <c:if test="${historyItem.eventType == 'MANUAL'}">
                                                     <!-- Temperature and Degree Units -->
                                                     <c:if test="${historyItem.manualCoolTemp.value != 0}">
-                                                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>"/>
+                                                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsCoolTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualCoolTemp.value}'></span>" htmlEscapeArguments="false"/>
                                                         <span class="C_label unit_label">${degreesCelsius}</span>
                                                         <span class="F_label unit_label">${degreesFahrenheit}</span>,
                                                     </c:if>
 
                                                     <c:if test="${historyItem.manualHeatTemp.value != 0}">
-                                                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>"/>
+                                                        <cti:msg2 key="yukon.web.modules.operator.thermostatManual.manualDetailsHeatTemp" arguments="<span class='raw_temperature_F' raw_temperature_F='${historyItem.manualHeatTemp.value}'></span>" htmlEscapeArguments="false"/>
                                                         <span class="C_label unit_label">${degreesCelsius}</span>
                                                         <span class="F_label unit_label">${degreesFahrenheit}</span>,
                                                     </c:if>

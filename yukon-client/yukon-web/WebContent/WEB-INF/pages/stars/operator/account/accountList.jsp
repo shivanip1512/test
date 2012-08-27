@@ -22,7 +22,7 @@
     			
     			<input type="text" name="searchValue" id="accountSearchValue" value="${accountSearchResultHolder.searchValue}">
     			
-                <cti:button nameKey="search" type="submit" styleClass="f_blocker"/>
+                <cti:button nameKey="search" type="submit" />
     		
     		</div>
     		
