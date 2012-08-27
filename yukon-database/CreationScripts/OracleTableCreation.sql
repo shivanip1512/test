@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/27/2012 2:45:55 PM                         */
+/* Created on:     8/27/2012 5:59:38 PM                         */
 /*==============================================================*/
 
 
@@ -6012,6 +6012,15 @@ create index INDX_LMThermSeaEntry_SeaId on LMThermostatSeasonEntry (
 );
 
 /*==============================================================*/
+/* Table: LMTierGear                                            */
+/*==============================================================*/
+create table LMTierGear  (
+   GearId               NUMBER                          not null,
+   Tier                 NUMBER                          not null,
+   constraint PK_GearId primary key (GearId)
+);
+
+/*==============================================================*/
 /* Table: LOGIC                                                 */
 /*==============================================================*/
 create table LOGIC  (
@@ -11517,6 +11526,11 @@ alter table LMThermostatSeason
 alter table LMThermostatSeasonEntry
    add constraint FK_LMThermSeaEntry_LMThermSea foreign key (SeasonID)
       references LMThermostatSeason (SeasonID)
+      on delete cascade;
+
+alter table LMTierGear
+   add constraint FK_GearId_DeviceId foreign key (GearId)
+      references LMProgramDirectGear (GearID)
       on delete cascade;
 
 alter table MACROROUTE

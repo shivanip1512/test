@@ -274,6 +274,18 @@ END;
 DROP TABLE GroupPaoPermission_Delete;
 /* End YUK-11317 */
 
+/* End YUK-11311 */
+CREATE TABLE LMTierGear
+(
+    GearId    NUMBER    NOT NULL,
+    Tier      NUMBER    NOT NULL,
+    CONSTRAINT PK_GearId PRIMARY KEY (GearId)
+);
+ALTER TABLE LMTierGear
+    ADD CONSTRAINT FK_GearId_DeviceId FOREIGN KEY (GearId)
+        REFERENCES LMProgramDirectGear (GearId)
+            ON DELETE CASCADE;
+/* End YUK-11311 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
