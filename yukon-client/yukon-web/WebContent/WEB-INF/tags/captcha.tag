@@ -18,5 +18,5 @@
      };
     </script> 
     
-    <script type="text/javascript" src="http://www.google.com/recaptcha/api/challenge?k=${captchaPublicKey}"></script>
+    <script type="text/javascript" src="https://www.google.com/recaptcha/api/challenge?k=${captchaPublicKey}"></script>
 </c:if>
