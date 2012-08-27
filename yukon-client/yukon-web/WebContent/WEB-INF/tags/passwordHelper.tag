@@ -13,12 +13,6 @@ jQuery(function(){
 });
 </script>
 
-<div class="password_manager">
-	<div class="fl">
-		<jsp:doBody />
-	</div>
-</div>
-
 <div class="description">
 	<h3>
 		<i:inline key="yukon.web.modules.passwordPolicy.requirements" />
