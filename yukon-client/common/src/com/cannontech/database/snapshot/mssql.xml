@@ -20044,15 +20044,6 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_GROUPPAO_REF_YKGRP_YUKONGRO</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>GroupID</i__columnName>
-            <i__foreignColumnName>GroupID</i__foreignColumnName>
-            <i__foreignTableName>YukonGroup</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_YkGrRl_YkGrp</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>GroupID</i__columnName>
@@ -23774,7 +23765,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>GroupID</i__columnName>
+            <i__columnName>UserGroupId</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -23790,7 +23781,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>PaoID</i__columnName>
+            <i__columnName>PaoId</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -23841,33 +23832,19 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>PK_GROUPPAOPERMISSION</string>
+            <string>Indx_UserGrpId_PaoId_Perm_UNQ</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>GroupPaoPermission</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>GroupPaoPermissionID</i__columnName>
-                  <i__nonNonUnique>false</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>PK_GROUPPAOPERMISSION</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>AK_GRPPAOPERM</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>GroupPaoPermission</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>GroupID</i__columnName>
+                  <i__columnName>UserGroupId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>GroupPaoPermission</i__tableName>
                   <i__ordinalPosition>2</i__ordinalPosition>
-                  <i__columnName>PaoID</i__columnName>
+                  <i__columnName>PaoId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -23877,7 +23854,21 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>AK_GRPPAOPERM</indexName>
+              <indexName>Indx_UserGrpId_PaoId_Perm_UNQ</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
+            <string>PK_GroupPaoPermission</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>GroupPaoPermission</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>GroupPaoPermissionID</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>PK_GroupPaoPermission</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -32547,6 +32538,15 @@
             <i__foreignColumnName>UserGroupId</i__foreignColumnName>
             <i__foreignTableName>UserGroup</i__foreignTableName>
             <i__updateRule>0</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_GroupPaoPerm_UserGroup</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>UserGroupId</i__columnName>
+            <i__foreignColumnName>UserGroupId</i__foreignColumnName>
+            <i__foreignTableName>UserGroup</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
@@ -53927,9 +53927,9 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_GROUPPAO_REF_YUKPA_YUKONPAO</i__foreignKeyName>
+            <i__foreignKeyName>FK_GroupPaoPerm_PAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>PaoID</i__columnName>
+            <i__columnName>PaoId</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
             <i__foreignTableName>YukonPAObject</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
