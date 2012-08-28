@@ -114,9 +114,7 @@ public class MasterConfigMapTest {
             masterCfgResource = new File(getClass().getResource("master.cfg").getPath());
         }
         assertNotNull("Could not find master.cfg in path", masterCfgResource);
-        masterConfigMap = new MasterConfigMap();
-        masterConfigMap.setConfigSource(masterCfgResource);
-        masterConfigMap.initialize();
+        masterConfigMap = new MasterConfigMap(masterCfgResource);
     }
 
 }

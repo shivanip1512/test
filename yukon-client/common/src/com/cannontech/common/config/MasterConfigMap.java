@@ -32,8 +32,10 @@ public class MasterConfigMap implements ConfigurationSource {
     private File masterCfgFile;
     private Logger log = YukonLogManager.getLogger(MasterConfigMap.class);
 
-    public MasterConfigMap() {
+    public MasterConfigMap(File file) throws IOException, CryptoException {
         super();
+        setConfigSource(file);
+        initialize();
     }
 
     public void reset() {
@@ -46,6 +48,7 @@ public class MasterConfigMap implements ConfigurationSource {
     }
 
     public void initialize() throws IOException, CryptoException {
+        configMap.clear();
         boolean updateFile = false;
         String endl = System.getProperty("line.separator");
         File tmp = File.createTempFile("master", "cfgtmp");

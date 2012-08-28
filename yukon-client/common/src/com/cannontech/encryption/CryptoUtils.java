@@ -43,7 +43,7 @@ public class CryptoUtils {
     private static final String CRYPTO_FILE_XML_VERSION = "version";
     private static final String CRYPTO_FILE_VERSION = "1";
     private static final String CRYPTO_FILE_XML_PASSKEY = "pk";
-    private static SecureRandom secureRandom = new SecureRandom();
+    private static final SecureRandom secureRandom = new SecureRandom();
 
     private CryptoUtils() {/*Not instantiable. Utility class only */ }
     

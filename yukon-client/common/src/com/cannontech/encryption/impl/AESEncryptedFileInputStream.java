@@ -47,9 +47,7 @@ public class AESEncryptedFileInputStream extends ByteArrayInputStream {
             throw new IOException("Could not completely read file "+file.getName());
         }
         is.close();
-        
-        AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(password);
-        
-        return aes.decrypt(bytes);
+
+        return new AESPasswordBasedCrypto(password).decrypt(bytes);
     }
 }

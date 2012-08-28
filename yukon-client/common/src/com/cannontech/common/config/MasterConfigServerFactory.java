@@ -21,9 +21,7 @@ public class MasterConfigServerFactory implements FactoryBean<ConfigurationSourc
             File remoteFile = new File(CtiUtilities.getYukonBase(), "Server/Config/" + remoteFileName);
             boolean isRemoteVersionAvailable = remoteFile.canRead();
             if (isRemoteVersionAvailable) {
-                MasterConfigMap config = new MasterConfigMap();
-                config.setConfigSource(remoteFile);
-                config.initialize();
+                MasterConfigMap config = new MasterConfigMap(remoteFile);
                 log.info("Using remote configuation: " + remoteFileName);
                 return config;
             }

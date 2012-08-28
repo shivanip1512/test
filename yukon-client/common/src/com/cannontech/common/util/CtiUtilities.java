@@ -48,6 +48,7 @@ import javax.swing.text.BadLocationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.Level;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
@@ -624,7 +625,7 @@ public final class CtiUtilities {
      * @return
      */
     public final static String getYukonBase() {
-        return BootstrapUtils.getYukonBase();
+        return BootstrapUtils.getYukonBase(CTILogger.getLevel() == Level.DEBUG);
     }
 
     public static boolean isRunningAsWebApplication() {

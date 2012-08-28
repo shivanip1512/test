@@ -23,7 +23,7 @@ public class BootstrapUtils {
      * structure.
      * @return
      */
-    public final static String getYukonBase() {
+    public final static String getYukonBase(boolean debug) {
 
         // try a JNDI context
         try {
@@ -34,7 +34,9 @@ public class BootstrapUtils {
                 return file.getCanonicalPath();
             }
         } catch (Exception e) {
-            System.out.println("Unable to use JNDI context for yukon.base: " + e.getMessage());
+            if (debug) {
+                System.out.println("Debug: Unable to use JNDI context for yukon.base: " + e.getMessage());
+            }
         }
 
         final String fs = System.getProperty("file.separator");
@@ -84,6 +86,6 @@ public class BootstrapUtils {
     }
     
     public final static String getKeysFolder() {
-        return getYukonBase() + KEYS_DIRECTORY;
+        return getYukonBase(false) + KEYS_DIRECTORY;
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.BadConfigurationException;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.encryption.CryptoException;
 
 public class MasterConfigHelper {
@@ -32,7 +32,7 @@ public class MasterConfigHelper {
             }
             log.info("Local config found on classpath: " + url);
         } else {
-            masterCfgLocation = new File(CtiUtilities.getYukonBase(), "Server/Config/master.cfg");
+            masterCfgLocation = new File(BootstrapUtils.getYukonBase(log.isDebugEnabled()), "Server/Config/master.cfg");
         }
     }
 
@@ -47,25 +47,25 @@ public class MasterConfigHelper {
 
     static public synchronized ConfigurationSource getLocalConfiguration(){
         if (localConfig == null) {
-            localConfig = new MasterConfigMap();
+            File masterCfg;
             // check if on classpath
             URL url = MasterConfigHelper.class.getClassLoader().getResource("master.cfg");
             if (url != null) {
                 try {
-                    localConfig.setConfigSource(new File(url.toURI()));
+                    masterCfg = new File(url.toURI());
                     log.info("Local config found on classpath: " + url);
                 }  catch (URISyntaxException e) {
                     log.error("master.cfg appears on the classpath but is unreadable, configuring with full path ", e);
-                    localConfig.setConfigSource(getMasterConfig());
+                    masterCfg = getMasterConfig();
                     log.info("Local config found on filesystem: " + masterCfgLocation);
                 } 
             } else {
-                localConfig.setConfigSource(getMasterConfig());
+                masterCfg = getMasterConfig();
                 log.info("Local config found on filesystem: " + masterCfgLocation);
             }
 
             try {
-                localConfig.initialize();
+                localConfig = new MasterConfigMap(masterCfg);
             } catch (CryptoException cae) {
                 log.error("Severe Error while initializing configuration. The MasterConfigPasskey.dat file might be invalid. May need to reset encrypted values in master.cfg to plaintext",cae);
             } catch (IOException e) {
