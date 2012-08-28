@@ -14,7 +14,7 @@
         <br>
         <div style="font-size:11px;">
             Tabular Data: 
-            <cti:simpleReportLinkFromNameTag definitionName="${definitionName}" viewType="extView" resultKey="${result.key}">HTML</cti:simpleReportLinkFromNameTag>
+            <cti:simpleReportLinkFromNameTag definitionName="${definitionName}" viewType="extView" resultKey="${result.key}" module="amr" showMenu="true">HTML</cti:simpleReportLinkFromNameTag>
             |
             <cti:simpleReportLinkFromNameTag definitionName="${definitionName}" viewType="csvView" resultKey="${result.key}">CSV</cti:simpleReportLinkFromNameTag>
             |
