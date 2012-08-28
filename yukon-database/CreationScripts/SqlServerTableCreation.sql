@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/27/2012 5:57:55 PM                         */
+/* Created on:     8/27/2012 6:12:29 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -8241,8 +8241,8 @@ INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 /*==============================================================*/
 create table UserGroup (
    UserGroupId          numeric              not null,
-   UserGroupName        varchar(1000)        not null,
-   UserGroupDescription varchar(200)         not null,
+   Name                 varchar(1000)        not null,
+   Description          varchar(200)         not null,
    constraint PK_UserGroup primary key (UserGroupId)
 )
 go

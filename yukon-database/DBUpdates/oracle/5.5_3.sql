@@ -5,8 +5,8 @@
 /* Start YUK-11015 */
 CREATE TABLE UserGroup  (
    UserGroupId              NUMBER                          NOT NULL,
-   UserGroupName            VARCHAR2(1000)                  NOT NULL,
-   UserGroupDescription     VARCHAR2(200)                   NOT NULL,
+   Name                     VARCHAR2(1000)                  NOT NULL,
+   Description              VARCHAR2(200)                   NOT NULL,
    GroupIdStr               VARCHAR2(150)                   NULL,
    CONSTRAINT PK_UserGroup PRIMARY KEY (UserGroupId)
 );
@@ -57,7 +57,7 @@ BEGIN
         EXIT WHEN userId_curs%NOTFOUND;
         
             /* Getting the groups associated with the userId */
-            SELECT (SELECT SUBSTR (SYS_CONNECT_BY_PATH (YUG.GroupId, ' AND '), 2)
+            SELECT (SELECT SUBSTR (SYS_CONNECT_BY_PATH (YUG.GroupId, ','), 2)
                     FROM (SELECT GroupId, ROW_NUMBER () OVER (ORDER BY GroupId) rn, COUNT (*) OVER () cnt
                           FROM YukonUserGroup
                           WHERE UserId = v_UserId
@@ -69,7 +69,7 @@ BEGIN
             WHERE YU.UserId = v_UserId;
 
             /* Getting the groups associated with the userId */
-            SELECT (SELECT SUBSTR (SYS_CONNECT_BY_PATH (YUG_YG.GroupName, ' AND '), 2)
+            SELECT (SELECT SUBSTR (SYS_CONNECT_BY_PATH (YUG_YG.GroupName, ' AND '), 6)
                     FROM (SELECT GroupName, ROW_NUMBER () OVER (ORDER BY GroupName) rn, COUNT (*) OVER () cnt
                           FROM YukonUserGroup YUG
                             JOIN YukonGroup YG ON YG.GroupId = YUG.GroupId

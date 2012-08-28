@@ -5,8 +5,8 @@
 /* Start YUK-11015 */
 CREATE TABLE UserGroup  (
    UserGroupId              NUMERIC                        NOT NULL,
-   UserGroupName            VARCHAR(1000)                  NOT NULL,
-   UserGroupDescription     VARCHAR(200)                   NOT NULL,
+   Name                     VARCHAR(1000)                  NOT NULL,
+   Description              VARCHAR(200)                   NOT NULL,
    GroupIdStr               VARCHAR(150)                   NULL,
    CONSTRAINT PK_UserGroup PRIMARY KEY (UserGroupId)
 );
@@ -60,7 +60,7 @@ WHILE (@@fetch_status = 0)
     BEGIN
         /* Getting the groups associated with the userId */
         SET @userGroupIdStr = NULL;
-        SELECT @userGroupIdStr = ISNULL(@userGroupIdStr + ' AND ','') + ISNULL(CAST(GroupID as VARCHAR),'')
+        SELECT @userGroupIdStr = ISNULL(@userGroupIdStr + ',','') + ISNULL(CAST(GroupID as VARCHAR),'')
         FROM YukonUserGroup YUG
         WHERE YUG.UserId = @userId;
         
