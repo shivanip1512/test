@@ -368,8 +368,8 @@
 
     <table name="UserGroup">
         <primaryKey name="UserGroupId" />
-        <identifier name="UserGroupName" />
-        <data name="UserGroupDescription" />
+        <identifier name="Name" />
+        <data name="Description" />
     </table>
 
     <table name="YukonGroup">
