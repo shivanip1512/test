@@ -3,5 +3,10 @@
 <properties>
 
     <entry key="yukon.web.modules.operator.moduleName">Operator</entry>
+    <entry key="yukon.web.modules.operator.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.operator.accountNumber">Account Number</entry>
+    <entry key="yukon.web.modules.operator.newOperation">New Inventory Action</entry>
+    <entry key="yukon.web.modules.operator.download">Download</entry>
     
 </properties>

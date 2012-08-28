@@ -206,6 +206,8 @@
     <entry key="yukon.web.modules.operator.inventoryActions.saveToFile.label">Save To File</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.resendConfig.label">Resend LM Config</entry>
     <entry key="yukon.web.modules.operator.inventoryActions.resendConfigDescription">Resend configurations for LM devices.</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.controlAudit.label">LM Control Audit</entry>
+    <entry key="yukon.web.modules.operator.inventoryActions.controlAuditDescription">Run a LM control audit report of LM devices.</entry>
 
     <!-- /inventory/inventoryOperations/saveBatchFile.jsp -->
     <entry key="yukon.web.modules.operator.saveToFile.pageName">Save To File</entry>
@@ -345,5 +347,26 @@
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notesLabel">Note:</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.notes">Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.</entry>
     <entry key="yukon.web.modules.operator.deviceReconfigStatus.newOperation">Choose A New Operation For Inventory</entry>
+    
+    <!-- /inventory/contolAudit/audit.jsp -->
+    <entry key="yukon.web.modules.operator.controlAudit.pageName">LM Control Audit</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.settings.title">Settings</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.range">Range</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.controlled">Controlled</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.uncontrolled">Uncontrolled</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.unknown">Unknown</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.unsupported">Unsupported</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.runAudit.label">Run Audit</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.controlTotal">Control Total</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.deviceCount">Device Count</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.controlledDevices.title">Controlled Devices</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.uncontrolledDevices.title">Uncontrolled Devices</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.unknownDevices.title">Unknown (Devices with No Data)</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.unsupportedDevices.title">Unsupported Devices</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.controlledCollectionDescription">LM Control Audit Controlled List</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.uncontrolledCollectionDescription">LM Control Audit Uncontrolled List</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.unknownCollectionDescription">LM Control Audit Unknown List</entry>
+    <entry key="yukon.web.modules.operator.controlAudit.unsupportedCollectionDescription">LM Control Audit Unsupported List</entry>
     
 </properties>

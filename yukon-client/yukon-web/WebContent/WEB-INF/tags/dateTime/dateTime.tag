@@ -57,7 +57,7 @@
 			</cti:displayForPageEditModes>
 			<cti:displayForPageEditModes modes="EDIT,CREATE">
                 <form:input id="${id}" 
-                            path="${path}"
+                            path="${path}" 
                             value="${dateTimeValue}"
                             cssClass="f_dateTimePicker f_dateTimePickerUI dateTimePicker ${cssClass}"
                             disabled="${pageScope.disabled}"

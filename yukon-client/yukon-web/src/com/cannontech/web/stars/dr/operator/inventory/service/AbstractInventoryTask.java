@@ -46,7 +46,7 @@ public abstract class AbstractInventoryTask implements Completable, CancelStatus
      * Sets the canceled flag on the task so that the process will know
      * to stop working on this task, returns true if the task was canceled
      * before the task was complete.
-     * @return whether cancel was effective (task was not already complete)
+     * @return Returns true when cancel was effective (task was not already complete)
      */
     public boolean cancel() {
         canceled = true;

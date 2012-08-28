@@ -238,7 +238,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10);
         int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
 
-        SearchResult<ThermostatEvent> result = new SearchResult<ThermostatEvent>().pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
+        SearchResult<ThermostatEvent> result = SearchResult.pageBasedForWholeList(currentPage, itemsPerPage, eventHistoryList);
         map.addAttribute("searchResult", result);
         map.addAttribute("eventHistoryList", result.getResultList());
         

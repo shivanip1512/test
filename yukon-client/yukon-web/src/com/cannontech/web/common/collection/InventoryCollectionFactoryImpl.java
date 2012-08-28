@@ -14,9 +14,11 @@ public class InventoryCollectionFactoryImpl extends CollectionFactoryImpl<Invent
         super(InventoryCollectionType.class, InventoryCollection.class);
     }
     
-    public void addCollectionToModelMap(HttpServletRequest request, ModelMap modelMap) throws ServletRequestBindingException {
+    public InventoryCollection addCollectionToModelMap(HttpServletRequest request, ModelMap modelMap) throws ServletRequestBindingException {
         InventoryCollection yukonCollection = createCollection(request);
         modelMap.addAttribute("inventoryCollection", yukonCollection);
         modelMap.addAllAttributes(yukonCollection.getCollectionParameters());
+        
+        return yukonCollection;
     }
 }

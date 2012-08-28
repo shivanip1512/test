@@ -60,7 +60,7 @@ jQuery(function() {
 
 <cti:url var="submitUrl" value="/spring/stars/operator/hardware/config/commit"/>
 
-<div class="configContent">
+<div class="threeQuarterLayout">
     <div class="primary">
         <div class="columnContent">
             <form:form id="editForm" name="editForm" action="${submitUrl}" commandName="configuration">

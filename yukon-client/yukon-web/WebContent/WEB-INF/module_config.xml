@@ -2029,6 +2029,9 @@
                             <page name="resendConfig" type="BASIC">
                                 <menu>inventory|</menu>
                             </page>
+                            <page name="controlAudit" type="BASIC">
+                                <menu>inventory|</menu>
+                            </page>
                         </pages>
                     </page>
                     <page name="deviceReconfigStatus" type="DETAIL_CHILD">

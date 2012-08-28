@@ -9,6 +9,8 @@
 <entry key="yukon.common.cancel">Cancel</entry>
 <entry key="yukon.common.save">Save</entry>
 
+<entry key="yukon.common.to">to</entry>
+
 <entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
 <entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
 
@@ -75,5 +77,8 @@
 <entry key="yukon.common.attributeGroups.RFN_VOLTAGE_EVENT">Voltage Events</entry>
 
 <entry key="yukon.web.common.rfnExpressComMessage.error">RF ExpressCom message error: {0}</entry>
+
+<entry key="yukon.common.adobeRequired">The Adobe Flash Player is required to view this graph.</entry>
+    <entry key="yukon.common.adobePleaseDL">Please download the latest version of the Flash Player by following the link below.</entry> 
         
 </properties>

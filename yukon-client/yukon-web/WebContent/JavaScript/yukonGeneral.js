@@ -403,3 +403,14 @@ function getHeaderJSON(xhr) {
 	}
 	return {};
 }
+
+jQuery(function() {
+    jQuery(document).delegate("h3.toggle-title", "click", function (event) {
+        var target = event.currentTarget;
+        var container = jQuery(target).closest("div.titledContainer");
+        container.toggleClass("collapsed");
+        var content = jQuery(container).find("div.content");
+        content.toggle();
+        
+    });
+});

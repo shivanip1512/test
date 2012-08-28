@@ -147,6 +147,20 @@
                 </cti:dataGridCell>
             </cti:checkRolesAndProperties>
             
+            <cti:dataGridCell>
+                    <table>
+                        <tr>
+                            <td class="actionCell">
+                                <form action="controlAudit/view" method="get">
+                                    <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
+                                    <cti:button nameKey="controlAudit" type="submit" styleClass="buttonGroup"/>
+                                </form>
+                            </td>
+                            <td class="actionCell"><i:inline key=".controlAuditDescription"/></td>
+                        </tr>
+                    </table>
+            </cti:dataGridCell>
+            
         </cti:dataGrid>
      
      </tags:boxContainer2>

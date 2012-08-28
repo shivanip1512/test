@@ -80,7 +80,7 @@ public class FormatDurationTag extends YukonTagSupport {
         getJspContext().getOut().print(formattedDuration);
     }
     
-    public void setValue(long value) {
+    public void setValue(Object value) {
         this.value = value;
         this.isValueSet = true;
     }

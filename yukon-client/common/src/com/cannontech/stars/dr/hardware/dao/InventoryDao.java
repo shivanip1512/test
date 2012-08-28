@@ -176,4 +176,11 @@ public interface InventoryDao {
      * @return
      */
     public String getMeterNumberForDevice(int deviceId);
+
+    public LiteLmHardware getLiteLmHardwareByInventoryId(int inventoryId);
+
+    public LiteLmHardware getLiteLmHardwareByInventory(YukonInventory inventory);
+
+    public List<LiteLmHardware> getLiteLmHardwareByInventory(List<InventoryIdentifier> inventory);
+    
 }

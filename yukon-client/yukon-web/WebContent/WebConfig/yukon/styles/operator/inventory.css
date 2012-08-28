@@ -96,3 +96,7 @@ ul.resultList {
 div.saveToBatchOption {
     padding-bottom: 8px;
 }
+
+.rangeSeparator {
+    padding: 0 10px;
+}

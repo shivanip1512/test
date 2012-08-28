@@ -6,10 +6,13 @@
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean" %>
 
 <cti:msgScope paths=".${nameKey},">
 	<cti:msg2 var="title" key=".title"/>
 </cti:msgScope>
+
+<c:if test="${hideEnabled}"><c:set var="h3Class" value="toggle-title"/></c:if>
 
 <cti:uniqueIdentifier prefix="formElementContainer_" var="thisId"/>
 
@@ -21,10 +24,10 @@
         
             <c:choose>
               <c:when test="${pageScope.escapeTitle}">
-                <spring:escapeBody htmlEscape="true">${pageScope.title}</spring:escapeBody>
+                <h3 class="${h3Class}"><spring:escapeBody htmlEscape="true">${pageScope.title}</spring:escapeBody></h3>
               </c:when>
               <c:otherwise>
-                ${pageScope.title} 
+                <h3 class="${h3Class}">${pageScope.title}</h3> 
               </c:otherwise>
             </c:choose>
         	

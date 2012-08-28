@@ -28,7 +28,7 @@ public class SearchResult<T> {
      * Returns a SearchResult containing a specific "page" of items, based on the specified
      * parameters.
      */
-    public SearchResult<T> pageBasedForWholeList(int currentPage, int itemsPerPage, List<T> itemList) {
+    public static  <T> SearchResult<T> pageBasedForWholeList(int currentPage, int itemsPerPage, List<T> itemList) {
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = itemList.size();

@@ -22,7 +22,6 @@
 			 cssClass="${pageScope.cssClass} f_dateStart"
 			 cssDialogClass="${pageScope.cssDialogClass}"
 			 maxDate="${pageScope.endValue}" />
-			 
 	<dt:date path="${pageScope.endPath}"
 			 name="${pageScope.endName}"
 			 value="${pageScope.endValue}"

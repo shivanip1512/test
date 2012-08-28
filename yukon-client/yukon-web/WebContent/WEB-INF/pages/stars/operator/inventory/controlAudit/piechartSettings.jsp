@@ -1,0 +1,36 @@
+<settings>
+  <text_color>444444</text_color>
+  <redraw>1</redraw>
+  <pie>
+    <colors>0x66EE66,0xEE6666,0xFFF465,0x888888</colors>
+    <y>50%</y>
+    <start_angle>80</start_angle>
+  </pie>
+  <decimals_separator>.</decimals_separator>
+  <precision>1</precision>
+  <background>
+    <alpha>100</alpha>
+  </background>
+  <balloon>
+    <enabled>0</enabled>
+    <show>{title}: {percents}% ({value})</show>
+  </balloon>
+  <legend>
+    <enabled>0</enabled>
+    <align>center</align>
+  </legend>
+  <animation>
+    <start_time>1</start_time>
+    <start_effect>regular</start_effect>
+    <start_radius>40%</start_radius>
+    <start_alpha>100</start_alpha>
+    <pull_out_effect>regular</pull_out_effect>
+  </animation>
+  <data_labels>
+    <show>{title}: {percents}% ({value})</show>
+    <max_width>140</max_width>
+  </data_labels>
+  <group>
+    <pull_out>1</pull_out>
+  </group>
+</settings>

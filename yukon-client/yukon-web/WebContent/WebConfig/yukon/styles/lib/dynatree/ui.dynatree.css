@@ -336,7 +336,7 @@ span.dynatree-active a
 }
 
 span.dynatree-selected .dynatree-title {
-    background-color:yellow !important;
+    background-color:#FFF465 !important;
     color: black !important;
 }
 
@@ -455,7 +455,7 @@ span.dynatree-drop-target.dynatree-drop-after a
 span.custom1 a
 {
 	background-color: maroon;
-	color: yellow;
+	color: #FFF465;
 }
 
 span.dynatree-icon { background-image:url("tree/folder.gif"); background-position: 0 0 !important; background-repeat:no-repeat; background-color:transparent; }

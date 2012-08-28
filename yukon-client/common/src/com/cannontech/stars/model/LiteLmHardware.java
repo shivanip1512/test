@@ -10,6 +10,7 @@ public class LiteLmHardware implements YukonInventory{
     private String label;
     private int accountId;
     private int energyCompanyId;
+    private String accountNo;
     
     public InventoryIdentifier getIdentifier() {
         return identifier;
@@ -54,6 +55,14 @@ public class LiteLmHardware implements YukonInventory{
     @Override
     public InventoryIdentifier getInventoryIdentifier() {
         return identifier;
+    }
+
+    public String getAccountNo() {
+        return accountNo;
+    }
+    
+    public void setAccountNo(String accountNo) {
+        this.accountNo = accountNo;
     }
     
 }

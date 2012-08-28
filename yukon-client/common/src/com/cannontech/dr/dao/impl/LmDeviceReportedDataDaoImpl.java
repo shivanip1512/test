@@ -13,7 +13,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.FieldMapper;
-import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -57,7 +56,7 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
     @PostConstruct
     public void init() {
         addressTemplate = new SimpleTableAccessTemplate<LmReportedAddress>(yukonJdbcTemplate, nextValueHelper);
-        addressTemplate.setTableName("LmReportedAddress");
+        addressTemplate.setTableName("ReportedAddressExpressCom");
         addressTemplate.setFieldMapper(fieldMapper);
         addressTemplate.setPrimaryKeyField("ChangeId");
         addressTemplate.setPrimaryKeyValidOver(0);
@@ -123,7 +122,7 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
         
         for (LmReportedAddressRelay relay : address.getRelays()) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("INSERT INTO LmReportedAddressRelay");
+            sql.append("INSERT INTO ReportedAddressRelayExpressCom");
             sql.values(address.getChangeId(), relay.getRelayNumber(), relay.getProgram(), relay.getSplinter());
             
             yukonJdbcTemplate.update(sql);
@@ -131,27 +130,10 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
     }
 
     @Override
-    public LmReportedAddress getCurrentAddress(int deviceId) throws NotFoundException {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ChangeId, DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
-        sql.append("FROM LmReportedAddress lmra");
-        sql.append("WHERE lmra.ChangeId = (SELECT MAX(ChangeId) FROM LmReportedAddress WHERE DeviceId").eq(deviceId).append(")");
-        
-        try {
-            LmReportedAddress address = yukonJdbcTemplate.queryForObject(sql, addressRowMapper);
-            address.setRelays(getRelays(address.getChangeId()));
-            
-            return address;
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("No address recorded for device with id: " + deviceId);
-        }
-    }
-
-    @Override
     public List<LmReportedAddress> getAllRecordedAddresses(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ChangeId, DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
-        sql.append("FROM LmReportedAddress");
+        sql.append("FROM ReportedAddressExpressCom");
         sql.append("WHERE DeviceId").eq(deviceId);
         
         List<LmReportedAddress> addresses = yukonJdbcTemplate.query(sql, addressRowMapper);
@@ -166,28 +148,43 @@ public class LmDeviceReportedDataDaoImpl implements LmDeviceReportedDataDao {
     private Set<LmReportedAddressRelay> getRelays(int changeId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ChangeId, RelayNumber, Program, Splinter");
-        sql.append("FROM LmReportedAddressRelay");
+        sql.append("FROM ReportedAddressRelayExpressCom");
         sql.append("WHERE ChangeId").eq(changeId);
         
         return Sets.newHashSet(yukonJdbcTemplate.query(sql, relayMapper));
+    }
+    
+    @Override
+    public LmReportedAddress getCurrentAddress(int deviceId) throws NotFoundException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ChangeId, DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
+        sql.append("FROM ReportedAddressExpressCom lmra");
+        sql.append("WHERE lmra.ChangeId = (SELECT MAX(ChangeId) FROM ReportedAddressRelayExpressCom WHERE DeviceId").eq(deviceId).append(")");
+        
+        try {
+            LmReportedAddress address = yukonJdbcTemplate.queryForObject(sql, addressRowMapper);
+            address.setRelays(getRelays(address.getChangeId()));
+            
+            return address;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No address recorded for device with id: " + deviceId);
+        }
     }
 
     @Override
     public Set<LmReportedAddress> getAllCurrentAddresses() {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DISTINCT DeviceId");
-        sql.append("FROM LmReportedAddress");
+        sql.append("SELECT ChangeId, DeviceId, Timestamp, SPID, GEO, Substation, Feeder, ZIP, UDA, Required");
+        sql.append("FROM ReportedAddressExpressCom lmra");
+        sql.append("WHERE lmra.ChangeId IN (SELECT MAX(ChangeId) FROM ReportedAddressExpressCom GROUP BY DeviceId)");
         
-        List<Integer> deviceIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
-        
-        Set<LmReportedAddress> addresses = Sets.newHashSetWithExpectedSize(deviceIds.size());
-        
-        for (Integer deviceId : deviceIds) {
-            addresses.add(getCurrentAddress(deviceId));
+        List<LmReportedAddress> addresses = yukonJdbcTemplate.query(sql, addressRowMapper);
+        for (LmReportedAddress address : addresses) {
+            address.setRelays(getRelays(address.getChangeId()));
         }
         
-        return addresses;
+        return Sets.newHashSet(addresses);
     }
     
 }

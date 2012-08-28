@@ -865,5 +865,83 @@ public class InventoryDaoImpl implements InventoryDao {
         sql.append("WHERE Deviceid").eq(deviceId);
         return yukonJdbcTemplate.queryForString(sql);
     }
+
+    @Override
+    public LiteLmHardware getLiteLmHardwareByInventoryId(int inventoryId) {
+        return getLiteLmHardwareByInventory(getYukonInventory(inventoryId));
+    }
+    
+    @Override
+    public LiteLmHardware getLiteLmHardwareByInventory(final YukonInventory inventory) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT IB.InventoryId, LMHB.ManufacturerSerialNumber, IB.DeviceLabel, ECIM.EnergyCompanyId, IB.AccountId, CA.AccountNumber");
+        sql.append("FROM InventoryBase IB");
+        sql.append(  "JOIN LmHardwareBase LMHB on LMHB.InventoryId = IB.InventoryId");
+        sql.append(  "JOIN EcToInventoryMapping ECIM on ECIM.InventoryId = IB.InventoryId");
+        sql.append(  "JOIN CustomerAccount CA on CA.AccountId = IB.AccountId");
+        sql.append("WHERE IB.InventoryId").eq(inventory.getInventoryIdentifier().getInventoryId());
+        
+        return yukonJdbcTemplate.queryForObject(sql, new YukonRowMapper<LiteLmHardware>() {
+
+            @Override
+            public LiteLmHardware mapRow(YukonResultSet rs) throws SQLException {
+                LiteLmHardware lmh = new LiteLmHardware();
+                lmh.setIdentifier(inventory.getInventoryIdentifier());
+                lmh.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
+                lmh.setLabel(rs.getString("DeviceLabel"));
+                lmh.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
+                lmh.setAccountId(rs.getInt("AccountId"));
+                lmh.setAccountNo(rs.getString("AccountNumber"));
+                
+                return lmh;
+            }
+            
+        });
+    }
+
+    @Override
+    public List<LiteLmHardware> getLiteLmHardwareByInventory(final List<InventoryIdentifier> inventory) {
+        
+        final Map<Integer, InventoryIdentifier> inventoryMap = Maps.newHashMapWithExpectedSize(inventory.size());
+        for (InventoryIdentifier id : inventory) {
+            inventoryMap.put(id.getInventoryId(), id);
+        }
+        
+        
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT IB.InventoryId, LMHB.ManufacturerSerialNumber, IB.DeviceLabel, ECIM.EnergyCompanyId, IB.AccountId, CA.AccountNumber");
+                sql.append("FROM InventoryBase IB");
+                sql.append(  "JOIN LmHardwareBase LMHB on LMHB.InventoryId = IB.InventoryId");
+                sql.append(  "JOIN EcToInventoryMapping ECIM on ECIM.InventoryId = IB.InventoryId");
+                sql.append(  "JOIN CustomerAccount CA on CA.AccountId = IB.AccountId");
+                sql.append("WHERE IB.InventoryId").in(subList);
+                return sql;
+            }
+        };
+        
+        List<LiteLmHardware> hardware = template.query(sqlGenerator, inventoryMap.keySet(), new YukonRowMapper<LiteLmHardware>() {
+
+            @Override
+            public LiteLmHardware mapRow(YukonResultSet rs) throws SQLException {
+                LiteLmHardware lmh = new LiteLmHardware();
+                lmh.setIdentifier(inventoryMap.get(rs.getInt("InventoryId")));
+                lmh.setSerialNumber(rs.getString("ManufacturerSerialNumber"));
+                lmh.setLabel(rs.getString("DeviceLabel"));
+                lmh.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
+                lmh.setAccountId(rs.getInt("AccountId"));
+                lmh.setAccountNo(rs.getString("AccountNumber"));
+                
+                return lmh;
+            }
+            
+        });
+        
+        return hardware;
+    }
     
 }
