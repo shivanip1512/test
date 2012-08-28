@@ -316,6 +316,24 @@ ALTER TABLE LMGroupSEP
 ALTER COLUMN RampOut NUMERIC NOT NULL;
 /* End YUK-11330 */
 
+/* Start YUK-11313 */
+CREATE TABLE EncryptionKey (
+    EncryptionKeyId NUMERIC      NOT NULL,
+    Name            VARCHAR(128) NOT NULL,
+    Value           VARCHAR(512) NOT NULL,
+    CONSTRAINT PK_EncryptionKey PRIMARY KEY (EncryptionKeyId)
+);
+GO
+
+CREATE TABLE YukonPAObjectEncryptionKey (
+    PAObjectID      NUMERIC NOT NULL,
+    EncryptionKeyId NUMERIC NOT NULL,
+    CONSTRAINT PK_YukonPAObjectEncryptionKey PRIMARY KEY (PAObjectID)
+);
+GO
+DELETE FROM StaticPaoInfo WHERE InfoKey = 'CPS_ONE_WAY_ENCRYPTION_KEY';
+/* End YUK-11313 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/28/2012 4:02:31 PM                         */
+/* Created on:     8/28/2012 5:00:17 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -4679,6 +4679,17 @@ create table ECToWorkOrderMapping (
 go
 
 /*==============================================================*/
+/* Table: EncryptionKey                                         */
+/*==============================================================*/
+create table EncryptionKey (
+   EncryptionKeyId      numeric              not null,
+   Name                 varchar(128)         not null,
+   Value                varchar(512)         not null,
+   constraint PK_EncryptionKey primary key (EncryptionKeyId)
+)
+go
+
+/*==============================================================*/
 /* Table: EnergyCompany                                         */
 /*==============================================================*/
 create table EnergyCompany (
@@ -9070,6 +9081,16 @@ create unique index Indx_PAO on YukonPAObject (
 Category ASC,
 PAOName ASC,
 PAOClass ASC
+)
+go
+
+/*==============================================================*/
+/* Table: YukonPAObjectEncryptionKey                            */
+/*==============================================================*/
+create table YukonPAObjectEncryptionKey (
+   PAObjectID           numeric              not null,
+   EncryptionKeyId      numeric              not null,
+   constraint PK_YukonPAObjectEncryptionKey primary key (PAObjectID)
 )
 go
 

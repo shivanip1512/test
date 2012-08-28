@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/28/2012 4:01:38 PM                         */
+/* Created on:     8/28/2012 5:02:38 PM                         */
 /*==============================================================*/
 
 
@@ -4454,6 +4454,16 @@ create table ECToWorkOrderMapping  (
 );
 
 /*==============================================================*/
+/* Table: EncryptionKey                                         */
+/*==============================================================*/
+create table EncryptionKey  (
+   EncryptionKeyId      NUMBER                          not null,
+   Name                 VARCHAR2(128)                   not null,
+   Value                VARCHAR2(512)                   not null,
+   constraint PK_EncryptionKey primary key (EncryptionKeyId)
+);
+
+/*==============================================================*/
 /* Table: EnergyCompany                                         */
 /*==============================================================*/
 create table EnergyCompany  (
@@ -8572,6 +8582,15 @@ create unique index Indx_PAO on YukonPAObject (
    Category ASC,
    PAOName ASC,
    PAOClass ASC
+);
+
+/*==============================================================*/
+/* Table: YukonPAObjectEncryptionKey                            */
+/*==============================================================*/
+create table YukonPAObjectEncryptionKey  (
+   PAObjectID           NUMBER                          not null,
+   EncryptionKeyId      NUMBER                          not null,
+   constraint PK_YukonPAObjectEncryptionKey primary key (PAObjectID)
 );
 
 /*==============================================================*/
