@@ -23,7 +23,9 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.gui.table.JComboCellEditor;
 import com.cannontech.common.gui.tree.CTITreeModel;
@@ -52,8 +54,9 @@ import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
 
-public class UserRolePanel extends DataInputPanel implements TreeSelectionListener
-{
+public class UserRolePanel extends DataInputPanel implements TreeSelectionListener {
+    private Logger log = YukonLogManager.getLogger(UserRolePanel.class);
+    
 	private javax.swing.JPanel ivjJPanelLoginDescription = null;
 	private javax.swing.JTree ivjJTreeRoles = null;
 	private javax.swing.JScrollPane ivjJScrollJTree = null;
@@ -434,8 +437,7 @@ public Object getValue(Object obj) {
                     createRoleEntry( role, prop, yukonGroup, roleEntryIDMap );
     			}
 			} catch (ConfigurationException e) {
-			    // TODO Auto-generated catch block
-			    e.printStackTrace();
+                log.error("The role trying to be added already to this role group already exists in one of its attached user groups.", e);
 			}
 		}
 	}

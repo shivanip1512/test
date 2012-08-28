@@ -72,7 +72,7 @@
 <entry key="yukon.web.picker.userPicker.dialogTitle">Select User</entry>
 
 <!-- User Picker -->
-<entry key="yukon.web.picker.userGroup.userGroupName">User Group Name</entry>
+<entry key="yukon.web.picker.userGroup.name">User Group Name</entry>
 <entry key="yukon.web.picker.userGroup.userGroupId">User Group Id</entry>
 <entry key="yukon.web.picker.userGroupPicker.dialogTitle">Select User Group</entry>
 

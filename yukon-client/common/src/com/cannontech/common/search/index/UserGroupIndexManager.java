@@ -27,7 +27,7 @@ public class UserGroupIndexManager extends AbstractIndexManager {
 
     @Override
     protected int getIndexVersion() {
-        return 2;
+        return 1;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class UserGroupIndexManager extends AbstractIndexManager {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM UserGroup");
-        sql.append("ORDER BY UserGroupName");
+        sql.append("ORDER BY Name");
         return sql.getSql();
     }
 
@@ -57,7 +57,7 @@ public class UserGroupIndexManager extends AbstractIndexManager {
 
         Document doc = new Document();
 
-        String userGroupName = rs.getString("userGroupName");
+        String userGroupName = rs.getString("name");
         int userGroupId = rs.getInt("userGroupId");
         String userGroupIdStr = Integer.toString(userGroupId);
         //will not be setting password here; no need for it
@@ -67,14 +67,14 @@ public class UserGroupIndexManager extends AbstractIndexManager {
         /*Don't store this; we don't want to display based off of this one*/
         doc.add(new Field("all", all, Field.Store.YES, Field.Index.ANALYZED));
         doc.add(new Field("userGroupId", userGroupIdStr, Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("userGroupName", userGroupName, Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("name", userGroupName, Field.Store.NO, Field.Index.NOT_ANALYZED));
 
         return doc;
     }
 
     @Override
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category, String type) {
-        if (database == DBChangeMsg.CHANGE_USER_GROUP_DB && ! DBChangeMsg.CAT_USER_GROUP.equalsIgnoreCase(category)) {
+        if (database == DBChangeMsg.CHANGE_USER_GROUP_DB && DBChangeMsg.CAT_USER_GROUP.equalsIgnoreCase(category)) {
             return this.processUserGroupChange(id);
         }
 
@@ -96,7 +96,7 @@ public class UserGroupIndexManager extends AbstractIndexManager {
         sql.append("SELECT *");
         sql.append("FROM UserGroup");
         sql.append("WHERE UserGroupId = ?");
-        sql.append("ORDER BY UserGroupName");
+        sql.append("ORDER BY Name");
 
         docList = jdbcTemplate.query(sql.getSql(), new Object[] { userGroupId }, new DocumentMapper());
         return new IndexUpdateInfo(docList, term);

@@ -26,20 +26,20 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.spring.YukonSpringHook;
 
 public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
     
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+    @Autowired private RoleDao roleDao;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
         
     private SimpleTableAccessTemplate<LiteUserGroup> userGroupTemplate;
     
     private FieldMapper<LiteUserGroup> userGroupFieldMapper = new FieldMapper<LiteUserGroup>() {
         @Override
         public void extractValues(MapSqlParameterSource p, LiteUserGroup liteUserGroup) {
-            p.addValue("UserGroupName", liteUserGroup.getUserGroupName());
-            p.addValue("UserGroupDescription", liteUserGroup.getUserGroupDescription());
+            p.addValue("Name", liteUserGroup.getUserGroupName());
+            p.addValue("Description", liteUserGroup.getUserGroupDescription());
         }
         
         @Override
@@ -69,14 +69,14 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
             LiteUserGroup liteUserGroup = new LiteUserGroup();
             
             liteUserGroup.setUserGroupId(rs.getInt("UserGroupId"));
-            liteUserGroup.setUserGroupName(rs.getString("UserGroupName"));
-            liteUserGroup.setUserGroupDescription(rs.getStringSafe("UserGroupDescription"));
+            liteUserGroup.setUserGroupName(rs.getString("Name"));
+            liteUserGroup.setUserGroupDescription(rs.getStringSafe("Description"));
 
             return liteUserGroup;
         }
     }
     
-    private static class UserGroupRowMapper implements YukonRowMapper<UserGroup> {
+    private class UserGroupRowMapper implements YukonRowMapper<UserGroup> {
         private Logger log = YukonLogManager.getLogger(UserGroupRowMapper.class);
 
         @Override
@@ -85,7 +85,6 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
             userGroup.setUserGroupId(rs.getInt("UserGroupId"));
             userGroup.setLiteUserGroup(new LiteUserGroupRowMapper().mapRow(rs));
             
-            RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
             Map<YukonRole, LiteYukonGroup> rolesToGroupsMap = 
                     roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getLiteUserGroup().getUserGroupId());
             try {
@@ -173,7 +172,7 @@ public class UserGroupDaoImpl implements UserGroupDao, InitializingBean {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT UG.*");
         sql.append("FROM UserGroup UG");
-        sql.append("WHERE UG.UserGroupName").eq(userGroupName);
+        sql.append("WHERE UG.Name").eq(userGroupName);
         
         LiteUserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new LiteUserGroupRowMapper());
         return userGroup;

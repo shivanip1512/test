@@ -75,10 +75,19 @@ public interface YukonUserDao {
     
     public int getAllYukonUserCount();
 
+    /**
+     * A Lists of users are given to the callback as all the users in the system are retrieved from the database.
+     */
     public void callbackWithAllYukonUsers(SimpleCallback<LiteYukonUser> callback);
 
+    /**
+     * A Lists of users are given to the callback as they are retrieved in chunks from the role group.
+     */
     public void callbackWithYukonUsersInGroup(LiteYukonGroup liteGroup, SimpleCallback<LiteYukonUser> simpleCallback);
 
+    /**
+     * A Lists of users are given to the callback as they are retrieved in chunks from the user group.
+     */
     public void callbackWithYukonUsersInUserGroup(LiteUserGroup userGroup, SimpleCallback<LiteYukonUser> simpleCallback);
     
     /**

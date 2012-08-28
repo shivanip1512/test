@@ -16,6 +16,8 @@ import javax.swing.SwingWorker;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.CaretListener;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.gui.util.TitleBorder;
@@ -293,11 +295,11 @@ public class UserGroupBasePanel extends DataInputPanel implements CaretListener 
     		userGroup = (UserGroup)o;
     	}
     
-    	if( getJTextFieldUserGroupName().getText() != null && getJTextFieldUserGroupName().getText().length() > 0 )
-    		userGroup.getLiteUserGroup().setUserGroupName( getJTextFieldUserGroupName().getText() );
+    	if(StringUtils.isNotBlank(getJTextFieldUserGroupName().getText()))
+    		userGroup.getLiteUserGroup().setUserGroupName(getJTextFieldUserGroupName().getText());
     
-    	if( getJEditorPaneDesc().getText() != null && getJEditorPaneDesc().getText().length() > 0 )
-    		userGroup.getLiteUserGroup().setUserGroupDescription( getJEditorPaneDesc().getText() );
+    	if(StringUtils.isNotEmpty(getJEditorPaneDesc().getText()))
+    		userGroup.getLiteUserGroup().setUserGroupDescription(getJEditorPaneDesc().getText());
     
     	return userGroup;
     }

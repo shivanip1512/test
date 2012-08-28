@@ -20,7 +20,6 @@
                 <tags:nameValueContainer2>
                     <tags:inputNameValue nameKey=".userGroupName" path="liteUserGroup.userGroupName"/>
                     <tags:inputNameValue nameKey=".userGroupDescription" path="liteUserGroup.userGroupDescription"/>
-                
                 </tags:nameValueContainer2>
                 
                 <div class="pageActionArea">
@@ -29,17 +28,17 @@
                         <c:if test="${isUserGroupDeletable}">
                             <cti:button nameKey="delete" name="delete" type="submit"/>
                         </c:if>
-                        <cti:button nameKey="cancel" name="cancel" type="submit"/>
+                        <cti:url var="cancelUrl" value="view">
+                            <cti:param name="userGroupId" value="${userGroup.liteUserGroup.userGroupId}"/>
+                        </cti:url>
+                        <cti:button nameKey="cancel" href="${cancelUrl}"/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         <cti:button nameKey="edit" name="edit" type="submit"/>
                     </cti:displayForPageEditModes>
                 </div>
             </form:form>
-
         </cti:dataGridCell>
-        
-        
         
         <cti:dataGridCell>
             <cti:displayForPageEditModes modes="VIEW">

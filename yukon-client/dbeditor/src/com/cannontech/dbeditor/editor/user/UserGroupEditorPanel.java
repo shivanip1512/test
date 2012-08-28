@@ -8,7 +8,7 @@ public class UserGroupEditorPanel extends PropertyPanel implements IMultiPanelEd
 
     private DataInputPanel[] inputPanels;
 	private String[] inputPanelTabNames;
-	public static final int PANEL_COUNT = 3;
+	public static final int PANEL_COUNT = 2;
 
 	public UserGroupEditorPanel() {
 		super();
@@ -25,10 +25,9 @@ public class UserGroupEditorPanel extends PropertyPanel implements IMultiPanelEd
 	 */
 	public Object[] createNewPanel(int panelIndex)
 	{
-		Object[] objs = new Object[PANEL_COUNT];
+		Object[] objs = new Object[2];
 		
-		switch( panelIndex )
-		{
+		switch( panelIndex ) {
 			case 0: 
 				objs[0] = new UserGroupBasePanel();
 				objs[1] = "General";
@@ -38,7 +37,6 @@ public class UserGroupEditorPanel extends PropertyPanel implements IMultiPanelEd
 				objs[0] = new UserGroupRoleEditorPanel();
 				objs[1] = "Role Groups";
 				break;
-
 		}
 			
 		return objs;

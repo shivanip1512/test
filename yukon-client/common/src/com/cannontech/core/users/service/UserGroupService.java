@@ -3,7 +3,6 @@ package com.cannontech.core.users.service;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.user.UserGroup;
 import com.google.common.collect.TreeMultimap;
 
 /**
@@ -11,11 +10,6 @@ import com.google.common.collect.TreeMultimap;
  * If you are looking to update the information or just see the UserGroup table information use the UserGroupDao instead.
  */
 public interface UserGroupService {
-
-    /**
-     * 
-     */
-    public void updateUserGroup(UserGroup userGroup);
 
     /**
      * 

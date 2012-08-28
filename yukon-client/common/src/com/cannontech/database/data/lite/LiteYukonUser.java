@@ -19,7 +19,7 @@ public class LiteYukonUser extends LiteBase {
     private AuthType authType;
     private Instant lastChangedDate;
     private boolean forceReset;
-    private int userGroupId;
+    private Integer userGroupId;
 
     public LiteYukonUser() {
         this(0,null,null);
@@ -34,11 +34,11 @@ public class LiteYukonUser extends LiteBase {
     }
 
     public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus) {
-        this(id, username, loginStatus, AuthType.PLAIN, Instant.now(), false, 0);
+        this(id, username, loginStatus, AuthType.PLAIN, Instant.now(), false, null);
     }
 
     public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus, AuthType authType, Instant lastChangedDate,
-                         boolean forceReset, int userGroupId) {
+                         boolean forceReset, Integer userGroupId) {
         setLiteType(LiteTypes.YUKON_USER);
         setUserID(id);
         setUsername(username);
@@ -124,6 +124,9 @@ public class LiteYukonUser extends LiteBase {
         return userGroupId;
     }
     public void setUserGroupId(int userGroupId) {
+        this.userGroupId = userGroupId;
+    }
+    public void setUserGroupId(Integer userGroupId) {
         this.userGroupId = userGroupId;
     }
 }

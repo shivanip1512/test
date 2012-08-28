@@ -47,6 +47,7 @@
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.userGroupName">User Group Name</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.userGroupDescription">User Group Description</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.updateSuccessful">User Group Updated Successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.userGroupEditor.noRoles">No role groups are attached to this user group.</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageName">User Group Info</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.VIEW.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.adminSetup.userGroupEditor.EDIT.pageName">Edit</entry>

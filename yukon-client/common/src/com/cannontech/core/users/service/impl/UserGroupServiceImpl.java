@@ -1,6 +1,5 @@
 package com.cannontech.core.users.service.impl;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +21,6 @@ public class UserGroupServiceImpl implements UserGroupService {
     {
         NON_EXISTANT_YUKON_GROUP.setGroupID(-1000);
         NON_EXISTANT_YUKON_GROUP.setGroupName("NONE");
-    }
-
-    @Override
-    public void updateUserGroup(UserGroup userGroup) {
-        try {
-            userGroup.update();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

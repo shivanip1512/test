@@ -7,6 +7,9 @@ import java.util.Map.Entry;
 
 import javax.naming.ConfigurationException;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.YukonGroupDao;
@@ -23,13 +26,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel {
-
+    private Logger log = YukonLogManager.getLogger(YukonGroup.class);
+    
 	private com.cannontech.database.db.user.YukonGroup yukonGroup;
 	private List<YukonGroupRole> yukonGroupRoles = Lists.newArrayList();
 	
-	
-	public YukonGroup() 
-	{
+	public YukonGroup() {
 		super();
 	}
 	
@@ -97,15 +99,14 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 		//add the roles this user has
 		YukonGroupRole[] roles = YukonGroupRole.getYukonGroupRoles( getGroupID().intValue(), getDbConnection() );
  
- 		for( int i = 0; i < roles.length; i++ ) {
- 			try {
+        for( int i = 0; i < roles.length; i++ ) {
+            try {
                 addYukonGroupRole(roles[i]);
             } catch (ConfigurationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error("Could not retrieve the yukon group supplied do to a conflict with it's roles", e);
             }
- 		}
-	}
+        }
+    }
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#update()

@@ -81,6 +81,7 @@
             <list>
                 <ref bean="pointDeviceIndexManager" />
                 <ref bean="userIndexManager" />
+                <ref bean="userGroupIndexManager" />
                 <ref bean="customerAccountIndexManager" />
                 <ref bean="loginGroupIndexManager" />
                 <ref bean="paoTypeIndexManager" />

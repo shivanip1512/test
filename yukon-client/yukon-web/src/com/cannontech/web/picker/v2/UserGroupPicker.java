@@ -12,7 +12,7 @@ public class UserGroupPicker extends LucenePicker<UltraLightYukonUser> {
     private static List<OutputColumn> outputColumns;
     static {
         List<OutputColumn> columns = Lists.newArrayList();
-        columns.add(new OutputColumn("userGroupName", titleKeyPrefix + "userGroupName"));
+        columns.add(new OutputColumn("userGroupName", titleKeyPrefix + "name"));
         columns.add(new OutputColumn("userGroupId", titleKeyPrefix + "userGroupId"));
         outputColumns = Collections.unmodifiableList(columns);
     }

@@ -8,7 +8,7 @@ import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.spring.YukonSpringHook;
 
 public class UserGroupTreeModel extends DBTreeModel {
-    UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
+    private UserGroupDao userGroupDao = YukonSpringHook.getBean("userGroupDao", UserGroupDao.class);
 
     public UserGroupTreeModel()  {
     	super( new DBTreeNode("User Groups") );
