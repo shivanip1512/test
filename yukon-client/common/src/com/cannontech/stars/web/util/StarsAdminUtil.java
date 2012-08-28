@@ -773,11 +773,7 @@ public class StarsAdminUtil {
 			stmt.execute();
 		}
 		
-		LiteYukonUser liteUser = new LiteYukonUser(
-				userDB.getUserID().intValue(),
-				userDB.getUsername(),
-				userDB.getLoginStatus()
-				);
+		LiteYukonUser liteUser = new LiteYukonUser(userDB.getUserID().intValue(), userDB.getUsername(), userDB.getLoginStatus());
         liteUser.setAuthType(defaultAuthType);
 		handleDBChange( liteUser, DbChangeType.ADD );
         
