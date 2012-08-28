@@ -38,8 +38,13 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
     private JCheckBox electricVehicleCheckBox = null;
     private JCheckBox generationCheckBox = null;
     private JTextField enrollmentGroupTextField = null;
+    private JTextField rampInTextField = null;
+    private JTextField rampOutTextField = null;
     private JLabel enrollmentGroupLabel = null;
     private JPanel enrollmentPanel = null;
+    private JPanel rampingPanel = null;
+    private JLabel rampInLabel = null;
+    private JLabel rampOutLabel = null;
 
     public LMGroupDigiSepPanel() {
         super();
@@ -60,6 +65,8 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
         getElectricVehicleCheckBox().addActionListener(this);
         getGenerationCheckBox().addActionListener(this);
         getUtilityEnerollmentGroupTextField().addCaretListener(this);
+        getRampInTextField().addCaretListener(this);
+        getRampOutTextField().addCaretListener(this);
 
         setLayout(new GridBagLayout());
 
@@ -80,6 +87,14 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
         constraintsJPanelEnrollmentPanel.ipady = 5;
         constraintsJPanelEnrollmentPanel.insets = new Insets(0, 2, 2, 0);
         add(getEnrollmentPanel(), constraintsJPanelEnrollmentPanel);
+        
+        GridBagConstraints constraintsJPanelRampingPanel = new GridBagConstraints();
+        constraintsJPanelRampingPanel.gridx = 0;
+        constraintsJPanelRampingPanel.gridy = 2;
+        constraintsJPanelRampingPanel.fill = GridBagConstraints.BOTH;
+        constraintsJPanelRampingPanel.ipady = 5;
+        constraintsJPanelRampingPanel.insets = new Insets(0, 2, 2, 0);
+        add(getRampingPanel(), constraintsJPanelRampingPanel);
 
     }
 
@@ -111,6 +126,54 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
         }
         return enrollmentPanel;
     }
+    
+    private JPanel getRampingPanel() {
+        if (rampingPanel == null) {
+            rampingPanel = new JPanel();
+            rampingPanel.setLayout(new GridBagLayout());
+            
+            TitleBorder border;
+            border = new TitleBorder();
+            border.setTitleFont(new java.awt.Font("Arial", 1, 14));
+            border.setTitle("Timing");
+            rampingPanel.setBorder(border);
+            
+            GridBagConstraints constraintsRampInLabel = new GridBagConstraints();
+            constraintsRampInLabel.gridx = 0;
+            constraintsRampInLabel.gridy = 0;
+            constraintsRampInLabel.insets = new Insets(0, 2, 2, 0);
+            constraintsRampInLabel.anchor = GridBagConstraints.WEST;
+            rampingPanel.add(getRampInLabel(), constraintsRampInLabel);
+            
+            GridBagConstraints constraintsRampInTextField = new GridBagConstraints();
+            constraintsRampInTextField.gridx = 1;
+            constraintsRampInTextField.gridy = 0;
+            constraintsRampInTextField.insets = new Insets(0, 2, 2, 0);
+            constraintsRampInTextField.anchor = GridBagConstraints.NORTHWEST;
+            constraintsRampInTextField.weightx = 1.0d;
+            rampingPanel.add(getRampInTextField(), constraintsRampInTextField);
+            
+            GridBagConstraints constraintsRampOutLabel = new GridBagConstraints();
+            constraintsRampOutLabel.gridx = 0;
+            constraintsRampOutLabel.gridy = 1;
+            constraintsRampOutLabel.insets = new Insets(0, 2, 2, 0);
+            constraintsRampOutLabel.anchor = GridBagConstraints.WEST;
+            rampingPanel.add(getRampOutLabel(), constraintsRampOutLabel);
+            
+            GridBagConstraints constraintsRampOutTextField = new GridBagConstraints();
+            constraintsRampOutTextField.gridx = 1;
+            constraintsRampOutTextField.gridy = 1;
+            constraintsRampOutTextField.insets = new Insets(0, 2, 2, 0);
+            constraintsRampOutTextField.anchor = GridBagConstraints.NORTHWEST;
+            constraintsRampOutTextField.weightx = 1.0d;
+            rampingPanel.add(getRampOutTextField(), constraintsRampOutTextField);
+            
+            getRampInTextField().setText("30");
+            getRampOutTextField().setText("30");
+        }
+        
+        return rampingPanel;
+    }
 
     private JPanel getDeviceClassPanel() {
         if (deviceClassPanel == null) {
@@ -131,43 +194,43 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
             deviceClassPanel.add(getHvacCheckBox(), constraintsCheckboxHVAC);
 
             GridBagConstraints constraintsCheckboxBaseboard = new GridBagConstraints();
-            constraintsCheckboxBaseboard.gridx = 0;
-            constraintsCheckboxBaseboard.gridy = 1;
+            constraintsCheckboxBaseboard.gridx = 1;
+            constraintsCheckboxBaseboard.gridy = 0;
             constraintsCheckboxBaseboard.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxBaseboard.anchor = GridBagConstraints.NORTHWEST;
             deviceClassPanel.add(getBaseboardCheckBox(), constraintsCheckboxBaseboard);
 
             GridBagConstraints constraintsCheckboxWaterHeater = new GridBagConstraints();
             constraintsCheckboxWaterHeater.gridx = 0;
-            constraintsCheckboxWaterHeater.gridy = 2;
+            constraintsCheckboxWaterHeater.gridy = 1;
             constraintsCheckboxWaterHeater.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxWaterHeater.anchor = GridBagConstraints.NORTHWEST;
             deviceClassPanel.add(getWaterHeaterCheckBox(), constraintsCheckboxWaterHeater);
 
             GridBagConstraints constraintsCheckboxPoolPump = new GridBagConstraints();
-            constraintsCheckboxPoolPump.gridx = 0;
-            constraintsCheckboxPoolPump.gridy = 3;
+            constraintsCheckboxPoolPump.gridx = 1;
+            constraintsCheckboxPoolPump.gridy = 1;
             constraintsCheckboxPoolPump.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxPoolPump.anchor = GridBagConstraints.NORTHWEST;
             deviceClassPanel.add(getPoolPumpCheckBox(), constraintsCheckboxPoolPump);
 
             GridBagConstraints constraintsCheckboxSmartAppliance = new GridBagConstraints();
             constraintsCheckboxSmartAppliance.gridx = 0;
-            constraintsCheckboxSmartAppliance.gridy = 4;
+            constraintsCheckboxSmartAppliance.gridy = 2;
             constraintsCheckboxSmartAppliance.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxSmartAppliance.anchor = GridBagConstraints.NORTHWEST;
             deviceClassPanel.add(getSmartApplianceCheckBox(), constraintsCheckboxSmartAppliance);
 
             GridBagConstraints constraintsCheckboxIrrigationPump = new GridBagConstraints();
-            constraintsCheckboxIrrigationPump.gridx = 0;
-            constraintsCheckboxIrrigationPump.gridy = 5;
+            constraintsCheckboxIrrigationPump.gridx = 1;
+            constraintsCheckboxIrrigationPump.gridy = 2;
             constraintsCheckboxIrrigationPump.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxIrrigationPump.anchor = GridBagConstraints.NORTHWEST;
             deviceClassPanel.add(getIrrigationPumpCheckBox(), constraintsCheckboxIrrigationPump);
 
             GridBagConstraints constraintsCheckboxCommercial = new GridBagConstraints();
             constraintsCheckboxCommercial.gridx = 0;
-            constraintsCheckboxCommercial.gridy = 6;
+            constraintsCheckboxCommercial.gridy = 3;
             constraintsCheckboxCommercial.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxCommercial.anchor = GridBagConstraints.NORTHWEST;
             constraintsCheckboxCommercial.weightx = 1.0d;
@@ -175,36 +238,36 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
             deviceClassPanel.add(getCommercialCheckBox(), constraintsCheckboxCommercial);
 
             GridBagConstraints constraintsCheckboxSimpleResidential = new GridBagConstraints();
-            constraintsCheckboxSimpleResidential.gridx = 0;
-            constraintsCheckboxSimpleResidential.gridy = 7;
+            constraintsCheckboxSimpleResidential.gridx = 1;
+            constraintsCheckboxSimpleResidential.gridy = 3;
             constraintsCheckboxSimpleResidential.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxSimpleResidential.anchor = GridBagConstraints.NORTHWEST;
             deviceClassPanel.add(getSimpleResidentialCheckBox(), constraintsCheckboxSimpleResidential);
 
             GridBagConstraints constraintsCheckboxExteriorLight = new GridBagConstraints();
             constraintsCheckboxExteriorLight.gridx = 0;
-            constraintsCheckboxExteriorLight.gridy = 8;
+            constraintsCheckboxExteriorLight.gridy = 4;
             constraintsCheckboxExteriorLight.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxExteriorLight.anchor = GridBagConstraints.NORTHWEST;
             deviceClassPanel.add(getExteriorLightCheckBox(), constraintsCheckboxExteriorLight);
 
             GridBagConstraints constraintsCheckboxInteriorLight = new GridBagConstraints();
-            constraintsCheckboxInteriorLight.gridx = 0;
-            constraintsCheckboxInteriorLight.gridy = 9;
+            constraintsCheckboxInteriorLight.gridx = 1;
+            constraintsCheckboxInteriorLight.gridy = 4;
             constraintsCheckboxInteriorLight.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxInteriorLight.anchor = GridBagConstraints.NORTHWEST;
             deviceClassPanel.add(getInteriorLightCheckBox(), constraintsCheckboxInteriorLight);
 
             GridBagConstraints constraintsCheckboxElectricVehicle = new GridBagConstraints();
             constraintsCheckboxElectricVehicle.gridx = 0;
-            constraintsCheckboxElectricVehicle.gridy = 10;
+            constraintsCheckboxElectricVehicle.gridy = 5;
             constraintsCheckboxElectricVehicle.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxElectricVehicle.anchor = GridBagConstraints.NORTHWEST;
             deviceClassPanel.add(getElectricVehicleCheckBox(), constraintsCheckboxElectricVehicle);
 
             GridBagConstraints constraintsCheckboxGeneration = new GridBagConstraints();
-            constraintsCheckboxGeneration.gridx = 0;
-            constraintsCheckboxGeneration.gridy = 11;
+            constraintsCheckboxGeneration.gridx = 1;
+            constraintsCheckboxGeneration.gridy = 5;
             constraintsCheckboxGeneration.insets = new Insets(0, 2, 2, 0);
             constraintsCheckboxGeneration.anchor = GridBagConstraints.NORTHWEST;
             deviceClassPanel.add(getGenerationCheckBox(), constraintsCheckboxGeneration);
@@ -313,6 +376,9 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
                 // as that means "all" groups.
                 CTILogger.error(n.getMessage(), n);
             }
+            
+            group.getLmGroupSep().setRampInMinutes(Integer.parseInt(getRampInTextField().getText()));
+            group.getLmGroupSep().setRampOutMinutes(Integer.parseInt(getRampOutTextField().getText()));
         }
         return o;
     }
@@ -343,6 +409,9 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
             getGenerationCheckBox().setSelected(group.getLmGroupSep().hasDeviceClass(SepDeviceClass.GENERATION_SYSTEMS));
 
             getUtilityEnerollmentGroupTextField().setText(group.getLmGroupSep().getUtilityEnrollmentGroup().toString());
+            
+            getRampInTextField().setText(group.getLmGroupSep().getRampInMinutes().toString());
+            getRampOutTextField().setText(group.getLmGroupSep().getRampOutMinutes().toString());
         }
     }
 
@@ -475,12 +544,46 @@ public class LMGroupDigiSepPanel extends DataInputPanel implements ActionListene
         }
         return enrollmentGroupTextField;
     }
+    
+    private JTextField getRampInTextField() {
+        if (rampInTextField == null) {
+            rampInTextField = new JTextField();
+            rampInTextField.setColumns(3);
+            rampInTextField.setPreferredSize(new Dimension(60, 20));
+            rampInTextField.setMaximumSize(new Dimension(60, 20));
+        }
+        return rampInTextField;
+    }
+    
+    private JTextField getRampOutTextField() {
+        if (rampOutTextField == null) {
+            rampOutTextField = new JTextField();
+            rampOutTextField.setColumns(3);
+            rampOutTextField.setPreferredSize(new Dimension(60, 20));
+            rampOutTextField.setMaximumSize(new Dimension(60, 20));
+        }
+        return rampOutTextField;
+    }
 
     private JLabel getUtilityEnerollmentGroupLabel() {
         if (enrollmentGroupLabel == null) {
             enrollmentGroupLabel = new JLabel("Utility Enrollment Group:");
         }
         return enrollmentGroupLabel;
+    }
+    
+    private JLabel getRampInLabel() {
+        if (rampInLabel == null) {
+            rampInLabel = new JLabel("Ramp In Time (min): ");
+        }
+        return rampInLabel;
+    }
+    
+    private JLabel getRampOutLabel() {
+        if (rampOutLabel == null) {
+            rampOutLabel = new JLabel("Ramp Out Time (min): ");
+        }
+        return rampOutLabel;
     }
 
     @Override

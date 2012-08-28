@@ -1,11 +1,9 @@
 package com.cannontech.database.db.device.lm;
 
-import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.util.EnumSet;
 import java.util.Set;
 
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.SepDeviceClassDao;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
 import com.cannontech.database.db.DBPersistent;
@@ -16,12 +14,14 @@ public class LMGroupSep extends DBPersistent {
     private Integer deviceId = null;
     private Integer utilityEnrollmentGroup = null;
     private Set<SepDeviceClass> deviceClassSet = null;
+    private Integer rampInMinutes = null;
+    private Integer rampOutMinutes = null;
 
     public static final String tableName = "LMGroupSep";
 
     @Override
     public void add() throws SQLException {
-        Object addValues[] = { getDeviceId(), getUtilityEnrollmentGroup() };
+        Object addValues[] = { getDeviceId(), getUtilityEnrollmentGroup(), getRampInMinutes(), getRampOutMinutes() };
 
         add(tableName, addValues);
         getDao().save(getDeviceClassSet(), deviceId);
@@ -35,7 +35,7 @@ public class LMGroupSep extends DBPersistent {
 
     @Override
     public void retrieve() throws SQLException {
-        String selectColumns[] = { "UtilityEnrollmentGroup" };
+        String selectColumns[] = { "UtilityEnrollmentGroup", "RampIn", "RampOut" };
         String constraintColumns[] = { "DeviceId" };
         Object constraintValues[] = { getDeviceId() };
 
@@ -43,6 +43,8 @@ public class LMGroupSep extends DBPersistent {
 
         if (results.length == selectColumns.length) {
             setUtilityEnrollmentGroup((Integer) results[0]);
+            setRampInMinutes((Integer)results[1]);
+            setRampOutMinutes((Integer)results[2]);
         } else
             throw new SQLException(getClass() + " - Incorrect Number of results retrieved");
 
@@ -52,8 +54,8 @@ public class LMGroupSep extends DBPersistent {
 
     @Override
     public void update() throws SQLException {
-        String setColumns[] = { "UtilityEnrollmentGroup" };
-        Object setValues[] = { getUtilityEnrollmentGroup() };
+        String setColumns[] = { "UtilityEnrollmentGroup", "RampIn", "RampOut" };
+        Object setValues[] = { getUtilityEnrollmentGroup(), getRampInMinutes(), getRampOutMinutes() };
 
         String constraintColumns[] = { "DeviceId" };
         Object constraintValues[] = { getDeviceId() };
@@ -72,6 +74,22 @@ public class LMGroupSep extends DBPersistent {
 
     public void setUtilityEnrollmentGroup(Integer utilityEnrollmentGroup) {
         this.utilityEnrollmentGroup = utilityEnrollmentGroup;
+    }
+    
+    public Integer getRampInMinutes() {
+        return rampInMinutes;
+    }
+    
+    public void setRampInMinutes(Integer rampInMinutes) {
+        this.rampInMinutes = rampInMinutes;
+    }
+    
+    public Integer getRampOutMinutes() {
+        return rampOutMinutes;
+    }
+    
+    public void setRampOutMinutes(Integer rampOutMinutes) {
+        this.rampOutMinutes = rampOutMinutes;
     }
 
     public void setDeviceId(Integer deviceId) {
