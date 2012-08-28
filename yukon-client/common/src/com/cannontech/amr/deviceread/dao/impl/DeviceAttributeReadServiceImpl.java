@@ -57,7 +57,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
                 DeviceAttributeReadStrategy impl = strategies.get(strategy);
                 if (impl.canRead(paoType)) {
                     ImmutableCollection<? extends YukonPao> immutableCollection = paoTypes.get(paoType);
-                    List<PaoMultiPointIdentifier> devicesAndPoints = attributeService.findPaoMultiPointIdentifiersForNonMappedAttributes(immutableCollection, attributes);
+                    List<PaoMultiPointIdentifier> devicesAndPoints = attributeService.findPaoMultiPointIdentifiersForAttributes(immutableCollection, attributes);
                     boolean readable = impl.isReadable(devicesAndPoints, user);
                     if (readable) {
                         return true;
@@ -82,7 +82,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             Maps.newEnumMap(StrategyType.class);
         
         // we need to resolve the attributes first to figure out which physical devices we'll be reading
-        final List<PaoMultiPointIdentifier> devicesAndPoints = attributeService.findPaoMultiPointIdentifiersForNonMappedAttributes(devices, attributes);
+        final List<PaoMultiPointIdentifier> devicesAndPoints = attributeService.findPaoMultiPointIdentifiersForAttributes(devices, attributes);
 
         Multimap<PaoType, PaoMultiPointIdentifier> byPhysicalPaoType = ArrayListMultimap.create(1, devicesAndPoints.size());
         for (PaoMultiPointIdentifier multiPoints : devicesAndPoints) {

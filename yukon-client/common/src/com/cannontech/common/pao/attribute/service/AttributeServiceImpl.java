@@ -106,16 +106,16 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
-        return getPaoMultiPointIdentifiersForNonMappedAttributes(devices,attributes,false);
+    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
+        return getPaoMultiPointIdentifiersForAttributes(devices,attributes,false);
     }
     
     @Override
-    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
-        return  getPaoMultiPointIdentifiersForNonMappedAttributes(devices,attributes, true);
+    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) {
+        return  getPaoMultiPointIdentifiersForAttributes(devices,attributes, true);
     }
     
-    private  List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices,
+    private  List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices,
                                                                Set<? extends Attribute> attributes, boolean throwException){
         List<PaoMultiPointIdentifier> devicesAndPoints = 
                 Lists.newArrayListWithCapacity(IterableUtils.guessSize(devices));

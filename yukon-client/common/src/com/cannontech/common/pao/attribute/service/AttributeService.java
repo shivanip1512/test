@@ -56,7 +56,7 @@ public interface AttributeService {
      * @param attributes
      * @return list of PaoMultiPointIdentifiers
      */
-    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
+    public List<PaoMultiPointIdentifier> findPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes);
     
     /**
      * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point
@@ -68,7 +68,7 @@ public interface AttributeService {
      * @return list of PaoMultiPointIdentifiers
      * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
      */
-    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForNonMappedAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) throws IllegalUseOfAttribute;
+    public List<PaoMultiPointIdentifier> getPaoMultiPointIdentifiersForAttributes(Iterable<? extends YukonPao> devices, Set<? extends Attribute> attributes) throws IllegalUseOfAttribute;
     
     /**
      * Method to get a set of attributes available for the given pao
