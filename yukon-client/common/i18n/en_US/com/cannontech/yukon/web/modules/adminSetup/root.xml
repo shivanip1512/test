@@ -14,28 +14,91 @@
     <entry key="yukon.web.modules.adminSetup.encryption.moduleName">Encryption</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.pageName">Encryption</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.pageDescription">Encryption</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.keyBox">Encryption Keys</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.keyBox.title">Encryption Keys</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.routesBox">Encrypted Routes</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.routesBox.title">Encrypted Routes</entry>
     
-    <entry key="yukon.web.modules.adminSetup.encryption.deleteBtn.imageUrl">/WebConfig/yukon/Icons/lock_open.png</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.deleteBtn.label">Disable</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.saveBtn.label">Save</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.saveBtn.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.confirmDeleteBtn.label">Delete</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.confirmDeleteBtn.imageUrl">/WebConfig/yukon/Icons/enable.gif</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.cancelBtn.label">Cancel</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.cancelBtn.imageUrl">/WebConfig/yukon/Icons/stop.gif</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.enableEncryptionBtn.label">Enable</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.enableEncryptionBtn.imageUrl">/WebConfig/yukon/Icons/lock.png</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.addEncryptionBtn.label">Add</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.addEncryptionBtn.imageUrl">/WebConfig/yukon/Icons/lock.png</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.removeEncryptionBtn.label">Remove</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.removeEncryptionBtn.imageUrl">/WebConfig/yukon/Icons/lock_open.png</entry>
 
-    <entry key="yukon.web.modules.adminSetup.encryption.keyFoundLbl">(Key is stored)</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.paoNameLbl">Pao Name</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.paoTypeLbl">Pao Type</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.CPSkeyLbl">CPS One-Way OTA Key</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.keyLbl">Key:</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.deleteKeyDialog.title">Delete Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.deleteKeyBtn">Delete Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.deleteKeyBtn.title">Delete Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.deleteKeyBtn.label">Delete Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.deleteKeyBtn.imageUrl">/WebConfig/yukon/Icons/delete.png</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.encryption.addKeyDialog.title">Add Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.addKeyBtn">Add Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.addKeyBtn.title">Add Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.addKeyBtn.label">Add Key</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.encryption.importKeyFileBtn">Import Keyfile</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.importKeyFileDialog.title">Import Keyfile</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.importKeyFileBtn.title">Import Keyfile</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.importKeyFileBtn.label">Import Keyfile</entry>
+   
+    <entry key="yukon.web.modules.adminSetup.encryption.viewPublicKeyBtn">View Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.viewPublicKeyBtn.title">View Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.viewPublicKeyBtn.label">View Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.viewPublicKeyDialog.title">View Public Key</entry>
+   
+    <entry key="yukon.web.modules.adminSetup.encryption.paoNameLbl">Name</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.paoTypeLbl">Type</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.CPSkeyLbl">One-Way Key</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.noRoutesMsg">No routes are available for encryption</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.confirmDeleteMsg">Are you sure you want to delete this key?</entry>
 
     <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.hexidecimal">Can only contain hexadecimal digits.</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.length">Must be exactly 40 digits. You have {0}.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.exactLength">Must be exactly {0} digits. You have {1}.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.length">Must be less than {0} digits. You have {1}.</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.empty">Cannot Be Empty.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.previouslyUsedKey">Name already assigned to key. Must be unique.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.keyInUse">Cannot delete key {0} because it is currently being used by {1}</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.errorMsg.nameLength">Name exceeds maximum length of {0}</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.encryption.addNewKeyHeading">Add a new key to your energy company.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.keyLbl">Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.actionLbl">Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.keyFilePasswordLbl">Keyfile password</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.importKeyFileLbl">Import Keyfile</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.keyNameLbl">Key Name</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.noKeysAvailable">No encryption keys available</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.usingKey">Using Key:</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.deleteKeyLbl">Delete Key</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.currentPublicKeyLbl">Current Public Key:</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.expiresLbl">Expires:</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.statusLbl">Status</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.invalidKey">Invalid</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.validKey">Valid</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.assignedLbl">Assigned</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.assignedKey">Yes</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.unassignedKey"></entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.publicKey.noKeyExists">No public key has been created yet.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.publicKey.keyExpired">The stored public key has expired. Please generate a new one.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.publicKey.keyGenerationFailed">Error: New public key generation failed. Check logs for more information.</entry>
+        
+    <entry key="yukon.web.modules.adminSetup.encryption.addError.alreadyAdded">Encrypted route is already added using key {0}.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.addError.invalidKey">Cannot enable because the key no longer exists.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.removeError.notAdded">Encrypted route was already removed.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.removeError.staleData">Cannot remove encryption key ''{0}'' because the route is using a different key: ''{1}''</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.encryption.invalidKeyFound">One or more of the keys found in the database was unable to be decrypted using the Shared Keyfile. If Yukon is run on multiple systems, the same Shared Keyfile should be used in both installations.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.sharedKeyFileCorrupt">The shared key file found on the file system is corrupt and cannot be used. Check logs for more information.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.fileUploadError.noFile">Error processing file. No file provided</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.fileUploadError.emptyFile">Error processing file: Empty File</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.fileUploadError.wrongPassword">Error processing file: Incorrect Password or Invalid Shared Keyfile.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.fileUploadSuccess">Successfully imported encryption key: {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.fileUploadError.unknownError">Error processing file: The file may not be in a valid format. Check log for more details.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.fileUploadError.unableToSaveKey">Unable to save key {0}. It is possible the name is already associated with a key.</entry>
 
+    <entry key="yukon.web.modules.adminSetup.encryption.confirmAdd.title">Confirm Add</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.confirmAdd.message">Are you sure you want to add encryption on route ''{0}''?</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.encryption.confirmRemove.title">Confirm Remove</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.confirmRemove.message">Are you sure you want to remove encryption on route ''{0}''?</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.encryption.confirmDelete.title">Confirm Delete</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.confirmDelete.message">Are you sure you want to delete key ''{0}''?</entry>
 </properties>

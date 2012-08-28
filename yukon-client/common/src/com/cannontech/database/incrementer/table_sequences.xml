@@ -288,5 +288,8 @@
       <sequence name="ReportedAddressExpressCom">
         <table name="ReportedAddressExpressCom" identitycolumn="ChangeId"/>
       </sequence>
+      <sequence name="EncryptionKey">
+        <table name="EncryptionKey" identitycolumn="EncryptionKeyId"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

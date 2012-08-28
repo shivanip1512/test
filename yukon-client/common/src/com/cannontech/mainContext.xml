@@ -307,6 +307,7 @@
     </bean>
     
     <bean id="encryptedRouteDao" class="com.cannontech.encryption.impl.EncryptedRouteDaoImpl"/>
+    <bean id="rsaKeyfileService" class="com.cannontech.encryption.impl.RSAKeyfileServiceImpl"/>
             
     <bean id="energyCompanyRolePropertyDao" class="com.cannontech.core.roleproperties.dao.impl.EnergyCompanyRolePropertyDaoImpl"/>
     

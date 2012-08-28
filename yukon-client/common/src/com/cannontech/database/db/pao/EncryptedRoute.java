@@ -4,21 +4,21 @@ import com.cannontech.common.pao.PaoType;
 
 public class EncryptedRoute {
 
-    private int paobjectId;
     private String paoName;
     private PaoType type;
-    private String value;
-    private String infoKey;
+    private Integer paobjectId;
+    private String encryptionKeyName;
+    private Integer encryptionKeyId;
 
     public boolean isEncrypted() {
-        return (value != null);
+        return (encryptionKeyId != null);
     }
 
-    public int getPaobjectId() {
+    public Integer getPaobjectId() {
         return paobjectId;
     }
 
-    public void setPaobjectId(int paobjectId) {
+    public void setPaobjectId(Integer paobjectId) {
         this.paobjectId = paobjectId;
     }
 
@@ -38,20 +38,20 @@ public class EncryptedRoute {
         this.type = type;
     }
 
-    public String getValue() {
-        return value;
+    public String getEncryptionKeyName() {
+        return encryptionKeyName;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setEncryptionKeyName(String encryptionKeyName) {
+        this.encryptionKeyName = encryptionKeyName;
     }
 
-    public String getInfoKey() {
-        return infoKey;
+    public Integer getEncryptionKeyId() {
+        return encryptionKeyId;
     }
 
-    public void setInfoKey(String paoInfo) {
-        this.infoKey = paoInfo;
+    public void setEncryptionKeyId(Integer encryptionKeyId) {
+        this.encryptionKeyId = encryptionKeyId;
     }
 
 }
