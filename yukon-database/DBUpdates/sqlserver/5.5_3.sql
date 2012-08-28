@@ -271,6 +271,34 @@ ALTER TABLE LMTierGear
             ON DELETE CASCADE;
 /* End YUK-11311 */
 
+/* Start YUK-11192 */
+UPDATE YukonListEntry SET EntryText = 'Meter'
+WHERE EntryId = 1058;
+
+UPDATE InventoryBase SET AlternateTrackingNumber = ' '
+FROM InventoryBase IB
+WHERE IB.AlternateTrackingNumber IS NULL;
+
+UPDATE InventoryBase SET Notes = ' '
+FROM InventoryBase IB
+WHERE IB.Notes IS NULL;
+
+UPDATE InventoryBase SET DeviceLabel = LMB.ManufacturerSerialNumber
+FROM InventoryBase IB
+JOIN LMHardwareBase LMB ON LMB.InventoryId = IB.InventoryId
+WHERE LTRIM(RTRIM(IB.DeviceLabel)) = '' OR IB.DeviceLabel IS NULL;
+
+UPDATE InventoryBase SET DeviceLabel = mhb.MeterNumber
+FROM InventoryBase IB
+JOIN  MeterHardwareBase mhb ON mhb.InventoryId = IB.InventoryId
+WHERE LTRIM(RTRIM(IB.DeviceLabel)) = '' OR IB.DeviceLabel IS NULL;
+
+UPDATE InventoryBase SET DeviceLabel = YPO.PAOName
+FROM InventoryBase IB
+JOIN  YukonPAObject YPO ON IB.DeviceID = YPO.PAObjectID 
+WHERE IB.DeviceID > 0 AND LTRIM(RTRIM(IB.DeviceLabel)) = '' OR IB.DeviceLabel IS NULL;
+/* End YUK-11192 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

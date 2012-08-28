@@ -286,6 +286,43 @@ ALTER TABLE LMTierGear
         REFERENCES LMProgramDirectGear (GearId)
             ON DELETE CASCADE;
 /* End YUK-11311 */
+            
+/* Start YUK-11192 */
+UPDATE YukonListEntry SET EntryText = 'Meter'
+WHERE EntryId = 1058;
+
+UPDATE InventoryBase IB
+SET IB.AlternateTrackingNumber = ' '
+WHERE IB.AlternateTrackingNumber IS NULL;
+
+UPDATE InventoryBase IB
+SET IB.Notes = ' '
+WHERE IB.Notes IS NULL;
+
+UPDATE InventoryBase IB
+SET DeviceLabel = (
+      SELECT LMHB.ManufacturerSerialNumber 
+      FROM LMHardwareBase LMHB
+      WHERE LMHB.InventoryId = IB.InventoryId
+)
+WHERE (IB.DeviceLabel = '' OR IB.DeviceLabel IS NULL);
+
+UPDATE InventoryBase IB
+SET DeviceLabel = (
+      SELECT MHB.MeterNumber 
+      FROM MeterHardwareBase MHB
+      WHERE MHB.InventoryId = IB.InventoryId
+)
+WHERE (IB.DeviceLabel = '' OR IB.DeviceLabel IS NULL);
+
+UPDATE InventoryBase IB
+SET DeviceLabel = (
+      SELECT YPAO.PAOName
+      FROM YukonPAObject YPAO
+      WHERE YPAO.PAObjectID = IB.InventoryId
+)
+WHERE (IB.DeviceLabel = '' OR IB.DeviceLabel IS NULL);
+/* End YUK-11192 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
