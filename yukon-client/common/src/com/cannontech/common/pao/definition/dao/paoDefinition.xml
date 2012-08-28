@@ -6815,6 +6815,10 @@
             <point type="Status" offset="2001">
                 <init>false</init>
                 <name>Device Reset Indicator</name>
+                <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+                </archive>
                 <stategroup value="TrueFalse"/>
             </point>
         </points>
@@ -6825,6 +6829,10 @@
             <point type="Status" offset="2001">
                 <init>false</init>
                 <name>Device Reset Indicator</name>
+                <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+                </archive>
                 <stategroup value="TrueFalse"/>
             </point>
         </points>
@@ -7322,6 +7330,10 @@
             <point type="Status" offset="2001">
                 <init>true</init>
                 <name>Device Reset Indicator</name>
+                <archive>
+                   <type>ON_CHANGE</type>
+                   <interval>ZERO</interval>
+                </archive>
                 <stategroup value="TrueFalse"/>
             </point>
         </points>
