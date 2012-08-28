@@ -91,7 +91,8 @@
     <entry key="yukon.web.modules.adminSetup.encryption.fileUploadError.wrongPassword">Error processing file: Incorrect Password or Invalid Shared Keyfile.</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.fileUploadSuccess">Successfully imported encryption key: {0}</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.fileUploadError.unknownError">Error processing file: The file may not be in a valid format. Check log for more details.</entry>
-    <entry key="yukon.web.modules.adminSetup.encryption.fileUploadError.unableToSaveKey">Unable to save key {0}. It is possible the name is already associated with a key.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.fileUploadError.unableToDecryptFile">Unable to decrypt file. The public key used to create this file may be expired.</entry>
+    <entry key="yukon.web.modules.adminSetup.encryption.fileUploadError.unableToUploadFile">Unable to convert file to temp file. Unable to upload.</entry>
 
     <entry key="yukon.web.modules.adminSetup.encryption.confirmAdd.title">Confirm Add</entry>
     <entry key="yukon.web.modules.adminSetup.encryption.confirmAdd.message">Are you sure you want to add encryption on route ''{0}''?</entry>

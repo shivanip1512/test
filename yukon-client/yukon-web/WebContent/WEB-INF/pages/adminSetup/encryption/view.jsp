@@ -210,7 +210,7 @@
                 jQuery("#publicKeyStatus").html("<i:inline key='.publicKey.keyExpired'/>").show('fade',{},200);
             } else {
                 // A valid key is found
-                jQuer("#publicKeyStatus").html("<i:inline key='.encryption.expiresLbl'/>"+publicKeyObj.expiration);
+                jQuery("#publicKeyStatus").html("<i:inline key='.encryption.expiresLbl'/>"+publicKeyObj.expiration);
                 jQuery("#publicKeyTextArea").val(publicKeyObj.publicKey);
                 jQuery("#publicKeyText").show('fade',{},200);
             }

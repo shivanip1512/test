@@ -32,7 +32,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.db.pao.EncryptedRoute;
@@ -374,7 +373,7 @@ public class EncryptionController {
         boolean success = false;
         if (!rsaKeyfileService.doesKeyPairExist()) {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".publicKey.noKeyExists"));
-        } else if (rsaKeyfileService.doesKeyPairExist()) {
+        } else if (rsaKeyfileService.isKeyPairExpired()) {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".publicKey.keyExpired"));
         } else {
             try {                    
@@ -387,9 +386,14 @@ public class EncryptionController {
                 encryptedRouteDao.saveNewEncyptionKey(fileImportBindingBean.getName(),encryptedValue);
                 flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess", fileImportBindingBean.getName()));
                 success = true;
-            } catch(PersistenceException pe) {
-                log.warn("Unable to save encryption key. Make sure the name is unique to this key.",pe);
-                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToSaveKey", fileImportBindingBean.getName()));
+            } catch (IOException e) {
+                //Unable to upload File
+                log.warn("caught exception in handleUploadedFile", e);
+                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
+            } catch (CryptoException e) {
+                // unable to decrypt file
+                log.warn("caught exception in handleUploadedFile", e);
+                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
             } catch (Exception e) {
                 log.warn("Caught Excpetion handling upload file.",e);
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
