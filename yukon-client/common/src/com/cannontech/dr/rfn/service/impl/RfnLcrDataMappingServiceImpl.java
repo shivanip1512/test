@@ -134,7 +134,7 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                 intervalPointData.add(runTimePointData);
                 intervalPointData.add(shedTimePointData);
                 currentIntervalTimestamp = currentIntervalTimestamp
-                        .withDurationAdded(Duration.standardHours(1), -1);
+                        .withDurationAdded(Duration.standardHours(1), 1);
             }
         }
         
