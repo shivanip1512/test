@@ -25,7 +25,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.gui.table.CheckBoxColorRenderer;
 import com.cannontech.common.gui.util.OkCancelDialog;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.UniqueSet;
 import com.cannontech.database.Transaction;
