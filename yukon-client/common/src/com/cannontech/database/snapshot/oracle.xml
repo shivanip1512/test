@@ -22487,9 +22487,18 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPGRDR_YKLST2</i__foreignKeyName>
+            <i__foreignKeyName>FK_APPGRDR_YKLST6</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>BLOWERHORSEPOWERID</i__columnName>
+            <i__columnName>BLOWERHEATSOURCEID</i__columnName>
+            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
+            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_APPGRDR_YKLST3</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>BLOWERENERGYSOURCEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -22505,15 +22514,6 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPGRDR_YKLST6</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>BLOWERHEATSOURCEID</i__columnName>
-            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
-            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_APPGRDR_YKLST1</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>BINSIZEID</i__columnName>
@@ -22523,9 +22523,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_APPGRDR_YKLST3</i__foreignKeyName>
+            <i__foreignKeyName>FK_APPGRDR_YKLST2</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>BLOWERENERGYSOURCEID</i__columnName>
+            <i__columnName>BLOWERHORSEPOWERID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -32776,7 +32776,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>USERGROUPNAME</i__columnName>
+            <i__columnName>NAME</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>VARCHAR2</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -32792,7 +32792,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>USERGROUPDESCRIPTION</i__columnName>
+            <i__columnName>DESCRIPTION</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>VARCHAR2</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
