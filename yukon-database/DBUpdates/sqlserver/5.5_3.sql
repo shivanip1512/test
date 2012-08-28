@@ -299,6 +299,23 @@ JOIN  YukonPAObject YPO ON IB.DeviceID = YPO.PAObjectID
 WHERE IB.DeviceID > 0 AND LTRIM(RTRIM(IB.DeviceLabel)) = '' OR IB.DeviceLabel IS NULL;
 /* End YUK-11192 */
 
+/* Start YUK-11330 */
+ALTER TABLE LMGroupSEP 
+ADD RampIn NUMERIC;
+GO
+UPDATE LMGroupSEP
+SET RampIn = 30;
+ALTER TABLE LMGroupSEP 
+ALTER COLUMN RampIn NUMERIC NOT NULL;
+ALTER TABLE LMGroupSEP 
+ADD RampOut NUMERIC;
+GO
+UPDATE LMGroupSEP
+SET RampOut = 30;
+ALTER TABLE LMGroupSEP 
+ALTER COLUMN RampOut NUMERIC NOT NULL;
+/* End YUK-11330 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

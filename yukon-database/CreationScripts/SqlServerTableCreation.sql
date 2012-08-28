@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/28/2012 12:54:10 PM                        */
+/* Created on:     8/28/2012 4:02:31 PM                         */
 /*==============================================================*/
 
 /*==============================================================*/
@@ -5854,6 +5854,8 @@ go
 create table LMGroupSep (
    DeviceId             numeric              not null,
    UtilityEnrollmentGroup numeric              not null,
+   RampIn               numeric              not null,
+   RampOut              numeric              not null,
    constraint PK_LMGroupSep primary key (DeviceId)
 )
 go

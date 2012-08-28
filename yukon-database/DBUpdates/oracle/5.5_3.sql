@@ -324,6 +324,21 @@ SET DeviceLabel = (
 WHERE (IB.DeviceLabel = '' OR IB.DeviceLabel IS NULL);
 /* End YUK-11192 */
 
+/* Start YUK-11330 */
+ALTER TABLE LMGroupSEP 
+ADD RampIn NUMBER;
+UPDATE LMGroupSEP
+SET RampIn = 30;
+ALTER TABLE LMGroupSEP 
+MODIFY RampIn NUMBER NOT NULL;
+ALTER TABLE LMGroupSEP 
+ADD RampOut NUMBER;
+UPDATE LMGroupSEP
+SET RampOut = 30;
+ALTER TABLE LMGroupSEP 
+MODIFY RampOut NUMBER NOT NULL;
+/* End YUK-11330 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

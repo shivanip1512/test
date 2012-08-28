@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/28/2012 12:55:23 PM                        */
+/* Created on:     8/28/2012 4:01:38 PM                         */
 /*==============================================================*/
 
 
@@ -5544,6 +5544,8 @@ create table LMGroupSASimple  (
 create table LMGroupSep  (
    DeviceId             NUMBER                          not null,
    UtilityEnrollmentGroup NUMBER                          not null,
+   RampIn               NUMBER                          not null,
+   RampOut              NUMBER                          not null,
    constraint PK_LMGroupSep primary key (DeviceId)
 );
 
