@@ -3585,36 +3585,47 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 !currentCapBank->getInsertDynamicDataFlag() &&
                                 timestamp > currentCapBank->getLastStatusChangeTime())
                             {
+                                if (value < 0)
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - CapBank: "<<currentCapBank->getPaoName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value<< endl;
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - CapBank: "<<currentCapBank->getPaoName()<<" received an invalid control state value (" 
+                                             << (long)value << "). Not adjusting the cap bank state." << endl;
+                                    }
                                 }
-                                if ((currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-                                    currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) &&
-                                    value < 6 )
+                                else
                                 {
-                                    currentCapBank->setBeforeVarsString(" Point Data ");
-                                    currentCapBank->setAfterVarsString(" Point Data ");
-                                    currentCapBank->setPercentChangeString(" --- ");
-                                    string text = "";
-                                    text = string("Var: Cancelled by Pending Override, ");
-                                    currentCapBank->setControlStatus((LONG)value);
-                                    text += currentCapBank->getControlStatusText();
-                                    currentFeeder->setRetryIndex(0);
-                                    long stationId, areaId, spAreaId;
-                                    store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                                    CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, "point data msg" );
-                                    eventMsg->setActionId(currentCapBank->getActionId());
-                                    eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - CapBank: "<<currentCapBank->getPaoName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value<< endl;
+                                    }
+                                    if ((currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+                                        currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) &&
+                                        value < 6 )
+                                    {
+                                        currentCapBank->setBeforeVarsString(" Point Data ");
+                                        currentCapBank->setAfterVarsString(" Point Data ");
+                                        currentCapBank->setPercentChangeString(" --- ");
+                                        string text = "";
+                                        text = string("Var: Cancelled by Pending Override, ");
+                                        currentCapBank->setControlStatus((LONG)value);
+                                        text += currentCapBank->getControlStatusText();
+                                        currentFeeder->setRetryIndex(0);
+                                        long stationId, areaId, spAreaId;
+                                        store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
+                                        CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, "point data msg" );
+                                        eventMsg->setActionId(currentCapBank->getActionId());
+                                        eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
 
-                                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
-                                    currentCapBank->setIgnoreFlag(false);
-                                    currentCapBank->setPorterRetFailFlag(false);
+                                        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
+                                        currentCapBank->setIgnoreFlag(false);
+                                        currentCapBank->setPorterRetFailFlag(false);
+                                    }
+                                    currentCapBank->setControlStatus((LONG)value);
+                                    currentCapBank->setTagsControlStatus((LONG)tags);
+                                    currentCapBank->setLastStatusChangeTime(timestamp);
+                                    currentSubstationBus->checkAndUpdateRecentlyControlledFlag();
                                 }
-                                currentCapBank->setControlStatus((LONG)value);
-                                currentCapBank->setTagsControlStatus((LONG)tags);
-                                currentCapBank->setLastStatusChangeTime(timestamp);
-                                currentSubstationBus->checkAndUpdateRecentlyControlledFlag();
                             }
                         }
                         currentSubstationBus->figureEstimatedVarLoadPointValue();

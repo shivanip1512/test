@@ -9561,9 +9561,17 @@ long CtiCCSubstationBusStore::isKVARAvailable( long kvarNeeded )
 void CtiCCSubstationBusStore::setControlStatusAndIncrementOpCount(CtiMultiMsg_vec& pointChanges, long status, CtiCCCapBank* cap,
                                                                   bool controlRecentlySentFlag)
 {
-
     if (cap == NULL)
         return;
+
+    if( status < 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " Control state value (" << status << ") is not valid. Not adjusting the cap bank state." << endl;
+        }
+        return;
+    }
 
     cap->setControlStatus(status);
     cap->setControlRecentlySentFlag(controlRecentlySentFlag);
@@ -10173,9 +10181,17 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_vec& pointChanges, long status, CtiCCCapBank* cap)
 {
-
     if (cap == NULL)
         return;
+
+    if( status < 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " Control state value (" << status << ") is not valid. Not adjusting the cap bank state." << endl;
+        }
+        return;
+    }
 
     cap->setControlStatus(status);
     cap->setControlRecentlySentFlag(false);

@@ -693,10 +693,22 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
         return;
     }
 
+    int controlStatus = capBank->getTwoWayPoints()->getPointValueByAttribute(PointAttribute::CapacitorBankState);
+
+    if( controlStatus < 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << commandName << " command rejected, CapBank: " << capBank->getPaoName()<<" received an invalid " 
+                 << "control state value (" << controlStatus << "). Not adjusting the cap bank state." << endl;
+        }
+        return;
+    }
+
     //Logging Action
     string text = string("Manual CBC/CapBank State Sync.  Adjusting CapBank State from: ");
     text += capBank->getControlStatusText() + " to ";
-    text += ( capBank->getTwoWayPoints()->getPointValueByAttribute(PointAttribute::CapacitorBankState) ? "Close." : "Open.");
+    text += ( controlStatus ? "Close." : "Open.");
     string additional = string("Cap Bank: ");
     additional += capBank->getPaoName();
 
@@ -709,7 +721,7 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
         additional += ")";
     }
 
-    capBank->setControlStatus(capBank->getTwoWayPoints()->getPointValueByAttribute(PointAttribute::CapacitorBankState));
+    capBank->setControlStatus(controlStatus);
 
     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(capBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
     CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
@@ -6381,71 +6393,81 @@ void CtiCCPointDataMsgExecutor::execute()
                     {
                         if( currentCapBank->getControlStatus() != (LONG)value )
                         {
-                            if( (currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getPerformingVerificationFlag() )&&
-                                currentFeeder->getLastCapBankControlledDeviceId() == currentCapBank->getPaoId() )
+                            if( value < 0)
                             {
-                                currentSubstationBus->setRecentlyControlledFlag(false);
-                                currentFeeder->setRecentlyControlledFlag(false);
-                                if( ciStringEqual(currentSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
                                 {
-                                    for(long x=0;x<ccFeeders.size();x++)
-                                    {
-                                        if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
-                                        {
-                                            currentSubstationBus->setRecentlyControlledFlag(true);
-                                            break;
-                                        }
-                                    }
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " CapBank:" << currentCapBank->getPaoName() << " received an invalid "
+                                         << "control state value (" << (long)value << "). Not adjusting the cap bank." << endl;
                                 }
-                            }
-                            if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-                                currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending)
-                            {
-                                currentFeeder->removeMaxKvar(currentCapBank->getPaoId());
-                                logToCCEvent = true;
-                            }
-
-                            currentCapBank->setBeforeVarsString(" Manual ");
-                            currentCapBank->setAfterVarsString(" Manual ");
-                            currentCapBank->setPercentChangeString(" --- ");
-
-                            currentSubstationBus->setBusUpdatedFlag(true);
-                            currentCapBank->setControlStatus((LONG)value);
-                            currentCapBank->setControlRecentlySentFlag(false);
-                            currentFeeder->setRetryIndex(0);
-                            currentCapBank->setControlStatusQuality(CC_Normal);
-                            currentCapBank->setTagsControlStatus((LONG)tags);
-                            currentCapBank->setLastStatusChangeTime(timestamp);
-                            currentCapBank->setPorterRetFailFlag(false);
-                            currentSubstationBus->figureEstimatedVarLoadPointValue();
-                            if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
-                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
-
-                            string text = "";
-                            if (logToCCEvent)
-                            {
-                                text = string("Var: Cancelled by Pending Override, ");
-                                currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
-
                             }
                             else
                             {
-                                text = "CapBank: ";
-                                text += currentCapBank->getPaoName();
-                                text += " Manual State Change to ";
-                                currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);
+                                if( (currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getPerformingVerificationFlag() )&&
+                                    currentFeeder->getLastCapBankControlledDeviceId() == currentCapBank->getPaoId() )
+                                {
+                                    currentSubstationBus->setRecentlyControlledFlag(false);
+                                    currentFeeder->setRecentlyControlledFlag(false);
+                                    if( ciStringEqual(currentSubstationBus->getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
+                                    {
+                                        for(long x=0;x<ccFeeders.size();x++)
+                                        {
+                                            if( ((CtiCCFeeder*)ccFeeders[x])->getRecentlyControlledFlag() )
+                                            {
+                                                currentSubstationBus->setRecentlyControlledFlag(true);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
+                                    currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending)
+                                {
+                                    currentFeeder->removeMaxKvar(currentCapBank->getPaoId());
+                                    logToCCEvent = true;
+                                }
 
+                                currentCapBank->setBeforeVarsString(" Manual ");
+                                currentCapBank->setAfterVarsString(" Manual ");
+                                currentCapBank->setPercentChangeString(" --- ");
+
+                                currentSubstationBus->setBusUpdatedFlag(true);
+                                currentCapBank->setControlStatus((LONG)value);
+                                currentCapBank->setControlRecentlySentFlag(false);
+                                currentFeeder->setRetryIndex(0);
+                                currentCapBank->setControlStatusQuality(CC_Normal);
+                                currentCapBank->setTagsControlStatus((LONG)tags);
+                                currentCapBank->setLastStatusChangeTime(timestamp);
+                                currentCapBank->setPorterRetFailFlag(false);
+                                currentSubstationBus->figureEstimatedVarLoadPointValue();
+                                if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
+                                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+
+                                string text = "";
+                                if (logToCCEvent)
+                                {
+                                    text = string("Var: Cancelled by Pending Override, ");
+                                    currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+
+                                }
+                                else
+                                {
+                                    text = "CapBank: ";
+                                    text += currentCapBank->getPaoName();
+                                    text += " Manual State Change to ";
+                                    currentCapBank->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1);
+
+                                }
+                                text += currentCapBank->getControlStatusText();
+
+                                long stationId, areaId, spAreaId;
+                                store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
+                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _pointDataMsg->getUser() );
+                                eventMsg->setActionId(currentCapBank->getActionId());
+                                eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
+
+                                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
                             }
-                            text += currentCapBank->getControlStatusText();
-
-                            long stationId, areaId, spAreaId;
-                            store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
-                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPaoId(), currentFeeder->getPaoId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _pointDataMsg->getUser() );
-                            eventMsg->setActionId(currentCapBank->getActionId());
-                            eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
-
-                            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
-
                         }
                         currentCapBank->setIgnoreFlag(false);
                         found = true;
