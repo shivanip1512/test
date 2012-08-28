@@ -1922,8 +1922,10 @@
         <displayName>MCT-410fL</displayName>
         <tags>
             <tag name="DLC_ADDRESS_RANGE">
-            	<value>3597701-3797699,
-            			3797700-3996927</value>
+            	<value>2596200-2796201,            	
+            			3597701-3797699,
+            			3797700-3996927,
+            			3996928-4001336</value>
             </tag>
         </tags>
     </pao>
