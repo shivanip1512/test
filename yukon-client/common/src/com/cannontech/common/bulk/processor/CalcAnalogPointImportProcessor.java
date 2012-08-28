@@ -17,6 +17,8 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 
+import static com.cannontech.common.bulk.model.PointImportParameters.*;
+
 public class CalcAnalogPointImportProcessor extends ScalarPointImportProcessor {
 private Map<String, PointCalculation> calcMap;
     
@@ -31,15 +33,15 @@ private Map<String, PointCalculation> calcMap;
     
     @Override
     protected void createPoint(ImportRow row) {
-        String deviceName = row.getValue("DEVICE NAME");
-        PaoType paoType = ImportPaoType.valueOf(row.getValue("DEVICE TYPE"));
-        String pointName = row.getValue("POINT NAME");
+        String deviceName = row.getValue(DEVICE_NAME.NAME);
+        PaoType paoType = ImportPaoType.valueOf(row.getValue(DEVICE_TYPE.NAME));
+        String pointName = row.getValue(POINT_NAME.NAME);
         int paoId = validatePaoAndPoint(deviceName, paoType, pointName);
-        Boolean isDisabled = StrictBoolean.valueOf(row.getValue("DISABLED"));
+        Boolean isDisabled = StrictBoolean.valueOf(row.getValue(DISABLED.NAME));
         
         CalcAnalogPointBuilder builder = pointBuilderFactory.getCalcAnalogPointBuilder(paoId, pointDao.getNextPointId(), pointName, isDisabled);
         
-        String calculationId = row.getValue("CALCULATION");
+        String calculationId = row.getValue(CALCULATION.NAME);
         PointCalculation calculation = calcMap.get(calculationId);
         if(calculation == null) {
             String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.invalidCalculation");
@@ -47,15 +49,15 @@ private Map<String, PointCalculation> calcMap;
         }
         builder.setCalculation(calculation);
         
-        AnalogPointUpdateType updateType = AnalogPointUpdateType.valueOf(row.getValue("UPDATE TYPE"));
+        AnalogPointUpdateType updateType = AnalogPointUpdateType.valueOf(row.getValue(ANALOG_UPDATE_TYPE.NAME));
         builder.setUpdateType(updateType);
         if(updateType.hasRate()) {
-            builder.setUpdateRate(PointPeriodicRate.valueOf(row.getValue("UPDATE RATE")));
+            builder.setUpdateRate(PointPeriodicRate.valueOf(row.getValue(UPDATE_RATE.NAME)));
         }
         
         doSharedProcessing(builder, row);
         
-        boolean forceQualityNormal = StrictBoolean.valueOf(row.getValue("FORCE QUALITY NORMAL"));
+        boolean forceQualityNormal = StrictBoolean.valueOf(row.getValue(FORCE_QUALITY_NORMAL.NAME));
         builder.setForceQualityNormal(forceQualityNormal);
         
         builder.insert();

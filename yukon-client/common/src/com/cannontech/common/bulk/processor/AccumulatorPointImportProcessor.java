@@ -14,6 +14,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.PointTypes;
 
+import static com.cannontech.common.bulk.model.PointImportParameters.*;
+
 public class AccumulatorPointImportProcessor extends ScalarPointImportProcessor {
     
     public AccumulatorPointImportProcessor(ImportFileFormat format, MessageSourceAccessor messageSourceAccessor,
@@ -24,17 +26,17 @@ public class AccumulatorPointImportProcessor extends ScalarPointImportProcessor 
     }
     
     public void createPoint(ImportRow row) {
-        String deviceName = row.getValue("DEVICE NAME");
-        PaoType paoType = ImportPaoType.valueOf(row.getValue("DEVICE TYPE"));
-        String pointName = row.getValue("POINT NAME");
+        String deviceName = row.getValue(DEVICE_NAME.NAME);
+        PaoType paoType = ImportPaoType.valueOf(row.getValue(DEVICE_TYPE.NAME));
+        String pointName = row.getValue(POINT_NAME.NAME);
         int paoId = validatePaoAndPoint(deviceName, paoType, pointName);
-        Boolean isDisabled = StrictBoolean.valueOf(row.getValue("DISABLED"));
-        AccumulatorType accumulatorType = AccumulatorType.valueOf(row.getValue("ACCUMULATOR TYPE"));
+        Boolean isDisabled = StrictBoolean.valueOf(row.getValue(DISABLED.NAME));
+        AccumulatorType accumulatorType = AccumulatorType.valueOf(row.getValue(ACCUMULATOR_TYPE.NAME));
         
         AccumulatorPointBuilder builder = pointBuilderFactory.getAccumulatorPointBuilder(paoId, pointDao.getNextPointId(), pointName, isDisabled, accumulatorType);
         
-        if(row.hasValue("POINT OFFSET")) {
-            int pointOffset = Integer.valueOf(row.getValue("POINT OFFSET"));
+        if(row.hasValue(POINT_OFFSET.NAME)) {
+            int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
             
             if(pointDao.deviceHasPoint(paoId, pointOffset, PointTypes.ANALOG_POINT)) {
                 String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.pointOffsetInUse", pointOffset, deviceName);
@@ -46,13 +48,13 @@ public class AccumulatorPointImportProcessor extends ScalarPointImportProcessor 
         
         doSharedProcessing(builder, row);
     
-        double multiplier = Double.valueOf(row.getValue("MULTIPLIER"));
+        double multiplier = Double.valueOf(row.getValue(MULTIPLIER.NAME));
         builder.setMultiplier(multiplier);
     
-        double dataOffset = Double.valueOf(row.getValue("DATA OFFSET"));
+        double dataOffset = Double.valueOf(row.getValue(DATA_OFFSET.NAME));
         builder.setDataOffset(dataOffset);
     
-        int meterDials = Integer.valueOf(row.getValue("METER DIALS"));
+        int meterDials = Integer.valueOf(row.getValue(METER_DIALS.NAME));
         builder.setMeterDials(meterDials);
         
         builder.insert();

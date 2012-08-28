@@ -332,6 +332,14 @@ public class ImportFileFormat implements Cloneable {
     }
     
     /**
+     * Sets the description and valid values i18n keys for the specified column.
+     */
+    public void setDescriptionKeys(String columnName, String descriptionKey, String validValuesKey) {
+        setDescriptionKey(columnName, descriptionKey);
+        setValidValuesKey(columnName, validValuesKey);
+    }
+    
+    /**
      * Sets the valid values i18n key for the specified column.
      */
     public void setValidValuesKey(String columnName, String key) {

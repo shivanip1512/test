@@ -26,6 +26,8 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
+import static com.cannontech.common.bulk.model.PointImportParameters.*;
+
 public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
     protected static final Logger log = YukonLogManager.getLogger(FdrTranslationManagerServiceImpl.class);
     protected MessageSourceAccessor messageSourceAccessor;
@@ -55,7 +57,7 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
         if(validationResult.isFailed()) {
             throwProcessingException(validationResult);
         } else {
-            ImportAction action = ImportAction.valueOf(row.getValue("ACTION"));
+            ImportAction action = ImportAction.valueOf(row.getValue(ACTION.NAME));
             switch(action) {
                 case ADD:
                     createPoint(row);
@@ -107,8 +109,8 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
     
     protected void removePoint(ImportRow row) {
         //find the device
-        String deviceName = row.getValue("DEVICE NAME");
-        PaoType paoType = ImportPaoType.valueOf(row.getValue("DEVICE TYPE"));
+        String deviceName = row.getValue(DEVICE_NAME.NAME);
+        PaoType paoType = ImportPaoType.valueOf(row.getValue(DEVICE_TYPE.NAME));
         YukonPao pao = paoDao.findYukonPao(deviceName, paoType);
         if(pao == null) {
             String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.invalidDevice", deviceName);
@@ -116,7 +118,7 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
         }
         
         //find the point
-        String pointName = row.getValue("POINT NAME");
+        String pointName = row.getValue(POINT_NAME.NAME);
         LitePoint litePoint = pointDao.findPointByName(pao, pointName);
         if(litePoint == null) {
             String error = messageSourceAccessor.getMessage("yukon.web.modules.amr.pointImport.error.pointDoesNotExist", pointName, deviceName);
