@@ -94,14 +94,22 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                 messagesToSend.add(pointData);
             }
         }
-        
-        List<PointData> intervalData = mapIntervalData(request, data, device);
-        messagesToSend.addAll(intervalData);
+        List<PointData> intervalData;
+        Boolean readNowRequestFlag = (data.evaluateAsInt("/DRReport/Info/Flags") & 0x01) == 1;
+        if (readNowRequestFlag) {
+            intervalData = mapIntervalData(request, data, device, true);
+            messagesToSend.addAll(intervalData);
+        } else {
+            intervalData = mapIntervalData(request, data, device, false);
+            messagesToSend.addAll(intervalData);
+        }
         
         return messagesToSend;
     }
 
-    private List<PointData> mapIntervalData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data, RfnDevice device) {
+
+    private List<PointData> mapIntervalData(RfnLcrReadingArchiveRequest archiveRequest, 
+            SimpleXPathTemplate data, RfnDevice device, boolean readFirstInterval) {
         
         List<PointData> intervalPointData = Lists.newArrayListWithExpectedSize(16);
         Set<RfnLcrRelayDataMap> rfnLcrRelayDataMap = Sets.newHashSet();
@@ -122,6 +130,10 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
 
             Long firstIntervalTimestamp = data.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
             Instant currentIntervalTimestamp = new Instant(firstIntervalTimestamp * 1000);
+            // If we only want to read the first interval of the message, re-make the list with only its first element.
+            if (readFirstInterval) {  
+                intervalData = Lists.newArrayList(intervalData.get(0));
+            }
             for (Integer interval : intervalData) {
                 Integer runTime = (interval & 0xFF00) >>> 8;
                 Integer shedTime = interval & 0xFF;
