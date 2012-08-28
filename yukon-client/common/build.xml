@@ -71,23 +71,25 @@
     <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
     <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">
-            <param name="halt" value="yes" />
-            <param name="testDir" value="test/build/unit" />
+            <param name="halt" value="yes"/>
+            <param name="srcdir" value="test/unit"/>
+            <param name="destdir" value="test/build/unit" />
         </antcall>
     </target>
 
     <!-- Run unit tests - will run all tests even if a failure or error occurs during a test -->
     <target name="runUnitTestsIgnoreFailures" description="Run all unit tests, do not stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">
-            <param name="halt" value="no" />
-            <param name="testDir" value="test/build/unit" />
+            <param name="halt" value="no"/>
+            <param name="srcdir" value="test/unit"/>
+            <param name="destdir" value="test/build/unit" />
         </antcall>
     </target>
 
     <!-- Compile unit tests - will compile all unit tests -->
     <target name="compileUnitTests">
         <antcall target="compileTests">
-            <param name="srcdir" value="test/unit" />
+            <param name="srcdir" value="test/unit"/>
             <param name="destdir" value="test/build/unit" />
         </antcall>
     </target>
@@ -113,7 +115,7 @@
         	todir="${destdir}/com/cannontech/common/config"/>
     </target>
 
-    <!-- Run tests. This target must be supplied a halt and testDir property -->
+    <!-- Run tests. This target must be supplied a halt and destdir property -->
     <target name="executeTests" depends="compileUnitTests">
 
         <property name="test.results.dir" value="test/testResults"/>
@@ -124,7 +126,8 @@
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
         <junit printsummary="withOutAndErr" haltonerror="${halt}" haltonfailure="${halt}">
             <classpath id="junit.class.path">
-                <pathelement location="${testDir}"/>
+                <pathelement location="${srcdir}"/>
+                <pathelement location="${destdir}"/>
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />
                     <exclude name="**/WebContent/**" />
@@ -132,7 +135,7 @@
             </classpath>
             <formatter type="xml" />
             <batchtest fork="yes" todir="${test.results.dir}">
-                <fileset dir="${testDir}">
+                <fileset dir="${destdir}">
                     <include name="**/*Test.class" />
                 </fileset>
             </batchtest>
