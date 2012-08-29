@@ -196,8 +196,8 @@ public class PasswordPolicy {
             }
         } 
 
-        // Fill in the remaining needed characters
-        int numberOfNeededCharacters = Ints.max(passwordQualityCheck, minPasswordLength) - genPass.length(); 
+        // Fill in the remaining needed characters.  If its less than 0 use 0.
+        int numberOfNeededCharacters = Ints.max(passwordQualityCheck - genPass.length(), minPasswordLength - genPass.length(), 0) ;
         genPass = genPass.concat(RandomStringUtils.randomAlphanumeric(numberOfNeededCharacters));
 
         // Shuffle the characters around to make the password more random.
