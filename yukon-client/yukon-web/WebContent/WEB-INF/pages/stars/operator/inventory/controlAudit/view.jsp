@@ -94,40 +94,6 @@ jQuery(function() {
     
 </cti:dataGrid>
 
-<c:if test="${fn:length(audit.controlledRows) > 0}">
-    <tags:formElementContainer nameKey="controlledDevices" styleClass="box marginBottom" hideEnabled="true">
-        <div class="threeQuarterLayout">
-            <div class="primary">
-                <dr:controlAuditResult result="${audit.controlledPaged}" type="CONTROLLED" auditId="${auditId}"/>
-            </div>
-            <div class="secondary">
-                <div class="columnContent">
-                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats marginBottom">
-                        <c:set var="percent" value="${fn:length(audit.controlledRows) / fn:length(settings.collection.list)}"/>
-                        <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.controlledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <ul class="labeledImageStack">
-                        <li>
-                            <cti:url var="newOperationControlled" value="newOperation">
-                                <cti:param name="auditId" value="${audit.auditId}"/>
-                                <cti:param name="type" value="CONTROLLED"/>
-                            </cti:url>
-                            <a href="${newOperationControlled}" class="small icon_cog_go labeled_icon"><i:inline key=".newOperation"/></a>
-                        </li>
-                        <li>
-                            <cti:url var="download" value="download">
-                                <cti:param name="auditId" value="${audit.auditId}"/>
-                                <cti:param name="type" value="CONTROLLED"/>
-                            </cti:url>
-                            <a href="${download}" class="small icon_csv labeled_icon"><i:inline key=".download"/></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </tags:formElementContainer>    
-</c:if>
-    
 <c:if test="${fn:length(audit.uncontrolledRows) > 0}">
     <tags:formElementContainer nameKey="uncontrolledDevices" styleClass="box cl marginBottom" hideEnabled="true">
         <div class="threeQuarterLayout">
@@ -194,6 +160,40 @@ jQuery(function() {
             </div>
         </div>
     </tags:formElementContainer>
+</c:if>
+
+<c:if test="${fn:length(audit.controlledRows) > 0}">
+    <tags:formElementContainer nameKey="controlledDevices" styleClass="box marginBottom" hideEnabled="true">
+        <div class="threeQuarterLayout">
+            <div class="primary">
+                <dr:controlAuditResult result="${audit.controlledPaged}" type="CONTROLLED" auditId="${auditId}"/>
+            </div>
+            <div class="secondary">
+                <div class="columnContent">
+                    <tags:nameValueContainer2 tableClass="sectionContainerNameValue stats marginBottom">
+                        <c:set var="percent" value="${fn:length(audit.controlledRows) / fn:length(settings.collection.list)}"/>
+                        <tags:nameValue2 nameKey=".deviceCount">${fn:length(audit.controlledRows)} (<fmt:formatNumber value="${percent}" type="percent" maxFractionDigits="1"/>)</tags:nameValue2>
+                    </tags:nameValueContainer2>
+                    <ul class="labeledImageStack">
+                        <li>
+                            <cti:url var="newOperationControlled" value="newOperation">
+                                <cti:param name="auditId" value="${audit.auditId}"/>
+                                <cti:param name="type" value="CONTROLLED"/>
+                            </cti:url>
+                            <a href="${newOperationControlled}" class="small icon_cog_go labeled_icon"><i:inline key=".newOperation"/></a>
+                        </li>
+                        <li>
+                            <cti:url var="download" value="download">
+                                <cti:param name="auditId" value="${audit.auditId}"/>
+                                <cti:param name="type" value="CONTROLLED"/>
+                            </cti:url>
+                            <a href="${download}" class="small icon_csv labeled_icon"><i:inline key=".download"/></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </tags:formElementContainer>    
 </c:if>
     
 <c:if test="${fn:length(audit.unsupportedRows) > 0}">
