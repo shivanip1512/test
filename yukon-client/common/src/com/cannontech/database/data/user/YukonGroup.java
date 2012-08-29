@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.editor.EditorPanel;
-import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.users.dao.UserGroupDao;
@@ -26,7 +25,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel {
-    private Logger log = YukonLogManager.getLogger(YukonGroup.class);
+    private final static Logger log = YukonLogManager.getLogger(YukonGroup.class);
     
 	private com.cannontech.database.db.user.YukonGroup yukonGroup;
 	private List<YukonGroupRole> yukonGroupRoles = Lists.newArrayList();
@@ -84,9 +83,6 @@ public class YukonGroup extends DBPersistent implements CTIDbChange, EditorPanel
 	 */
 	public void delete() throws SQLException {
 		delete( YukonGroupRole.TABLE_NAME, "GroupID", getYukonGroup().getGroupID() );
-        PaoPermissionDao<LiteYukonGroup> paoPermissionDao = (PaoPermissionDao<LiteYukonGroup>) YukonSpringHook.getBean("groupPaoPermissionDao");
-        paoPermissionDao.removeAllPermissions(getGroupID());
-        
 		getYukonGroup().delete();
 	}
 
