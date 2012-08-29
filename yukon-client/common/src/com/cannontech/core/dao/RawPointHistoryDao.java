@@ -99,6 +99,19 @@ public interface RawPointHistoryDao {
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order);
 
     /**
+     * Method to get a list of point values for a given point and time period.  
+     * @param pointId - Id of point to get values for
+     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
+     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering by timestamp and changeid
+     * @param orderBy - controls field to order by  [timestamp, value]
+     * @return List of values for the point
+     */
+    
+    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order, OrderBy orderBy);
+    
+    /**
      * Method to get a list of point values for a given point and time period, 
      * but only returning up to maxRows rows. 
      * To return a list with maxRows closest to startDate, use reverseOrder of false.
@@ -112,6 +125,22 @@ public interface RawPointHistoryDao {
      * @return List of values for the point
      */
     public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order, int maxRows);
+    
+    /**
+     * Method to get a list of point values for a given point and time period, 
+     * but only returning up to maxRows rows. 
+     * To return a list with maxRows closest to startDate, use reverseOrder of false.
+     * To return a list with maxRows closest to stopDate, use reverseOrder of true. 
+     * @param pointId - Id of point to get values for
+     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
+     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
+     * @param clusivity - determines whether each end of range is inclusive or exclusive
+     * @param order - controls ordering by timestamp and changeid
+     * @param orderBy - controls field to order by  [timestamp, value]
+     * @param maxRows - Maximum number of rows to return
+     * @return List of values for the point
+     */
+    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, Clusivity clusivity, Order order, OrderBy orderBy, int maxRows);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap

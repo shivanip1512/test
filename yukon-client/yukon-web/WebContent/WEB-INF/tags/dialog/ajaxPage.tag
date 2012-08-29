@@ -1,3 +1,4 @@
+<%@ tag trimDirectiveWhitespaces="true" %>
 <%@ tag language="java" pageEncoding="UTF-8" description="Use this tag to wrap a JSP which is to be an AJAX dialog."%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -12,11 +13,12 @@
 <%@ attribute name="okEvent" required="true" description="Use 'yukonDialogSubmit' to submit a form, 'none' to skip the ok button or an event name to trigger that event on the dialog." %>
 <%@ attribute name="id" description="The id of the div to put the dialog in.  This div should exist on the page using the dialog.  Defaults to 'ajaxDialog'." %>
 <%@ attribute name="options" description="Options to use for the dialog.  See http://jqueryui.com/demos/dialog/#options" %>
+<%@ attribute name="title" description="Dialog Title--use this if you need a dynamic title." %>
 
 <cti:includeScript link="/JavaScript/ajaxDialog.js"/>
 
 <c:if test="${empty pageScope.id}">
-    <c:set var="id" value="ajaxDialog"/>
+    <c:set var="id" value="ajaxDialog" />
 </c:if>
 
 <c:set var="pageParts" value="${fn:split(page, '.')}"/>
@@ -33,11 +35,17 @@
 <cti:msgScope paths="${modulePaths}">
 
 <cti:msgScope paths=".${nameKey},components.dialog.${nameKey},components.dialog">
-    <cti:msg2 var="titleMsg" key=".title"/>
+    <c:if test="${!empty pageScope.title}">
+        <c:set var="titleMsg" value="${title}"/>
+    </c:if>
+    <c:if test="${empty pageScope.title}">
+        <cti:msg2 var="titleMsg" key=".title"/>
+    </c:if>
     <cti:msg2 var="okBtnMsg" key=".ok"/>
     <cti:msg2 var="cancelBtnMsg" key=".cancel"/>
     <cti:msg2 var="closeBtnMsg" key=".close"/>
 </cti:msgScope>
+
 
 <script type="text/javascript">
 jQuery(document).ready(function() {

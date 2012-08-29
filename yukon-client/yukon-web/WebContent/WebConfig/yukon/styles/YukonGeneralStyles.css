@@ -1583,6 +1583,11 @@ a.icon {
 
 .pass {background: transparent url(../Icons/tick.png) top left no-repeat}
 .fail {background: transparent url(../Icons/cross.png) top left no-repeat}
+.history {
+    background-image: url(../Icons/time.gif);
+    background-repeat:no-repeat;
+}
+
 
 .search_button {
     background: transparent url(../Buttons/GoButtonGray.gif) top left no-repeat;
@@ -2406,4 +2411,12 @@ div.compactResultsPaging {
 }
 div.compactResultsPaging span{
     line-height: 16px;
+}
+a.pv_history {
+    color: #000;
+    text-decoration: none;
+}
+a.pv_history:hover {
+    color: #06c;
+    cursor: pointer;
 }

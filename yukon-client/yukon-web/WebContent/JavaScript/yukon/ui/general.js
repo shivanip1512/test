@@ -36,6 +36,13 @@ Yukon.ui = {
     
     autoWire: function() {
         // register listeners
+        
+        //ajaxPage
+        jQuery(document).delegate('.f_ajaxPage', 'click', function(e){
+            e.stopPropagation();
+            jQuery(this.getAttribute("data-selector")).load(this.getAttribute("href"));
+            return false;
+        });
     	
     	//html5 placeholder support for IE
 		jQuery.placeholder();

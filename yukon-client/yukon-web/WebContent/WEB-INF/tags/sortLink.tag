@@ -1,9 +1,12 @@
 <%@ attribute name="fieldName" required="true" %>
 <%@ attribute name="baseUrl" required="true" %>
 <%@ attribute name="nameKey" required="true" %>
+<%@ attribute name="styleClass" %>
+<%@ attribute name="moreAttributes" %>
 <%@ attribute name="sortParam" %>
 <%@ attribute name="descendingParam" %>
 <%@ attribute name="isDefault" type="java.lang.Boolean" %>
+<%@ attribute name="descendingByDefault" type="java.lang.Boolean" %>
 <%@ tag body-content="empty" %>
 
 <%--
@@ -13,6 +16,10 @@ attribute to true on the field which is the default sort field.
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+
+<c:if test="${empty pageScope.descendingByDefault}">
+    <c:set var="descendingByDefault" value="false"/>
+</c:if>
 
 <cti:msgScope paths=".${nameKey}">
     <cti:msg2 var="linkTextMsg" key=".linkText"/>
@@ -54,16 +61,18 @@ attribute to true on the field which is the default sort field.
     </c:if>
 </cti:url>
 
-<a href="${sortUrl}">
+<a href="${sortUrl}" class="${styleClass}" ${moreAttributes}>
     ${linkTextMsg}
     <c:if test="${currentSort == fieldName}">
-        <c:choose>
-            <c:when test="${!param[descendingParam]}">
-                <span title="${ascendingMsg}">&#9650;</span>
-            </c:when>
-            <c:otherwise>
-                <span title="${descendingMsg}">&#9660;</span>
-            </c:otherwise>
-        </c:choose>
+        <c:set var="isDescending" value="${param[descendingParam]}"/>
+        <c:if test="${descendingByDefault}">
+            <c:set var="isDescending" value="${!param[descendingParam]}"/>
+        </c:if>
+        <c:if test="${!isDescending}">
+            <span title="${ascendingMsg}">&#9650;</span>
+        </c:if>
+        <c:if test="${isDescending}">
+            <span title="${descendingMsg}">&#9660;</span>
+        </c:if>
     </c:if>
 </a>
