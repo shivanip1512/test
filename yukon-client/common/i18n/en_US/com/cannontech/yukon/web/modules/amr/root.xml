@@ -176,5 +176,6 @@
     <entry key="yukon.web.modules.amr.macsscheduler.innerView.sortedAscending">Sorted ascending/Time</entry>
     <entry key="yukon.web.modules.amr.macsscheduler.innerView.sortedDescending">Sorted descending</entry>
     <entry key="yukon.web.modules.amr.macsscheduler.innerView.updating">Updating...</entry>
+    <entry key="yukon.web.modules.amr.macsscheduler.innerView.disable">Disable</entry>
     
 </properties>
