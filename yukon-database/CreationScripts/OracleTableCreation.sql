@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/28/2012 5:02:38 PM                         */
+/* Created on:     8/28/2012 6:58:31 PM                         */
 /*==============================================================*/
 
 
@@ -7006,6 +7006,34 @@ create table RepeaterRoute  (
 );
 
 /*==============================================================*/
+/* Table: ReportedAddressExpressCom                             */
+/*==============================================================*/
+create table ReportedAddressExpressCom  (
+   ChangeId             NUMBER                          not null,
+   DeviceId             NUMBER                          not null,
+   Timestamp            DATE                            not null,
+   SPID                 NUMBER                          not null,
+   GEO                  NUMBER                          not null,
+   Substation           NUMBER                          not null,
+   Feeder               NUMBER                          not null,
+   Zip                  NUMBER                          not null,
+   UDA                  NUMBER                          not null,
+   Required             NUMBER                          not null,
+   constraint PK_ReportedAddressExpressCom primary key (ChangeId)
+);
+
+/*==============================================================*/
+/* Table: ReportedAddressRelayExpressCom                        */
+/*==============================================================*/
+create table ReportedAddressRelayExpressCom  (
+   ChangeId             NUMBER                          not null,
+   RelayNumber          NUMBER                          not null,
+   Program              NUMBER                          not null,
+   Splinter             NUMBER                          not null,
+   constraint PK_ReportedAddressRelayExpCom primary key (ChangeId, RelayNumber)
+);
+
+/*==============================================================*/
 /* Table: Route                                                 */
 /*==============================================================*/
 create table Route  (
@@ -11873,6 +11901,14 @@ alter table RepeaterRoute
 alter table RepeaterRoute
    add constraint SYS_C0013270 foreign key (DEVICEID)
       references DEVICE (DEVICEID);
+
+alter table ReportedAddressExpressCom
+   add constraint FK_RepAddExpressCom_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID);
+
+alter table ReportedAddressRelayExpressCom
+   add constraint FK_RepAddRelayExp_RepAddExpCom foreign key (ChangeId)
+      references ReportedAddressExpressCom (ChangeId);
 
 alter table Route
    add constraint FK_Route_DevID foreign key (DeviceID)

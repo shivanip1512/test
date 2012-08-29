@@ -334,6 +334,42 @@ GO
 DELETE FROM StaticPaoInfo WHERE InfoKey = 'CPS_ONE_WAY_ENCRYPTION_KEY';
 /* End YUK-11313 */
 
+/* Start YUK-11293 */
+CREATE TABLE ReportedAddressExpressCom (
+   ChangeId             NUMERIC              NOT NULL,
+   DeviceId             NUMERIC              NOT NULL,
+   Timestamp            DATETIME             NOT NULL,
+   SPID                 NUMERIC              NOT NULL,
+   GEO                  NUMERIC              NOT NULL,
+   Substation           NUMERIC              NOT NULL,
+   Feeder               NUMERIC              NOT NULL,
+   Zip                  NUMERIC              NOT NULL,
+   UDA                  NUMERIC              NOT NULL,
+   Required             NUMERIC              NOT NULL,
+   CONSTRAINT PK_ReportedAddressExpressCom PRIMARY KEY (ChangeId)
+);
+GO
+
+ALTER TABLE ReportedAddressExpressCom
+   ADD CONSTRAINT FK_RepAddExpressCom_Device FOREIGN KEY (DeviceId)
+      REFERENCES Device (DeviceId);
+GO
+
+CREATE TABLE ReportedAddressRelayExpressCom (
+   ChangeId             NUMERIC              NOT NULL,
+   RelayNumber          NUMERIC              NOT NULL,
+   Program              NUMERIC              NOT NULL,
+   Splinter             NUMERIC              NOT NULL,
+   CONSTRAINT PK_ReportedAddressRelayExpCom PRIMARY KEY (ChangeId, RelayNumber)
+);
+GO
+
+ALTER TABLE ReportedAddressRelayExpressCom
+   ADD CONSTRAINT FK_RepAddRelayExp_RepAddExpCom FOREIGN KEY (ChangeId)
+      REFERENCES ReportedAddressExpressCom (ChangeId);
+GO
+/* End YUK-11293 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

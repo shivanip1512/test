@@ -355,6 +355,38 @@ CREATE TABLE YukonPAObjectEncryptionKey (
 DELETE FROM StaticPaoInfo WHERE InfoKey = 'CPS_ONE_WAY_ENCRYPTION_KEY';
 /* End YUK-11313 */
 
+/* Start YUK-11293 */
+CREATE TABLE ReportedAddressExpressCom (
+   ChangeId             NUMBER              NOT NULL,
+   DeviceId             NUMBER              NOT NULL,
+   Timestamp            DATE                NOT NULL,
+   SPID                 NUMBER              NOT NULL,
+   GEO                  NUMBER              NOT NULL,
+   Substation           NUMBER              NOT NULL,
+   Feeder               NUMBER              NOT NULL,
+   Zip                  NUMBER              NOT NULL,
+   UDA                  NUMBER              NOT NULL,
+   Required             NUMBER              NOT NULL,
+   CONSTRAINT PK_ReportedAddressExpressCom PRIMARY KEY (ChangeId)
+);
+
+ALTER TABLE ReportedAddressExpressCom
+   ADD CONSTRAINT FK_RepAddExpressCom_Device FOREIGN KEY (DeviceId)
+      REFERENCES Device (DeviceId);
+
+CREATE TABLE ReportedAddressRelayExpressCom (
+   ChangeId             NUMBER              NOT NULL,
+   RelayNumber          NUMBER              NOT NULL,
+   Program              NUMBER              NOT NULL,
+   Splinter             NUMBER              NOT NULL,
+   CONSTRAINT PK_ReportedAddressRelayExpCom PRIMARY KEY (ChangeId, RelayNumber)
+);
+
+ALTER TABLE ReportedAddressRelayExpressCom
+   ADD CONSTRAINT FK_RepAddRelayExp_RepAddExpCom FOREIGN KEY (ChangeId)
+      REFERENCES ReportedAddressExpressCom (ChangeId);
+/* End YUK-11293 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
