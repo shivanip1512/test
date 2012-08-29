@@ -59,9 +59,18 @@ private:
    void refreshProperties         (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
    void refreshReasonabilityLimits(LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
    void refreshPointLimits        (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
-   void RefreshDynamicData        (LONG pntID = 0,             const std::set<long> &ids = std::set<long>());
    void processPointDynamicData   (LONG pntID, const std::set<long> &ids = std::set<long>());
    void refreshArchivalList       (LONG pntID, LONG paoID = 0, const std::set<long> &ids = std::set<long>());
+
+   void refreshDynamicDataForSinglePoint(const long pointId);
+   void refreshDynamicDataForPointSet   (const std::set<long> &ids);
+   void refreshDynamicDataForAllPoints  ();
+
+   void loadDynamicPoint(Cti::Database::DatabaseReader &rdr);
+
+   void executeDynamicDataQueries(const std::vector<std::string> &queries);
+
+   std::vector<std::string> generateSqlStatements(const std::set<long> &pointIds);
 
    void getDirtyRecordList(std::list<CtiTablePointDispatch> &updateList);
    void writeRecordsToDB  (std::list<CtiTablePointDispatch> &updateList);
@@ -129,4 +138,6 @@ private:
 public:
     void addAlarming(CtiTablePointAlarming &table) { Inherited::addAlarming(table); }
     void removeAlarming(unsigned long pointID)     { Inherited::removeAlarming(pointID); }
+
+    std::vector<std::string> generateSqlStatements(const std::set<long> &pointIds) { return Inherited::generateSqlStatements(pointIds); }
 };

@@ -95,7 +95,7 @@ string CtiTablePointDispatch::getSQLCoreStatement(long id)
 
     if( id )
     {
-        return string(sqlNoID + " WHERE DPD.pointid = ?");
+        return string(sqlNoID + " WHERE DPD.pointid = " + CtiNumStr(id));
     }
     else
     {

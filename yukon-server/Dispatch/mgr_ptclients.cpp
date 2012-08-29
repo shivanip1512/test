@@ -88,7 +88,7 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, const set<long> 
             //This will probably always be true, but why not check.
             if(dynamic && !dynamic->getDispatch().getUpdatedFlag())
             {
-                RefreshDynamicData(pntID);
+                refreshDynamicDataForSinglePoint(pntID);
                 //ApplyInsertNonUpdatedDynamicData(0, pTempPoint, NULL);
             }
         }
@@ -106,7 +106,7 @@ void CtiPointClientManager::processPointDynamicData(LONG pntID, const set<long> 
             }
         }
 
-        RefreshDynamicData(0, pointIds);
+        refreshDynamicDataForPointSet(pointIds);
     }
 }
 
@@ -195,7 +195,7 @@ std::set<long> CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPoi
 
         if( find_if(_dynamic.begin(), _dynamic.end(), non_updated_check()) != _dynamic.end() )
         {
-            RefreshDynamicData();
+            refreshDynamicDataForAllPoints();
         }
     }
 
@@ -872,19 +872,93 @@ void CtiPointClientManager::DeleteList(void)
 
 }
 
-/*
- *  This method reloads all dynamic point data into memory.  It will only update the memory image if
- *  this point has never previously been loaded (updated).
- */
-void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointIds)
+void CtiPointClientManager::refreshDynamicDataForSinglePoint(const long id)
 {
-    //I think this does not need to be locked as the piece of data in question already exists.
-    // This function only updates existing data.
-    //coll_type::writer_lock_guard_t guard(getLock());
+    if( ! id )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); 
+            dout << CtiTime() << " A valid pointId was not provided. Unable to refresh dynamic data for point." << endl; 
+        }
+        return;
+    }
 
-    LONG lTemp = 0;
-    CtiPointSPtr pTempPoint;
+    const vector<string> queries(1, CtiTablePointDispatch::getSQLCoreStatement(id));
 
+    executeDynamicDataQueries(queries);
+}
+
+void CtiPointClientManager::refreshDynamicDataForPointSet(const set<long> &pointIds)
+{
+    if( pointIds.empty() )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout); 
+            dout << CtiTime() << " No pointIds were provided. Unable to refresh dynamic data for points." << endl; 
+        }
+        return;
+    }
+
+    const vector<string> queries = generateSqlStatements(pointIds);
+
+    executeDynamicDataQueries(queries);
+}
+
+void CtiPointClientManager::refreshDynamicDataForAllPoints()
+{
+    // We want the sql without a single-id where clause.
+    const vector<string> queries(1, CtiTablePointDispatch::getSQLCoreStatement(0));
+
+    executeDynamicDataQueries(queries);
+}
+
+vector<string> CtiPointClientManager::generateSqlStatements(const set<long> &pointIds)
+{
+    // We want the sql without a single-id where clause.
+    const string sql = CtiTablePointDispatch::getSQLCoreStatement(0);
+    
+    vector<string> queries;
+
+    Cti::Database::id_set_itr pointid_itr = pointIds.begin();
+
+    int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_POINT_SELECT", POINT_REFRESH_SIZE);
+
+    do
+    {
+        // Let the chunking begin.
+        string chunk = sql;
+
+        int subset_size = min(distance(pointid_itr, pointIds.end()), max_ids_per_select);
+
+        Cti::Database::id_set_itr subset_end = pointid_itr;
+        advance(subset_end, subset_size);
+        Cti::Database::id_set pointid_subset(pointid_itr, subset_end);
+
+        std::ostringstream in_list;
+        csv_output_iterator<long, std::ostringstream> csv_itr(in_list);
+
+        in_list << "(";
+
+        copy(pointid_subset.begin(), pointid_subset.end(), csv_itr);
+
+        in_list << ")";
+
+        chunk += " WHERE DPD.pointid IN ";
+        chunk += in_list.str();
+
+        // Sql is completed.
+        queries.push_back(chunk);
+
+        // Grab the next chunk.
+        advance(pointid_itr, subset_size);
+
+    } while( pointid_itr != pointIds.end() );
+
+    return queries;
+}
+
+void CtiPointClientManager::executeDynamicDataQueries(const vector<string> &queries)
+{
     CtiTime start, stop;
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
@@ -892,83 +966,74 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Looking for Dynamic Dispatch Data" << endl;
     }
 
-    string sql = CtiTablePointDispatch::getSQLCoreStatement(id);
-
-    if(!pointIds.empty())
-    {
-        std::ostringstream in_list;
-        csv_output_iterator<long, std::ostringstream> csv_itr(in_list);
-
-        in_list << "(";
-
-        copy(pointIds.begin(), pointIds.end(), csv_itr);
-
-        in_list << ")";
-
-        sql += (id ? " AND DPD.pointid IN " : " WHERE DPD.pointid IN ");
-        sql += in_list.str();
-    }
-
     Cti::Database::DatabaseConnection connection;
-    Cti::Database::DatabaseReader rdr(connection, sql);
 
-    if(id)
+    for each( const string &sql in queries )
     {
-        rdr << id;
-    }
+        Cti::Database::DatabaseReader rdr(connection, sql);
 
-    rdr.execute();
+        rdr.execute();
 
-    if(DebugLevel & DEBUGLEVEL_MGR_POINT || !rdr.isValid())
-    {
-        string loggedSQLstring = rdr.asString();
+        if(DebugLevel & DEBUGLEVEL_MGR_POINT || !rdr.isValid())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << loggedSQLstring << endl;
-        }
-    }
-
-    start = start.now();
-    while( rdr() )
-    {
-        rdr["pointid"] >> lTemp;                        // get the point id
-        pTempPoint = getCachedPoint( lTemp );
-
-        if(pTempPoint)
-        {
-            CtiDynamicPointDispatchSPtr pDyn = getDynamic(pTempPoint);
-
-            if(pDyn)
+            string loggedSQLstring = rdr.asString();
             {
-                if(pDyn->getDispatch().getUpdatedFlag() == FALSE)
-                {
-                    pDyn->getDispatch().DecodeDatabaseReader(rdr);              // Decode the current row.
-
-                    UINT statictags = pDyn->getDispatch().getTags();
-                    pDyn->getDispatch().resetTags();                    // clear them all!
-                    pDyn->getDispatch().setTags(pTempPoint->adjustStaticTags(statictags));   // make the static tags match...
-                    pDyn->getDispatch().setUpdatedFlag();
-                    pDyn->getDispatch().resetDirty();                           // Set tags would normally dirty things up!
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << loggedSQLstring << endl;
             }
         }
-        else
+
+        start = start.now();
+
+        while( rdr() )
+        {
+            loadDynamicPoint(rdr);
+        }
+
+        if((stop = stop.now()).seconds() - start.seconds() > 5 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** WARNING **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  Point id " << lTemp << " found in "  << CtiTablePointDispatch::getTableName() << ", no other point info available" << endl;
+            dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Dynamic Data " << endl;
         }
-    }
-
-    if((stop = stop.now()).seconds() - start.seconds() > 5 )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Dynamic Data " << endl;
     }
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Done looking for Dynamic Dispatch Data" << endl;
+    }
+}
+
+void CtiPointClientManager::loadDynamicPoint(Cti::Database::DatabaseReader &rdr)
+{
+    long lTemp = 0;
+    CtiPointSPtr pTempPoint;
+
+    rdr["pointid"] >> lTemp;                        // get the point id
+    pTempPoint = getCachedPoint( lTemp );
+
+    if(pTempPoint)
+    {
+        CtiDynamicPointDispatchSPtr pDyn = getDynamic(pTempPoint);
+
+        if(pDyn)
+        {
+            if(pDyn->getDispatch().getUpdatedFlag() == FALSE)
+            {
+                pDyn->getDispatch().DecodeDatabaseReader(rdr);              // Decode the current row.
+
+                UINT statictags = pDyn->getDispatch().getTags();
+                pDyn->getDispatch().resetTags();                    // clear them all!
+                pDyn->getDispatch().setTags(pTempPoint->adjustStaticTags(statictags));   // make the static tags match...
+                pDyn->getDispatch().setUpdatedFlag();
+                pDyn->getDispatch().resetDirty();                           // Set tags would normally dirty things up!
+            }
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** WARNING **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "  Point id " << lTemp << " found in "  << CtiTablePointDispatch::getTableName() << ", no other point info available" << endl;
     }
 }
 
